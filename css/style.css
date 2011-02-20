@@ -1,0 +1,187 @@
+/* Most of CSS copied from other sources, among .. */
+/*   - http://www.designyourway.net/blog/resources/31-css-code-snippets-to-make-you-a-better-coder/ */
+
+/* Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    /* font-family: inherit; */
+
+	/*The Trebuchet-based sans serif stack:*/
+	font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
+    font-size: 9pt;
+	
+    vertical-align: baseline;
+}
+
+img {
+	vertical-align: middle;
+}
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+
+body {
+    color: black;
+    background: white;
+}
+ol, ul {
+    list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+caption, th, td {
+    text-align: left;
+    font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+}
+blockquote, q {
+    quotes: "" "";
+}
+
+/* Make sure clickable elements have a pointer as cursor */
+a[href], 
+input[type='submit'], 
+input[type='image'], 
+label[for], 
+select, 
+button, 
+.pointer {
+       cursor: pointer;
+}
+
+/* Shadows */
+.shadow {
+  -moz-box-shadow: 3px 3px 3px #ccc;
+  -webkit-box-shadow: 3px 3px 3px #ccc;
+  box-shadow: 3px 3px 3px #ccc;
+}
+
+/* *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- */
+.container {
+	width: 100%;
+}
+
+.filtercontainer {
+	float: left;
+	width: 350px;
+	margin-right: 14px;
+	min-height: 600px;
+}
+
+.filter h4 {
+	font-size: 120%;
+	font-weight: bold;
+	text-align: center;
+	
+	padding-bottom: 16px;
+}
+
+.filter {
+	width: 300px;
+	margin-left: 20px;
+	margin-right: 10px;
+	margin-top: 24px;
+	margin-bottom: 20px;
+	
+/*	min-height: 200px;
+*/
+
+	background-color: #0F4F81;
+	border: 1px solid #175F98;
+	
+	padding: 10px;
+	color: white;
+	
+	-moz-border-radius-topleft:     8px;
+	-moz-border-radius-topright:    8px;
+	-moz-border-radius-bottomright: 8px;
+	-moz-border-radius-bottomleft:  8px;
+	border-top-left-radius:         8px;
+	border-top-right-radius:        8px;
+	border-bottom-right-radius:     8px;
+	border-bottom-left-radius:      8px;
+}
+
+.spotscontainer {
+	padding-right: 6px;
+}
+
+/* Some styling for the forms in the filter boxes */
+table.filters td {
+	padding-bottom: 12px;
+	color: white;
+}
+
+input.searchbox {
+	width: 300px;
+	text-align: left;
+}
+.filtersubmit {
+	border: 1px solid #0F4F81;
+	background-color: #175F98;
+	color: white;
+	font-weight: bold;
+	width: 300px;
+}
+	
+
+ul.filterlist a {
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+ul.filterlist img {
+	margin-right: 6px;
+}
+
+/* spot info  */
+.spotinfocontainer {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.spotinfoimage {
+	width: expression(this.width > 350 ? "350px;": "auto" );
+	float: left;
+	max-width: 350px;
+	margin-right: 10px;
+}
+
+.spotinfoclear {
+	clear: both;
+}
+
+.spotinfotable tr th	  {
+	padding-right: 18px;
+}
+
+.spotinfotable tr th,
+.spotinfotable tr th a {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.spotinfotable tr td {
+	font-size: 120%;
+}
