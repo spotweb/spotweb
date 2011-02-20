@@ -45,10 +45,10 @@ class db
 		
 		if ($p == null) {
 			$this->setMaxArticleId($server, 0);
-			$p = array(0);
+			$p = 0;
 		} # if
 		
-		return $p[0];
+		return $p;
 	} # getMaxArticleId
 
 	function getSpots($id, $limit, $sqlFilter) {

@@ -6,20 +6,21 @@ require_once "SpotNntp.php";
 
 $db = new db($settings['sqlite3_path']);
 
-$spotnntp = new SpotNntp($settings['nntp_host'],
-						 $settings['nntp_enc'],
-						 $settings['nntp_port'],
-						 $settings['nntp_user'],
-						 $settings['nntp_pass']);
+$spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
+						 $settings['nntp_hdr']['enc'],
+						 $settings['nntp_hdr']['port'],
+						 $settings['nntp_hdr']['user'],
+						 $settings['nntp_hdr']['pass']);
 if ($spotnntp->connect()) {
 	$msgdata = $spotnntp->selectGroup($settings['hdr_group']);
 	if ($msgdata === false) {
 		echo "Error getting group: " . $spotnntp->getError();
-		break;
+		exit;
 	} # if
 
 	# Determine wether we want 
-	$curMsg = $db->getMaxArticleId($settings['nntp_host']);
+	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
+	
 	if ($curMsg < $msgdata['first']) {
 		$curMsg = $msgdata['first'];
 	} # if
@@ -64,7 +65,7 @@ if ($spotnntp->connect()) {
 			$curMsg = ($hdrList[0]['Number'] + 1);
 		} # else
 
-		$db->setMaxArticleid($settings['nntp_host'], $curMsg);
+		$db->setMaxArticleid($settings['nntp_hdr']['host'], $curMsg);
 		$db->endTransaction();
 	} # while
 

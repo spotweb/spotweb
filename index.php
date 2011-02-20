@@ -224,11 +224,11 @@ switch($site['page']) {
 		
 		$spot = $spot[0];
 		
-		$spotnntp = new SpotNntp($settings['nntp_host'],
-								 $settings['nntp_enc'],
-								 $settings['nntp_port'],
-								 $settings['nntp_user'],
-								 $settings['nntp_pass']);
+		$spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
+								 $settings['nntp_hdr']['enc'],
+								 $settings['nntp_hdr']['port'],
+								 $settings['nntp_hdr']['user'],
+								 $settings['nntp_hdr']['pass']);
 		if ($spotnntp->connect()) {
 			$header = $spotnntp->getHeader('<' . $spot['messageid'] . '>');
 			
@@ -261,13 +261,25 @@ switch($site['page']) {
 		$spot = $db->getSpot(Req::getDef('messageid', ''));
 		$spot = $spot[0];
 		
-		$spotnntp = new SpotNntp($settings['nntp_host'],
-								 $settings['nntp_enc'],
-								 $settings['nntp_port'],
-								 $settings['nntp_user'],
-								 $settings['nntp_pass']);
-		if ($spotnntp->connect()) {
-			$header = $spotnntp->getHeader('<' . $spot['messageid'] . '>');
+		$hdr_spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
+									$settings['nntp_hdr']['enc'],
+									$settings['nntp_hdr']['port'],
+									$settings['nntp_hdr']['user'],
+									$settings['nntp_hdr']['pass']);
+		if ($settings['nntp_hdr']['host'] == $settings['nntp_nzb']['host']) {
+			$connected = ($hdr_spotnntp->connect());
+			$nzb_spotnntp = $hdr_spotnntp;
+		} else {
+			$nzb_spotnntp = new SpotNntp($settings['nntp_nzb']['host'],
+										$settings['nntp_nzb']['enc'],
+										$settings['nntp_nzb']['port'],
+										$settings['nntp_nzb']['user'],
+										$settings['nntp_nzb']['pass']);
+			$connected = (($hdr_spotnntp->connect()) && ($nzb_spotnntp->connect()));
+		} # else
+		
+		if ($connected) {
+			$header = $hdr_spotnntp->getHeader('<' . $spot['messageid'] . '>');
 			
 			$xml = '';
 			if ($header !== false) {
@@ -281,11 +293,13 @@ switch($site['page']) {
 			$spotParser = new SpotParser();
 			$xmlar = $spotParser->parseFull($xml);
 			
+			/* Connect to the NZB group */
+			
 			/* Get the NZB file */
 			$nzb = false;
 			if (is_array($xmlar['segment'])) {
 				foreach($xmlar['segment'] as $seg) {
-					$tmp = $spotnntp->getBody("<" . $seg . ">");
+					$tmp = $nzb_spotnntp->getBody("<" . $seg . ">");
 					
 					if ($tmp !== false) {
 						$nzb .= implode("", $tmp);
@@ -294,7 +308,7 @@ switch($site['page']) {
 					} #else
 				} # foreach
 			} else {
-				$tmp = $spotnntp->getBody("<" . $xmlar['segment'] . ">");
+				$tmp = $nzb_spotnntp->getBody("<" . $xmlar['segment'] . ">");
 				if ($tmp !== false) {
 					$nzb .= implode("", $tmp);
 				} # if

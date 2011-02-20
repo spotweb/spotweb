@@ -3,20 +3,33 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-   WIJZIG ONDERSTAANDE  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-$settings['nntp_host'] = 'news.ziggo.nl';	# <== Geef hier je nntp server in
-$settings['nntp_user'] = 'xx';				# <== Geef hier je username in
-$settings['nntp_pass'] = 'yy';				# <== Geef hier je password in
-$settings['nntp_enc'] = false; 				# <== false|'tls'|'ssl', defaults to false.
-$settings['nntp_port'] = 119; 				# <== set to 563 in case of encryption
+$settings['nntp_nzb']['host'] = 'news.ziggo.nl';	# <== Geef hier je nntp server in
+$settings['nntp_nzb']['user'] = 'xx';				# <== Geef hier je username in
+$settings['nntp_nzb']['pass'] = 'yy';				# <== Geef hier je password in
+$settings['nntp_nzb']['enc'] = false; 				# <== false|'tls'|'ssl', defaults to false.
+$settings['nntp_nzb']['port'] = 119; 				# <== set to 563 in case of encryption
 
-@include('../ownsettings.php'); 			# <== deze lijn mag je wijzigen	
+# =-=-=-=-=-=-=-=- Als je een aparte 'headers' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
+$settings['nntp_hdr']['host'] = '';					# <== Geef hier je nntp server voor headers in, maar enkel als dit nodig is
+$settings['nntp_hdr']['user'] = '';
+$settings['nntp_hdr']['pass'] = '';
+$settings['nntp_hdr']['enc'] = false;				# <== false|'tls'|'ssl', defaults to false.
+$settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
+
+
+@include('../ownsettings.php'); 			# <== deze lijn mag je verwijderen	
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+# override NNTP header settings 
+if (empty($settings['nntp_hdr']['nntp_host'])) {
+	$settings['nntp_hdr'] = $settings['nntp_nzb'];
+} # if 
 
 // version
-define('VERSION', 0.2);
+define('VERSION', '0.2b');
 
 // settings 
 $settings['hdr_group'] = 'free.pt';
