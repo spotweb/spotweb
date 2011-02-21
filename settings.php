@@ -17,14 +17,14 @@ $settings['nntp_hdr']['enc'] = false;				# <== false|'tls'|'ssl', defaults to fa
 $settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
 
 
-@include('../ownsettings.php'); 			# <== deze lijn mag je verwijderen	
+@include('../ownsettings.php'); 					# <== deze lijn mag je verwijderen	
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 # override NNTP header settings 
-if (empty($settings['nntp_hdr']['nntp_host'])) {
+if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
 
