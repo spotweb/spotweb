@@ -64,14 +64,14 @@ function filterToQuery($search, $dynatree) {
 				$val = explode('_', (substr($val, 3) . '_'));
 
 				if (count($val) >= 3) {
-					$dyn2search['cat'][$val[0]][] = 'o' . $val[1];
+					$dyn2search['cat'][$val[0]][] = 'a' . $val[1];
 				} else {
 					$dyn2search['cat'][$val[0]][] = $val[0];
 				}
 			} # if
 		} # foreach
 	} # if
-
+	
 	# merge the actual search array and the categories selected in the
 	# tree
 	$search = array_merge($search, $dyn2search);
@@ -203,6 +203,7 @@ switch($site['page']) {
 		openDb();
 		$filter = filterToQuery($req->getDef('search', array()),
 								$req->getDef('dynatree-select', array()));
+								
 		$spots = loadSpots($prefs['perpage'], $filter);
 
 		#- display stuff -#
