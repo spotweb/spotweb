@@ -166,7 +166,7 @@ class SpotParser {
 						
 						$spot['Title'] = trim(implode('|', $tmp));
 						
-						if ((strpos(chr(0xc2), $spot['Title']) !== false) | (strpos(chr(0xc3), $spot['Title']) !== false)) {
+						if ((strpos($spot['Title'], chr(0xc2)) !== false) | (strpos($spot['Title'], chr(0xc3)) !== false)) {
 							$spot['Title'] = trim($this->OldEncodingParse($spot['Title']));
 						} # if
 					} # if recentKey

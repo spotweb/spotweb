@@ -45,7 +45,7 @@
 		<tr> <th> Include files  </th> <th> OK ? </th> </tr>
 		<tr> <td> Settings file </td> <td> <?php echo testInclude("settings.php") ? "OK" : "settings.php cannot be read" ?>  </td> </tr>
 		<tr> <td> PEAR Net/NNTP </td> <td> <?php echo testInclude("Net/NNTP/Client.php") ? "OK" : "PEAR Net/NNTP package cannot be found" ?> </td> </tr>
-		<tr> <td> NNTP server </td> <td> <?php echo (!empty($settings['nntp_host']) === false) ? "No server entered" : "OK" ?>  </td> </tr>
+		<tr> <td> NNTP server </td> <td> <?php echo (!empty($settings['nntp_nzb']['host']) === false) ? "No server entered" : "OK" ?>  </td> </tr>
 	</table>
 	
 	</body>
