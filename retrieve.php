@@ -51,7 +51,7 @@ if ($spotnntp->connect()) {
 											$msgheader['From'], 
 											$msgheader['Message-ID'],
 											$settings['rsa_keys']);
-
+											
 			if (($spot != null) && ($spot['Verified'])) {
 				$db->addSpot($spot);
 			} # if

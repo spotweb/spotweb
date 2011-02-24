@@ -286,7 +286,7 @@ switch($site['page']) {
 		
 		if ($connected) {
 			$header = $hdr_spotnntp->getHeader('<' . $spot['messageid'] . '>');
-			
+
 			$xml = '';
 			if ($header !== false) {
 				foreach($header as $str) {
@@ -300,7 +300,6 @@ switch($site['page']) {
 			$xmlar = $spotParser->parseFull($xml);
 			
 			/* Connect to the NZB group */
-			
 			/* Get the NZB file */
 			$nzb = false;
 			if (is_array($xmlar['segment'])) {

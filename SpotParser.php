@@ -101,7 +101,6 @@ class SpotParser {
 						
 					} else {
 						$list = array();
-						
 						for($i = 0; $i < strlen($strInput); $i++) {
 							if (($strInput[$i] == 0) && (!is_numeric($strInput[$i])) && (strlen($expression) > 0)) {
 								$list[] = $expression;
@@ -210,7 +209,7 @@ class SpotParser {
 						} # if must be signed
 						else {
 							$spot['Verified'] = true;
-						} # if doesnt need to be designed, pretend that it is
+						} # if doesnt need to be signed, pretend that it is
 					} # if
 				} # if
 			} # if

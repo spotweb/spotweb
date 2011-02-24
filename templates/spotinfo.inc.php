@@ -18,9 +18,13 @@
 	} # if
 
 	# display the download button
-	echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
+	if (isset($spot['segment'])) {
+		echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
+	} else {
+		echo "\t\t\t\t<a href='http://www.binsearch.info/?adv_age=&q=" . $spot['filename'] . "'><img style='float: right;' src='images/donwload3.png'></a>";
+	} # if
 
-	# and fixup the descrition text
+	# and fixup the description text
 	$tmp = $spot['description'];
 	
 	$tmp = str_replace('[b]', '<b>', $tmp);
