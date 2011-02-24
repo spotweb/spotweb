@@ -37,6 +37,14 @@ $settings['nzb_group'] = 'alt.binaries.ftd';
 
 // db
 $settings['sqlite3_path'] = './nntpdb.sqlite3';
+
+# Als je MySQL wilt gebruiken, comment dan bovenstaande regel uit, en comment onderstaande in
+#$settings['mysql']['host'] = 'localhost';
+#$settings['mysql']['dbname'] = 'spotweb';
+#$settings['mysql']['user'] = 'spotweb';
+#$settings['mysql']['pass'] = 'spotweb';
+
+# waar moeten ew de templates vinden?
 $settings['tpl_path'] = './templates/';
 
 

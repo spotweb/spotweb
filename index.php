@@ -89,7 +89,12 @@ function filterToQuery($search, $dynatree) {
 			if ((is_array($cat)) && (!empty($cat))) {
 				$subcatStr = " AND (";
 				$subcatCounter = 0;
-					
+
+				#
+				# uiteraard is een LIKE query voor category search niet super schaalbaar
+				# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
+				# moet het meer dan genoeg zijn
+				#
 				foreach($cat as $subcat) {
 					# split up the subcat
 					$operator = ' LIKE ';
@@ -320,7 +325,7 @@ switch($site['page']) {
 				Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
 				echo gzinflate($spotParser->unspecialZipStr($nzb));
 			} else {
-				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();
+				echo "Unable to get NZB file: " . $spotnntp->getError();
 			} # else
 		} # if
 		
