@@ -14,19 +14,27 @@ class db_sqlite3 extends db_abs {
 	static function safe($s) {
 		return sqlite_escape_string($s);
 	} # safe
+
+	function rawExec($s) {
+		return $this->_conn->queryExec($s);
+	} # rawExec
 	
 	function exec($s, $p = array()) {
 		$p = array_map(array('db_sqlite3', 'safe'), $p);
 		
 		# echo "EXECUTING: " . vsprintf($s, $p) . "\r\n";
-		
-		return $this->_conn->queryExec(vsprintf($s, $p));
+
+		if (empty($p)) {
+			return $this->rawExec($s);
+		} else {
+			return $this->rawExec(vsprintf($s, $p));
+		} # if
 	} # exec
 		
 	function singleQuery($s, $p = array()) {
 		$p = array_map(array('db_sqlite3', 'safe'), $p);
 		
-		return $this->_conn->singleQuery(vsprintf($s, $p));
+		return $this->_conn->singleQuery(vsprintf($s, $p), true);
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {

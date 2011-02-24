@@ -3,6 +3,7 @@
  * A mess
  */
 require_once "dbeng/db_sqlite3.php";
+require_once "dbeng/db_mysql.php";
 
 class db
 {
@@ -10,7 +11,12 @@ class db
 	
     function __construct($path)
     {
-		$this->_conn = new db_sqlite3($path);
+		# $this->_conn = new db_sqlite3($path);
+		global $settings;
+		$this->_conn = new db_mysql($settings['mysql']['host'],
+									$settings['mysql']['user'],
+									$settings['mysql']['pass'],
+									$settings['mysql']['dbname']); 
     }
 	
 	function setMaxArticleId($server, $maxarticleid) {
@@ -53,6 +59,10 @@ class db
 	function endTransaction() {
 		$this->_conn->exec('COMMIT;', array());
 	} # endTransaction
+	
+	function safe($q) {
+		return $this->_conn->safe($q);
+	} # safe
 	
 	function addSpot($spot) {
 		return $this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 

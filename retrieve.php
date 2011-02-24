@@ -25,7 +25,7 @@ if ($spotnntp->connect()) {
 		$curMsg = $msgdata['first'];
 	} # if
 	
-	echo "Message count:       " . ($msgdata['last'] - $msgdata['first']) . "\r\n";
+	echo "Appr. Message count: " . ($msgdata['last'] - $msgdata['first']) . "\r\n";
 	echo "Last message number: " . $msgdata['last'] . "\r\n";
 	echo "Current message:     " . $curMsg . "\r\n";
 			
@@ -61,6 +61,7 @@ if ($spotnntp->connect()) {
 		# messagenumber with the increment to make sure we advance
 		if ((count($hdrList) < 1) || ($hdrList[0]['Number'] < $curMsg)) {
 			$curMsg += $increment;
+			echo "No spots found in current range\r\n";
 		} else {
 			$curMsg = ($hdrList[0]['Number'] + 1);
 		} # else

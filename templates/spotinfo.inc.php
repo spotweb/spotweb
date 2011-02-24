@@ -28,6 +28,10 @@
 	$tmp = str_replace('[i]', '<i>', $tmp);
 	$tmp = str_replace('[/i]', '</i>', $tmp);
 	$tmp = str_replace('[br]', '<br>', $tmp);
+	$tmp = str_replace('[u]', '<u>', $tmp);
+	$tmp = str_replace('[/u]', '</u>', $tmp);
+	$tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
+	$tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
 	echo $tmp;
 ?>
 	
