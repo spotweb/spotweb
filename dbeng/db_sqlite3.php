@@ -24,6 +24,8 @@ class db_sqlite3 extends db_abs {
 		
 		# echo "EXECUTING: " . vsprintf($s, $p) . "\r\n";
 
+		# niet op empty checken gaat mis als er %'s in de query string zitten omdat
+		# er dan gereplaced wordt waar dat niet moet..
 		if (empty($p)) {
 			return $this->rawExec($s);
 		} else {
@@ -34,13 +36,25 @@ class db_sqlite3 extends db_abs {
 	function singleQuery($s, $p = array()) {
 		$p = array_map(array('db_sqlite3', 'safe'), $p);
 		
-		return $this->_conn->singleQuery(vsprintf($s, $p), true);
+		# niet op empty checken gaat mis als er %'s in de query string zitten omdat
+		# er dan gereplaced wordt waar dat niet moet..
+		if (empty($p)) {
+			return $this->_conn->singleQuery($s, true);
+		} else {
+			return $this->_conn->singleQuery(vsprintf($s, $p), true);
+		} # else
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
 		$p = array_map(array('db_sqlite3', 'safe'), $p);
 		
-		return $this->_conn->arrayQuery(vsprintf($s, $p));
+		# niet op empty checken gaat mis als er %'s in de query string zitten omdat
+		# er dan gereplaced wordt waar dat niet moet..
+		if (empty($p)) {
+			return $this->_conn->arrayQuery($s);
+		} else {
+			return $this->_conn->arrayQuery(vsprintf($s, $p));
+		} # else
 	} # arrayQuery
 
 	
