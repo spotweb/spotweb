@@ -320,7 +320,7 @@ switch($site['page']) {
 				Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
 				echo gzinflate($spotParser->unspecialZipStr($nzb));
 			} else {
-				echo "Unable to get NZB file: " . $spotnntp->getError();
+				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();
 			} # else
 		} # if
 		
