@@ -4,7 +4,7 @@ require_once "db.php";
 require_once "SpotParser.php";
 require_once "SpotNntp.php";
 
-$db = new db($settings['sqlite3_path']);
+$db = new db($settings['db']);
 
 $spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
 						 $settings['nntp_hdr']['enc'],

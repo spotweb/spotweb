@@ -36,13 +36,17 @@ $settings['hdr_group'] = 'free.pt';
 $settings['nzb_group'] = 'alt.binaries.ftd';
 
 // db
-$settings['sqlite3_path'] = './nntpdb.sqlite3';
+$settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3 en mysql
+$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
-# Als je MySQL wilt gebruiken, comment dan bovenstaande regel uit, en comment onderstaande in
-$settings['mysql']['host'] = 'localhost';
-$settings['mysql']['dbname'] = 'spotweb';
-$settings['mysql']['user'] = 'spotweb';
-$settings['mysql']['pass'] = 'spotweb';
+# Als je MySQL wilt gebruiken, vul dan onderstaande in
+#$settings['db']['engine'] = 'mysql';
+#$settings['db']['host'] = 'localhost';
+#$settings['db']['dbname'] = 'spotweb';
+#$settings['db']['user'] = 'spotweb';
+#$settings['db']['pass'] = 'spotweb';
+
+# welke database engine willen we gebruiken?
 
 # waar moeten ew de templates vinden?
 $settings['tpl_path'] = './templates/';

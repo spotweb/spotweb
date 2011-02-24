@@ -33,7 +33,7 @@ function openDb() {
 	extract($GLOBALS['site'], EXTR_REFS);
 
 	# fireup the database
-	$db = new db($settings['sqlite3_path']);
+	$db = new db($settings['db']);
 
 	$GLOBALS['site']['db'] = $db;
 	

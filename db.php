@@ -9,15 +9,23 @@ class db
 {
 	private $_conn;
 	
-    function __construct($path)
+    function __construct($db)
     {
-		# $this->_conn = new db_sqlite3($path);
 		global $settings;
-		$this->_conn = new db_mysql($settings['mysql']['host'],
-									$settings['mysql']['user'],
-									$settings['mysql']['pass'],
-									$settings['mysql']['dbname']); 
-    }
+		
+		switch ($db['engine']) {
+			case 'sqlite3'	: $this->_conn = new db_sqlite3($db['path']);
+							  break;
+							  
+			case 'mysql'	: $this->_conn = new db_mysql($db['host'],
+												$db['user'],
+												$db['pass'],
+												$db['dbname']); 
+							  break;
+							  
+		    default			: die("Unknown DB engine specified, please choose sqlite3 or mysql");
+		} # switch
+    } # ctor
 	
 	function setMaxArticleId($server, $maxarticleid) {
 		return $this->_conn->exec("REPLACE INTO nntp(server, maxarticleid) VALUES('%s',%s)", Array($server, (int) $maxarticleid));
