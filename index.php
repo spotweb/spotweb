@@ -40,10 +40,32 @@ function openDb() {
 	return $db;
 } # openDb]
 
+function sabnzbdurl($spot) {
+	extract($GLOBALS['site'], EXTR_REFS);
+
+	$tmp = $settings['sabnzbd']['url'];
+	$tmp = str_replace('$SABNZBDHOST', $settings['sabnzbd']['host'], $tmp);
+	$tmp = str_replace('$NZBURL', urlencode($settings['sabnzbd']['spotweburl'] . '?page=getnzb&messageid='. $spot['messageid']), $tmp);
+	$tmp = str_replace('$SPOTTITLE', urlencode($spot['title']), $tmp);
+	$tmp = str_replace('$APIKEY', $settings['sabnzbd']['apikey'], $tmp);
+
+	return $tmp;
+} # sabnzbdurl
+
 function loadSpots($start, $sqlFilter) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	
-	return $db->getSpots($start, $prefs['perpage'], $sqlFilter);
+	$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
+
+	if (isset($settings['sabnzbd'])) {
+		$spotCnt = count($spotList);
+		
+		for ($i = 0; $i < $spotCnt; $i++) {
+			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);
+		} # foreach
+	} # if
+	
+	return $spotList;
 } # loadSpots()
 
 function filterToQuery($search, $dynatree) {
@@ -249,6 +271,7 @@ switch($site['page']) {
 			$spotParser = new SpotParser();
 			$xmlar = $spotParser->parseFull($xml);
 			$xmlar['messageid'] = Req::getDef('messageid', '');
+			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
 
 			#- display stuff -#
 			template('header');

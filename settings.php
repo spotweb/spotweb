@@ -16,9 +16,6 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;				# <== false|'tls'|'ssl', defaults to false.
 $settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
 
-
-@include('../ownsettings.php'); 					# <== deze lijn mag je verwijderen	
-
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -52,7 +49,16 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 $settings['tpl_path'] = './templates/';
 
 # tonen we een update knop in de web ui?
-$settings['show_updatebutton'] = true;
+$settings['show_updatebutton'] = false;
+
+# toon een download-nzb knop op het overzicht?
+$settings['show_nzbbutton'] = true;
+
+# integratie met sabnzbd+? uncomment als dit gewenst is
+#$settings['sabnzbd']['host'] = '192.168.10.122:8081';					# <== Pas deze aan naar de sabnzbd host plus port
+#$settings['sabnzbd']['apikey'] = '906e38e971fbf8175303a43569d4f151';	# <== Pas deze aan naar jouw sabnzbd api key
+#$settings['sabnzbd']['spotweburl'] = 'http://server/spotweb/';			# <== URL naar spotweb, gezien vanuit de Sabnzbd machine
+#$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&apikey=$APIKEY'; # <== Hoef je niet aan te passen
 
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
@@ -71,3 +77,5 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 								 'exponent' => 'AQAB');
 
 
+
+@include('../ownsettings.php'); 					# <== deze lijn mag je verwijderen	

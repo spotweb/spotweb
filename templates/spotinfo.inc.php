@@ -19,7 +19,11 @@
 
 	# display the download button
 	if (isset($spot['segment'])) {
-		echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
+		if (isset($settings['sabnzbd'])) {
+			echo "\t\t\t\t<a href='" . $spot['sabnzbdurl'] . "' target='_blank'><img style='float: right;' src='images/download3.png'></a>";
+		} else {
+			echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
+		}
 	} else {
 		echo "\t\t\t\t<a href='http://www.binsearch.info/?adv_age=&q=" . $spot['filename'] . "'><img style='float: right;' src='images/download3.png'></a>";
 	} # if
@@ -71,9 +75,17 @@
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
 					<tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> </td> </tr>
 					<tr> <th> Tag </th> <td> <?php if (isset($spot['tag'])) { echo $spot['tag']; } ?> </td> </tr>
-					<tr> <th> Binsearch </th? <td> <a href='http://www.binsearch.info/?adv_age=&q=<?php echo urlencode($spot['title']); ?>'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
 
-					<tr> <th colspan="2"> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid'] ?>'>Download</a> </th> </tr>
+					<tr> <td colspan="2"> &nbsp;  </td> </tr>
+					<tr> <th> Binsearch </th> <td> <a href='http://www.binsearch.info/?adv_age=&q=<?php echo urlencode($spot['title']); ?>'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
+					<tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+<?php					
+	if (isset($settings['sabnzbd'])) {
+?>
+					<tr> <th> SABnzbd </th? <td> <a href='<?php echo $spot['sabnzbdurl']; ?>' target='_blank'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
+<?php
+	} # if
+?>
 
 				</table>
 			

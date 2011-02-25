@@ -1,6 +1,19 @@
 			<div class="spotscontainer">
 				<table class="spots">
-					<tr> <th> Formaat </th> <th> Cat. </th> <th> Titel </th> <th> Genre </th> <th> Afzender </th> <th> Datum </th> <th> Dnl. </th> </tr>
+					<tr> 
+						<th> Formaat </th> 
+						<th> Cat. </th> 
+						<th> Titel </th> 
+						<th> Genre </th> 
+						<th> Afzender </th> 
+						<th> Datum </th> 
+<?php if ($settings['show_nzbbutton']) { ?>
+						<th> Dnl. </th> 
+<?php } ?>						
+<?php if (isset($settings['sabnzbd'])) { ?>
+						<th> sabnzbd </th> 
+<?php } ?>						
+					</tr>
 			
 <?php
 	$count = 0;
@@ -19,10 +32,25 @@
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
-			echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'>NZB</a></td>";
+			if ($settings['show_nzbbutton']) {
+				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'>NZB</a></td>";
+			} # if
+
+			# display the sabnzbd button
+			if (isset($settings['sabnzbd'])) {
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "'>Go</a></td>";
+			} # if
 		} else {
-			echo "<td> &nbsp; </td>";
+			if ($settings['show_nzbbutton']) {
+				echo "<td> &nbsp; </td>";
+			} # if
+
+			# display the sabnzbd button
+			if (isset($settings['sabnzbd'])) {
+				echo "<td> &nbsp; </td>";
+			} # if
 		} # else
+		
 		
 		echo "</tr>\r\n";
 	}
