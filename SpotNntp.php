@@ -83,7 +83,9 @@ class SpotNntp {
 		function connect() {
 			try {
 				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport);
-				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
+				if (!empty($this->_user)) {
+					$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
+				} # if
 			}
 			catch(Exception $x) {
 				$this->_error = $x->getMessage();
