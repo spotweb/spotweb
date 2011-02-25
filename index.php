@@ -230,7 +230,7 @@ switch($site['page']) {
 		openDb();
 		$filter = filterToQuery($req->getDef('search', $settings['index_filter']),
 								$req->getDef('dynatree-select', array()));
-		$spots = loadSpots($prefs['perpage'], $filter);
+		$spots = loadSpots(0, $filter);
 
 		#- display stuff -#
 		template('header');
