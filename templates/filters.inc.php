@@ -43,5 +43,17 @@
 						<li> <a href="?search[cat]="><img src='images/custom2.png'>Reset filters</a>
 					</ul>
 				</div>
-			</div>
 
+<?php
+	if ($settings['show_updatebutton']) {
+?>
+				<div class="filter shadow">
+					<h4>Update</h4>
+					<ul class="filterlist">
+						<li> <a href="retrieve.php">Update Spots</a></li>
+					</ul>
+                </div>
+<?php
+	}
+?>
+			</div>

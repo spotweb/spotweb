@@ -1,6 +1,6 @@
 <?php
-require_once ('Math/BigInteger.php');
-require_once ('Crypt/RSA.php');
+require_once "Math/BigInteger.php";
+require_once "Crypt/RSA.php";
 require_once "settings.php";
 
 class SpotParser {
@@ -169,22 +169,27 @@ class SpotParser {
 							$spot['Title'] = trim($this->OldEncodingParse($spot['Title']));
 						} # if
 					} # if recentKey
-					
+
 					$spot['Stamp'] = $fields[$_STAMP];
 					if (((strlen($spot['Title']) != 0) && (strlen($spot['Poster']) != 0)) && (($spot['ID'] >= 1000000) || $recentKey)) {
-						$mustbeSigned = $recentKey | (!$recentKey & ($spot['ID'] > 1383670));
+
+						# Vanaf spot-id 1385910 komen we KeyID's 2 tegen, dus vanaf daar gaan we alle niet-signed posts weigeren.
+						$mustbeSigned = $recentKey | (!$recentKey & ($spot['ID'] > 1385910));
 
 						# FIXME
 						#
 						# somehow there is a check that the key is only validated for spots with key id 2 ?
 						# not sure about the code as it only seems to execute for more than 25000 spots or something?
 						#
-						$mustbeSigned = (($mustbeSigned) & ($spot['KeyID'] == 2));
+						$mustbeSigned = (($mustbeSigned) & ($spot['KeyID'] >= 2));
 						
 						# and verify the signature it
 						if ($mustbeSigned) {
 							$spot['HeaderSign'] = $fields[count($fields) - 1];
+							
 							if (strlen($spot['HeaderSign']) != 0) {
+								$spot['WasSigned'] = true;
+
 								# This is the string to verify
 								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
 								
@@ -200,15 +205,15 @@ class SpotParser {
 								$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
 								$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
 								
+								# Supress notice if the signature was invalid
+								$saveErrorReporting = error_reporting(E_ERROR);
 								$spot['Verified'] = $rsa->verify($toCheck, $signature);
-								
-								if (!$spot['Verified']) {
-									echo "UNABLE TO VERIFY: " . $spot['ID'] . "\r\n";
-								}
+								error_reporting($saveErrorReporting);
 							} # if
 						} # if must be signed
 						else {
 							$spot['Verified'] = true;
+							$spot['WasSigned'] = false;
 						} # if doesnt need to be signed, pretend that it is
 					} # if
 				} # if

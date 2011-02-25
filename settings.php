@@ -51,6 +51,15 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 # waar moeten ew de templates vinden?
 $settings['tpl_path'] = './templates/';
 
+# tonen we een update knop in de web ui?
+$settings['show_updatebutton'] = true;
+
+# de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
+# zorg dat deze wel gedefinieerd is.
+$settings['index_filter'] = array();
+
+# als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
+# $settings['index_filter'] = array('cat' => array('0' => array('a!d23', 'a!d24', 'a!d25', 'a!d26')));
 
 // RSA keys
 $settings['rsa_keys'] = array();

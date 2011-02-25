@@ -42,6 +42,16 @@ class db
 		return $p;
 	} # getMaxArticleId
 
+	function getSpotCount() {
+		$p = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
+		
+		if ($p == null) {
+			return 0;
+		} else {
+			return $p;
+		} # if
+	} # getSpotCount
+
 	function getSpots($id, $limit, $sqlFilter) {
 		$results = array();
 
