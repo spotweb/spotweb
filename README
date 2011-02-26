@@ -1,5 +1,5 @@
 SpotWeb
-=============
+=======
 
 SpotWeb is een versie van SpotNed (http://twitter.com/spotned) voor het web. 
 Het gebruikt PHP5 om de meeste functies te implementren en is getest op Linux en FreeBSD.

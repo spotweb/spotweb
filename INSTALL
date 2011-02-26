@@ -2,9 +2,9 @@
 Script is getest met onderstaande configuratie, als het op andere systemen werkt laat het even weten:
 * Script is enkel getest op een unix-achtige
 * Apache webserver
-* PHP v5.3 (modules vereist: SQLite, bcmath, ctype, xml, zlib)
+* PHP v5.3 (modules vereist: SQLite of MySQL, bcmath, ctype, xml, zlib)
 * PEAR's Net/NNTP module
-* Moet kunnen lezen en schrijven in de directory waar de SQLite database staat
+* Moet kunnen lezen en schrijven in de directory waar de SQLite database staat, of moet een MySQL database hebben
 
 Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controleren.
 
@@ -21,7 +21,10 @@ Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controler
 == FreeBSD installatie hints  ==
 * apache22
 * php5
-* php5-sqlite
+* database:
+  * php5-sqlite
+  of
+  * php5-mysql
 * php5-bcmath
 * php5-ctype
 * php5-xml
