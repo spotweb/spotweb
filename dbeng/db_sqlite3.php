@@ -9,7 +9,7 @@ class db_sqlite3 extends db_abs {
     {
 		$this->_conn = sqlite_factory($path);
 		$this->createDatabase();
-    }
+    } # ctor
 		
 	static function safe($s) {
 		return sqlite_escape_string($s);
@@ -82,6 +82,15 @@ class db_sqlite3 extends db_abs {
 			$this->_conn->queryExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->_conn->queryExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->_conn->queryExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
+		} # if
+		
+		$q = $this->_conn->singleQuery("PRAGMA table_info(commentsxover)");
+		if (!$q) {
+			$this->_conn->queryExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
+										   messageid TEXT,
+										   revid INTEGER,
+										   nntpref TEXT);");
+			$this->_conn->queryExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
 	} # Createdatabase
 

@@ -39,7 +39,11 @@ class SpotParser {
 		} # if error parsing
 		
 		xml_parser_free($xml_parser);
+
+		# fix the category in the XML array
+		$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
 		
+		# and return the parsed XML
 		return $this->_xmlarray;
 	} # parseFull()
 

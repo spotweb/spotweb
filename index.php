@@ -43,11 +43,22 @@ function openDb() {
 function sabnzbdurl($spot) {
 	extract($GLOBALS['site'], EXTR_REFS);
 
+	# fix de category
+	$spot['category'] = (int) $spot['category'];
+	
 	# find een geschikte category
 	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
 	
 	# voeg de subcategorieen samen en splits ze dan op een pipe
-	$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
+	if (isset($spot['subcata'])) {
+		$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
+	} else {
+		$subcatAr = array();
+		foreach($spot['sub'] as $subcat) {
+			$subcatAr[] = substr($subcat, 2, 1) . ((int) substr($subcat, 3));
+		} # foreach
+	} # else
+	
 	foreach($subcatAr as $cat) {
 		if (isset($settings['sabnzbd']['categories'][$spot['category']][$cat])) {
 			$category = $settings['sabnzbd']['categories'][$spot['category']][$cat];
@@ -301,9 +312,31 @@ switch($site['page']) {
 			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
 			$xmlar['searchurl'] = makesearchurl($xmlar);
 
+			# Vraag een lijst op met alle comments messageid's
+			$commentList = $db->getCommentRef($xmlar['messageid']);
+			$comments = array();
+			
+			foreach($commentList as $comment) {
+				$tmpAr = array('body' => $spotnntp->getBody('<' . $comment['messageid'] . '>'));
+				
+				# extract de velden we die we willen hebben
+				$header = $spotnntp->getHeader('<' . $comment['messageid'] . '>');
+				foreach($header as $hdr) {
+					if (substr($hdr, 0, strlen('From: ')) == 'From: ') {
+						$tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')));
+					} # if
+					
+					if (substr($hdr, 0, strlen('Date: ')) == 'Date: ') {
+						$tmpAr['date'] = substr($hdr, strlen('Date: '));
+					} # if
+				} # foreach
+				
+				$comments[] = $tmpAr; 
+			} # foreach
+			
 			#- display stuff -#
 			template('header');
-			template('spotinfo', array('spot' => $xmlar));
+			template('spotinfo', array('spot' => $xmlar, 'comments' => $comments));
 			template('footer');
 			
 			break;

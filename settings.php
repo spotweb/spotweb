@@ -26,6 +26,7 @@ define('VERSION', '0.2c');
 // settings 
 $settings['hdr_group'] = 'free.pt';
 $settings['nzb_group'] = 'alt.binaries.ftd';
+$settings['comment_group'] = 'free.usenet';
 
 // db
 $settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3 en mysql
@@ -107,13 +108,13 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 # hierin staan override (moet in de parent directory staan). Kan vooral handig zijn bij 
 # upgrades van SpotWeb zodat je eigen settings bewaard blijven.
 #
-@include('../ownsettings.php'); 	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('../ownsettings.php')) { @include('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('./ownsettings.php')) { @include('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
-# override NNTP header settings, als er geen aparte NNTP header server is opgegeven, gebruik die van 
+# override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
 #
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
-

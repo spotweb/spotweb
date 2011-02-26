@@ -82,6 +82,16 @@ class db
 		return $this->_conn->safe($q);
 	} # safe
 	
+	function addCommentRef($messageid, $revid, $nntpref) {
+		return $this->_conn->exec("REPLACE INTO commentsxover(messageid, revid, nntpref) 
+								   VALUES('%s', %d, '%s')",
+								Array($messageid, (int) $revid, $nntpref));
+	} # addCommentRef
+	
+	function getCommentRef($nntpref) {
+		return $this->_conn->arrayQuery("SELECT messageid, MAX(revid) FROM commentsxover WHERE nntpref = '<%s>' GROUP BY messageid", Array($nntpref));
+	} # getCommentRef
+
 	function addSpot($spot) {
 		return $this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",

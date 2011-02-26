@@ -10,7 +10,7 @@
 	} # format_size
 	
 	# fix up the category number
-	$hcat = ((int) $spot['category']) - 1;
+	$hcat = ((int) $spot['category']);
 	
 	# and display the image and website
 	if (!empty($spot['website'])) {
@@ -48,7 +48,7 @@
 				<br class="spotinfoclear">
 				<br> 
 				<br> 
-					
+
 				<table class="spotinfotable">
 					<tr> <th> Categorie </th> <td> <?php echo SpotCategories::HeadCat2Desc($hcat); ?> </td> </tr>
 		
@@ -99,5 +99,28 @@
 				<br> 
 				<br>
 				<br>
+
+<?php
+	if (!empty($comments)) {
+?>	
+			<h3 class="comment">Reacties</h3>
+			<ul class="comment">
+<?php
+		foreach($comments as $comment) {
+?>
+				<li> <strong> Gepost door <?php echo $comment['from']; ?> @ <?php echo $comment['date']; ?> </strong> <br>
+				<?php echo join("<br>", $comment['body']); ?>
+				<br><br>
+				</li>
+<?php	
+		} # foreach
+?>
+			</ul>
+<?php
+	} # if
+?>
+				<br class="spotinfoclear">
+				<br> 
+				<br> 
 	
 			</div>	

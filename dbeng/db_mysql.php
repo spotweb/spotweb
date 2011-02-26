@@ -58,6 +58,8 @@ class db_mysql extends db_abs {
 		$rows = array();
 			
 		while ($rows[] = mysql_fetch_assoc($res));
+		# remove last element (false element)
+		array_pop($rows); 
 		
 		mysql_free_result($res);
 		return $rows;
@@ -95,6 +97,22 @@ class db_mysql extends db_abs {
 			$this->exec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->exec("CREATE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
+		
+		$q = $this->singleQuery("SHOW TABLES LIKE 'commentsxover'");
+		if (!$q) {
+			$res = $this->exec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
+										   messageid VARCHAR(250),
+										   revid INTEGER,
+										   nntpref VARCHAR(250));");
+			if (!$res) {
+				die(mysql_error($this->_conn));
+			} # if
+			$res = $this->exec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+			if (!$res) {
+				die(mysql_error($this->_conn));
+			} # if
+		} # if
+		
 	} # Createdatabase
 
 } # class

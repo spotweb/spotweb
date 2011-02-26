@@ -183,5 +183,14 @@ ul.filterlist img {
 }
 
 .spotinfotable tr td {
+	font-size: 140%;
+}
+
+h3.comment {
 	font-size: 120%;
+	font-weight: bold;
+}
+
+ul.comment li strong {
+	font-weight: bold;
 }
