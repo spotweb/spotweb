@@ -20,13 +20,8 @@ $settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-# override NNTP header settings 
-if (empty($settings['nntp_hdr']['host'])) {
-	$settings['nntp_hdr'] = $settings['nntp_nzb'];
-} # if 
-
 // version
-define('VERSION', '0.2b');
+define('VERSION', '0.2c');
 
 // settings 
 $settings['hdr_group'] = 'free.pt';
@@ -58,7 +53,35 @@ $settings['show_nzbbutton'] = true;
 #$settings['sabnzbd']['host'] = '192.168.10.122:8081';					# <== Pas deze aan naar de sabnzbd host plus port
 #$settings['sabnzbd']['apikey'] = '906e38e971fbf8175303a43569d4f151';	# <== Pas deze aan naar jouw sabnzbd api key
 #$settings['sabnzbd']['spotweburl'] = 'http://server/spotweb/';			# <== URL naar spotweb, gezien vanuit de Sabnzbd machine
-#$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&apikey=$APIKEY'; # <== Hoef je niet aan te passen
+#$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY'; # <== Hoef je niet aan te passen
+# vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
+$settings['sabnzbd']['categories'] = Array(
+		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
+					 'a5'		=> "books",
+					 'd2'		=> "anime",
+					 'd11'		=> "tv",
+					 'd29'		=> "anime"),
+		1	=> Array('default'	=> 'music'),
+		2	=> Array('default'	=> 'games'),
+		3	=> Array('default'	=> 'apps',
+					 'a3'		=> 'consoles',
+					 'a3'		=> 'consoles',
+					 'a4'		=> 'consoles',
+					 'a5'		=> 'consoles',
+					 'a6'		=> 'consoles',
+					 'a7'		=> 'consoles',
+					 'a8'		=> 'consoles',
+					 'a9'		=> 'consoles',
+					 'a10'		=> 'consoles',
+					 'a11'		=> 'consoles',
+					 'a12'		=> 'consoles',
+					 'a13'		=> 'pda',
+					 'a14'		=> 'pda',
+					 'a15'		=> 'pda')
+	);
+					 
+					 
+					 
 
 # zoekmachine url (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
 $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&q=$SPOTFNAME';
@@ -85,3 +108,12 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 # upgrades van SpotWeb zodat je eigen settings bewaard blijven.
 #
 @include('../ownsettings.php'); 	# <== deze lijn mag je eventueel verwijderen	
+
+#
+# override NNTP header settings, als er geen aparte NNTP header server is opgegeven, gebruik die van 
+# de NZB server
+#
+if (empty($settings['nntp_hdr']['host'])) {
+	$settings['nntp_hdr'] = $settings['nntp_nzb'];
+} # if 
+

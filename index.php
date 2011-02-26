@@ -43,10 +43,23 @@ function openDb() {
 function sabnzbdurl($spot) {
 	extract($GLOBALS['site'], EXTR_REFS);
 
+	# find een geschikte category
+	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
+	
+	# voeg de subcategorieen samen en splits ze dan op een pipe
+	$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
+	foreach($subcatAr as $cat) {
+		if (isset($settings['sabnzbd']['categories'][$spot['category']][$cat])) {
+			$category = $settings['sabnzbd']['categories'][$spot['category']][$cat];
+		} # if
+	} # foreach
+	
+	# en creeer die sabnzbd url
 	$tmp = $settings['sabnzbd']['url'];
 	$tmp = str_replace('$SABNZBDHOST', $settings['sabnzbd']['host'], $tmp);
 	$tmp = str_replace('$NZBURL', urlencode($settings['sabnzbd']['spotweburl'] . '?page=getnzb&messageid='. $spot['messageid']), $tmp);
 	$tmp = str_replace('$SPOTTITLE', urlencode($spot['title']), $tmp);
+	$tmp = str_replace('$SANZBDCAT', $category, $tmp);
 	$tmp = str_replace('$APIKEY', $settings['sabnzbd']['apikey'], $tmp);
 
 	return $tmp;
