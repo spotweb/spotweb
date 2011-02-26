@@ -21,7 +21,7 @@ $settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // version
-define('VERSION', '0.2c');
+define('VERSION', '0.3a');
 
 // settings 
 $settings['hdr_group'] = 'free.pt';
