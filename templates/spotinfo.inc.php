@@ -25,7 +25,7 @@
 			echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
 		}
 	} else {
-		echo "\t\t\t\t<a href='http://www.binsearch.info/?adv_age=&q=" . $spot['filename'] . "'><img style='float: right;' src='images/download3.png'></a>";
+		echo "\t\t\t\t<a href='" . $spot['searchurl']. "'><img style='float: right;' src='images/download3.png'></a>";
 	} # if
 
 	# and fixup the description text
@@ -77,10 +77,16 @@
 					<tr> <th> Tag </th> <td> <?php if (isset($spot['tag'])) { echo $spot['tag']; } ?> </td> </tr>
 
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
-					<tr> <th> Binsearch </th> <td> <a href='http://www.binsearch.info/?adv_age=&q=<?php echo urlencode($spot['title']); ?>'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
-					<tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+					<tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
 <?php					
-	if (isset($settings['sabnzbd'])) {
+	if (isset($spot['segment'])) {
+?>
+					<tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+<?php
+	} # if
+?>
+<?php					
+	if ((isset($settings['sabnzbd'])) && (isset($spot['segment']))) {
 ?>
 					<tr> <th> SABnzbd </th? <td> <a href='<?php echo $spot['sabnzbdurl']; ?>' target='_blank'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
 <?php

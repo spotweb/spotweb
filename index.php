@@ -52,18 +52,32 @@ function sabnzbdurl($spot) {
 	return $tmp;
 } # sabnzbdurl
 
+function makesearchurl($spot) {
+	extract($GLOBALS['site'], EXTR_REFS);
+
+	if (!isset($spot['filename'])) {
+		$tmp = str_replace('$SPOTFNAME', $spot['title'], $settings['search_url']);
+	} else {
+		$tmp = str_replace('$SPOTFNAME', $spot['filename'], $settings['search_url']);
+	} # else 
+
+	return $tmp;
+} # makesearchurl
+
 function loadSpots($start, $sqlFilter) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	
 	$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
 
-	if (isset($settings['sabnzbd'])) {
-		$spotCnt = count($spotList);
-		
-		for ($i = 0; $i < $spotCnt; $i++) {
+	$spotCnt = count($spotList);
+	
+	for ($i = 0; $i < $spotCnt; $i++) {
+		if (isset($settings['sabnzbd'])) {
 			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);
-		} # foreach
-	} # if
+		} # if
+
+		$spotList[$i]['searchurl'] = makesearchurl($spotList[$i]);
+	} # foreach
 	
 	return $spotList;
 } # loadSpots()
@@ -258,7 +272,7 @@ switch($site['page']) {
 								 $settings['nntp_hdr']['pass']);
 		if ($spotnntp->connect()) {
 			$header = $spotnntp->getHeader('<' . $spot['messageid'] . '>');
-			
+
 			$xml = '';
 			if ($header !== false) {
 				foreach($header as $str) {
@@ -267,11 +281,12 @@ switch($site['page']) {
 					} # if
 				} # foreach
 			} # if
-			
+
 			$spotParser = new SpotParser();
 			$xmlar = $spotParser->parseFull($xml);
 			$xmlar['messageid'] = Req::getDef('messageid', '');
 			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
+			$xmlar['searchurl'] = makesearchurl($xmlar);
 
 			#- display stuff -#
 			template('header');

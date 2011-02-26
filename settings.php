@@ -60,6 +60,10 @@ $settings['show_nzbbutton'] = true;
 #$settings['sabnzbd']['spotweburl'] = 'http://server/spotweb/';			# <== URL naar spotweb, gezien vanuit de Sabnzbd machine
 #$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&apikey=$APIKEY'; # <== Hoef je niet aan te passen
 
+# zoekmachine url (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
+$settings['search_url'] = 'http://www.binsearch.info/?adv_age=&q=$SPOTFNAME';
+# $settings['search_url'] = 'http://nzbindex.nl/search/?q=$SPOTFNAME';
+
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
 $settings['index_filter'] = array();
