@@ -80,6 +80,8 @@ $settings['rsa_keys'][3] = array('modulo' => 'uiyChPV23eguLAJNttC/o0nAsxXgdjtvUv
 $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMigBrs+jFgOK5Ldzwl17mKXJhl+su/GR9',
 								 'exponent' => 'AQAB');
 
-
-
-@include('../ownsettings.php'); 					# <== deze lijn mag je verwijderen	
+# Include eventueel eigen settings, dit is ook een PHP file die settings die 
+# hierin staan override (moet in de parent directory staan). Kan vooral handig zijn bij 
+# upgrades van SpotWeb zodat je eigen settings bewaard blijven.
+#
+@include('../ownsettings.php'); 	# <== deze lijn mag je eventueel verwijderen	
