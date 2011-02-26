@@ -51,5 +51,20 @@
 		<tr> <td> NNTP server </td> <td> <?php echo (!empty($settings['nntp_nzb']['host']) === false) ? "No server entered" : "OK" ?>  </td> </tr>
 	</table>
 	
+	<br> <br>
+	
+	<table>
+		<tr> <th> Path </th> <th> PEAR found? </th> <th> Net/NNTP found? </th> <tr>
+		
+<?php
+		$arInclude = explode(":", ini_get("include_path")); 
+		for($i = 0; $i < count($arInclude); $i++) {
+			echo "\t\t<tr><td>" . $arInclude[$i] . "</td> <td> " . 
+						(file_exists($arInclude[$i] . 'System.php') ? "OK" : "") . "</td> <td>" .
+						(file_exists($arInclude[$i] . "Net/NNTP/Client.php") ? "OK" : "") . " </td> </tr>";
+		} # foreach
+?>  
+	</table>
+	
 	</body>
 </html>
