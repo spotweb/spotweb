@@ -64,6 +64,9 @@ function cbRetrieveComments($hdrList, $curMsg) {
 			$msgidNumber[2] = 0;
 		} # if
 		
+		# fix de references, niet alle news servers geven die goed door
+		$msgheader['References'] = $msgidNumber[0] . '@' . $msgidParts[1];
+		
 		# voeg spot aan db toe
 		$db->addCommentRef($msgid,
 						   $msgidNumber[2],
