@@ -109,6 +109,7 @@ function loadSpots($start, $sqlFilter) {
 function filterToQuery($search) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	$filterList = array();
+	$dyn2search = array();
 
 	# dont filter anything
 	if (empty($search)) {
@@ -117,8 +118,36 @@ function filterToQuery($search) {
 	
 	# convert the dynatree list to a list 
 	if (!empty($search['tree'])) {
+		# explode the dynaList
 		$dynaList = explode(',', $search['tree']);
+
+		# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
+		$newTreeQuery = '';
+		for($i = 0; $i < count($dynaList); $i++) {
+			if (strlen($dynaList[$i]) == 6) {
+				$hCat = (int) substr($dynaList[$i], 3, 1);
+				$subCat = substr($dynaList[$i], 5);
+				
+				# creeer een string die alle subcategories bevat
+				$tmpStr = '';
+				foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
+					$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
+				} # foreach
+				
+				$newTreeQuery .= $tmpStr;
+			} elseif (substr($dynaList[$i], 0, 1) == '!') {
+				# als het een NOT is, haal hem dan uit de lijst
+				$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+			} else {
+				$newTreeQuery .= "," . $dynaList[$i];
+			} # else
+		} # foreach
 		
+		# explode the dynaList
+		$search['tree'] = $newTreeQuery;
+		$dynaList = explode(',', $search['tree']);
+
+		# en fix the list
 		foreach($dynaList as $val) {
 			if (substr($val, 0, 3) == 'cat') {
 				# 0e element is hoofdcategory
@@ -128,7 +157,7 @@ function filterToQuery($search) {
 				$catVal = $val[0];
 				$subCatIdx = substr($val[1], 0, 1);
 				$subCatVal = substr($val[1], 1);
-				
+
 				if (count($val) >= 3) {
 					$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
 				} # if

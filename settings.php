@@ -34,7 +34,10 @@ $settings['filters'] = array(
 	Array("Spellen", "images/games2.png", "cat2", "", array()),
 	Array("Applicaties", "images/applications2.png", "cat3", "", array()),
 	Array("Erotiek", "images/x2.png", "cat0_d23,cat0_d24,cat0_d25,cat0_26", "", array()),
-	Array("Reset filters", "images/custom2.png", "cat0_a5", "", array())
+	Array("Reset filters", "images/custom2.png", "", "", array())
+	
+	# Uncomment onderstaande als voorbeeld van een custom filter
+	# ,Array("Lossless MJ", "images/audio2.png", "cat1_a2,cat1_a4,cat1_a7,cat1_a8&search[type]=Titel&search[text]=Michael+Jackson", "", array())
 );	
 
 
