@@ -44,6 +44,7 @@
 
 	<table>
 		<tr> <th> Include files  </th> <th> OK ? </th> </tr>
+		<tr> <td> Open base dir </td> <td> <?php echo (!ini_get("open_basedir")) ? "OK" : "Not empty, might be a problem"; ?>  </td> </tr>
 		<tr> <td> Settings file </td> <td> <?php echo testInclude("settings.php") ? "OK" : "settings.php cannot be read" ?>  </td> </tr>
 		<tr> <td> PHP safe mode </td> <td> <?php echo ini_get('safe_mode') ? "Safe mode set -- will cause problems for retrieve.php" : "OK"; ?> </td> </tr>
 		<tr> <td> PEAR </td> <td> <?php echo testInclude("System.php") ? "OK" : "PEAR cannot be found" ?> </td> </tr>
