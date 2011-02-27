@@ -139,3 +139,9 @@ if (file_exists('./ownsettings.php')) { @include('./ownsettings.php'); }	# <== d
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
+
+
+# Fix E_DEPRECATED errors
+if (!defined(E_DEPRECATED)) {
+	define(E_DEPRECATED, 8192);
+} # if
