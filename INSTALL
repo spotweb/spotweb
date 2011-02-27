@@ -37,6 +37,12 @@ Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controler
 5. Als retrieve.php geen errors geeft, kan je naar http://jouwserver/jouwdir/ surfen om dit script te gebruiken
 6. Voer met regelmaat 'retrieve.php' uit om de database te updaten
 
+== Troubleshooting ==
+Als je een lege pagina krijgt is het meestal een probleem in je settings.php danwel ownsettings.php. In je Apache (of webserver)
+errorlog kan je zelf even kijken welke error je krijgt en los die dan op.
+
+Omdat settings.php gewoon een "echte" PHP file is, moet deze foutloos zijn anders werkt het script niet. 
+
 == FreeBSD installatie hints  ==
 * apache22
 * php5
