@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL & ~E_DEPRECATED);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_WARNING);
 
 require_once "settings.php";
 require_once "db.php";

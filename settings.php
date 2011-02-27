@@ -3,11 +3,11 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-   WIJZIG ONDERSTAANDE  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-$settings['nntp_nzb']['host'] = 'news.ziggo.nl';	# <== Geef hier je nntp server in
-$settings['nntp_nzb']['user'] = 'xx';				# <== Geef hier je username in
-$settings['nntp_nzb']['pass'] = 'yy';				# <== Geef hier je password in
-$settings['nntp_nzb']['enc'] = false; 				# <== false|'tls'|'ssl', defaults to false.
-$settings['nntp_nzb']['port'] = 119; 				# <== set to 563 in case of encryption
+$settings['nntp_nzb']['host'] = 'news.ziggo.nl';    # <== Geef hier je nntp server in
+$settings['nntp_nzb']['user'] = 'xx';               # <== Geef hier je username in
+$settings['nntp_nzb']['pass'] = 'yy';               # <== Geef hier je password in
+$settings['nntp_nzb']['enc'] = false;               # <== false|'tls'|'ssl', defaults to false.
+$settings['nntp_nzb']['port'] = 119;                # <== set to 563 in case of encryption
 
 # =-=-=-=-=-=-=-=- Als je een aparte 'headers' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
 $settings['nntp_hdr']['host'] = '';
