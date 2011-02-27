@@ -89,7 +89,7 @@ class db
 	} # addCommentRef
 	
 	function getCommentRef($nntpref) {
-		return $this->_conn->arrayQuery("SELECT messageid, MAX(revid) FROM commentsxover WHERE nntpref = '<%s>' GROUP BY messageid", Array($nntpref));
+		return $this->_conn->arrayQuery("SELECT messageid, MAX(revid) FROM commentsxover WHERE nntpref = '%s' GROUP BY messageid", Array($nntpref));
 	} # getCommentRef
 
 	function addSpot($spot) {
