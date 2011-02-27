@@ -38,7 +38,7 @@
 
 			# display the sabnzbd button
 			if (isset($settings['sabnzbd']['apikey'])) {
-				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "'><img height='16 widt='16'  class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 widt='16'  class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {
