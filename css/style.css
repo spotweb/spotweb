@@ -126,6 +126,13 @@ button,
 	padding-right: 6px;
 }
 
+a.filter {
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
 /* Some styling for the forms in the filter boxes */
 table.filters td {
 	padding-bottom: 12px;
