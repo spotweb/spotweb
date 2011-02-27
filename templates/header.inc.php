@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title><?php echo $pagetitle?></title>
 		<link rel='stylesheet' type='text/css' href='js/dynatree/skin-vista/ui.dynatree.css'>
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection">
 		<link rel="stylesheet" href="css/tablecloth.css" type="text/css" media="screen, projection">

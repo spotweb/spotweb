@@ -27,6 +27,7 @@ function initialize() {
 	$GLOBALS['site']['req'] = $req;
 	$GLOBALS['site']['settings'] = $settings;
 	$GLOBALS['site']['prefs'] = $prefs;
+	$GLOBALS['site']['pagetitle'] = 'SpotWeb - ';
 } # initialize()
 
 function openDb() {
@@ -272,6 +273,9 @@ switch($site['page']) {
 		$filter = filterToQuery($req->getDef('search', $settings['index_filter']));
 		$spots = loadSpots(0, $filter);
 
+		# zet de page title
+		$pagetitle .= "overzicht";
+		
 		#- display stuff -#
 		template('header');
 		template('filters', array('search' => $req->getDef('search', array()),
@@ -337,6 +341,9 @@ switch($site['page']) {
 				$comments[] = $tmpAr; 
 			} # foreach
 			
+			# zet de page title
+			$pagetitle .= "spot: " . $xmlar['title'];
+		
 			#- display stuff -#
 			template('header');
 			template('spotinfo', array('spot' => $xmlar, 'comments' => $comments));
