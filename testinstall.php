@@ -9,18 +9,20 @@
 
 <?php
 	$extList = get_loaded_extensions();
+	
+	$phpVersion = explode(".", phpversion());
 ?>
 
 	<table>
 		<tr> <th> PHP extension </th> <th> OK ? </th> </tr>
 
+		<tr> <td> PHP version </td> <td> <?php echo ($phpVersion[0] >= '5' && $phpVersion[1] >= 3) ? "OK" : "PHP 5.3 or later is recommended" ?>  </td> </tr>
 		<tr> <td> SQLite </td> <td> <?php echo (array_search('SQLite', $extList) === false) ? "Not installed (geen probleem als MySQL geinstalleerd is)" : "OK" ?>  </td> </tr>
 		<tr> <td> MySQL </td> <td> <?php echo (array_search('mysql', $extList) === false) ? "Not installed (geen probleem als sqlite3 geinstalleerd is)" : "OK" ?>  </td> </tr>
 		<tr> <td> bcmath </td> <td> <?php echo (array_search('bcmath', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 		<tr> <td> ctype </td> <td> <?php echo (array_search('ctype', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 		<tr> <td> xml </td> <td> <?php echo (array_search('xml', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 		<tr> <td> zlib </td> <td> <?php echo (array_search('zlib', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
-
 	</table>
 
 	<br>
