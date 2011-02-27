@@ -10,11 +10,11 @@ $settings['nntp_nzb']['enc'] = false; 				# <== false|'tls'|'ssl', defaults to f
 $settings['nntp_nzb']['port'] = 119; 				# <== set to 563 in case of encryption
 
 # =-=-=-=-=-=-=-=- Als je een aparte 'headers' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
-$settings['nntp_hdr']['host'] = '';					# <== Geef hier je nntp server voor headers in, maar enkel als dit nodig is
+$settings['nntp_hdr']['host'] = '';
 $settings['nntp_hdr']['user'] = '';
 $settings['nntp_hdr']['pass'] = '';
-$settings['nntp_hdr']['enc'] = false;				# <== false|'tls'|'ssl', defaults to false.
-$settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
+$settings['nntp_hdr']['enc'] = false;
+$settings['nntp_hdr']['port'] = 119;
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -60,8 +60,6 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 #$settings['db']['user'] = 'spotweb';
 #$settings['db']['pass'] = 'spotweb';
 
-# welke database engine willen we gebruiken?
-
 # waar moeten ew de templates vinden?
 $settings['tpl_path'] = './templates/';
 
@@ -103,8 +101,6 @@ $settings['sabnzbd']['categories'] = Array(
 					 'a15'		=> 'pda')
 	);
 					 
-					 
-					 
 
 # zoekmachine url (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
 $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&q=$SPOTFNAME';
@@ -117,7 +113,10 @@ $settings['index_filter'] = array();
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
 # $settings['index_filter'] = array('cat' => array('0' => array('a!d23', 'a!d24', 'a!d25', 'a!d26')));
 
-// RSA keys
+#
+# RSA keys
+# Worden gebruikt om te valideren of spots geldig zijn, hoef je normaal niet aan te komen
+#
 $settings['rsa_keys'] = array();
 $settings['rsa_keys'][2] = array('modulo' => 'ys8WSlqonQMWT8ubG0tAA2Q07P36E+CJmb875wSR1XH7IFhEi0CCwlUzNqBFhC+P',
 								 'exponent' => 'AQAB');
@@ -126,21 +125,23 @@ $settings['rsa_keys'][3] = array('modulo' => 'uiyChPV23eguLAJNttC/o0nAsxXgdjtvUv
 $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMigBrs+jFgOK5Ldzwl17mKXJhl+su/GR9',
 								 'exponent' => 'AQAB');
 
-# Include eventueel eigen settings, dit is ook een PHP file die settings die 
-# hierin staan override (moet in de parent directory staan). Kan vooral handig zijn bij 
-# upgrades van SpotWeb zodat je eigen settings bewaard blijven.
+#
+# Include eventueel eigen settings, dit is ook een PHP file. 
+# Settings welke hierin staan zullen de instellingen van deze file overiden.
+#
+# We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
+# je instellingen bewaard blijven.
 #
 if (file_exists('../ownsettings.php')) { @include('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 if (file_exists('./ownsettings.php')) { @include('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
-# override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
+# Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
 #
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
-
 
 # Fix E_DEPRECATED errors
 if (!defined(E_DEPRECATED)) {
