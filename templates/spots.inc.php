@@ -10,7 +10,7 @@
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th> Dnl. </th> 
 <?php } ?>						
-<?php if (isset($settings['sabnzbd'])) { ?>
+<?php if (isset($settings['sabnzbd']['apikey'])) { ?>
 						<th> sabnzbd </th> 
 <?php } ?>						
 					</tr>
@@ -37,7 +37,7 @@
 			} # if
 
 			# display the sabnzbd button
-			if (isset($settings['sabnzbd'])) {
+			if (isset($settings['sabnzbd']['apikey'])) {
 				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "'><img height='16 widt='16'  class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {

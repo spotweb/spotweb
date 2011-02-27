@@ -19,7 +19,7 @@
 
 	# display the download button
 	if (isset($spot['segment'])) {
-		if (isset($settings['sabnzbd'])) {
+		if (isset($settings['sabnzbd']['apikey'])) {
 			echo "\t\t\t\t<a href='" . $spot['sabnzbdurl'] . "' target='_blank'><img style='float: right;' src='images/download3.png'></a>";
 		} else {
 			echo "\t\t\t\t<a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'><img style='float: right;' src='images/download3.png'></a>";
@@ -86,7 +86,7 @@
 	} # if
 ?>
 <?php					
-	if ((isset($settings['sabnzbd'])) && (isset($spot['segment']))) {
+	if ((isset($settings['sabnzbd']['apikey'])) && (isset($spot['segment']))) {
 ?>
 					<tr> <th> SABnzbd </th? <td> <a href='<?php echo $spot['sabnzbdurl']; ?>' target='_blank'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
 <?php
