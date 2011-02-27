@@ -106,91 +106,65 @@ function loadSpots($start, $sqlFilter) {
 	return $spotList;
 } # loadSpots()
 
-function filterToQuery($search, $dynatree) {
+function filterToQuery($search) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	$filterList = array();
 
 	# dont filter anything
-	if (empty($search) && (empty($dynatree))) {
+	if (empty($search)) {
 		return '';
-	}
-
+	} # if
+	
 	# convert the dynatree list to a list 
-	$dyn2search = array();
-	if (!empty($dynatree)) {
-		$dynaList = explode(',', $dynatree);
+	if (!empty($search['tree'])) {
+		$dynaList = explode(',', $search['tree']);
+		
 		foreach($dynaList as $val) {
 			if (substr($val, 0, 3) == 'cat') {
+				# 0e element is hoofdcategory
+				# 1e element is category
 				$val = explode('_', (substr($val, 3) . '_'));
-
+				
+				$catVal = $val[0];
+				$subCatIdx = substr($val[1], 0, 1);
+				$subCatVal = substr($val[1], 1);
+				
 				if (count($val) >= 3) {
-					$dyn2search['cat'][$val[0]][] = 'a' . $val[1];
-				} else {
-					$dyn2search['cat'][$val[0]][] = $val[0];
-				}
+					$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
+				} # if
 			} # if
 		} # foreach
 	} # if
-	
-	# merge the actual search array and the categories selected in the
-	# tree
-	$search = array_merge($search, $dyn2search);
-	
+
 	# Add a list of possible head categories
-	if ((isset($search['cat'])) && ((is_array($search['cat'])))) {
+	if (is_array($dyn2search['cat'])) {
 		$filterList = array();
 
-		foreach($search['cat'] as $catid => $cat) {
+		foreach($dyn2search['cat'] as $catid => $cat) {
 			$catid = (int) $catid;
-			$tmpStr = "(";
-			$tmpStr .= "(category = " . $catid . ")";
+			$tmpStr = "((category = " . $catid . ")";
 			
 			# Now start adding the sub categories
 			if ((is_array($cat)) && (!empty($cat))) {
-				$subcatStr = " AND (";
-				$subcatCounter = 0;
-
 				#
 				# uiteraard is een LIKE query voor category search niet super schaalbaar
 				# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
 				# moet het meer dan genoeg zijn
 				#
-				foreach($cat as $subcat) {
-					# split up the subcat
-					$operator = ' LIKE ';
-					$seloper = ' OR ';
+				$subcatItems = array();
+				foreach($cat as $subcat => $subcatItem) {
+					$subcatValues = array();
 					
-					# OR or AND ?
-					if (substr($subcat, 0, 1) == 'a') {
-						$seloper = ' AND ';
-					} # if
-					$subcat = substr($subcat, 1);			
+					foreach($subcatItem as $subcatValue) {
+						$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+					} # foreach
 					
-					# NOT for this subcategory?
-					if (substr($subcat, 0, 1) == '!') {
-						$subcat = substr($subcat, 1);
-						$operator = ' NOT LIKE ';
-					} # if
-					
-					# extract the category type
-					$catType = substr($subcat, 0, 1);
-					$subcat = ((int) (substr($subcat, 1))) . '|';
-
-					if (array_search($catType, array('a','b','c','d')) !== false) {
-						if ($subcatCounter == 0) {
-							$seloper = '';
-						} # if
-						
-						$subcatStr .= $seloper . "subcat" . $catType . $operator . "'%" . $catType . $subcat . "%'";
-						$subcatCounter++;
-					} # if
+					# voeg de subfilter values (bv. alle formaten films) samen met een OR
+					$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
 				} # foreach subcat
-				
-				$subcatStr .= ")";
-			} # if
-			
-			if ($subcatCounter > 0) {
-				$tmpStr .= $subcatStr;
+
+				# voeg de category samen met de diverse subcategory filters met een OR, bv. genre: actie, type: divx.
+				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
 			} # if
 			
 			# close the opening parenthesis from this category filter
@@ -237,7 +211,7 @@ function categoriesToJson() {
 				
 		$subcatDesc = array();
 		foreach(SpotCategories::$_subcat_descriptions[$hcat_key] as $sclist_key => $sclist_desc) {
-			$subcatTmp = '{"title": "' . $sclist_desc . '", "isFolder": true, "hideCheckbox": true, "unselectable": true, "children": [';
+			$subcatTmp = '{"title": "' . $sclist_desc . '", "isFolder": true, "hideCheckbox": true, "key": "cat' . $hcat_key . '_' . $sclist_key . '", "unselectable": false, "children": [';
 			# echo ".." . $sclist_desc . " <br>";
 
 			$catList = array();
@@ -266,8 +240,7 @@ switch($site['page']) {
 	case 'index' : {
 
 		openDb();
-		$filter = filterToQuery($req->getDef('search', $settings['index_filter']),
-								$req->getDef('dynatree-select', array()));
+		$filter = filterToQuery($req->getDef('search', $settings['index_filter']));
 		$spots = loadSpots(0, $filter);
 
 		#- display stuff -#

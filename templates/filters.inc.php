@@ -3,7 +3,8 @@
 				<div class="filter shadow">
 					<h4>Zoeken</h4>
 
-					<form action="">
+					<form id="filterform" action="">
+					<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></input>
 						<table class="filters">
 						<tr> 
 <?php
@@ -33,14 +34,14 @@
 					<h4>Filters</h4>
 					
 					<ul class="filterlist">
-						<li> <a href="?search[cat][0][]=a!a5&amp;search[cat][0][]=a!d11&amp;search[cat][0][]=a!d23&amp;search[cat][0][]=a!d24&amp;search[cat][0][]=a!d25&amp;search[cat][0][]=a!d26"><img src='images/video2.png'>Films (geen erotiek)</a>
-						<li> <a href="?search[cat][0][]=od11"><img src='images/series2.png'>Series</a>
-						<li> <a href="?search[cat][0][]=oa5"><img src='images/books2.png'>Boeken</a>
-						<li> <a href="?search[cat][1]=1"><img src='images/audio2.png'>Muziek</a>
-						<li> <a href="?search[cat][2]=2"><img src='images/games2.png'>Spellen</a>
-						<li> <a href="?search[cat][3]=3"><img src='images/applications2.png'>Applicaties</a>
-						<li> <a href="?search[cat][0][]=od23&amp;search[cat][0][]=od24&amp;search[cat][0][]=od25&amp;search[cat][0][]=od26"><img src='images/x2.png'>Erotiek</a>
-						<li> <a href="?search[cat]="><img src='images/custom2.png'>Reset filters</a>
+						<li> <a onclick="matchTree('cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26', true);" ><img src='images/video2.png'>Films (geen erotiek)</a>
+						<li> <a onclick="matchTree('cat0_d11', true)"><img src='images/series2.png'>Series</a>
+						<li> <a onclick="matchTree('cat0_a5', true);"><img src='images/books2.png'>Boeken</a>
+						<li> <a onclick="matchTree('cat1', true);"><img src='images/audio2.png'>Muziek</a>
+						<li> <a onclick="matchTree('cat2', true);"><img src='images/games2.png'>Spellen</a>
+						<li> <a onclick="matchTree('cat3', true);"><img src='images/applications2.png'>Applicaties</a>
+						<li> <a onclick="matchTree('cat0_d23,cat0_d24,cat0_d25,cat0_26', true);"><img src='images/x2.png'>Erotiek</a>
+						<li> <a onclick="matchTree('', true);"><img src='images/custom2.png'>Reset filters</a>
 					</ul>
 				</div>
 
