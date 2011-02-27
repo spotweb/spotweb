@@ -49,33 +49,30 @@
 			$("img.sabnzbd-button").click(function(e) {
 				e.preventDefault();
 
-				$url = $(this).parent()[0].href.split("?");
+				var surl = $(this).parent()[0].href.split("?");
 				$(this).data("downloadpushed", "yes");
 			
 				$.ajax({
-				  type: 'get',
-				  url: $url[0],
-				  data: $url[1],
-				  async: true,
-				 });
+					url: surl[0],
+					data: surl[1],
+					context: $(this),
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert(textStatus);
+					},
+					success: function(data, textStatus, jqXHR) {
+						// We kunnen de returncode niet checken want cross-site
+						// scripting is niet toegestaan, dus krijgen we de inhoud 
+						// niet te zien
+					},
+					beforeSend: function(jqXHR, settings) {
+						$(this).src = "images/loading.gif";
+					}, // # beforeSend
+					complete: function(jqXHR, textStatus) {
+						$(this).remove();
+					}, // # complete
+					dataType: "script"
+				});
 			}); // click
-			
-			$("img.sabnzbd-button").ajaxComplete(function(event, XMLHttpRequest, ajaxOptions) {
-				var elm = $(event.target);
-
-				if (elm.data("downloadpushed") == "yes") {	
-					elm.remove();
-				} // if
-			}); // # ajaxComplete
-			
-			$("img.sabnzbd-button").ajaxStart(function(e) {	
-				var elm = $(e.target);
-
-				if (elm.data("downloadpushed") == "yes") {	
-					this.src = "images/loading.gif";
-				} // if
-			}); // # ajaxStart
-			
 		});
 
 		function clearTree() {

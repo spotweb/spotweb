@@ -75,7 +75,7 @@ $settings['show_nzbbutton'] = true;
 #$settings['sabnzbd']['host'] = '192.168.10.122:8081';					# <== Pas deze aan naar de sabnzbd host plus port
 #$settings['sabnzbd']['apikey'] = '906e38e971fbf8175303a43569d4f151';	# <== Pas deze aan naar jouw sabnzbd api key
 #$settings['sabnzbd']['spotweburl'] = 'http://server/spotweb/';			# <== URL naar spotweb, gezien vanuit de Sabnzbd machine
-#$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY'; # <== Hoef je niet aan te passen
+#$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=json'; # <== Hoef je niet aan te passen
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
 		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
