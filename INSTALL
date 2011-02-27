@@ -8,6 +8,25 @@ Script is getest met onderstaande configuratie, als het op andere systemen werkt
 
 Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controleren.
 
+=== Bevestigingen dat het werkt ===
+	FreeBSD 8.0
+	Apache 2.2.17 met PHP via mod_fcgid(mod_suexec)
+	PHP 5.3.5
+	PEAR Version: 1.9.1
+	5.1.54 
+
+	:: https://github.com/spotweb/spotweb/issues#issue/12
+	lighttpd/1.4.19 met support voor PHP via fastcgi
+	PHP Version 5.2.6-3ubuntu4
+	Mysql: 5.0.75
+	Pear PEAR Version: 1.7.1 met Net_NNTP geinstalleerd
+
+	:: https://github.com/spotweb/spotweb/issues#issue/12/comment/812695
+	PHP 5.2.16 with Suhosin-Patch 0.9.7 (cgi-fcgi) (built: Jan 2 2011 10:34:33)
+	PEAR Version: 1.9.1 (met Net_NNTP)
+	MySQL 5.1.47
+	
+	
 == Installatie instructies ==
 0. Zorg dat je dependencies vervuld zijn
 1. Pak het archief uit naar een directory onder je webroot
