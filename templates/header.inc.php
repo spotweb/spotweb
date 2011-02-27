@@ -46,6 +46,36 @@
 				return true;
 			});
 			
+			$("img.sabnzbd-button").click(function(e) {
+				e.preventDefault();
+
+				$url = $(this).parent()[0].href.split("?");
+				$(this).data("downloadpushed", "yes");
+			
+				$.ajax({
+				  type: 'get',
+				  url: $url[0],
+				  data: $url[1],
+				  async: true,
+				 });
+			}); // click
+			
+			$("img.sabnzbd-button").ajaxComplete(function(event, XMLHttpRequest, ajaxOptions) {
+				var elm = $(event.target);
+
+				if (elm.data("downloadpushed") == "yes") {	
+					elm.remove();
+				} // if
+			}); // # ajaxComplete
+			
+			$("img.sabnzbd-button").ajaxStart(function(e) {	
+				var elm = $(e.target);
+
+				if (elm.data("downloadpushed") == "yes") {	
+					this.src = "images/loading.gif";
+				} // if
+			}); // # ajaxStart
+			
 		});
 
 		function clearTree() {

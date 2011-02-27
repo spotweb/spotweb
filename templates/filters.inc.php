@@ -4,12 +4,12 @@
 					<h4>Zoeken</h4>
 
 					<form id="filterform" action="">
+<?php
+	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => ''), $search);
+?>
 					<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></input>
 						<table class="filters">
 						<tr> 
-<?php
-	$search = array_merge(array('type' => 'Titel', 'text' => ''), $search);
-?>
 							<td> <input type="radio" name="search[type]" value="Titel"  <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?>>Titel</input> </td>
 							<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?>>Afzender</input> </td>
 							<td> <input type="radio" name="search[type]" value="Tag"	<?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?>>Tag</input> </td>
