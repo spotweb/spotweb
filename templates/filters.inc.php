@@ -34,14 +34,22 @@
 					<h4>Filters</h4>
 					
 					<ul class="filterlist">
-						<li> <a class="filter" onclick="matchTree('cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26', true);" ><img src='images/video2.png'>Films (geen erotiek)</a>
-						<li> <a class="filter" onclick="matchTree('cat0_d11', true)"><img src='images/series2.png'>Series</a>
-						<li> <a class="filter" onclick="matchTree('cat0_a5', true);"><img src='images/books2.png'>Boeken</a>
-						<li> <a class="filter" onclick="matchTree('cat1', true);"><img src='images/audio2.png'>Muziek</a>
-						<li> <a class="filter" onclick="matchTree('cat2', true);"><img src='images/games2.png'>Spellen</a>
-						<li> <a class="filter" onclick="matchTree('cat3', true);"><img src='images/applications2.png'>Applicaties</a>
-						<li> <a class="filter" onclick="matchTree('cat0_d23,cat0_d24,cat0_d25,cat0_26', true);"><img src='images/x2.png'>Erotiek</a>
-						<li> <a class="filter" onclick="matchTree('', true);"><img src='images/custom2.png'>Reset filters</a>
+<?php
+	foreach($filters as $filter) {
+?>
+						<li> <a class="filter <?php echo $filter[3]; ?>" onclick="matchTree('<?php echo $filter[2];?>', true);"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
+<?php
+		if (!empty($filter[4])) {
+			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
+			foreach($filter[4] as $subFilter) {
+?>
+								<li> <a class="filter <?php echo $subFilter[3];?>" onclick="matchTree('<?php echo $subFilter[2];?>', true);"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
+<?php
+			} # foreach 
+			echo "\t\t\t\t\t\t\t</ul>\r\n";
+		} # is_array
+	} # foreach
+?>
 					</ul>
 				</div>
 

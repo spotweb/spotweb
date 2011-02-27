@@ -245,7 +245,8 @@ switch($site['page']) {
 
 		#- display stuff -#
 		template('header');
-		template('filters', array('search' => $req->getDef('search', array())));
+		template('filters', array('search' => $req->getDef('search', array()),
+								  'filters' => $settings['filters']));
 		template('spots', array('spots' => $spots));
 		template('footer');
 		break;

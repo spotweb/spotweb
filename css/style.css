@@ -162,6 +162,10 @@ ul.filterlist img {
 	margin-right: 6px;
 }
 
+ul.subfilterlist  li {
+	margin-left: 34px;
+}
+
 /* spot info  */
 .spotinfocontainer {
 	margin-left: 20px;

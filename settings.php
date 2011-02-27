@@ -20,6 +20,24 @@ $settings['nntp_hdr']['port'] = 119;				# <== set to 563 in case of encryption
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+$settings['filters'] = array(
+	Array("Films (geen erotiek)", "images/video2.png", "cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", "", array()),
+	Array("Series", "images/series2.png", "cat0_d11", "", array()),
+	Array("Boeken", "images/books2.png", "cat0_a5", "", array()),
+	Array("Muziek", "images/audio2.png", "cat1", "", 
+		Array(
+			Array("Compressed", "images/audio2.png", "cat1_a0,cat1_a3,cat1_a5,cat1_a6", ""),
+			Array("Lossless", "images/audio2.png", "cat1_a2,cat1_a4,cat1_a7,cat1_a8", "")
+		)
+	),
+	Array("Spellen", "images/games2.png", "cat2", "", array()),
+	Array("Applicaties", "images/applications2.png", "cat3", "", array()),
+	Array("Erotiek", "images/x2.png", "cat0_d23,cat0_d24,cat0_d25,cat0_26", "", array()),
+	Array("Reset filters", "images/custom2.png", "cat0_a5", "", array())
+);	
+
+
 // version
 define('VERSION', '0.3a');
 
