@@ -7,25 +7,39 @@ require_once "dbeng/db_mysql.php";
 
 class db
 {
-	private $_conn;
+	private $_dbsettings = null;
+	private $_conn = null;
 	
     function __construct($db)
     {
-		global $settings;
-		
-		switch ($db['engine']) {
-			case 'sqlite3'	: $this->_conn = new db_sqlite3($db['path']);
+		global $settings;		
+		$this->_dbsettings = $db;
+	} # __ctor
+	
+	function connect() {
+		switch ($this->_dbsettings['engine']) {
+			case 'sqlite3'	: $this->_conn = new db_sqlite3($this->_dbsettings['path']);
 							  break;
 							  
-			case 'mysql'	: $this->_conn = new db_mysql($db['host'],
-												$db['user'],
-												$db['pass'],
-												$db['dbname']); 
+			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
+												$this->_dbsettings['user'],
+												$this->_dbsettings['pass'],
+												$this->_dbsettings['dbname']); 
 							  break;
 							  
 		    default			: die("Unknown DB engine specified, please choose sqlite3 or mysql");
 		} # switch
+		
+		return ($this->_conn->connect());
     } # ctor
+	
+	function getError() {
+		return $this->_conn->getError();
+	} # getError()
+	
+	function setError($s) {
+		$this->_conn->setError($s);
+	} # setError()
 	
 	function setMaxArticleId($server, $maxarticleid) {
 		return $this->_conn->exec("REPLACE INTO nntp(server, maxarticleid) VALUES('%s',%s)", Array($server, (int) $maxarticleid));

@@ -37,6 +37,9 @@ function openDb() {
 
 	# fireup the database
 	$db = new db($settings['db']);
+	if (!$db->connect()) {
+		die($db->getError());
+	} # if
 
 	$GLOBALS['site']['db'] = $db;
 	

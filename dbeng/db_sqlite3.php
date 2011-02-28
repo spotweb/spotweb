@@ -3,19 +3,25 @@
 require_once "dbeng/db_abs.php";
 
 class db_sqlite3 extends db_abs {
+	private $_db_path;
 	private $_conn;
 	
 	function __construct($path) {
+		$this->_db_path = $path;
+    } # ctor
+
+	function connect() {
 		try {
-			$this->_conn = sqlite_factory($path);
+			$this->_conn = sqlite_factory($this->_db_path);
 		} catch(Exception $x) {
-			die("Unable to connect to sqlite3 database: " . $x->getMessage());
+			$this->setError("Unable to open sqlite3 database: " . $x->getMessage());
+			return false;
 		} # try
 		
-		$this->createDatabase();
-    } # ctor
-		
-	static function safe($s) {
+		return $this->createDatabase();
+	} # connect()
+	
+	function safe($s) {
 		return sqlite_escape_string($s);
 	} # safe
 
@@ -24,7 +30,7 @@ class db_sqlite3 extends db_abs {
 	} # rawExec
 	
 	function exec($s, $p = array()) {
-		$p = array_map(array('db_sqlite3', 'safe'), $p);
+		$p = array_map(array($this, 'safe'), $p);
 		
 		# echo "EXECUTING: " . vsprintf($s, $p) . "\r\n";
 
@@ -38,7 +44,7 @@ class db_sqlite3 extends db_abs {
 	} # exec
 		
 	function singleQuery($s, $p = array()) {
-		$p = array_map(array('db_sqlite3', 'safe'), $p);
+		$p = array_map(array($this, 'safe'), $p);
 		
 		# niet op empty checken gaat mis als er %'s in de query string zitten omdat
 		# er dan gereplaced wordt waar dat niet moet..
@@ -50,7 +56,7 @@ class db_sqlite3 extends db_abs {
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
-		$p = array_map(array('db_sqlite3', 'safe'), $p);
+		$p = array_map(array($this, 'safe'), $p);
 		
 		# niet op empty checken gaat mis als er %'s in de query string zitten omdat
 		# er dan gereplaced wordt waar dat niet moet..
@@ -96,6 +102,8 @@ class db_sqlite3 extends db_abs {
 										   nntpref TEXT);");
 			$this->_conn->queryExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
+		
+		return true;
 	} # Createdatabase
 
 } # class

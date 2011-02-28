@@ -89,6 +89,9 @@ if (ini_get('safe_mode') ) {
 } # if
 
 $db = new db($settings['db']);
+if (!$db->connect()) {
+	die($db->getError());
+} # if
 echo "Spots in database:   " . $db->getSpotCount() . "\r\n";
 
 ## Spots

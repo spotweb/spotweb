@@ -3,25 +3,38 @@
 require_once "dbeng/db_abs.php";
 
 class db_mysql extends db_abs {
+	private $_db_host;
+	private $_db_user;
+	private $_db_pass;
+	private $_db_db;
+	
 	private $_conn;
 	
 	function __construct($host, $user, $pass, $db)
     {
-		$this->_conn = @mysql_connect($host, $user, $pass);
+		$this->_db_host = $host;
+		$this->_db_user = $user;
+		$this->_db_pass = $pass;
+		$this->_db_db = $db;
+	}
+	
+	function connect() {
+		$this->_conn = @mysql_connect($this->_db_host, $this->_db_user, $this->_db_pass);
 		
 		if (!$this->_conn) {
-			die("Unable to connect to MySQL db: " . mysql_error());
+			$this->setError("Unable to connect to MySQL server: " . mysql_error());
+			return false;
 		} # if 
-		
-		
-		if (!@mysql_select_db($db, $this->_conn)) {
-			die("Unabel to select MySQL db: " . mysql_error($this->_conn));
+				
+		if (!@mysql_select_db($this->_db_db, $this->_conn)) {
+			$this->setError("Unabel to select MySQL db: " . mysql_error($this->_conn));
+			return false;
 		} # if
 		
-		$this->createDatabase();
+		return $this->createDatabase();
     } # ctor
 		
-	static function safe($s) {
+	function safe($s) {
 		return mysql_real_escape_string($s);
 	} # safe
 
@@ -31,7 +44,7 @@ class db_mysql extends db_abs {
 
 	function exec($s, $p = array()) {
 		if (!empty($p)) {
-			$p = array_map(array('db_mysql', 'safe'), $p);
+			$p = array_map(array($this, 'safe'), $p);
 		} # if
 		
 		if (empty($p)) {
@@ -69,7 +82,7 @@ class db_mysql extends db_abs {
 	function createDatabase() {
 		$q = $this->singleQuery("SHOW TABLES");
 		if (!$q) {
-			$res = $this->exec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
+			$res = $this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 											messageid varchar(250),
 											spotid INTEGER,
 											category INTEGER, 
@@ -86,33 +99,34 @@ class db_mysql extends db_abs {
 			if (!$res) {
 				die(mysql_error($this->_conn));
 			} # if
-			$res = $this->exec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
+			$res = $this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE);");
 			if (!$res) {
 				die(mysql_error($this->_conn));
 			} # if
 
 			# create indices
-			$this->exec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
-			$this->exec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->exec("CREATE INDEX idx_spots_3 ON spots(messageid)");
+			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
+			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
+			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
 		
 		$q = $this->singleQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (!$q) {
-			$res = $this->exec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
+			$res = $this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
 			if (!$res) {
 				die(mysql_error($this->_conn));
 			} # if
-			$res = $this->exec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+			$res = $this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			if (!$res) {
 				die(mysql_error($this->_conn));
 			} # if
 		} # if
 		
+		return true;
 	} # Createdatabase
 
 } # class
