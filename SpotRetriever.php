@@ -78,9 +78,7 @@ class SpotRetriever {
 		} # loopTillEnd()
 
 		function quit() {
-			try {
-				$this->_spotnntp->quit();
-			} catch(Exception $x) {}
+			$this->_spotnntp->quit();
 		} # quit()
 		
 } # class SpotRetriever

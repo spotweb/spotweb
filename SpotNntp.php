@@ -57,7 +57,15 @@ class SpotNntp {
 		} # getOverview()
 		
 		function quit() {
-			$this->_nntp->quit();
+			try {
+				$this->_nntp->quit();
+			} 
+			catch(Exception $x) {
+				$this->_error = $x->getMessage();
+				return false;
+			} # catch
+			
+			return true;
 		} # quit()
 		
 		function getHeader($msgid) {
