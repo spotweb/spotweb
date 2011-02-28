@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_WARNING);
+
 require_once "db.php";
 require_once "req.php";
 require_once "SpotParser.php";
