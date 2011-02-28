@@ -35,19 +35,15 @@
 	$tmp = str_replace('[/b]', '</b>', $tmp);
 	$tmp = str_replace('[i]', '<i>', $tmp);
 	$tmp = str_replace('[/i]', '</i>', $tmp);
-	$tmp = str_replace('[br]', '<br>', $tmp);
+	$tmp = str_replace('[br]', "<br>", $tmp);
 	$tmp = str_replace('[u]', '<u>', $tmp);
 	$tmp = str_replace('[/u]', '</u>', $tmp);
 	$tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
 	$tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
-	echo $tmp;
+	echo "<pre>$tmp</pre>";
 ?>
 	
-				<br> 
-				<br>
 				<br class="spotinfoclear">
-				<br> 
-				<br> 
 
 				<table class="spotinfotable">
 					<tr> <th> Categorie </th> <td> <?php echo SpotCategories::HeadCat2Desc($hcat); ?> </td> </tr>
@@ -124,3 +120,4 @@
 				<br> 
 	
 			</div>	
+			</div>

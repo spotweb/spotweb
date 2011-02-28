@@ -29,6 +29,22 @@ img {
 	vertical-align: middle;
 }
 
+pre {
+	font-family: "Lucida Console",
+				 "Consolas",
+				 "Monaco",
+				 "Nimbus Mono L",
+				 "DejaVu Sans Mono",
+				 "Courier New",
+                 Courier,
+                 monospace;
+	white-space: pre-wrap;       /* css-3 */
+	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
 /* remember to define focus styles! */
 :focus {
     outline: 0;
@@ -168,6 +184,8 @@ ul.subfilterlist  li {
 
 /* spot info  */
 .spotinfocontainer {
+	padding-right: 6px;
+	
 	margin-left: 20px;
 	margin-right: 20px;
 }
