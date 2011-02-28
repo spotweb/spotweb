@@ -42,28 +42,36 @@ class db_mysql extends db_abs {
 		return mysql_query($s, $this->_conn);
 	} # rawExec
 
-	function exec($s, $p = array()) {
-		return $this->rawExec($this->prepareSql($s, $p));
-	} # exec
-		
 	function singleQuery($s, $p = array()) {
 		$res = $this->exec($s, $p);
-		$row = mysql_fetch_array($res);
-		mysql_free_result($res);
-
-		return $row[0];
+		
+		if ($res) {
+			$row = mysql_fetch_array($res);
+			mysql_free_result($res);
+			
+			return $row[0];
+		} else {
+			$this->setError("Error executing query (" . $s . "): " . mysql_error($this->_conn));
+			return false;
+		} # else
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
 		$res = $this->exec($s, $p); 
-		$rows = array();
-			
-		while ($rows[] = mysql_fetch_assoc($res));
-		# remove last element (false element)
-		array_pop($rows); 
 		
-		mysql_free_result($res);
-		return $rows;
+		if ($res) {
+			$rows = array();
+			
+			while ($rows[] = mysql_fetch_assoc($res));
+			# remove last element (false element)
+			array_pop($rows); 
+		
+			mysql_free_result($res);
+			return $rows;
+		} else {
+			$this->setError("Error executing query (" . $s . "): " . mysql_error($this->_conn));
+			return false;
+		} # else
 	} # arrayQuery
 
 	

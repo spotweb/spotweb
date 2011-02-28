@@ -54,7 +54,13 @@ abstract class db_abs {
 			return vsprintf($s, $p);
 		} # else
 	} # prepareSql()
-		
+
+	/*
+	 * Voer een query uit en geef het resultaat (resource of handle) terug
+	 */
+	function exec($s, $p = array()) {
+		return $this->rawExec($this->prepareSql($s, $p));
+	} # exec()
 
 	/*
 	 * Set een bepaalde error string zodat, we storen deze hier in plaats 

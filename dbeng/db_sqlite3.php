@@ -29,19 +29,24 @@ class db_sqlite3 extends db_abs {
 		return $this->_conn->queryExec($s);
 	} # rawExec
 	
-	function exec($s, $p = array()) {
-		return $this->rawExec($this->prepareSql($s, $p));
-	} # exec
-		
 	function singleQuery($s, $p = array()) {
-		return $this->_conn->singleQuery($this->prepareSql($s, $p), true);
+		$res = $this->_conn->singleQuery($this->prepareSql($s, $p), true);
+		if ($res) {
+			return $res;
+		} else {
+			$this->setError("Error executing query (" . $s . "): " . sqlite_error_string(sqlite_last_error($this->_conn)));
+		} # else
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
-		return $this->_conn->arrayQuery($this->prepareSql($s, $p));
+		$res = $this->_conn->arrayQuery($this->prepareSql($s, $p));
+		if ($res) {
+			return $res;
+		} else {
+			$this->setError("Error executing query (" . $s . "): " . sqlite_error_string(sqlite_last_error($this->_conn)));
+		} # if
 	} # arrayQuery
 
-	
 	function createDatabase() {
 		$q = $this->_conn->singleQuery("PRAGMA table_info(spots)");
 		if (!$q) {
