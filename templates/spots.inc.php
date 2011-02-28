@@ -37,7 +37,7 @@
 			} # if
 
 			# display the sabnzbd button
-			if (isset($settings['sabnzbd']['apikey'])) {
+			if (!empty($spot['sabnzbdurl'])) {
 				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 widt='16'  class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {

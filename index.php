@@ -46,6 +46,11 @@ function openDb() {
 function sabnzbdurl($spot) {
 	extract($GLOBALS['site'], EXTR_REFS);
 
+	# alleen draaien als we gedefinieerd zijn
+	if ((!isset($settings['sabnzbd'])) | (!isset($settings['sabnzbd']['apikey'])) | (!isset($settings['sabnzbd']['categories']))) {
+		return '';
+	} # if
+	
 	# fix de category
 	$spot['category'] = (int) $spot['category'];
 	
@@ -99,7 +104,7 @@ function loadSpots($start, $sqlFilter) {
 	$spotCnt = count($spotList);
 	
 	for ($i = 0; $i < $spotCnt; $i++) {
-		if (isset($settings['sabnzbd'])) {
+		if (isset($settings['sabnzbd']['apikey'])) {
 			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);
 		} # if
 
