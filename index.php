@@ -196,9 +196,9 @@ function filterToQuery($search) {
 			} # if
 		} # foreach
 	} # if
-
+	
 	# Add a list of possible head categories
-	if ((isset($dyn2search['cat'])) & (is_array($dyn2search['cat']))) {
+	if ((isset($dyn2search['cat'])) && (is_array($dyn2search['cat']))) {
 		$filterList = array();
 
 		foreach($dyn2search['cat'] as $catid => $cat) {

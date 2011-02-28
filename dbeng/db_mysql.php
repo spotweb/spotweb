@@ -77,7 +77,12 @@ class db_mysql extends db_abs {
 	
 	function createDatabase() {
 		$q = $this->singleQuery("SHOW TABLES");
-		if (!$q) {
+		if ($q === false) {
+			$this->setError("Error querying tables in database: " . mysql_error($this->_conn));
+			return false;
+		} # if
+		
+		if (empty($q)) {
 			$res = $this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 											messageid varchar(250),
 											spotid INTEGER,
@@ -93,32 +98,54 @@ class db_mysql extends db_abs {
 											tag TEXT,
 											stamp INTEGER);");
 			if (!$res) {
-				die(mysql_error($this->_conn));
+				$this->setError("Error creating table spots: " . mysql_error($this->_conn));
+				return false;
 			} # if
 			$res = $this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE);");
 			if (!$res) {
-				die(mysql_error($this->_conn));
+				$this->setError("Error creating table nntp: " . mysql_error($this->_conn));
+				return false;
 			} # if
 
 			# create indices
-			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
-			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
+			if (!$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)")) {
+				$this->setError("Error creating index1 on table spots: " . mysql_error($this->_conn));
+				return false;
+			} # if
+			
+			if (!$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)")) {
+				$this->setError("Error creating index2 on table spots: " . mysql_error($this->_conn));
+				return false;
+			} # if
+			
+			if (!$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)")) {
+				$this->setError("Error creating index3 on table spots: " . mysql_error($this->_conn));
+				return false;
+			} # if
+			
 		} # if
 		
 		$q = $this->singleQuery("SHOW TABLES LIKE 'commentsxover'");
-		if (!$q) {
+		if ($q === false) {
+			$this->setError("Error querying tables in database: " . mysql_error($this->_conn));
+			return false;
+		} # if
+
+		if (empty($q)) {
 			$res = $this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
 			if (!$res) {
-				die(mysql_error($this->_conn));
+				$this->setError("Error creating table commentsxover: " . mysql_error($this->_conn));
+				return false;
 			} # if
+
 			$res = $this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			if (!$res) {
-				die(mysql_error($this->_conn));
+				$this->setError("Error creating index1 on table commentsxover: " . mysql_error($this->_conn));
+				return false;
 			} # if
 		} # if
 		
