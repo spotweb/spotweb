@@ -127,14 +127,35 @@ function filterToQuery($search) {
 		# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
 		$newTreeQuery = '';
 		for($i = 0; $i < count($dynaList); $i++) {
-			if (strlen($dynaList[$i]) == 6) {
+			# De opgegeven category kan in twee soorten voorkomen:
+			#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
+			#	  cat1				==> Heel cat1 selecteren
+			#
+			# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
+			if ((strlen($dynaList[$i]) == 6) || (strlen($dynaList[$i]) == 4)) {
 				$hCat = (int) substr($dynaList[$i], 3, 1);
-				$subCat = substr($dynaList[$i], 5);
 				
+				# was een subcategory gespecificeerd?
+				if (strlen($dynaList[$i]) == 6) {
+					$subCatSelected = substr($dynaList[$i], 5);
+				} else {
+					$subCatSelected = '*';
+				} # else
+				
+				#
 				# creeer een string die alle subcategories bevat
+				#
+				# we loopen altijd door alle subcategorieen heen zodat we zowel voor complete category selectie
+				# als voor enkel subcategory selectie dezelfde code kunnen gebruiken.
+				#
 				$tmpStr = '';
-				foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-					$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
+				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
+				
+					if (($subCat == $subCatSelected) || ($subCatSelected == '*')) {
+						foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
+							$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
+						} # foreach
+					} # if
 				} # foreach
 				
 				$newTreeQuery .= $tmpStr;
