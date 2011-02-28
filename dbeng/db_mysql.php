@@ -7,14 +7,14 @@ class db_mysql extends db_abs {
 	
 	function __construct($host, $user, $pass, $db)
     {
-		$this->_conn = mysql_connect($host, $user, $pass);
+		$this->_conn = @mysql_connect($host, $user, $pass);
 		
 		if (!$this->_conn) {
-			die("Unable to connect to MySQL db: " . mysql_error($this->_conn));
+			die("Unable to connect to MySQL db: " . mysql_error());
 		} # if 
 		
 		
-		if (!mysql_select_db($db, $this->_conn)) {
+		if (!@mysql_select_db($db, $this->_conn)) {
 			die("Unabel to select MySQL db: " . mysql_error($this->_conn));
 		} # if
 		
