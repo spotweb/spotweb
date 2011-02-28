@@ -40,7 +40,7 @@ function cbRetrieveSpots($hdrList, $curMsg) {
 	} # else
 
 	$db->setMaxArticleid($settings['nntp_hdr']['host'], $curMsg);
-	$db->endTransaction();
+	$db->commitTransaction();
 } # cbRetrieveSpots
 
 
@@ -80,7 +80,7 @@ function cbRetrieveComments($hdrList, $curMsg) {
 	} # else
 
 	$db->setMaxArticleid('comments', $curMsg);
-	$db->endTransaction();
+	$db->commitTransaction();
 } # cbRetrieveComments
 
 # in safe mode, max execution time cannot be set, warn the user
