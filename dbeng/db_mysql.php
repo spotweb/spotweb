@@ -43,19 +43,7 @@ class db_mysql extends db_abs {
 	} # rawExec
 
 	function exec($s, $p = array()) {
-		if (!empty($p)) {
-			$p = array_map(array($this, 'safe'), $p);
-		} # if
-		
-		if (empty($p)) {
-			$res = $this->rawExec($s);
-		} else {
-			$res = $this->rawExec(vsprintf($s, $p));
-		} # if
-		if (!$res) {
-			die(mysql_error());
-		}
-		return $res;
+		return $this->rawExec($this->prepareSql($s, $p));
 	} # exec
 		
 	function singleQuery($s, $p = array()) {

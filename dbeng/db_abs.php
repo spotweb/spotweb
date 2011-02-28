@@ -35,9 +35,26 @@ abstract class db_abs {
 	abstract function arrayQuery($sql, $params = array());
 	
 	/*
-	 * Draait de database specifieke "safe-parameter" functie uit.
+	 * Voert de database specifieke "safe-parameter" functie uit.
 	 */
 	abstract function safe($s);	
+	
+	/*
+	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
+	 */
+	function prepareSql($s, $p) {
+		#
+		# Als er geen parameters zijn mee gegeven, dan voeren we vsprintf() ook niet
+		# uit, dat zorgt er voor dat we bv. LIKE's kunnen uitvoeren (met %'s) zonder
+		# dat vsprintf() die probeert te interpreteren.
+		if (empty($p)) {
+			return $s;
+		} else {
+			$p = array_map(array($this, 'safe'), $p);
+			return vsprintf($s, $p);
+		} # else
+	} # prepareSql()
+		
 
 	/*
 	 * Set een bepaalde error string zodat, we storen deze hier in plaats 

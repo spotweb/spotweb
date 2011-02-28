@@ -81,15 +81,15 @@ class db
 	} # getSpot()
 
 	function beginTransaction() {
-		$this->_conn->exec('BEGIN;', array());
+		$this->_conn->exec('BEGIN;');
 	} # beginTransaction
 
 	function abortTransaction() {
-		$this->_conn->exec('ABORT;', array());
+		$this->_conn->exec('ABORT;');
 	} # abortTransaction
 	
 	function endTransaction() {
-		$this->_conn->exec('COMMIT;', array());
+		$this->_conn->exec('COMMIT;');
 	} # endTransaction
 	
 	function safe($q) {
