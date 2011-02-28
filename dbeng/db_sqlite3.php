@@ -5,9 +5,13 @@ require_once "dbeng/db_abs.php";
 class db_sqlite3 extends db_abs {
 	private $_conn;
 	
-	function __construct($path)
-    {
-		$this->_conn = sqlite_factory($path);
+	function __construct($path) {
+		try {
+			$this->_conn = sqlite_factory($path);
+		} catch(Exception $x) {
+			die("Unable to connect to sqlite3 database: " . $x->getMessage());
+		} # try
+		
 		$this->createDatabase();
     } # ctor
 		
