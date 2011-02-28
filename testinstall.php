@@ -9,8 +9,24 @@
 
 <?php
 	$extList = get_loaded_extensions();
-	
 	$phpVersion = explode(".", phpversion());
+	
+	
+	function return_bytes($val) {
+		$val = trim($val);
+		$last = strtolower($val[strlen($val)-1]);
+		switch($last) {
+			// The 'G' modifier is available since PHP 5.1.0
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
+
+		return $val;
+	} # return_bytes()
 ?>
 
 	<table>
@@ -19,6 +35,7 @@
 		<tr> <td> timezone settings </td> <td> <?php echo (ini_get("date.timezone")) ? "OK" : "Please specify date.timezone in your PHP.ini"; ?> </td> </tr>
 		<tr> <td> Open base dir </td> <td> <?php echo (!ini_get("open_basedir")) ? "OK" : "Not empty, might be a problem"; ?>  </td> </tr>
 		<tr> <td> PHP safe mode </td> <td> <?php echo ini_get('safe_mode') ? "Safe mode set -- will cause problems for retrieve.php" : "OK"; ?> </td> </tr>
+		<tr> <td> Memory limit </td> <td> <?php echo return_bytes(ini_get('memory_limit')) < (32*1024*1024) ? "memory_limit below 32M" : "OK"; ?> </td> </tr>
 	</table>
 	
 	<br>
