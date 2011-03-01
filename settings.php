@@ -126,6 +126,12 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 								 'exponent' => 'AQAB');
 
 #
+# Hoeveel verschillende headers (van danwel spots danwel comments) moeten er per keer opgehaald worden? 
+# Als je regelmatig timeouts krijgt van retrieve.php, vrelaag dan dit aantal
+#
+$settings['retrieve_increment'] = 1000;
+
+#
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
 #

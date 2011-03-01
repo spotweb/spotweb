@@ -39,7 +39,7 @@ class SpotRetriever {
 		} # connect
 		
 		
-		function loopTillEnd($curMsg, $callback) {
+		function loopTillEnd($curMsg, $callback, $increment = 1000) {
 			echo "Appr. Message count: " . ($this->_msgdata['last'] - $this->_msgdata['first']) . "\r\n";
 			echo "First message number:" . $this->_msgdata['first'] . "\r\n";
 			echo "Last message number: " . $this->_msgdata['last'] . "\r\n";
@@ -51,7 +51,6 @@ class SpotRetriever {
 				$curMsg = $this->_msgdata['first'];
 			} # if
 
-			$increment = 1000;
 			while ($curMsg < $this->_msgdata['last']) {
 				# Show some status message
 				echo "Retrieving:          " . ($curMsg) . " till " . ($curMsg + $increment) ;

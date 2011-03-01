@@ -88,6 +88,11 @@ if (ini_get('safe_mode') ) {
 	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems\r\n\r\n";
 } # if
 
+if (!isset($settings['retrieve_increment'])) {
+	echo "WARNING: Parameter retrieve_increment is missing in settings.php, please add and run again.";
+	die();
+}
+
 $db = new db($settings['db']);
 if (!$db->connect()) {
 	die($db->getError() . "\r\n");
@@ -103,7 +108,7 @@ if (! ($msgdata = $retriever->connect($settings['hdr_group']))) {
 } # if
 
 $curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
-$retriever->loopTillEnd($curMsg, 'cbRetrieveSpots');
+$retriever->loopTillEnd($curMsg, 'cbRetrieveSpots', $settings['retrieve_increment']);
 $retriever->quit();
 
 ## Spots
@@ -117,5 +122,5 @@ if (! ($msgdata = $retriever->connect($settings['comment_group']))) {
 } # if
 
 $curMsg = $db->getMaxArticleId('comments');
-$retriever->loopTillEnd($curMsg, 'cbRetrieveComments');
+$retriever->loopTillEnd($curMsg, 'cbRetrieveComments', $settings['retrieve_increment']);
 $retriever->quit();
