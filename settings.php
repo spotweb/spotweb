@@ -132,8 +132,8 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 # We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
 # je instellingen bewaard blijven.
 #
-if (file_exists('../ownsettings.php')) { @include('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('./ownsettings.php')) { @include('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('../ownsettings.php')) { @include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('./ownsettings.php')) { @include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
