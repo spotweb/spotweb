@@ -18,7 +18,7 @@ class SpotParser {
 	} # xmlfullEndElement
 
 	private function xmlfullCharacterHandler($parser, $data) {
-		if (isset($this->_xmlarray[$this->_xmlelement])) {
+		if ((isset($this->_xmlarray[$this->_xmlelement])) && (!empty($this->_xmlarray[$this->_xmlelement]))) {
 			if (!is_array($this->_xmlarray[$this->_xmlelement])) {
 				$this->_xmlarray[$this->_xmlelement] = array($this->_xmlarray[$this->_xmlelement], $data);
 			} else {
@@ -30,6 +30,11 @@ class SpotParser {
 	} # xmlfullCharacterHandler
 
 	function parseFull($xml) {
+		# Gebruik een spot template zodat we altijd de velden hebben die we willen
+		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
+						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '');
+		$this->_xmlarray = $tpl_spot;
+		
 		$xml_parser = xml_parser_create();
 		xml_set_element_handler($xml_parser, array($this, 'xmlfullStartElement'), array('SpotParser', 'xmlfullEndElement'));
 		xml_set_character_data_handler($xml_parser, array($this, 'xmlfullCharacterHandler'));
@@ -42,6 +47,8 @@ class SpotParser {
 
 		# fix the category in the XML array
 		$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
+		
+		var_dump($this->_xmlarray);
 		
 		# and return the parsed XML
 		return $this->_xmlarray;

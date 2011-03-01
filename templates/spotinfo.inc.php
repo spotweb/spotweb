@@ -18,7 +18,7 @@
 	} # if
 
 	# display the download button
-	if (isset($spot['segment'])) {
+	if (!empty($spot['segment'])) {
 		if (!empty($spot['sabnzbdurl'])) {
 			echo "\t\t\t\t<a href='" . $spot['sabnzbdurl'] . "' target='_blank'><img style='float: right;' src='images/download3.png' class='sabnzbd-button'></a>";
 		} else {
@@ -75,14 +75,14 @@
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
 					<tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
 <?php					
-	if (isset($spot['segment'])) {
+	if (!empty($spot['segment'])) {
 ?>
 					<tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
 <?php
 	} # if
 ?>
 <?php					
-	if ((!empty($spot['sabnzbdurl'])) && (isset($spot['segment']))) {
+	if ((!empty($spot['sabnzbdurl'])) && (!empty($spot['segment']))) {
 ?>
 					<tr> <th> SABnzbd </th? <td> <a href='<?php echo $spot['sabnzbdurl']; ?>' target='_blank'><?php echo htmlentities($spot['title']); ?></a> </td> </tr>
 <?php
