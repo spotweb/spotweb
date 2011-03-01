@@ -48,8 +48,6 @@ class SpotParser {
 		# fix the category in the XML array
 		$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
 		
-		var_dump($this->_xmlarray);
-		
 		# and return the parsed XML
 		return $this->_xmlarray;
 	} # parseFull()
