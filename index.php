@@ -61,7 +61,10 @@ function sabnzbdurl($spot) {
 	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
 	
 	# voeg de subcategorieen samen en splits ze dan op een pipe
-	if (isset($spot['subcata'])) {
+	if (isset($spot['subcat'])) {
+		$subcatAr = array();
+		$subcatAr[] = $spot['subcat'];
+	} else if (isset($spot['subcata'])) {
 		$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
 	} else {
 		$subcatAr = array();
