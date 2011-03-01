@@ -49,7 +49,7 @@
 					<tr> <th> Categorie </th> <td> <?php echo SpotCategories::HeadCat2Desc($hcat); ?> </td> </tr>
 		
 <?php
-	if (isset($spot['sub'])) {
+	if (!empty($spot['sub'])) {
 		foreach($spot['sub'] as $sub) {
 			$tmp = array();
 			$tmp[0] = substr($sub, 2, 1);
@@ -70,7 +70,7 @@
 ?>
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
 					<tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> </td> </tr>
-					<tr> <th> Tag </th> <td> <?php if (isset($spot['tag'])) { echo $spot['tag']; } ?> </td> </tr>
+					<tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
 
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
 					<tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
