@@ -46,6 +46,37 @@ function openDb() {
 	return $db;
 } # openDb]
 
+function fixSpotSubCategories($spot) {
+	$subcatAr = array();
+	$subcatList = array();
+	
+	#
+	# Bij oude-style (?) spots wordt er al een gesplitste array van subcategorieen aangeleverd
+	# die uiteraard niet compatible is met de nieuwe style van subcategorieen
+	#
+	if ((!empty($spot['subcat'])) && (is_array($spot['subcat']))) {
+		$subcatList = $spot['subcat'];
+	} elseif (isset($spot['subcata'])) {
+		#
+		# als de headers al voorbewerkt zijn (maw: dit is de spotheader listing  vanuit de database), 
+		# niks meer aan doen.
+		#
+		$subcatList = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
+	} else {
+		$subcatList = $spot['sub'];
+	} # if
+
+	# match hoofdcat/subcat-type/subcatvalue
+	foreach($subcatList as $subcat) {
+		if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
+			$subcatAr[] = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
+		} # if
+	} # foreach
+	
+	return $subcatAr;
+} # func. fixSpotSubCategories
+
+
 function sabnzbdurl($spot) {
 	extract($GLOBALS['site'], EXTR_REFS);
 
@@ -60,20 +91,7 @@ function sabnzbdurl($spot) {
 	# find een geschikte category
 	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
 	
-	# voeg de subcategorieen samen en splits ze dan op een pipe
-	if (isset($spot['subcat'])) {
-		$subcatAr = array();
-		$subcatAr[] = $spot['subcat'];
-	} else if (isset($spot['subcata'])) {
-		$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
-	} else {
-		$subcatAr = array();
-		foreach($spot['sub'] as $subcat) {
-			$subcatAr[] = substr($subcat, 2, 1) . ((int) substr($subcat, 3));
-		} # foreach
-	} # else
-	
-	foreach($subcatAr as $cat) {
+	foreach($spot['subcatlist'] as $cat) {
 		if (isset($settings['sabnzbd']['categories'][$spot['category']][$cat])) {
 			$category = $settings['sabnzbd']['categories'][$spot['category']][$cat];
 		} # if
@@ -110,6 +128,8 @@ function loadSpots($start, $sqlFilter) {
 	$spotCnt = count($spotList);
 	
 	for ($i = 0; $i < $spotCnt; $i++) {
+		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
+		
 		if (isset($settings['sabnzbd']['apikey'])) {
 			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);
 		} # if
@@ -350,6 +370,7 @@ switch($site['page']) {
 			$spotParser = new SpotParser();
 			$xmlar = $spotParser->parseFull($xml);
 			$xmlar['messageid'] = Req::getDef('messageid', '');
+			$xmlar['subcatlist'] = fixSpotSubcategories($xmlar);
 			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
 			$xmlar['searchurl'] = makesearchurl($xmlar);
 

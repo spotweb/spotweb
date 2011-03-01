@@ -30,7 +30,7 @@
 					</form>
 				</div>
 
-				<div class="filter">
+				<div class="filter shadow">
 					<h4>Filters</h4>
 					
 					<ul class="filterlist">
@@ -52,7 +52,6 @@
 ?>
 					</ul>
 				</div>
-
 <?php
 	if ($settings['show_updatebutton']) {
 ?>

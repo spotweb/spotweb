@@ -49,13 +49,10 @@
 					<tr> <th> Categorie </th> <td> <?php echo SpotCategories::HeadCat2Desc($hcat); ?> </td> </tr>
 		
 <?php
-	if (!empty($spot['sub'])) {
-		foreach($spot['sub'] as $sub) {
-			$tmp = array();
-			$tmp[0] = substr($sub, 2, 1);
-			$tmp[1] = $tmp[0] . (int) substr($sub, 3) . '|';
-			
-			echo "\t\t\t\t\t<tr> <th> " . SpotCategories::SubcatDescription($hcat, $tmp[0]) .  "</th> <td> " . SpotCategories::Cat2Desc($hcat, $tmp[1]) . " </td> </tr>\r\n";
+	if (!empty($spot['subcatlist'])) {
+		foreach($spot['subcatlist'] as $sub) {
+			$subcatType = substr($sub, 0, 1);
+			echo "\t\t\t\t\t<tr> <th> " . SpotCategories::SubcatDescription($hcat, $subcatType) .  "</th> <td> " . SpotCategories::Cat2Desc($hcat, $sub) . " </td> </tr>\r\n";
 		} # foreach
 	} # if
 ?>	

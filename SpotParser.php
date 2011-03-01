@@ -32,7 +32,7 @@ class SpotParser {
 	function parseFull($xml) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '');
+						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '', 'key-id' => '');
 		$this->_xmlarray = $tpl_spot;
 		
 		$xml_parser = xml_parser_create();
@@ -45,8 +45,10 @@ class SpotParser {
 		
 		xml_parser_free($xml_parser);
 
-		# fix the category in the XML array
-		$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
+		# fix the category in the XML array but only for new spots
+		if ($this->_xmlarray['key-id'] != 1) {
+			$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
+		} # if
 		
 		# and return the parsed XML
 		return $this->_xmlarray;
