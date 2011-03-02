@@ -54,24 +54,27 @@ function fixSpotSubCategories($spot) {
 	# Bij oude-style (?) spots wordt er al een gesplitste array van subcategorieen aangeleverd
 	# die uiteraard niet compatible is met de nieuwe style van subcategorieen
 	#
-	if ((!empty($spot['subcat'])) && (is_array($spot['subcat']))) {
-		$subcatList = $spot['subcat'];
-	} elseif (isset($spot['subcata'])) {
+	if (!isset($spot['subcata'])) {
+		
+		if ((!empty($spot['subcat'])) && (is_array($spot['subcat']))) {
+			$subcatList = $spot['subcat'];
+		} else {
+			$subcatList = $spot['sub'];
+		} # if
+
+		# match hoofdcat/subcat-type/subcatvalue
+		foreach($subcatList as $subcat) {
+			if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
+				$subcatAr[] = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
+			} # if
+		} # foreach
+	} else {
 		#
 		# als de headers al voorbewerkt zijn (maw: dit is de spotheader listing  vanuit de database), 
-		# niks meer aan doen.
+		# niks meer aan doen behalve er zelf de category voor gaan zetten
 		#
-		$subcatList = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
-	} else {
-		$subcatList = $spot['sub'];
-	} # if
-
-	# match hoofdcat/subcat-type/subcatvalue
-	foreach($subcatList as $subcat) {
-		if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
-			$subcatAr[] = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
-		} # if
-	} # foreach
+		$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
+	} # elseif 
 	
 	return $subcatAr;
 } # func. fixSpotSubCategories
@@ -90,7 +93,7 @@ function sabnzbdurl($spot) {
 	
 	# find een geschikte category
 	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
-	
+
 	foreach($spot['subcatlist'] as $cat) {
 		if (isset($settings['sabnzbd']['categories'][$spot['category']][$cat])) {
 			$category = $settings['sabnzbd']['categories'][$spot['category']][$cat];
