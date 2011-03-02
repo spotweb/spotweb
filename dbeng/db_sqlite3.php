@@ -31,7 +31,7 @@ class db_sqlite3 extends db_abs {
 	
 	function singleQuery($s, $p = array()) {
 		$res = @$this->_conn->singleQuery($this->prepareSql($s, $p), true);
-		if ($res) {
+		if ($res !== false) {
 			return $res;
 		} else {
 			$this->setError("Error executing query (" . $s . "): " . sqlite_error_string($this->_conn->lastError()));
@@ -41,11 +41,10 @@ class db_sqlite3 extends db_abs {
 
 	function arrayQuery($s, $p = array()) {
 		$res = @$this->_conn->arrayQuery($this->prepareSql($s, $p));
-		if ($res) {
+		if ($res !== false) {
 			return $res;
 		} else {
-			$this->setError("Error executing query (" . $s . "): " . sqlite_error_string($this->_conn->lastError()));
-			return false;
+			$this->setError("Error executing query (" . $this->prepareSql($s, $p) . "): " . sqlite_error_string($this->_conn->lastError()));
 		} # if
 	} # arrayQuery
 
@@ -101,12 +100,7 @@ class db_sqlite3 extends db_abs {
 			} # if
 		} # if
 		
-		$q = $this->rawExec("PRAGMA table_info(commentsxover)");
-		if ($q === false) {
-			$this->setError("Error querying tables in database: " . sqlite_error_string($this->_conn->lastError()));
-			return false;
-		} # if
-
+		$q = $this->singleQuery("PRAGMA table_info(commentsxover)");
 		if (!$q) {
 			$res = $this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
 										   messageid TEXT,
