@@ -3,33 +3,48 @@ require_once "SpotRetriever_Abs.php";
 
 class SpotRetriever_Comments extends SpotRetriever_Abs {
 		private $_db;
+		private $_outputType;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, $db) {
+		function __construct($server, $db, $outputType) {
 			parent::__construct($server);
 			
 			$this->_db = $db;
+			$this->_outputType = $outputType;
 		} # ctor
 		
 		/*
 		 * Geef de status weer in category/text formaat. Beide zijn vrij te bepalen
 		 */
 		function displayStatus($cat, $txt) {
-			switch($cat) {
-				case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "\r\n"; break;
-				case 'firstmsg'			: echo "First message number:	" . $txt . "\r\n"; break;
-				case 'lastmsg'			: echo "Last message number:	" . $txt . "\r\n"; break;
-				case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
-				case 'progress'			: echo "Retrieving " . $txt; break;
-				case 'totalcomments'	: echo ", found " . $txt . " comments\r\n"; break;
-				case ''					: echo "\r\n"; break;
-				
-				default					: echo $cat . $txt;
-			} # switch
+			if ($this->_outputType != 'xml') {
+				switch($cat) {
+					case 'start'			: echo "Retrieving new comments from server...\r\n"; break;
+					case 'done'				: echo "Finished retrieving comments.\r\n\r\n"; break;
+					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "\r\n"; break;
+					case 'firstmsg'			: echo "First message number:	" . $txt . "\r\n"; break;
+					case 'lastmsg'			: echo "Last message number:	" . $txt . "\r\n"; break;
+					case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
+					case 'progress'			: echo "Retrieving " . $txt; break;
+					case 'loopcount'		: echo ", found " . $txt . " comments\r\n"; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments\r\n"; break;
+					case ''					: echo "\r\n"; break;
+					
+					default					: echo $cat . $txt;
+				} # switch
+			} else {
+
+				switch($cat) {
+					case 'start'			: echo "<comments>"; brak;
+					case 'done'				: echo "</comments>"; break;
+					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
+					default					: break;
+				} # switch
+			} # xml output
 		} # displayStatus
 
 		
@@ -66,13 +81,15 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			} # foreach
 
 			if (count($hdrList) > 0) {
-				$this->displayStatus("totalcomments", count($hdrList));
+				$this->displayStatus("loopcount", count($hdrList));
 			} else {
-				$this->displayStatus("totalcomments", 0);
+				$this->displayStatus("loopcount", 0);
 			} # else
 
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
+			
+			return count($hdrList);
 		} # process()
 		
 } # class SpotRetriever_Comments

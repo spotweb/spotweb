@@ -24,6 +24,7 @@ abstract class SpotRetriever_Abs {
 		} # ctor
 		
 		function connect($group) {
+			$this->displayStatus("start", "");
 			$this->_spotnntp = new SpotNntp($this->_server['host'],
 									 $this->_server['enc'],
 									 $this->_server['port'],
@@ -40,6 +41,8 @@ abstract class SpotRetriever_Abs {
 		 * Haal de headers op en zorg dat ze steeds verwerkt worden
 		 */
 		function loopTillEnd($curMsg, $increment = 1000) {
+			$processed = 0;
+			
 			$this->displayStatus("groupmessagecount", ($this->_msgdata['last'] - $this->_msgdata['first']));
 			$this->displayStatus("firstmsg", $this->_msgdata['first']);
 			$this->displayStatus("lastmsg", $this->_msgdata['last']);
@@ -64,12 +67,14 @@ abstract class SpotRetriever_Abs {
 				} # else
 
 				# run the processing method
-				$this->process($hdrList, $curMsg, $increment);
+				$processed += $this->process($hdrList, $curMsg, $increment);
 			} # while
 	
+			$this->displayStatus("totalprocessed", $processed);
 		} # loopTillEnd()
 
 		function quit() {
 			$this->_spotnntp->quit();
+			$this->displayStatus("done", "");
 		} # quit()
 } # class SpotRetriever

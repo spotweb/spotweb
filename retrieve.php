@@ -1,9 +1,9 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
-error_reporting(E_ALL & E_STRICT);
 
 require_once "settings.php";
 require_once "lib/SpotDb.php";
+require_once "lib/SpotReq.php";
 require_once "SpotParser.php";
 require_once "SpotNntp.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
@@ -20,6 +20,9 @@ if (!isset($settings['retrieve_increment'])) {
 	die();
 }
 
+$req = new SpotReq();
+$req->initialize();
+
 try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
@@ -28,29 +31,32 @@ catch(Exception $x) {
 	die("Unable to connect to database: " . $x->getMessage() . "\r\n");
 } # catch
 
-echo "Spots in database:   " . $db->getSpotCount() . "\r\n";
-
 ## Spots
 try {
 	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
 
-	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], $db, $settings['rsa_keys']);
+	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], 
+										 $db, 
+										 $settings['rsa_keys'], 
+										 $req->getDef('output', ''));
 	$msgdata = $retriever->connect($settings['hdr_group']);
+	$retriever->displayStatus('dbcount', $db->getSpotCount());
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
 } 
 catch(Exception $x) {
 	echo "\r\n\r\n";
 	echo "Fatal error occured retrieving messages: \r\n";
+	echo $x->getTraceAsString();
 	echo "  " . $x->getMessage() . "\r\n\r\n";
 	die();
 } # catch
 
-## Spots
-echo "Done retrieving spots, retrieving comments...\r\n";
-
+## Comments
 try {
-	$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], $db);
+	$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
+											$db,
+											$req->getDef('output', ''));
 	$msgdata = $retriever->connect($settings['comment_group']);
 
 	$curMsg = $db->getMaxArticleId('comments');

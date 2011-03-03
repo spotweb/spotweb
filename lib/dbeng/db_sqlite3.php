@@ -27,7 +27,10 @@ class db_sqlite3 extends db_abs {
 		$errorMsg = '';
 		$tmpRes = @$this->_conn->unbufferedQuery($s, SQLITE_BOTH, $errorMsg);
 		if ($tmpRes === false) {
-			throw new Exception("Error executing query: " . $errorMsg);
+			if (empty($errorMsg)) {
+				$errorMsg =  sqlite_error_string($this->_conn->lastError());
+				throw new Exception("Error executing query: " . $errorMsg);
+			} # if
 		} # if
 
 		return $tmpRes;		
