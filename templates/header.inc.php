@@ -46,12 +46,42 @@
 
 				return true;
 			});
+
+			$("#updatespotsbtn").click(function(e) {
+				e.preventDefault();
+
+				var surl = this.href.split("?");
+			
+				$.ajax({
+					url: surl[0],
+					data: surl[1],
+					context: $(this),
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert('Error fetching updates');
+					},
+					success: function(data, textStatus, jqXHR) {
+						// We kunnen de returncode niet checken want cross-site
+						// scripting is niet toegestaan, dus krijgen we de inhoud 
+						// niet te zien
+						var totproc = $(data).find("totalprocessed")[0];
+						if (totproc.textContent != "0") {
+							location.reload();
+						} // if 
+					},
+					beforeSend: function(jqXHR, settings) {
+						var x = $("#updatespotimg")[0].src = "images/loading.gif";
+					}, // # beforeSend
+					complete: function(jqXHR, textStatus) {
+						var x = $("#updatespotimg")[0].src = "images/gobutton.png";
+					}, // # complete
+					dataType: "xml"
+				});
+			}); // updatebutton
 			
 			$("img.sabnzbd-button").click(function(e) {
 				e.preventDefault();
 
 				var surl = $(this).parent()[0].href.split("?");
-				$(this).data("downloadpushed", "yes");
 			
 				$.ajax({
 					url: surl[0],
@@ -71,7 +101,7 @@
 					complete: function(jqXHR, textStatus) {
 						$(this).remove();
 					}, // # complete
-					dataType: "script"
+					dataType: "text"
 				});
 			}); // click
 		});

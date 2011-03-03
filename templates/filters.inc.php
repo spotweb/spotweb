@@ -57,8 +57,8 @@
 ?>
 				<div class="filter shadow">
 					<h4>Update</h4>
-					<ul class="filterlist">
-						<li> <a href="retrieve.php">Update Spots</a></li>
+					<ul class="filterlist updatebox">
+						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn">Update Spots <img id="updatespotimg" src="images/gobutton.png"></img></a></li>
 					</ul>
                 </div>
 <?php

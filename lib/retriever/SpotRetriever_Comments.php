@@ -39,7 +39,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			} else {
 
 				switch($cat) {
-					case 'start'			: echo "<comments>"; brak;
+					case 'start'			: echo "<comments>"; break;
 					case 'done'				: echo "</comments>"; break;
 					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
 					default					: break;

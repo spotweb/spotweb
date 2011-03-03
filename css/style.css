@@ -138,6 +138,13 @@ button,
 	border-bottom-left-radius:      8px;
 }
 
+.updatebox,
+ul.updatebox li a {
+	color: black;
+	text-align: center;
+	background-color: white;
+}
+
 .spotscontainer {
 	padding-right: 6px;
 }

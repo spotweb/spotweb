@@ -23,6 +23,10 @@ if (!isset($settings['retrieve_increment'])) {
 $req = new SpotReq();
 $req->initialize();
 
+if ($req::getDef('output', '') == 'xml') {
+	echo "<xml>";
+} # if
+
 try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
@@ -68,3 +72,8 @@ try {
 	echo "  " . $x->getMessage() . "\r\n\r\n";
 	die();
 } # catch
+
+
+if ($req::getDef('output', '') == 'xml') {
+	echo "</xml>";
+} # if
