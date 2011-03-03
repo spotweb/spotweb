@@ -2,7 +2,7 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
 require_once "lib/SpotDb.php";
-require_once "req.php";
+require_once "lib/SpotReq.php";
 require_once "SpotParser.php";
 require_once "SpotCategories.php";
 require_once "SpotNntp.php";
@@ -16,7 +16,7 @@ function initialize() {
 	$prefs['perpage'] = 1000;
 		
 	# helper functions for passed variables
-	$req = new Req();
+	$req = new SpotReq();
 	$req->initialize();
 
 	# gather the current page
@@ -41,7 +41,7 @@ function openDb() {
 		$db->connect();
 	} 
 	catch(Exception $x) {
-		die($x->getMessage());
+		die('Unable to open database: ' . $x->getMessage());
 	} # catch
 
 	$GLOBALS['site']['db'] = $db;
@@ -352,7 +352,7 @@ switch($site['page']) {
 
 	case 'getspot' : {
 		$db = openDb();
-		$spot = $db->getSpot(Req::getDef('messageid', ''));
+		$spot = $db->getSpot($req->getDef('messageid', ''));
 		
 		$spot = $spot[0];
 
@@ -376,7 +376,7 @@ switch($site['page']) {
 
 			$spotParser = new SpotParser();
 			$xmlar = $spotParser->parseFull($xml);
-			$xmlar['messageid'] = Req::getDef('messageid', '');
+			$xmlar['messageid'] = $req->getDef('messageid', '');
 			$xmlar['subcatlist'] = fixSpotSubcategories($xmlar);
 			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
 			$xmlar['searchurl'] = makesearchurl($xmlar);
@@ -420,7 +420,7 @@ switch($site['page']) {
 	
 	case 'getnzb' : {
 		$db = openDb();
-		$spot = $db->getSpot(Req::getDef('messageid', ''));
+		$spot = $db->getSpot($req->getDef('messageid', ''));
 		$spot = $spot[0];
 		
 		try {
