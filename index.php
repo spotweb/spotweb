@@ -36,10 +36,13 @@ function openDb() {
 	extract($GLOBALS['site'], EXTR_REFS);
 
 	# fireup the database
-	$db = new SpotDb($settings['db']);
-	if (!$db->connect()) {
-		die($db->getError());
-	} # if
+	try {
+		$db = new SpotDb($settings['db']);
+		$db->connect();
+	} 
+	catch(Exception $x) {
+		die($x->getMessage());
+	} # catch
 
 	$GLOBALS['site']['db'] = $db;
 	
@@ -332,7 +335,7 @@ switch($site['page']) {
 
 		# zet de page title
 		$pagetitle .= "overzicht";
-		
+
 		#- display stuff -#
 		template('header');
 		template('filters', array('search' => $req->getDef('search', array()),
@@ -489,3 +492,4 @@ switch($site['page']) {
 		break;
 	} # getnzb 
 }
+
