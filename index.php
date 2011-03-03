@@ -465,9 +465,19 @@ switch($site['page']) {
 			} # if
 			
 			if ($nzb !== false) {
+			    if ($settings['nzb_download_local'] == true)
+			    {
+				$myFile = $settings['nzb_local_queue_dir'] .$xmlar['title'] . ".nzb";
+				$fh = fopen($myFile, 'w') or die("Unable to open file");
+				$stringData = gzinflate($spotParser->unspecialZipStr($nzb));
+				fwrite($fh, $stringData);
+				fclose($fh);
+				echo "NZB toegevoegd aan queue : ".$myFile;
+			    } else {
 				Header("Content-Type: application/x-nzb");
 				Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
 				echo gzinflate($spotParser->unspecialZipStr($nzb));
+			    }
 			} else {
 				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();
 			} # else

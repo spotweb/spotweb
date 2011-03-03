@@ -131,6 +131,15 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 #
 $settings['retrieve_increment'] = 1000;
 
+
+#
+# Wanneer je NZB bestanden in een monitor queue wilt plaatsen, zet dan nzb_download_local op true
+# en vul in nzb_local_queue_dir de directory waar de NZB in geplaatst moet worden.
+#
+
+$settings['nzb_download_local'] = false;
+$settings['nzb_local_queue_dir'] = '/[pad naar queue dir]/';
+
 #
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
