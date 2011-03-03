@@ -23,7 +23,7 @@ if (!isset($settings['retrieve_increment'])) {
 $req = new SpotReq();
 $req->initialize();
 
-if ($req::getDef('output', '') == 'xml') {
+if ($req->getDef('output', '') == 'xml') {
 	echo "<xml>";
 } # if
 
@@ -74,6 +74,6 @@ try {
 } # catch
 
 
-if ($req::getDef('output', '') == 'xml') {
+if ($req->getDef('output', '') == 'xml') {
 	echo "</xml>";
 } # if
