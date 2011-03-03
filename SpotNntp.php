@@ -25,33 +25,13 @@ class SpotNntp {
 			$this->_nntp = new Net_NNTP_Client();
 		} # ctor
 		
-		function getError() {
-			return $this->_error;
-		} # getError()
-		
 		function selectGroup($group) {
-			$msgInfo = false;
-			try {
-				$msgInfo = $this->_nntp->selectGroup($group);
-			} 
-			catch (Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
-			
-			return $msgInfo;
+			return $this->_nntp->selectGroup($group);
 		} # selectGroup()
 		
 		function getOverview($first, $last) {
-			$hdrList = false;
-			try {
-				$hdrList = $this->_nntp->getOverview($first . '-' . $last);
-				$hdrList = array_reverse($hdrList);
-			}
-			catch(Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
+			$hdrList = $this->_nntp->getOverview($first . '-' . $last);
+			$hdrList = array_reverse($hdrList);
 			
 			return $hdrList;
 		} # getOverview()
@@ -59,47 +39,23 @@ class SpotNntp {
 		function quit() {
 			try {
 				$this->_nntp->quit();
-			} 
-			catch(Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
-			
-			return true;
+			} catch(Exception $x) {
+				// dummy, we dont care about exceptions during quitting time
+			}
 		} # quit()
 		
 		function getHeader($msgid) {
-			try {
-				return $this->_nntp->getHeader($msgid);
-			}
-			catch(Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
+			return $this->_nntp->getHeader($msgid);
 		} # getHeader()
 
 		function getBody($msgid) {
-			try {
-				return $this->_nntp->getBody($msgid);
-			}
-			catch(Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
+			return $this->_nntp->getBody($msgid);
 		} # getBody	()
 		
 		function connect() {
-			try {
-				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport);
-				if (!empty($this->_user)) {
-					$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
-				} # if
-			}
-			catch(Exception $x) {
-				$this->_error = $x->getMessage();
-				return false;
-			} # catch
-
-			return true;
+			$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport);
+			if (!empty($this->_user)) {
+				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
+			} # if
 		} # connect()
 } # class SpotNntp

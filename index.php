@@ -352,13 +352,14 @@ switch($site['page']) {
 		$spot = $db->getSpot(Req::getDef('messageid', ''));
 		
 		$spot = $spot[0];
-		
-		$spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
-								 $settings['nntp_hdr']['enc'],
-								 $settings['nntp_hdr']['port'],
-								 $settings['nntp_hdr']['user'],
-								 $settings['nntp_hdr']['pass']);
-		if ($spotnntp->connect()) {
+
+		try {
+			$spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
+									 $settings['nntp_hdr']['enc'],
+									 $settings['nntp_hdr']['port'],
+									 $settings['nntp_hdr']['user'],
+									 $settings['nntp_hdr']['pass']);
+			$spotnntp->connect();
 			$header = $spotnntp->getHeader('<' . $spot['messageid'] . '>');
 
 			$xml = '';
@@ -408,8 +409,9 @@ switch($site['page']) {
 			template('footer');
 			
 			break;
-		} else {
-			die("Unable to connect to NNTP server");
+		} 
+		catch (Exception $x) {
+			die($x->getMessage());
 		} # else
 	} # getspot
 	
@@ -418,24 +420,25 @@ switch($site['page']) {
 		$spot = $db->getSpot(Req::getDef('messageid', ''));
 		$spot = $spot[0];
 		
-		$hdr_spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
-									$settings['nntp_hdr']['enc'],
-									$settings['nntp_hdr']['port'],
-									$settings['nntp_hdr']['user'],
-									$settings['nntp_hdr']['pass']);
-		if ($settings['nntp_hdr']['host'] == $settings['nntp_nzb']['host']) {
-			$connected = ($hdr_spotnntp->connect());
-			$nzb_spotnntp = $hdr_spotnntp;
-		} else {
-			$nzb_spotnntp = new SpotNntp($settings['nntp_nzb']['host'],
-										$settings['nntp_nzb']['enc'],
-										$settings['nntp_nzb']['port'],
-										$settings['nntp_nzb']['user'],
-										$settings['nntp_nzb']['pass']);
-			$connected = (($hdr_spotnntp->connect()) && ($nzb_spotnntp->connect()));
-		} # else
+		try {
+			$hdr_spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
+										$settings['nntp_hdr']['enc'],
+										$settings['nntp_hdr']['port'],
+										$settings['nntp_hdr']['user'],
+										$settings['nntp_hdr']['pass']);
+			if ($settings['nntp_hdr']['host'] == $settings['nntp_nzb']['host']) {
+				$hdr_spotnntp->connect();
+				$nzb_spotnntp = $hdr_spotnntp;
+			} else {
+				$nzb_spotnntp = new SpotNntp($settings['nntp_nzb']['host'],
+											$settings['nntp_nzb']['enc'],
+											$settings['nntp_nzb']['port'],
+											$settings['nntp_nzb']['user'],
+											$settings['nntp_nzb']['pass']);
+				$hdr_spotnntp->connect(); 
+				$nzb_spotnntp->connect(); 
+			} # else
 		
-		if ($connected) {
 			$header = $hdr_spotnntp->getHeader('<' . $spot['messageid'] . '>');
 
 			$xml = '';
@@ -455,19 +458,10 @@ switch($site['page']) {
 			$nzb = false;
 			if (is_array($xmlar['segment'])) {
 				foreach($xmlar['segment'] as $seg) {
-					$tmp = $nzb_spotnntp->getBody("<" . $seg . ">");
-					
-					if ($tmp !== false) {
-						$nzb .= implode("", $tmp);
-					} else {
-						break;
-					} #else
+					$nzb .= implode("", $nzb_spotnntp->getBody("<" . $seg . ">"));
 				} # foreach
 			} else {
-				$tmp = $nzb_spotnntp->getBody("<" . $xmlar['segment'] . ">");
-				if ($tmp !== false) {
-					$nzb .= implode("", $tmp);
-				} # if
+				$nzb .= implode("", $nzb_spotnntp->getBody("<" . $xmlar['segment'] . ">"));
 			} # if
 			
 			if ($nzb !== false) {
@@ -477,7 +471,10 @@ switch($site['page']) {
 			} else {
 				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();
 			} # else
-		} # if
+		} 
+		catch(Exception $x) {
+			die($x->getMessage());
+		} # catch
 		
 		break;
 	} # getnzb 
