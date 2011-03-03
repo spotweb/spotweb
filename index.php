@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
-require_once "db.php";
+require_once "lib/SpotDb.php";
 require_once "req.php";
 require_once "SpotParser.php";
 require_once "SpotCategories.php";
@@ -36,7 +36,7 @@ function openDb() {
 	extract($GLOBALS['site'], EXTR_REFS);
 
 	# fireup the database
-	$db = new db($settings['db']);
+	$db = new SpotDb($settings['db']);
 	if (!$db->connect()) {
 		die($db->getError());
 	} # if
@@ -467,16 +467,16 @@ switch($site['page']) {
 			if ($nzb !== false) {
 			    if ($settings['nzb_download_local'] == true)
 			    {
-				$myFile = $settings['nzb_local_queue_dir'] .$xmlar['title'] . ".nzb";
-				$fh = fopen($myFile, 'w') or die("Unable to open file");
-				$stringData = gzinflate($spotParser->unspecialZipStr($nzb));
-				fwrite($fh, $stringData);
-				fclose($fh);
-				echo "NZB toegevoegd aan queue : ".$myFile;
+					$myFile = $settings['nzb_local_queue_dir'] .$xmlar['title'] . ".nzb";
+					$fh = fopen($myFile, 'w') or die("Unable to open file");
+					$stringData = gzinflate($spotParser->unspecialZipStr($nzb));
+					fwrite($fh, $stringData);
+					fclose($fh);
+					echo "NZB toegevoegd aan queue : ".$myFile;
 			    } else {
-				Header("Content-Type: application/x-nzb");
-				Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
-				echo gzinflate($spotParser->unspecialZipStr($nzb));
+					Header("Content-Type: application/x-nzb");
+					Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
+					echo gzinflate($spotParser->unspecialZipStr($nzb));
 			    }
 			} else {
 				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();

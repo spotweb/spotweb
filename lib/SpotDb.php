@@ -2,10 +2,10 @@
 /*
  * A mess
  */
-require_once "dbeng/db_sqlite3.php";
-require_once "dbeng/db_mysql.php";
+require_once "lib/dbeng/db_sqlite3.php";
+require_once "lib/dbeng/db_mysql.php";
 
-class db
+class SpotDb
 {
 	private $_dbsettings = null;
 	private $_conn = null;

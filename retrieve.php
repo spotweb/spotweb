@@ -2,7 +2,7 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
 require_once "settings.php";
-require_once "db.php";
+require_once "lib/SpotDb.php";
 require_once "SpotParser.php";
 require_once "SpotNntp.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
@@ -19,7 +19,7 @@ if (!isset($settings['retrieve_increment'])) {
 	die();
 }
 
-$db = new db($settings['db']);
+$db = new SpotDb($settings['db']);
 if (!$db->connect()) {
 	die($db->getError() . "\r\n");
 } # if

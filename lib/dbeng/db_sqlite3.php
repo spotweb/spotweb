@@ -1,6 +1,6 @@
 <?php
 # a mess
-require_once "dbeng/db_abs.php";
+require_once "lib/dbeng/db_abs.php";
 
 class db_sqlite3 extends db_abs {
 	private $_db_path;
