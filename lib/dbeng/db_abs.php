@@ -62,19 +62,4 @@ abstract class db_abs {
 		return $this->rawExec($this->prepareSql($s, $p));
 	} # exec()
 
-	/*
-	 * Set een bepaalde error string zodat, we storen deze hier in plaats 
-	 * de database specifieke op te halen omdat we willen dat er eventueel nog
-	 * extra informatie bijgezet kan worden.
-	 */
-	function setError($s) {
-		$this->_error = $s;
-	} # setError
-
-	/*
-	 * Geeft de error string terug. 
-	 */
-	function getError() {
-		return $this->_error;
-	} # getError
 }

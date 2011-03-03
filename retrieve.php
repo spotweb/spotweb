@@ -1,5 +1,6 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
+error_reporting(E_ALL & E_STRICT);
 
 require_once "settings.php";
 require_once "lib/SpotDb.php";
@@ -19,10 +20,14 @@ if (!isset($settings['retrieve_increment'])) {
 	die();
 }
 
-$db = new SpotDb($settings['db']);
-if (!$db->connect()) {
-	die($db->getError() . "\r\n");
-} # if
+try {
+	$db = new SpotDb($settings['db']);
+	$db->connect();
+} 
+catch(Exception $x) {
+	die("Unable to connect to database: " . $x->getMessage() . "\r\n");
+} # catch
+
 echo "Spots in database:   " . $db->getSpotCount() . "\r\n";
 
 ## Spots

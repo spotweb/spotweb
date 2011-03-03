@@ -11,14 +11,12 @@ class db_sqlite3 extends db_abs {
     } # ctor
 
 	function connect() {
-		try {
-			$this->_conn = @sqlite_factory($this->_db_path);
-		} catch(Exception $x) {
-			$this->setError("Unable to open sqlite3 database: " . $x->getMessage());
-			return false;
-		} # try
+		$this->_conn = @sqlite_factory($this->_db_path);
+		if ($this->_conn === null) {
+			throw new Exception("Unable to connect to database: " . sqlite_error_string($this->_conn->lastError()));
+		} # if
 		
-		return $this->createDatabase();
+		$this->createDatabase();
 	} # connect()
 	
 	function safe($s) {
@@ -26,37 +24,44 @@ class db_sqlite3 extends db_abs {
 	} # safe
 
 	function rawExec($s) {
-		return @$this->_conn->queryExec($s);
+		$errorMsg = '';
+		$tmpRes = @$this->_conn->unbufferedQuery($s, SQLITE_BOTH, $errorMsg);
+		if ($tmpRes === false) {
+			throw new Exception("Error executing query: " . $errorMsg);
+		} # if
+
+		return $tmpRes;		
 	} # rawExec
 	
 	function singleQuery($s, $p = array()) {
-		$res = @$this->_conn->singleQuery($this->prepareSql($s, $p), true);
-		if ($res !== false) {
-			return $res;
-		} else {
-			$this->setError("Error executing query (" . $s . "): " . sqlite_error_string($this->_conn->lastError()));
-			return false;
-		} # else
+		# We gebruiken niet meer de 'native' singleQuery() omdat de SQL syntax errors
+		# daar niet naar  boven komen
+		$res = $this->exec($s, $p);
+		$row = $res->fetch();
+
+		unset($res);
+		return $row[0];
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
-		$res = @$this->_conn->arrayQuery($this->prepareSql($s, $p));
-		if ($res !== false) {
-			return $res;
-		} else {
-			$this->setError("Error executing query (" . $this->prepareSql($s, $p) . "): " . sqlite_error_string($this->_conn->lastError()));
-		} # if
+		# We gebruiken niet meer de 'native' arrayQuery() omdat de SQL syntax errors
+		# daar niet naar  boven komen
+		$rows = array();
+
+		$res = $this->exec($s, $p); 
+		while ($rows[] = $res->fetch());
+
+		# remove last element (false element)
+		array_pop($rows); 
+		
+		unset($res);
+		return $rows;
 	} # arrayQuery
 
 	function createDatabase() {
-		$q = @$this->_conn->singleQuery("PRAGMA table_info(spots)");
-		if ($q === false) {
-			$this->setError("Error querying tables in database: " . sqlite_error_string($this->_conn->lastError()));
-			return false;
-		} # if
-
+		$q = $this->arrayQuery("PRAGMA table_info(spots)");
 		if (empty($q)) {
-			$res = $this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
+			$this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
 											messageid TEXT,
 											spotid INTEGER,
 											category INTEGER, 
@@ -70,54 +75,23 @@ class db_sqlite3 extends db_abs {
 											title TEXT,
 											tag TEXT,
 											stamp INTEGER);");
-			if (!$res) {
-				$this->setError("Error creating table spots in database: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
-
-			$res = $this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
+			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE);");
-
-			if (!$res) {
-				$this->setError("Error creating table nntp in database: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
-
+			
 			# create indices
-			if (!$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)")) {
-				$this->setError("Error creating index1 on table spots: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
-			
-			if (!$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)")) {
-				$this->setError("Error creating index2 on table spots: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
-			
-			if (!$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)")) {
-				$this->setError("Error creating index3 on table spots: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
+			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
+			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
+			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
 		
-		$q = $this->singleQuery("PRAGMA table_info(commentsxover)");
-		if (!$q) {
-			$res = $this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
+		$q = $this->arrayQuery("PRAGMA table_info(commentsxover)");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
 										   messageid TEXT,
 										   revid INTEGER,
 										   nntpref TEXT);");
-			if (!$res) {
-				$this->setError("Error creating table commentsxover in database: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
-										   
-			if (!$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)")) {
-				$this->setError("Error creating index1 on table commentsxover: " . sqlite_error_string($this->_conn->lastError()));
-				return false;
-			} # if
+			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
-		
-		return true;
 	} # Createdatabase
 
 } # class

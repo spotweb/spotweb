@@ -33,18 +33,11 @@ class SpotDb
 												$this->_dbsettings['dbname']); 
 							  break;
 							  
-		    default			: die("Unknown DB engine specified, please choose sqlite3 or mysql");
+		    default			: throw new Exception("Unknown DB engine specified, please choose sqlite3 or mysql");
 		} # switch
 		
-		return ($this->_conn->connect());
+		$this->_conn->connect();
     } # ctor
-	
-	/**
-	 * Utility functie om snel de error code van een mislukte query te kunnen opvragen
-	 */
-	function getError() {
-		return $this->_conn->getError();
-	} # getError()
 	
 	/* 
 	 * Update of insert the maximum article id in de database.
@@ -52,7 +45,7 @@ class SpotDb
 	 * Geeft false terug als dit een error gegeven heeft
 	 */
 	function setMaxArticleId($server, $maxarticleid) {
-		return $this->_conn->exec("REPLACE INTO nntp(server, maxarticleid) VALUES('%s',%s)", Array($server, (int) $maxarticleid));
+		$this->_conn->exec("REPLACE INTO nntp(server, maxarticleid) VALUES('%s',%s)", Array($server, (int) $maxarticleid));
 	} # setMaxArticleId()
 
 	/*
@@ -60,29 +53,25 @@ class SpotDb
 	 * niet bestaat, voeg dan een nieuw record toe en zet die op 0
 	 */
 	function getMaxArticleId($server) {
-		$p = $this->_conn->singleQuery("SELECT maxarticleid FROM nntp WHERE server = '%s'", Array($server));
-		
-		if ($p == null) {
-			if (!$this->setMaxArticleId($server, 0)) {
-				return false;
-			} # if
-			
-			$p = 0;
+		$artId = $this->_conn->singleQuery("SELECT maxarticleid FROM nntp WHERE server = '%s'", Array($server));
+		if ($artId == null) {
+			$this->setMaxArticleId($server, 0);
+			$artId = 0;
 		} # if
 		
-		return $p;
+		return $artId;
 	} # getMaxArticleId
 
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
 	function getSpotCount() {
-		$p = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
+		$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
 		
-		if ($p == null) {
+		if ($cnt == null) {
 			return 0;
 		} else {
-			return $p;
+			return $cnt;
 		} # if
 	} # getSpotCount
 
@@ -115,8 +104,7 @@ class SpotDb
 	 *   revid is een of ander revisie nummer of iets dergelijks
 	 */
 	function addCommentRef($messageid, $revid, $nntpref) {
-		return $this->_conn->exec("REPLACE INTO commentsxover(messageid, revid, nntpref) 
-								   VALUES('%s', %d, '%s')",
+		$this->_conn->exec("REPLACE INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
 								Array($messageid, (int) $revid, $nntpref));
 	} # addCommentRef
 	
@@ -131,7 +119,7 @@ class SpotDb
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot) {
-		return $this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
+		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['ID'],
 					   $spot['MessageID'],
@@ -167,4 +155,3 @@ class SpotDb
 	} # safe
 	
 } # class db
-
