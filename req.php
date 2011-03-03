@@ -4,7 +4,7 @@ class Req {
     static private $_merged = array(); 
     
     function initialize() {
-		Req::$_merged = $_REQUEST;
+		Req::$_merged = array_merge($_POST, $_GET);
     }
     
     function get($varName, $escapeType = 'html') {
