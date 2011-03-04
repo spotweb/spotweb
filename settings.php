@@ -44,6 +44,9 @@ $settings['filters'] = array(
 // version
 define('VERSION', '0.3a');
 
+// preferences
+$settings['prefs']['perpage'] = 100;
+
 // settings 
 $settings['hdr_group'] = 'free.pt';
 $settings['nzb_group'] = 'alt.binaries.ftd';

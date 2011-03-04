@@ -13,7 +13,10 @@ function initialize() {
 
 	# we define some preferences, later these could be
 	# user specific or stored in a cookie or something
-	$prefs['perpage'] = 1000;
+	$prefs = array('perpage' => 1000);
+	if (isset($settings['prefs'])) {
+		$prefs = array_merge($prefs, $settings['prefs']);
+	} # if
 		
 	# helper functions for passed variables
 	$req = new SpotReq();
