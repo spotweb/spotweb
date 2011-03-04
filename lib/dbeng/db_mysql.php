@@ -112,6 +112,12 @@ class db_mysql extends db_abs {
 		if (count($q) == 2) {
 			$this->rawExec("ALTER TABLE nntp ADD COLUMN(nowrunning INTEGER DEFAULT 0);");
 		} # if
+
+		# Controleer of er wel een index zit op 'spots' tabel 
+		$q = $this->arrayQuery("SHOW INDEXES FROM spots WHERE key_name = 'idx_spots_4'");
+		if (empty($q)) {
+			$this->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
+		} # if
 		
 	} # Createdatabase
 

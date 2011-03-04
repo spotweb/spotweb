@@ -120,6 +120,12 @@ class db_sqlite3 extends db_abs {
 							  $nntp['maxarticleid']));
 			} # foreach
 		} # if
+		
+		# Controleer of er wel een index zit op 'spots' tabel 
+		$q = $this->arrayQuery("PRAGMA index_info(idx_spots_4)");
+		if (empty($q)) {
+			$q = $this->arrayQuery("CREATE INDEX idx_spots_4 ON spots(stamp);");
+		}# if
 	} # Createdatabase
 
 } # class

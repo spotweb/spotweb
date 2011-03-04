@@ -116,9 +116,9 @@ class SpotDb
 		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
-			$sqlFilter = ' AND ' . $sqlFilter;
+			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if
- 		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE id > 0 " . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+ 		return $this->_conn->arrayQuery("SELECT * FROM spots " . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
 
 	/*
