@@ -132,43 +132,11 @@ function makesearchurl($spot) {
 function loadSpots($start, $sqlFilter) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	
-	$direction = $req->GetDef('direction', '0');
-
-	switch($direction) 
-	{
-		case '0' : 
-		{
-			$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
-			break;
-		}
-		case 'next':
-		{
-			$spotList = $db->getNextSpots($start, $prefs['perpage'], $sqlFilter);
-			break;
-		}
-		case 'prev':
-		{
-			$spotList = $db->getPrevSpots($start, $prefs['perpage'], $sqlFilter);
-			break;
-		}
-	}
+	$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
 
 	$spotCnt = count($spotList);
 
-	$GLOBALS['loweststamp'] = $spotList[$spotCnt-1]['stamp'];
-	$GLOBALS['higheststamp'] = $spotList[0]['stamp'];
-
 	for ($i = 0; $i < $spotCnt; $i++) {
-
-		if ($spotList[$i]['stamp'] > $GLOBALS['higheststamp'])
-		{
-			$GLOBALS['higheststamp'] = $spotList[$i]['stamp'];
-		}
-		
-		if ($spotList[$i]['stamp'] < $GLOBALS['loweststamp'])
-		{
-			$GLOBALS['loweststamp'] = $spotList[$i]['stamp'];
-		}
 
 		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
 		
@@ -384,7 +352,13 @@ switch($site['page']) {
 		template('filters', array('search' => $req->getDef('search', array()),
 								  'filters' => $settings['filters']));
 		template('spots', array('spots' => $spots));
-		template('footer', array('firstspot' => $GLOBALS['higheststamp'], 'lastspot' => $GLOBALS['loweststamp'], 'filter' => $req->getDef('search', $settings['index_filter'])));
+		if ($startid > 0) {
+			$prevoffset = $startid -1;
+		} else {
+			$prevoffset = 0;
+		}
+		$nextoffset= $startid +1;
+		template('footer', array('nextoffset' => $nextoffset, 'prevoffset' => $prevoffset,'filter' => $req->getDef('search', $settings['index_filter'])));
 		break;
 	} # case index
 	
