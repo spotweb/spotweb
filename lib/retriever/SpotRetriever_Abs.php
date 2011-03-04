@@ -1,7 +1,10 @@
 <?php
+require_once "lib/exceptions/RetrieverRunningException.php";
+
 abstract class SpotRetriever_Abs {
 		protected $_server;
 		protected $_spotnntp;
+		protected $_db;
 		
 		private $_msgdata;
 
@@ -19,11 +22,21 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
-		function __construct($server) {
+		function __construct($server, $db) {
 			$this->_server = $server;
+			$this->_db = $db;
 		} # ctor
 		
 		function connect($group) {
+			# als er al een retriever instance loopt, stop er dan mee
+			if ($this->_db->isRetrieverRunning($this->_server['host'])) {
+				throw new RetrieverRunningException();
+			} # if
+			
+			# anders melden we onszelf aan dat we al draaien
+			$this->_db->setRetrieverRunning($this->_server['host'], true);
+
+			# zo niet, dan gaan we draaien
 			$this->displayStatus("start", "");
 			$this->_spotnntp = new SpotNntp($this->_server['host'],
 									 $this->_server['enc'],
@@ -74,6 +87,10 @@ abstract class SpotRetriever_Abs {
 		} # loopTillEnd()
 
 		function quit() {
+			# anders melden we onszelf af dat we al draaien
+			$this->_db->setRetrieverRunning($this->_server['host'], false);
+			
+			# sluit de NNTP connectie af
 			$this->_spotnntp->quit();
 			$this->displayStatus("done", "");
 		} # quit()

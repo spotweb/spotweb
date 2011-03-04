@@ -61,6 +61,10 @@ class db_sqlite3 extends db_abs {
 		return $rows;
 	} # arrayQuery
 
+	function rows($res) {
+		return $this->_conn->changes();
+	} # rows()
+	
 	function createDatabase() {
 		$q = $this->arrayQuery("PRAGMA table_info(spots)");
 		if (empty($q)) {

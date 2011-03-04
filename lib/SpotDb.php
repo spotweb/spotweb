@@ -19,8 +19,6 @@ class SpotDb
 	/*
 	 * Open connectie naar de database (basically factory), de 'engine' wordt uit de 
 	 * settings gehaald die mee worden gegeven in de ctor.
-	 * 
-	 * Als connectie mislukt geeft deze een false terug, anders een true.
 	 */
 	function connect() {
 		switch ($this->_dbsettings['engine']) {
@@ -41,11 +39,17 @@ class SpotDb
 	
 	/* 
 	 * Update of insert the maximum article id in de database.
-	 * 
-	 * Geeft false terug als dit een error gegeven heeft
 	 */
 	function setMaxArticleId($server, $maxarticleid) {
-		$this->_conn->exec("REPLACE INTO nntp(server, maxarticleid) VALUES('%s',%s)", Array($server, (int) $maxarticleid));
+		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
+		$res = $this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
+		
+		if ( (is_resource($res) && $this->_conn->rows($res) == 0) || 	# sqlite
+		     (is_bool($res) && !$res)									# mysql
+			)
+		{	
+			$this->_conn->exec("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
+		} # if
 	} # setMaxArticleId()
 
 	/*
@@ -62,6 +66,34 @@ class SpotDb
 		return $artId;
 	} # getMaxArticleId
 
+	/*
+	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
+	 */
+	function isRetrieverRunning($server) {
+		$artId = $this->_conn->singleQuery("SELECT nowrunning FROM nntp WHERE server = '%s'", Array($server));
+		return ((!empty($artId)) && ($artId > (time() - 60)));
+	} # isRetrieverRunning
+
+	/*
+	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
+	 */
+	function setRetrieverRunning($server, $isRunning) {
+		if ($isRunning) {
+			$runTime = time();
+		} else {
+			$runTime = 0;
+		} # if
+		
+		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
+		$res = $this->_conn->exec("UPDATE nntp SET nowrunning = '%s' WHERE server = '%s'", Array((int) $runTime, $server));
+		if ( (is_resource($res) && $this->_conn->rows($res) == 0) || 	# sqlite
+		     (is_bool($res) && !$res)									# mysql
+			)
+		{	
+			$this->_conn->exec("INSERT INTO nntp(server, nowrunning) VALUES('%s', '%s')", Array($server, (int) $runTime));
+		} # if
+	} # setRetrieverRunning
+	
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
@@ -104,7 +136,7 @@ class SpotDb
 	 *   revid is een of ander revisie nummer of iets dergelijks
 	 */
 	function addCommentRef($messageid, $revid, $nntpref) {
-		$this->_conn->exec("REPLACE INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
+		$this->_conn->exec("INSERT INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
 								Array($messageid, (int) $revid, $nntpref));
 	} # addCommentRef
 	

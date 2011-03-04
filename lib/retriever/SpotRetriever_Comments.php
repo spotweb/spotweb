@@ -2,7 +2,6 @@
 require_once "SpotRetriever_Abs.php";
 
 class SpotRetriever_Comments extends SpotRetriever_Abs {
-		private $_db;
 		private $_outputType;
 
 		/**
@@ -11,9 +10,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		 * rsakeys = array van rsa keys
 		 */
 		function __construct($server, $db, $outputType) {
-			parent::__construct($server);
+			parent::__construct($server, $db);
 			
-			$this->_db = $db;
 			$this->_outputType = $outputType;
 		} # ctor
 		

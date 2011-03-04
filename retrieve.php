@@ -35,6 +35,12 @@ catch(Exception $x) {
 	die("Unable to connect to database: " . $x->getMessage() . "\r\n");
 } # catch
 
+## Als we forceren om de "already running" check te bypassen, doe dat dan
+if (($argc > 1) && ($argv[1] == '--force')) {
+	$db->setRetrieverRunning($settings['nntp_hdr']['host'], false);
+} # if
+
+
 ## Spots
 try {
 	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
@@ -48,6 +54,10 @@ try {
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
 } 
+catch(RetrieverRunningException $x) {
+	echo "\r\n\r\n";
+	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren.\r\n";
+}
 catch(Exception $x) {
 	echo "\r\n\r\n";
 	echo "Fatal error occured retrieving messages: \r\n";
@@ -66,6 +76,10 @@ try {
 	$curMsg = $db->getMaxArticleId('comments');
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
+}
+catch(RetrieverRunningException $x) {
+	echo "\r\n\r\n";
+	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren.\r\n";
 } catch(Exception $x) {
 	echo "\r\n\r\n";
 	echo "Fatal error occured retrieving messages: \r\n";

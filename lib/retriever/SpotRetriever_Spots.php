@@ -2,7 +2,6 @@
 require_once "SpotRetriever_Abs.php";
 
 class SpotRetriever_Spots extends SpotRetriever_Abs {
-		private $_db;
 		private $_rsakeys;
 		private $_outputType;
 
@@ -12,9 +11,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * rsakeys = array van rsa keys
 		 */
 		function __construct($server, $db, $rsakeys, $outputType) {
-			parent::__construct($server);
+			parent::__construct($server, $db);
 			
-			$this->_db = $db;
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
 		} # ctor

@@ -67,6 +67,9 @@ class db_mysql extends db_abs {
 		return $rows;
 	} # arrayQuery
 
+	function rows($res) {
+		return mysql_affected_rows($res);
+	} # rows()
 	
 	function createDatabase() {
 		$q = $this->arrayQuery("SHOW TABLES");

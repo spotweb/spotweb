@@ -38,6 +38,13 @@ abstract class db_abs {
 	 * Voert de database specifieke "safe-parameter" functie uit.
 	 */
 	abstract function safe($s);	
+
+	/*
+	 * Geef het aantal affected rows terug
+	 *
+	 * $res is de resource handle van de query
+	 */
+	abstract function rows($res);
 	
 	/*
 	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
