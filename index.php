@@ -132,11 +132,44 @@ function makesearchurl($spot) {
 function loadSpots($start, $sqlFilter) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	
-	$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
+	$direction = $req->GetDef('direction', '0');
+
+	switch($direction) 
+	{
+		case '0' : 
+		{
+			$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
+			break;
+		}
+		case 'next':
+		{
+			$spotList = $db->getNextSpots($start, $prefs['perpage'], $sqlFilter);
+			break;
+		}
+		case 'prev':
+		{
+			$spotList = $db->getPrevSpots($start, $prefs['perpage'], $sqlFilter);
+			break;
+		}
+	}
 
 	$spotCnt = count($spotList);
-	
+
+	$GLOBALS['loweststamp'] = $spotList[$spotCnt-1]['stamp'];
+	$GLOBALS['higheststamp'] = $spotList[0]['stamp'];
+
 	for ($i = 0; $i < $spotCnt; $i++) {
+
+		if ($spotList[$i]['stamp'] > $GLOBALS['higheststamp'])
+		{
+			$GLOBALS['higheststamp'] = $spotList[$i]['stamp'];
+		}
+		
+		if ($spotList[$i]['stamp'] < $GLOBALS['loweststamp'])
+		{
+			$GLOBALS['loweststamp'] = $spotList[$i]['stamp'];
+		}
+
 		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
 		
 		if (isset($settings['sabnzbd']['apikey'])) {
@@ -144,8 +177,9 @@ function loadSpots($start, $sqlFilter) {
 		} # if
 
 		$spotList[$i]['searchurl'] = makesearchurl($spotList[$i]);
-	} # foreach
 	
+	} # foreach
+
 	return $spotList;
 } # loadSpots()
 
@@ -334,8 +368,14 @@ switch($site['page']) {
 
 		openDb();
 		$filter = filterToQuery($req->getDef('search', $settings['index_filter']));
-		$spots = loadSpots(0, $filter);
 
+		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
+		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
+		# dat de index pagina wordt aangeroepen
+
+		$startid = $req->GetDef('offset', 0);
+
+		$spots = loadSpots($startid, $filter);
 		# zet de page title
 		$pagetitle .= "overzicht";
 
@@ -344,7 +384,7 @@ switch($site['page']) {
 		template('filters', array('search' => $req->getDef('search', array()),
 								  'filters' => $settings['filters']));
 		template('spots', array('spots' => $spots));
-		template('footer');
+		template('footer', array('firstspot' => $GLOBALS['higheststamp'], 'lastspot' => $GLOBALS['loweststamp'], 'filter' => $req->getDef('search', $settings['index_filter'])));
 		break;
 	} # case index
 	

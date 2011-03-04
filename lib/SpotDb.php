@@ -117,10 +117,29 @@ class SpotDb
 		if (!empty($sqlFilter)) {
 			$sqlFilter = ' AND ' . $sqlFilter;
 		} # if
-		
+
 		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE id > " . (int) $id . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit);
 	} # getSpots
-	
+
+	function getNextSpots($id, $limit, $sqlFilter)
+	{
+		$results = array();
+
+		if (!empty($sqlFilter)) {
+			$sqlFilter = ' AND ' . $sqlFilter;
+		} # if
+		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE stamp <= " . (int) $id . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit);
+	}
+
+	function getPrevSpots($id, $limit, $sqlFilter)
+	{
+		$results = array();
+
+		if (!empty($sqlFilter)) {
+			$sqlFilter = ' AND ' . $sqlFilter;
+		} # if
+		return $this->_conn->arrayQuery("(SELECT * FROM spots WHERE stamp >= " . (int) $id . $sqlFilter . " ORDER BY stamp ASC LIMIT " . (int) $limit . ") ORDER BY stamp DESC" );
+	}
 	/*
 	 * Vraag 1 specifieke spot op
 	 */
