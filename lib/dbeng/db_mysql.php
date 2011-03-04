@@ -26,7 +26,7 @@ class db_mysql extends db_abs {
 		} # if 
 				
 		if (!@mysql_select_db($this->_db_db, $this->_conn)) {
-			throw new Exception("Unabel to select MySQL db: " . mysql_error($this->_conn));
+			throw new Exception("Unable to select MySQL db: " . mysql_error($this->_conn));
 			return false;
 		} # if
 		
@@ -86,7 +86,8 @@ class db_mysql extends db_abs {
 										tag TEXT,
 										stamp INTEGER);");
 			$this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
-										   maxarticleid INTEGER UNIQUE);");
+										   maxarticleid INTEGER UNIQUE,
+										   nowrunning INTEGER DEFAULT 0);");
 
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
@@ -102,6 +103,13 @@ class db_mysql extends db_abs {
 										   nntpref VARCHAR(250));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
+		
+		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
+		$q = $this->arrayQuery("SHOW COLUMNS FROM nntp;");
+		if (count($q) == 2) {
+			$this->rawExec("ALTER TABLE nntp ADD COLUMN(nowrunning INTEGER DEFAULT 0);");
+		} # if
+		
 	} # Createdatabase
 
 } # class

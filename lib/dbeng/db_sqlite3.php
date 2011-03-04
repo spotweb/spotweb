@@ -29,8 +29,8 @@ class db_sqlite3 extends db_abs {
 		if ($tmpRes === false) {
 			if (empty($errorMsg)) {
 				$errorMsg =  sqlite_error_string($this->_conn->lastError());
-				throw new Exception("Error executing query: " . $errorMsg);
 			} # if
+			throw new Exception("Error executing query: " . $errorMsg);
 		} # if
 
 		return $tmpRes;		
@@ -79,7 +79,8 @@ class db_sqlite3 extends db_abs {
 											tag TEXT,
 											stamp INTEGER);");
 			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
-										   maxarticleid INTEGER UNIQUE);");
+										maxarticleid INTEGER UNIQUE,
+										nowrunning INTEGER DEFAULT 0);");
 			
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
@@ -94,6 +95,26 @@ class db_sqlite3 extends db_abs {
 										   revid INTEGER,
 										   nntpref TEXT);");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+		} # if
+		
+		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
+		$q = $this->arrayQuery("PRAGMA table_info(nntp)");
+		if (count($q) == 2) {
+			# Niet alle SQLite versies ondersteunen alter table, dus we lezen de data in, droppen de tabel en 
+			# inserten de data opnieuw
+			$nntpData = $this->arrayQuery("SELECT server,maxarticleid FROM nntp");
+			
+			# Drop de nntp table en creeer hem opnieuw
+			$this->rawExec("DROP TABLE nntp");
+			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
+													maxarticleid INTEGER UNIQUE,
+													nowrunning INTEGER DEFAULT 0);");
+													
+			foreach($nntpData as $nntp) {
+				$this->exec("INSERT INTO nntp(server,maxarticleid) VALUES('%s','%s')", 
+						Array($nntp['server'],
+							  $nntp['maxarticleid']));
+			} # foreach
 		} # if
 	} # Createdatabase
 

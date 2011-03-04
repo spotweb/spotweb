@@ -40,7 +40,6 @@ $settings['filters'] = array(
 	# ,Array("Lossless MJ", "images/audio2.png", "cat1_a2,cat1_a4,cat1_a7,cat1_a8&search[type]=Titel&search[text]=Michael+Jackson", "", array())
 );	
 
-
 // version
 define('VERSION', '0.3a');
 
