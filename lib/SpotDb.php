@@ -111,37 +111,16 @@ class SpotDb
 	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
 	 * 
 	 */
-#	function getSpots($id, $limit, $sqlFilter) {
-#		$results = array();
-#
-#		if (!empty($sqlFilter)) {
-#			$sqlFilter = ' AND ' . $sqlFilter;
-#		} # if
-
-#		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE id > " . (int) $id . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit);
-#	} # getSpots
-
-	function getSpots($id, $limit, $sqlFilter)
-	{
+	function getSpots($pageNr, $limit, $sqlFilter) {
 		$results = array();
-		$offset = (int) $id * (int) $limit;
+		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
 			$sqlFilter = ' AND ' . $sqlFilter;
 		} # if
- 		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE id > 0 " . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit ." OFFSET " . ( (int) $id * (int) $limit ) );
+ 		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE id > 0 " . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+	} # getSpots()
 
-	}
-
-#	function getPrevSpots($id, $limit, $sqlFilter)
-#	{
-#		$results = array();
-#
-#		if (!empty($sqlFilter)) {
-#			$sqlFilter = ' AND ' . $sqlFilter;
-#		} # if
-#		return $this->_conn->arrayQuery("(SELECT * FROM spots WHERE stamp >= " . (int) $id . $sqlFilter . " ORDER BY stamp ASC LIMIT " . (int) $limit . ") ORDER BY stamp DESC" );
-#	}
 	/*
 	 * Vraag 1 specifieke spot op
 	 */

@@ -137,7 +137,6 @@ function loadSpots($start, $sqlFilter) {
 	$spotCnt = count($spotList);
 
 	for ($i = 0; $i < $spotCnt; $i++) {
-
 		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
 		
 		if (isset($settings['sabnzbd']['apikey'])) {
@@ -145,7 +144,6 @@ function loadSpots($start, $sqlFilter) {
 		} # if
 
 		$spotList[$i]['searchurl'] = makesearchurl($spotList[$i]);
-	
 	} # foreach
 
 	return $spotList;
@@ -340,10 +338,13 @@ switch($site['page']) {
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
 		# dat de index pagina wordt aangeroepen
-
-		$startid = $req->GetDef('offset', 0);
-
-		$spots = loadSpots($startid, $filter);
+		$pageNr = $req->getDef('offset', 0);
+		$prevOffset = max($pageNr - 1, 0);
+		$nextOffset= $pageNr + 1;
+		
+		# lada de spots
+		$spots = loadSpots($pageNr, $filter);
+		
 		# zet de page title
 		$pagetitle .= "overzicht";
 
@@ -352,13 +353,10 @@ switch($site['page']) {
 		template('filters', array('search' => $req->getDef('search', array()),
 								  'filters' => $settings['filters']));
 		template('spots', array('spots' => $spots));
-		if ($startid > 0) {
-			$prevoffset = $startid -1;
-		} else {
-			$prevoffset = 0;
-		}
-		$nextoffset= $startid +1;
-		template('footer', array('nextoffset' => $nextoffset, 'prevoffset' => $prevoffset,'filter' => $req->getDef('search', $settings['index_filter'])));
+		
+		template('footer', array('nextoffset' => $nextOffset, 
+								'prevoffset' => $prevOffset,
+								'filter' => $req->getDef('search', $settings['index_filter'])));
 		break;
 	} # case index
 	
