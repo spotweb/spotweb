@@ -1,3 +1,11 @@
+<?php
+	# Converteer filter parameters naar queries
+	$getUrl = '';
+	foreach($activefilter as $val => $key) {
+		$getUrl .= '&amp;search[' .  $val . ']=' . urlencode($key);
+	} # foreach
+?>
+
 			<div class="spotscontainer">
 				<table class="spots">
 					<tr> 
@@ -56,5 +64,12 @@
 	}
 ?>
 
+			<tr>
+				<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">Vorige</a><?php }?></td>
+				<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende</a><?php }?></td>
+			</tr>
+
+			
 			</table>
+			
 		</div>

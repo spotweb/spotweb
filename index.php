@@ -132,10 +132,13 @@ function makesearchurl($spot) {
 function loadSpots($start, $sqlFilter) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	
-	$spotList = $db->getSpots($start, $prefs['perpage'], $sqlFilter);
-
+	$spotList = $db->getSpots($start, $prefs['perpage'] + 1, $sqlFilter);
 	$spotCnt = count($spotList);
 
+	# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
+	# we dat er nog een volgende pagina is
+	$hasNextPage = ($spotCnt > $prefs['perpage']);
+		
 	for ($i = 0; $i < $spotCnt; $i++) {
 		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
 		
@@ -146,7 +149,7 @@ function loadSpots($start, $sqlFilter) {
 		$spotList[$i]['searchurl'] = makesearchurl($spotList[$i]);
 	} # foreach
 
-	return $spotList;
+	return array('list' => $spotList, 'hasnextpage' => $hasNextPage);
 } # loadSpots()
 
 function filterToQuery($search) {
@@ -338,12 +341,22 @@ switch($site['page']) {
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
 		# dat de index pagina wordt aangeroepen
-		$pageNr = $req->getDef('offset', 0);
-		$prevOffset = max($pageNr - 1, 0);
-		$nextOffset= $pageNr + 1;
+		$pageNr = $req->getDef('page', 0);
+		$nextPage = $pageNr + 1;
+		if ($nextPage == 1) {
+			$prevPage = -1;
+		} else {
+			$prevPage = max($pageNr - 1, 0);
+		} # else
 		
-		# lada de spots
-		$spots = loadSpots($pageNr, $filter);
+		# laad de spots
+		$spotsTmp = loadSpots($pageNr, $filter);
+		$spots = $spotsTmp['list'];
+		
+		# als er geen volgende pagina is, ook niet tonen
+		if (!$spotsTmp['hasnextpage']) {
+			$nextPage = -1;
+		} # if
 		
 		# zet de page title
 		$pagetitle .= "overzicht";
@@ -352,11 +365,11 @@ switch($site['page']) {
 		template('header');
 		template('filters', array('search' => $req->getDef('search', array()),
 								  'filters' => $settings['filters']));
-		template('spots', array('spots' => $spots));
-		
-		template('footer', array('nextoffset' => $nextOffset, 
-								'prevoffset' => $prevOffset,
-								'filter' => $req->getDef('search', $settings['index_filter'])));
+		template('spots', array('spots' => $spots,
+		                        'nextPage' => $nextPage,
+								'prevPage' => $prevPage,
+								'activefilter' => $req->getDef('search', $settings['index_filter'])));
+		template('footer');
 		break;
 	} # case index
 	
