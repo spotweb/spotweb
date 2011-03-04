@@ -109,7 +109,7 @@ function sabnzbdurl($spot) {
 	# en creeer die sabnzbd url
 	$tmp = $settings['sabnzbd']['url'];
 	$tmp = str_replace('$SABNZBDHOST', $settings['sabnzbd']['host'], $tmp);
-	$tmp = str_replace('$NZBURL', urlencode($settings['sabnzbd']['spotweburl'] . '?page=getnzb&messageid='. $spot['messageid']), $tmp);
+	$tmp = str_replace('$NZBURL', urlencode($settings['sabnzbd']['spotweburl'] . '?page=getnzb&amp;messageid='. $spot['messageid']), $tmp);
 	$tmp = str_replace('$SPOTTITLE', urlencode($spot['title']), $tmp);
 	$tmp = str_replace('$SANZBDCAT', $category, $tmp);
 	$tmp = str_replace('$APIKEY', $settings['sabnzbd']['apikey'], $tmp);
