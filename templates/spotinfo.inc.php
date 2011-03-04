@@ -14,7 +14,7 @@
 	
 	# and display the image and website
 	if (!empty($spot['website'])) {
-		echo "\t\t\t\t" . '<a href="' . $spot['website'] . '"><img class="spotinfoimage" src="' . $spot['image'] . '"></a>';
+		echo "\t\t\t\t" . '<a href="' . htmlentities($spot['website']) . '"><img class="spotinfoimage" src="' . htmlentities($spot['image']) . '"></a>';
 	} # if
 
 	# display the download button
