@@ -71,7 +71,7 @@ class SpotDb
 	 */
 	function isRetrieverRunning($server) {
 		$artId = $this->_conn->singleQuery("SELECT nowrunning FROM nntp WHERE server = '%s'", Array($server));
-		return ((!empty($artId)) && ($artId > (time() - 60)));
+		return ((!empty($artId)) && ($artId > (time() - 3000)));
 	} # isRetrieverRunning
 
 	/*
