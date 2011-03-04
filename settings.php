@@ -45,7 +45,7 @@ $settings['filters'] = array(
 define('VERSION', '0.3a');
 
 // preferences
-$settings['prefs']['perpage'] = 100;
+$settings['prefs']['perpage'] = 1000;
 
 // settings 
 $settings['hdr_group'] = 'free.pt';
