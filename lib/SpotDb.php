@@ -44,10 +44,7 @@ class SpotDb
 		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
 		$res = $this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
 		
-		if ( (is_resource($res) && $this->_conn->rows($res) == 0) || 	# sqlite
-		     (is_bool($res) && !$res)									# mysql
-			)
-		{	
+		if ($this->_conn->rows() == 0) {	
 			$this->_conn->exec("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
 		} # if
 	} # setMaxArticleId()
@@ -86,10 +83,7 @@ class SpotDb
 		
 		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
 		$res = $this->_conn->exec("UPDATE nntp SET nowrunning = '%s' WHERE server = '%s'", Array((int) $runTime, $server));
-		if ( (is_resource($res) && $this->_conn->rows($res) == 0) || 	# sqlite
-		     (is_bool($res) && !$res)									# mysql
-			)
-		{	
+		if ($this->_conn->rows() == 0) {	
 			$this->_conn->exec("INSERT INTO nntp(server, nowrunning) VALUES('%s', '%s')", Array($server, (int) $runTime));
 		} # if
 	} # setRetrieverRunning

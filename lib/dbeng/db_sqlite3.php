@@ -61,7 +61,7 @@ class db_sqlite3 extends db_abs {
 		return $rows;
 	} # arrayQuery
 
-	function rows($res) {
+	function rows() {
 		return $this->_conn->changes();
 	} # rows()
 	

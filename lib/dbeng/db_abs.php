@@ -42,9 +42,8 @@ abstract class db_abs {
 	/*
 	 * Geef het aantal affected rows terug
 	 *
-	 * $res is de resource handle van de query
 	 */
-	abstract function rows($res);
+	abstract function rows();
 	
 	/*
 	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
