@@ -88,7 +88,7 @@
 					data: surl[1],
 					context: $(this),
 					error: function(jqXHR, textStatus, errorThrown) {
-						alert(textStatus);
+						// zie bij success(): alert(textStatus);
 					},
 					success: function(data, textStatus, jqXHR) {
 						// We kunnen de returncode niet checken want cross-site
