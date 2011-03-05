@@ -44,7 +44,8 @@ $settings['filters'] = array(
 define('VERSION', '0.3a');
 
 // preferences
-$settings['prefs']['perpage'] = 1000;
+// hoeveel spots wil je tonen op 1 pagina?
+$settings['prefs']['perpage'] = 100;
 
 // settings 
 $settings['hdr_group'] = 'free.pt';
@@ -149,8 +150,8 @@ $settings['nzb_local_queue_dir'] = '/[pad naar queue dir]/';
 # We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
 # je instellingen bewaard blijven.
 #
-if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('../ownsettings.php')) { @include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('./ownsettings.php')) { @include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
