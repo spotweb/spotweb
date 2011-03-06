@@ -397,25 +397,7 @@ switch($site['page']) {
 			# Vraag een lijst op met alle comments messageid's
 			$db = openDb();
 			$commentList = $db->getCommentRef($xmlar['messageid']);
-			$comments = array();
-			
-			foreach($commentList as $comment) {
-				$tmpAr = array('body' => $spotnntp->getBody('<' . $comment['messageid'] . '>'));
-				
-				# extract de velden we die we willen hebben
-				$header = $spotnntp->getHeader('<' . $comment['messageid'] . '>');
-				foreach($header as $hdr) {
-					if (substr($hdr, 0, strlen('From: ')) == 'From: ') {
-						$tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')));
-					} # if
-					
-					if (substr($hdr, 0, strlen('Date: ')) == 'Date: ') {
-						$tmpAr['date'] = substr($hdr, strlen('Date: '));
-					} # if
-				} # foreach
-				
-				$comments[] = $tmpAr; 
-			} # foreach
+			$comments = $spotnntp->getComments($commentList);
 			
 			# zet de page title
 			$pagetitle .= "spot: " . $xmlar['spot']['title'];

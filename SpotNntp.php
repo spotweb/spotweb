@@ -39,9 +39,10 @@ class SpotNntp {
 		function quit() {
 			try {
 				$this->_nntp->quit();
-			} catch(Exception $x) {
+			} 
+			catch(Exception $x) {
 				// dummy, we dont care about exceptions during quitting time
-			}
+			} # catch
 		} # quit()
 		
 		function getHeader($msgid) {
@@ -58,6 +59,51 @@ class SpotNntp {
 				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
 			} # if
 		} # connect()
+		
+		function getArticle($msgId) {
+			$result = array('header' => array(), 'body' => array());
+			
+			# Fetch het artikel
+			$art = $this->_nntp->getArticle($msgId);
+			
+			# vervolgens splitsen we het op in een header array en een body array
+			$i = 0;
+			while( (count($art) >= $i) && ($art[$i] != '')) {
+				$result['header'][] = $art[$i];
+				$i++;
+			} # while
+			$i++;
+
+			while( (count($art) >= $i) && ($art[$i] != '')) {
+				$result['body'][] = $art[$i];
+				$i++;
+			} # while
+			
+			return $result;
+		} # getArticle
+		
+		
+		function getComments($commentList) {
+			$comments = array();
+			
+			foreach($commentList as $comment) {
+				$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');
+				
+				# extract de velden we die we willen hebben
+				foreach($tmpAr['header'] as $hdr) {
+					$keys = explode(':', $hdr);
+					
+					switch($keys[0]) {
+						case 'From'	: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+						case 'Date'	: $tmpAr['date'] = substr($hdr, strlen('Date: ')); break;
+					} # switch
+				} # foreach
+				
+				$comments[] = $tmpAr; 
+			} # foreach
+
+			return $comments;
+		} # getComments
 		
 		function getFullSpot($msgId) {
 			# initialize some variables
