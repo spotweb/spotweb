@@ -3,6 +3,13 @@ require_once "lib/page/SpotPage_Abs.php";
 require_once "SpotCategories.php";
 
 class SpotPage_getnzb extends SpotPage_Abs {
+	private $_messageid;
+	
+	function __construct($db, $settings, $prefs, $messageid) {
+		parent::__construct($db, $settings, $prefs);
+		$this->_messageid = $messageid;
+	} # ctor
+
 	function render() {
 		$hdr_spotnntp = new SpotNntp($this->_settings['nntp_hdr']['host'],
 									$this->_settings['nntp_hdr']['enc'],
@@ -22,7 +29,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			$nzb_spotnntp->connect(); 
 		} # else
 	
-		$xmlar = $hdr_spotnntp->getFullSpot($this->_req->getDef('messageid', ''));
+		$xmlar = $hdr_spotnntp->getFullSpot($this->_messageid);
 		$nzb = $nzb_spotnntp->getNzb($xmlar['info']['segment']);
 		
 		if ($this->_settings['nzb_download_local'] == true)

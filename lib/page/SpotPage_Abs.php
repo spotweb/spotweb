@@ -5,15 +5,13 @@ abstract class SpotPage_Abs {
 	protected $_db;
 	protected $_settings;
 	protected $_prefs;
-	protected $_req;
 	protected $_pageTitle;
 	
 	
-	function __construct($db, $settings, $prefs, $req) {
+	function __construct($db, $settings, $prefs) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
-		$this->_req = $req;
 	} # ctor
 	
 	/*

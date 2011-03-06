@@ -3,6 +3,13 @@ require_once "lib/page/SpotPage_Abs.php";
 require_once "SpotCategories.php";
 
 class SpotPage_getspot extends SpotPage_Abs {
+	private $_messageid;
+	
+	function __construct($db, $settings, $prefs, $messageid) {
+		parent::__construct($db, $settings, $prefs);
+		$this->_messageid = $messageid;
+	} # ctor
+
 
 	function render() {
 		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']['host'],
@@ -11,10 +18,10 @@ class SpotPage_getspot extends SpotPage_Abs {
 								 $this->_settings['nntp_hdr']['user'],
 								 $this->_settings['nntp_hdr']['pass']);
 		$spotnntp->connect();
-		$header = $spotnntp->getFullSpot($this->_req->getDef('messageid', ''));
+		$header = $spotnntp->getFullSpot($this->_messageid);
 		
 		$xmlar['spot'] = $header['info'];
-		$xmlar['messageid'] = $this->_req->getDef('messageid', '');
+		$xmlar['messageid'] = $this->_messageid;
 		$xmlar['spot']['messageid'] = $xmlar['messageid'];
 		$xmlar['spot']['userid'] = $header['userid'];
 		$xmlar['spot']['verified'] = $header['verified'];
