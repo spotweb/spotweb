@@ -167,6 +167,7 @@ class SpotNntp {
 				
 				$spot['userid'] = str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
 			} # if
+
 			
 			return $spot;
 		} # getFullSpot 

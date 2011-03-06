@@ -32,7 +32,8 @@ class SpotParser {
 	function parseFull($xml) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '', 'key-id' => '');
+						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '', 'key-id' => '',
+						  'subcatlist' => array());
 		$this->_xmlarray = $tpl_spot;
 		
 		$xml_parser = xml_parser_create();
@@ -55,6 +56,23 @@ class SpotParser {
 		if (!is_array($this->_xmlarray['segment'])) {
 			$this->_xmlarray['segment'] = array($this->_xmlarray['segment']);
 		} # if
+
+		#
+		# Bij oude-style (?) spots wordt er al een gesplitste array van subcategorieen aangeleverd
+		# die uiteraard niet compatible is met de nieuwe style van subcategorieen
+		#
+		if ((!empty($this->_xmlarray['subcat'])) && (is_array($this->_xmlarray['subcat']))) {
+			$subcatList = $this->_xmlarray['subcat'];
+		} else {
+			$subcatList = $this->_xmlarray['sub'];
+		} # if
+
+		# match hoofdcat/subcat-type/subcatvalue
+		foreach($subcatList as $subcat) {
+			if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
+				$this->_xmlarray['subcatlist'][] = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
+			} # if
+		} # foreach
 		
 		# and return the parsed XML
 		return $this->_xmlarray;
@@ -69,17 +87,17 @@ class SpotParser {
 		$spot = array();
 		
 		// Eerst splitsen we de header string op in enkel de category info e.d.
-		$tmpHdr = preg_split("(<|>)", $from);
+		$tmpHdr = preg_split('(<|>)', $from);
 		
 		if (count($tmpHdr) < 2) {
 			return null;
 		} # if
 		
-		$tmpHdr = explode("@", $tmpHdr[1]);
+		$tmpHdr = explode('@', $tmpHdr[1]);
 		$spot['Header'] = $tmpHdr[1];
 		$spot['Verified'] = false;
 		$spot['MessageID'] = substr($messageid, 1, strlen($messageid) - 2);
-		$fields = explode(".", $spot['Header']);
+		$fields = explode('.', $spot['Header']);
 
 		if (count($fields) >= 6) {
 			$spot['ID'] = $fields[$_ID];
@@ -88,7 +106,7 @@ class SpotParser {
 				$spot['Category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 				
 				// extract de posters name
-				$spot['Poster'] = explode("<", $from);
+				$spot['Poster'] = explode('<', $from);
 				$spot['Poster'] = Trim($spot['Poster'][0]);
 				
 				// key id
@@ -110,7 +128,7 @@ class SpotParser {
 						$subcatAr = $this->splitBySizEx($strInput, 3);
 						foreach($subcatAr as $str) {
 							if (strlen($str) > 0) {
-								$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . "|";
+								$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . '|';
 							} # if
 						} # foeeach
 						
@@ -130,7 +148,7 @@ class SpotParser {
 						$list[] = $expression;
 						$expression = '';
 						foreach($list as $str) {
-							$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . "|";
+							$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
 						} # foreach
 						
 						$spot['SubCat'] = (int) (substr($list[0], 1));
@@ -151,16 +169,16 @@ class SpotParser {
 						} # foreach
 					} # if
 						
-					if ((strpos($subj, "=?") !== false) && (strpos($subj, "?=") !== false)) {
+					if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 						# Make sure its as simple as possible
-						$subj = str_replace("?= =?", "?==?", $subj);
-						$subj = str_replace("\r", "", trim($this->oldEncodingParse($subj)));
-						$subj = str_replace("\n", "", $subj);
+						$subj = str_replace('?= =?', '?==?', $subj);
+						$subj = str_replace('\r', '', trim($this->oldEncodingParse($subj)));
+						$subj = str_replace('\n', '', $subj);
 					} # if
 					
 					if ($recentKey) {
-						if (strpos($subj, "|") !== false) {
-							$tmp = explode("|", $subj);
+						if (strpos($subj, '|') !== false) {
+							$tmp = explode('|', $subj);
 							
 							$spot['Title'] = trim($tmp[0]);
 							$spot['Tag'] = trim($tmp[1]);
@@ -169,7 +187,7 @@ class SpotParser {
 							$spot['Tag'] = '';
 						} # else
 					} else {
-						$tmp = explode("|", $subj);
+						$tmp = explode('|', $subj);
 						if (count($tmp) <= 1) {
 							$tmp = array($subj);
 						} # if
@@ -232,7 +250,7 @@ class SpotParser {
 	
 	private function fixPadding($strInput) {
 		while ((strlen($strInput) % 4) != 0) {
-			$strInput .= "=";
+			$strInput .= '=';
 		} # while
 	
 		return $strInput;
@@ -240,17 +258,17 @@ class SpotParser {
 
 	/*private */function unspecialString($strInput) {
 		$strInput = $this->fixPadding($strInput);
-		$strInput = str_replace("-s", "/", $strInput);
-		$strInput = str_replace("-p", "+", $strInput);
+		$strInput = str_replace('-s', '/', $strInput);
+		$strInput = str_replace('-p', '+', $strInput);
 		
 		return $strInput;
 	} # unspecialString
 	
 	/*private */function unspecialZipStr($strInput) {
-		$strInput = str_replace("=C", "\n", $strInput);
-		$strInput = str_replace("=B", "\r", $strInput);
-		$strInput = str_replace("=A", "\0", $strInput);
-		$strInput = str_replace("=D", "=", $strInput);
+		$strInput = str_replace('=C', "\n", $strInput);
+		$strInput = str_replace('=B', "\r", $strInput);
+		$strInput = str_replace('=A', "\0", $strInput);
+		$strInput = str_replace('=D', '=', $strInput);
 		
 		return $strInput;
 	} # unspecialZipstr
@@ -270,8 +288,8 @@ class SpotParser {
 
 	
 	function parseEncodedWord($inputStr) {
-		$str = "";
-		$builder = "";
+		$str = '';
+		$builder = '';
 		
 		if (substr($inputStr, 0, 1) !== '=') {
 			return $inputStr;
@@ -281,9 +299,9 @@ class SpotParser {
 			return $inputStr;
 		} # if
 		
-		$name = substr($inputStr, 2, strpos($inputStr, "?", 2) - 2);
-		if (strtoupper($name) == "UTF8") {
-			$name = "UTF-8";
+		$name = substr($inputStr, 2, strpos($inputStr, '?', 2) - 2);
+		if (strtoupper($name) == 'UTF8') {
+			$name = 'UTF-8';
 		} # if
 		
 		$c = $inputStr[strlen($name) + 3];
@@ -303,7 +321,7 @@ class SpotParser {
 							} # if
 							
 							if ($chArray == null) {
-								echo "Untested code path!";
+								echo 'Untested code path!';
 								$builder .= $chArray . chr(10);
 								$startIndex += 3;
 							} # if 
@@ -337,8 +355,8 @@ class SpotParser {
 	} # parseEncodedWord
 	
 	function oldEncodingParse($inputStr) {
-		$builder = "";
-		$builder2 = "";
+		$builder = '';
+		$builder2 = '';
 		$encodedWord = false;
 		$num = 0;
 		
@@ -363,14 +381,14 @@ class SpotParser {
 							$ch2 = $inputStr[$num+1];
 						} # if
 						
-						if ($ch2 != "=") {
+						if ($ch2 != '=') {
 							break;
 						} # if
 						
 						$encodedWord = false;
 						$builder .= $ch . $ch2;
 						$builder2 .= $this->parseEncodedWord($builder);
-						$builder = "";
+						$builder = '';
 						$num += 2;
 						$bliep = true;
 						continue;						

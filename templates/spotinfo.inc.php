@@ -25,7 +25,9 @@
 	# and display the image and website
 	if (!empty($spot['website'])) {
 		echo "\t\t\t\t" . '<a href="' . htmlentities($spot['website']) . '"><img class="spotinfoimage" src="' . htmlentities($spot['image']) . '"></a>';
-	} # if
+	} elseif (!empty($spot['image'])) {
+		echo "\t\t\t\t" . '<img class="spotinfoimage" src="' . htmlentities($spot['image']) . '">';
+	} # else
 
 	# display the download button
 	if (!empty($spot['segment'])) {
@@ -50,6 +52,7 @@
 	$tmp = str_ireplace('[/u]', '</u>', $tmp);
 	$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
 	$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
+	$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
 	echo "<pre>$tmp</pre>";
 ?>
 	
