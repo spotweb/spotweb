@@ -11,14 +11,14 @@ class SpotNntp {
 		private $_error;
 		private $_nntp;
 		
-		function __construct($server, $serverenc, $serverport, $user, $pass) {
+		function __construct($server) { 
 			$error = '';
 			
-			$this->_server = $server;
-			$this->_serverenc = $serverenc;
-			$this->_serverport = $serverport;
-			$this->_user = $user;
-			$this->_pass = $pass;
+			$this->_server = $server['host'];
+			$this->_serverenc = $server['enc'];
+			$this->_serverport = $server['port'];
+			$this->_user = $server['user'];
+			$this->_pass = $server['pass'];
 			
 			# Set pear error handling to be used by exceptions
 			PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);			

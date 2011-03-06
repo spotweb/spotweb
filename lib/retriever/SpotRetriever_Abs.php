@@ -38,11 +38,7 @@ abstract class SpotRetriever_Abs {
 
 			# zo niet, dan gaan we draaien
 			$this->displayStatus("start", "");
-			$this->_spotnntp = new SpotNntp($this->_server['host'],
-									 $this->_server['enc'],
-									 $this->_server['port'],
-									 $this->_server['user'],
-									 $this->_server['pass']);
+			$this->_spotnntp = new SpotNntp($this->_server);
 			$this->_spotnntp->connect();
 			$this->_msgdata = $this->_spotnntp->selectGroup($group);
 			

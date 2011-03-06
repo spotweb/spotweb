@@ -12,11 +12,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 
 
 	function render() {
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']['host'],
-								 $this->_settings['nntp_hdr']['enc'],
-								 $this->_settings['nntp_hdr']['port'],
-								 $this->_settings['nntp_hdr']['user'],
-								 $this->_settings['nntp_hdr']['pass']);
+		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
 		$spotnntp->connect();
 		
 		# Vraag de volledige spot informatie op -- dit doet ook basic
