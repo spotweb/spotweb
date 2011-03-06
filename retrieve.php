@@ -36,7 +36,7 @@ catch(Exception $x) {
 } # catch
 
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
-if (($argc > 1) && ($argv[1] == '--force')) {
+if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 	$db->setRetrieverRunning($settings['nntp_hdr']['host'], false);
 } # if
 
