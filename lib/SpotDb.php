@@ -31,7 +31,7 @@ class SpotDb
 												$this->_dbsettings['dbname']); 
 							  break;
 							  
-		    default			: throw new Exception("Unknown DB engine specified, please choose sqlite3 or mysql");
+		    default			: throw new Exception("Unknown DB engine specified, please choose either sqlite3 or mysql");
 		} # switch
 		
 		$this->_conn->connect();

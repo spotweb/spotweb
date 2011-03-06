@@ -61,7 +61,6 @@ catch(RetrieverRunningException $x) {
 catch(Exception $x) {
 	echo "\r\n\r\n";
 	echo "Fatal error occured retrieving messages: \r\n";
-	echo $x->getTraceAsString();
 	echo "  " . $x->getMessage() . "\r\n\r\n";
 	die();
 } # catch
