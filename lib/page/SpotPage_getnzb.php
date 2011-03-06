@@ -41,7 +41,9 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			Header("Content-Disposition: attachment; filename=\"" . urlencode($fullSpot['title']) . ".nzb\"");
 			echo $nzb;
 		} # else
-
+		
+		# en voeg hem toe aan de lijst met downloads
+		$this->_db->addDownload($fullSpot['messageid']);
 	} # render
 	
 } # SpotPage_getnzb

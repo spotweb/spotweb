@@ -149,7 +149,15 @@ class db_mysql extends db_abs {
 		if (empty($q)) {
 			$this->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
 		} # if
-		
+
+		$q = $this->arrayQuery("SHOW TABLES LIKE 'downloadlist'");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
+										   messageid VARCHAR(250),
+										   stamp INTEGER);");
+			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+		} # if
+
 	} # Createdatabase
 
 } # class

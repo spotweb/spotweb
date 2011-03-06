@@ -22,7 +22,7 @@ abstract class SpotPage_Abs {
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
 		
-		$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs);
+		$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db);
 		require_once($settings['tpl_path'] . $tpl . '.inc.php');
 	} # template
 	

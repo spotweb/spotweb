@@ -126,6 +126,15 @@ class db_sqlite3 extends db_abs {
 		if (empty($q)) {
 			$q = $this->arrayQuery("CREATE INDEX idx_spots_4 ON spots(stamp);");
 		}# if
+		
+		$q = $this->arrayQuery("PRAGMA table_info(downloadlist)");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
+										   messageid VARCHAR(250),
+										   stamp INTEGER);");
+			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+		} # if
+		
 	} # Createdatabase
 
 } # class

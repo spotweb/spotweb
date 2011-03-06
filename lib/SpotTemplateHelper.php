@@ -5,10 +5,12 @@
 class SpotTemplateHelper {	
 	protected $_settings;
 	protected $_prefs;
+	protected $_db;
 	
-	function __construct($settings, $prefs) {
+	function __construct($settings, $prefs, $db) {
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
+		$this->_db = $db;
 	} # ctor
 	
 	/*
@@ -82,5 +84,25 @@ class SpotTemplateHelper {
 		
 		return $tmp;
 	} # formatDescription
+	
+	function hasbeenDownloaded($spot) {
+		# We gebruiken een static list en een array search omdat dit waarschijnlijk
+		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
+		static $dlList = null;
+		static $dlListCnt = 0;
+		
+		if ($dlList == null) {
+			$dlList = $this->_db->getDownloads();
+			$dlListCnt = count($dlList);
+		} # if
+		
+		for($i = 0; $i < $dlListCnt; $i++) {
+			if ($dlList[$i]['messageid'] == $spot['messageid']) {
+				return true;
+			} # if
+		} # for
+		
+		return false;
+	} # hasbeenDownloaded
 	
 } # class SpotTemplateHelper

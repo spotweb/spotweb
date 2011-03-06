@@ -52,16 +52,18 @@
 ?>
 					</ul>
 				</div>
+				<div class="filter shadow">
+					<h4>Maintenance</h4>
+					<ul class="filterlist maintenancebox">
 <?php
 	if ($settings['show_updatebutton']) {
 ?>
-				<div class="filter shadow">
-					<h4>Update</h4>
-					<ul class="filterlist updatebox">
-						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn">Update Spots <img id="updatespotimg" src="images/gobutton.png"></img></a></li>
-					</ul>
-                </div>
+						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="updatespotsbtn">Update Spots <img id="updatespotimg" src="images/gobutton.png"></img></a></li>
 <?php
 	}
 ?>
+						<li> <a href="?page=erasedls" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads <img id="erasedlsimg" src="images/gobutton.png"></img></a></li>
+					</ul>
+                </div>
+
 			</div>

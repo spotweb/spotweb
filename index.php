@@ -11,6 +11,7 @@ require_once "lib/page/SpotPage_index.php";
 require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
+require_once "lib/page/SpotPage_erasedls.php";
 
 function openDb($dbSettings) {
 	# fireup the database
@@ -42,7 +43,7 @@ function initialize() {
 
 	# gather the current page
 	$GLOBALS['site']['page'] = $req->getDef('page', 'index');
-	if (array_search($GLOBALS['site']['page'], array('index', 'catsjson', 'getnzb', 'getspot')) === false) {
+	if (array_search($GLOBALS['site']['page'], array('index', 'catsjson', 'getnzb', 'getspot', 'erasedls')) === false) {
 		$GLOBALS['site']['page'] = 'index';
 	} # if
 	
@@ -72,6 +73,12 @@ try {
 				break;
 		} # getspot
 
+		case 'erasedls' : {
+				$page = new SpotPage_erasedls($db, $settings, $prefs);
+				$page->render();
+				break;
+		} # erasedls
+		
 		case 'catsjson' : {
 				$page = new SpotPage_catsjson($db, $settings, $prefs);
 				$page->render();

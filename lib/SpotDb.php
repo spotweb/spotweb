@@ -31,7 +31,7 @@ class SpotDb
 												$this->_dbsettings['dbname']); 
 							  break;
 							  
-		    default			: throw new Exception("Unknown DB engine specified, please choose either sqlite3 or mysql");
+		    default			: throw new Exception('Unknown DB engine specified, please choose either sqlite3 or mysql');
 		} # switch
 		
 		$this->_conn->connect();
@@ -142,6 +142,36 @@ class SpotDb
 	} # getCommentRef
 
 	/*
+	 * Voeg een spot toe aan de lijst van gedownloade files
+	 */
+	function addDownload($messageid) {
+		$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
+								Array($messageid, time()));
+	} # addDownload
+
+	/*
+	 * Is een messageid al gedownload?
+	 */
+	function hasBeenDownload($messageid) {
+		$artId = $this->_conn->singleQuery("SELECT stamp FROM downloadlist WHERE messageid = '%s'", Array($messageid));
+		return (!empty($artId));
+	} # hasBeenDownload
+
+	/*
+	 * Geef een lijst terug van alle downloads
+	 */
+	function getDownloads() {
+		return $this->_conn->arrayQuery("SELECT s.title AS title, dl.stamp AS stamp, dl.messageid AS messageid FROM downloadlist dl, spots s WHERE dl.messageid = s.messageid");
+	} # getDownloads
+
+	/*
+	 * Wis de lijst met downloads
+	 */
+	function emptyDownloadList() {
+		return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
+	} # emptyDownloadList()
+	
+	/*
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot) {
@@ -162,7 +192,6 @@ class SpotDb
 					   $spot['Stamp']));
 	} # addSpot()
 
-	
 	
 	function beginTransaction() {
 		$this->_conn->exec('BEGIN;');

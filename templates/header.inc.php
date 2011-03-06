@@ -47,7 +47,29 @@
 				return true;
 			});
 
-			$("#updatespotsbtn").click(function(e) {
+			$(".erasedlsbtn").click(function(e) {
+				e.preventDefault();
+
+				var surl = this.href.split("?");
+			
+				$.ajax({
+					url: surl[0],
+					data: surl[1],
+					context: $(this),
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert('Error removing downloadlist');
+					},
+					beforeSend: function(jqXHR, settings) {
+						var x = $("#erasedlsimg")[0].src = "images/loading.gif";
+					}, // # beforeSend
+					complete: function(jqXHR, textStatus) {
+						var x = $("#erasedlsimg")[0].src = "images/gobutton.png";
+					}, // # complete
+					dataType: "xml"
+				});
+			}); // erasedlsbtn
+			
+			$(".updatespotsbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
