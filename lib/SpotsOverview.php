@@ -65,12 +65,12 @@ class SpotsOverview {
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search['tree'] = '';
 		} # if
-		
+
 		# convert the dynatree list to a list 
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
-
+			
 			# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
 			$newTreeQuery = '';
 			for($i = 0; $i < count($dynaList); $i++) {
@@ -88,7 +88,7 @@ class SpotsOverview {
 					} else {
 						$subCatSelected = '*';
 					} # else
-					
+
 					#
 					# creeer een string die alle subcategories bevat
 					#
@@ -113,7 +113,7 @@ class SpotsOverview {
 					$newTreeQuery .= "," . $dynaList[$i];
 				} # else
 			} # foreach
-			
+
 			# explode the dynaList
 			$search['tree'] = $newTreeQuery;
 			$dynaList = explode(',', $search['tree']);

@@ -32,6 +32,59 @@ class SpotCategories {
 			Array('a' => 'Platform',
 				  'b' => 'Genre')
 			);
+
+
+	public static $_shortcat = 
+		Array(0 => 
+				Array(0 => "DivX",
+					  1 => "WMV",
+					  2 => "MPG",
+					  3 => "DVD5",
+					  4 => "HD Ovg",
+					  5 => "eBook",
+					  6 => "Blu-ray",
+					  7 => "HD-DVD",
+					  8 => "WMVHD",
+					  9 => "x264HD",
+					  10 => "DVD9"),
+  			  1 =>
+				Array(0	=> "MP3",
+					  1 => "WMA",
+					  2 => "WAV",
+					  3 => "OGG",
+					  4 => "Lossles",
+					  5 => "DTS",
+					  6 => "AAC",
+					  7 => "APE",
+					  8 => "FLAC"),
+  			  2 =>
+				Array(0 => "WIN",
+					  1 => "MAC",
+					  2 => "LNX",
+					  3 => "PS",
+					  4 => "PS2",
+					  5 => "PSP",
+					  6 => "XBX",
+					  7 => "360",
+					  8 => "GBA",
+					  9 => "GC",
+					  10 => "NDS",
+					  11 => "Wii",
+					  12 => "PS3",
+					  13 => "WinPh",
+					  14 => "iOs",
+					  15 => "Android"),
+  			  3 =>
+				Array(0 => "WIN",
+					  1 => "MAC",
+					  2 => "LNX",
+					  3 => "OS/2",
+					  4 => "WinPh",
+					  5 => "NAV",
+					  6 => "iOs",
+					  7 => "Android")
+			);
+			
 			
 	public static $_categories = 
 		Array(0 => 
@@ -265,6 +318,23 @@ class SpotCategories {
 		} # if
 	}
 
+	static function Cat2ShortDesc($hcat, $cat) {
+		$catList = explode("|", $cat);
+		$cat = $catList[0]; 
+
+		if (empty($cat[0])) {
+			return '';
+		} # if 
+		
+		$nr = substr($cat, 1);
+	
+		if (!isset(self::$_shortcat[$hcat][$nr])) {
+			return "-";
+		} else {
+			return self::$_shortcat[$hcat][$nr];
+		} # if
+	}
+	
 	static function SubcatDescription($hcat, $ch) {
 		if ((isset(self::$_subcat_descriptions[$hcat])) && (isset(self::$_subcat_descriptions[$hcat][$ch]))) {
 			return self::$_subcat_descriptions[$hcat][$ch];

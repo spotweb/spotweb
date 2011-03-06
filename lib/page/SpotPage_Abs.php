@@ -21,8 +21,15 @@ abstract class SpotPage_Abs {
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
+	
+		if (file_exists($settings['tpl_path'] . '/CustomTplHelper.php')) {
+			require_once $settings['tpl_path'] . '/CustomTplHelper.php';
+			
+			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db);
+		} else {
+			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db);
+		} # else
 		
-		$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db);
 		require_once($settings['tpl_path'] . $tpl . '.inc.php');
 	} # template
 	
