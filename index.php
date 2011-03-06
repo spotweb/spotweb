@@ -54,20 +54,6 @@ function initialize() {
 	$GLOBALS['site']['db'] = openDb($settings['db']);
 } # initialize()
 
-
-
-function showPage($page) {
-	extract($GLOBALS['site'], EXTR_REFS);
-
-	require_once "lib/page/SpotPage_" . $page . ".php";
-	
-	$className = "SpotPage_" . $page;
-	
-	$page = new $className($db, $settings, $prefs, $req);
-	$page->render();
-} # showPage()
-
-
 #- main() -#
 try {
 	initialize();
