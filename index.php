@@ -5,7 +5,7 @@ require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
 require_once "SpotParser.php";
 require_once "SpotCategories.php";
-require_once "SpotNntp.php";
+require_once "lib/SpotNntp.php";
 
 function initialize() {
 	require_once "settings.php";
@@ -50,21 +50,7 @@ function openDb() {
 	$GLOBALS['site']['db'] = $db;
 	
 	return $db;
-} # openDb]
-
-function fixSpotSubCategories($spot) {
-	$subcatAr = array();
-	$subcatList = array();
-	
-	#
-	# als de headers al voorbewerkt zijn (maw: dit is de spotheader listing  vanuit de database), 
-	# niks meer aan doen behalve er zelf de category voor gaan zetten
-	#
-	$subcatAr = explode("|", $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd']);
-	
-	return $subcatAr;
-} # func. fixSpotSubCategories
-
+} # openDb
 
 function sabnzbdurl($spot) {
 	extract($GLOBALS['site'], EXTR_REFS);
@@ -120,7 +106,8 @@ function loadSpots($start, $sqlFilter) {
 	$hasNextPage = ($spotCnt > $prefs['perpage']);
 		
 	for ($i = 0; $i < $spotCnt; $i++) {
-		$spotList[$i]['subcatlist'] = fixSpotSubcategories($spotList[$i]);
+		$spotList[$i]['subcatlist'] = explode("|", $spotList[$i]['subcata'] . $spotList[$i]['subcatb'] . $spotList[$i]['subcatc'] . $spotList[$i]['subcatd']);
+
 		
 		if (isset($settings['sabnzbd']['apikey'])) {
 			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);

@@ -5,7 +5,7 @@ require_once "settings.php";
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
 require_once "SpotParser.php";
-require_once "SpotNntp.php";
+require_once "lib/SpotNntp.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
 require_once "lib/retriever/SpotRetriever_Comments.php";
 
