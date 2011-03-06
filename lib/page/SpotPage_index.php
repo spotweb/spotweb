@@ -23,22 +23,13 @@ class SpotPage_index extends SpotPage_Abs {
 		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter);
 		$spots = $spotsTmp['list'];
 
-		$spotCnt = count($spots);
-		for ($i = 0; $i < $spotCnt; $i++) {
-			if (isset($this->_settings['sabnzbd']['apikey'])) {
-				$spots[$i]['sabnzbdurl'] = sabnzbdurl($spots[$i]);
-			} # if
-
-			$spots[$i]['searchurl'] = makesearchurl($spots[$i]);
-		} # for
-
 		# als er geen volgende pagina is, ook niet tonen
 		if (!$spotsTmp['hasmore']) {
 			$nextPage = -1;
 		} # if
 		
 		# zet de page title
-		$pagetitle = "overzicht";
+		$this->_pageTitle = "overzicht";
 		
 		#- display stuff -#
 		$this->template('header');

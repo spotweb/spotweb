@@ -55,48 +55,6 @@ function initialize() {
 } # initialize()
 
 
-function sabnzbdurl($spot) {
-	extract($GLOBALS['site'], EXTR_REFS);
-
-	# alleen draaien als we gedefinieerd zijn
-	if ((!isset($settings['sabnzbd'])) | (!isset($settings['sabnzbd']['apikey'])) | (!isset($settings['sabnzbd']['categories']))) {
-		return '';
-	} # if
-	
-	# fix de category
-	$spot['category'] = (int) $spot['category'];
-	
-	# find een geschikte category
-	$category = $settings['sabnzbd']['categories'][$spot['category']]['default'];
-
-	foreach($spot['subcatlist'] as $cat) {
-		if (isset($settings['sabnzbd']['categories'][$spot['category']][$cat])) {
-			$category = $settings['sabnzbd']['categories'][$spot['category']][$cat];
-		} # if
-	} # foreach
-	
-	# en creeer die sabnzbd url
-	$tmp = $settings['sabnzbd']['url'];
-	$tmp = str_replace('$SABNZBDHOST', $settings['sabnzbd']['host'], $tmp);
-	$tmp = str_replace('$NZBURL', urlencode($settings['sabnzbd']['spotweburl'] . '?page=getnzb&messageid='. $spot['messageid']), $tmp);
-	$tmp = str_replace('$SPOTTITLE', urlencode($spot['title']), $tmp);
-	$tmp = str_replace('$SANZBDCAT', $category, $tmp);
-	$tmp = str_replace('$APIKEY', $settings['sabnzbd']['apikey'], $tmp);
-
-	return $tmp;
-} # sabnzbdurl
-
-function makesearchurl($spot) {
-	extract($GLOBALS['site'], EXTR_REFS);
-
-	if (!isset($spot['filename'])) {
-		$tmp = str_replace('$SPOTFNAME', $spot['title'], $settings['search_url']);
-	} else {
-		$tmp = str_replace('$SPOTFNAME', $spot['filename'], $settings['search_url']);
-	} # else 
-
-	return $tmp;
-} # makesearchurl
 
 function showPage($page) {
 	extract($GLOBALS['site'], EXTR_REFS);

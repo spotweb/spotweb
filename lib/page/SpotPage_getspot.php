@@ -15,8 +15,6 @@ class SpotPage_getspot extends SpotPage_Abs {
 		
 		$xmlar['spot'] = $header['info'];
 		$xmlar['messageid'] = $this->_req->getDef('messageid', '');
-		$xmlar['spot']['sabnzbdurl'] = sabnzbdurl($xmlar['spot']);
-		$xmlar['spot']['searchurl'] = makesearchurl($xmlar['spot']);
 		$xmlar['spot']['messageid'] = $xmlar['messageid'];
 		$xmlar['spot']['userid'] = $header['userid'];
 		$xmlar['spot']['verified'] = $header['verified'];
@@ -26,7 +24,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 		$comments = $spotnntp->getComments($commentList);
 		
 		# zet de page title
-		$pagetitle = "spot: " . $xmlar['spot']['title'];
+		$this->_pageTitle = "spot: " . $xmlar['spot']['title'];
 
 		#- display stuff -#
 		$this->template('header');

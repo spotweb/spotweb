@@ -26,6 +26,10 @@
 <?php
 	$count = 0;
 	foreach($spots as $spot) {
+		# fix the sabnzbdurl en searchurl
+		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
+		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+	
 		$count++;
 
 		echo "\t\t\t\t\t";
