@@ -50,6 +50,12 @@ class SpotParser {
 			$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
 		} # if
 		
+		# We bieden de segment list altijd aan in een array, 
+		# dus fix het als het nu geen array is
+		if (!is_array($this->_xmlarray['segment'])) {
+			$this->_xmlarray['segment'] = array($this->_xmlarray['segment']);
+		} # if
+		
 		# and return the parsed XML
 		return $this->_xmlarray;
 	} # parseFull()

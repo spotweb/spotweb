@@ -13,7 +13,7 @@ function initialize() {
 
 	# we define some preferences, later these could be
 	# user specific or stored in a cookie or something
-	$prefs = array('perpage' => 1000);
+	$prefs = array('perpage' => 100);
 	if (isset($settings['prefs'])) {
 		$prefs = array_merge($prefs, $settings['prefs']);
 	} # if
@@ -387,12 +387,13 @@ switch($site['page']) {
 									 $settings['nntp_hdr']['pass']);
 			$spotnntp->connect();
 			$header = $spotnntp->getFullSpot($req->getDef('messageid', ''));
-
+			
 			$xmlar['spot'] = $header['info'];
 			$xmlar['messageid'] = $req->getDef('messageid', '');
 			$xmlar['spot']['subcatlist'] = fixSpotSubcategories($xmlar['spot']);
-			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar['spot']);
-			$xmlar['searchurl'] = makesearchurl($xmlar['spot']);
+			$xmlar['spot']['sabnzbdurl'] = sabnzbdurl($xmlar['spot']);
+			$xmlar['spot']['searchurl'] = makesearchurl($xmlar['spot']);
+			$xmlar['spot']['messageid'] = $xmlar['messageid'];
 
 			# Vraag een lijst op met alle comments messageid's
 			$db = openDb();
@@ -415,10 +416,6 @@ switch($site['page']) {
 	} # getspot
 	
 	case 'getnzb' : {
-		$db = openDb();
-		$spot = $db->getSpot($req->getDef('messageid', ''));
-		$spot = $spot[0];
-		
 		try {
 			$hdr_spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
 										$settings['nntp_hdr']['enc'],
@@ -438,48 +435,21 @@ switch($site['page']) {
 				$nzb_spotnntp->connect(); 
 			} # else
 		
-			$header = $hdr_spotnntp->getHeader('<' . $spot['messageid'] . '>');
-
-			$xml = '';
-			if ($header !== false) {
-				foreach($header as $str) {
-					if (substr($str, 0, 7) == 'X-XML: ') {
-						$xml .= substr($str, 7);
-					} # if
-				} # foreach
-			} # if
+			$xmlar = $hdr_spotnntp->getFullSpot($req->getDef('messageid', ''));
+			$nzb = $nzb_spotnntp->getNzb($xmlar['info']['segment']);
 			
-			$spotParser = new SpotParser();
-			$xmlar = $spotParser->parseFull($xml);
-			
-			/* Connect to the NZB group */
-			/* Get the NZB file */
-			$nzb = false;
-			if (is_array($xmlar['segment'])) {
-				foreach($xmlar['segment'] as $seg) {
-					$nzb .= implode("", $nzb_spotnntp->getBody("<" . $seg . ">"));
-				} # foreach
+			if ($settings['nzb_download_local'] == true)
+			{
+				$myFile = $settings['nzb_local_queue_dir'] .$xmlar['info']['title'] . ".nzb";
+				$fh = fopen($myFile, 'w') or die("Unable to open file");
+				fwrite($fh, $nzb);
+				fclose($fh);
+				echo "NZB toegevoegd aan queue : ".$myFile;
 			} else {
-				$nzb .= implode("", $nzb_spotnntp->getBody("<" . $xmlar['segment'] . ">"));
-			} # if
-			
-			if ($nzb !== false) {
-			    if ($settings['nzb_download_local'] == true)
-			    {
-					$myFile = $settings['nzb_local_queue_dir'] .$xmlar['title'] . ".nzb";
-					$fh = fopen($myFile, 'w') or die("Unable to open file");
-					$stringData = gzinflate($spotParser->unspecialZipStr($nzb));
-					fwrite($fh, $stringData);
-					fclose($fh);
-					echo "NZB toegevoegd aan queue : ".$myFile;
-			    } else {
-					Header("Content-Type: application/x-nzb");
-					Header("Content-Disposition: attachment; filename=\"" . $xmlar['title'] . ".nzb\"");
-					echo gzinflate($spotParser->unspecialZipStr($nzb));
-			    }
-			} else {
-				echo "Unable to get NZB file: " . $nzb_spotnntp->getError();
-			} # else
+				Header("Content-Type: application/x-nzb");
+				Header("Content-Disposition: attachment; filename=\"" . $xmlar['info']['title'] . ".nzb\"");
+				echo $nzb;
+			}
 		} 
 		catch(Exception $x) {
 			die($x->getMessage());

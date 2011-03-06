@@ -85,7 +85,9 @@ class SpotNntp {
 		
 		function getComments($commentList) {
 			$comments = array();
-			
+
+			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
+			# als comment text zelf.
 			foreach($commentList as $comment) {
 				$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');
 				
@@ -104,6 +106,18 @@ class SpotNntp {
 
 			return $comments;
 		} # getComments
+		
+		function getNzb($segList) {
+			$nzb = '';
+
+			foreach($segList as $seg) {
+				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
+			} # foreach
+			
+			$spotParser = new SpotParser();
+			return gzinflate( $spotParser->unspecialZipStr($nzb) );
+		} # getNzb
+
 		
 		function getFullSpot($msgId) {
 			# initialize some variables
@@ -142,6 +156,6 @@ class SpotNntp {
 			$spot['info'] = $spotParser->parseFull($spot['xml']);
 			
 			return $spot;
-		} # getSpot 
+		} # getFullSpot 
 		
 } # class SpotNntp
