@@ -62,7 +62,7 @@ $settings['filters'] = array(
 );
 
 // version
-define('VERSION', '0.3a');
+define('VERSION', '0.5a');
 
 // preferences
 // hoeveel spots wil je tonen op 1 pagina?
