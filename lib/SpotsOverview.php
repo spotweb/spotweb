@@ -51,13 +51,19 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en text) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search) {
+	function filterToQuery(&$search) {
 		$filterList = array();
 		$dyn2search = array();
 
 		# dont filter anything
 		if (empty($search)) {
 			return '';
+		} # if
+		
+		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
+		# resetten we gewoon de boom
+		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
+			$search['tree'] = '';
 		} # if
 		
 		# convert the dynatree list to a list 
