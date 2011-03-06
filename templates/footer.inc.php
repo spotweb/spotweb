@@ -1,7 +1,7 @@
 
 		</div>
 			
-		<div class="span-24">
+		<div>
 			<!-- The Footer -->
 			<br>			
 		</div>

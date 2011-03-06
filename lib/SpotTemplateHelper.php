@@ -59,9 +59,28 @@ class SpotTemplateHelper {
 
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
 	function format_size($size) {
-		  $sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
-		  if ($size == 0) { return('n/a'); } else {
-		  return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]); }
+		$sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+		if ($size == 0) { 
+			return('n/a'); 
+		} else {
+			return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]); 
+		} # else
 	} # format_size
 
+	
+	function formatDescription($tmp) {
+		$tmp = str_ireplace('[b]', '<b>', $tmp);
+		$tmp = str_ireplace('[/b]', '</b>', $tmp);
+		$tmp = str_ireplace('[i]', '<i>', $tmp);
+		$tmp = str_ireplace('[/i]', '</i>', $tmp);
+		$tmp = str_ireplace('[br]', "<br>", $tmp);
+		$tmp = str_ireplace('[u]', '<u>', $tmp);
+		$tmp = str_ireplace('[/u]', '</u>', $tmp);
+		$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
+		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
+		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
+		
+		return $tmp;
+	} # formatDescription
+	
 } # class SpotTemplateHelper

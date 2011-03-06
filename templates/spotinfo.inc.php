@@ -38,18 +38,7 @@
 	} # if
 
 	# and fixup the description text
-	$tmp = $spot['description'];
-	
-	$tmp = str_ireplace('[b]', '<b>', $tmp);
-	$tmp = str_ireplace('[/b]', '</b>', $tmp);
-	$tmp = str_ireplace('[i]', '<i>', $tmp);
-	$tmp = str_ireplace('[/i]', '</i>', $tmp);
-	$tmp = str_ireplace('[br]', "<br>", $tmp);
-	$tmp = str_ireplace('[u]', '<u>', $tmp);
-	$tmp = str_ireplace('[/u]', '</u>', $tmp);
-	$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
-	$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
-	$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
+	$tmp = $tplHelper->formatDescription($spot['description']);
 	echo "<pre>$tmp</pre>";
 ?>
 	
