@@ -123,4 +123,4 @@ function showPage($page) {
 #- main() -#
 initialize();
 extract($site, EXTR_REFS);
-showPage($site['page');
+showPage($site['page']);
