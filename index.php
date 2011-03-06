@@ -4,6 +4,7 @@ error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PH
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
 require_once "lib/SpotParser.php";
+require_once "lib/SpotsOverview.php";
 require_once "SpotCategories.php";
 require_once "lib/SpotNntp.php";
 
@@ -95,169 +96,6 @@ function makesearchurl($spot) {
 	return $tmp;
 } # makesearchurl
 
-function loadSpots($start, $sqlFilter) {
-	extract($GLOBALS['site'], EXTR_REFS);
-	
-	$spotList = $db->getSpots($start, $prefs['perpage'] + 1, $sqlFilter);
-	$spotCnt = count($spotList);
-
-	# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
-	# we dat er nog een volgende pagina is
-	$hasNextPage = ($spotCnt > $prefs['perpage']);
-		
-	for ($i = 0; $i < $spotCnt; $i++) {
-		$spotList[$i]['subcatlist'] = explode("|", $spotList[$i]['subcata'] . $spotList[$i]['subcatb'] . $spotList[$i]['subcatc'] . $spotList[$i]['subcatd']);
-
-		
-		if (isset($settings['sabnzbd']['apikey'])) {
-			$spotList[$i]['sabnzbdurl'] = sabnzbdurl($spotList[$i]);
-		} # if
-
-		$spotList[$i]['searchurl'] = makesearchurl($spotList[$i]);
-	} # foreach
-
-	return array('list' => $spotList, 'hasnextpage' => $hasNextPage);
-} # loadSpots()
-
-function filterToQuery($search) {
-	extract($GLOBALS['site'], EXTR_REFS);
-	$filterList = array();
-	$dyn2search = array();
-
-	# dont filter anything
-	if (empty($search)) {
-		return '';
-	} # if
-	
-	# convert the dynatree list to a list 
-	if (!empty($search['tree'])) {
-		# explode the dynaList
-		$dynaList = explode(',', $search['tree']);
-
-		# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
-		$newTreeQuery = '';
-		for($i = 0; $i < count($dynaList); $i++) {
-			# De opgegeven category kan in twee soorten voorkomen:
-			#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
-			#	  cat1				==> Heel cat1 selecteren
-			#
-			# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
-			if ((strlen($dynaList[$i]) == 6) || (strlen($dynaList[$i]) == 4)) {
-				$hCat = (int) substr($dynaList[$i], 3, 1);
-				
-				# was een subcategory gespecificeerd?
-				if (strlen($dynaList[$i]) == 6) {
-					$subCatSelected = substr($dynaList[$i], 5);
-				} else {
-					$subCatSelected = '*';
-				} # else
-				
-				#
-				# creeer een string die alle subcategories bevat
-				#
-				# we loopen altijd door alle subcategorieen heen zodat we zowel voor complete category selectie
-				# als voor enkel subcategory selectie dezelfde code kunnen gebruiken.
-				#
-				$tmpStr = '';
-				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
-				
-					if (($subCat == $subCatSelected) || ($subCatSelected == '*')) {
-						foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-							$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
-						} # foreach
-					} # if
-				} # foreach
-				
-				$newTreeQuery .= $tmpStr;
-			} elseif (substr($dynaList[$i], 0, 1) == '!') {
-				# als het een NOT is, haal hem dan uit de lijst
-				$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
-			} else {
-				$newTreeQuery .= "," . $dynaList[$i];
-			} # else
-		} # foreach
-		
-		# explode the dynaList
-		$search['tree'] = $newTreeQuery;
-		$dynaList = explode(',', $search['tree']);
-
-		# en fix the list
-		foreach($dynaList as $val) {
-			if (substr($val, 0, 3) == 'cat') {
-				# 0e element is hoofdcategory
-				# 1e element is category
-				$val = explode('_', (substr($val, 3) . '_'));
-				
-				$catVal = $val[0];
-				$subCatIdx = substr($val[1], 0, 1);
-				$subCatVal = substr($val[1], 1);
-
-				if (count($val) >= 3) {
-					$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
-				} # if
-			} # if
-		} # foreach
-	} # if
-	
-	# Add a list of possible head categories
-	if ((isset($dyn2search['cat'])) && (is_array($dyn2search['cat']))) {
-		$filterList = array();
-
-		foreach($dyn2search['cat'] as $catid => $cat) {
-			$catid = (int) $catid;
-			$tmpStr = "((category = " . $catid . ")";
-			
-			# Now start adding the sub categories
-			if ((is_array($cat)) && (!empty($cat))) {
-				#
-				# uiteraard is een LIKE query voor category search niet super schaalbaar
-				# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
-				# moet het meer dan genoeg zijn
-				#
-				$subcatItems = array();
-				foreach($cat as $subcat => $subcatItem) {
-					$subcatValues = array();
-					
-					foreach($subcatItem as $subcatValue) {
-						$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
-					} # foreach
-					
-					# voeg de subfilter values (bv. alle formaten films) samen met een OR
-					$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
-				} # foreach subcat
-
-				# voeg de category samen met de diverse subcategory filters met een OR, bv. genre: actie, type: divx.
-				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
-			} # if
-			
-			# close the opening parenthesis from this category filter
-			$tmpStr .= ")";
-			$filterList[] = $tmpStr;
-		} # foreach
-	} # if
-
-	# Add a list of possible head categories
-	$textSearch = '';
-	if ((!empty($search['text'])) && ((isset($search['type'])))) {
-		$field = 'title';
-	
-		if ($search['type'] == 'Tag') {
-			$field = 'tag';
-		} else if ($search['type'] == 'Poster') {
-			$field = 'poster';
-		} # else
-		
-		$textSearch .= ' (' . $field . " LIKE '%" . $db->safe($search['text']) . "%')";
-	} # if
-
-	if (!empty($filterList)) {
-		# echo  '(' . (join(' OR ', $filterList) . ') ' . (empty($textSearch) ? "" : " AND " . $textSearch));
-		return '(' . (join(' OR ', $filterList) . ') ' . (empty($textSearch) ? "" : " AND " . $textSearch));
-	} else {
-		return $textSearch;
-	} # if
-} # filterToQuery
-
 function template($tpl, $params = array()) {
 	extract($GLOBALS['site'], EXTR_REFS);
 	extract($params, EXTR_REFS);
@@ -302,8 +140,9 @@ extract($site, EXTR_REFS);
 switch($site['page']) {
 	case 'index' : {
 
-		openDb();
-		$filter = filterToQuery($req->getDef('search', $settings['index_filter']));
+		$db = openDb();
+		$spotsOverview = new SpotsOverview($db);
+		$filter = $spotsOverview->filterToQuery($req->getDef('search', $settings['index_filter']));
 
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
@@ -317,11 +156,20 @@ switch($site['page']) {
 		} # else
 		
 		# laad de spots
-		$spotsTmp = loadSpots($pageNr, $filter);
+		$spotsTmp = $spotsOverview->loadSpots($pageNr, $prefs['perpage'], $filter);
 		$spots = $spotsTmp['list'];
-		
+
+		$spotCnt = count($spots);
+		for ($i = 0; $i < $spotCnt; $i++) {
+			if (isset($settings['sabnzbd']['apikey'])) {
+				$spots[$i]['sabnzbdurl'] = sabnzbdurl($spots[$i]);
+			} # if
+
+			$spots[$i]['searchurl'] = makesearchurl($spots[$i]);
+		} # for
+
 		# als er geen volgende pagina is, ook niet tonen
-		if (!$spotsTmp['hasnextpage']) {
+		if (!$spotsTmp['hasmore']) {
 			$nextPage = -1;
 		} # if
 		
