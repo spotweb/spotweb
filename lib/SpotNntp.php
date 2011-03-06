@@ -68,13 +68,13 @@ class SpotNntp {
 			
 			# vervolgens splitsen we het op in een header array en een body array
 			$i = 0;
-			while( (count($art) >= $i) && ($art[$i] != '')) {
+			while( (count($art) > $i) && ($art[$i] != '')) {
 				$result['header'][] = $art[$i];
 				$i++;
 			} # while
 			$i++;
 
-			while( (count($art) >= $i) && ($art[$i] != '')) {
+			while( (count($art) > $i) && ($art[$i] != '')) {
 				$result['body'][] = $art[$i];
 				$i++;
 			} # while

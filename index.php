@@ -111,6 +111,11 @@ function showPage($page) {
 
 
 #- main() -#
-initialize();
-extract($site, EXTR_REFS);
-showPage($site['page']);
+try {
+	initialize();
+	extract($site, EXTR_REFS);
+	showPage($site['page']);
+}
+catch(Exception $x) {
+	die($x->getMessage());
+} # catch
