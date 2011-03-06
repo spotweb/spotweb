@@ -31,15 +31,15 @@
 	# and fixup the description text
 	$tmp = $spot['description'];
 	
-	$tmp = str_replace('[b]', '<b>', $tmp);
-	$tmp = str_replace('[/b]', '</b>', $tmp);
-	$tmp = str_replace('[i]', '<i>', $tmp);
-	$tmp = str_replace('[/i]', '</i>', $tmp);
-	$tmp = str_replace('[br]', "<br>", $tmp);
-	$tmp = str_replace('[u]', '<u>', $tmp);
-	$tmp = str_replace('[/u]', '</u>', $tmp);
-	$tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
-	$tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
+	$tmp = str_ireplace('[b]', '<b>', $tmp);
+	$tmp = str_ireplace('[/b]', '</b>', $tmp);
+	$tmp = str_ireplace('[i]', '<i>', $tmp);
+	$tmp = str_ireplace('[/i]', '</i>', $tmp);
+	$tmp = str_ireplace('[br]', "<br>", $tmp);
+	$tmp = str_ireplace('[u]', '<u>', $tmp);
+	$tmp = str_ireplace('[/u]', '</u>', $tmp);
+	$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
+	$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
 	echo "<pre>$tmp</pre>";
 ?>
 	
