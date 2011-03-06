@@ -1,6 +1,6 @@
 <?php
 require_once "lib/page/SpotPage_Abs.php";
-require_once "SpotCategories.php";
+require_once "lib/SpotCategories.php";
 
 class SpotPage_getnzb extends SpotPage_Abs {
 	private $_messageid;
