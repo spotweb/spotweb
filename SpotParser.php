@@ -154,7 +154,7 @@ class SpotParser {
 					if ((strpos($subj, "=?") !== false) && (strpos($subj, "?=") !== false)) {
 						# Make sure its as simple as possible
 						$subj = str_replace("?= =?", "?==?", $subj);
-						$subj = str_replace("\r", "", trim($this->OldEncodingParse($subj)));
+						$subj = str_replace("\r", "", trim($this->oldEncodingParse($subj)));
 						$subj = str_replace("\n", "", $subj);
 					} # if
 					
@@ -183,7 +183,7 @@ class SpotParser {
 						$spot['Title'] = trim(implode('|', $tmp));
 						
 						if ((strpos($spot['Title'], chr(0xc2)) !== false) | (strpos($spot['Title'], chr(0xc3)) !== false)) {
-							$spot['Title'] = trim($this->OldEncodingParse($spot['Title']));
+							$spot['Title'] = trim($this->oldEncodingParse($spot['Title']));
 						} # if
 					} # if recentKey
 
@@ -269,7 +269,7 @@ class SpotParser {
 	} # splitBySizEx
 
 	
-	function ParseEncodedWord($inputStr) {
+	function parseEncodedWord($inputStr) {
 		$str = "";
 		$builder = "";
 		
@@ -336,7 +336,7 @@ class SpotParser {
 		return $builder;
 	} # parseEncodedWord
 	
-	function OldEncodingParse($inputStr) {
+	function oldEncodingParse($inputStr) {
 		$builder = "";
 		$builder2 = "";
 		$encodedWord = false;
@@ -369,7 +369,7 @@ class SpotParser {
 						
 						$encodedWord = false;
 						$builder .= $ch . $ch2;
-						$builder2 .= $this->ParseEncodedWord($builder);
+						$builder2 .= $this->parseEncodedWord($builder);
 						$builder = "";
 						$num += 2;
 						$bliep = true;
@@ -390,7 +390,7 @@ class SpotParser {
 		} # while
 		
 		return $builder2;
-	} # OldEncodingParse
+	} # oldEncodingParse
 
 	public function checkRsaSignature($toCheck, $signature, $rsaKey) {
 		# Initialize the public key to verify with

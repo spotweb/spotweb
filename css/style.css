@@ -197,6 +197,20 @@ ul.subfilterlist  li {
 	margin-right: 20px;
 }
 
+.warning {
+	width: 600px;
+	border: 4px solid red;
+	
+	color: black;
+	padding: 14px;
+	
+	margin: 0 auto;
+	margin-bottom: 20px;
+	
+	text-align: center;
+	font-weight: bold;
+}
+	
 .spotinfoimage {
 	width: expression(this.width > 350 ? "350px;": "auto" );
 	float: left;

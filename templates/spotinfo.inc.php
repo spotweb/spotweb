@@ -2,6 +2,16 @@
 				<br>
 				<br>
 <?php
+	if (!$spot['verified']) {
+?>
+					<div class='warning'>
+						Spot is niet geverifieerd!
+					</div>
+<?php
+	}
+?>
+
+<?php
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
 	function format_size($size) {
 		  $sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
@@ -66,7 +76,7 @@
 	}
 ?>
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>
-					<tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> </td> </tr>
+					<tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['userid']; ?>)</td> </tr>
 					<tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
 
 					<tr> <td colspan="2"> &nbsp;  </td> </tr>

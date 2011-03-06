@@ -394,6 +394,8 @@ switch($site['page']) {
 			$xmlar['spot']['sabnzbdurl'] = sabnzbdurl($xmlar['spot']);
 			$xmlar['spot']['searchurl'] = makesearchurl($xmlar['spot']);
 			$xmlar['spot']['messageid'] = $xmlar['messageid'];
+			$xmlar['spot']['userid'] = $header['userid'];
+			$xmlar['spot']['verified'] = $header['verified'];
 
 			# Vraag een lijst op met alle comments messageid's
 			$db = openDb();

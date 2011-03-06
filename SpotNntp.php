@@ -128,6 +128,7 @@ class SpotNntp {
 						  'user-key' => '',
 						  'verified' => false,
 						  'info' => array(),
+						  'userid' => '',
 						  'xml-signature' => '');
 			# Vraag de volledige article header van de spot op
 			$header = $this->getHeader('<' . $msgId . '>');
@@ -154,6 +155,18 @@ class SpotNntp {
 
 			# Parse nu de XML file
 			$spot['info'] = $spotParser->parseFull($spot['xml']);
+			
+			# als de spot verified is, toon dan de userid van deze user
+			if ($spot['verified']) {
+				$userSignCrc = crc32(base64_decode($spot['user-key']['modulo']));
+				
+				$userIdTmp = chr($userSignCrc & 0xFF) .
+								chr(($userSignCrc >> 8) & 0xFF ).
+								chr(($userSignCrc >> 16) & 0xFF) .
+								chr(($userSignCrc >> 24) & 0xFF);
+				
+				$spot['userid'] = str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
+			} # if
 			
 			return $spot;
 		} # getFullSpot 
