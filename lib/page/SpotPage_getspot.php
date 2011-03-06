@@ -29,9 +29,9 @@ class SpotPage_getspot extends SpotPage_Abs {
 		$pagetitle = "spot: " . $xmlar['spot']['title'];
 
 		#- display stuff -#
-		template('header');
-		template('spotinfo', array('spot' => $xmlar['spot'], 'rawspot' => $xmlar, 'comments' => $comments));
-		template('footer');
+		$this->template('header');
+		$this->template('spotinfo', array('spot' => $xmlar['spot'], 'rawspot' => $xmlar, 'comments' => $comments));
+		$this->template('footer');
 	} # render
 	
 } # class SpotPage_getspot

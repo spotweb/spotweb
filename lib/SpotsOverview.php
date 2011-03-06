@@ -13,7 +13,7 @@ class SpotsOverview {
 	 * filter ingesteld wordt;
 	 */
 	function loadSpots($start, $limit, $sqlFilter) {
-		$spotList = $this->_db->getSpots($start, $limit, $sqlFilter);
+		$spotList = $this->_db->getSpots($start, $limit + 1, $sqlFilter);
 		$spotCnt = count($spotList);
 
 		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 

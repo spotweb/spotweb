@@ -110,16 +110,6 @@ function showPage($page) {
 } # showPage()
 
 
-	/*
-	 * Display de template
-	 */
-	function template($tpl, $params = array()) {
-		extract($GLOBALS['site'], EXTR_REFS);
-		extract($params, EXTR_REFS);
-		require_once($settings['tpl_path'] . $tpl . '.inc.php');
-	} # template
-	
-
 #- main() -#
 initialize();
 extract($site, EXTR_REFS);

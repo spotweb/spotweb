@@ -39,16 +39,16 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# zet de page title
 		$pagetitle = "overzicht";
-
+		
 		#- display stuff -#
-		template('header');
-		template('filters', array('search' => $this->_req->getDef('search', array()),
+		$this->template('header');
+		$this->template('filters', array('search' => $this->_req->getDef('search', array()),
 								  'filters' => $this->_settings['filters']));
-		template('spots', array('spots' => $spots,
+		$this->template('spots', array('spots' => $spots,
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'activefilter' => $this->_req->getDef('search', $this->_settings['index_filter'])));
-		template('footer');
+		$this->template('footer');
 	} # render()
 	
 } # class SpotPage_index
