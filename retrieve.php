@@ -4,7 +4,7 @@ error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PH
 require_once "settings.php";
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
-require_once "SpotParser.php";
+require_once "lib/SpotParser.php";
 require_once "lib/SpotNntp.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
 require_once "lib/retriever/SpotRetriever_Comments.php";

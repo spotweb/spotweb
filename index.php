@@ -3,7 +3,7 @@ error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PH
 
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
-require_once "SpotParser.php";
+require_once "lib/SpotParser.php";
 require_once "SpotCategories.php";
 require_once "lib/SpotNntp.php";
 
