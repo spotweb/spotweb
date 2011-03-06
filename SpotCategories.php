@@ -91,24 +91,24 @@ class SpotCategories {
 					  13  => "Muziek",
 					  14  => "Musical",
 					  15  => "Mysterie",
-					  0x10  => "Romantiek",
-					  0x11  => "Science Fiction",
-					  0x12  => "Sport",
-					  0x13  => "Korte film",
+					  16  => "Romantiek",
+					  17  => "Science Fiction",
+					  18  => "Sport",
+					  19  => "Korte film",
 					  20  => "Thriller",
-					  0x15  => "Oorlog",
-  					  0x16  => "Western",
-					  0x17  => "Erotiek (hetero)",
-					  0x18  => "Erotiek (gay mannen)",
-					  0x19  => "Erotiek (gay vrouwen)",
-					  0x1a  => "Erotiek (bi)",
-					  0x1b  => "",
-					  0x1c  => "Asian",
-					  0x1d  => "Anime",
+					  21  => "Oorlog",
+  					  22  => "Western",
+					  23  => "Erotiek (hetero)",
+					  24  => "Erotiek (gay mannen)",
+					  25  => "Erotiek (gay vrouwen)",
+					  26  => "Erotiek (bi)",
+					  27  => "",
+					  28  => "Asian",
+					  29  => "Anime",
 					  30  => "Cover",
-					  0x1f  => "Comics",
-					  0x20  => "Cartoons",
-					  0x21  => "Kinderfilm")
+					  31  => "Comics",
+					  32  => "Cartoons",
+					  33  => "Kinderfilm")
 			),
 			  1 => Array(
 			      'a' => 
@@ -156,17 +156,17 @@ class SpotCategories {
 					  13 => "Pop",
 					  14 => "R&B/Soul",
 					  15 => "Hip hop",
-					  0x10 => "Reggae",
-					  0x11 => "Religieus",
-					  0x12 => "Rock",
-				 	  0x13 => "Soundtracks",
+					  16 => "Reggae",
+					  17 => "Religieus",
+					  18 => "Rock",
+				 	  19 => "Soundtracks",
 					  20 => "",
-					  0x15 => "Jumpstyle",
-					  0x16 => "Asian",
-					  0x17 => "Disco",
-					  0x18 => "Oldskool",
-					  0x19 => "Metal",
-					  0x1a => "Country")
+					  21 => "Jumpstyle",
+					  22 => "Asian",
+					  23 => "Disco",
+					  24 => "Oldskool",
+					  25 => "Metal",
+					  26 => "Country")
 			),
 			  2 => Array(
 			  	  'a' => 
@@ -234,16 +234,16 @@ class SpotCategories {
 					  13 => "Browsers",
 					  14 => "Download managers",
 					  15 => "File sharing",
-					  0x10 => "Usenet software",
-					  0x11 => "RSS Readers",
-					  0x12 => "FTP software",
-					  0x13 => "Firewalls",
+					  16 => "Usenet software",
+					  17 => "RSS Readers",
+					  18 => "FTP software",
+					  19 => "Firewalls",
 					  20 => "Antivirus software",
-					  0x15 => "Antispyware software",
-					  0x16 => "Optimalisatiesoftware",
-					  0x17 => "Beveiligingssoftware",
-					  0x18 => "Systeemsoftware",
-					  0x19 => "")
+					  21 => "Antispyware software",
+					  22 => "Optimalisatiesoftware",
+					  23 => "Beveiligingssoftware",
+					  24 => "Systeemsoftware",
+					  25 => "")
 			)
 		);
 
@@ -266,14 +266,26 @@ class SpotCategories {
 	}
 
 	static function SubcatDescription($hcat, $ch) {
-		return self::$_subcat_descriptions[$hcat][$ch];
+		if ((isset(self::$_subcat_descriptions[$hcat])) && (isset(self::$_subcat_descriptions[$hcat][$ch]))) {
+			return self::$_subcat_descriptions[$hcat][$ch];
+		} else {
+			return '-';
+		} # else
 	} # func SubcatDescription
 	
 	static function SubcatNumberFromHeadcat($hcat) {
-		return self::$_headcat_subcat_mapping[$hcat];
+		if (isset(self::$_headcat_subcat_mapping[$hcat])) {
+			return self::$_headcat_subcat_mapping[$hcat];
+		} else {
+			return '-';
+		} # else
 	} # SubcatNumberFromHeadcat
 	
 	static function HeadCat2Desc($cat) {
-		return self::$_head_categories[$cat];
+		if (isset(self::$_head_categories[$cat])) {
+			return self::$_head_categories[$cat];
+		} else {
+			return '-';
+		} # else
 	} # func. Cat2Desc
 } 
