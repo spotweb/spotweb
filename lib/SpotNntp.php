@@ -128,6 +128,7 @@ class SpotNntp {
 						  'user-key' => '',
 						  'verified' => false,
 						  'info' => array(),
+						  'messageid' => $msgId,
 						  'userid' => '',
 						  'xml-signature' => '');
 			# Vraag de volledige article header van de spot op
@@ -153,9 +154,6 @@ class SpotNntp {
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			$spot['verified'] = $spotParser->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
 
-			# Parse nu de XML file
-			$spot['info'] = $spotParser->parseFull($spot['xml']);
-			
 			# als de spot verified is, toon dan de userid van deze user
 			if ($spot['verified']) {
 				$userSignCrc = crc32(base64_decode($spot['user-key']['modulo']));
@@ -166,8 +164,10 @@ class SpotNntp {
 								chr(($userSignCrc >> 24) & 0xFF);
 				
 				$spot['userid'] = str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-			} # if
-
+			} # if	
+			
+			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
+			$spot = array_merge($spotParser->parseFull($spot['xml']), $spot);
 			
 			return $spot;
 		} # getFullSpot 

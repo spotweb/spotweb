@@ -28,7 +28,6 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter);
-		$spots = $spotsTmp['list'];
 
 		# als er geen volgende pagina is, ook niet tonen
 		if (!$spotsTmp['hasmore']) {
@@ -42,7 +41,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->template('header');
 		$this->template('filters', array('search' => $this->_params['search'],
 								  'filters' => $this->_settings['filters']));
-		$this->template('spots', array('spots' => $spots,
+		$this->template('spots', array('spots' => $spotsTmp['list'],
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'activefilter' => $this->_params['search']));
