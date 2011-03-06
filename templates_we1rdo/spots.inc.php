@@ -43,13 +43,13 @@
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($settings['show_nzbbutton']) {
-				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' class='nzb'>NZB</a>";
+				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' class='nzb'>NZB";
 				
 				if ($tplHelper->hasBeenDownloaded($spot)) {
 					echo '*';
 				} # if
 				
-			//	echo "</td>";
+				echo "</a></td>";
 			} # if
 
 			# display the sabnzbd button
