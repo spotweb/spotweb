@@ -112,7 +112,8 @@ class db_sqlite3 extends db_abs {
 			$this->rawExec("DROP TABLE nntp");
 			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
 													maxarticleid INTEGER UNIQUE,
-													nowrunning INTEGER DEFAULT 0);");
+													nowrunning INTEGER DEFAULT 0,
+													lastrun INTEGER DEFAULT 0);");
 													
 			foreach($nntpData as $nntp) {
 				$this->exec("INSERT INTO nntp(server,maxarticleid) VALUES('%s','%s')", 
@@ -133,6 +134,27 @@ class db_sqlite3 extends db_abs {
 										   messageid VARCHAR(250),
 										   stamp INTEGER);");
 			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+		} # if
+
+		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
+		$q = $this->arrayQuery("PRAGMA table_info(nntp)");
+		if (count($q) == 3) {
+			# Niet alle SQLite versies ondersteunen alter table, dus we lezen de data in, droppen de tabel en 
+			# inserten de data opnieuw
+			$nntpData = $this->arrayQuery("SELECT server,maxarticleid FROM nntp");
+			
+			# Drop de nntp table en creeer hem opnieuw
+			$this->rawExec("DROP TABLE nntp");
+			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
+													maxarticleid INTEGER UNIQUE,
+													nowrunning INTEGER DEFAULT 0,
+													lastrun INTEGER DEFAULT 0);");
+													
+			foreach($nntpData as $nntp) {
+				$this->exec("INSERT INTO nntp(server,maxarticleid) VALUES('%s','%s')", 
+						Array($nntp['server'],
+							  $nntp['maxarticleid']));
+			} # foreach
 		} # if
 		
 	} # Createdatabase

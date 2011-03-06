@@ -34,16 +34,21 @@ class SpotPage_index extends SpotPage_Abs {
 			$nextPage = -1;
 		} # if
 		
+		# query wanneer de laatste keer de spots geupdate werden
+		$lastUpdateTime = $this->_db->getLastUpdate($this->_settings['nntp_hdr']['host']);
+
 		# zet de page title
 		$this->_pageTitle = "overzicht";
 		
 		#- display stuff -#
 		$this->template('header');
 		$this->template('filters', array('search' => $this->_params['search'],
+								  'lastupdate' => $lastUpdateTime,
 								  'filters' => $this->_settings['filters']));
 		$this->template('spots', array('spots' => $spotsTmp['list'],
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
+								'lastupdate' => $lastUpdateTime,
 								'activefilter' => $this->_params['search']));
 		$this->template('footer');
 	} # render()

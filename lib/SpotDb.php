@@ -87,6 +87,20 @@ class SpotDb
 			$this->_conn->exec("INSERT INTO nntp(server, nowrunning) VALUES('%s', '%s')", Array($server, (int) $runTime));
 		} # if
 	} # setRetrieverRunning
+
+	/*
+	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
+	 */
+	function setLastUpdate($server) {
+		return $this->_conn->exec("UPDATE nntp SET lastrun = '%d' WHERE server = '%s'", Array(time(), $server));
+	} # getLastUpdate
+
+	/*
+	 * Geef de datum van de laatste update terug
+	 */
+	function getLastUpdate($server) {
+		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
+	} # getLastUpdate
 	
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit

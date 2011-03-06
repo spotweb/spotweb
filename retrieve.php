@@ -53,6 +53,7 @@ try {
 	$retriever->displayStatus('dbcount', $db->getSpotCount());
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
+	$db->setLastUpdate($settings['nntp_hdr']['host']);
 } 
 catch(RetrieverRunningException $x) {
 	echo "\r\n\r\n";

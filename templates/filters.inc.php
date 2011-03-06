@@ -55,6 +55,7 @@
 				<div class="filter shadow">
 					<h4>Maintenance</h4>
 					<ul class="filterlist maintenancebox">
+						<li> Laatste update: <?php echo strftime("%a, %d-%b-%Y (%H:%M)", $lastupdate); ?> </li>
 <?php
 	if ($settings['show_updatebutton']) {
 ?>

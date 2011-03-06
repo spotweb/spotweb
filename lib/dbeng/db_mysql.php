@@ -121,7 +121,8 @@ class db_mysql extends db_abs {
 										stamp INTEGER);");
 			$this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
-										   nowrunning INTEGER DEFAULT 0);");
+										   nowrunning INTEGER DEFAULT 0,
+										   lastrun INTEGER DEFAULT 0);");
 
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
@@ -158,6 +159,11 @@ class db_mysql extends db_abs {
 			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 		} # if
 
+		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
+		$q = $this->arrayQuery("SHOW COLUMNS FROM nntp;");
+		if (count($q) == 3) {
+			$this->rawExec("ALTER TABLE nntp ADD COLUMN(lastrun INTEGER DEFAULT 0);");
+		} # if
 	} # Createdatabase
 
 } # class
