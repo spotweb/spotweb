@@ -15,10 +15,10 @@
 						<th class='poster'> <a href="?page=index&sortby=poster">Afzender</a> </th> 
 						<th class='date'> <a href="?page=index&sortby=stamp">Datum</a> </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
-						<th class='nzb'> Dnl. </th> 
+						<th class='nzb'> NZB </th> 
 <?php } ?>						
 <?php if (isset($settings['sabnzbd']['apikey'])) { ?>
-						<th> sabnzbd </th> 
+						<th> DNL </th> 
 <?php } ?>						
 					</tr>
 
@@ -43,7 +43,7 @@
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($settings['show_nzbbutton']) {
-			//	echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "'>NZB</a>";
+				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' class='nzb'>NZB</a>";
 				
 				if ($tplHelper->hasBeenDownloaded($spot)) {
 					echo '*';
@@ -54,7 +54,7 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-		//		echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 widt='16'  class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 widt='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {
