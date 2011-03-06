@@ -119,14 +119,15 @@ class SpotDb
 	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
 	 * 
 	 */
-	function getSpots($pageNr, $limit, $sqlFilter) {
+	function getSpots($pageNr, $limit, $sqlFilter, $sort) {
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
 			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if
- 		return $this->_conn->arrayQuery("SELECT * FROM spots " . $sqlFilter . " ORDER BY stamp DESC LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+
+ 		return $this->_conn->arrayQuery("SELECT * FROM spots " . $sqlFilter . " ORDER BY " . $sort['field'] . " " . $sort['direction'] . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
 
 	/*

@@ -149,6 +149,11 @@ ul.maintenancebox li a {
 	padding-right: 6px;
 }
 
+table.spots th a {
+	color: white;
+	text-decoration: none;
+}
+
 a.filter {
 	cursor: pointer;
 	margin: 0;

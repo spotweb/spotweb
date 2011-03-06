@@ -25,9 +25,11 @@ class SpotPage_index extends SpotPage_Abs {
 		} else {
 			$prevPage = max($pageNr - 1, 0);
 		} # else
-		
+
 		# laad de spots
-		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter);
+		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter, 
+							array('field' => $this->_params['sortby'], 
+								  'direction' => $this->_params['sortdir']));
 
 		# als er geen volgende pagina is, ook niet tonen
 		if (!$spotsTmp['hasmore']) {

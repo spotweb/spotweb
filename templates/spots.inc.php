@@ -10,11 +10,11 @@
 				<table class="spots">
 					<tr> 
 						<th> Formaat </th> 
-						<th> Cat. </th> 
-						<th> Titel </th> 
+						<th> <a href="?page=index&sortby=category">Cat.</a> </th> 
+						<th> <a href="?page=index&sortby=title">Titel</a> </th> 
 						<th> Genre </th> 
-						<th> Afzender </th> 
-						<th> Datum </th> 
+						<th> <a href="?page=index&sortby=poster">Afzender</a> </th> 
+						<th> <a href="?page=index&sortby=stamp">Datum</a> </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th> Dnl. </th> 
 <?php } ?>						

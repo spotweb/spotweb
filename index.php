@@ -88,7 +88,9 @@ try {
 		case 'index' : {
 				$page = new SpotPage_index($db, $settings, $prefs, 
 							Array('search' => $req->getDef('search', $settings['index_filter']),
-								  'page' => $req->getDef('page', 0))
+								  'page' => $req->getDef('page', 0),
+								  'sortby' => $req->getDef('sortby', ''),
+								  'sortdir' => $req->getDef('sortdir', ''))
 					);
 				$page->render();
 				break;
