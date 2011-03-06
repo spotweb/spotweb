@@ -107,7 +107,7 @@ class SpotParser {
 							exit;
 						} # if
 
-						$subcatAr = $this->SplitBySizEx($strInput, 3);
+						$subcatAr = $this->splitBySizEx($strInput, 3);
 						foreach($subcatAr as $str) {
 							if (strlen($str) > 0) {
 								$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . "|";
@@ -211,7 +211,7 @@ class SpotParser {
 								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
 
 								# the signature this header is signed with
-								$signature = base64_decode($this->UnspecialString($spot['HeaderSign']));
+								$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
 
 								# Check the RSA signature on the spot
 								$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
@@ -230,32 +230,32 @@ class SpotParser {
 		return $spot;
 	} # parseXover
 	
-	private function FixPadding($strInput) {
+	private function fixPadding($strInput) {
 		while ((strlen($strInput) % 4) != 0) {
 			$strInput .= "=";
 		} # while
 	
 		return $strInput;
-	} # FixPadding
+	} # fixPadding
 
-	/*private */function UnspecialString($strInput) {
-		$strInput = $this->FixPadding($strInput);
+	/*private */function unspecialString($strInput) {
+		$strInput = $this->fixPadding($strInput);
 		$strInput = str_replace("-s", "/", $strInput);
 		$strInput = str_replace("-p", "+", $strInput);
 		
 		return $strInput;
-	} # UnspecialString
+	} # unspecialString
 	
-	/*private */function UnspecialZipStr($strInput) {
+	/*private */function unspecialZipStr($strInput) {
 		$strInput = str_replace("=C", "\n", $strInput);
 		$strInput = str_replace("=B", "\r", $strInput);
 		$strInput = str_replace("=A", "\0", $strInput);
 		$strInput = str_replace("=D", "=", $strInput);
 		
 		return $strInput;
-	} # UnspecialZipstr
+	} # unspecialZipstr
 
-	private function SplitBySizEx($strInput, $iSize) {
+	private function splitBySizEx($strInput, $iSize) {
 		$length = strlen($strInput);
 		$index = 0;
 		$tmp = array();
@@ -266,7 +266,7 @@ class SpotParser {
 		} # for
 		
 		return $tmp;
-	} # SplitBySizEx
+	} # splitBySizEx
 
 	
 	function ParseEncodedWord($inputStr) {

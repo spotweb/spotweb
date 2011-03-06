@@ -138,7 +138,7 @@ class SpotNntp {
 				
 				switch($keys[0]) {
 					case 'X-XML' 			: $spot['xml'] .= substr($str, 7); break;
-					case 'X-User-Signature'	: $spot['user-signature'] = base64_decode($spotParser->UnspecialString(substr($str, 18))); break;
+					case 'X-User-Signature'	: $spot['user-signature'] = base64_decode($spotParser->unspecialString(substr($str, 18))); break;
 					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($str, 12)); 
