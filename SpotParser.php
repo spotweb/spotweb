@@ -203,23 +203,12 @@ class SpotParser {
 
 								# This is the string to verify
 								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
-								
-								# Initialize the public key to verify with
-								$pubKey['n'] = new Math_BigInteger(base64_decode($rsakeys[$spot['KeyID']]['modulo']), 256);
-								$pubKey['e'] = new Math_BigInteger(base64_decode($rsakeys[$spot['KeyID']]['exponent']), 256);
-								
+
 								# the signature this header is signed with
 								$signature = base64_decode($this->UnspecialString($spot['HeaderSign']));
-								
-								# and verify the signature
-								$rsa = new Crypt_RSA();
-								$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-								$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-								
-								# Supress notice if the signature was invalid
-								$saveErrorReporting = error_reporting(E_ERROR);
-								$spot['Verified'] = $rsa->verify($toCheck, $signature);
-								error_reporting($saveErrorReporting);
+
+								# Check the RSA signature on the spot
+								$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
 							} # if
 						} # if must be signed
 						else {
@@ -243,7 +232,7 @@ class SpotParser {
 		return $strInput;
 	} # FixPadding
 
-	private function UnspecialString($strInput) {
+	/*private */function UnspecialString($strInput) {
 		$strInput = $this->FixPadding($strInput);
 		$strInput = str_replace("-s", "/", $strInput);
 		$strInput = str_replace("-p", "+", $strInput);
@@ -396,12 +385,23 @@ class SpotParser {
 		
 		return $builder2;
 	} # OldEncodingParse
-	
-} # class Spot
 
-/*
-	convert("Two And A half Men S04E20 | shrekNZB", "jjzwlr <57105@13a00b04c01d04.205135897.57105.1297325839.7rQ.0.U9rvXyLMQU2-sZll-szYs2MwwVdVhRb8C-pYSACkNtuweKS6ItvcuXwS7l1t0khesWf>", $settings['rsa_keys']);
-	echo "<hr>";
-	convert("Acronis True Image Home 2011 14.0.6696 UK | zinitzio", "zinitzio <57399@43a00b24.371055968.57399.1297361414.hus.0.oqUtT-pzj7699nE-p9PXMQ9Y-poelVdPDMFIjKGP-sDL7xK-sIPiu427ryBSCumgNXZlD>", $settings['rsa_keys']);
-*/
+	public function checkRsaSignature($toCheck, $signature, $rsaKey) {
+		# Initialize the public key to verify with
+		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
+		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
+		
+		# and verify the signature
+		$rsa = new Crypt_RSA();
+		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
+		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		
+		# Supress notice if the signature was invalid
+		$saveErrorReporting = error_reporting(E_ERROR);
+		$tmpSave = $rsa->verify($toCheck, $signature);
+		error_reporting($saveErrorReporting);
+		
+		return $tmpSave;
+	} # checkRsaSignature
+} # class Spot
 

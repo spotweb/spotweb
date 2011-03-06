@@ -379,11 +379,6 @@ switch($site['page']) {
 	} # catsjson
 
 	case 'getspot' : {
-		$db = openDb();
-		$spot = $db->getSpot($req->getDef('messageid', ''));
-		
-		$spot = $spot[0];
-
 		try {
 			$spotnntp = new SpotNntp($settings['nntp_hdr']['host'],
 									 $settings['nntp_hdr']['enc'],
@@ -391,25 +386,16 @@ switch($site['page']) {
 									 $settings['nntp_hdr']['user'],
 									 $settings['nntp_hdr']['pass']);
 			$spotnntp->connect();
-			$header = $spotnntp->getHeader('<' . $spot['messageid'] . '>');
+			$header = $spotnntp->getFullSpot($req->getDef('messageid', ''));
 
-			$xml = '';
-			if ($header !== false) {
-				foreach($header as $str) {
-					if (substr($str, 0, 7) == 'X-XML: ') {
-						$xml .= substr($str, 7);
-					} # if
-				} # foreach
-			} # if
-
-			$spotParser = new SpotParser();
-			$xmlar = $spotParser->parseFull($xml);
+			$xmlar['spot'] = $header['info'];
 			$xmlar['messageid'] = $req->getDef('messageid', '');
-			$xmlar['subcatlist'] = fixSpotSubcategories($xmlar);
-			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar);
-			$xmlar['searchurl'] = makesearchurl($xmlar);
+			$xmlar['spot']['subcatlist'] = fixSpotSubcategories($xmlar['spot']);
+			$xmlar['sabnzbdurl'] = sabnzbdurl($xmlar['spot']);
+			$xmlar['searchurl'] = makesearchurl($xmlar['spot']);
 
 			# Vraag een lijst op met alle comments messageid's
+			$db = openDb();
 			$commentList = $db->getCommentRef($xmlar['messageid']);
 			$comments = array();
 			
@@ -432,11 +418,11 @@ switch($site['page']) {
 			} # foreach
 			
 			# zet de page title
-			$pagetitle .= "spot: " . $xmlar['title'];
+			$pagetitle .= "spot: " . $xmlar['spot']['title'];
 		
 			#- display stuff -#
 			template('header');
-			template('spotinfo', array('spot' => $xmlar, 'comments' => $comments));
+			template('spotinfo', array('spot' => $xmlar['spot'], 'rawspot' => $xmlar, 'comments' => $comments));
 			template('footer');
 			
 			break;

@@ -58,4 +58,44 @@ class SpotNntp {
 				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
 			} # if
 		} # connect()
+		
+		function getFullSpot($msgId) {
+			# initialize some variables
+			$spotParser = new SpotParser();
+			
+			$spot = array('xml' => '',
+						  'user-signature' => '',
+						  'user-key' => '',
+						  'verified' => false,
+						  'info' => array(),
+						  'xml-signature' => '');
+			# Vraag de volledige article header van de spot op
+			$header = $this->getHeader('<' . $msgId . '>');
+			
+			# Parse de header			  
+			foreach($header as $str) {
+				$keys = explode(':', $str);
+				
+				switch($keys[0]) {
+					case 'X-XML' 			: $spot['xml'] .= substr($str, 7); break;
+					case 'X-User-Signature'	: $spot['user-signature'] = base64_decode($spotParser->UnspecialString(substr($str, 18))); break;
+					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
+					case 'X-User-Key'		: {
+							$xml = simplexml_load_string(substr($str, 12)); 
+							$spot['user-key']['exponent'] = (string) $xml->Exponent;
+							$spot['user-key']['modulo'] = (string) $xml->Modulus;
+							break;
+					} # x-user-key
+				} # switch
+			} # foreach
+			
+			# Valideer de signature van de XML, deze is gesigned door de user zelf
+			$spot['verified'] = $spotParser->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+
+			# Parse nu de XML file
+			$spot['info'] = $spotParser->parseFull($spot['xml']);
+			
+			return $spot;
+		} # getSpot 
+		
 } # class SpotNntp

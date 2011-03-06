@@ -62,7 +62,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
-				
+			
 				$spotParser = new SpotParser();
 				$spot = $spotParser->parseXover($msgheader['Subject'], 
 												$msgheader['From'], 
