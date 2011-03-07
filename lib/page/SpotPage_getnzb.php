@@ -43,7 +43,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			if (!empty($settings['nzb_local_queue_command'])){ }
 				$saveOutput = array();
                 $status = 0;
-				$cmdToRun = str_replace(array('$SPOTTITLE'), array($fullSpot['title'], $settings['nzb_local_queue_command']));
+				$cmdToRun = str_replace(array('$SPOTTITLE'), array($fullSpot['title']), $settings['nzb_local_queue_command']);
 				
                 exec($cmdToRun, $saveOutput, $status);
 				
