@@ -154,3 +154,17 @@ table.spots tr:last-child td {background-color:#f7f7f7; height:20px; font-weight
 table.spots tr:last-child td a {display:inline;}
 table.spots tr:last-child td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
 table.spots tr:last-child td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 5px 0 0;}
+
+/* DYNATREE OVERRIDES */
+div.filter ul.dynatree-container {
+	border: 0;
+}
+
+div.filter ul.dynatree-container a {
+	display: inline;
+	font-weight: normal;
+}
+
+div.advancedsearch {
+	display: none;
+}

@@ -64,6 +64,12 @@ $settings['filters'] = array(
 // version
 define('VERSION', '0.5a');
 
+#
+# Wanneer nzb_download_local true is kan er met nzb_local_queue_command een programma uitgevoerd worden nadat de nzb in de queue is geplaatst.
+# Dit is bijvoorbeeld handig om nzbget -S te draaien.
+#
+$settings['nzb_local_queue_command'] = '';
+
 // preferences
 // hoeveel spots wil je tonen op 1 pagina?
 $settings['prefs']['perpage'] = 100;

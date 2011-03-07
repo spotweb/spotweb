@@ -17,19 +17,18 @@
 								<tr>
 									<td colspan="3"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"></input></td>
 								</tr>
-
-								<tr> 
-									<td colspan='3'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
-								</tr>
 							</tbody>
 						</table>
 
-<!--						
-						<div id="tree"> 
-							<ul>
-							</ul>
+						<div class='advancedsearch'>
+							<tr> 
+								<td colspan='3'> <input type="checkbox" name="search[unfiltered]" id='search-unfiltered' value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>></input><label for='search-unfiltered'>Vergeet filters voor zoekopdracht</label></td>
+							</tr>
+							<div id="tree"> 
+								<ul>
+								</ul>
+							</div>
 						</div>
--->
 						
 						<br>
 						<input type='submit' class="filtersubmit" value='Zoek en filter'></input>
@@ -41,13 +40,13 @@
 	foreach($filters as $filter) {
 ?>
 						<li> 
-							<a class="filter <?php echo $filter[3]; ?>" href="?search[tree]=<?php echo $filter[2];?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
+							<a class="filter <?php echo $filter[3]; ?>" href="?search[tree]=<?php echo $filter[2] . $tplHelper->getFilterParams('tree');?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
 <?php
 		if (!empty($filter[4])) {
 			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 			foreach($filter[4] as $subFilter) {
 ?>
-								<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2];?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a></li>
+								<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2] . $tplHelper->getFilterParams('tree');?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a></li>
 <?php
 			} # foreach 
 			echo "\t\t\t\t\t\t\t</ul>\r\n";

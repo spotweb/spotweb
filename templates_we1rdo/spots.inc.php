@@ -1,10 +1,4 @@
-<?php
-	# Converteer filter parameters naar queries
-	$getUrl = '';
-	foreach($activefilter as $val => $key) {
-		$getUrl .= '&amp;search[' .  $val . ']=' . urlencode($key);
-	} # foreach
-?>
+<?php $getUrl = $tplHelper->getFilterParams(); ?>
 			<div class="spots">
 				<table class="spots">
 					<tbody>

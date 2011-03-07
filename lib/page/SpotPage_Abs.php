@@ -25,9 +25,9 @@ abstract class SpotPage_Abs {
 		if (file_exists($settings['tpl_path'] . '/CustomTplHelper.php')) {
 			require_once $settings['tpl_path'] . '/CustomTplHelper.php';
 			
-			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db);
+			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db, $params);
 		} else {
-			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db);
+			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db, $params);
 		} # else
 		
 		require_once($settings['tpl_path'] . $tpl . '.inc.php');
