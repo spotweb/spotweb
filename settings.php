@@ -65,6 +65,12 @@ $settings['filters'] = array(
 define('VERSION', '0.5a');
 
 #
+# Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
+# het ophalen van headers veel, veel trager. Het staat je dan echter wel toe om te filteren op userid.
+#
+$settings['retrieve_full'] = true;
+
+#
 # Wanneer nzb_download_local true is kan er met nzb_local_queue_command een programma uitgevoerd worden nadat de nzb in de queue is geplaatst.
 # Dit is bijvoorbeeld handig om nzbget -S te draaien.
 #

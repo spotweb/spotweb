@@ -14,14 +14,11 @@ class SpotPage_getspot extends SpotPage_Abs {
 	function render() {
 		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
 		$spotnntp->connect();
-		
-		# Vraag de volledige spot informatie op -- dit doet ook basic
-		# sanity en validatie checking
-		$fullSpot = $spotnntp->getFullSpot($this->_messageid);
 
-		# Vraag een lijst op met alle comments messageid's
-		$commentList = $this->_db->getCommentRef($fullSpot['messageid']);
-		$comments = $spotnntp->getComments($commentList);
+		# Haal de volledige spotinhoud op
+		$spotsOverview = new SpotsOverview($this->_db);
+		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $spotnntp);
+		$comments = $spotsOverview->getSpotComments($this->_messageid, $spotnntp);
 		
 		# zet de page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];

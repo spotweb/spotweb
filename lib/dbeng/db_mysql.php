@@ -159,11 +159,28 @@ class db_mysql extends db_abs {
 			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 		} # if
 
-		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
+		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 3 kolommen (server,maxarticleid,nowrunning)
 		$q = $this->arrayQuery("SHOW COLUMNS FROM nntp;");
 		if (count($q) == 3) {
 			$this->rawExec("ALTER TABLE nntp ADD COLUMN(lastrun INTEGER DEFAULT 0);");
 		} # if
+		
+		$q = $this->arrayQuery("SHOW TABLES LIKE 'spotsfull'");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
+										messageid varchar(250),
+										userid varchar(32),
+										verified BOOLEAN,
+										usersignature TEXT,
+										userkey TEXT,
+										xmlsignature TEXT,
+										fullxml TEXT,
+										filesize INTEGER);");										
+
+			# create indices
+			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid)");
+		} # if
+		
 	} # Createdatabase
 
 } # class

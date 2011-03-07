@@ -1,10 +1,48 @@
 <?php
+/*
+ * Vormt basically de koppeling tussen DB en NNTP, waarbij de db als een soort
+ * cache dient
+ */
 class SpotsOverview {
 	private $_db;
 
 	function __construct($db) {
 		$this->_db = $db;
 	} # ctor
+	
+	/*
+	 * Geef een volledig Spot array terug
+	 */
+	function getFullSpot($msgId, $nntp) {
+		$fullSpot = $this->_db->getFullSpot($msgId);
+		if (empty($fullSpot)) {
+			# Vraag de volledige spot informatie op -- dit doet ook basic
+			# sanity en validatie checking
+			$fullSpot = $nntp->getFullSpot($msgId);
+			$this->_db->addFullSpot($fullSpot);
+		} else {
+			$spotParser = new SpotParser();
+			$fullSpot = array_merge($spotParser->parseFull($fullSpot['xml']), $fullSpot);
+		} # else
+		
+		return $fullSpot;
+	} # getFullSpot
+	
+	/*
+	 * Geef de lijst met comments terug 
+	 */
+	function getSpotComments($msgId, $nntp) {
+		# Vraag een lijst op met alle comments messageid's
+		$commentList = $this->_db->getCommentRef($msgId);
+		return $nntp->getComments($commentList);
+	} # getSpotComments()
+	
+	/* 
+	 * Geef de NZB file terug
+	 */
+	function getNzb($msgIdList, $nntp) {
+		return $nntp->getNzb($msgIdList);
+	} # getNzb
 	
 	/*
 	 * Laad de spots van af positie $stat, maximaal $limit spots.
@@ -30,7 +68,7 @@ class SpotsOverview {
 
 		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
 		# we dat er nog een volgende pagina is
-		$hasNextPage = ($spotCnt > $limit);
+		$hasMore = ($spotCnt > $limit);
 			
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We trekken de lijst van subcategorieen uitelkaar 
@@ -42,7 +80,7 @@ class SpotsOverview {
 		} # foreach
 
 		return array('list' => $spotList, 
-					 'hasmore' => $hasNextPage);
+					 'hasmore' => $hasMore);
 	} # loadSpots()
 
 	

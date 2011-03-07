@@ -48,7 +48,8 @@ try {
 	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], 
 										 $db, 
 										 $settings['rsa_keys'], 
-										 $req->getDef('output', ''));
+										 $req->getDef('output', ''),
+										 $settings['retrieve_full']);
 	$msgdata = $retriever->connect($settings['hdr_group']);
 	$retriever->displayStatus('dbcount', $db->getSpotCount());
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);

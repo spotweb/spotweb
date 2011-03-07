@@ -61,10 +61,15 @@ class SpotParser {
 		# Bij oude-style (?) spots wordt er al een gesplitste array van subcategorieen aangeleverd
 		# die uiteraard niet compatible is met de nieuwe style van subcategorieen
 		#
+		$subcatList = array();
 		if ((!empty($this->_xmlarray['subcat'])) && (is_array($this->_xmlarray['subcat']))) {
 			$subcatList = $this->_xmlarray['subcat'];
 		} else {
-			$subcatList = $this->_xmlarray['sub'];
+			if (!is_array($this->_xmlarray['sub'])) {
+				$subcatList = array($this->_xmlarray['sub']);
+			} else {
+				$subcatList = $this->_xmlarray['sub'];
+			} # if
 		} # if
 
 		# match hoofdcat/subcat-type/subcatvalue

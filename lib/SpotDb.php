@@ -126,16 +126,45 @@ class SpotDb
 		if (!empty($sqlFilter)) {
 			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if
-
- 		return $this->_conn->arrayQuery("SELECT * FROM spots " . $sqlFilter . " ORDER BY " . $sort['field'] . " " . $sort['direction'] . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+										 
+ 		return $this->_conn->arrayQuery("SELECT s.*
+										 FROM spots AS s 
+										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+										 " . $sqlFilter . " 
+										 ORDER BY s." . $sort['field'] . " " . $sort['direction'] . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
 
 	/*
 	 * Vraag 1 specifieke spot op
 	 */
-	function getSpot($messageId) {
-		return $this->_conn->arrayQuery("SELECT * FROM spots WHERE messageid = '%s'", Array($messageId));
-	} # getSpot()
+	function getFullSpot($messageId) {
+		$tmpArray = $this->_conn->arrayQuery("SELECT s.*,
+												s.spotid AS id,
+												f.messageid AS messageid,
+												f.userid AS userid,
+												f.verified AS verified,
+												f.usersignature AS \"user-signature\",
+												f.userkey AS \"user-key\",
+												f.xmlsignature AS \"xml-signature\",
+												f.fullxml AS xml,
+												f.filesize AS filesize
+												FROM spots AS s 
+												JOIN spotsfull AS f ON f.messageid = s.messageid 
+										  WHERE s.messageid = '%s'", Array($messageId));
+		if (empty($tmpArray)) {
+			return ;
+		} # if
+		$tmpArray = $tmpArray[0];
+		
+		# If spot is fully stored in db and is of the new type, we process it to
+		# make it exactly the same as when retrieved using NNTP
+		if (!empty($tmpArray['xml']) && (!empty($tmpArray['user-signature']))) {
+			$tmpArray['user-signature'] = base64_decode($tmpArray['user-signature']);
+			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
+		} # if
+		
+		return $tmpArray;		
+	} # getFullSpot()
 
 	
 	/*
@@ -189,7 +218,7 @@ class SpotDb
 	/*
 	 * Voeg een spot toe aan de database
 	 */
-	function addSpot($spot) {
+	function addSpot($spot, $fullSpot) {
 		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['ID'],
@@ -205,7 +234,28 @@ class SpotDb
 					   $spot['Title'],
 					   $spot['Tag'],
 					   $spot['Stamp']));
+					   
+		if (!empty($fullSpot)) {
+			$this->addFullSpot($fullSpot);
+		} # if
 	} # addSpot()
+	
+	/*
+	 * Voeg enkel de full spot toe aan de database, niet gebruiken zonder dat er een entry in 'spots' staat
+	 * want dan komt deze spot niet in het overzicht te staan.
+	 */
+	function addFullSpot($fullSpot) {
+		$this->_conn->exec("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
+				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				Array($fullSpot['messageid'],
+					  $fullSpot['userid'],
+					  $fullSpot['verified'],
+					  base64_encode($fullSpot['user-signature']),
+					  base64_encode(serialize($fullSpot['user-key'])),
+					  $fullSpot['xml-signature'],
+					  $fullSpot['xml'],
+					  $fullSpot['size']));
+	} # addFullSpot
 
 	
 	function beginTransaction() {

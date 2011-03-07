@@ -4,17 +4,19 @@ require_once "SpotRetriever_Abs.php";
 class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_rsakeys;
 		private $_outputType;
+		private $_retrieveFull;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, $db, $rsakeys, $outputType) {
+		function __construct($server, $db, $rsakeys, $outputType, $retrieveFull) {
 			parent::__construct($server, $db);
 			
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
+			$this->_retrieveFull = $retrieveFull;
 		} # ctor
 
 
@@ -70,7 +72,30 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 												$this->_rsakeys);
 												
 				if (($spot != null) && ($spot['Verified'])) {
-					$this->_db->addSpot($spot);
+					#
+					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
+					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
+					# vragen we enkel de de headers op van de artikelen die er daadwerkelijk zijn
+					#
+					if ($this->_retrieveFull) {
+						try {
+							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
+						} 
+						catch(Exception $x) {
+							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
+							# swallow the error
+							if ($x->getMessage() == 'No such article found') {
+								;
+							} else {
+								throw $x;
+							} # else
+						} # catch
+					} else {
+						$fullSpot = array();
+					} # if
+				
+					# en voeg hem aan de database toe
+					$this->_db->addSpot($spot, $fullSpot);
 				} # if
 				
 				if ($spot['Verified']) {

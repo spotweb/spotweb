@@ -156,6 +156,22 @@ class db_sqlite3 extends db_abs {
 							  $nntp['maxarticleid']));
 			} # foreach
 		} # if
+
+		$q = $this->arrayQuery("PRAGMA table_info(spotsfull)");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY, 
+										messageid varchar(250),
+										userid varchar(32),
+										verified BOOLEAN,
+										usersignature TEXT,
+										userkey TEXT,
+										xmlsignature TEXT,
+										fullxml TEXT,
+										filesize INTEGER);");										
+
+			# create indices
+			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid)");
+		} # if
 		
 	} # Createdatabase
 
