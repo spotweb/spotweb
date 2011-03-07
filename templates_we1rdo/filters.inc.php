@@ -40,13 +40,13 @@
 	foreach($filters as $filter) {
 ?>
 						<li> 
-							<a class="filter <?php echo $filter[3]; ?>" href="?search[tree]=<?php echo $filter[2] . $tplHelper->getFilterParams('tree');?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
+							<a class="filter <?php echo $filter[3]; ?>" href="?<?php echo $tplHelper->getFilterParams('tree') . '&amp;search[tree]=' . $filter[2]; ?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
 <?php
 		if (!empty($filter[4])) {
 			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 			foreach($filter[4] as $subFilter) {
 ?>
-								<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2] . $tplHelper->getFilterParams('tree');?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a></li>
+								<li> <a class="filter <?php echo $subFilter[3];?>" href="?<?php echo $tplHelper->getFilterParams('tree') . '&amp;search[tree]=' . $filter[2]; ?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a></li>
 <?php
 			} # foreach 
 			echo "\t\t\t\t\t\t\t</ul>\r\n";
