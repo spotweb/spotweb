@@ -28,7 +28,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class=' " . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "' >" . 
 			 "<td class='category'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</td>" .
-			 "<td class='title'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "'>" . $spot['title'] . "</a></td>" .
+			 "<td class='title'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
 			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .
 			 "<td>" . strftime("%a, %d-%b-%Y (%H:%M)", $spot['stamp']) . "</td>";
