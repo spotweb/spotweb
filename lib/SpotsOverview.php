@@ -54,6 +54,7 @@ class SpotsOverview {
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
 		if (array_search($sort['field'], $sortFields) === false) {
+			$sort = array();
 			$sort['field'] = 'stamp';
 			$sort['direction'] = 'DESC';
 		} else {
