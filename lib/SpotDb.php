@@ -127,7 +127,23 @@ class SpotDb
 			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if
 										 
- 		return $this->_conn->arrayQuery("SELECT s.*
+ 		return $this->_conn->arrayQuery("SELECT s.id AS id,
+												s.messageid AS messageid,
+												s.spotid AS spotid,
+												s.category AS category,
+												s.subcat AS subcat,
+												s.poster AS poster,
+												s.groupname AS groupname,
+												s.subcata AS subcata,
+												s.subcatb AS subcatb,
+												s.subcatc AS subcatc,
+												s.subcatd AS subcatd,
+												s.title AS title,
+												s.tag AS tag,
+												s.stamp AS stamp,
+												f.userid AS userid,
+												f.verified AS verified,
+												f.filesize AS filesize												
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 " . $sqlFilter . " 
