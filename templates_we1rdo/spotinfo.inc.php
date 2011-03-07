@@ -18,7 +18,7 @@
 ?>
 						
                         	<th class="category"><?php echo $spot['formatname'];?></th>
-                            <th class="title">Post Title</th>
+                            <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
                                 |
