@@ -23,7 +23,7 @@
 		$(function(){
 			$("a.spotlink").fancybox({
 				'width'			: '80%',
-				'height' 		: '88%',
+				'height' 		: '94%',
 				'autoScale' 	: false,
 				'transitionIn'	: 'none',
 				'transitionOut'	: 'none',

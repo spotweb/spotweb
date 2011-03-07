@@ -123,5 +123,37 @@ class SpotTemplateHelper {
 		return $getUrl;
 	} # getFilterParams
 	
+	/*
+	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,
+	 * vullen we een aantal defaults in.
+	 */
+	function formatSpot($spot) {
+		// Category is altijd een integer bij ons
+		$spot['category'] = (int) $spot['category'];
+		
+		// Geen website? Dan standaard naar de zoekmachine
+		if (empty($spot['website'])) {
+			$spot['website'] = $this->makeSearchUrl($spot);
+		} # if
+		
+		// geef de category een fatsoenlijke naam
+		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
+		$spot['formatname'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
+		
+		// fix the sabnzbdurl en searchurl
+		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
+		$spot['searchurl'] = $this->makeSearchUrl($spot);
+		
+		// properly escape sevreal urls
+		$spot['image'] = htmlentities($spot['image']);
+		$spot['website'] = htmlentities($spot['website']);
+		$spot['poster'] = htmlentities($spot['poster']);
+		$spot['tag'] = htmlentities($spot['tag']);
+		
+		// description
+		$spot['description'] = $this->formatDescription($spot['description']);
+		
+		return $spot;
+	} # formatSpot
 	
 } # class SpotTemplateHelper
