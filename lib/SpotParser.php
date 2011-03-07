@@ -45,6 +45,11 @@ class SpotParser {
 		} # if error parsing
 		
 		xml_parser_free($xml_parser);
+		
+		# als de xml parser een error heeft gegeven, geef false terug
+		if ($this->_xmlarray) {
+			throw new ParseSpotXmlException();
+		} # if
 
 		# fix the category in the XML array but only for new spots
 		if ($this->_xmlarray['key-id'] != 1) {

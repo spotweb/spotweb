@@ -81,6 +81,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
 						} 
+						catch(ParseSportXmlException $x) {
+							$fullSpot = array();
+						} 
 						catch(Exception $x) {
 							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
 							# swallow the error
