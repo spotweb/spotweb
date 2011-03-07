@@ -170,7 +170,7 @@ class db_sqlite3 extends db_abs {
 										filesize INTEGER);");										
 
 			# create indices
-			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid)");
+			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
 		
 	} # Createdatabase
