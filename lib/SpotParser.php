@@ -2,6 +2,7 @@
 require_once "Math/BigInteger.php";
 require_once "Crypt/RSA.php";
 require_once "settings.php";
+require_once "lib/exceptions/ParseSpotXmlException.php";
 
 class SpotParser {
 	private $_xmlarray = array();
@@ -47,7 +48,7 @@ class SpotParser {
 		xml_parser_free($xml_parser);
 		
 		# als de xml parser een error heeft gegeven, geef false terug
-		if ($this->_xmlarray) {
+		if ($this->_xmlarray === false) {
 			throw new ParseSpotXmlException();
 		} # if
 

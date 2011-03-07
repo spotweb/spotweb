@@ -81,7 +81,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
 						} 
-						catch(ParseSportXmlException $x) {
+						catch(ParseSpotXmlException $x) {
+							echo "Error parsing spot..";
 							$fullSpot = array();
 						} 
 						catch(Exception $x) {
