@@ -5,7 +5,7 @@
 
 					<form id="filterform" action="">
 <?php
-	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => ''), $search);
+	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
 ?>
 					<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></input>
 						<table class="filters">
