@@ -62,11 +62,11 @@
 <?php
 	if ($settings['show_updatebutton']) {
 ?>
-						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="updatespotsbtn">Update Spots</a></li>
+						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="updatespotsbtn">Update Spots <img id="updatespotimg" src="images/gobutton.png"></img></a></li>
 <?php
 	}
 ?>
-						<li> <a href="?page=erasedls" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads</a></li>
+						<li> <a href="?page=erasedls" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads <img id="erasedlsimg" src="images/gobutton.png"></img></a></li>
 					</ul>
 
 				</div>
