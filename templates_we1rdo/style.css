@@ -115,14 +115,14 @@ table.spots {
 table.spots a {color:#000; text-decoration:none; display:block; width:100%;}
 table.spots img { border: 0; }
 
-table.spots th,
-table.spots th a {
+table.spots th {
 	text-align:left;
 	color:#fff;
 	background-color:#777777;
 	line-height:20px;
 	padding:0 0 0 5px;
 }
+table.spots th a {color:#fff;}
 
 table.spots th.category {text-align:center; width:50px; padding:0 2px 0 0;}
 table.spots th.title {}
