@@ -12,7 +12,7 @@
 						<th class='nzb'> NZB </th> 
 <?php } ?>						
 <?php if (isset($settings['sabnzbd']['apikey'])) { ?>
-						<th> DNL </th> 
+						<th class='sabnzbd'> SAB </th> 
 <?php } ?>						
 					</tr>
 
@@ -48,7 +48,7 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 widt='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {
@@ -66,8 +66,8 @@
 	}
 ?>
 					<tr>
-						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">Vorige</a><?php }?></td>
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende</a><?php }?></td>
+						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
+						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
 					</tr>
 
 				</tbody>

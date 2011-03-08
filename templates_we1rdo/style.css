@@ -33,9 +33,9 @@ input.filtersubmit {
 	margin:0 10px 20px 10px;
 	height:20px;
 	color:#fff;
-	font-weight:bold;
 	font:11px Arial, Helvetica, sans-serif;
 	cursor:pointer;
+	font-weight:bold;
 }
 
 /* FILTERS */
@@ -58,7 +58,7 @@ div.filter h4 {
 	margin:0 0 5px 0;
 }
 
-div.filter ul {margin:0; padding:0;}
+div.filter ul {margin:0 0 20px; padding:0;}
 div.filter ul ul {margin:0 0 0 10px;}
 div.filter li {list-style:none; margin:0 0 5px 0;}
 div.filter li li {margin:2px 0 0;}
@@ -96,7 +96,7 @@ ul.maintenancebox li a.erasedlsbtn {
 	margin:0 10px 5px 10px;
 	line-height:20px;
 	color:#fff;
-	font-weight:normal;
+	font-weight:bold;
 	text-align:center;
 }
 
@@ -130,6 +130,7 @@ table.spots th.genre {width:110px;}
 table.spots th.poster {width:150px;}
 table.spots th.date {width:140px;}
 table.spots th.nzb {width:30px;}
+table.spots th.sabnzbd {width:28px;}
 
 table.spots td {padding:0 0 0 5px;}
 
@@ -145,7 +146,10 @@ table.spots tr td.category {
 	line-height:20px;
 	padding:0 2px 0 0;
 	background-color:#fff;
+	vertical-align:top;
 }
+
+table.spots tr td img.sabnzbd-button {margin:0 4px;}
 
 table.spots tr.blue td {background-color:#e6f2ff;}
 table.spots tr.orange td {background-color:#fbf8e0;}
