@@ -1,7 +1,7 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
 ?>
-    	<div class="details <?php echo $tplHelper->cat2color($spot['category']); ?>">
+    	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" href="<?php echo $spot['website']; ?>">
                 <img class="spotinfoimage" src="<?php echo $spot['image']; ?>">
             </a>
