@@ -156,6 +156,8 @@ table.spots tr.orange td {background-color:#fffad3;}
 table.spots tr.green td {background-color:#cbffcb;}
 table.spots tr.red td {background-color:#fedede;}
 
+table.spots tr:hover td {background-color:#fff;}
+
 table.spots tr.blue td.category {background:url(img/blue.png) no-repeat left top;}
 table.spots tr.orange td.category {background:url(img/orange.png) no-repeat left top;}
 table.spots tr.green td.category {background:url(img/green.png) no-repeat left top;}
