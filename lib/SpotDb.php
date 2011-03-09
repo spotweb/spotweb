@@ -114,6 +114,44 @@ class SpotDb
 			return $cnt;
 		} # if
 	} # getSpotCount
+	
+	/*
+	 * Match set of spots
+	 */
+	function matchMessageIds($hdrList) {
+		$idList = array('spot' => array(), 'fullspot' => array());
+		
+		# geen message id's gegeven? vraag het niet eens aan de db
+		if (count($hdrList) == 0) {
+			return $idList;
+		} # if
+		
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($hdrList as $hdr) {
+			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		# Omdat MySQL geen full joins kent, doen we het zo
+		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
+											UNION
+					 				    SELECT '' as spot, messageid AS fullspot FROM spotsfull WHERE messageid IN (" . $msgIdList . ")");
+									  
+		# en lossen we het hier op
+		foreach($rs as $msgids) {
+			if (!empty($msgids['spot'])) {
+				$idList['spot'][] = $msgids['spot'];
+			} # if
+			
+			if (!empty($msgids['fullspot'])) {
+				$idList['fullspot'][] = $msgids['fullspot'];
+			} # if
+		} # foreach
+		
+		return $idList;
+	} # matchMessageIds 
+		
 
 	/*
 	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
@@ -234,7 +272,7 @@ class SpotDb
 	/*
 	 * Voeg een spot toe aan de database
 	 */
-	function addSpot($spot, $fullSpot) {
+	function addSpot($spot, $fullSpot = array()) {
 		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['ID'],
@@ -265,7 +303,7 @@ class SpotDb
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
-					  $fullSpot['verified'],
+					  (int) $fullSpot['verified'],
 					  base64_encode($fullSpot['user-signature']),
 					  base64_encode(serialize($fullSpot['user-key'])),
 					  $fullSpot['xml-signature'],

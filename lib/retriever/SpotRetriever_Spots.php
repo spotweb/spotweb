@@ -34,7 +34,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "\r\n"; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
-					case 'verified'			: echo " (verified " . $txt . ", of "; break;
+					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
+					case 'fullretrieved'	: echo "retrieved " . $txt . " full spots, "; break;
+					case 'verified'			: echo "verified " . $txt . ", of "; break;
 					case 'loopcount'		: echo $txt . " spots)\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
 					case ''					: echo "\r\n"; break;
@@ -61,29 +63,61 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		
 			$this->_db->beginTransaction();
 			$signedCount = 0;
+			$hdrsRetrieved = 0;
+			$fullsRetrieved = 0;
+			
+			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
+			$t = microtime(true);
+			$dbIdList = $this->_db->matchMessageIds($hdrList);
+			
+			# en loop door elke header heen
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
-				set_time_limit(120);			
-			
-				$spotParser = new SpotParser();
-				$spot = $spotParser->parseXover($msgheader['Subject'], 
-												$msgheader['From'], 
-												$msgheader['Message-ID'],
-												$this->_rsakeys);
-												
-				if (($spot != null) && ($spot['Verified'])) {
+				set_time_limit(120);
+
+				# messageid to check
+				$msgId = substr($msgheader['Message-ID'], 1, -1);
+
+				# als we de spot overview nog niet in de database hebben, haal hem dan op
+				if (!in_array($msgId, $dbIdList['spot'])) {
+					$hdrsRetrieved++;
+					
+					$spotParser = new SpotParser();
+					$spot = $spotParser->parseXover($msgheader['Subject'], 
+													$msgheader['From'], 
+													$msgheader['Message-ID'],
+													$this->_rsakeys);
+					if ($spot['Verified']) {
+						$this->_db->addSpot($spot);
+						$dbIdList['spot'][] = $msgId;
+						
+						if ($spot['WasSigned']) {
+							$signedCount++;
+						} # if
+					} # if
+				} # if
+
+				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
+				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
+				if ((in_array($msgId, $dbIdList['spot'])) &&   # header moet in db zitten
+				   (!in_array($msgId, $dbIdList['fullspot']))) # maar de fullspot niet
+				   {
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
 					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
 					# vragen we enkel de de headers op van de artikelen die er daadwerkelijk zijn
 					#
 					if ($this->_retrieveFull) {
+						$fullSpot = array();
 						try {
+							$fullsRetrieved++;
 							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
+
+							# en voeg hem aan de database toe
+							$this->_db->addFullSpot($fullSpot);
 						} 
 						catch(ParseSpotXmlException $x) {
-							echo "Error parsing spot..";
-							$fullSpot = array();
+							; # swallow error
 						} 
 						catch(Exception $x) {
 							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
@@ -94,25 +128,19 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 								throw $x;
 							} # else
 						} # catch
-					} else {
-						$fullSpot = array();
-					} # if
-				
-					# en voeg hem aan de database toe
-					$this->_db->addSpot($spot, $fullSpot);
-				} # if
-				
-				if ($spot['Verified']) {
-					if ($spot['WasSigned']) {
-						$signedCount++;
-					} # if
-				} # if
+						
+					} # if retrievefull
+				} # if fullspot is not in db yet
 			} # foreach
 
 			if (count($hdrList) > 0) {
+				$this->displayStatus("hdrparsed", $hdrsRetrieved);
+				$this->displayStatus("fullretrieved", $fullsRetrieved);
 				$this->displayStatus("verified", $signedCount);
 				$this->displayStatus("loopcount", count($hdrList));
 			} else {
+				$this->displayStatus("hdrparsed", 0);
+				$this->displayStatus("fullretrieved", 0);
 				$this->displayStatus("verified", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
