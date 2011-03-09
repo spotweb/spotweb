@@ -49,7 +49,7 @@ class SpotNzb {
 	function runHttp($fullSpot, $action) {
 		# URL to run
 		$url = $this->generateSabnzbdUrl($fullSpot, $action);
-		
+
 		# create an stream context to be able to pass certain parameters
 		$ctx = stream_context_create(array('http' => array('timeout' => 10)));
 		$output = @file_get_contents($url, 0, $ctx);
@@ -94,7 +94,7 @@ class SpotNzb {
 			
 			case 'push-sabnzbd'		: {
 				$this->saveNzbFile($fullSpot, $nzb); 
-				$this->runHttp($fullSpot, $action); 
+				$this->runHttp($fullSpot, $action);
 				break;
 			} # push-sabnzbd
 			
