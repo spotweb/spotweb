@@ -40,7 +40,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			} # if
 
 			# Moeten we een script draaien nadat de file er gezet is?
-			if (!empty($settings['nzb_local_queue_command'])){ }
+			if (!empty($settings['nzb_local_queue_command'])) { 
 				$saveOutput = array();
                 $status = 0;
 				$cmdToRun = str_replace(array('$SPOTTITLE'), array($fullSpot['title']), $settings['nzb_local_queue_command']);
@@ -50,7 +50,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 				if ($status != 0) {
 					throw new Exception("Unable to execute program: " . $cmdToRun);
 				} # if
-			# if
+			} # if
 		} else {
 			Header("Content-Type: application/x-nzb");
 			Header("Content-Disposition: attachment; filename=\"" . urlencode($fullSpot['title']) . ".nzb\"");
