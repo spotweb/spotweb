@@ -64,11 +64,11 @@
             	<h4>Comments</h4>
 					<ul>
 <?php
+		$count = 0;
 		foreach($comments as $comment) {
 ?>
-					<li> <strong> Gepost door <?php echo $comment['from']; ?> @ <?php echo strftime("%a, %d-%b-%Y (%H:%M)", $comment['date']); ?> </strong> <br>
-					<?php echo join("<br>", $comment['body']); ?>
-					<br><br>
+					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> @ <?php echo strftime("%a, %d-%b-%Y (%H:%M)", $comment['date']); ?> </strong> <br>
+						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
 		} # foreach
