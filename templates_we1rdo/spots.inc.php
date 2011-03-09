@@ -11,7 +11,7 @@
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>						
-<?php if (isset($settings['sabnzbd']['apikey'])) { ?>
+<?php if ($settings['nzbhandler']['action'] != 'disable') { ?>
 						<th class='sabnzbd'> SAB </th> 
 <?php } ?>						
 					</tr>

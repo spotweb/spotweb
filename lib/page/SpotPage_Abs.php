@@ -7,7 +7,6 @@ abstract class SpotPage_Abs {
 	protected $_prefs;
 	protected $_pageTitle;
 	
-	
 	function __construct($db, $settings, $prefs) {
 		$this->_db = $db;
 		$this->_settings = $settings;
