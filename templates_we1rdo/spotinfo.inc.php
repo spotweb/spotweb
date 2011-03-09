@@ -66,7 +66,7 @@
 <?php
 		foreach($comments as $comment) {
 ?>
-					<li> <strong> Gepost door <?php echo $comment['from']; ?> @ <?php echo $comment['date']; ?> </strong> <br>
+					<li> <strong> Gepost door <?php echo $comment['from']; ?> @ <?php echo strftime("%a, %d-%b-%Y (%H:%M)", $comment['date']); ?> </strong> <br>
 					<?php echo join("<br>", $comment['body']); ?>
 					<br><br>
 					</li>
