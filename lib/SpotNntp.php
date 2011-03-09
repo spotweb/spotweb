@@ -143,8 +143,10 @@ class SpotNntp {
 					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($str, 12)); 
-							$spot['user-key']['exponent'] = (string) $xml->Exponent;
-							$spot['user-key']['modulo'] = (string) $xml->Modulus;
+							if ($xml !== false) {
+								$spot['user-key']['exponent'] = (string) $xml->Exponent;
+								$spot['user-key']['modulo'] = (string) $xml->Modulus;
+							} # if
 							break;
 					} # x-user-key
 				} # switch
