@@ -14,7 +14,7 @@ form#filterform table tbody > tr:nth-child(1) td input {position:relative; top:2
 form#filterform td {padding:0;}
 
 input.searchbox {
-	background-color:#f7f7f7;
+	background-color:#ececec;
 	border:1px solid #d4d4d4;
 	-moz-border-radius:4px;
 	-webkit-border-radius:4px;
@@ -66,7 +66,7 @@ div.filter li li {margin:2px 0 0;}
 div.filter a {
 	display:block;
 	width:100%;
-	background-color:#f7f7f7;
+	background-color:#ececec;
 	line-height:20px;
 	-moz-border-radius:4px;
 	-webkit-border-radius:4px;
@@ -76,10 +76,10 @@ div.filter a {
 	font-weight:bold;
 }
 
-div.filter > ul > li:nth-child(2) a {background-color:#e6f2ff;}
-div.filter > ul > li:nth-child(3) a {background-color:#fbf8e0;}
-div.filter > ul > li:nth-child(4) a {background-color:#eaffea;}
-div.filter > ul > li:nth-child(5) a {background-color:#ffeaea;}
+div.filter > ul > li:nth-child(2) a {background-color:#daecff;}
+div.filter > ul > li:nth-child(3) a {background-color:#fffad3;}
+div.filter > ul > li:nth-child(4) a {background-color:#cbffcb;}
+div.filter > ul > li:nth-child(5) a {background-color:#fedede;}
 
 div.filter a img {
 	border:0;
@@ -151,10 +151,10 @@ table.spots tr td.category {
 
 table.spots tr td img.sabnzbd-button {margin:0 4px;}
 
-table.spots tr.blue td {background-color:#e6f2ff;}
-table.spots tr.orange td {background-color:#fbf8e0;}
-table.spots tr.green td {background-color:#eaffea;}
-table.spots tr.red td {background-color:#ffeaea;}
+table.spots tr.blue td {background-color:#daecff;}
+table.spots tr.orange td {background-color:#fffad3;}
+table.spots tr.green td {background-color:#cbffcb;}
+table.spots tr.red td {background-color:#fedede;}
 
 table.spots tr.blue td.category {background:url(img/blue.png) no-repeat left top;}
 table.spots tr.orange td.category {background:url(img/orange.png) no-repeat left top;}
@@ -167,7 +167,7 @@ table.spots tr.orange a.nzb {color:#e9a213;}
 table.spots tr.green a.nzb {color:#00de00;}
 table.spots tr.red a.nzb {color:#de2500;}
 
-table.spots tr:last-child td {background-color:#f7f7f7; height:20px; font-weight:bold;}
+table.spots tr:last-child td {background-color:#ececec; height:20px; font-weight:bold;}
 table.spots tr:last-child td a {display:inline;}
 table.spots tr:last-child td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
 table.spots tr:last-child td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 5px 0 0;}
@@ -189,13 +189,13 @@ div.details.green table.spotheader th.category {background:url(img/green.png) no
 div.details.red table.spotheader th.category {background:url(img/red.png) no-repeat top left;}
 
 div.details.blue table.spotinfo th,
-div.details.blue table.spotheader th.nzb {background-color:#e6f2ff;}
+div.details.blue table.spotheader th.nzb {background-color:#daecff;}
 div.details.orange table.spotinfo th,
-div.details.orange table.spotheader th.nzb {background-color:#fbf8e0;}
+div.details.orange table.spotheader th.nzb {background-color:#fffad3;}
 div.details.green table.spotinfo th,
-div.details.green table.spotheader th.nzb {background-color:#eaffea;}
+div.details.green table.spotheader th.nzb {background-color:#cbffcb;}
 div.details.red table.spotinfo th,
-div.details.red table.spotheader th.nzb {background-color:#ffeaea;}
+div.details.red table.spotheader th.nzb {background-color:#fedede;}
 
 div.details.blue table.spotheader th.nzb a.nzb {color:#008edf;}
 div.details.orange table.spotheader th.nzb a.nzb {color:#e9a213;}
@@ -213,7 +213,7 @@ div.details table.spotinfo {width:100%; border-collapse:separate; border-spacing
 div.details table.spotinfo th,
 div.details table.spotinfo td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; height:20px; padding:2px 5px;}
 div.details table.spotinfo th {text-align:right; width:165px;}
-div.details table.spotinfo td {background-color:#f7f7f7;}
+div.details table.spotinfo td {background-color:#ececec;}
 div.details table.spotinfo td.break {background-color:#fff;}
 
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
@@ -224,17 +224,7 @@ div.details div.description pre {white-space:pre-line;}
 div.details div.comments h4,
 div.details div.description h4 {background:#777; font-size:11px; line-height:20px; color:#fff; padding:0 5px; margin:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
-
 /* DYNATREE OVERRIDES */
-div.filter ul.dynatree-container {
-	border: 0;
-}
-
-div.filter ul.dynatree-container a {
-	display: inline;
-	font-weight: normal;
-}
-
-div.advancedsearch {
-	display: none;
-}
+div.filter ul.dynatree-container {border:0;}
+div.filter ul.dynatree-container a {display:inline; font-weight:normal;}
+div.advancedsearch {display:none;}
