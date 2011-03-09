@@ -82,6 +82,13 @@ class SpotNntp {
 			return $result;
 		} # getArticle
 		
+		function cbCommentDateSort($a, $b) {
+			if ($a['date'] == $b['date']) {
+				return 0;
+			} # if
+			
+			return ($a['date'] < $b['date']) ? -1 : 1;
+		} # cbCommentDateSort
 		
 		function getComments($commentList) {
 			$comments = array();
@@ -97,13 +104,16 @@ class SpotNntp {
 					
 					switch($keys[0]) {
 						case 'From'	: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
-						case 'Date'	: $tmpAr['date'] = substr($hdr, strlen('Date: ')); break;
+						case 'Date'	: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
 					} # switch
 				} # foreach
 				
 				$comments[] = $tmpAr; 
 			} # foreach
 
+			# sorteer de comments per datum
+			usort($comments, array($this, 'cbCommentDateSort'));
+			
 			return $comments;
 		} # getComments
 		
@@ -143,8 +153,10 @@ class SpotNntp {
 					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($str, 12)); 
-							$spot['user-key']['exponent'] = (string) $xml->Exponent;
-							$spot['user-key']['modulo'] = (string) $xml->Modulus;
+							if ($xml !== false) {
+								$spot['user-key']['exponent'] = (string) $xml->Exponent;
+								$spot['user-key']['modulo'] = (string) $xml->Modulus;
+							} # if
 							break;
 					} # x-user-key
 				} # switch
