@@ -77,17 +77,22 @@ define('VERSION', '0.6a');
 # Opm.: We roepen sabnzbd altijd aan dat hij zelf de NZB file moet ophalen, we doen dit omdat
 #		we anders geen category kunnen meegeven aldus de huidige API documentatie.
 #
-$settings['nzbhandling'] =
-	array('action' 		=> 'push-sabnzbd', 
-		  'local_dir'	=> '',													# Waar moet de NZB file opgeslagen worden (voor save, push-sabnzbd en runcommand)
-		  'command'		=> '',													# Mogelijke parameters: $SPOTTITLE en $NZBPATH
-		  'sabnzbd'		=> array('host'			=> '192.168.10.122:8081', 		# Pas deze aan naar de sabnzbd host plus port
-						 		 'apikey'		=> 'xxxxx',						# Pas deze aan naar jouw sabnzbd api key
-								 'spotweburl'	=> 'http://server/spotweb/',	# URL naar spotweb, gezien vanuit de Sabnzbd machine
-								 'url'			=> 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&amp;name=$NZBURL&nzbname=$SPOTTITLE&amp;cat=$SANZBDCAT&amp;apikey=$APIKEY&amp;output=text'
-								 )
-	);
-
+# Settings:
+#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save, push-sabnzbd en runcommand)
+#	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
+#	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
+#						- apikey	 - sabnzbd API key	
+#						- spotweburl - URL naar spotweb
+#						- url		 - 
+#
+$settings['nzbhandling']['action'] = 'push-sabnzbd';
+$settings['nzbhandling']['local_dir'] = '';
+$settings['nzbhandling']['command'] = '';
+$settings['nzbhandling']['sabnzbd'] = array();
+$settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
+$settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
+$settings['nzbhandling']['sabnzbd']['spotweburl'] = 'http://server/spotweb/';
+$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
 	
 #
 # Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
