@@ -78,7 +78,7 @@ define('VERSION', '0.6a');
 #		we anders geen category kunnen meegeven aldus de huidige API documentatie.
 #
 $settings['nzbhandling'] =
-	array('action' 		=> 'client-sabnzbd', 
+	array('action' 		=> 'push-sabnzbd', 
 		  'local_dir'	=> '',													# Waar moet de NZB file opgeslagen worden (voor save, push-sabnzbd en runcommand)
 		  'command'		=> '',													# Mogelijke parameters: $SPOTTITLE en $NZBPATH
 		  'sabnzbd'		=> array('host'			=> '192.168.10.122:8081', 		# Pas deze aan naar de sabnzbd host plus port
