@@ -57,7 +57,7 @@
 				</table>
       		</div>
             <div class="description">
-            	<h4>Post Description (pre styled)</h4>
+            	<h4>Post Description</h4>
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments">
