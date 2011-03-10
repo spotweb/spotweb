@@ -5,7 +5,7 @@
 		<link rel='stylesheet' type='text/css' href='js/dynatree/skin-vista/ui.dynatree.css'>
 		<link rel="stylesheet" href="templates_we1rdo/style.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
-
+		<link rel='shortcut icon' href='templates_we1rdo/img/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
