@@ -181,6 +181,7 @@ div.details a.postimage img {display:block; max-width:300px; border:0; float:lef
 
 div.details div.spotinfo {margin:0 -5px 0 305px;}
 
+div.details div.warning {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:0 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 div.details table.spotheader {width:100%; border-collapse:separate; border-spacing:5px 3px;}
 div.details table.spotheader th {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; text-align:left;}
 div.details table.spotheader th.category {width:50px; color:#fff; line-height:20px; padding:0; text-align:center; vertical-align:top;}
