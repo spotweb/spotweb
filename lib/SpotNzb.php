@@ -46,9 +46,9 @@ class SpotNzb {
 	/*
 	 * Roept sabnzbd aan en parseert de output
 	 */
-	function runHttp($fullSpot, $action) {
+	function runHttp($fullSpot) {
 		# URL to run
-		$url = $this->generateSabnzbdUrl($fullSpot, $action);
+		$url = $this->generateSabnzbdUrl($fullSpot, $this->_action);
 		
 		# create an stream context to be able to pass certain parameters
 		$ctx = stream_context_create(array('http' => array('timeout' => 10)));
@@ -93,7 +93,7 @@ class SpotNzb {
 			
 			case 'push-sabnzbd'		: {
 				$this->saveNzbFile($fullSpot, $nzb); 
-				$this->runHttp($fullSpot, $action); 
+				$this->runHttp($fullSpot); 
 				break;
 			} # push-sabnzbd
 			
