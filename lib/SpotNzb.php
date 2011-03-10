@@ -46,29 +46,18 @@ class SpotNzb {
 	/*
 	 * Roept sabnzbd aan en parseert de output
 	 */
-	function runHttp($fullSpot) {
+	function runHttp($fullSpot, $action) {
 		# URL to run
-<<<<<<< HEAD
 		$url = $this->generateSabnzbdUrl($fullSpot, $action);
-
-=======
-		$url = $this->generateSabnzbdUrl($fullSpot, $this->_action);
 		
->>>>>>> parent of 7011826... action werd niet goed doorgegeven voor sabnzbd-push
 		# create an stream context to be able to pass certain parameters
 		$ctx = stream_context_create(array('http' => array('timeout' => 10)));
 		$output = @file_get_contents($url, 0, $ctx);
-
 		if ($output	=== false) {
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
-<<<<<<< HEAD
-
-		if (trim(strtolower($output)) != "ok") {
-=======
 		
-		if (strcasecmp($output, "OK") == 0) {
->>>>>>> 471170f4c01f8a0e8cf72c39b86e3276fe06950c
+		if ($output != "OK") {
 			throw new Exception("sabnzbd returned: " . $output);
 		} # if
 	} # runHttp
@@ -104,11 +93,7 @@ class SpotNzb {
 			
 			case 'push-sabnzbd'		: {
 				$this->saveNzbFile($fullSpot, $nzb); 
-<<<<<<< HEAD
-				$this->runHttp($fullSpot, $action);
-=======
-				$this->runHttp($fullSpot); 
->>>>>>> parent of 7011826... action werd niet goed doorgegeven voor sabnzbd-push
+				$this->runHttp($fullSpot, $action); 
 				break;
 			} # push-sabnzbd
 			
@@ -168,7 +153,7 @@ class SpotNzb {
 		
 		# vervang een aantal variables		
 		$tmp = str_replace('$SABNZBDHOST', $sabnzbd['host'], $tmp);
-		$tmp = str_replace('$SPOTTITLE', urlencode($this->cleanForFileSystem($spot['title'])), $tmp);
+		$tmp = str_replace('$SPOTTITLE', $this->cleanForFileSystem($spot['title']), $tmp);
 		$tmp = str_replace('$SANZBDCAT', $this->convertCatToSabnzbdCat($spot), $tmp);
 		$tmp = str_replace('$APIKEY', $sabnzbd['apikey'], $tmp);
 
@@ -181,7 +166,7 @@ class SpotNzb {
 		} elseif ($action == 'push-sabnzbd') {
 			# server roept sabnzbd aan
 			$tmp = str_replace('$SABNZBDMODE', 'addlocalfile', $tmp);
-			$tmp = str_replace('$NZBURL', urlencode($this->makeNzbLocalPath($spot)), $tmp);
+			$tmp = str_replace('$NZBURL', $this->makeNzbLocalPath($spot), $tmp);
 		} # else
 		
 		return $tmp;
