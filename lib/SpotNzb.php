@@ -57,8 +57,7 @@ class SpotNzb {
 		if ($output	=== false) {
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
-
-		if (trim(strtolower($output)) != "ok") {
+		if (strcasecmp($output, "OK") == 0) {
 			throw new Exception("sabnzbd returned: " . $output);
 		} # if
 	} # runHttp
