@@ -62,19 +62,43 @@ $settings['filters'] = array(
 );
 
 // version
-define('VERSION', '0.5a');
+define('VERSION', '0.6a');
 
+#
+# We definieeren in een aantal stappen wat er moet gebeuren met NZB files
+# Er zijn een aantal verschillende acties mogelijk:
+#	* disable			- Geen acties, toon enkel de 'download nzb' knop
+#	* display			- Stuurt de NZB file naar de server, intern gebruik
+#	* save				- Save de file op disk
+#	* runcommand		- Save de file op disk en roep een commando aan
+#	* push-sabnzbd		- Roep sabnzbd+ aan via HTTP door SpotWeb, schrijft de NZB lokaal weg
+#	* client-sabnzbd	- Roep sabnzbd+ aan via de users' browser (oude default)
+#
+# Opm.: We roepen sabnzbd altijd aan dat hij zelf de NZB file moet ophalen, we doen dit omdat
+#		we anders geen category kunnen meegeven aldus de huidige API documentatie.
+#
+# Settings:
+#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save, push-sabnzbd en runcommand)
+#	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
+#	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
+#						- apikey	 - sabnzbd API key	
+#						- spotweburl - URL naar spotweb
+#						- url		 - 
+#
+$settings['nzbhandling']['action'] = 'push-sabnzbd';
+$settings['nzbhandling']['local_dir'] = '';
+$settings['nzbhandling']['command'] = '';
+$settings['nzbhandling']['sabnzbd'] = array();
+$settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
+$settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
+$settings['nzbhandling']['sabnzbd']['spotweburl'] = 'http://server/spotweb/';
+$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
+	
 #
 # Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
 # het ophalen van headers veel, veel trager. Het staat je dan echter wel toe om te filteren op userid.
 #
 $settings['retrieve_full'] = true;
-
-#
-# Wanneer nzb_download_local true is kan er met nzb_local_queue_command een programma uitgevoerd worden nadat de nzb in de queue is geplaatst.
-# Dit is bijvoorbeeld handig om nzbget -S te draaien.
-#
-$settings['nzb_local_queue_command'] = '';
 
 // preferences
 // hoeveel spots wil je tonen op 1 pagina?
@@ -104,12 +128,6 @@ $settings['show_updatebutton'] = false;
 
 # toon een download-nzb knop op het overzicht?
 $settings['show_nzbbutton'] = true;
-
-# integratie met sabnzbd+? uncomment als dit gewenst is
-#$settings['sabnzbd']['host'] = '192.168.10.122:8081';					# <== Pas deze aan naar de sabnzbd host plus port
-#$settings['sabnzbd']['apikey'] = '';									# <== Pas deze aan naar jouw sabnzbd api key
-#$settings['sabnzbd']['spotweburl'] = 'http://server/spotweb/';			# <== URL naar spotweb, gezien vanuit de Sabnzbd machine
-$settings['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=addurl&amp;name=$NZBURL&nzbname=$SPOTTITLE&amp;cat=$SANZBDCAT&amp;apikey=$APIKEY&amp;output=json'; # <== Hoef je niet aan te passen
 
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
@@ -147,7 +165,7 @@ $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME'
 $settings['index_filter'] = array();
 
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => 'cat0,cat1,cat2,c3,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26');
+# $settings['index_filter'] = array('tree' => 'cat0,cat1,cat2,cat3,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26');
 
 #
 # RSA keys
@@ -166,15 +184,6 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 # Als je regelmatig timeouts krijgt van retrieve.php, vrelaag dan dit aantal
 #
 $settings['retrieve_increment'] = 1000;
-
-
-#
-# Wanneer je NZB bestanden in een monitor queue wilt plaatsen, zet dan nzb_download_local op true
-# en vul in nzb_local_queue_dir de directory waar de NZB in geplaatst moet worden.
-#
-
-$settings['nzb_download_local'] = false;
-$settings['nzb_local_queue_dir'] = '/[pad naar queue dir]/';
 
 #
 # Include eventueel eigen settings, dit is ook een PHP file. 

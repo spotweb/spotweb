@@ -1,4 +1,4 @@
 <?php
 	require_once "lib/exceptions/CustomException.php";
 	
-	class RetrieverRunningException extends Exception {};
+	class RetrieverRunningException extends CustomException {};

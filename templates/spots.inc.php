@@ -18,7 +18,7 @@
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th> Dnl. </th> 
 <?php } ?>						
-<?php if (isset($settings['sabnzbd']['apikey'])) { ?>
+<?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
 						<th> sabnzbd </th> 
 <?php } ?>						
 					</tr>

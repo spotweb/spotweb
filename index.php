@@ -37,7 +37,9 @@ try {
 		} # getspot
 
 		case 'getnzb' : {
-				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], 
+								Array('messageid' => $req->getDef('messageid', ''),
+									  'action' => $req->getDef('action', 'display')));
 				$page->render();
 				break;
 		} # getspot

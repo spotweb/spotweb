@@ -1,4 +1,5 @@
 <?php
+require_once "lib/SpotNzb.php";
 
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
@@ -33,33 +34,21 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
-		# alleen draaien als we gedefinieerd zijn
-		if ((!isset($this->_settings['sabnzbd'])) | (!isset($this->_settings['sabnzbd']['apikey'])) | (!isset($this->_settings['sabnzbd']['categories']))) {
+		$action = $this->_settings['nzbhandling']['action'];
+		# geef geen url terug als we disabled zijn
+		if ($action == 'disable') {
 			return '';
 		} # if
 		
-		# fix de category
-		$spot['category'] = (int) $spot['category'];
-		
-		# vind een geschikte category
-		$category = $this->_settings['sabnzbd']['categories'][$spot['category']]['default'];
-
-		foreach($spot['subcatlist'] as $cat) {
-			if (isset($this->_settings['sabnzbd']['categories'][$spot['category']][$cat])) {
-				$category = $this->_settings['sabnzbd']['categories'][$spot['category']][$cat];
-			} # if
-		} # foreach
-		
-		# en creeer die sabnzbd url
-		$tmp = $this->_settings['sabnzbd']['url'];
-		$tmp = str_replace('$SABNZBDHOST', $this->_settings['sabnzbd']['host'], $tmp);
-		$tmp = str_replace('$NZBURL', urlencode($this->_settings['sabnzbd']['spotweburl'] . '?page=getnzb&messageid='. $spot['messageid']), $tmp);
-		$tmp = str_replace('$SPOTTITLE', urlencode($spot['title']), $tmp);
-		$tmp = str_replace('$SANZBDCAT', $category, $tmp);
-		$tmp = str_replace('$APIKEY', $this->_settings['sabnzbd']['apikey'], $tmp);
-
-		return $tmp;
-	} # sabnzbdurl
+		# als de gebruiker gevraagd heeft om niet clientside handling, geef ons zelf dan terug 
+		# met de gekozen actie
+		if ($action == 'client-sabnzbd') {
+			$spotNzb = new SpotNzb($this->_db, $this->_settings);
+			return $spotNzb->generateSabnzbdUrl($spot, $action);
+		} else {
+			return '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
+		} # else
+	} # makeSabnzbdUrl
 
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
 	function format_size($size) {
