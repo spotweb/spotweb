@@ -95,16 +95,21 @@
 <br>
 <table>
 <?php
-	if ($settings['nzb_download_local'] == true)
+	switch ($settings['nzbhandling']['action'] )
 	{
-		echo "<td><b>NZB local download enabled</b></td>";
-		echo "<tr><td>NZB directory: </td><td>" .$settings['nzb_local_queue_dir'] ."</td></tr>";
-		echo "<tr><td>Directory access: </td><td>";
-		$TestFileName = $settings['nzb_local_queue_dir'] ."testFile.txt";
-		$TestFileHandle = fopen($TestFileName, 'w') or die("Cannot create file</td></tr>");
-		echo "OK</td></tr>";
-		fclose($TestFileHandle);
-		unlink($TestFileName);
+		case "save":
+		case "runcommand":
+		case "push-sabnzbd":
+			echo "<td><b>NZB local download enabled</b></td>";
+			echo "<tr><td>NZB action: </td><td>" . $settings['nzbhandling']['action'] . "</td></tr>";
+			echo "<tr><td>NZB directory: </td><td>" .$settings['nzbhandling']['local_dir'] ."</td></tr>";
+			echo "<tr><td>Directory access: </td><td>";
+			$TestFileName = $settings['nzbhandling']['local_dir'] ."testFile.txt";
+			$TestFileHandle = fopen($TestFileName, 'w') or die("Cannot create file</td></tr>");
+			echo "OK</td></tr>";
+			fclose($TestFileHandle);
+			unlink($TestFileName);
+			break;
 	}
 ?>
 </table>
