@@ -96,19 +96,27 @@ class SpotNntp {
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
 			# als comment text zelf.
 			foreach($commentList as $comment) {
-				$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');
-				
-				# extract de velden we die we willen hebben
-				foreach($tmpAr['header'] as $hdr) {
-					$keys = explode(':', $hdr);
+				try {
+					$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');	
 					
-					switch($keys[0]) {
-						case 'From'	: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
-						case 'Date'	: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
-					} # switch
-				} # foreach
-				
-				$comments[] = $tmpAr; 
+					# extract de velden we die we willen hebben
+					foreach($tmpAr['header'] as $hdr) {
+						$keys = explode(':', $hdr);
+						
+						switch($keys[0]) {
+							case 'From'	: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+							case 'Date'	: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
+						} # switch
+					} # foreach
+					
+					$comments[] = $tmpAr; 
+				} 
+				catch(Exception $x) {
+					# Soms gaat het ophalen van een comment mis? Raar want deze komen van de XOVER
+					# van de server zelf, dus tenzij ze gecancelled worden mag dit niet gebeuren.
+					# iig, we negeren de error
+					;
+				} # catch
 			} # foreach
 
 			# sorteer de comments per datum
