@@ -120,7 +120,7 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 #$settings['db']['user'] = 'spotweb';
 #$settings['db']['pass'] = 'spotweb';
 
-# waar moeten ew de templates vinden?
+# waar moeten we de templates vinden?
 $settings['tpl_path'] = './templates/';
 
 # tonen we een update knop in de web ui?
