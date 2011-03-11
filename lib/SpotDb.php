@@ -228,7 +228,7 @@ class SpotDb
 	 *   revid is een of ander revisie nummer of iets dergelijks
 	 */
 	function addCommentRef($messageid, $revid, $nntpref) {
-		$this->_conn->exec("INSERT IGNORE INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
+		$this->_conn->exec("INSERT INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
 								Array($messageid, (int) $revid, $nntpref));
 	} # addCommentRef
 	
@@ -273,7 +273,7 @@ class SpotDb
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->exec("INSERT IGNORE INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
+		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['ID'],
 					   $spot['MessageID'],
@@ -299,7 +299,7 @@ class SpotDb
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
-		$this->_conn->exec("INSERT IGNORE INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
+		$this->_conn->exec("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
