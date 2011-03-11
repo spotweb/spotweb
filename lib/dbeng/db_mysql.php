@@ -129,6 +129,12 @@ class db_mysql extends db_abs {
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
+
+		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
+		$q = $this->arrayQuery("SHOW INDEX FROM spots WHERE Key_name = 'idx_spots_3' AND Non_unique = 1;");
+		if (count($q) == 1) {
+			$this->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_3, ADD UNIQUE idx_spots_3 (messageid);");
+		} # if
 		
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (empty($q)) {
@@ -179,6 +185,13 @@ class db_mysql extends db_abs {
 			# create indices
 			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
+
+		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen unieke messageid
+		$q = $this->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_1' AND Non_unique = 1;");
+		if (count($q) == 2) {
+			$this->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_1, ADD UNIQUE idx_spotsfull_1 (messageid, userid);");
+		} # if
+
 	} # Createdatabase
 
 } # class
