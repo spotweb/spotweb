@@ -210,7 +210,7 @@ if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <
 # Ga nu de template zetten
 #
 
-if (($settings['templates']['autodetect'] == true) && (isset($_REQUEST['HTTP_USER_AGENT']))) {
+if (($settings['templates']['autodetect'] == true) && (isset($_SERVER['HTTP_USER_AGENT']))) {
 		include_once('Mobile_Detect.php');
 		$detect = new Mobile_Detect();
 
