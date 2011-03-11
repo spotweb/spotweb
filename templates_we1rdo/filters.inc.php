@@ -34,7 +34,6 @@
 							</div>
 						</div>
 						
-						<br>
 						<input type='submit' class="filtersubmit" value='Zoek en filter'></input>
 					</form>
 
