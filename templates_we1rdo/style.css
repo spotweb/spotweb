@@ -9,8 +9,8 @@ div.clear {
 
 /* ZOEKEN */
 form#filterform table {border-collapse:separate; border-spacing:0 4px;}
-form#filterform table tbody > tr:nth-child(1) td {width:33%; text-align:center; padding-bottom:8px;}
-form#filterform table tbody > tr:nth-child(1) td input {position:relative; top:2px; margin:0 6px 0 0;}
+form#filterform table tbody > tr:first-child td {width:33%; text-align:center; padding-bottom:8px;}
+form#filterform table tbody > tr:first-child td input {position:relative; top:2px; margin:0 6px 0 0;}
 form#filterform td {padding:0;}
 
 input.searchbox {
