@@ -100,6 +100,9 @@ $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mo
 #
 $settings['retrieve_full'] = true;
 
+# moeten wij comments ophalen?
+$settings['retrieve_comments'] = true;
+
 # hoeveel spots wil je tonen op 1 pagina?
 $settings['prefs']['perpage'] = 100;
 
