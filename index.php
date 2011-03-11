@@ -13,7 +13,7 @@ require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
 require_once "lib/page/SpotPage_erasedls.php";
-
+require_once "lib/page/SpotPage_getspotmobile.php";
 #- main() -#
 try {
 	# database object
@@ -25,7 +25,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getspot', 'erasedls')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls')) === false) {
 		$page = 'index';
 	} # if
 
@@ -40,6 +40,23 @@ try {
 				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], 
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
+				$page->render();
+				break;
+		}
+		
+		case 'getspotmobile' : {
+				$page = new SpotPage_getspotmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page->render();
+				break;
+		} # getspotmobile
+
+		case 'getnzbmobile' : {
+				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page->render();
+				break;
+		} # getnzbmobile		
+		case 'getnzb' : {
+				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getspot

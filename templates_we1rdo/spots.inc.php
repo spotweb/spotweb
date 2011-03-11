@@ -48,7 +48,7 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16 width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {

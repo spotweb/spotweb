@@ -15,6 +15,7 @@ class SpotsOverview {
 	 */
 	function getFullSpot($msgId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId);
+		
 		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
@@ -24,7 +25,7 @@ class SpotsOverview {
 			$spotParser = new SpotParser();
 			$fullSpot = array_merge($spotParser->parseFull($fullSpot['xml']), $fullSpot);
 		} # else
-		
+	
 		return $fullSpot;
 	} # getFullSpot
 	

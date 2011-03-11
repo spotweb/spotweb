@@ -6,17 +6,16 @@
                 <img class="spotinfoimage" src="<?php echo $spot['image']; ?>">
             </a>
 			<div class="spotinfo">
-				<table class="spotheader">
-					<tbody>
-                    	<tr>
 <?php
 	if (!$spot['verified']) {
 ?>
-							<th class="warning">Deze Spot is niet geverifieerd, de naam van de poster is niet bevestigd</th>
+				<div class="warning">Deze Spot is niet geverifieerd, de naam van de poster is niet bevestigd!</div>
 <?php
 	}
 ?>
-						
+				<table class="spotheader">
+					<tbody>
+                    	<tr>						
                         	<th class="category"><?php echo $spot['formatname'];?></th>
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
