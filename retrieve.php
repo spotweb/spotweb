@@ -70,7 +70,7 @@ catch(Exception $x) {
 
 ## Comments
 try {
-	if ($settings['retrieve_full']) {
+	if ($settings['retrieve_comments']) {
 		$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
 												$db,
 												$req->getDef('output', ''));
