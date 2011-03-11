@@ -20,6 +20,7 @@ class db_mysql extends db_abs {
 	
 	function connect() {
 		$this->_conn = @mysql_connect($this->_db_host, $this->_db_user, $this->_db_pass);
+		mysql_set_charset('utf8', $this->_conn);
 		
 		if (!$this->_conn) {
 			throw new Exception("Unable to connect to MySQL server: " . mysql_error());
@@ -127,7 +128,7 @@ class db_mysql extends db_abs {
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
 		
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
@@ -136,7 +137,7 @@ class db_mysql extends db_abs {
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
-			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)")
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
@@ -178,7 +179,7 @@ class db_mysql extends db_abs {
 										filesize INTEGER);");										
 
 			# create indices
-			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
 	} # Createdatabase
 
