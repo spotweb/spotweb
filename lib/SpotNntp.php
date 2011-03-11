@@ -172,7 +172,11 @@ class SpotNntp {
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			if (!empty($spot['xml-signature']) && (!empty($spot['user-signature'])) && (!empty($spot['user-key']))) {
-				$spot['verified'] = $spotParser->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+				$spot['verified'] = $spotParser->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
+				
+				if (!$spot['verified']) {
+					$spot['verified'] = $spotParser->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+				} # if 
 			} else {
 				$spot['verified'] = false;
 			} # else

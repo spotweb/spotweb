@@ -236,11 +236,11 @@ class SpotParser {
 							if (strlen($spot['HeaderSign']) != 0) {
 								$spot['WasSigned'] = true;
 
-								# This is the string to verify
-								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
-
 								# the signature this header is signed with
 								$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
+
+								# This is the string to verify
+								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
 
 								# Check the RSA signature on the spot
 								$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
