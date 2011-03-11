@@ -101,7 +101,9 @@ class SpotNzb {
 		} # switch
 		
 		# en voeg hem toe aan de lijst met downloads
-		$this->_db->addDownload($fullSpot['messageid']);
+		if ($this->_settings['keep_downloadlist']) {
+			$this->_db->addDownload($fullSpot['messageid']);
+		} # if
 	} # handleNzbAction
 	 
 	/*

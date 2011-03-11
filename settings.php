@@ -100,6 +100,9 @@ $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mo
 #
 $settings['retrieve_full'] = true;
 
+# moeten wij comments ophalen?
+$settings['retrieve_comments'] = true;
+
 # hoeveel spots wil je tonen op 1 pagina?
 $settings['prefs']['perpage'] = 100;
 
@@ -133,6 +136,9 @@ $settings['show_updatebutton'] = false;
 
 # toon een download-nzb knop op het overzicht?
 $settings['show_nzbbutton'] = true;
+
+# moeten we bijhouden welke downloads er gedaan zijn?
+$settings['keep_downloadlist'] = true;
 
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(

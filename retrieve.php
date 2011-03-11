@@ -70,14 +70,16 @@ catch(Exception $x) {
 
 ## Comments
 try {
-	$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
-											$db,
-											$req->getDef('output', ''));
-	$msgdata = $retriever->connect($settings['comment_group']);
+	if ($settings['retrieve_comments']) {
+		$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
+												$db,
+												$req->getDef('output', ''));
+		$msgdata = $retriever->connect($settings['comment_group']);
 
-	$curMsg = $db->getMaxArticleId('comments');
-	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
-	$retriever->quit();
+		$curMsg = $db->getMaxArticleId('comments');
+		$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
+		$retriever->quit();
+	} # if
 }
 catch(RetrieverRunningException $x) {
 	echo "\r\n\r\n";
