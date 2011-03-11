@@ -119,8 +119,14 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 #$settings['db']['user'] = 'spotweb';
 #$settings['db']['pass'] = 'spotweb';
 
-# waar moeten ew de templates vinden?
-$settings['tpl_path'] = './templates/';
+# waar moeten we de templates vinden?
+# zet eerst de standaard waarden...
+# deze kunnen in de ownsettings nog worden aangepast.
+# het detecteren komt pas na het laden van de ownsettings.
+
+$settings['templates']['autodetect'] = true;
+$settings['templates']['default'] = './templates/';
+$settings['templates']['mobile'] = './templates_mobile/';
 
 # tonen we een update knop in de web ui?
 $settings['show_updatebutton'] = false;
@@ -195,6 +201,22 @@ if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	#
 if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
+# Ga nu de template zetten
+#
+
+if ($settings['templates']['autodetect'] == true) {
+	include_once('Mobile_Detect.php');
+	$detect = new Mobile_Detect();
+
+	if ($detect->isMobile()) {
+		$settings['tpl_path'] = $settings['templates']['mobile']; 
+	} else { 
+		$settings['tpl_path'] = $settings['templates']['default']; 
+	}
+} else {
+	$settings['tpl_path'] = $settings['templates']['default'];
+}
+
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
 #
