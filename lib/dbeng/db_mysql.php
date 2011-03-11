@@ -20,7 +20,6 @@ class db_mysql extends db_abs {
 	
 	function connect() {
 		$this->_conn = @mysql_connect($this->_db_host, $this->_db_user, $this->_db_pass);
-		mysql_set_charset('utf8', $this->_conn);
 		
 		if (!$this->_conn) {
 			throw new Exception("Unable to connect to MySQL server: " . mysql_error());
