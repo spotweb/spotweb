@@ -142,6 +142,16 @@ class db_mysql extends db_abs {
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
+			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(messageid)");
+		} # if
+
+		# Controleer of de 'idx_commentsxover_1' tabel wel recent is, de oude versie had geen unieke messageid
+		$q = $this->arrayQuery("SHOW INDEX FROM commentsxover WHERE Key_name = 'idx_commentsxover_1';"); // Een check of er al een index is, aangezien de vorige versie een error gaf
+		$q2 = $this->arrayQuery("SHOW INDEX FROM commentsxover WHERE Key_name = 'idx_commentsxover_1' AND Non_unique = 1;");
+		if (count($q) == 0) {
+			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
+		} elseif (count($q2) == 1) {
+			$this->rawExec("ALTER IGNORE TABLE commentsxover DROP INDEX idx_commentsxover_1, ADD UNIQUE idx_commentsxover_1 (messageid);");
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
