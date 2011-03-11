@@ -137,6 +137,9 @@ $settings['show_updatebutton'] = false;
 # toon een download-nzb knop op het overzicht?
 $settings['show_nzbbutton'] = true;
 
+# moeten we bijhouden welke downloads er gedaan zijn?
+$settings['keep_downloadlist'] = true;
+
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
 		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
