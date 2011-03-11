@@ -76,10 +76,11 @@
 						alert('Error removing downloadlist');
 					},
 					beforeSend: function(jqXHR, settings) {
-						var x = $("#erasedlsimg")[0].src = "images/loading.gif";
+						var x = $("li.info").html("<img src='templates_we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						var x = $("#erasedlsimg")[0].src = "images/gobutton.png";
+						var x = setTimeout( function() { $("li.info").html("History removed") }, 1000);
+						setTimeout( function() { location.reload() }, 1500);
 					}, // # complete
 					dataType: "xml"
 				});
@@ -107,14 +108,15 @@
 						} // if 
 					},
 					beforeSend: function(jqXHR, settings) {
-						var x = $("#updatespotimg")[0].src = "images/loading.gif";
+						var x = $("li.info").html("<img src='templates_we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						var x = $("#updatespotimg")[0].src = "images/gobutton.png";
+						var x = $("li.info").html("Updated spots");
 					}, // # complete
 					dataType: "xml"
 				});
 			}); // updatebutton
+			
 			
 			$("img.sabnzbd-button").click(function(e) {
 				e.preventDefault();

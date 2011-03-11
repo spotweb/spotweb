@@ -90,7 +90,7 @@ div.filter a img {
 }
 
 /* MAINTENANCE */
-ul.maintenancebox li.info {text-align:center; margin:10px 0;}
+ul.maintenancebox li.info {text-align:center; margin:10px 0; height:16px; line-height:16px;}
 ul.maintenancebox li a.updatespotsbtn,
 ul.maintenancebox li a.erasedlsbtn {
 	background:url(img/button.png) no-repeat left top;
