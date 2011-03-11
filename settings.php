@@ -211,14 +211,16 @@ if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <
 #
 
 if ($settings['templates']['autodetect'] == true) {
-	include_once('Mobile_Detect.php');
-	$detect = new Mobile_Detect();
+	if (isset($_REQUEST['HTTP_USER_AGENT'])) {
+		include_once('Mobile_Detect.php');
+		$detect = new Mobile_Detect();
 
-	if ($detect->isMobile()) {
-		$settings['tpl_path'] = $settings['templates']['mobile']; 
-	} else { 
-		$settings['tpl_path'] = $settings['templates']['default']; 
-	}
+		if ($detect->isMobile()) {
+			$settings['tpl_path'] = $settings['templates']['mobile']; 
+		} else { 
+			$settings['tpl_path'] = $settings['templates']['default']; 
+		}
+	} # if
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
 }
