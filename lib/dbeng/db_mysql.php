@@ -128,7 +128,6 @@ class db_mysql extends db_abs {
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
 		
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
