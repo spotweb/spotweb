@@ -127,6 +127,7 @@ class db_mysql extends db_abs {
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
+			$this->rawExec("CREATE UNIQUE idx_spots_3 ON spots(messageid)");
 		} # if
 		
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
@@ -135,7 +136,6 @@ class db_mysql extends db_abs {
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
-			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)")
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
