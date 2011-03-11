@@ -125,7 +125,7 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 # het detecteren komt pas na het laden van de ownsettings.
 
 $settings['templates']['autodetect'] = true;
-$settings['templates']['default'] = './templates/';
+$settings['templates']['default'] = './templates_we1rdo/';
 $settings['templates']['mobile'] = './templates_mobile/';
 
 # tonen we een update knop in de web ui?
