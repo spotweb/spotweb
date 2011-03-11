@@ -6,28 +6,35 @@ require_once "lib/exceptions/ParseSpotXmlException.php";
 
 class SpotParser {
 	private $_xmlarray = array();
+	private $_xmldata = '';
 	private $_xmlelement = '';
 
 	private function xmlfullStartElement($parser, $name, $attrs) 
 	{
+		$this->_xmldata = '';
 		$this->_xmlelement = strtolower($name);
 	} # xmlfullStartElement
 	
 	private function xmlfullEndElement($parser, $name) 
 	{
+		if ((isset($this->_xmlarray[$this->_xmlelement])) && (!empty($this->_xmlarray[$this->_xmlelement]))) {
+			if (!is_array($this->_xmlarray[$this->_xmlelement])) {
+				$this->_xmlarray[$this->_xmlelement] = array($this->_xmlarray[$this->_xmlelement], $this->_xmldata);
+			} else {
+				$this->_xmlarray[$this->_xmlelement][] = $this->_xmldata;
+			} # else
+		} else {
+			$this->_xmlarray[$this->_xmlelement] = $this->_xmldata;
+		} # else
+
 		$this->_xmlelement = '';
 	} # xmlfullEndElement
 
 	private function xmlfullCharacterHandler($parser, $data) {
-		if ((isset($this->_xmlarray[$this->_xmlelement])) && (!empty($this->_xmlarray[$this->_xmlelement]))) {
-			if (!is_array($this->_xmlarray[$this->_xmlelement])) {
-				$this->_xmlarray[$this->_xmlelement] = array($this->_xmlarray[$this->_xmlelement], $data);
-			} else {
-				$this->_xmlarray[$this->_xmlelement][] = $data;
-			} # else
-		} else {
-			$this->_xmlarray[$this->_xmlelement] = $data;
-		} # else
+		# deze functie wordt niet alleen aangeroepen voor elk element, maar kan als er
+		# bv. entities inzitten meerdere keren aangeroepen worden, vandaar dat we hier puur
+		# een temp string appenden
+		$this->_xmldata .= $data;
 	} # xmlfullCharacterHandler
 
 	function parseFull($xml) {
@@ -40,13 +47,13 @@ class SpotParser {
 		$xml_parser = xml_parser_create();
 		xml_set_element_handler($xml_parser, array($this, 'xmlfullStartElement'), array('SpotParser', 'xmlfullEndElement'));
 		xml_set_character_data_handler($xml_parser, array($this, 'xmlfullCharacterHandler'));
-		
+
 		if (!xml_parse($xml_parser, $xml, true)) {
 			$this->_xmlarray = false;
 		} # if error parsing
 		
 		xml_parser_free($xml_parser);
-		
+
 		# als de xml parser een error heeft gegeven, geef false terug
 		if ($this->_xmlarray === false) {
 			throw new ParseSpotXmlException();
@@ -236,14 +243,21 @@ class SpotParser {
 							if (strlen($spot['HeaderSign']) != 0) {
 								$spot['WasSigned'] = true;
 
-								# the signature this header is signed with
-								$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
+								# KeyID 7 betekent dat het serverless signed is
+								if ($spot['KeyID'] == 7) {
+									$userSignedHash = sha1('<' . $spot['MessageID'] . '>', false);
+									$spot['Verified'] = (substr($userSignedHash, 0, 3) == '0000');
+								} else {
+									# the signature this header is signed with
+									$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
 
-								# This is the string to verify
-								$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
+									# This is the string to verify
+									$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
 
-								# Check the RSA signature on the spot
-								$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
+									
+									# Check the RSA signature on the spot
+									$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
+								} # else
 							} # if
 						} # if must be signed
 						else {
