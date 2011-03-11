@@ -52,7 +52,7 @@ class SpotCategories {
 					  1 => "WMA",
 					  2 => "WAV",
 					  3 => "OGG",
-					  4 => "Lossles",
+					  4 => "1:1",
 					  5 => "DTS",
 					  6 => "AAC",
 					  7 => "APE",
