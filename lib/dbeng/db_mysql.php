@@ -136,6 +136,7 @@ class db_mysql extends db_abs {
 										   messageid VARCHAR(250),
 										   revid INTEGER,
 										   nntpref VARCHAR(250));");
+			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
