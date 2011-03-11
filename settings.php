@@ -100,16 +100,15 @@ $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mo
 #
 $settings['retrieve_full'] = true;
 
-// preferences
-// hoeveel spots wil je tonen op 1 pagina?
+# hoeveel spots wil je tonen op 1 pagina?
 $settings['prefs']['perpage'] = 100;
 
-// settings 
+# settings 
 $settings['hdr_group'] = 'free.pt';
 $settings['nzb_group'] = 'alt.binaries.ftd';
 $settings['comment_group'] = 'free.usenet';
 
-// db
+# db
 $settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3 en mysql
 $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
@@ -120,7 +119,7 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 #$settings['db']['user'] = 'spotweb';
 #$settings['db']['pass'] = 'spotweb';
 
-# waar moeten we de templates vinden?
+# waar moeten ew de templates vinden?
 $settings['tpl_path'] = './templates/';
 
 # tonen we een update knop in de web ui?
