@@ -46,12 +46,37 @@ class SpotNzb {
 	/*
 	 * Roept sabnzbd aan en parseert de output
 	 */
-	function runHttp($fullSpot, $action) {
+	function runHttp($fullSpot, $nzb, $action) {
+		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
+		# equivalent to <input type="file" name="uploaded_file"/>
+		@define('FORM_FIELD', 'name'); 
+
 		# URL to run
 		$url = $this->generateSabnzbdUrl($fullSpot, $action);
+		
+		# dit is gecopieerd van:
+		#	http://stackoverflow.com/questions/4003989/upload-a-file-using-file-get-contents
+
+		# creeer de header
+		$header = 'Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY;
+
+		# bouw nu de content
+		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
+		$content .= 
+            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $this->cleanForFileSystem($fullSpot['title']) . ".nzb\"\r\n" .
+			"Content-Type: application/x-nzb\r\n\r\n" . 
+			$content .= $nzb."\r\n";
+			
+		# signal end of request (note the trailing "--")
+		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
 
 		# create an stream context to be able to pass certain parameters
-		$ctx = stream_context_create(array('http' => array('timeout' => 10)));
+		$ctx = stream_context_create(array('http' => 
+					array('timeout' => 10,
+						  'method' => 'POST',
+						  'header' => $header,
+						  'content' => $content)));
+						  
 		$output = @file_get_contents($url, 0, $ctx);
 		
 		if ($output	=== false) {
@@ -92,8 +117,7 @@ class SpotNzb {
 			} # runcommand
 			
 			case 'push-sabnzbd'		: {
-				$this->saveNzbFile($fullSpot, $nzb); 
-				$this->runHttp($fullSpot, $action);
+				$this->runHttp($fullSpot, $nzb, $action);
 				break;
 			} # push-sabnzbd
 			
@@ -167,8 +191,8 @@ class SpotNzb {
 			$tmp = str_replace('$NZBURL', urlencode($sabnzbd['spotweburl'] . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
 		} elseif ($action == 'push-sabnzbd') {
 			# server roept sabnzbd aan
-			$tmp = str_replace('$SABNZBDMODE', 'addlocalfile', $tmp);
-			$tmp = str_replace('$NZBURL', urlencode($this->makeNzbLocalPath($spot)), $tmp);
+			$tmp = str_replace('$SABNZBDMODE', 'addfile', $tmp);
+			$tmp = str_replace('$NZBURL', '', $tmp);
 		} # else
 		
 		return $tmp;
