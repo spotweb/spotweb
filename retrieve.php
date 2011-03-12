@@ -41,10 +41,8 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 	$db->setRetrieverRunning($settings['nntp_hdr']['host'], false);
 } # if
 
-
 ## Spots
 try {
-	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
 
 	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], 
 										 $db, 
@@ -53,6 +51,12 @@ try {
 										 $settings['retrieve_full']);
 	$msgdata = $retriever->connect($settings['hdr_group']);
 	$retriever->displayStatus('dbcount', $db->getSpotCount());
+	
+	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
+	if ($curMsg != 0) {
+		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
+	} # if
+
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
 	$db->setLastUpdate($settings['nntp_hdr']['host']);
@@ -77,6 +81,10 @@ try {
 		$msgdata = $retriever->connect($settings['comment_group']);
 
 		$curMsg = $db->getMaxArticleId('comments');
+		if ($curMsg != 0) {
+			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
+		} # if
+
 		$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 		$retriever->quit();
 	} # if

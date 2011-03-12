@@ -39,6 +39,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'verified'			: echo "verified " . $txt . ", of "; break;
 					case 'loopcount'		: echo $txt . " spots)\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
+					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
 					case ''					: echo "\r\n"; break;
 					
 					default					: echo $cat . $txt;

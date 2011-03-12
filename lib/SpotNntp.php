@@ -35,6 +35,11 @@ class SpotNntp {
 			
 			return $hdrList;
 		} # getOverview()
+
+		function getMessageIdList($first, $last) {
+			$hdrList = $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
+			return $hdrList;
+		} # getMessageIdList()
 		
 		function quit() {
 			try {

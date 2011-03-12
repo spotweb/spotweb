@@ -30,6 +30,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " comments\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments\r\n"; break;
+					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
 					case ''					: echo "\r\n"; break;
 					
 					default					: echo $cat . $txt;

@@ -47,6 +47,39 @@ abstract class SpotRetriever_Abs {
 		
 
 		/*
+		 * Zoekt het juiste articlenummer voor een opgegeven messageid
+		 */
+		function searchMessageid($messageId) {
+			if (empty($messageId)) {
+				return 0;
+			} # if
+				
+			$this->displayStatus('searchmsgid', '');
+			
+			$found = false;
+			$decrement = 5000;
+			$messageId = '<' . $messageId . '>';
+			$curMsg = $this->_msgdata['last'];
+
+			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
+				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
+
+				# get the list of headers (XHDR)
+				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				
+				foreach($hdrList as $msgNum => $msgId) {
+					if ($msgId == $messageId) {
+						$curMsg = $msgNum;
+						$found = true;
+						break;
+					} # if
+				} # for
+			} # while
+
+			return $curMsg;
+		} # searchMessageId
+		
+		/*
 		 * Haal de headers op en zorg dat ze steeds verwerkt worden
 		 */
 		function loopTillEnd($curMsg, $increment = 1000) {

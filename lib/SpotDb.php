@@ -36,7 +36,7 @@ class SpotDb
 		
 		$this->_conn->connect();
     } # ctor
-	
+
 	/* 
 	 * Update of insert the maximum article id in de database.
 	 */
@@ -63,6 +63,22 @@ class SpotDb
 		return $artId;
 	} # getMaxArticleId
 
+	/* 
+	 * Returns the highest messageid from server 
+	 */
+	function getMaxMessageId($headers) {
+		if ($headers == 'headers') {
+			$msgId = $this->_conn->singleQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 1");
+		} else {
+			$msgId = $this->_conn->singleQuery("SELECT messageid FROM commentsxover ORDER BY id DESC LIMIT 1");
+		} # else
+		if ($msgId == null) {
+			$msgId = '';
+		} # if
+		
+		return $msgId;
+	} # func. getMaxMessageId
+	 
 	/*
 	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
 	 */
