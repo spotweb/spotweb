@@ -50,7 +50,7 @@
 			$categoryClass = "green";
 		} elseif (stristr($filter[2],"cat3")) {
 			$categoryClass = "red";
-		} elseif (!$filter[2]) {
+		} else {
 			$categoryClass = "";
 		}
 ?>
@@ -60,12 +60,11 @@
             echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
             foreach($filter[4] as $subFilter) {
 ?>
-                                <li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2];?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
+            			<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2];?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
 <?php
 			} # foreach 
             echo "\t\t\t\t\t\t\t</ul>\r\n";
         } # is_array
-		
     } # foreach
 ?>
                     </ul>
