@@ -69,7 +69,7 @@ class db_sqlite3 extends db_abs {
 		$q = $this->arrayQuery("PRAGMA table_info(spots)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
-											messageid TEXT,
+											messageid VARCHAR(128),
 											spotid INTEGER,
 											category INTEGER, 
 											subcat INTEGER,
@@ -95,9 +95,9 @@ class db_sqlite3 extends db_abs {
 		$q = $this->arrayQuery("PRAGMA table_info(commentsxover)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
-										   messageid TEXT,
+										   messageid VARCHAR(128),
 										   revid INTEGER,
-										   nntpref TEXT);");
+										   nntpref VARCHAR(128));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
 		
@@ -131,7 +131,7 @@ class db_sqlite3 extends db_abs {
 		$q = $this->arrayQuery("PRAGMA table_info(downloadlist)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
-										   messageid VARCHAR(250),
+										   messageid VARCHAR(128),
 										   stamp INTEGER);");
 			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 		} # if
@@ -160,7 +160,7 @@ class db_sqlite3 extends db_abs {
 		$q = $this->arrayQuery("PRAGMA table_info(spotsfull)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY, 
-										messageid varchar(250),
+										messageid varchar(128),
 										userid varchar(32),
 										verified BOOLEAN,
 										usersignature TEXT,

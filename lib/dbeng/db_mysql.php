@@ -106,7 +106,7 @@ class db_mysql extends db_abs {
 		$q = $this->arrayQuery("SHOW TABLES");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(250),
+										messageid varchar(128),
 										spotid INTEGER,
 										category INTEGER, 
 										subcat INTEGER,
@@ -139,9 +139,9 @@ class db_mysql extends db_abs {
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(250),
+										   messageid VARCHAR(128),
 										   revid INTEGER,
-										   nntpref VARCHAR(250));");
+										   nntpref VARCHAR(128));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if
 		
@@ -160,7 +160,7 @@ class db_mysql extends db_abs {
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'downloadlist'");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(250),
+										   messageid VARCHAR(128),
 										   stamp INTEGER);");
 			$this->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 		} # if
@@ -174,7 +174,7 @@ class db_mysql extends db_abs {
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'spotsfull'");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(250),
+										messageid varchar(128),
 										userid varchar(32),
 										verified BOOLEAN,
 										usersignature TEXT,
