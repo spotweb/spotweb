@@ -78,10 +78,10 @@ div.filter a {
 	font-weight:bold;
 }
 
-div.filter > ul > li:nth-child(2) a {background-color:#daecff;}
-div.filter > ul > li:nth-child(3) a {background-color:#fffad3;}
-div.filter > ul > li:nth-child(4) a {background-color:#cbffcb;}
-div.filter > ul > li:nth-child(5) a {background-color:#fedede;}
+div.filter > ul > li.blue a {background-color:#daecff;}
+div.filter > ul > li.orange a {background-color:#fffad3;}
+div.filter > ul > li.green a {background-color:#cbffcb;}
+div.filter > ul > li.red a {background-color:#fedede;}
 
 div.filter a img {
 	border:0;
