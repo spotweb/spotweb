@@ -1,5 +1,9 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
+$site = $_SERVER['SERVER_NAME'];
+$source = $_SERVER['REQUEST_URI'];
+$getpath = explode('/',$source);
+$setpath = $site . "/" . $getpath . "/";
 ?>
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
@@ -8,7 +12,7 @@
                       <a href="<?php echo $spot['sabnzbdurl'];?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SABNZBD</a></th>
 <?php } else { ?>	
 
-      <a class="nzb" href="<?php echo 'http://'. $_SERVER['SERVER_NAME'] ?>/spotweb/?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
+      <a class="nzb" href="<?php echo 'http://'. $setpath ?>?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
 	<?php } ?>		
 	
 	</div>
