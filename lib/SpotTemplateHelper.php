@@ -116,7 +116,7 @@ class SpotTemplateHelper {
 	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,
 	 * vullen we een aantal defaults in.
 	 */
-	function formatSpot($spot) {
+	function formatSpot($spot, $comments) {
 		// Category is altijd een integer bij ons
 		$spot['category'] = (int) $spot['category'];
 		
@@ -142,7 +142,13 @@ class SpotTemplateHelper {
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);
 		
-		return $spot;
+		// escape de HTML voor de comments
+		$commentCount = count($comments);
+		for($i = 0; $i < $commentCount; $i++ ){
+			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
+		} # for
+		
+		return array($spot, $comments);
 	} # formatSpot
 	
 } # class SpotTemplateHelper

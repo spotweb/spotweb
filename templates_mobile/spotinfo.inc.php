@@ -1,5 +1,5 @@
 <?php
-	$spot = $tplHelper->formatSpot($spot);
+	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
 	$setpath = $tplHelper->getSitePath();
 ?>
 <div data-role="page" id="spots"> 
