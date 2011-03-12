@@ -22,12 +22,14 @@
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+
+		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 	
 		$count++;
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class=' " . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "' >" . 
-			 "<td class='category'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</td>" .
+			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
 			 "<td class='title'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
 			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .

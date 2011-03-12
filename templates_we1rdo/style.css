@@ -151,6 +151,8 @@ table.spots tr td.category {
 	vertical-align:top;
 }
 
+table.spots tr td.category a {color:#fff;}
+
 table.spots tr td img.sabnzbd-button {margin:0 4px;}
 
 table.spots tr.blue td {background-color:#daecff;}
