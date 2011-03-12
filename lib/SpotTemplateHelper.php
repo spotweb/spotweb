@@ -151,13 +151,59 @@ class SpotTemplateHelper {
 		return array($spot, $comments);
 	} # formatSpot
 	
+	#
+	# Copied from:
+	# 	http://www.mdj.us/web-development/php-programming/another-variation-on-the-time-ago-php-function-use-mysqls-datetime-field-type/
+	# DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...	
+	function time_ago($date, $granularity=2) {
+		$difference = time() - $date;
+		$periods = array(0 => 315360000,
+			1 => 31536000,
+			2 => 2628000,
+			3 => 604800, 
+			4 => 86400,
+			5 => 3600,
+			6 => 60);
+		$names_singular = array('eeuw', 'jaar', 'maand', 'week', 'dag', 'uur', 'minuut');
+		$names_plural = array('eeuwen', 'jaar', 'maanden', 'weken', 'dagen', 'uur', 'minuten');
+			
+		$retval = '';
+		foreach ($periods as $key => $value) {
+			if ($difference >= $value) {
+				$time = floor($difference/$value);
+				$difference %= $value;
+				$retval .= ($retval ? ' ' : '').$time.' ';
+				
+				if ($time > 1) {
+					$retval .= $names_plural[$key];
+				} else {
+					$retval .= $names_singular[$key];
+				} # if
+				$retval .= ', ';
+				$granularity--;
+			}
+			
+			if ($granularity == '0') { break; }
+		}
+		return substr($retval, 0, -2);
+	} # time_ago()
+
+
 	function formatDate($stamp, $type) {
-		switch($type) {
-			case 'comment'		:
-			case 'spotlist'		: 
-			case 'lastupdate'	: 
-			default 			: return strftime("%a, %d-%b-%Y (%H:%M)", $stamp);
-		} # switch
+		if (!isset($this->_settings['prefs']['date_formatting'])) {
+			$this->_settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
+		} # if
+		
+		if ($this->_settings['prefs']['date_formatting'] == 'human') {
+			return $this->time_ago($stamp);
+		} else {
+			switch($type) {
+				case 'comment'		:
+				case 'spotlist'		: 
+				case 'lastupdate'	: 
+				default 			: return strftime($this->_settings['prefs']['date_formatting'], $stamp);
+			} # switch
+		} # else
 	} # formatDate
 	
 } # class SpotTemplateHelper
