@@ -171,10 +171,10 @@ table.spots tr.orange a.nzb {color:#e9a213;}
 table.spots tr.green a.nzb {color:#00de00;}
 table.spots tr.red a.nzb {color:#de2500;}
 
-table.spots tr:last-child td {background-color:#ececec; height:20px; font-weight:bold;}
-table.spots tr:last-child td a {display:inline;}
-table.spots tr:last-child td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
-table.spots tr:last-child td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 5px 0 0;}
+table.spots tr.nav td {background-color:#ececec; height:20px; font-weight:bold;}
+table.spots tr.nav td a {display:inline;}
+table.spots tr.nav td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
+table.spots tr.nav td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 5px 0 0;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:500px;}

@@ -72,7 +72,7 @@ class SpotCategories {
 					  11 => "Wii",
 					  12 => "PS3",
 					  13 => "WinPh",
-					  14 => "iOs",
+					  14 => "iOS",
 					  15 => "Android"),
   			  3 =>
 				Array(0 => "WIN",
@@ -81,7 +81,7 @@ class SpotCategories {
 					  3 => "OS/2",
 					  4 => "WinPh",
 					  5 => "NAV",
-					  6 => "iOs",
+					  6 => "iOS",
 					  7 => "Android")
 			);
 			
@@ -237,7 +237,7 @@ class SpotCategories {
 					  11 => "Nintento Wii",
 					  12 => "Playstation 3",
 					  13 => "Windows Phone",
-					  14 => "iOs",
+					  14 => "iOS",
 					  15 => "Android"),
 				  'b' => 
 				Array(0 => "ISO",
@@ -268,7 +268,7 @@ class SpotCategories {
 					  3 => "OS/2",
 					  4 => "Windows Phone",
 					  5 => "Navigatiesystemen",
-					  6 => "iOs",
+					  6 => "iOS",
 					  7 => "Android"),
 				  'b' =>
 				Array(0 => "Audio bewerking",
