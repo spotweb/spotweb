@@ -1,5 +1,7 @@
 <?php
 require_once "lib/SpotNzb.php";
+require_once "lib/ubb/ubbparse.php";
+require_once 'lib/ubb/taghandler.inc.php';
 
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
@@ -62,13 +64,13 @@ class SpotTemplateHelper {
 
 	
 	function formatDescription($tmp) {
-		$tmp = str_ireplace('[b]', '<b>', $tmp);
-		$tmp = str_ireplace('[/b]', '</b>', $tmp);
-		$tmp = str_ireplace('[i]', '<i>', $tmp);
-		$tmp = str_ireplace('[/i]', '</i>', $tmp);
-		$tmp = str_ireplace('[br]', "<br>", $tmp);
-		$tmp = str_ireplace('[u]', '<u>', $tmp);
-		$tmp = str_ireplace('[/u]', '</u>', $tmp);
+		# initialize ubb parser
+		$parser = new UbbParse($tmp);
+		TagHandler::setDeniedTags( Array() );
+        $tmp = $parser->parse();
+		$tmp = $tmp[0];
+	
+		# en replace eventuele misvormde br tags
 		$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
 		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
 		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
