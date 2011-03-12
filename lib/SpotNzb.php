@@ -48,8 +48,8 @@ class SpotNzb {
 	 */
 	function runHttp($fullSpot, $nzb, $action) {
 		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
-		# equivalent to <input type="file" name="uploaded_file"/>
-		@define('FORM_FIELD', 'name'); 
+		# equivalent to <input type="file" name="nzbfile"/>
+		@define('FORM_FIELD', 'nzbfile'); 
 
 		# URL to run
 		$url = $this->generateSabnzbdUrl($fullSpot, $action);
@@ -65,24 +65,24 @@ class SpotNzb {
 		$content .= 
             "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $this->cleanForFileSystem($fullSpot['title']) . ".nzb\"\r\n" .
 			"Content-Type: application/x-nzb\r\n\r\n" . 
-			$content .= $nzb."\r\n";
+			$nzb."\r\n";
 			
 		# signal end of request (note the trailing "--")
 		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
 
 		# create an stream context to be able to pass certain parameters
 		$ctx = stream_context_create(array('http' => 
-					array('timeout' => 10,
+					array('timeout' => 15,
 						  'method' => 'POST',
 						  'header' => $header,
 						  'content' => $content)));
-						  
+
 		$output = @file_get_contents($url, 0, $ctx);
-		
 		if ($output	=== false) {
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
-		if (strcasecmp($output, "OK") == 0) {
+		
+		if (strtolower(trim($output)) != 'ok') {
 			throw new Exception("sabnzbd returned: " . $output);
 		} # if
 	} # runHttp
