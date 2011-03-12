@@ -17,6 +17,8 @@ class CustomTplHelper extends SpotTemplateHelper {
 		$source = $_SERVER['REQUEST_URI'];
 		$getpath = explode('/',$source);
 		$setpath = $site . "/" . $getpath[1] . "/";
+		
+		return $setpath;
 	} # getSitePath
 	
 	
