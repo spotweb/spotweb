@@ -12,4 +12,12 @@ class CustomTplHelper extends SpotTemplateHelper {
 		return '-';
 	} # cat2color
 	
+	function getSitePath() {
+		$site = $_SERVER['SERVER_NAME'];
+		$source = $_SERVER['REQUEST_URI'];
+		$getpath = explode('/',$source);
+		$setpath = $site . "/" . $getpath[1] . "/";
+	} # getSitePath
+	
+	
 } # class CustomTplHelper

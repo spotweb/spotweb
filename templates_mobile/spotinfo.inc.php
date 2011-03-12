@@ -1,9 +1,6 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
-$site = $_SERVER['SERVER_NAME'];
-$source = $_SERVER['REQUEST_URI'];
-$getpath = explode('/',$source);
-$setpath = $site . "/" . $getpath[1] . "/";
+	$setpath = $tplHelper->getSitePath();
 ?>
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">

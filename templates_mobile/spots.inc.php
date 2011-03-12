@@ -1,9 +1,6 @@
 <?php 
-$getUrl = $tplHelper->getFilterParams(); 
-$site = $_SERVER['SERVER_NAME'];
-$source = $_SERVER['REQUEST_URI'];
-$getpath = explode('/',$source);
-$setpath = $site . "/" . $getpath[1] . "/";
+$getUrl = $tplHelper->getFilterParams();
+$setpath = $tplHelper->getSitePath();
 ?>
 
 <div data-role="page" id="spots"> 
