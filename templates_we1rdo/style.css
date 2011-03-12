@@ -38,6 +38,7 @@ input.filtersubmit {
 	font:11px Arial, Helvetica, sans-serif;
 	cursor:pointer;
 	font-weight:bold;
+	display:block;
 }
 
 /* FILTERS */
