@@ -24,15 +24,10 @@
 							</tbody>
 						</table>
 
-						<div class='advancedsearch'>
-							<tr> 
-								<td colspan='3'> <input type="checkbox" name="search[unfiltered]" id='search-unfiltered' value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>></input><label for='search-unfiltered'>Vergeet filters voor zoekopdracht</label></td>
-							</tr>
-							<div id="tree"> 
-								<ul>
-								</ul>
-							</div>
-						</div>
+                        <div id="tree"> 
+                            <ul>
+                            </ul>
+                        </div>
 						
 						<input type='submit' class="filtersubmit" value='Zoek en filter'></input>
 					</form>
