@@ -19,7 +19,7 @@
 								</tr>
 
 								<tr> 
-									<td colspan="3"> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
+									<td colspan='3'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
 								</tr>
 							</tbody>
 						</table>
