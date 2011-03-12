@@ -1,9 +1,15 @@
-<?php $getUrl = $tplHelper->getFilterParams(); ?>
+<?php 
+$getUrl = $tplHelper->getFilterParams(); 
+$site = $_SERVER['SERVER_NAME'];
+$source = $_SERVER['REQUEST_URI'];
+$getpath = explode('/',$source);
+$setpath = $site . "/" . $getpath . "/";
+?>
 
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Spotweb</h1>
-	<a href='<?php echo "http://". $_SERVER["SERVER_NAME"] ?>/spotweb/index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
+	<a href='<?php echo "http://". $setpath?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
 	<div data-role="navbar">
 		<ul>
 			<li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
@@ -22,7 +28,7 @@
 $count = 0;
 
 	foreach($spots as $spot) {
-		echo "<li><a href='http://". $_SERVER["SERVER_NAME"] . "/spotweb/index.php?page=getspotmobile&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper(strftime("%d %b %H:%M", $spot['stamp'])) ."</p></a></li>\n";
+		echo "<li><a href='http://". $setpath . "index.php?page=getspotmobile&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper(strftime("%d %b %H:%M", $spot['stamp'])) ."</p></a></li>\n";
 	}
 	
 ?>
@@ -30,7 +36,7 @@ $count = 0;
 
 <fieldset class="ui-grid-a">
 	<?php if ($prevPage >= 0) { ?> 
-	<div class="ui-block-a"><a href="<?php echo $_SERVER['SERVER_NAME'];?>index.php?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
+	<div class="ui-block-a"><a href="<?php echo $setpath;?>index.php?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
 			<?php }else{ ?>
 	<div class="ui-block-a"><a href="#" disabled data-theme="c" rel=external data-role="button" data-icon="minus">&nbsp;</a></div>
 			<?php } ?> 
