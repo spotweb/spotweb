@@ -6,7 +6,7 @@ $setpath = $tplHelper->getSitePath();
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Spotweb</h1>
-	<a href='<?php echo "http://". $setpath?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
+	<a href='<?php echo "http://". $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
 	<div data-role="navbar">
 		<ul>
 			<li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
