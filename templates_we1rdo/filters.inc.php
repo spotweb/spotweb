@@ -43,7 +43,7 @@
 <?php
     foreach($filters as $filter) {
 ?>
-                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2color($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="?search[tree]=<?php echo $filter[2];?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
+                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="?search[tree]=<?php echo $filter[2];?>"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a>
 <?php
         if (!empty($filter[4])) {
             echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
