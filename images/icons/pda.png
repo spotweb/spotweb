@@ -1,0 +1,1205 @@
+
+    
+
+  
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Commit 25d275f4b7eb9bba1a3666546003930f14f36da8 to we1rdo/spotweb - GitHub</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
+
+    <link href="https://assets.github.com/stylesheets/bundle_common.css?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" media="screen" rel="stylesheet" type="text/css" />
+<link href="https://assets.github.com/stylesheets/bundle_github.css?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" media="screen" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript">
+      if (typeof console == "undefined" || typeof console.log == "undefined")
+        console = { log: function() {} }
+    </script>
+    <script type="text/javascript" charset="utf-8">
+      var GitHub = {
+        assetHost: 'https://assets.github.com'
+      }
+      var github_user = null
+      
+    </script>
+    <script src="https://assets.github.com/javascripts/jquery/jquery-1.4.2.min.js?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" type="text/javascript"></script>
+    <script src="https://assets.github.com/javascripts/bundle_common.js?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" type="text/javascript"></script>
+<script src="https://assets.github.com/javascripts/bundle_github.js?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" type="text/javascript"></script>
+
+
+        <script type="text/javascript" charset="utf-8">
+      GitHub.spy({
+        repo: "we1rdo/spotweb"
+      })
+    </script>
+
+    
+
+  <link rel='alternate' type='text/plain+diff' href='/we1rdo/spotweb/commit/25d275f4b7eb9bba1a3666546003930f14f36da8.diff' />
+  <link rel='alternate' type='text/plain+patch' href='/we1rdo/spotweb/commit/25d275f4b7eb9bba1a3666546003930f14f36da8.patch' />
+
+  <link href="https://github.com/we1rdo/spotweb/commits/25d275f4b7eb9bba1a3666546003930f14f36da8.atom" rel="alternate" title="Recent Commits to spotweb:25d275f4b7eb9bba1a3666546003930f14f36da8" type="application/atom+xml" />
+
+    <META NAME="ROBOTS" CONTENT="NOINDEX, FOLLOW">    <meta name="description" content="" />
+    <script type="text/javascript">
+      GitHub.nameWithOwner = GitHub.nameWithOwner || "we1rdo/spotweb";
+      GitHub.currentRef = '';
+      GitHub.commitSHA = "25d275f4b7eb9bba1a3666546003930f14f36da8";
+      GitHub.currentPath = '';
+      GitHub.masterBranch = "master";
+
+      
+    </script>
+  
+
+        <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-3769691-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script');
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        ga.setAttribute('async', 'true');
+        document.documentElement.firstChild.appendChild(ga);
+      })();
+    </script>
+
+    
+  </head>
+
+  
+
+  <body class="logged_out page-commit-show">
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="subnavd" id="main">
+      <div id="header" class="true">
+        
+          <a class="logo boring" href="https://github.com">
+            <img alt="github" class="default" src="https://assets.github.com/images/modules/header/logov3.png?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" />
+            <!--[if (gt IE 8)|!(IE)]><!-->
+            <img alt="github" class="hover" src="https://assets.github.com/images/modules/header/logov3-hover.png?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" />
+            <!--<![endif]-->
+          </a>
+        
+        
+        <div class="topsearch">
+  
+    <ul class="nav logged_out">
+      <li class="pricing"><a href="/plans">Pricing and Signup</a></li>
+      <li class="explore"><a href="/explore">Explore GitHub</a></li>
+      <li class="features"><a href="/features">Features</a></li>
+      <li class="blog"><a href="/blog">Blog</a></li>
+      <li class="login"><a href="/login?return_to=https://github.com/we1rdo/spotweb/commit/25d275f4b7eb9bba1a3666546003930f14f36da8">Login</a></li>
+    </ul>
+  
+</div>
+
+      </div>
+
+      
+      
+        
+    <div class="site">
+      <div class="pagehead repohead vis-public fork  ">
+
+      
+
+      <div class="title-actions-bar">
+        <h1>
+          <a href="/we1rdo">we1rdo</a> / <strong><a href="https://github.com/we1rdo/spotweb">spotweb</a></strong>
+          
+            <span class="fork-flag">
+              
+              <span class="text">forked from <a href="/spotweb/spotweb">spotweb/spotweb</a></span>
+            </span>
+          
+          
+        </h1>
+
+        
+    <ul class="actions">
+      
+
+      
+        <li class="for-owner" style="display:none"><a href="https://github.com/we1rdo/spotweb/admin" class="minibutton btn-admin "><span><span class="icon"></span>Admin</span></a></li>
+        <li>
+          <a href="/we1rdo/spotweb/toggle_watch" class="minibutton btn-watch " id="watch_button" onclick="var f = document.createElement('form'); f.style.display = 'none'; this.parentNode.appendChild(f); f.method = 'POST'; f.action = this.href;var s = document.createElement('input'); s.setAttribute('type', 'hidden'); s.setAttribute('name', 'authenticity_token'); s.setAttribute('value', '0ec3b8d6f75ae529420e60da0cd2318c30466538'); f.appendChild(s);f.submit();return false;" style="display:none"><span><span class="icon"></span>Watch</span></a>
+          <a href="/we1rdo/spotweb/toggle_watch" class="minibutton btn-watch " id="unwatch_button" onclick="var f = document.createElement('form'); f.style.display = 'none'; this.parentNode.appendChild(f); f.method = 'POST'; f.action = this.href;var s = document.createElement('input'); s.setAttribute('type', 'hidden'); s.setAttribute('name', 'authenticity_token'); s.setAttribute('value', '0ec3b8d6f75ae529420e60da0cd2318c30466538'); f.appendChild(s);f.submit();return false;" style="display:none"><span><span class="icon"></span>Unwatch</span></a>
+        </li>
+        
+          
+            <li class="for-notforked" style="display:none"><a href="/we1rdo/spotweb/fork" class="minibutton btn-fork " id="fork_button" onclick="var f = document.createElement('form'); f.style.display = 'none'; this.parentNode.appendChild(f); f.method = 'POST'; f.action = this.href;var s = document.createElement('input'); s.setAttribute('type', 'hidden'); s.setAttribute('name', 'authenticity_token'); s.setAttribute('value', '0ec3b8d6f75ae529420e60da0cd2318c30466538'); f.appendChild(s);f.submit();return false;"><span><span class="icon"></span>Fork</span></a></li>
+            <li class="for-hasfork" style="display:none"><a href="#" class="minibutton btn-fork " id="your_fork_button"><span><span class="icon"></span>Your Fork</span></a></li>
+          
+
+          
+        
+      
+      
+      <li class="repostats">
+        <ul class="repo-stats">
+          <li class="watchers"><a href="/we1rdo/spotweb/watchers" title="Watchers" class="tooltipped downwards">1</a></li>
+          <li class="forks"><a href="/we1rdo/spotweb/network" title="Forks" class="tooltipped downwards">20</a></li>
+        </ul>
+      </li>
+    </ul>
+
+      </div>
+
+        
+  <ul class="tabs">
+    <li><a href="https://github.com/we1rdo/spotweb/tree/" highlight="repo_source">Source</a></li>
+    <li><a href="https://github.com/we1rdo/spotweb/commits/" class="selected" highlight="repo_commits">Commits</a></li>
+    <li><a href="/we1rdo/spotweb/network" highlight="repo_network">Network</a></li>
+    <li><a href="/we1rdo/spotweb/pulls" highlight="repo_pulls">Pull Requests (0)</a></li>
+
+    
+
+    
+      
+      <li><a href="/we1rdo/spotweb/issues" highlight="issues">Issues (1)</a></li>
+    
+
+    
+    <li><a href="/we1rdo/spotweb/graphs" highlight="repo_graphs">Graphs</a></li>
+
+    <li class="contextswitch nochoices">
+      <span class="toggle leftwards tooltipped" title="25d275f4b7eb9bba1a3666546003930f14f36da8">
+        <em>Tree:</em>
+        <code>25d275f</code>
+      </span>
+    </li>
+  </ul>
+
+  <div style="display:none" id="pl-description"><p><em class="placeholder">click here to add a description</em></p></div>
+  <div style="display:none" id="pl-homepage"><p><em class="placeholder">click here to add a homepage</em></p></div>
+
+  
+  <div class="subnav-bar">
+  
+  <ul>
+    <li>
+      <a href="#" class="dropdown">Switch Branches (1)</a>
+      <ul>
+        
+          
+          <li><a href="/we1rdo/spotweb/commits/master">master</a></li>
+        
+      </ul>
+    </li>
+    <li>
+      <a href="#" class="dropdown defunct">Switch Tags (0)</a>
+      
+    </li>
+    
+      <li>
+        
+        <a href="/we1rdo/spotweb/comments">Comments</a>
+      </li>
+    
+    <li>
+      
+      <a href="/we1rdo/spotweb/contributors">Contributors</a>
+    </li>
+  </ul>
+</div>
+
+  
+  
+  
+  
+  
+
+
+
+        
+    <div class="frame frame-center tree-finder" style="display: none">
+      <div class="breadcrumb">
+        <b><a href="/we1rdo/spotweb">spotweb</a></b> /
+        <input class="tree-finder-input" type="text" name="query" autocomplete="off" spellcheck="false">
+      </div>
+
+      
+        <div class="octotip">
+          <p>
+            <a href="/we1rdo/spotweb/dismiss-tree-finder-help" class="dismiss js-dismiss-tree-list-help" title="Hide this notice forever">Dismiss</a>
+            <strong>Octotip:</strong> You've activated the <em>file finder</em> by pressing <span class="kbd">t</span>
+            Start typing to filter the file list. Use <span class="kbd badmono">↑</span> and <span class="kbd badmono">↓</span> to navigate,
+            <span class="kbd">enter</span> to view files.
+          </p>
+        </div>
+      
+
+      <table class="tree-browser" cellpadding="0" cellspacing="0">
+        <tr class="js-header"><th>&nbsp;</th><th>name</th></tr>
+        <tr class="js-no-results no-results" style="display: none">
+          <th colspan="2">No matching files</th>
+        </tr>
+        <tbody class="js-results-list">
+        </tbody>
+      </table>
+    </div>
+
+    <div id="jump-to-line" style="display:none">
+      <h2>Jump to Line</h2>
+      <form>
+        <input class="textfield" type="text">
+        <div class="full-button">
+          <button type="submit" class="classy">
+            <span>Go</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="repo_details" class="metabox clearfix has-downloads-no-desc">
+      <div id="repo_details_loader" class="metabox-loader" style="display:none">Sending Request&hellip;</div>
+
+        <a href="/we1rdo/spotweb/downloads" class="download-source" id="download_button" title="Download source, tagged packages and binaries."><span class="icon"></span>Downloads</a>
+
+      <div id="repository_desc_wrapper">
+      <div id="repository_description" rel="repository_description_edit">
+        
+      </div>
+
+      <div id="repository_description_edit" style="display:none;" class="inline-edit">
+        <form action="/we1rdo/spotweb/admin/update" method="post"><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="0ec3b8d6f75ae529420e60da0cd2318c30466538" /></div>
+          <input type="hidden" name="field" value="repository_description">
+          <input type="text" class="textfield" name="value" value="">
+          <div class="form-actions">
+            <button class="minibutton"><span>Save</span></button> &nbsp; <a href="#" class="cancel">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      
+      <div class="repository-homepage" id="repository_homepage" rel="repository_homepage_edit">
+        <p><a href="http://" rel="nofollow"></a></p>
+      </div>
+
+      <div id="repository_homepage_edit" style="display:none;" class="inline-edit">
+        <form action="/we1rdo/spotweb/admin/update" method="post"><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="0ec3b8d6f75ae529420e60da0cd2318c30466538" /></div>
+          <input type="hidden" name="field" value="repository_homepage">
+          <input type="text" class="textfield" name="value" value="">
+          <div class="form-actions">
+            <button class="minibutton"><span>Save</span></button> &nbsp; <a href="#" class="cancel">Cancel</a>
+          </div>
+        </form>
+      </div>
+      </div>
+      <div class="rule editable-only"></div>
+            <div id="url_box" class="url-box">
+        <ul class="clone-urls">
+          
+            
+            <li id="http_clone_url"><a href="https://github.com/we1rdo/spotweb.git" data-permissions="Read-Only">HTTP</a></li>
+            <li id="public_clone_url"><a href="git://github.com/we1rdo/spotweb.git" data-permissions="Read-Only">Git Read-Only</a></li>
+          
+          
+        </ul>
+        <input type="text" spellcheck="false" id="url_field" class="url-field" />
+              <span style="display:none" id="url_box_clippy"></span>
+      <span id="clippy_tooltip_url_box_clippy" class="clippy-tooltip tooltipped" title="copy to clipboard">
+      <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+              width="14"
+              height="14"
+              class="clippy"
+              id="clippy" >
+      <param name="movie" value="https://assets.github.com/flash/clippy.swf?v5"/>
+      <param name="allowScriptAccess" value="always" />
+      <param name="quality" value="high" />
+      <param name="scale" value="noscale" />
+      <param NAME="FlashVars" value="id=url_box_clippy&amp;copied=&amp;copyto=">
+      <param name="bgcolor" value="#FFFFFF">
+      <param name="wmode" value="opaque">
+      <embed src="https://assets.github.com/flash/clippy.swf?v5"
+             width="14"
+             height="14"
+             name="clippy"
+             quality="high"
+             allowScriptAccess="always"
+             type="application/x-shockwave-flash"
+             pluginspage="http://www.macromedia.com/go/getflashplayer"
+             FlashVars="id=url_box_clippy&amp;copied=&amp;copyto="
+             bgcolor="#FFFFFF"
+             wmode="opaque"
+      />
+      </object>
+      </span>
+
+        <p id="url_description">This URL has <strong>Read+Write</strong> access</p>
+      </div>
+    </div>
+
+
+        
+
+      </div><!-- /.pagehead -->
+
+      
+
+
+
+
+
+<script type="text/javascript">
+  GitHub.downloadRepo = '/we1rdo/spotweb/archives/25d275f4b7eb9bba1a3666546003930f14f36da8'
+  GitHub.revType = "SHA1"
+
+  GitHub.controllerName = "commit"
+  GitHub.actionName     = "show"
+  GitHub.currentAction  = "commit#show"
+
+  
+
+  
+</script>
+
+
+
+
+
+
+
+
+
+  
+  <div id="commit" class="single_commit">
+    <div class="group">
+        
+  <div class="envelope commit">
+    <div class="human">
+      
+        <div class="message"><pre>updated filter icons</pre></div>
+      
+
+      <div class="actor">
+        <div class="gravatar">
+          
+          <img src="https://secure.gravatar.com/avatar/8b227516bfe23b64b037fe891e672232?s=140&d=https://assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" alt="" width="30" height="30"  />
+        </div>
+        <div class="name"><a href="/we1rdo">we1rdo</a> <span>(author)</span></div>
+        <div class="date">
+          <abbr class="relatize" title="2011-03-12 04:38:43">Sat Mar 12 04:38:43 -0800 2011</abbr>
+        </div>
+      </div>
+
+      
+
+    </div>
+    <div class="machine">
+      <span>c</span>ommit&nbsp;&nbsp;25d275f4b7eb9bba1a36<br />
+      <span>t</span>ree&nbsp;&nbsp;&nbsp;&nbsp;<a href="/we1rdo/spotweb/tree/25d275f4b7eb9bba1a3666546003930f14f36da8" hotkey="t">b4006044003743b8d829</a><br />
+      
+        <span>p</span>arent&nbsp;
+        
+        <a href="/we1rdo/spotweb/commit/c95220c7be26071df504b86bb1432e36351a270c" hotkey="p">c95220c7be26071df504</a>
+      
+
+    </div>
+  </div>
+
+    </div>
+  </div>
+
+  
+    <p class="explain">
+      Showing 3 changed files
+      with 3 additions
+      and 3 deletions.
+    </p>
+    <table id='toc'>
+  
+  <tr>
+    <td class="status added">
+      <span class='stat-icon' title='added'>A</span>
+    </td>
+    <td class="path"><a href='#diff-0'>images/icons/dvd.png</a></td>
+    <td class="diffstat">
+      <a href="#diff-0" class="tooltipped leftwards" title="0 additions &amp; 0 deletions">
+        <span class="diffstat-summary">0</span>
+        <span class="diffstat-bar"></span>
+      </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="status added">
+      <span class='stat-icon' title='added'>A</span>
+    </td>
+    <td class="path"><a href='#diff-1'>images/icons/pda.png</a></td>
+    <td class="diffstat">
+      <a href="#diff-1" class="tooltipped leftwards" title="0 additions &amp; 0 deletions">
+        <span class="diffstat-summary">0</span>
+        <span class="diffstat-bar"></span>
+      </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="status modified">
+      <span class='stat-icon' title='modified'>M</span>
+    </td>
+    <td class="path"><a href='#diff-2'>settings.php</a></td>
+    <td class="diffstat">
+      <a href="#diff-2" class="tooltipped leftwards" title="3 additions &amp; 3 deletions">
+        <span class="diffstat-summary">6</span>
+        <span class="diffstat-bar"><span class='plus'>&bull;</span><span class='plus'>&bull;</span><span class='minus'>&bull;</span><span class='minus'>&bull;</span></span>
+      </a>
+    </td>
+  </tr>
+  
+</table>
+
+    
+<div id="files" class="diff-view commentable">
+  
+    <div id="diff-0" class="file">
+      <div class="meta" data-path="images/icons/dvd.png">
+        <div class="info">
+          <span class="icon"><img alt="Txt" height="16" src="https://assets.github.com/images/icons/txt.png?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" width="16" /></span>
+          images/icons/dvd.png
+          
+        </div>
+        <ul class="actions">
+          <li style='display:none'><label><input type="checkbox" checked="checked" class="show-inline-comments-toggle" /> show inline notes</label></li>
+          <li><a href="/we1rdo/spotweb/blob/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/dvd.png">View file @ <code>25d275f</code></a></li>
+        </ul>
+      </div>
+      
+        <div class="image">
+          
+          <a href="/we1rdo/spotweb/tree/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/dvd.png"><img class='image-file-added' src="/we1rdo/spotweb/blob/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/dvd.png?raw=true" /></a>
+          
+        </div>
+      
+
+      <div class="file-comments-place-holder" data-path="images/icons/dvd.png"></div>
+    </div>
+  
+    <div id="diff-1" class="file">
+      <div class="meta" data-path="images/icons/pda.png">
+        <div class="info">
+          <span class="icon"><img alt="Txt" height="16" src="https://assets.github.com/images/icons/txt.png?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" width="16" /></span>
+          images/icons/pda.png
+          
+        </div>
+        <ul class="actions">
+          <li style='display:none'><label><input type="checkbox" checked="checked" class="show-inline-comments-toggle" /> show inline notes</label></li>
+          <li><a href="/we1rdo/spotweb/blob/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/pda.png">View file @ <code>25d275f</code></a></li>
+        </ul>
+      </div>
+      
+        <div class="image">
+          
+          <a href="/we1rdo/spotweb/tree/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/pda.png"><img class='image-file-added' src="/we1rdo/spotweb/blob/25d275f4b7eb9bba1a3666546003930f14f36da8/images/icons/pda.png?raw=true" /></a>
+          
+        </div>
+      
+
+      <div class="file-comments-place-holder" data-path="images/icons/pda.png"></div>
+    </div>
+  
+    <div id="diff-2" class="file">
+      <div class="meta" data-path="settings.php">
+        <div class="info">
+          <span class="icon"><img alt="Txt" height="16" src="https://assets.github.com/images/icons/txt.png?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" width="16" /></span>
+          settings.php
+          
+        </div>
+        <ul class="actions">
+          <li style='display:none'><label><input type="checkbox" checked="checked" class="show-inline-comments-toggle" /> show inline notes</label></li>
+          <li><a href="/we1rdo/spotweb/blob/25d275f4b7eb9bba1a3666546003930f14f36da8/settings.php">View file @ <code>25d275f</code></a></li>
+        </ul>
+      </div>
+      
+        
+
+        <div class="data highlight"  >
+          <table cellpadding="0" cellspacing="0" width="100%">
+            
+              <tr data-position='0'>
+                <td id="L2L28" class="line_numbers linkable-line-number">...</td>
+                <td id="L2R28" class="line_numbers linkable-line-number">...</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=0&line=28"></b>
+                  
+                  <pre><div class='gc'>@@&nbsp;-29,7&nbsp;+29,7&nbsp;@@&nbsp;$settings['filters']&nbsp;=&nbsp;array(</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='1'>
+                <td id="L2L29" class="line_numbers linkable-line-number">29</td>
+                <td id="L2R29" class="line_numbers linkable-line-number">29</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=1&line=29"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;DivX&quot;,&nbsp;&quot;images/icons/divx.png&quot;,&nbsp;&quot;cat0_a0&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='2'>
+                <td id="L2L30" class="line_numbers linkable-line-number">30</td>
+                <td id="L2R30" class="line_numbers linkable-line-number">30</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=2&line=30"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;WMV&quot;,&nbsp;&quot;images/icons/wmv.png&quot;,&nbsp;&quot;cat0_a1&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='3'>
+                <td id="L2L31" class="line_numbers linkable-line-number">31</td>
+                <td id="L2R31" class="line_numbers linkable-line-number">31</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=3&line=31"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;MPEG&quot;,&nbsp;&quot;images/icons/mpg.png&quot;,&nbsp;&quot;cat0_a2&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='4'>
+                <td id="L2L32" class="line_numbers linkable-line-number">32</td>
+                <td id="L2R31" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=4&line=32"></b>
+                  
+                  <pre><div class='gd'>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;DVD&quot;,&nbsp;&quot;images/icons/<span class="x">film</span>.png&quot;,&nbsp;&quot;cat0_a3,cat0_a10&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='5'>
+                <td id="L2L32" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td id="L2R32" class="line_numbers linkable-line-number">32</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=5&line=32"></b>
+                  
+                  <pre><div class='gi'>+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;DVD&quot;,&nbsp;&quot;images/icons/<span class="x">dvd</span>.png&quot;,&nbsp;&quot;cat0_a3,cat0_a10&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='6'>
+                <td id="L2L33" class="line_numbers linkable-line-number">33</td>
+                <td id="L2R33" class="line_numbers linkable-line-number">33</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=6&line=33"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;HD&quot;,&nbsp;&quot;images/icons/hd.png&quot;,&nbsp;&quot;cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='7'>
+                <td id="L2L34" class="line_numbers linkable-line-number">34</td>
+                <td id="L2R34" class="line_numbers linkable-line-number">34</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=7&line=34"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Series&quot;,&nbsp;&quot;images/icons/tv.png&quot;,&nbsp;&quot;cat0_d11&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='8'>
+                <td id="L2L35" class="line_numbers linkable-line-number">35</td>
+                <td id="L2R35" class="line_numbers linkable-line-number">35</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=8&line=35"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Boeken&quot;,&nbsp;&quot;images/icons/book.png&quot;,&nbsp;&quot;cat0_a5&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='9'>
+                <td id="L2L48" class="line_numbers linkable-line-number">...</td>
+                <td id="L2R48" class="line_numbers linkable-line-number">...</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=9&line=48"></b>
+                  
+                  <pre><div class='gc'>@@&nbsp;-49,14&nbsp;+49,14&nbsp;@@&nbsp;$settings['filters']&nbsp;=&nbsp;array(</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='10'>
+                <td id="L2L49" class="line_numbers linkable-line-number">49</td>
+                <td id="L2R49" class="line_numbers linkable-line-number">49</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=10&line=49"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Playstation&quot;,&nbsp;&quot;images/icons/playstation.png&quot;,&nbsp;&quot;cat2_a3,cat2_a4,cat2_a5,cat2_a12&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='11'>
+                <td id="L2L50" class="line_numbers linkable-line-number">50</td>
+                <td id="L2R50" class="line_numbers linkable-line-number">50</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=11&line=50"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;XBox&quot;,&nbsp;&quot;images/icons/xbox.png&quot;,&nbsp;&quot;cat2_a6,cat2_a7&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='12'>
+                <td id="L2L51" class="line_numbers linkable-line-number">51</td>
+                <td id="L2R51" class="line_numbers linkable-line-number">51</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=12&line=51"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Nintendo&quot;,&nbsp;&quot;images/icons/nintendo_ds.png&quot;,&nbsp;&quot;cat2_a9,cat2_a10,cat2_a11&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='13'>
+                <td id="L2L52" class="line_numbers linkable-line-number">52</td>
+                <td id="L2R51" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=13&line=52"></b>
+                  
+                  <pre><div class='gd'>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;PDA&quot;,&nbsp;&quot;images/icons/p<span class="x">hone</span>.png&quot;,&nbsp;&quot;cat2_a13&quot;,&nbsp;&quot;&quot;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='14'>
+                <td id="L2L52" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td id="L2R52" class="line_numbers linkable-line-number">52</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=14&line=52"></b>
+                  
+                  <pre><div class='gi'>+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;PDA&quot;,&nbsp;&quot;images/icons/p<span class="x">da</span>.png&quot;,&nbsp;&quot;cat2_a13&quot;,&nbsp;&quot;&quot;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='15'>
+                <td id="L2L53" class="line_numbers linkable-line-number">53</td>
+                <td id="L2R53" class="line_numbers linkable-line-number">53</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=15&line=53"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='16'>
+                <td id="L2L54" class="line_numbers linkable-line-number">54</td>
+                <td id="L2R54" class="line_numbers linkable-line-number">54</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=16&line=54"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='17'>
+                <td id="L2L55" class="line_numbers linkable-line-number">55</td>
+                <td id="L2R55" class="line_numbers linkable-line-number">55</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=17&line=55"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Applicaties&quot;,&nbsp;&quot;images/icons/application.png&quot;,&nbsp;&quot;cat3_a&quot;,&nbsp;&quot;&quot;,&nbsp;</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='18'>
+                <td id="L2L56" class="line_numbers linkable-line-number">56</td>
+                <td id="L2R56" class="line_numbers linkable-line-number">56</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=18&line=56"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='19'>
+                <td id="L2L57" class="line_numbers linkable-line-number">57</td>
+                <td id="L2R57" class="line_numbers linkable-line-number">57</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=19&line=57"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Windows&quot;,&nbsp;&quot;images/icons/vista.png&quot;,&nbsp;&quot;cat3_a0&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='20'>
+                <td id="L2L58" class="line_numbers linkable-line-number">58</td>
+                <td id="L2R58" class="line_numbers linkable-line-number">58</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=20&line=58"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;Mac&nbsp;/&nbsp;Linux&nbsp;/&nbsp;OS2&quot;,&nbsp;&quot;images/icons/linux.png&quot;,&nbsp;&quot;cat3_a1,cat3_a2,cat3_a3&quot;,&nbsp;&quot;&quot;),</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='21'>
+                <td id="L2L59" class="line_numbers linkable-line-number">59</td>
+                <td id="L2R58" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=21&line=59"></b>
+                  
+                  <pre><div class='gd'>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;PDA&nbsp;/&nbsp;Navigatie&quot;,&nbsp;&quot;images/icons/p<span class="x">hone</span>.png&quot;,&nbsp;&quot;cat3_a4,cat3_a5,cat3_a6,cat3_a7&quot;,&nbsp;&quot;&quot;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='22'>
+                <td id="L2L59" class="line_numbers linkable-line-number">&nbsp;</td>
+                <td id="L2R59" class="line_numbers linkable-line-number">59</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=22&line=59"></b>
+                  
+                  <pre><div class='gi'>+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array(&quot;PDA&nbsp;/&nbsp;Navigatie&quot;,&nbsp;&quot;images/icons/p<span class="x">da</span>.png&quot;,&nbsp;&quot;cat3_a4,cat3_a5,cat3_a6,cat3_a7&quot;,&nbsp;&quot;&quot;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='23'>
+                <td id="L2L60" class="line_numbers linkable-line-number">60</td>
+                <td id="L2R60" class="line_numbers linkable-line-number">60</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=23&line=60"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='24'>
+                <td id="L2L61" class="line_numbers linkable-line-number">61</td>
+                <td id="L2R61" class="line_numbers linkable-line-number">61</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=24&line=61"></b>
+                  
+                  <pre><div class=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</div></pre>
+                </td>
+              </tr>
+            
+              <tr data-position='25'>
+                <td id="L2L62" class="line_numbers linkable-line-number">62</td>
+                <td id="L2R62" class="line_numbers linkable-line-number">62</td>
+                <td width="100%">
+                  
+                    <b class="add-bubble" remote="/we1rdo/spotweb/commit_comment/form?commit_id=25d275f4b7eb9bba1a3666546003930f14f36da8&path=settings.php&position=25&line=62"></b>
+                  
+                  <pre><div class=''>&nbsp;);</div></pre>
+                </td>
+              </tr>
+            
+          </table>
+        </div>
+      
+
+      <div class="file-comments-place-holder" data-path="settings.php"></div>
+    </div>
+  
+</div>
+
+  
+
+
+<div id="all_commit_comments">
+
+  
+
+  
+  
+  <h2>
+    0 notes
+    on commit <code>25d275f</code>
+    
+    <span class="toggle" id="inline_comments_toggle"><label><input type="checkbox">Show line notes below</label></span>
+  </h2>
+  <div id="comments" class="new-comments only-commit-comments comment-holder">
+    
+  </div>
+
+  
+    Please <a href="/login?return_to=https://github.com/we1rdo/spotweb/commit/25d275f4b7eb9bba1a3666546003930f14f36da8" rel="nofollow">log in</a> to comment.
+  
+</div>
+
+
+
+
+<!-- COMMENTS -->
+<div id='diff-comment-data' style='display:none'>
+  
+</div>
+
+
+    </div>
+  
+      
+    </div>
+
+    <div id="footer" class="clearfix">
+      <div class="site">
+        <div class="sponsor">
+          <a href="http://www.rackspace.com" class="logo">
+            <img alt="Dedicated Server" height="36" src="https://assets.github.com/images/modules/footer/rackspace_logo.png?v2?7c073b8e0eba9dc751d7a51f3ba3732990c8204c" width="38" />
+          </a>
+          Powered by the <a href="http://www.rackspace.com ">Dedicated
+          Servers</a> and<br/> <a href="http://www.rackspacecloud.com">Cloud
+          Computing</a> of Rackspace Hosting<span>&reg;</span>
+        </div>
+
+        <ul class="links">
+          <li class="blog"><a href="https://github.com/blog">Blog</a></li>
+          <li><a href="/login/multipass?to=http%3A%2F%2Fsupport.github.com">Support</a></li>
+          <li><a href="https://github.com/training">Training</a></li>
+          <li><a href="http://jobs.github.com">Job Board</a></li>
+          <li><a href="http://shop.github.com">Shop</a></li>
+          <li><a href="https://github.com/contact">Contact</a></li>
+          <li><a href="http://develop.github.com">API</a></li>
+          <li><a href="http://status.github.com">Status</a></li>
+        </ul>
+        <ul class="sosueme">
+          <li class="main">&copy; 2011 <span id="_rrt" title="0.06548s from fe5.rs.github.com">GitHub</span> Inc. All rights reserved.</li>
+          <li><a href="/site/terms">Terms of Service</a></li>
+          <li><a href="/site/privacy">Privacy</a></li>
+          <li><a href="https://github.com/security">Security</a></li>
+        </ul>
+      </div>
+    </div><!-- /#footer -->
+
+    
+      
+      
+        <!-- current locale:  -->
+        <div class="locales">
+          <div class="site">
+
+            <ul class="choices clearfix limited-locales">
+              <li><span class="current">English</span></li>
+              
+                  <li><a rel="nofollow" href="?locale=de">Deutsch</a></li>
+              
+                  <li><a rel="nofollow" href="?locale=fr">Français</a></li>
+              
+                  <li><a rel="nofollow" href="?locale=ja">日本語</a></li>
+              
+                  <li><a rel="nofollow" href="?locale=pt-BR">Português (BR)</a></li>
+              
+                  <li><a rel="nofollow" href="?locale=ru">Русский</a></li>
+              
+                  <li><a rel="nofollow" href="?locale=zh">中文</a></li>
+              
+              <li class="all"><a href="#" class="minibutton btn-forward js-all-locales"><span><span class="icon"></span>See all available languages</span></a></li>
+            </ul>
+
+            <div class="all-locales clearfix">
+              <h3>Your current locale selection: <strong>English</strong>. Choose another?</h3>
+              
+              
+                <ul class="choices">
+                  
+                      <li><a rel="nofollow" href="?locale=en">English</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=af">Afrikaans</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=ca">Català</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=cs">Čeština</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=de">Deutsch</a></li>
+                  
+                </ul>
+              
+                <ul class="choices">
+                  
+                      <li><a rel="nofollow" href="?locale=es">Español</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=fr">Français</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=hr">Hrvatski</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=hu">Magyar</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=id">Indonesia</a></li>
+                  
+                </ul>
+              
+                <ul class="choices">
+                  
+                      <li><a rel="nofollow" href="?locale=it">Italiano</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=ja">日本語</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=nl">Nederlands</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=no">Norsk</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=pl">Polski</a></li>
+                  
+                </ul>
+              
+                <ul class="choices">
+                  
+                      <li><a rel="nofollow" href="?locale=pt-BR">Português (BR)</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=ru">Русский</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=sr">Српски</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=sv">Svenska</a></li>
+                  
+                      <li><a rel="nofollow" href="?locale=zh">中文</a></li>
+                  
+                </ul>
+              
+            </div>
+
+          </div>
+          <div class="fade"></div>
+        </div>
+      
+    
+
+    <script>window._auth_token = "0ec3b8d6f75ae529420e60da0cd2318c30466538"</script>
+    
+
+<div id="keyboard_shortcuts_pane" style="display:none">
+  <h2>Keyboard Shortcuts <small><a href="#" class="js-see-all-keyboard-shortcuts">(see all)</a></small></h2>
+
+  <div class="columns threecols">
+    <div class="column first">
+      <h3>Site wide shortcuts</h3>
+      <dl class="keyboard-mappings">
+        <dt>s</dt>
+        <dd>Focus site search</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>?</dt>
+        <dd>Bring up this help dialog</dd>
+      </dl>
+    </div><!-- /.column.first -->
+
+    <div class="column middle" style='display:none'>
+      <h3>Commit list</h3>
+      <dl class="keyboard-mappings">
+        <dt>j</dt>
+        <dd>Move selected down</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>k</dt>
+        <dd>Move selected up</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>t</dt>
+        <dd>Open tree</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>p</dt>
+        <dd>Open parent</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>c <em>or</em> o <em>or</em> enter</dt>
+        <dd>Open commit</dd>
+      </dl>
+    </div><!-- /.column.first -->
+
+    <div class="column last" style='display:none'>
+      <h3>Pull request list</h3>
+      <dl class="keyboard-mappings">
+        <dt>j</dt>
+        <dd>Move selected down</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>k</dt>
+        <dd>Move selected up</dd>
+      </dl>
+      <dl class="keyboard-mappings">
+        <dt>o <em>or</em> enter</dt>
+        <dd>Open issue</dd>
+      </dl>
+    </div><!-- /.columns.last -->
+
+  </div><!-- /.columns.equacols -->
+
+  <div style='display:none'>
+    <div class="rule"></div>
+
+    <h3>Issues</h3>
+
+    <div class="columns threecols">
+      <div class="column first">
+        <dl class="keyboard-mappings">
+          <dt>j</dt>
+          <dd>Move selected down</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>k</dt>
+          <dd>Move selected up</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>x</dt>
+          <dd>Toggle select target</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>o <em>or</em> enter</dt>
+          <dd>Open issue</dd>
+        </dl>
+      </div><!-- /.column.first -->
+      <div class="column middle">
+        <dl class="keyboard-mappings">
+          <dt>I</dt>
+          <dd>Mark selected as read</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>U</dt>
+          <dd>Mark selected as unread</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>e</dt>
+          <dd>Close selected</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>y</dt>
+          <dd>Remove selected from view</dd>
+        </dl>
+      </div><!-- /.column.middle -->
+      <div class="column last">
+        <dl class="keyboard-mappings">
+          <dt>c</dt>
+          <dd>Create issue</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>l</dt>
+          <dd>Create label</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>i</dt>
+          <dd>Back to inbox</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>u</dt>
+          <dd>Back to issues</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>/</dt>
+          <dd>Focus issues search</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div style='display:none'>
+    <div class="rule"></div>
+
+    <h3>Network Graph</h3>
+    <div class="columns equacols">
+      <div class="column first">
+        <dl class="keyboard-mappings">
+          <dt><span class="badmono">←</span> <em>or</em> h</dt>
+          <dd>Scroll left</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt><span class="badmono">→</span> <em>or</em> l</dt>
+          <dd>Scroll right</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt><span class="badmono">↑</span> <em>or</em> k</dt>
+          <dd>Scroll up</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt><span class="badmono">↓</span> <em>or</em> j</dt>
+          <dd>Scroll down</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>t</dt>
+          <dd>Toggle visibility of head labels</dd>
+        </dl>
+      </div><!-- /.column.first -->
+      <div class="column last">
+        <dl class="keyboard-mappings">
+          <dt>shift <span class="badmono">←</span> <em>or</em> shift h</dt>
+          <dd>Scroll all the way left</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>shift <span class="badmono">→</span> <em>or</em> shift l</dt>
+          <dd>Scroll all the way right</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>shift <span class="badmono">↑</span> <em>or</em> shift k</dt>
+          <dd>Scroll all the way up</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>shift <span class="badmono">↓</span> <em>or</em> shift j</dt>
+          <dd>Scroll all the way down</dd>
+        </dl>
+      </div><!-- /.column.last -->
+    </div>
+  </div>
+
+  <div style='display:none'>
+    <div class="rule"></div>
+
+    <h3>Source Code Browsing</h3>
+    <div class="columns threecols">
+      <div class="column first">
+        <dl class="keyboard-mappings">
+          <dt>t</dt>
+          <dd>Activates the file finder</dd>
+        </dl>
+        <dl class="keyboard-mappings">
+          <dt>l</dt>
+          <dd>Jump to line</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+</div>
+    
+
+    <!--[if IE 8]>
+    <script type="text/javascript" charset="utf-8">
+      $(document.body).addClass("ie8")
+    </script>
+    <![endif]-->
+
+    <!--[if IE 7]>
+    <script type="text/javascript" charset="utf-8">
+      $(document.body).addClass("ie7")
+    </script>
+    <![endif]-->
+
+    
+    <script type='text/javascript'></script>
+    
+  </body>
+</html>
+
