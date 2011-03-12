@@ -29,7 +29,7 @@ $settings['filters'] = array(
             Array("DivX", "images/icons/divx.png", "cat0_a0", ""),
             Array("WMV", "images/icons/wmv.png", "cat0_a1", ""),
             Array("MPEG", "images/icons/mpg.png", "cat0_a2", ""),
-            Array("DVD", "images/icons/film.png", "cat0_a3,cat0_a10", ""),
+            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10", ""),
             Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9", ""),
             Array("Series", "images/icons/tv.png", "cat0_d11", ""),
             Array("Boeken", "images/icons/book.png", "cat0_a5", ""),
@@ -49,14 +49,14 @@ $settings['filters'] = array(
             Array("Playstation", "images/icons/playstation.png", "cat2_a3,cat2_a4,cat2_a5,cat2_a12", ""),
             Array("XBox", "images/icons/xbox.png", "cat2_a6,cat2_a7", ""),
             Array("Nintendo", "images/icons/nintendo_ds.png", "cat2_a9,cat2_a10,cat2_a11", ""),
-            Array("PDA", "images/icons/phone.png", "cat2_a13", "")
+            Array("PDA", "images/icons/pda.png", "cat2_a13", "")
         )
     ),
     Array("Applicaties", "images/icons/application.png", "cat3_a", "", 
         Array(
             Array("Windows", "images/icons/vista.png", "cat3_a0", ""),
             Array("Mac / Linux / OS2", "images/icons/linux.png", "cat3_a1,cat3_a2,cat3_a3", ""),
-            Array("PDA / Navigatie", "images/icons/phone.png", "cat3_a4,cat3_a5,cat3_a6,cat3_a7", "")
+            Array("PDA / Navigatie", "images/icons/pda.png", "cat3_a4,cat3_a5,cat3_a6,cat3_a7", "")
         )
     )
 );
