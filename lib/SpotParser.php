@@ -6,42 +6,51 @@ require_once "lib/exceptions/ParseSpotXmlException.php";
 
 class SpotParser {
 	private $_xmlarray = array();
-	private $_xmldata = '';
+	private $_xmldata = array();
 	private $_xmlelement = '';
 
 	private function xmlfullStartElement($parser, $name, $attrs) 
 	{
-		$this->_xmldata = '';
-		$this->_xmlelement = strtolower($name);
+		$name = strtolower($name);
+		$this->_xmlelement = $name;
+		$this->_xmldata[$name] = '';
 	} # xmlfullStartElement
 	
 	private function xmlfullEndElement($parser, $name) 
 	{
-		if ((isset($this->_xmlarray[$this->_xmlelement])) && (!empty($this->_xmlarray[$this->_xmlelement]))) {
-			if (!is_array($this->_xmlarray[$this->_xmlelement])) {
-				$this->_xmlarray[$this->_xmlelement] = array($this->_xmlarray[$this->_xmlelement], $this->_xmldata);
-			} else {
-				$this->_xmlarray[$this->_xmlelement][] = $this->_xmldata;
-			} # else
-		} else {
-			$this->_xmlarray[$this->_xmlelement] = $this->_xmldata;
-		} # else
+		$name = strtolower($name);
 
-		$this->_xmlelement = '';
+		if (!isset($this->_xmlarray[$name])) {
+			return ;
+		} # if
+		
+		if (!empty($this->_xmlelement)) {
+			if ((isset($this->_xmlarray[$name])) && (!empty($this->_xmlarray[$name]))) {
+				if (!is_array($this->_xmlarray[$name])) {
+					$this->_xmlarray[$name] = array($this->_xmlarray[$name], $this->_xmldata[$name]);
+				} else {
+					$this->_xmlarray[$name][] = $this->_xmldata[$name];
+				} # else
+			} else {
+				$this->_xmlarray[$name] = $this->_xmldata[$name];
+			} # else
+		} # if
+
+		$this->_xmldata[$name] = '';
 	} # xmlfullEndElement
 
 	private function xmlfullCharacterHandler($parser, $data) {
 		# deze functie wordt niet alleen aangeroepen voor elk element, maar kan als er
 		# bv. entities inzitten meerdere keren aangeroepen worden, vandaar dat we hier puur
 		# een temp string appenden
-		$this->_xmldata .= $data;
+		$this->_xmldata[$this->_xmlelement] .= $data;
 	} # xmlfullCharacterHandler
 
 	function parseFull($xml) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '', 'key-id' => '',
-						  'subcatlist' => array());
+						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '');
 		$this->_xmlarray = $tpl_spot;
 		
 		$xml_parser = xml_parser_create();
@@ -88,7 +97,9 @@ class SpotParser {
 		# match hoofdcat/subcat-type/subcatvalue
 		foreach($subcatList as $subcat) {
 			if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
-				$this->_xmlarray['subcatlist'][] = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
+				$subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
+				$this->_xmlarray['subcatlist'][] = $subCatVal;
+				$this->_xmlarray['subcat' . $subCatVal[0]] .= $subCatVal . '|';
 			} # if
 		} # foreach
 		
