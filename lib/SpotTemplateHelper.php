@@ -165,9 +165,10 @@ class SpotTemplateHelper {
 			3 => 604800, 
 			4 => 86400,
 			5 => 3600,
-			6 => 60);
-		$names_singular = array('eeuw', 'jaar', 'maand', 'week', 'dag', 'uur', 'minuut');
-		$names_plural = array('eeuwen', 'jaar', 'maanden', 'weken', 'dagen', 'uur', 'minuten');
+			6 => 60,
+			7 => 1);
+		$names_singular = array('eeuw', 'jaar', 'maand', 'week', 'dag', 'uur', 'minuut', 'seconde');
+		$names_plural = array('eeuwen', 'jaar', 'maanden', 'weken', 'dagen', 'uur', 'minuten', 'seconden');
 			
 		$retval = '';
 		foreach ($periods as $key => $value) {
