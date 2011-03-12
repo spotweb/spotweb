@@ -1,6 +1,5 @@
 <?php
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
-	var_dump($comments);
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" href="<?php echo $spot['website']; ?>">
