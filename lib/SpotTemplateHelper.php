@@ -151,4 +151,13 @@ class SpotTemplateHelper {
 		return array($spot, $comments);
 	} # formatSpot
 	
+	function formatDate($stamp, $type) {
+		switch($type) {
+			case 'comment'		:
+			case 'spotlist'		: 
+			case 'lastupdate'	: 
+			default 			: return strftime("%a, %d-%b-%Y (%H:%M)", $stamp);
+		} # switch
+	} # formatDate
+	
 } # class SpotTemplateHelper

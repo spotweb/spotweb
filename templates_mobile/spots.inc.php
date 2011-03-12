@@ -25,7 +25,7 @@ $setpath = $tplHelper->getSitePath();
 $count = 0;
 
 	foreach($spots as $spot) {
-		echo "<li><a href='http://". $setpath . "index.php?page=getspotmobile&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper(strftime("%d %b %H:%M", $spot['stamp'])) ."</p></a></li>\n";
+		echo "<li><a href='http://". $setpath . "index.php?page=getspotmobile&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist')) ."</p></a></li>\n";
 	}
 	
 ?>

@@ -76,7 +76,7 @@ if(sizeof($comments)>0){ ?>
 
 		foreach($comments as $comment) {
 ?>
-					<li><?php echo $comment['from']; ?> @ <?php echo strftime("%d-%m-%y (%H:%M)", $comment['date']); ?> <br>
+					<li><?php echo $comment['from']; ?> @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> <br>
 					<?php echo join("<br>", $comment['body']); ?>
 					<br>
 					</li>

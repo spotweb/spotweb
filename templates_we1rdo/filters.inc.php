@@ -60,7 +60,7 @@
 
 					<h4>Maintenance</h4>
 					<ul class="filterlist maintenancebox">
-						<li class="info"> Laatste update: <?php echo strftime("%a, %d-%b-%Y (%H:%M)", $lastupdate); ?> </li>
+						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
 	if ($settings['show_updatebutton']) {
 ?>

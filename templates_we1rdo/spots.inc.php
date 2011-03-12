@@ -31,7 +31,7 @@
 			 "<td class='title'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
 			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .
-			 "<td>" . strftime("%a, %d-%b-%Y (%H:%M)", $spot['stamp']) . "</td>";
+			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
 
 		# only display the NZB button from 24 nov or later
