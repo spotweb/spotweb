@@ -83,6 +83,8 @@ div.filter > ul > li.orange a {background-color:#fffad3;}
 div.filter > ul > li.green a {background-color:#cbffcb;}
 div.filter > ul > li.red a {background-color:#fedede;}
 
+div.filter > ul > li a:hover {background-color:#fff;}
+
 div.filter a img {
 	border:0;
 	float:left;
