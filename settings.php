@@ -78,7 +78,7 @@ define('VERSION', '0.6a');
 #		we anders geen category kunnen meegeven aldus de huidige API documentatie.
 #
 # Settings:
-#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save, push-sabnzbd en runcommand)
+#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
