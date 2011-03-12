@@ -3,7 +3,7 @@ $getUrl = $tplHelper->getFilterParams();
 $site = $_SERVER['SERVER_NAME'];
 $source = $_SERVER['REQUEST_URI'];
 $getpath = explode('/',$source);
-$setpath = $site . "/" . $getpath . "/";
+$setpath = $site . "/" . $getpath[1] . "/";
 ?>
 
 <div data-role="page" id="spots"> 
