@@ -118,7 +118,9 @@ class db_mysql extends db_abs {
 										subcatd VARCHAR(24),
 										title TEXT,
 										tag TEXT,
-										stamp INTEGER);");
+										stamp INTEGER,
+										filesize INTEGER DEFAULT 0,
+										moderated BOOLEAN DEFAULT FALSE);");
 			$this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
@@ -135,6 +137,14 @@ class db_mysql extends db_abs {
 		if (count($q) == 1) {
 			$this->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_3, ADD UNIQUE idx_spots_3 (messageid);");
 		} # if
+
+		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
+		$q = $this->arrayQuery("SHOW COLUMNS FROM spots");
+		if (count($q) == 14) {
+			$this->rawExec("ALTER TABLE spots ADD COLUMN(filesize INTEGER DEFAULT 0,
+										moderated BOOLEAN DEFAULT FALSE)");
+		} # if
+		
 		
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, daarvan droppen wij er 1
 		try {

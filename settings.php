@@ -65,6 +65,22 @@ $settings['filters'] = array(
 define('VERSION', '0.6a');
 
 #
+# SpotNet ondersteund moderatie van de gepostte spots en reacties, dit gebeurt
+# door middel van moderatie berichten in de nieuwsgroup waar ook de spots worden
+# gepost.
+#
+# SpotWeb ziet deze berichten ook, en zal er iets mee moeten doen. Afhankelijk van
+# wat je wilt moet je onderstaande setting aanpassen naar een van de volgende waardes:
+#
+# 	disable				- 	Doe helemaal niks met de moderatie
+#	act					- 	Wis de gemodereerde spots
+#	markspot			-	Markeer de gemodereerde spots als gemodereerd. Er is op 
+#							dit moment nog geen UI om dit te filteren of iets dergelijks.
+#
+$settings['spot_moderation'] = 'act';
+
+
+#
 # We definieeren in een aantal stappen wat er moet gebeuren met NZB files
 # Er zijn een aantal verschillende acties mogelijk:
 #	* disable			- Geen acties, toon enkel de 'download nzb' knop

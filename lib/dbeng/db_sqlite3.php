@@ -66,6 +66,12 @@ class db_sqlite3 extends db_abs {
 	} # rows()
 	
 	function createDatabase() {
+		# Controleer of de 'spots' tabel wel recent is, de oude versie had 14 kolommen
+		$q = $this->arrayQuery("PRAGMA table_info(spots)");
+		if (count($q) == 14) {
+			$this->rawExec("DROP TABLE spots;");
+		} # if
+		
 		$q = $this->arrayQuery("PRAGMA table_info(spots)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
@@ -81,7 +87,9 @@ class db_sqlite3 extends db_abs {
 											subcatd TEXT,
 											title TEXT,
 											tag TEXT,
-											stamp INTEGER);");
+											stamp INTEGER,
+											filesize INTEGER DEFAULT 0,
+											moderated BOOLEAN DEFAULT FALSE);");
 			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
 										maxarticleid INTEGER UNIQUE,
 										nowrunning INTEGER DEFAULT 0);");
@@ -91,6 +99,7 @@ class db_sqlite3 extends db_abs {
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
 		} # if
+
 
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, die droppen wij volledig
 		try {

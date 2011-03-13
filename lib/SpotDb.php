@@ -300,6 +300,13 @@ class SpotDb
 	} # deleteSpot
 
 	/*
+	 * Markeer een spot in de db moderated
+	 */
+	function markSpotModerated($msgId) {
+		$this->_conn->exec("UPDATE spots SET moderated = true WHERE messageid = '%s'", Array($msgId));
+	} # markSpotModerated
+
+	/*
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
