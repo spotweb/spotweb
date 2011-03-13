@@ -80,6 +80,7 @@
 <?php
 	}
 ?>
+						<li> <a href="?page=markallasread" id="markallasreadbtn" class="markallasreadbtn">Mark all as read</a></li>
 					</ul>
 
 				</div>
