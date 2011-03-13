@@ -1,5 +1,6 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
+session_start();
 
 require_once "settings.php";
 require_once "lib/SpotDb.php";
@@ -8,6 +9,7 @@ require_once "lib/SpotParser.php";
 require_once "lib/SpotsOverview.php";
 require_once "lib/SpotCategories.php";
 require_once "lib/SpotNntp.php";
+require_once "lib/SpotCookie.php";
 require_once "lib/page/SpotPage_index.php";
 require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getspot.php";
