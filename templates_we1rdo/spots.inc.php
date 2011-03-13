@@ -3,12 +3,12 @@
 				<table class="spots">
 					<tbody>
 					<tr class="head"> 
-						<th class='category'> <a href="?page=index&sortby=category" title="Sorteren op Categorie">Cat.</a> </th> 
-						<th class='title'> <a href="?page=index&sortby=title" title="Sorteren op Titel">Titel</a> </th> 
+						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
+						<th class='title'> <a href="?page=index&sortby=title<?php echo $getUrl;?>" title="Sorteren op Titel">Titel</a> </th> 
                         <th class='comments'> </th>
 						<th class='genre'> Genre </th> 
-						<th class='poster'> <a href="?page=index&sortby=poster" title="Sorteren op Afzender">Afzender</a> </th> 
-						<th class='date'> <a href="?page=index&sortby=stamp" title="Sorteren op Datum">Datum</a> </th> 
+						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 
+						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>						
