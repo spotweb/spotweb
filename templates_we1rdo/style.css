@@ -257,3 +257,6 @@ div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-
 div.filter ul.dynatree-container {border:0;}
 div.filter ul.dynatree-container a {display:inline; font-weight:normal;}
 div.advancedsearch {display:none;}
+
+/* highlight new spot */
+td.newspot { font-style: italic; }
