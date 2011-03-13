@@ -164,7 +164,7 @@ table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-style:italic;}
 
-table.spots tr td img.sabnzbd-button {margin:0 4px;}
+table.spots tr td img.sabnzbd-button {margin:1px 4px -1px 4px;}
 
 table.spots tr.blue td {background-color:#daecff;}
 table.spots tr.orange td {background-color:#fffad3;}
