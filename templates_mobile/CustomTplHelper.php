@@ -37,7 +37,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 		$getpath = explode('/',$source);
 		$setpath = $site . "/" . $getpath[1] . "/";
 		
-		return $setpath;
+		return 'http://' . $setpath;
 	} # getSitePath
 	
 	

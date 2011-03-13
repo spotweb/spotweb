@@ -1,20 +1,20 @@
-
+<?php $setpath = $tplHelper->getSitePath(); ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Zoek</h1>
 
 	<div data-role="navbar">
 		<ul>
-			<li><a href="#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="#search" class="ui-btn-active" data-icon="search">Zoek</a></li>
-			<li><a href="#filters" data-icon="star">Filters</a></li>
+			<li><a href="<?php echo $setpath;?>#spots" data-icon="grid" >Spots</a></li>
+			<li><a href="<?php echo $setpath;?>#search" class="ui-btn-active" data-icon="search">Zoek</a></li>
+			<li><a href="<?php echo $setpath;?>#filters" data-icon="star">Filters</a></li>
 		</ul>
 	</div><!-- /navbar -->
 
 </div>
 <div data-role="content">
 	<div data-role="fieldcontain" >
-		<form id="filterform" action="index.php?page=search#spots" method="get" data-ajax="false">
+		<form id="filterform" action="<?php echo $setpath;?>index.php?page=search#spots" method="get" data-ajax="false">
 			<fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
 	         		<input type="radio" name="search[type]" value="Titel" id="radio-choice-1" checked="checked" />
 	         		<label for="radio-choice-1">Titel</label>
@@ -36,9 +36,9 @@
 
 	<div data-role="navbar">
 		<ul>
-			<li><a href="#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="#search" data-icon="search">Zoek</a></li>
-			<li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
+			<li><a href="<?php echo $setpath;?>#spots" data-icon="grid" >Spots</a></li>
+			<li><a href="<?php echo $setpath;?>#search" data-icon="search">Zoek</a></li>
+			<li><a href="<?php echo $setpath;?>#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
 
 		</ul>
 	</div><!-- /navbar -->
@@ -52,7 +52,7 @@
 ?>
 			<li> 
 				<img src="<?php echo $filter[1]; ?>" class="ui-li-icon" />
-				<h3><a href="index.php?search[tree]=<?php echo $filter[2];?>#spots" rel="external"><?php echo $filter[0]; ?></a></h3>
+				<h3><a href="<?php echo $setpath;?>index.php?search[tree]=<?php echo $filter[2];?>#spots" rel="external"><?php echo $filter[0]; ?></a></h3>
 			</li>
 <?php
         if (!empty($filter[4])) {
@@ -60,7 +60,7 @@
 ?>
             <li>
                <img src="<?php echo $subFilter[1]; ?>" class="ui-li-icon" />
-               <h3><a href="index.php?search[tree]=<?php echo $subFilter[2];?>#spots" rel="external"> - <?php echo $subFilter[0]; ?></a></h3>
+               <h3><a href="<?php echo $setpath;?>index.php?search[tree]=<?php echo $subFilter[2];?>#spots" rel="external"> - <?php echo $subFilter[0]; ?></a></h3>
              </li>
 <?php
             } # foreach 

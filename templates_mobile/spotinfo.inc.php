@@ -9,7 +9,7 @@
                       <a href="<?php echo $spot['sabnzbdurl'];?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SABNZBD</a></th>
 <?php } else { ?>	
 
-      <a class="nzb" href="<?php echo 'http://'. $setpath ?>?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
+      <a class="nzb" href="<?php echo $setpath ?>?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
 	<?php } ?>		
 	
 	</div>
@@ -42,8 +42,8 @@
                         <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a> </td> </tr>
                         <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['userid']; ?>) </td> </tr>
                         <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
-                        <tr><th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-                        <tr><th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+                        <tr><th> Zoekmachine </th> <td> <a href='<?php echo $setpath . $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+                        <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
                     </tbody>
 				</table>
             	<h4>Omschrijving</h4>
