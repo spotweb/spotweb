@@ -102,7 +102,8 @@ div.filter a img {
 /* MAINTENANCE */
 ul.maintenancebox li.info {text-align:center; margin:10px 0; height:16px; line-height:16px;}
 ul.maintenancebox li a.updatespotsbtn,
-ul.maintenancebox li a.erasedlsbtn, ul.maintenancebox li a.markallasreadbtn {
+ul.maintenancebox li a.erasedlsbtn, 
+ul.maintenancebox li a.markallasreadbtn {
 	background:url(img/button.png) no-repeat left top;
 	width:250px;
 	margin:0 10px 5px 10px;
@@ -270,6 +271,3 @@ div.details.red div.comments li.even {background-color:#ffeaea;}
 div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
-
-/* highlight new spot */
-td.newspot { font-style: italic; }
