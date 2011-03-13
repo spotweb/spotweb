@@ -140,15 +140,16 @@
 				});
 			}); // markallasreadbtn
 						
-			$("img.sabnzbd-button").click(function(e) {
+			$("a.sabnzbd-button").click(function(e) {
 				e.preventDefault();
 
-				var surl = $(this).parent()[0].href.split("?");
+				var surl = this.href.split("?");
+				var temp = $(this);
 			
 				$.ajax({
 					url: surl[0],
 					data: surl[1],
-					context: $(this),
+					context: $(temp),
 					error: function(jqXHR, textStatus, errorThrown) {
 						// zie bij success(): alert(textStatus);
 					},
@@ -158,10 +159,10 @@
 						// niet te zien
 					},
 					beforeSend: function(jqXHR, settings) {
-						$(this).src = "images/loading.gif";
+						$(temp).html("<img class='sabnzbd-button' src='templates_we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						$(this).remove();
+						setTimeout( function() { $(temp).html("<img class='sabnzbd-button' src='templates_we1rdo/img/succes.png' />") }, 1000);
 					}, // # complete
 					dataType: "text"
 				});
