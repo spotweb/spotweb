@@ -290,7 +290,15 @@ class SpotDb
 	function emptyDownloadList() {
 		return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
 	} # emptyDownloadList()
-	
+
+	/*
+	 * Verwijder een spot uit de db
+	 */
+	function deleteSpot($msgId) {
+		$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+	} # deleteSpot
+
 	/*
 	 * Voeg een spot toe aan de database
 	 */
