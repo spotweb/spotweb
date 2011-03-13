@@ -105,7 +105,7 @@ class SpotsOverview {
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
-			$search = $this->_settings['index_filter'];
+			$search = array_merge($search, $this->_settings['index_filter']);
 		} # if
 
 		# convert the dynatree list to a list 
