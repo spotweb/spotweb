@@ -73,7 +73,13 @@
 <?php
 	}
 ?>
+<?php
+	if ($settings['keep_downloadlist']) {
+?>
 						<li> <a href="?page=erasedls" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads</a></li>
+<?php
+	}
+?>
 					</ul>
 
 				</div>

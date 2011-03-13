@@ -3,12 +3,12 @@
 				<table class="spots">
 					<tbody>
 					<tr class="head"> 
-						<th class='category'> <a href="?page=index&sortby=category">Cat.</a> </th> 
-						<th class='title'> <a href="?page=index&sortby=title">Titel</a> </th> 
+						<th class='category'> <a href="?page=index&sortby=category" title="Sorteren op Categorie">Cat.</a> </th> 
+						<th class='title'> <a href="?page=index&sortby=title" title="Sorteren op Titel">Titel</a> </th> 
                         <th class='comments'> </th>
 						<th class='genre'> Genre </th> 
-						<th class='poster'> <a href="?page=index&sortby=poster">Afzender</a> </th> 
-						<th class='date'> <a href="?page=index&sortby=stamp">Datum</a> </th> 
+						<th class='poster'> <a href="?page=index&sortby=poster" title="Sorteren op Afzender">Afzender</a> </th> 
+						<th class='date'> <a href="?page=index&sortby=stamp" title="Sorteren op Datum">Datum</a> </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>						
@@ -24,7 +24,7 @@
 		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 		if ($tplHelper->newSinceLastVisit($spot)) {
-			$newSpotClass = 'newspot';
+			$newSpotClass = 'new';
 		} else {
 			$newSpotClass = '';
 		} # else
@@ -36,9 +36,9 @@
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
-			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
-			 "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments on \"" . $spot['title'] . "\"'>" . $tplHelper->getCommentCount($spot) . "</a></td>" .
+			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
+			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
+			 "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>" .
 			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .
 			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
@@ -47,7 +47,7 @@
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($settings['show_nzbbutton']) {
-				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' class='nzb'>NZB";
+				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' title ='Download NZB' class='nzb'>NZB";
 				
 				if ($tplHelper->hasBeenDownloaded($spot)) {
 					echo '*';
@@ -58,7 +58,7 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' ><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Voeg spot toe aan SabNZBd+ queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {

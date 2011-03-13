@@ -94,6 +94,10 @@ class SpotTemplateHelper {
 	} # formatDescription
 	
 	function hasbeenDownloaded($spot) {
+		if (!$this->_settings['keep_downloadlist']) {
+			return false;
+		} # if
+		
 		# We gebruiken een static list en een array search omdat dit waarschijnlijk
 		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
 		static $dlList = null;
@@ -171,6 +175,11 @@ class SpotTemplateHelper {
 		
 		return array($spot, $comments);
 	} # formatSpot
+	
+	
+	function newSinceLastVisit($spot) {
+		return ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp']); 
+	} # newSinceLastVisit
 	
 	#
 	# Copied from:

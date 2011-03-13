@@ -145,6 +145,12 @@ $settings['show_nzbbutton'] = true;
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
 
+# highlight nieuwe items - cookies
+$settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
+if (isset($_SERVER['HTTP_HOST'])) {
+	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+} # if
+
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
 		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
