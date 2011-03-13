@@ -132,11 +132,11 @@ class SpotNntp {
 		
 		function getNzb($segList) {
 			$nzb = '';
-
+			
 			foreach($segList as $seg) {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
-			
+
 			$spotParser = new SpotParser();
 			return gzinflate( $spotParser->unspecialZipStr($nzb) );
 		} # getNzb

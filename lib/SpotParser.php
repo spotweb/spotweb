@@ -5,78 +5,44 @@ require_once "settings.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 
 class SpotParser {
-	private $_xmlarray = array();
-	private $_xmldata = array();
-	private $_xmlelement = '';
-
-	private function xmlfullStartElement($parser, $name, $attrs) 
-	{
-		$name = strtolower($name);
-		$this->_xmlelement = $name;
-		$this->_xmldata[$name] = '';
-	} # xmlfullStartElement
-	
-	private function xmlfullEndElement($parser, $name) 
-	{
-		$name = strtolower($name);
-
-		if (!isset($this->_xmlarray[$name])) {
-			return ;
-		} # if
-		
-		if (!empty($this->_xmlelement)) {
-			if ((isset($this->_xmlarray[$name])) && (!empty($this->_xmlarray[$name]))) {
-				if (!is_array($this->_xmlarray[$name])) {
-					$this->_xmlarray[$name] = array($this->_xmlarray[$name], $this->_xmldata[$name]);
-				} else {
-					$this->_xmlarray[$name][] = $this->_xmldata[$name];
-				} # else
-			} else {
-				$this->_xmlarray[$name] = $this->_xmldata[$name];
-			} # else
-		} # if
-
-		$this->_xmldata[$name] = '';
-	} # xmlfullEndElement
-
-	private function xmlfullCharacterHandler($parser, $data) {
-		# deze functie wordt niet alleen aangeroepen voor elk element, maar kan als er
-		# bv. entities inzitten meerdere keren aangeroepen worden, vandaar dat we hier puur
-		# een temp string appenden
-		$this->_xmldata[$this->_xmlelement] .= $data;
-	} # xmlfullCharacterHandler
-
-	function parseFull($xml) {
+	function parseFull($xmlStr) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'segment' => '', 'title' => '', 'key-id' => '',
-						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '');
-		$this->_xmlarray = $tpl_spot;
-		
-		$xml_parser = xml_parser_create();
-		xml_set_element_handler($xml_parser, array($this, 'xmlfullStartElement'), array('SpotParser', 'xmlfullEndElement'));
-		xml_set_character_data_handler($xml_parser, array($this, 'xmlfullCharacterHandler'));
+						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
+						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '', 'imageid' => '');
 
-		if (!xml_parse($xml_parser, $xml, true)) {
-			$this->_xmlarray = false;
-		} # if error parsing
-		
-		xml_parser_free($xml_parser);
 
-		# als de xml parser een error heeft gegeven, geef false terug
-		if ($this->_xmlarray === false) {
-			throw new ParseSpotXmlException();
-		} # if
+		$xml = new SimpleXMLElement($xmlStr);
+		$xml = $xml->Posting;
+		$tpl_spot['category'] = (string) $xml->Category;
+		$tpl_spot['website'] = (string) $xml->Website;
+		$tpl_spot['description'] = (string) $xml->Description;
+		$tpl_spot['size'] = (string) $xml->Size;
+		$tpl_spot['poster'] = (string) $xml->Poster;
+		$tpl_spot['tag'] = (string) $xml->Tag;
+		$tpl_spot['title'] = (string) $xml->Title;
+		$tpl_spot['key-id'] = (string) $xml->{"Key-ID"};
+		
+		# Images behandelen we op een speciale manier, in de oude spots
+		# was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid
+		if (empty($xml->Image->Segment)) {
+			$tpl_spot['image'] = (string) $xml->Image;
+ 		} else {
+			$tpl_spot['image'] = Array(
+				'segment' => (string) $xml->Image->Segment,
+				'height' => (string) $xml->Image['Height'],
+				'width' => (string) $xml->Image['Width']
+			);
+		} # else
+		
+		# NZB segmenten plakken we gewoon aan elkaar
+		foreach($xml->xpath('/Spotnet/Posting/NZB/Segment') as $seg) {
+			$tpl_spot['nzb'][] = (string) $seg;
+		} # foreach
 
 		# fix the category in the XML array but only for new spots
-		if ($this->_xmlarray['key-id'] != 1) {
-			$this->_xmlarray['category'] = ((int) $this->_xmlarray['category']) - 1;
-		} # if
-		
-		# We bieden de segment list altijd aan in een array, 
-		# dus fix het als het nu geen array is
-		if (!is_array($this->_xmlarray['segment'])) {
-			$this->_xmlarray['segment'] = array($this->_xmlarray['segment']);
+		if ((int) $xml->Key != 1) {
+			$tpl_spot['category'] = ((int) $tpl_spot['category']) - 1;
 		} # if
 
 		#
@@ -84,27 +50,29 @@ class SpotParser {
 		# die uiteraard niet compatible is met de nieuwe style van subcategorieen
 		#
 		$subcatList = array();
-		if ((!empty($this->_xmlarray['subcat'])) && (is_array($this->_xmlarray['subcat']))) {
-			$subcatList = $this->_xmlarray['subcat'];
+
+		# Category subelementen plakken we gewoon aan elkaar, category zelf kennen we toe
+		if (!empty($xml->SubCat)) {
+			foreach($xml->xpath('/Spotnet/Posting/Category/SubCat') as $sub) {
+				$subcatlist[] = (string) $sub;
+			} # foreach
 		} else {
-			if (!is_array($this->_xmlarray['sub'])) {
-				$subcatList = array($this->_xmlarray['sub']);
-			} else {
-				$subcatList = $this->_xmlarray['sub'];
-			} # if
+			foreach($xml->xpath('/Spotnet/Posting/Category/Sub') as $sub) {
+				$subcatlist[] = (string) $sub;
+			} # foreach
 		} # if
 
 		# match hoofdcat/subcat-type/subcatvalue
 		foreach($subcatList as $subcat) {
 			if (preg_match('/(\d+)([aAbBcCdD])(\d+)/', preg_quote($subcat), $tmpMatches)) {
 				$subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
-				$this->_xmlarray['subcatlist'][] = $subCatVal;
-				$this->_xmlarray['subcat' . $subCatVal[0]] .= $subCatVal . '|';
+				$tpl_spot['subcatlist'][] = $subCatVal;
+				$tpl_spot['subcat' . $subCatVal[0]] .= $subCatVal . '|';
 			} # if
 		} # foreach
 		
 		# and return the parsed XML
-		return $this->_xmlarray;
+		return $tpl_spot;
 	} # parseFull()
 
 	function parseXover($subj, $from, $messageid, $rsakeys) {
@@ -305,7 +273,7 @@ class SpotParser {
 		$strInput = str_replace('=B', "\r", $strInput);
 		$strInput = str_replace('=A', "\0", $strInput);
 		$strInput = str_replace('=D', '=', $strInput);
-		
+	
 		return $strInput;
 	} # unspecialZipstr
 
