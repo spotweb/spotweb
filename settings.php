@@ -147,7 +147,9 @@ $settings['keep_downloadlist'] = true;
 
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
-$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+if (isset($_SERVER['HTTP_HOST'])) {
+	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+} # if
 
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(

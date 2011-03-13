@@ -172,6 +172,11 @@ class SpotTemplateHelper {
 		return array($spot, $comments);
 	} # formatSpot
 	
+	
+	function newSinceLastVisit($spot) {
+		return ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp']); 
+	} # newSinceLastVisit
+	
 	#
 	# Copied from:
 	# 	http://www.mdj.us/web-development/php-programming/another-variation-on-the-time-ago-php-function-use-mysqls-datetime-field-type/

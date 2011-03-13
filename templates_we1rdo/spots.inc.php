@@ -22,18 +22,21 @@
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+		if ($tplHelper->newSinceLastVisit($spot)) {
+			$newSpotClass = 'newspot';
+		} else {
+			$newSpotClass = '';
+		} # else
 
 		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 		
-		/* highlight new spot */
-		$newSpotClass = ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp']) ? ' newspot' : '';
-		
 		$count++;
+		
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title" . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
+			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
 			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .
 			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
