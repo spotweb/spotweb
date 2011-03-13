@@ -11,8 +11,11 @@ class SpotParser {
 						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
 						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '', 'imageid' => '');
 
-
-		$xml = new SimpleXMLElement($xmlStr);
+						  
+		/* 
+		 * Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
+		 */		
+		$xml = @(new SimpleXMLElement($xmlStr));
 		$xml = $xml->Posting;
 		$tpl_spot['category'] = (string) $xml->Category;
 		$tpl_spot['website'] = (string) $xml->Website;

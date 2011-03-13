@@ -108,12 +108,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
 					# vragen we enkel de de headers op van de artikelen die er daadwerkelijk zijn
 					#
-					if ($this->_retrieveFull) {
+					# KeyID 2 is een 'moderator' post en kan dus niet getrieved worden
+					#
+					if (($this->_retrieveFull) && ($spot['KeyID'] != 2)) {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;
 							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
-
+					
 							# en voeg hem aan de database toe
 							$this->_db->addFullSpot($fullSpot);
 						} 
@@ -124,6 +126,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
 							# swallow the error
 							if ($x->getMessage() == 'No such article found') {
+								;
+							}
+							# als de XML niet te parsen is, niets aan te doen
+							if ($x->getMessage() == 'String could not be parsed as XML') {
 								;
 							} else {
 								throw $x;

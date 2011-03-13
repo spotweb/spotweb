@@ -29,7 +29,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug 
 	 */
 	function getCommentCount($spot) {
-		return $this->_db->getCommentCount($spot);
+		return $this->_db->getCommentCount($spot['messageid']);
 	} # getCommentCount
 	
 	
@@ -151,7 +151,11 @@ class SpotTemplateHelper {
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// properly escape sevreal urls
-		$spot['image'] = htmlentities($spot['image']);
+		if (!is_array($spot['image'])) {
+			$spot['image'] = htmlentities($spot['image']);
+		} else {
+			$spot['image'] = '';
+		} # else
 		$spot['website'] = htmlentities($spot['website']);
 		$spot['poster'] = htmlentities($spot['poster']);
 		$spot['tag'] = htmlentities($spot['tag']);
