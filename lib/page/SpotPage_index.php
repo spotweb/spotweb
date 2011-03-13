@@ -12,7 +12,7 @@ class SpotPage_index extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$spotsOverview = new SpotsOverview($this->_db);
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$filter = $spotsOverview->filterToQuery($this->_params['search']);
 
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
