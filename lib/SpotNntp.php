@@ -154,7 +154,7 @@ class SpotNntp {
 						  'xml-signature' => '');
 			# Vraag de volledige article header van de spot op
 			$header = $this->getHeader('<' . $msgId . '>');
-			
+
 			# Parse de header			  
 			foreach($header as $str) {
 				$keys = explode(':', $str);
