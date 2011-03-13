@@ -50,8 +50,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		/*
 		 * De daadwerkelijke processing van de headers
 		 */
-		function process($hdrList, $curMsg, $increment) {
-			$this->displayStatus("progress", ($curMsg) . " till " . ($curMsg + $increment));
+		function process($hdrList, $curMsg, $endMsg) {
+			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
 			$this->_db->beginTransaction();
 			$signedCount = 0;
@@ -59,23 +59,15 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				# Reset timelimit
 				set_time_limit(120);			
 
-				# strip de reference van de <>'s en sla het edit nummer apart op
-				$msgidParts = explode('@', substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2));
-				$msgidNumber = explode('.', $msgidParts[0]);
-				
-				if (count($msgidNumber) >= 3) {
-					$msgid = $msgidNumber[0] . '.' . $msgidNumber[1] . '@' . $msgidParts[1];
-				} else {
-					$msgid = $msgidParts[0] . '@' . $msgidParts[1];
-					$msgidNumber[2] = 0;
-				} # if
+				# strip de reference van de <>'s
+				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 				
 				# fix de references, niet alle news servers geven die goed door
-				$msgheader['References'] = $msgidNumber[0] . '@' . $msgidParts[1];
-				
+				$msgIdParts = explode(".", $commentId);
+				$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+
 				# voeg spot aan db toe
-				$this->_db->addCommentRef($msgid,
-								   $msgidNumber[2],
+				$this->_db->addCommentRef($commentId,
 								   $msgheader['References']);
 			} # foreach
 

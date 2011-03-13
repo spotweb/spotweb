@@ -31,7 +31,6 @@ class SpotNntp {
 		
 		function getOverview($first, $last) {
 			$hdrList = $this->_nntp->getOverview($first . '-' . $last);
-			$hdrList = array_reverse($hdrList);
 			
 			return $hdrList;
 		} # getOverview()
