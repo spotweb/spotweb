@@ -5,9 +5,11 @@
  */
 class SpotsOverview {
 	private $_db;
+	private $_settings;
 
-	function __construct($db) {
+	function __construct($db, $settings) {
 		$this->_db = $db;
+		$this->_settings = $settings;
 	} # ctor
 	
 	/*

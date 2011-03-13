@@ -25,7 +25,7 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 	
 		# Haal de spot op en gebruik de informatie daarin om de NZB file op te halen
 		# Haal de volledige spotinhoud op
-		$spotsOverview = new SpotsOverview($this->_db);
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $hdr_spotnntp);
 		$nzb = $spotsOverview->getNzb($fullSpot['segment'], $nzb_spotnntp);
 		

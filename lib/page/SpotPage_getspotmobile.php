@@ -16,7 +16,7 @@ class SpotPage_getspotmobile extends SpotPage_Abs {
 		$spotnntp->connect();
 
 		# Haal de volledige spotinhoud op
-		$spotsOverview = new SpotsOverview($this->_db);
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $spotnntp);
 		$comments = $spotsOverview->getSpotComments($this->_messageid, $spotnntp);
 		
