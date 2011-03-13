@@ -3,6 +3,7 @@ error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PH
 session_start();
 
 require_once "settings.php";
+require_once "lib/SpotCookie.php";
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
 require_once "lib/SpotParser.php";
