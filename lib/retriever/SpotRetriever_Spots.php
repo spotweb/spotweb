@@ -35,9 +35,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
-					case 'fullretrieved'	: echo "retrieved " . $txt . " full spots, "; break;
-					case 'verified'			: echo "verified " . $txt . ", of "; break;
-					case 'loopcount'		: echo $txt . " spots)\r\n"; break;
+					case 'fullretrieved'	: echo $txt . " full, "; break;
+					case 'verified'			: echo "verified " . $txt . ", "; break;
+					case 'removedcount'		: echo "removed " . $txt . " of "; break;
+					case 'loopcount'		: echo $txt . " total messages)\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
 					case ''					: echo "\r\n"; break;
@@ -51,6 +52,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'done'				: echo "</spots>"; break;
 					case 'dbcount'			: echo "<dbcount>" . $txt . "</dbcount>"; break;
 					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
+					case 'totalremoved'		: echo "<totalremoved>" . $txt . "</totalremoved>"; break;
 					default					: break;
 				} # switch
 			} # else xmloutput
@@ -66,6 +68,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
+			$deleteCount = 0;
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$t = microtime(true);
@@ -88,13 +91,26 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['From'], 
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
+													
 					if ($spot['Verified']) {
-						$this->_db->addSpot($spot);
-						$dbIdList['spot'][] = $msgId;
-						
-						if ($spot['WasSigned']) {
-							$signedCount++;
-						} # if
+						if ($spot['KeyID'] == 2) {
+							$commandAr = explode(' ', strtolower($spot['Title']));
+							$validCommands = array('delete', 'dispose', 'remove');
+							
+							# is dit een geldig commando?
+							if (array_search($commandAr[0], $validCommands) !== false) {
+								$this->_db->deleteSpot($commandAr[1]);
+								$deleteCount++;
+							} # if
+							
+						} else {
+							$this->_db->addSpot($spot);
+							$dbIdList['spot'][] = $msgId;
+							
+							if ($spot['WasSigned']) {
+								$signedCount++;
+							} # if
+						} # else
 					} # if
 				} # if
 
@@ -144,11 +160,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->displayStatus("hdrparsed", $hdrsRetrieved);
 				$this->displayStatus("fullretrieved", $fullsRetrieved);
 				$this->displayStatus("verified", $signedCount);
+				$this->displayStatus("removedcount", $deleteCount);
 				$this->displayStatus("loopcount", count($hdrList));
 			} else {
 				$this->displayStatus("hdrparsed", 0);
 				$this->displayStatus("fullretrieved", 0);
 				$this->displayStatus("verified", 0);
+				$this->displayStatus("removedcount", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
 
