@@ -30,7 +30,7 @@
 		} # else
 
 		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
-	
+		
 		$count++;
 		
 

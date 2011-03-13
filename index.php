@@ -17,6 +17,7 @@ require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
 require_once "lib/page/SpotPage_erasedls.php";
 require_once "lib/page/SpotPage_getspotmobile.php";
+require_once "lib/page/SpotPage_markallasread.php";
 #- main() -#
 try {
 	# database object
@@ -28,7 +29,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread')) === false) {
 		$page = 'index';
 	} # if
 
@@ -75,6 +76,12 @@ try {
 				$page->render();
 				break;
 		} # getspot
+		
+		case 'markallasread' : {
+				$page = new SpotPage_markallasread($db, $settings, $settings['prefs']);
+				$page->render();
+				break;
+		} # markallasread
 
 		case 'index' : {
 				$page = new SpotPage_index($db, $settings, $settings['prefs'], 

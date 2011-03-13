@@ -117,7 +117,29 @@
 				});
 			}); // updatebutton
 			
+			$(".markallasreadbtn").click(function(e) {
+				e.preventDefault();
+
+				var surl = this.href.split("?");
 			
+				$.ajax({
+					url: surl[0],
+					data: surl[1],
+					context: $(this),
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert('Error marking all as read');
+					},
+					beforeSend: function(jqXHR, settings) {
+						var x = $("li.info").html("<img src='templates_we1rdo/img/loading.gif' />");
+					}, // # beforeSend
+					complete: function(jqXHR, textStatus) {
+						var x = setTimeout( function() { $("li.info").html("All marked as read.") }, 1000);
+						setTimeout( function() { location.reload() }, 1500);
+					}, // # complete
+					dataType: "xml"
+				});
+			}); // markallasreadbtn
+						
 			$("img.sabnzbd-button").click(function(e) {
 				e.preventDefault();
 
