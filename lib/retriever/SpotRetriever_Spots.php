@@ -148,9 +148,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# swallow the error
 							if ($x->getMessage() == 'No such article found') {
 								;
-							}
+							} 
 							# als de XML niet te parsen is, niets aan te doen
-							if ($x->getMessage() == 'String could not be parsed as XML') {
+							elseif ($x->getMessage() == 'String could not be parsed as XML') {
 								;
 							} else {
 								throw $x;
