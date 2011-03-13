@@ -92,7 +92,7 @@ class SpotNzb {
 	 */
 	function handleNzbAction($messageid, $action, $hdr_spotnntp, $nzb_spotnntp) {
 		# Haal de volledige spot op en gebruik de informatie daarin om de NZB file op te halen
-		$spotsOverview = new SpotsOverview($this->_db);
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($messageid, $hdr_spotnntp);
 		$nzb = $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp);
 		
