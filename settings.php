@@ -23,7 +23,7 @@ $settings['nntp_hdr']['port'] = 119;
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Default zet gemaakt door 'Nakebod'
 $settings['filters'] = array(    
-    Array("Reset filters", "images/icons/home.png", "", "", array()),
+    Array("Reset filters", "images/icons/home.png", "&search[unfiltered]=true", "", array()),
     Array("Beeld", "images/icons/film.png", "cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", "", 
         Array(
             Array("DivX", "images/icons/divx.png", "cat0_a0", ""),

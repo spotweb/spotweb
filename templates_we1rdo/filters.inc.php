@@ -43,14 +43,16 @@
         if (!empty($filter[4])) {
             echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
             foreach($filter[4] as $subFilter) {
+				$strFilter = '?search[tree]=' . $subFilter[2];
 ?>
-            			<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2];?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
+            			<li> <a class="filter <?php echo $subFilter[3];?>" href="<?php echo strFilter;?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
 <?php
 				if (!empty($subFilter[4])) {
 					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 					foreach($subFilter[4] as $sub2Filter) {
+						$strFilter = '';
 		?>
-							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="?search[tree]=<?php echo $sub2Filter[2];?>"><img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; ?></a>
+							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="<?php echo $strFilter;?>"><img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; ?></a>
 		<?php
 					} # foreach 
 					echo "\t\t\t\t\t\t\t</ul>\r\n";
