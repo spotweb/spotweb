@@ -136,8 +136,8 @@ table.spots th {
 }
 table.spots th a {color:#fff;}
 table.spots th.category {text-align:center; min-width:50px; width:50px; padding:0 2px 0 0;}
-table.spots th.title {}
-table.spots th.genre {width:110px;}
+table.spots th.comments {width:34px; min-width:34px; padding:0;}
+table.spots th.genre {min-width:90px; width:110px;}
 table.spots th.poster {width:150px;}
 table.spots th.date {min-width:90px; width:140px;}
 table.spots th.nzb {width:30px;}
@@ -161,6 +161,8 @@ table.spots tr td.category {
 }
 table.spots tr td.category a {color:#fff;}
 
+table.spots tr td.new {font-style:italic;}
+
 table.spots tr td img.sabnzbd-button {margin:0 4px;}
 
 table.spots tr.blue td {background-color:#daecff;}
@@ -174,6 +176,15 @@ table.spots tr.blue td.category {background:url(img/blue.png) no-repeat left top
 table.spots tr.orange td.category {background:url(img/orange.png) no-repeat left top;}
 table.spots tr.green td.category {background:url(img/green.png) no-repeat left top;}
 table.spots tr.red td.category {background:url(img/red.png) no-repeat left top;}
+
+table.spots tr td.comments {text-align:center; padding:0;}
+table.spots tr td.comments a {font-weight:bold; color:#fff;}
+table.spots tr:hover td.comments a {color:#000;}
+table.spots tr:hover td.comments {background-image:none !important;}
+table.spots tr.blue td.comments {background-image:url(img/inline_blue.png);}
+table.spots tr.orange td.comments {background-image:url(img/inline_orange.png);}
+table.spots tr.green td.comments {background-image:url(img/inline_green.png);}
+table.spots tr.red td.comments {background-image:url(img/inline_red.png);}
 
 table.spots a.nzb {font-weight:bold;}
 table.spots tr.blue a.nzb {color:#008edf;}
@@ -242,8 +253,9 @@ div.details table.spotinfo td.break {background-color:#fff;}
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
 
 div.details div.description {clear:both; padding:10px 0 0;}
-div.details div.description pre {white-space:pre-line;}
+div.details div.description pre {white-space:pre-line; margin:10px 0 0;}
 
+div.details div.comments {padding:10px 0 0;}
 div.details div.comments h4,
 div.details div.description h4 {background:#777; font-size:11px; line-height:20px; color:#fff; padding:0 5px; margin:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 

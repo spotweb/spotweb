@@ -59,7 +59,7 @@
             	<h4>Post Description</h4>
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
-            <div class="comments">
+            <div class="comments" id="comments">
             	<h4>Comments</h4>
 					<ul>
 <?php
