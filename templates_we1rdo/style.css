@@ -140,8 +140,6 @@ table.spots th.title {}
 table.spots th.genre {width:110px;}
 table.spots th.poster {width:150px;}
 table.spots th.date {min-width:90px; width:140px;}
-table.spots th.date {min-width:90px; width:140px;}
->>>>>>> e4852b4... foutje hersteld m.b.t. breedte kolommen
 table.spots th.nzb {width:30px;}
 table.spots th.sabnzbd {width:28px;}
 
@@ -260,8 +258,3 @@ div.details.red div.comments li.even {background-color:#ffeaea;}
 div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
-
-/* DYNATREE OVERRIDES */
-div.filter ul.dynatree-container {border:0;}
-div.filter ul.dynatree-container a {display:inline; font-weight:normal;}
-div.advancedsearch {display:none;}
