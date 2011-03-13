@@ -255,6 +255,13 @@ class SpotDb
 	} # getCommentRef
 
 	/*
+	 * Geef het aantal reacties voor een specifieke spot terug
+	 */
+	function getCommentCount($nntpref) {
+		return $this->_conn->arrayQuery("SELECT COUNT(1) FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+	} # getCommentCount
+
+	/*
 	 * Voeg een spot toe aan de lijst van gedownloade files
 	 */
 	function addDownload($messageid) {
