@@ -11,6 +11,7 @@ class SpotParser {
 						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
 						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '', 'imageid' => '');
 
+						  
 		/* 
 		 * Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		

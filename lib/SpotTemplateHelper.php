@@ -29,7 +29,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug 
 	 */
 	function getCommentCount($spot) {
-		return $this->_db->getCommentCount($spot);
+		return $this->_db->getCommentCount($spot['messageid']);
 	} # getCommentCount
 	
 	
