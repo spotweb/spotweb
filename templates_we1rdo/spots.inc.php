@@ -66,7 +66,7 @@
 			} # if
 
 			# display the sabnzbd button
-			if (isset($settings['sabnzbd'])) {
+			if (!empty($spot['sabnzbdurl'])) {
 				echo "<td> &nbsp; </td>";
 			} # if
 		} # else
