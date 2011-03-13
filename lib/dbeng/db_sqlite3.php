@@ -93,10 +93,14 @@ class db_sqlite3 extends db_abs {
 		} # if
 
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, die droppen wij volledig
-		$q = $this->arrayQuery("PRAGMA table_info(commentsxover)");
-		if (count($q) == 4) {
-			$this->rawExec("DROP TABLE commentsxover");
-		} # if
+		try {
+			$q = $this->arrayQuery("PRAGMA table_info(commentsxover)");
+			if (count($q) == 4) {
+				$this->rawExec("DROP TABLE commentsxover");
+			} # if
+		} catch(Exception $x) {
+		 ;
+		}
 		
 		$q = $this->arrayQuery("PRAGMA table_info(commentsxover)");
 		if (empty($q)) {

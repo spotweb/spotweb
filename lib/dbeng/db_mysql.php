@@ -137,10 +137,14 @@ class db_mysql extends db_abs {
 		} # if
 		
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, daarvan droppen wij er 1
-		$q = $this->arrayQuery("SHOW COLUMNS FROM commentsxover;");
-		if (count($q) == 4) {
-			$this->rawExec("DROP TABLE commentsxover");
-		} # if
+		try {
+			$q = $this->arrayQuery("SHOW COLUMNS FROM commentsxover;");
+			if (count($q) == 4) {
+				$this->rawExec("DROP TABLE commentsxover");
+			} # if
+		} catch(Exception $x) {
+		 ;
+		}
 
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (empty($q)) {
