@@ -19,20 +19,15 @@
 								</tr>
 
 								<tr> 
-									<td colspan="3"> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
+									<td colspan='3'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
 								</tr>
 							</tbody>
 						</table>
 
-						<div class='advancedsearch'>
-							<tr> 
-								<td colspan='3'> <input type="checkbox" name="search[unfiltered]" id='search-unfiltered' value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>></input><label for='search-unfiltered'>Vergeet filters voor zoekopdracht</label></td>
-							</tr>
-							<div id="tree"> 
-								<ul>
-								</ul>
-							</div>
-						</div>
+                        <div id="tree"> 
+                            <ul>
+                            </ul>
+                        </div>
 						
 						<input type='submit' class="filtersubmit" value='Zoek en filter'></input>
 					</form>
@@ -51,6 +46,16 @@
 ?>
             			<li> <a class="filter <?php echo $subFilter[3];?>" href="?search[tree]=<?php echo $subFilter[2];?>"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a>
 <?php
+				if (!empty($subFilter[4])) {
+					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
+					foreach($subFilter[4] as $sub2Filter) {
+		?>
+							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="?search[tree]=<?php echo $sub2Filter[2];?>"><img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; ?></a>
+		<?php
+					} # foreach 
+					echo "\t\t\t\t\t\t\t</ul>\r\n";
+				} # is_array
+			
 			} # foreach 
             echo "\t\t\t\t\t\t\t</ul>\r\n";
         } # is_array

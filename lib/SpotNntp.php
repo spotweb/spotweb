@@ -31,7 +31,6 @@ class SpotNntp {
 		
 		function getOverview($first, $last) {
 			$hdrList = $this->_nntp->getOverview($first . '-' . $last);
-			$hdrList = array_reverse($hdrList);
 			
 			return $hdrList;
 		} # getOverview()
@@ -132,11 +131,11 @@ class SpotNntp {
 		
 		function getNzb($segList) {
 			$nzb = '';
-
+			
 			foreach($segList as $seg) {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
-			
+
 			$spotParser = new SpotParser();
 			return gzinflate( $spotParser->unspecialZipStr($nzb) );
 		} # getNzb

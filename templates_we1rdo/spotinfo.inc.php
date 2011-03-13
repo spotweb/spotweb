@@ -21,11 +21,11 @@
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
                                 |
-<?php if (!empty($spot['segment'])) { ?>
+<?php if (!empty($spot['nzb'])) { ?>
                             	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="NZB downloaden">NZB</a>
 <?php } ?>								
                             </th>
-<?php if ((!empty($spot['segment'])) && (!empty($spot['sabnzbdurl']))) { ?>
+<?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
                             <th class="sabnzbd"><a href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img height="16" width="16" src="images/download-small.png" class="sabnzbd-button"></a></th>
 <?php } ?>								
                         </tr>

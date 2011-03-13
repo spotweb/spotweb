@@ -59,8 +59,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		/*
 		 * De daadwerkelijke processing van de headers
 		 */
-		function process($hdrList, $curMsg, $increment) {
-			$this->displayStatus("progress", ($curMsg) . " till " . ($curMsg + $increment));
+		function process($hdrList, $curMsg, $endMsg) {
+			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
 			$this->_db->beginTransaction();
 			$signedCount = 0;

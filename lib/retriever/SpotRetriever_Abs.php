@@ -85,31 +85,32 @@ abstract class SpotRetriever_Abs {
 		function loopTillEnd($curMsg, $increment = 1000) {
 			$processed = 0;
 			
+			# make sure we handle articlenumber wrap arounds
+			if ($curMsg < $this->_msgdata['first']) {
+				$curMsg = $this->_msgdata['first'];
+			} # if
+
 			$this->displayStatus("groupmessagecount", ($this->_msgdata['last'] - $this->_msgdata['first']));
 			$this->displayStatus("firstmsg", $this->_msgdata['first']);
 			$this->displayStatus("lastmsg", $this->_msgdata['last']);
 			$this->displayStatus("curmsg", $curMsg);
 			$this->displayStatus("", "");
 
-			# make sure we handle articlenumber wrap arounds
-			if ($curMsg < $this->_msgdata['first']) {
-				$curMsg = $this->_msgdata['first'];
-			} # if
-
 			while ($curMsg < $this->_msgdata['last']) {
 				# get the list of headers (XOVER)
 				$hdrList = $this->_spotnntp->getOverview($curMsg, ($curMsg + $increment));
 				
+				$saveCurMsg = $curMsg;
 				# If no spots were found, just manually increase the
 				# messagenumber with the increment to make sure we advance
-				if ((count($hdrList) < 1) || ($hdrList[0]['Number'] < $curMsg)) {
+				if ((count($hdrList) < 1) || ($hdrList[count($hdrList)-1]['Number'] < $curMsg)) {
 					$curMsg += $increment;
 				} else {
-					$curMsg = ($hdrList[0]['Number'] + 1);
+					$curMsg = ($hdrList[count($hdrList)-1]['Number'] + 1);
 				} # else
 
 				# run the processing method
-				$processed += $this->process($hdrList, $curMsg, $increment);
+				$processed += $this->process($hdrList, $saveCurMsg, $curMsg);
 			} # while
 	
 			$this->displayStatus("totalprocessed", $processed);

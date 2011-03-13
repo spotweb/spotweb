@@ -136,11 +136,16 @@ class db_mysql extends db_abs {
 			$this->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_3, ADD UNIQUE idx_spots_3 (messageid);");
 		} # if
 		
+		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, daarvan droppen wij er 1
+		$q = $this->arrayQuery("SHOW COLUMNS FROM commentsxover;");
+		if (count($q) == 4) {
+			$this->rawExec("DROP TABLE commentsxover");
+		} # if
+
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
-										   revid INTEGER,
 										   nntpref VARCHAR(128));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 		} # if

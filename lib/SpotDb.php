@@ -241,19 +241,25 @@ class SpotDb
 	 * Insert commentreg, 
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
-	 *   revid is een of ander revisie nummer of iets dergelijks
 	 */
-	function addCommentRef($messageid, $revid, $nntpref) {
-		$this->_conn->exec("INSERT INTO commentsxover(messageid, revid, nntpref) VALUES('%s', %d, '%s')",
-								Array($messageid, (int) $revid, $nntpref));
+	function addCommentRef($messageid, $nntpref) {
+		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref) VALUES('%s', '%s')",
+								Array($messageid, $nntpref));
 	} # addCommentRef
 	
 	/*
 	 * Geef al het commentaar voor een specifieke spot terug
 	 */
 	function getCommentRef($nntpref) {
-		return $this->_conn->arrayQuery("SELECT messageid, MAX(revid) FROM commentsxover WHERE nntpref = '%s' GROUP BY messageid", Array($nntpref));
+		return $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
 	} # getCommentRef
+
+	/*
+	 * Geef het aantal reacties voor een specifieke spot terug
+	 */
+	function getCommentCount($nntpref) {
+		return $this->_conn->arrayQuery("SELECT COUNT(1) FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+	} # getCommentCount
 
 	/*
 	 * Voeg een spot toe aan de lijst van gedownloade files

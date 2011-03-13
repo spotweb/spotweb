@@ -17,6 +17,21 @@ class SpotTemplateHelper {
 		$this->_db = $db;
 		$this->_params = $params;
 	} # ctor
+
+	/*
+	 * Geef het aantal spots terug 
+	 */
+	function getSpotCount() {
+		return $this->_db->getSpotCount();
+	} # getSpotCount
+
+	/*
+	 * Geef het aantal spots terug 
+	 */
+	function getCommentCount($spot) {
+		return $this->_db->getCommentCount($spot);
+	} # getCommentCount
+	
 	
 	/*
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
