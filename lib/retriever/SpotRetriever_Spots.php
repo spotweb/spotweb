@@ -117,7 +117,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							} # if
 						} # else
 					} # if
-				} # if
+				} else {
+					# anders halen we hem uit de database want we hebben die nodig
+					$spot = $this->_db->getFullSpot($msgId);
+				} # else
 
 				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
 				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
