@@ -5,6 +5,7 @@ abstract class SpotRetriever_Abs {
 		protected $_server;
 		protected $_spotnntp;
 		protected $_db;
+		protected $_settings;
 		
 		private $_msgdata;
 
@@ -22,9 +23,10 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
-		function __construct($server, $db) {
+		function __construct($server, $db, $settings) {
 			$this->_server = $server;
 			$this->_db = $db;
+			$this->_settings = $settings;
 		} # ctor
 		
 		function connect($group) {

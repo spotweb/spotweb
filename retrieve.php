@@ -46,6 +46,7 @@ try {
 
 	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], 
 										 $db, 
+										 $settings,										 
 										 $settings['rsa_keys'], 
 										 $req->getDef('output', ''),
 										 $settings['retrieve_full']);
@@ -77,6 +78,7 @@ try {
 	if ($settings['retrieve_comments']) {
 		$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
 												$db,
+												$settings,
 												$req->getDef('output', ''));
 		$msgdata = $retriever->connect($settings['comment_group']);
 

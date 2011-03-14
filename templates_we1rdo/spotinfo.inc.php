@@ -2,14 +2,14 @@
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
-            <a class="postimage" href="<?php echo $spot['website']; ?>">
-                <img class="spotinfoimage" src="<?php echo $spot['image']; ?>">
+            <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
+                <img class="spotinfoimage" src="?page=proxyurl&amp;url=<?php echo $spot['image']; ?>">
             </a>
 			<div class="spotinfo">
 <?php
 	if (!$spot['verified']) {
 ?>
-				<div class="warning">Deze Spot is niet geverifieerd, de naam van de poster is niet bevestigd!</div>
+				<div class="warning">Deze Spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
 <?php
 	}
 ?>
