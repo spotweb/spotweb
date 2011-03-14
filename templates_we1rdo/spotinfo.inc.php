@@ -9,7 +9,7 @@
 <?php
 	if (!$spot['verified']) {
 ?>
-				<div class="warning">Deze Spot is niet geverifieerd, de naam van de poster is niet bevestigd!</div>
+				<div class="warning">Deze Spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
 <?php
 	}
 ?>
