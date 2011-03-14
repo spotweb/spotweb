@@ -3,7 +3,7 @@
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
-                <img class="spotinfoimage" src="?page=proxyurl&amp;url=<?php echo $spot['image']; ?>">
+                <img class="spotinfoimage" src="?page=getimage&amp;messageid=<?php echo $spot['messageid']; ?>&amp;image[height]=300&amp;image[width]=300">
             </a>
 			<div class="spotinfo">
 <?php
