@@ -16,6 +16,7 @@ require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
 require_once "lib/page/SpotPage_erasedls.php";
+require_once "lib/page/SpotPage_proxy.php";
 require_once "lib/page/SpotPage_getspotmobile.php";
 require_once "lib/page/SpotPage_markallasread.php";
 #- main() -#
@@ -29,7 +30,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'proxyurl')) === false) {
 		$page = 'index';
 	} # if
 
@@ -82,6 +83,12 @@ try {
 				$page->render();
 				break;
 		} # markallasread
+
+		case 'proxyurl' : {
+			$page = new SpotPage_proxy($db, $settings, $settings['prefs'], $req->getDef('url', ''));
+			$page->render();
+			break;
+		}
 
 		case 'index' : {
 				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
