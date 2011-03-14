@@ -13,7 +13,6 @@ class SpotPage_getspotmobile extends SpotPage_Abs {
 
 	function render() {
 		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
-		$spotnntp->connect();
 
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);

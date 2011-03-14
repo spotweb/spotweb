@@ -10,10 +10,12 @@ class SpotNntp {
 		
 		private $_error;
 		private $_nntp;
+		private $_connected;
 		
 		function __construct($server) { 
 			$error = '';
 			
+			$this->_connected = false;
 			$this->_server = $server['host'];
 			$this->_serverenc = $server['enc'];
 			$this->_serverport = $server['port'];
@@ -26,21 +28,28 @@ class SpotNntp {
 		} # ctor
 		
 		function selectGroup($group) {
+			$this->connect();
 			return $this->_nntp->selectGroup($group);
 		} # selectGroup()
 		
 		function getOverview($first, $last) {
+			$this->connect();
 			$hdrList = $this->_nntp->getOverview($first . '-' . $last);
 			
 			return $hdrList;
 		} # getOverview()
 
 		function getMessageIdList($first, $last) {
+			$this->connect();
 			$hdrList = $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
 			return $hdrList;
 		} # getMessageIdList()
 		
 		function quit() {
+			if (!$this->_connected) {
+				return ;
+			} # if
+			
 			try {
 				$this->_nntp->quit();
 			} 
@@ -50,21 +59,30 @@ class SpotNntp {
 		} # quit()
 		
 		function getHeader($msgid) {
+			$this->connect();
 			return $this->_nntp->getHeader($msgid);
 		} # getHeader()
 
 		function getBody($msgid) {
+			$this->connect();
 			return $this->_nntp->getBody($msgid);
 		} # getBody	()
 		
 		function connect() {
-			$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport);
+			# dummy operation
+			if ($this->_connected) {
+				return ;
+			} # if
+			$this->_connected = true;
+			
+			$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
 			if (!empty($this->_user)) {
 				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
 			} # if
 		} # connect()
 		
 		function getArticle($msgId) {
+			$this->connect();
 			$result = array('header' => array(), 'body' => array());
 			
 			# Fetch het artikel
@@ -128,6 +146,12 @@ class SpotNntp {
 			
 			return $comments;
 		} # getComments
+
+		function getImage($segment) {
+			$nzb = implode('', $this->getBody('<' . $segment . '>'));
+			$spotParser = new SpotParser();
+			return $spotParser->unspecialZipStr($nzb);
+		} # getImage
 		
 		function getNzb($segList) {
 			$nzb = '';

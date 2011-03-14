@@ -15,14 +15,12 @@ class SpotPage_getnzb extends SpotPage_Abs {
 	
 	function render() {
 		$hdr_spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
-		$hdr_spotnntp->connect(); 
 
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 		if ($this->_settings['nntp_hdr']['host'] == $this->_settings['nntp_nzb']['host']) {
 			$nzb_spotnntp = $hdr_spotnntp;
 		} else {
 			$nzb_spotnntp = new SpotNntp($this->_settings['nntp_nzb']);
-			$nzb_spotnntp->connect(); 
 		} # else
 
 		try {

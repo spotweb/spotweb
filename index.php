@@ -16,9 +16,10 @@ require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
 require_once "lib/page/SpotPage_erasedls.php";
-require_once "lib/page/SpotPage_proxy.php";
+require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_getspotmobile.php";
 require_once "lib/page/SpotPage_markallasread.php";
+require_once "lib/page/SpotPage_getimage.php";
 #- main() -#
 try {
 	# database object
@@ -30,7 +31,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'proxyurl')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage')) === false) {
 		$page = 'index';
 	} # if
 
@@ -84,8 +85,10 @@ try {
 				break;
 		} # markallasread
 
-		case 'proxyurl' : {
-			$page = new SpotPage_proxy($db, $settings, $settings['prefs'], $req->getDef('url', ''));
+		case 'getimage' : {
+			$page = new SpotPage_getimage($db, $settings, $settings['prefs'], 
+								Array('messageid' => $req->getDef('messageid', ''),
+									  'image' => $req->getDef('image', Array())));
 			$page->render();
 			break;
 		}
