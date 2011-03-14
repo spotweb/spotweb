@@ -3,3 +3,5 @@ nntpdb.sqlite3-journal
 ownsettings.php
 server-settings.php
 retrieve.sh
+.htaccess
+.htpasswd
