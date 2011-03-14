@@ -11,8 +11,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, $db, $rsakeys, $outputType, $retrieveFull) {
-			parent::__construct($server, $db);
+		function __construct($server, $db, $settings, $rsakeys, $outputType, $retrieveFull) {
+			parent::__construct($server, $db, $settings);
 			
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
