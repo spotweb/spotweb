@@ -38,6 +38,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'fullretrieved'	: echo $txt . " full, "; break;
 					case 'verified'			: echo "verified " . $txt . ", "; break;
 					case 'modcount'			: echo "moderated " . $txt . " of "; break;
+					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
 					case 'loopcount'		: echo $txt . " total messages)\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
@@ -69,6 +70,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
 			$modCount = 0;
+			$skipCount = 0;
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$t = microtime(true);
@@ -109,11 +111,16 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							} # if
 							
 						} else {
-							$this->_db->addSpot($spot);
-							$dbIdList['spot'][] = $msgId;
+							// Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
+							if ($this->_settings['retention'] > 0 && $spot['Stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
+								$skipCount++;
+							} else {
+								$this->_db->addSpot($spot);
+								$dbIdList['spot'][] = $msgId;
 							
-							if ($spot['WasSigned']) {
-								$signedCount++;
+								if ($spot['WasSigned']) {
+									$signedCount++;
+								} # if
 							} # if
 						} # else
 					} # if
@@ -169,12 +176,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->displayStatus("fullretrieved", $fullsRetrieved);
 				$this->displayStatus("verified", $signedCount);
 				$this->displayStatus("modcount", $modCount);
+				$this->displayStatus("skipcount", $skipCount);
 				$this->displayStatus("loopcount", count($hdrList));
 			} else {
 				$this->displayStatus("hdrparsed", 0);
 				$this->displayStatus("fullretrieved", 0);
 				$this->displayStatus("verified", 0);
 				$this->displayStatus("modcount", 0);
+				$this->displayStatus("skipcount", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
 
