@@ -57,11 +57,11 @@ class SpotParser {
 		# Category subelementen plakken we gewoon aan elkaar, category zelf kennen we toe
 		if (!empty($xml->SubCat)) {
 			foreach($xml->xpath('/Spotnet/Posting/Category/SubCat') as $sub) {
-				$subcatlist[] = (string) $sub;
+				$subcatList[] = (string) $sub;
 			} # foreach
 		} else {
 			foreach($xml->xpath('/Spotnet/Posting/Category/Sub') as $sub) {
-				$subcatlist[] = (string) $sub;
+				$subcatList[] = (string) $sub;
 			} # foreach
 		} # if
 

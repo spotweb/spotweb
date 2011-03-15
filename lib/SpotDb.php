@@ -313,10 +313,11 @@ class SpotDb
 	 */
 	function deleteSpotsRetention($retention) {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
-		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
+		
+		$this->_conn->exec('DELETE FROM spots, spotsfull, commentsxover USING spots
 			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-			WHERE spots.stamp < UNIX_TIMESTAMP() - $retention;");
+			WHERE spots.stamp < ' . (time() - $retention) );
 	} # deleteSpotsRetention
 
 	/*
