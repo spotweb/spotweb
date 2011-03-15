@@ -117,6 +117,7 @@ class db_sqlite3 extends db_abs {
 										   messageid VARCHAR(128),
 										   nntpref VARCHAR(128));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON spotsfull(messageid)");
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
