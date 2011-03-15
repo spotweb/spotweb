@@ -1,6 +1,12 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
+# Risky warning, might trip up some stuff
+if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
+	echo "It appears you are not running retrieve.php from its own directory. Please CHDIR to my directoy and run again!" . PHP_EOL;
+	die();
+} # if
+
 require_once "settings.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/SpotDb.php";
@@ -16,10 +22,6 @@ if (ini_get('safe_mode') ) {
 	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 } # if
 
-if (!isset($settings['retrieve_increment'])) {
-	echo "WARNING: Parameter retrieve_increment is missing in settings.php, please add and run again.";
-	die();
-}
 
 $req = new SpotReq();
 $req->initialize();
