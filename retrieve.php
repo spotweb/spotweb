@@ -101,6 +101,17 @@ catch(RetrieverRunningException $x) {
 	die();
 } # catch
 
+## Retention cleanup
+try {
+	if ($settings['retention'] > 0) {
+		$db->deleteSpotsRetention($settings['retention']);
+	} # if
+} catch(Exception $x) {
+	echo "\r\n\r\n";
+	echo "Fatal error occured cleaning up messages: \r\n";
+	echo "  " . $x->getMessage() . "\r\n\r\n";
+	die();
+} # catch
 
 if ($req->getDef('output', '') == 'xml') {
 	echo "</xml>";

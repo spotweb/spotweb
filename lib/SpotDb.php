@@ -307,6 +307,17 @@ class SpotDb
 	} # markSpotModerated
 
 	/*
+	 * Verwijder oude spots uit de db
+	 */
+	function deleteSpotsRetention($retention) {
+		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
+		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
+			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+			WHERE spots.stamp < UNIX_TIMESTAMP() - $retention;");
+	} # deleteSpotsRetention
+
+	/*
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {

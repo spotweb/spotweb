@@ -122,6 +122,9 @@ $settings['retrieve_comments'] = true;
 # hoeveel spots wil je tonen op 1 pagina?
 $settings['prefs']['perpage'] = 100;
 
+# Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen
+$settings['retention'] = 0;
+
 # hoe willen we datums geformatteerd hebben? Geef een strng in compatibel met http://php.net/strftime of 'human' voor 
 # een human-readable verhaal
 # $settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
