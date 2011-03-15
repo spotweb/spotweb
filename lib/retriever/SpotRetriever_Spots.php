@@ -37,7 +37,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
 					case 'fullretrieved'	: echo $txt . " full, "; break;
 					case 'verified'			: echo "verified " . $txt . ", "; break;
-					case 'modcount'			: echo "moderated " . $txt . " of "; break;
+					case 'modcount'			: echo "moderated " . $txt . ", "; break;
 					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
 					case 'loopcount'		: echo $txt . " total messages)\r\n"; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
@@ -53,6 +53,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'done'				: echo "</spots>"; break;
 					case 'dbcount'			: echo "<dbcount>" . $txt . "</dbcount>"; break;
 					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
+					case 'skipcount'		: echo "<totalskipped> " . $txt . "</totalskipped>"; break;
 					case 'totalremoved'		: echo "<totalremoved>" . $txt . "</totalremoved>"; break;
 					default					: break;
 				} # switch
@@ -108,8 +109,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						if (array_search($commandAr[0], $validCommands) !== false) {
 							switch($this->_settings['spot_moderation']) {
 								case 'disable'	: break;
-								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]);
-								default			: $this->_db->deleteSpot($commandAr[1]);
+								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]); break;
+								default			: $this->_db->deleteSpot($commandAr[1]); break;
 							} # switch
 							
 							$modCount++;
