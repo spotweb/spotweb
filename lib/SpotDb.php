@@ -295,10 +295,10 @@ class SpotDb
 	 * Verwijder een spot uit de db
 	 */
 	function deleteSpot($msgId) {
-		$this->_conn->exec("DELETE FROM spots as S, spotsfull, commentsxover USING spots
+		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
 			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-			WHERE s.messageid = '%s'", Array($msgId));
+			WHERE spots.messageid = '%s'", Array($msgId));
 	} # deleteSpot
 
 	/*
