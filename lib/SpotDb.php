@@ -305,7 +305,7 @@ class SpotDb
 	 * Markeer een spot in de db moderated
 	 */
 	function markSpotModerated($msgId) {
-		$this->_conn->exec("UPDATE spots SET moderated = true WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->exec("UPDATE spots SET moderated = 1 WHERE messageid = '%s'", Array($msgId));
 	} # markSpotModerated
 
 	/*
@@ -367,7 +367,7 @@ class SpotDb
 	} # beginTransaction
 
 	function abortTransaction() {
-		$this->_conn->exec('ABORT;');
+		$this->_conn->exec('ROLLBACK;');
 	} # abortTransaction
 	
 	function commitTransaction() {
