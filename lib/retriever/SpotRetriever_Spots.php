@@ -94,36 +94,40 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 													
-					if ($spot['Verified']) {
-						if ($spot['KeyID'] == 2) {
-							$commandAr = explode(' ', strtolower($spot['Title']));
-							$validCommands = array('delete', 'dispose', 'remove');
-							
-							# is dit een geldig commando?
-							if (array_search($commandAr[0], $validCommands) !== false) {
-								switch($this->_settings['spot_moderation']) {
-									case 'disable'	: break;
-									case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]);
-									default			: $this->_db->deleteSpot($commandAr[1]);
-								} # switch
-								
-								$modCount++;
-							} # if
-							
-						} else {
-							// Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
-							if ($this->_settings['retention'] > 0 && $spot['Stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
-								$skipCount++;
-							} else {
-								$this->_db->addSpot($spot);
-								$dbIdList['spot'][] = $msgId;
-							
-								if ($spot['WasSigned']) {
-									$signedCount++;
-								} # if
-							} # if
-						} # else
+					# als er een parse error was, negeren we de spot volledig, ook niet
+					# verified spots gooien we weg.
+					if (($spot === false) || (!$spot['Verified'])){
+						continue;
 					} # if
+													
+					if ($spot['KeyID'] == 2) {
+						$commandAr = explode(' ', strtolower($spot['Title']));
+						$validCommands = array('delete', 'dispose', 'remove');
+						
+						# is dit een geldig commando?
+						if (array_search($commandAr[0], $validCommands) !== false) {
+							switch($this->_settings['spot_moderation']) {
+								case 'disable'	: break;
+								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]);
+								default			: $this->_db->deleteSpot($commandAr[1]);
+							} # switch
+							
+							$modCount++;
+						} # if
+						
+					} else {
+						// Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
+						if ($this->_settings['retention'] > 0 && $spot['Stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
+							$skipCount++;
+						} else {
+							$this->_db->addSpot($spot);
+							$dbIdList['spot'][] = $msgId;
+						
+							if ($spot['WasSigned']) {
+								$signedCount++;
+							} # if
+						} # if
+					} # else
 				} else {
 					# anders halen we hem uit de database want we hebben die nodig
 					$spot = $this->_db->getFullSpot($msgId);

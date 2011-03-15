@@ -295,8 +295,10 @@ class SpotDb
 	 * Verwijder een spot uit de db
 	 */
 	function deleteSpot($msgId) {
-		$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
-		$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->exec("DELETE FROM spots as S, spotsfull, commentsxover USING spots
+			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+			WHERE s.messageid = '%s'", Array($msgId));
 	} # deleteSpot
 
 	/*
@@ -310,8 +312,11 @@ class SpotDb
 	 * Verwijder oude spots uit de db
 	 */
 	function deleteSpotsRetention($retention) {
-		$deletefrom = time() - $retention * 24 * 60 * 60;
-		$this->_conn->exec("DELETE FROM spots WHERE stamp < $deletefrom;");
+		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
+		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
+			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+			WHERE spots.stamp < UNIX_TIMESTAMP() - $retention;");
 	} # deleteSpotsRetention
 
 	/*

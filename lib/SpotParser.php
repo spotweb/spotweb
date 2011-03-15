@@ -94,6 +94,10 @@ class SpotParser {
 		} # if
 		
 		$tmpHdr = explode('@', $tmpHdr[1]);
+		if (count($tmpHdr) < 2) {
+			return false;
+		} # if 
+		
 		$spot['Header'] = $tmpHdr[1];
 		$spot['Verified'] = false;
 		$spot['MessageID'] = substr($messageid, 1, strlen($messageid) - 2);
