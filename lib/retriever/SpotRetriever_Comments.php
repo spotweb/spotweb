@@ -21,17 +21,17 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo "Retrieving new comments from server...\r\n"; break;
-					case 'done'				: echo "Finished retrieving comments.\r\n\r\n"; break;
-					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "\r\n"; break;
-					case 'firstmsg'			: echo "First message number:	" . $txt . "\r\n"; break;
-					case 'lastmsg'			: echo "Last message number:	" . $txt . "\r\n"; break;
-					case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
+					case 'start'			: echo "Retrieving new comments from server..." . PHP_EOL; break;
+					case 'done'				: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
+					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
+					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
+					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
+					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
-					case 'loopcount'		: echo ", found " . $txt . " comments\r\n"; break;
-					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments\r\n"; break;
-					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
-					case ''					: echo "\r\n"; break;
+					case 'loopcount'		: echo ", found " . $txt . " comments" . PHP_EOL; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
+					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
+					case ''					: echo PHP_EOL; break;
 					
 					default					: echo $cat . $txt;
 				} # switch

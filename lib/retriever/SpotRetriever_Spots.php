@@ -26,23 +26,23 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo "Retrieving new Spots from server...\r\n"; break;
-					case 'done'				: echo "Finished retrieving spots.\r\n\r\n"; break;
-					case 'dbcount'			: echo "Spots in database:	" . $txt . "\r\n"; break;
-					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "\r\n"; break;
-					case 'firstmsg'			: echo "First message number:	" . $txt . "\r\n"; break;
-					case 'lastmsg'			: echo "Last message number:	" . $txt . "\r\n"; break;
-					case 'curmsg'			: echo "Current message:	" . $txt . "\r\n"; break;
+					case 'start'			: echo "Retrieving new Spots from server..." . PHP_EOL; break;
+					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
+					case 'dbcount'			: echo "Spots in database:	" . $txt . "" . PHP_EOL; break;
+					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
+					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
+					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
+					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
 					case 'fullretrieved'	: echo $txt . " full, "; break;
 					case 'verified'			: echo "verified " . $txt . ", "; break;
 					case 'modcount'			: echo "moderated " . $txt . ", "; break;
 					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
-					case 'loopcount'		: echo $txt . " total messages)\r\n"; break;
-					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots\r\n"; break;
-					case 'searchmsgid'		: echo "Looking for articlenumber for messageid\r\n"; break;
-					case ''					: echo "\r\n"; break;
+					case 'loopcount'		: echo $txt . " total messages)" . PHP_EOL; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
+					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
+					case ''					: echo PHP_EOL; break;
 					
 					default					: echo $cat . $txt;
 				} # switch

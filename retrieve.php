@@ -13,7 +13,7 @@ require_once "lib/retriever/SpotRetriever_Comments.php";
 
 # in safe mode, max execution time cannot be set, warn the user
 if (ini_get('safe_mode') ) {
-	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems\r\n\r\n";
+	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 } # if
 
 if (!isset($settings['retrieve_increment'])) {
@@ -33,7 +33,7 @@ try {
 	$db->connect();
 } 
 catch(Exception $x) {
-	die("Unable to connect to database: " . $x->getMessage() . "\r\n");
+	die("Unable to connect to database: " . $x->getMessage() . PHP_EOL);
 } # catch
 
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
@@ -63,13 +63,13 @@ try {
 	$db->setLastUpdate($settings['nntp_hdr']['host']);
 } 
 catch(RetrieverRunningException $x) {
-	echo "\r\n\r\n";
-	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren.\r\n";
+	echo PHP_EOL . PHP_EOL;
+	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
 }
 catch(Exception $x) {
-	echo "\r\n\r\n";
-	echo "Fatal error occured retrieving messages: \r\n";
-	echo "  " . $x->getMessage() . "\r\n\r\n";
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured retrieving messages:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
 	die();
 } # catch
 
@@ -92,12 +92,12 @@ try {
 	} # if
 }
 catch(RetrieverRunningException $x) {
-	echo "\r\n\r\n";
-	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren.\r\n";
+	echo PHP_EOL . PHP_EOL;
+	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
 } catch(Exception $x) {
-	echo "\r\n\r\n";
-	echo "Fatal error occured retrieving messages: \r\n";
-	echo "  " . $x->getMessage() . "\r\n\r\n";
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured retrieving messages:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
 	die();
 } # catch
 
@@ -107,9 +107,9 @@ try {
 		$db->deleteSpotsRetention($settings['retention']);
 	} # if
 } catch(Exception $x) {
-	echo "\r\n\r\n";
-	echo "Fatal error occured cleaning up messages: \r\n";
-	echo "  " . $x->getMessage() . "\r\n\r\n";
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured retrieving messages:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
 	die();
 } # catch
 
