@@ -195,6 +195,7 @@ class SpotDb
 												s.title AS title,
 												s.tag AS tag,
 												s.stamp AS stamp,
+												s.moderated AS moderated,
 												f.userid AS userid,
 												f.verified AS verified,
 												f.filesize AS filesize												
