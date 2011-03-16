@@ -295,10 +295,20 @@ class SpotDb
 	 * Verwijder een spot uit de db
 	 */
 	function deleteSpot($msgId) {
-		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
-			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
-			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-			WHERE spots.messageid = '%s'", Array($msgId));
+		switch ($this->_dbsettings['engine']) {
+			case 'sqlite3'	: { 
+				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				break; 
+			} # sqlite3
+			default			: {
+				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
+									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									WHERE spots.messageid = '%s'", Array($msgId));
+			} # default
+		} # switch
 	} # deleteSpot
 
 	/*

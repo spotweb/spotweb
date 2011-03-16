@@ -24,7 +24,7 @@ class db_sqlite3 extends db_abs {
 	} # safe
 
 	function rawExec($s) {
-	var_dump($s);
+		# var_dump($s);
 		$errorMsg = '';
 		$tmpRes = @$this->_conn->unbufferedQuery($s, SQLITE_BOTH, $errorMsg);
 		if ($tmpRes === false) {
