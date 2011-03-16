@@ -13,6 +13,7 @@ require_once "lib/SpotNntp.php";
 require_once "lib/SpotCookie.php";
 require_once "lib/page/SpotPage_index.php";
 require_once "lib/page/SpotPage_getnzb.php";
+require_once "lib/page/SpotPage_getnzbmobile.php";
 require_once "lib/page/SpotPage_getspot.php";
 require_once "lib/page/SpotPage_catsjson.php";
 require_once "lib/page/SpotPage_erasedls.php";
@@ -57,7 +58,7 @@ try {
 		} # getspotmobile
 
 		case 'getnzbmobile' : {
-				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getnzbmobile		
