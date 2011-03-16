@@ -6,7 +6,7 @@
 						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
 						<th class='title'> <a href="?page=index&sortby=title<?php echo $getUrl;?>" title="Sorteren op Titel">Titel</a> </th> 
                         <?php if ($settings['retrieve_comments']) {
-                        	echo "<th class='comments'> </th>";
+                        	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
 						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 

@@ -137,7 +137,7 @@ table.spots th {
 }
 table.spots th a {color:#fff;}
 table.spots th.category {text-align:center; min-width:50px; width:50px; padding:0 2px 0 0;}
-table.spots th.comments {width:34px; min-width:34px; padding:0;}
+table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots th.genre {min-width:90px; width:120px;}
 table.spots th.poster {width:110px;}
 table.spots th.date {min-width:90px; width:140px;}
@@ -199,7 +199,7 @@ table.spots tr.nav td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-borde
 table.spots tr.nav td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 5px 0 0;}
 
 /* SPOT DETAILS */
-div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:500px;}
+div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:680px;}
 
 div.details a.postimage img {display:block; max-width:300px; border:0; float:left; margin:3px 0 0;}
 
@@ -259,6 +259,8 @@ div.details div.description pre {white-space:pre-line; margin:10px 0 0;}
 div.details div.comments {padding:10px 0 0;}
 div.details div.comments h4,
 div.details div.description h4 {background:#777; font-size:11px; line-height:20px; color:#fff; padding:0 5px; margin:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+
+div.details div.comments h4 span {float:right; display:block; line-height:14px; background-color:#4b4b4b; margin:3px 0; padding:0 5px; font-size:10px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 div.details div.comments ul {padding:0; margin:0;}
 div.details div.comments li {margin:5px 0 0 0; padding:6px 10px; list-style:none; line-height:16px;}
