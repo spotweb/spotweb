@@ -438,5 +438,17 @@ class SpotParser {
 		
 		return $tmpSave;
 	} # checkRsaSignature
+	
+	public function calculateUserid($userKey) {
+		$userSignCrc = crc32(base64_decode($userKey));
+		
+		$userIdTmp = chr($userSignCrc & 0xFF) .
+						chr(($userSignCrc >> 8) & 0xFF ).
+						chr(($userSignCrc >> 16) & 0xFF) .
+						chr(($userSignCrc >> 24) & 0xFF);
+		
+		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
+	} # calculateUserId
+	
 } # class Spot
 

@@ -114,23 +114,49 @@ class SpotNntp {
 		
 		function getComments($commentList) {
 			$comments = array();
+			$spotParser = new SpotParser();
 
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
 			# als comment text zelf.
 			foreach($commentList as $comment) {
 				try {
 					$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');	
-					
+					$tmpAr['messageid'] = $comment['messageid'];
+
+
 					# extract de velden we die we willen hebben
 					foreach($tmpAr['header'] as $hdr) {
 						$keys = explode(':', $hdr);
 						
 						switch($keys[0]) {
-							case 'From'	: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
-							case 'Date'	: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
+							case 'From'				: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+							case 'Date'				: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
+							case 'X-User-Signature'	: $tmpAr['user-signature'] = base64_decode($spotParser->unspecialString(substr($hdr, 18))); break;
+							case 'X-User-Key'		: {
+									$xml = simplexml_load_string(substr($hdr, 12)); 
+									if ($xml !== false) {
+										$tmpAr['user-key']['exponent'] = (string) $xml->Exponent;
+										$tmpAr['user-key']['modulo'] = (string) $xml->Modulus;
+									} # if
+									break;
+							} # x-user-key
 						} # switch
 					} # foreach
-					
+
+					# Valideer de signature van de XML, deze is gesigned door de user zelf
+					if ((!empty($tmpAr['user-signature'])) && (!empty($tmpAr['user-key']))) {
+						$tmpAr['verified'] = $spotParser->checkRsaSignature('<' . $tmpAr['messageid'] .  '>', $tmpAr['user-signature'], $tmpAr['user-key']);
+						if (!$tmpAr['verified']) {
+							$tmpAr['verified'] = $spotParser->checkRsaSignature('<' . $tmpAr['messageid'] .  '>' . implode("\r\n", $tmpAr['body']) . "\r\n\r\n" . $tmpAr['from'], $tmpAr['user-signature'], $tmpAr['user-key']);
+						} # if
+						
+						if ($tmpAr['verified']) {
+							$tmpAr['userid'] = $spotParser->calculateUserid($tmpAr['user-key']['modulo']);
+						} # if
+					} else {
+						$tmpAr['verified'] = false;
+					} # else
+
 					$comments[] = $tmpAr; 
 				} 
 				catch(Exception $x) {
@@ -211,14 +237,7 @@ class SpotNntp {
 
 			# als de spot verified is, toon dan de userid van deze user
 			if ($spot['verified']) {
-				$userSignCrc = crc32(base64_decode($spot['user-key']['modulo']));
-				
-				$userIdTmp = chr($userSignCrc & 0xFF) .
-								chr(($userSignCrc >> 8) & 0xFF ).
-								chr(($userSignCrc >> 16) & 0xFF) .
-								chr(($userSignCrc >> 24) & 0xFF);
-				
-				$spot['userid'] = str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
+				$spot['userid'] = $spotParser->calculateUserid($spot['user-key']['modulo']);
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven

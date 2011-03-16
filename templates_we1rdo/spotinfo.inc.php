@@ -65,11 +65,13 @@
 <?php
 		$count = 0;
 		foreach($comments as $comment) {
+			if ($comment['verified']) {
 ?>
-					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
+					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<?php echo $comment['userid']; ?>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
 						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
+			} # if
 		} # foreach
 ?>
 				</ul>
