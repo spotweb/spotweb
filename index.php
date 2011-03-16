@@ -21,6 +21,7 @@ require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_getspotmobile.php";
 require_once "lib/page/SpotPage_markallasread.php";
 require_once "lib/page/SpotPage_getimage.php";
+require_once "lib/page/SpotPage_selecttemplate.php";
 #- main() -#
 try {
 	# database object
@@ -32,7 +33,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage', 'selecttemplate')) === false) {
 		$page = 'index';
 	} # if
 
@@ -89,6 +90,12 @@ try {
 			break;
 		}
 
+		case 'selecttemplate' : {
+				$page = new SpotPage_selecttemplate($db, $settings, $settings['prefs'], $req);
+				$page->render();
+				break;
+		} # selecttemplate
+		
 		case 'index' : {
 				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
 							Array('search' => $req->getDef('search', $settings['index_filter']),
