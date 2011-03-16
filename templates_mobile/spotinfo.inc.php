@@ -6,11 +6,10 @@
 	<div data-role="header" data-backbtn="false">
 	<h1>Spot info</h1>
 <?php if (!empty($spot['sabnzbdurl'])) { ?>
-                      <a href="<?php echo $spot['sabnzbdurl'];?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SABNZBD</a></th>
+                  <a href="<?php echo $setpath . str_replace('getnzb','getnzbmobile',$spot['sabnzbdurl']);?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SAVE</a></th>
 <?php } else { ?>	
-
-      <a class="nzb" href="<?php echo $setpath ?>?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
-	<?php } ?>		
+  <a class="nzb" href="<?php echo $setpath ?>index.php?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
+<?php } ?>		
 	
 	</div>
 	<div data-role="content">
