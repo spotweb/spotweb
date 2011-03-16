@@ -8,7 +8,8 @@
 			<div class="spotinfo">
 <?php if (!$spot['verified']) { ?>
 				<div class="warning">Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
-<?php } if($tplHelper->isModerated($spot)) { ?>
+<?php } 
+	  if($tplHelper->isModerated($spot)) { ?>
 				<div class="warning">Deze spot is als mogelijk onwenselijk gemodereerd!</div>
 <?php } ?>
 
