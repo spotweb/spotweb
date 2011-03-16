@@ -5,9 +5,9 @@
 
 	<div data-role="navbar">
 		<ul>
-			<li><a href="<?php echo $setpath;?>#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="<?php echo $setpath;?>#search" class="ui-btn-active" data-icon="search">Zoek</a></li>
-			<li><a href="<?php echo $setpath;?>#filters" data-icon="star">Filters</a></li>
+			<li><a href="#spots" data-icon="grid" >Spots</a></li>
+			<li><a href="#search" class="ui-btn-active" data-icon="search">Zoek</a></li>
+			<li><a href="#filters" data-icon="star">Filters</a></li>
 		</ul>
 	</div><!-- /navbar -->
 
@@ -36,9 +36,9 @@
 
 	<div data-role="navbar">
 		<ul>
-			<li><a href="<?php echo $setpath;?>#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="<?php echo $setpath;?>#search" data-icon="search">Zoek</a></li>
-			<li><a href="<?php echo $setpath;?>#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
+			<li><a href="#spots" data-icon="grid" >Spots</a></li>
+			<li><a href="#search" data-icon="search">Zoek</a></li>
+			<li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
 
 		</ul>
 	</div><!-- /navbar -->
