@@ -6,13 +6,12 @@
                 <img class="spotinfoimage" src="?page=getimage&amp;messageid=<?php echo $spot['messageid']; ?>&amp;image[height]=300&amp;image[width]=300">
             </a>
 			<div class="spotinfo">
-<?php
-	if (!$spot['verified']) {
-?>
-				<div class="warning">Deze Spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
-<?php
-	}
-?>
+<?php if (!$spot['verified']) { ?>
+				<div class="warning">Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
+<?php } if($tplHelper->isModerated($spot)) { ?>
+				<div class="warning">Deze spot is als mogelijk onwenselijk gemodereerd!</div>
+<?php } ?>
+
 				<table class="spotheader">
 					<tbody>
                     	<tr>						
