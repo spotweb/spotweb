@@ -165,6 +165,7 @@ table.spots tr td.category {
 table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
+table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 
 table.spots tr td img.sabnzbd-button {margin:1px 4px -1px 4px;}
 
