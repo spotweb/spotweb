@@ -50,7 +50,7 @@
 				if (!empty($subFilter[4])) {
 					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 					foreach($subFilter[4] as $sub2Filter) {
-						$strFilter = '';
+						$strFilter = '?search[tree]=' . $sub2Filter[2];
 		?>
 							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="<?php echo $strFilter;?>"><img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; ?></a>
 		<?php
