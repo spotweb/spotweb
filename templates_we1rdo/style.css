@@ -135,7 +135,7 @@ table.spots th {
 	line-height:20px;
 	padding:0 0 0 5px;
 }
-table.spots th a {color:#fff;}
+table.spots th a {color:#fff; display:inline;}
 table.spots th.category {text-align:center; min-width:50px; width:50px; padding:0 2px 0 0;}
 table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots th.genre {min-width:90px; width:120px;}
@@ -143,6 +143,8 @@ table.spots th.poster {width:110px;}
 table.spots th.date {min-width:90px; width:140px;}
 table.spots th.nzb {width:30px;}
 table.spots th.sabnzbd {width:28px;}
+
+table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#4b4b4b; margin:3px 3px 3px 0; padding:0 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 table.spots td {padding:0 0 0 5px;}
 
