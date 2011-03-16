@@ -61,11 +61,6 @@ try {
 				$page->render();
 				break;
 		} # getnzbmobile		
-		case 'getnzb' : {
-				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
-				$page->render();
-				break;
-		} # getspot
 
 		case 'erasedls' : {
 				$page = new SpotPage_erasedls($db, $settings, $settings['prefs']);
