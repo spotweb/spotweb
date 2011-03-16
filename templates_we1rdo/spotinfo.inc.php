@@ -26,8 +26,11 @@
 <?php } ?>								
                             </th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
+	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img height="16" width="16" src="templates_we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
+	<?php } else { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img height="16" width="16" src="images/download-small.png" class="sabnzbd-button"></a></th>
-<?php } ?>								
+<?php } } ?>								
                         </tr>
                     </table>
                 </table>
