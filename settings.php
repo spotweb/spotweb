@@ -254,7 +254,7 @@ if (($settings['templates']['autodetect'] == true) &&
 		if ($detect->isMobile()) {
 			$settings['tpl_path'] = $settings['templates']['mobile']; 
 		} else { 
-			if($settings['allow_user_template'] == true && isset($_COOKIE['template']) && isset($settings['available_templates'][$_COOKIE['template']])) {
+			if ($settings['allow_user_template'] == true && isset($_COOKIE['template']) && isset($settings['available_templates'][$_COOKIE['template']])) {
 				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
 				$settings['tpl_path'] = $settings['available_templates'][$_COOKIE['template']];
 				
@@ -262,11 +262,11 @@ if (($settings['templates']['autodetect'] == true) &&
 				setcookie('template', $_COOKIE['template'], time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
 			} else {
 				$settings['tpl_path'] = $settings['templates']['default']; 
-			}
-		}
+			} # else
+		} # else
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
-}
+} # else
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server

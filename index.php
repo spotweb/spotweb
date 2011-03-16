@@ -91,7 +91,7 @@ try {
 		}
 
 		case 'selecttemplate' : {
-				$page = new SpotPage_selecttemplate($db, $settings, $settings['prefs']);
+				$page = new SpotPage_selecttemplate($db, $settings, $settings['prefs'], $req);
 				$page->render();
 				break;
 		} # selecttemplate
