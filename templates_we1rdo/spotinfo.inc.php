@@ -63,7 +63,7 @@
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments</h4>
+            	<h4>Comments <span class="commentcount"># <?php echo $tplHelper->getCommentCount($spot); ?></span></h4>
 					<ul>
 <?php
 		$count = 0;
