@@ -1,13 +1,10 @@
 <!--
-########################################################
-########################################################
-##                                                    ##
-##                     Author:                        ##
-##              Splendid (Tweakers)                   ##
-##  http://sourceforge.net/projects/spotwebsplendid/  ##
-##                                                    ##
-########################################################
-########################################################
+#########################################
+#                                       #
+#                Author:                #
+#          Splendid (Tweakers)          #
+#                                       #
+#########################################
 -->
 
 <?php if(empty($_GET['ajax'])) { ?>
@@ -16,6 +13,7 @@
 <html>
 	<head>
 		<title><?php echo $pagetitle?></title>
+		<meta charset="utf-8" />
 		
 		<!-- Stylesheets -->
 		<style type="text/css">
@@ -29,6 +27,7 @@
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery-ui.custom.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery.cookie.js' type='text/javascript'></script>
+		
 		<script src='templates_splendid/js/gen_tree.js' type='text/javascript'></script>
 		<script src='templates_splendid/js/scripts.js' type='text/javascript'></script>
 
