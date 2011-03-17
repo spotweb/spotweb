@@ -59,7 +59,9 @@ try {
 		} # getspotmobile
 
 		case 'getnzbmobile' : {
-				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], 
+								Array('messageid' => $req->getDef('messageid', ''),
+									  'action' => $req->getDef('action', 'display')));
 				$page->render();
 				break;
 		} # getnzbmobile		
