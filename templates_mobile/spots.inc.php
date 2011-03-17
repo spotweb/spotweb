@@ -33,12 +33,12 @@ $count = 0;
 
 <fieldset class="ui-grid-a">
 	<?php if ($prevPage >= 0) { ?> 
-	<div class="ui-block-a"><a href="<?php echo $setpath;?>index.php?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
+	<div class="ui-block-a"><a href="<?php echo $setpath;?>index.php?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
 			<?php }else{ ?>
 	<div class="ui-block-a"><a href="<?php echo $setpath;?>#" disabled data-theme="c" rel=external data-role="button" data-icon="minus">&nbsp;</a></div>
 			<?php } ?> 
 			<?php if ($nextPage > 0) { ?>
-	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?page=spots&amp;direction=next&amp;page=<?php echo $nextPage . $getUrl;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
+	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?pagenr=spots&amp;direction=next&amp;page=<?php echo $nextPage . $getUrl;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
 	<?php } ?>   
 </fieldset>
 

@@ -18,7 +18,7 @@ class SpotPage_index extends SpotPage_Abs {
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
 		# dat de index pagina wordt aangeroepen
-		$pageNr = $this->_params['page'];
+		$pageNr = $this->_params['pagenr'];
 		$nextPage = $pageNr + 1;
 		if ($nextPage == 1) {
 			$prevPage = -1;
