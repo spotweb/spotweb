@@ -22,11 +22,11 @@
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
                                 |
 <?php if (!empty($spot['nzb'])) { ?>
-                            	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="NZB downloaden">NZB</a>
+                            	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
-                            <th class="sabnzbd"><a href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img height="16" width="16" src="images/download-small.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img height="16" width="16" src="images/download-small.png" class="sabnzbd-button"></a></th>
 <?php } ?>								
                         </tr>
                     </table>
@@ -65,11 +65,13 @@
 <?php
 		$count = 0;
 		foreach($comments as $comment) {
+			if ($comment['verified']) {
 ?>
-					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
+					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<?php echo $comment['userid']; ?>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
 						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
+			} # if
 		} # foreach
 ?>
 				</ul>
