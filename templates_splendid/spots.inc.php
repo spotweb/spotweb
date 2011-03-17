@@ -56,7 +56,9 @@
 					<tr class="head"> 
 						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
 						<th class='title'> <a href="?page=index&sortby=title<?php echo $getUrl;?>" title="Sorteren op Titel">Titel</a> </th> 
+<?php if($settings['retrieve_comments']) { ?>
                         <th class='comments'> </th>
+<?php } ?>
 						<th class='genre'> Genre </th> 
 						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 
 						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
@@ -87,9 +89,11 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . $spot['subcata'].$spot['subcatb'].$spot['subcatc'].$spot['subcatd']."'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . "</a></td>" .
-			 "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>" .
-			 "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
+			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . utf8_encode($spot['title']) . "' class='spotlink'>" . utf8_encode($spot['title']) . "</a></td>";
+        
+        if($settings['retrieve_comments']) echo "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
+        
+        echo "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
 			 "<td>" . $spot['poster'] . "</td>" .
 			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
@@ -127,9 +131,9 @@
 ?>
 					<tr class="nav">
 						<!--<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>-->
-						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>&ajax=1')">< Vorige</a><?php }?></td>
+						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()">< Vorige</a><?php }?></td>
 						<!--<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>-->
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>&ajax=1')">Volgende ></a><?php }?></td>
+						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()">Volgende ></a><?php }?></td>
 					</tr>
 
 				</tbody>
