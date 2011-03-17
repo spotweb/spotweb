@@ -20,8 +20,8 @@
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
-                                |
 <?php if (!empty($spot['nzb'])) { ?>
+								|
                             	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
