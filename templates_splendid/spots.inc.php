@@ -129,6 +129,10 @@
 		echo "</tr>\r\n";
 	}
 ?>
+					<tr>
+					  <td colspan="8" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
+					</tr>
+					
 					<tr class="nav">
 						<!--<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>-->
 						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()">< Vorige</a><?php }?></td>

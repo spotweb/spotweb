@@ -409,5 +409,13 @@ a.big_button:hover {
 }
 
 a.big_button div {
-	padding: 2px;
+	padding: 2px 14px 2px 0;
+}
+
+.shadow,
+.shadow img {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none;
+	vertical-align: top;
 }
