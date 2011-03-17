@@ -117,7 +117,7 @@ class SpotTemplateHelper {
 		return false;
 	} # hasbeenDownloaded
 	
-	function getFilterParams($dontInclude = array()) {
+	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
 		
 		if (!is_array($dontInclude)) {
@@ -130,8 +130,16 @@ class SpotTemplateHelper {
 			}
 		} # foreach
 		
+		# zijn er sorteer opties meegestuurd?
+		if (isset($this->_params['sortdir'])) {
+			$getUrl .= '&amp;sortdir=' . $this->_params['sortdir'];
+		} # if
+		if (isset($this->_params['sortby'])) {
+			$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
+		} # if
+		
 		return $getUrl;
-	} # getFilterParams
+	} # getQueryParams
 	
 	/*
 	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,

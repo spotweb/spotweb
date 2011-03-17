@@ -1,4 +1,4 @@
-<?php $getUrl = $tplHelper->getFilterParams(); ?>
+<?php $getUrl = $tplHelper->getQueryParams(); ?>
 			<div class="spots">
 				<table class="spots">
 					<tbody>

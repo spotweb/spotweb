@@ -1,5 +1,5 @@
 <?php 
-$getUrl = $tplHelper->getFilterParams();
+$getUrl = $tplHelper->getQueryParams();
 $setpath = $tplHelper->getSitePath();
 ?>
 

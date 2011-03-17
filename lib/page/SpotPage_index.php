@@ -52,7 +52,9 @@ class SpotPage_index extends SpotPage_Abs {
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'lastupdate' => $lastUpdateTime,
-								'activefilter' => $this->_params['search']));
+								'activefilter' => $this->_params['search'],
+								'sortby' => $this->_params['sortby'],
+								'sortdir' => $this->_params['sortdir']));
 		$this->template('footer');
 	} # render()
 	
