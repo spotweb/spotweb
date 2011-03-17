@@ -8,10 +8,12 @@ div.clear {
 }
 
 /* ZOEKEN */
+div.filter h4.search {margin:0;}
+
 form#filterform table {border-collapse:separate; border-spacing:0 4px;}
-form#filterform table tbody > tr:first-child td {width:33%; text-align:center; padding:0 0 8px;}
+form#filterform table tbody > tr:first-child td {width:33%; text-align:center; padding:0 0 3px;}
 form#filterform table tbody > tr:first-child td input {position:relative; top:2px; margin:0 6px 0 0;}
-form#filterform table tbody > tr:last-child td {text-align:center; padding:5px 0 7px;}
+form#filterform table tbody > tr:last-child td {text-align:center; padding:3px 0 5px;}
 form#filterform table tbody > tr:last-child td input {position:relative; top:2px; margin:0 6px 0 0;}
 form#filterform td {padding:0;}
 
@@ -21,7 +23,7 @@ input.searchbox {
 	-moz-border-radius:4px;
 	-webkit-border-radius:4px;
 	border-radius:4px;
-	width:260px;
+	width:220px;
 	font:12px Arial, Helvetica, sans-serif;
 	height:16px;
 	padding:1px 4px 1px 4px;
@@ -30,7 +32,7 @@ input.searchbox {
 input.filtersubmit {
 	background:url(img/button.png) no-repeat left top;
 	border:0;
-	width:250px;
+	width:210px;
 	padding:0 0 2px 0;
 	margin:0 10px 20px 10px;
 	height:20px;
@@ -42,15 +44,13 @@ input.filtersubmit {
 }
 
 /* DYNATREE */
-div#tree {min-height:86px;}
-
-div.filter ul.dynatree-container {border:0; margin:0 0 10px; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+div.filter ul.dynatree-container {min-height:68px; border:0; margin:0 0 10px; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.filter ul.dynatree-container li {margin:0;}
 div.filter ul.dynatree-container a {display:inline-block; font:11px Arial, Helvetica, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
 
 /* FILTERS */
 div.filter {
-	width:270px;
+	width:230px;
 	float:left;
 	padding-top:2px;
 	/* position:fixed; -- small screen won't be able to scroll vertically in the sidebar, with position:fixed; enabled */
@@ -105,7 +105,7 @@ ul.maintenancebox li a.updatespotsbtn,
 ul.maintenancebox li a.erasedlsbtn, 
 ul.maintenancebox li a.markallasreadbtn {
 	background:url(img/button.png) no-repeat left top;
-	width:250px;
+	width:210px;
 	margin:0 10px 5px 10px;
 	line-height:20px;
 	color:#fff;
@@ -115,7 +115,7 @@ ul.maintenancebox li a.markallasreadbtn {
 
 /* SPOTS */
 div.spots {
-	margin:0 0 0 280px;
+	margin:0 0 0 240px;
 	min-width:750px;
 }
 
@@ -142,7 +142,7 @@ table.spots th.genre {min-width:90px; width:120px;}
 table.spots th.poster {width:110px;}
 table.spots th.date {min-width:90px; width:140px;}
 table.spots th.nzb {width:30px;}
-table.spots th.sabnzbd {width:28px;}
+table.spots th.sabnzbd {min-width:28px; width:28px;}
 
 table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#4b4b4b; margin:3px 3px 3px 0; padding:0 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 

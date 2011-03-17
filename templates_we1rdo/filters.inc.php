@@ -1,5 +1,5 @@
 				<div class="filter">
-					<h4>Zoeken</h4>
+					<h4 class="search">Zoeken</h4>
 
 					<form id="filterform" action="">
 <?php
