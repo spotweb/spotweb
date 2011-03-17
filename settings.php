@@ -158,6 +158,7 @@ $settings['templates']['mobile'] = './templates_mobile/';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array(	'we1rdo'	=> './templates_we1rdo/', 
+											'splendid'	=> './templates_splendid/'
 											'mobile'	=> './templates_mobile/'
 										);
 
