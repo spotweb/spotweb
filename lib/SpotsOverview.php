@@ -233,6 +233,11 @@ class SpotsOverview {
 			$textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')";
 		} # if
 
+		# New spots
+		if (isset($search['type']) && $search['type'] == 'New') {
+			$textSearch .= ' (stamp >= ' . $this->_db->safe($_SESSION['last_visit']) . ")";
+		}
+
 		if (!empty($filterList)) {
 			return '(' . (join(' OR ', $filterList) . ') ' . (empty($textSearch) ? "" : " AND " . $textSearch));
 		} else {
