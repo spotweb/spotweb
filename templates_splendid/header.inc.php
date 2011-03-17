@@ -58,6 +58,7 @@
 		<div class="container">
 			<div id="page_header" align="center">
 			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
+			  <!--[if IE]><div class="ie_error">DEZE TEMPLATE ONDERSTEUND HELAAS (NOG) GEEN INTERNET EXPLORER!</div><![endif]-->
 			  <div class="menu_top"></div>
 			  <?php } ?>
 			</div>
