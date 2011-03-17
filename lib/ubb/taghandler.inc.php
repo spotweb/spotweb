@@ -44,7 +44,7 @@
 		* Returns the tag config for a given tag
 		*/
 		function gettagconfig($tagname) {
-			if (isset(TagHandler::$tagconfig[$tagname[0]][$tagname])) {
+			if ((strlen($tagname) >= 1) && (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]))) {
 				return TagHandler::$tagconfig[$tagname[0]][$tagname];
 			} else {
 				return NULL;

@@ -155,6 +155,11 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = './templates_we1rdo/';
 $settings['templates']['mobile'] = './templates_mobile/';
 
+$settings['allow_user_template'] = true;
+$settings['available_templates'] = Array(	'we1rdo'	=> './templates_we1rdo/', 
+											'mobile'	=> './templates_mobile/'
+										);
+
 # tonen we een update knop in de web ui?
 $settings['show_updatebutton'] = false;
 
@@ -249,11 +254,19 @@ if (($settings['templates']['autodetect'] == true) &&
 		if ($detect->isMobile()) {
 			$settings['tpl_path'] = $settings['templates']['mobile']; 
 		} else { 
-			$settings['tpl_path'] = $settings['templates']['default']; 
-		}
+			if ($settings['allow_user_template'] == true && isset($_COOKIE['template']) && isset($settings['available_templates'][$_COOKIE['template']])) {
+				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
+				$settings['tpl_path'] = $settings['available_templates'][$_COOKIE['template']];
+				
+				// verleng cookie
+				setcookie('template', $_COOKIE['template'], time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
+			} else {
+				$settings['tpl_path'] = $settings['templates']['default']; 
+			} # else
+		} # else
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
-}
+} # else
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server

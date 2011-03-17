@@ -21,6 +21,12 @@
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function(){
+			$("a.spotlink").click(function(e){
+				if(e.metaKey || e.altKey || e.shiftKey || e.button == 1) {
+					e.stopImmediatePropagation();
+				}
+			});
+
 			$("a.spotlink").fancybox({
 				'width'			: '80%',
 				'height' 		: '94%',

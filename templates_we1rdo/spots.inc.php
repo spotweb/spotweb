@@ -1,16 +1,16 @@
-<?php $getUrl = $tplHelper->getFilterParams(); ?>
+<?php $getUrl = $tplHelper->getQueryParams(); ?>
 			<div class="spots">
 				<table class="spots">
 					<tbody>
 					<tr class="head"> 
 						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
-						<th class='title'> <a href="?page=index&sortby=title<?php echo $getUrl;?>" title="Sorteren op Titel">Titel</a> </th> 
+						<th class='title'> <span class="sortby"><a href="?page=index&sortby=title&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=title&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Titel </th> 
                         <?php if ($settings['retrieve_comments']) {
-                        	echo "<th class='comments'> </th>";
+                        	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
-						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 
-						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
+                        <th class='poster'> <span class="sortby"><a href="?page=index&sortby=poster&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=poster&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Afzender </th> 
+						<th class='date'> <span class="sortby"><a href="?page=index&sortby=stamp&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=stamp&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>						
@@ -30,6 +30,12 @@
 		} else {
 			$newSpotClass = '';
 		} # else
+		
+		if($tplHelper->isModerated($spot)) { 
+			$markSpot = '<span class="markSpot">!</span>';
+		} else {
+			$markSpot = '';
+		}
 
 		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 		
@@ -39,7 +45,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . $markSpot . "</a></td>";
 		
 		if ($settings['retrieve_comments']) {
 			echo "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
@@ -64,7 +70,11 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
+				if ($tplHelper->hasBeenDownloaded($spot)) {
+					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img height='16' width='16' class='sabnzbd-button' src='templates_we1rdo/img/succes.png'></a></td>";
+				} else {
+					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";	
+				} # else
 			} # if
 		} else {
 			if ($settings['show_nzbbutton']) {
@@ -82,8 +92,8 @@
 	}
 ?>
 					<tr class="nav">
-						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
+						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
+						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
 					</tr>
 
 				</tbody>

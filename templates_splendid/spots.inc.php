@@ -1,4 +1,4 @@
-<?php $getUrl = $tplHelper->getFilterParams(); ?>			
+<?php $getUrl = $tplHelper->getQueryParams(); ?>			
 			
 			<div class="" id="spots">
 			
@@ -130,10 +130,10 @@
 	}
 ?>
 					<tr class="nav">
-						<!--<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>-->
-						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;page=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()">< Vorige</a><?php }?></td>
-						<!--<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>-->
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;page=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()">Volgende ></a><?php }?></td>
+						<!--<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>-->
+						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()">< Vorige</a><?php }?></td>
+						<!--<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>-->
+						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()">Volgende ></a><?php }?></td>
 					</tr>
 
 				</tbody>

@@ -6,13 +6,13 @@
                 <img class="spotinfoimage" src="?page=getimage&amp;messageid=<?php echo $spot['messageid']; ?>&amp;image[height]=300&amp;image[width]=300">
             </a>
 			<div class="spotinfo">
-<?php
-	if (!$spot['verified']) {
-?>
-				<div class="warning">Deze Spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
-<?php
-	}
-?>
+<?php if (!$spot['verified']) { ?>
+				<div class="warning">Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
+<?php } 
+	  if($tplHelper->isModerated($spot)) { ?>
+				<div class="warning">Deze spot is als mogelijk onwenselijk gemodereerd!</div>
+<?php } ?>
+
 				<table class="spotheader">
 					<tbody>
                     	<tr>						
@@ -20,14 +20,17 @@
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
-                                |
 <?php if (!empty($spot['nzb'])) { ?>
+								|
                             	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
+	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img height="16" width="16" src="templates_we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
+	<?php } else { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img height="16" width="16" src="images/download-small.png" class="sabnzbd-button"></a></th>
-<?php } ?>								
+<?php } } ?>								
                         </tr>
                     </table>
                 </table>
@@ -60,7 +63,7 @@
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments</h4>
+            	<h4>Comments <span class="commentcount"># <?php echo $tplHelper->getCommentCount($spot); ?></span></h4>
 					<ul>
 <?php
 		$count = 0;

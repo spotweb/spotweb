@@ -83,6 +83,7 @@ class SpotNntp {
 		
 		function getArticle($msgId) {
 			$this->connect();
+	
 			$result = array('header' => array(), 'body' => array());
 			
 			# Fetch het artikel
@@ -115,14 +116,13 @@ class SpotNntp {
 		function getComments($commentList) {
 			$comments = array();
 			$spotParser = new SpotParser();
-
+			
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
 			# als comment text zelf.
 			foreach($commentList as $comment) {
 				try {
 					$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');	
 					$tmpAr['messageid'] = $comment['messageid'];
-
 
 					# extract de velden we die we willen hebben
 					foreach($tmpAr['header'] as $hdr) {
@@ -169,6 +169,7 @@ class SpotNntp {
 
 			# sorteer de comments per datum
 			usort($comments, array($this, 'cbCommentDateSort'));
+			
 			
 			return $comments;
 		} # getComments
