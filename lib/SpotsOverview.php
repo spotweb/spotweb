@@ -18,7 +18,7 @@ class SpotsOverview {
 	function getFullSpot($msgId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId);
 		
-		if (empty($fullSpot)) {
+		if ((empty($fullSpot)) || (!isset($fullSpot['verified']))) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
 			$fullSpot = $nntp->getFullSpot($msgId);
