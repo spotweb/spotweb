@@ -246,11 +246,7 @@ class SpotTemplateHelper {
 	} # formatDate
 	
 	function isModerated($spot) {
-		if (($spot['moderated'] != 0) && ($this->_settings['spot_moderation'] == 'markspot')) {
-			return true;
-		} else {
-			return false;
-		} # else 
+		return (($spot['moderated'] != 0) && ($this->_settings['spot_moderation'] == 'markspot'));
 	} # isModerated
 	
 } # class SpotTemplateHelper
