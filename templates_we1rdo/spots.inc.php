@@ -1,16 +1,19 @@
-<?php $getUrl = $tplHelper->getQueryParams(); ?>
+<?php 
+	$getUrl = $tplHelper->getQueryParams(); 
+	$sortUrl = $tplHelper->getQueryParams(array('sortby', 'sortdir'));
+?>
 			<div class="spots">
 				<table class="spots">
 					<tbody>
 					<tr class="head"> 
-						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
-						<th class='title'> <span class="sortby"><a href="?page=index&sortby=title&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=title&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Titel </th> 
+						<th class='category'> <a href="?page=index&sortby=category<?php echo $sortUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
+						<th class='title'> <span class="sortby"><a href="?page=index&sortby=title&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=title&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Titel </th> 
                         <?php if ($settings['retrieve_comments']) {
                         	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
-                        <th class='poster'> <span class="sortby"><a href="?page=index&sortby=poster&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=poster&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Afzender </th> 
-						<th class='date'> <span class="sortby"><a href="?page=index&sortby=stamp&sortdir=DESC<?php echo $getUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=stamp&sortdir=ASC<?php echo $getUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
+                        <th class='poster'> <span class="sortby"><a href="?page=index&sortby=poster&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=poster&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Afzender </th> 
+						<th class='date'> <span class="sortby"><a href="?page=index&sortby=stamp&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=stamp&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>						

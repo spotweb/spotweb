@@ -131,11 +131,15 @@ class SpotTemplateHelper {
 		} # foreach
 		
 		# zijn er sorteer opties meegestuurd?
-		if (isset($this->_params['sortdir'])) {
-			$getUrl .= '&amp;sortdir=' . $this->_params['sortdir'];
+		if (array_search('sortdir', $dontInclude) === false) {
+			if (!empty($this->_params['sortdir'])) {
+				$getUrl .= '&amp;sortdir=' . $this->_params['sortdir'];
+			} # if
 		} # if
-		if (isset($this->_params['sortby'])) {
-			$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
+		if (array_search('sortby', $dontInclude) === false) {
+			if (!empty($this->_params['sortby'])) {
+				$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
+			} # if
 		} # if
 		
 		return $getUrl;
