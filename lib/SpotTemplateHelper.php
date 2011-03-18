@@ -258,7 +258,7 @@ class SpotTemplateHelper {
 	}
 
 	function hostUrl() {
-		return (@$_SERVER['HTTPS'] ? 'https://' : 'http://') . $this->host() ;
+		return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $this->host() ;
 	}
 
 	function baseUrl() {
