@@ -167,7 +167,8 @@ table.spots tr td.category a {color:#fff;}
 table.spots tr td.new {font-weight:bold;}
 table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 
-table.spots tr td img.sabnzbd-button {margin:1px 4px -1px 4px;}
+table.spots tr td img.sabnzbd-button {display:block; margin:0 0 1px;}
+table.spots tr td img.sabnzbd-button.loading {margin:0 0 0 2px;}
 
 table.spots tr.blue td {background-color:#daecff;}
 table.spots tr.orange td {background-color:#fffad3;}
@@ -245,7 +246,8 @@ div.details table.spotheader th.nzb {width:115px; text-align:center; padding:0; 
 div.details table.spotheader th.nzb a.search {display:inline-block; color:#000; text-decoration:none; width:45%;}
 div.details table.spotheader th.nzb a.nzb {display:inline-block; text-decoration:none; width:45%;}
 div.details table.spotheader th.sabnzbd {width:16px; padding:0;}
-div.details table.spotheader th.sabnzbd a img {border:0;}
+div.details table.spotheader th.sabnzbd a img {border:0; display:block; margin:0 0 1px 0;}
+div.details table.spotheader th.sabnzbd a img.loading {margin:0 2px 0 2px;}
 
 div.details table.spotinfo {width:100%; border-collapse:separate; border-spacing:5px 2px;}
 div.details table.spotinfo th,

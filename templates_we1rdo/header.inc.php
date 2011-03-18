@@ -165,7 +165,7 @@
 						// niet te zien
 					},
 					beforeSend: function(jqXHR, settings) {
-						$(temp).html("<img class='sabnzbd-button' src='templates_we1rdo/img/loading.gif' />");
+						$(temp).html("<img class='sabnzbd-button loading' src='templates_we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
 						setTimeout( function() { $(temp).html("<img class='sabnzbd-button' src='templates_we1rdo/img/succes.png' />") }, 1000);
