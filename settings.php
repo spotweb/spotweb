@@ -91,9 +91,6 @@ $settings['spot_moderation'] = 'act';
 #	* push-sabnzbd		- Roep sabnzbd+ aan via HTTP door SpotWeb, schrijft de NZB lokaal weg
 #	* client-sabnzbd	- Roep sabnzbd+ aan via de users' browser (oude default)
 #
-# Opm.: We roepen sabnzbd altijd aan dat hij zelf de NZB file moet ophalen, we doen dit omdat
-#		we anders geen category kunnen meegeven aldus de huidige API documentatie.
-#
 # Settings:
 #   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
@@ -158,6 +155,7 @@ $settings['templates']['mobile'] = './templates_mobile/';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array(	'we1rdo'	=> './templates_we1rdo/', 
+											'splendid'	=> './templates_splendid/',
 											'mobile'	=> './templates_mobile/'
 										);
 
