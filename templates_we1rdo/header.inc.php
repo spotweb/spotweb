@@ -205,6 +205,17 @@
 			return false;
 		} // matchTree()
 		
+		//// Check for checkboxes at submit
+		 $(function() {
+            $('input[id$=multisubmit]').click(function(e) {
+                var checked = $(':checkbox:checked').length;
+                if (checked == 0) {
+                    alert('Je moet minstens 1 spot selecteren!');
+                    e.preventDefault();
+                }
+            });
+        });
+		
 			//// Select or Deselect All checkboxes
 		var checked=false;
 		var frmname='';
