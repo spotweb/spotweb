@@ -113,7 +113,7 @@
 						<td class="next"><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
 <?php if ($spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
                         <td class="button">  
-                            <input id='multisubmit' type='image' value='Multi NZB' title='Download Multi NZB' />
+                            <input id='multisubmit' type='submit' value='Multi NZB' title='Download Multi NZB' />
                         </td>
                         </form>
 <?php } ?>
