@@ -193,6 +193,15 @@ class db_sqlite3 extends db_abs {
 			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
 		
+		$q = $this->arrayQuery("PRAGMA table_info(watchlist)");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 
+												   messageid VARCHAR(128),
+												   dateadded INTEGER,
+												   comment TEXT);");
+			$this->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON spotsfull(messageid)");
+		} # if
+		
 	} # Createdatabase
 
 } # class

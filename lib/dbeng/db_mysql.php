@@ -213,6 +213,14 @@ class db_mysql extends db_abs {
 			$this->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_1, ADD UNIQUE idx_spotsfull_1 (messageid, userid);");
 		} # if
 
+		$q = $this->arrayQuery("SHOW TABLES LIKE 'watchlist'");
+		if (empty($q)) {
+			$this->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
+												   messageid VARCHAR(128),
+												   dateadded INTEGER,
+												   comment TEXT);");
+			$this->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON spotsfull(messageid)");
+		} # if
 	} # Createdatabase
 
 } # class
