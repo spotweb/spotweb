@@ -6,7 +6,6 @@
 #                                       #
 #########################################
 -->
-
 <?php if(empty($_GET['ajax'])) { ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -39,22 +38,19 @@
 
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
-		$(function(){
-			$("a.spotlink").fancybox({
-				'width'			: '80%',
-				'height' 		: '94%',
-				'autoScale' 	: false,
-				'transitionIn'	: 'none',
-				'transitionOut'	: 'none',
-				'type'			: 'iframe'
-			})
+		$(function() {
 			$('#spots').load('?search[tree]=<?php if(!empty($settings['index_filter']['tree'])) echo $settings['index_filter']['tree'] ?>&ajax=1');
 		});
+		var min_width = 295;
 		</script>
-		
+		<!--[if IE]><script type='text/javascript'>var min_width = 315;</script><![endif]-->
 	</head>
 	
 	<body>
 		<div class="container">
 			<div id="page_header" align="center">
-			  <?php if(empty($_GET['page']) || $_GET['page'] ==
+			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
+			  <div class="menu_top"></div>
+			  <?php } ?>
+			</div>
+<?php } ?>
