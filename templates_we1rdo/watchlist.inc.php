@@ -1,5 +1,11 @@
-	<table>
-		<tr> <th> Title </th> <th> Date added </th> <th> Comment </th> <th> Remove </th> <th> Download </th> </tr>
+    <table class="watchlist">
+		<tr>
+        	<th> Title </th>
+            <th> Date added </th>
+            <th> Comment </th>
+            <th> Remove </th>
+            <th> Download </th>
+		</tr>
 		
 <?php
 	foreach($watchlist as $watch) {

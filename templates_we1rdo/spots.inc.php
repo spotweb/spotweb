@@ -17,9 +17,9 @@
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
                         <th class='multinzb'> 
-                        	<form action='' method='GET' id='checkboxget' name='checkboxget'>
-                            	<input type='hidden' name='page' value='getnzb' />
-                                <input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");' /> 
+                        	<form action="" method="GET" id="checkboxget" name="checkboxget">
+                            	<input type='hidden' name='page' value='getnzb'>
+                                <input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
                         </th>
 <?php } ?>						
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
@@ -77,7 +77,7 @@
 				
 				$multispotid = htmlspecialchars($spot['messageid']);
 				echo "<td>";
-				echo "<input type=checkbox name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
 				echo "</td>";
 			} # if
 
@@ -113,7 +113,7 @@
 						<td class="next"><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
 <?php if ($spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
                         <td class="button">  
-                            <input id='multisubmit' type='button' value='Multi NZB' title='Download Multi NZB' />
+                            <input id='multisubmit' type='image' value='Multi NZB' title='Download Multi NZB' />
                         </td>
                         </form>
 <?php } ?>
