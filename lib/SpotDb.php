@@ -373,7 +373,37 @@ class SpotDb
 					  $fullSpot['size']));
 	} # addFullSpot
 
-	
+	function addToWatchlist($spot, $comment) {
+		$this->_conn->exec("INSERT INTO watchlist(messageid, dateadded, comment) VALUES ('%s', %d, '%s')",
+				Array($fullSpot['messageid'], time(), $comment)); 
+	} # addToWatchList
+
+	function removeFromWatchlist($messageid) {
+		$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", 
+				Array($messageid));
+	} # removeFromWatchlist
+
+	function getWatchlist() {
+		return $this->_conn->arrayQuery("SELECT w.messageid AS messageid, 
+										 w.dateadded AS dateadded, 
+										 w.comment AS comment, 
+										 s.title AS title, 
+										 s.spotid AS spotid, 
+										 s.category AS category, 
+										 s.poster AS poster, 
+										 s.subcata AS subcata, 
+										 s.subcatb AS subcatb, 
+										 s.subcatc AS subcatc, 
+										 s.subcatd AS subcatd, 
+										 s.title AS title, 
+										 s.tag AS tag, 
+										 s.stamp AS stamp, 
+										 s.filesize AS filesize, 
+										 s.moderated AS moderated 
+									FROM watchlist w 
+									LEFT JOIN spots s ON s.messageid = w.messageid", Array());									
+	} # addToWatchList
+
 	function beginTransaction() {
 		$this->_conn->exec('BEGIN;');
 	} # beginTransaction
