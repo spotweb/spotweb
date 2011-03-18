@@ -15,7 +15,7 @@
 				'type'			: 'iframe'
 			})
 			
-			$('#spot_table').width($('#spots').width()-295);
+			$('#spot_table').width($('html').width()-min_width);
 			
 			$("a.sabnzbd-button").click(function(e) {
 				e.preventDefault();
@@ -47,11 +47,11 @@
 		});
 		
 		$(window).resize(function() {
-			$('#spot_table').width($('#spots').width()-295);
+			$('#spot_table').width($('html').width()-min_width);
 		});
 		</script>
 
-				<table class="spots" id="spot_table">
+				<table class="spots" id="spot_table" border="0" cellpadding="0">
 					<tbody>
 					<tr class="head"> 
 						<th class='category'> <a href="?page=index&sortby=category<?php echo $getUrl;?>" title="Sorteren op Categorie">Cat.</a> </th> 
@@ -133,18 +133,16 @@
 					  <td colspan="8" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
 					</tr>
 					
-					<tr class="nav">
-						<!--<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>-->
-						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()">< Vorige</a><?php }?></td>
-						<!--<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>-->
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()">Volgende ></a><?php }?></td>
+					<tr>
+						<td colspan="4" style='text-align: left;padding: 0'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()" class="vorige"></a><?php }?></td>
+						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()" class="volgende"></a><?php }?></td>
 					</tr>
 
 				</tbody>
 			</table>
-			
 		</div>
 
 		<div class="clear"></div>
+		<br /><br />
 		
 <?php } ?>
