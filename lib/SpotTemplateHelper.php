@@ -264,6 +264,7 @@ class SpotTemplateHelper {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
+				case 'watchlist'	:
 				default 			: return strftime($this->_settings['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else

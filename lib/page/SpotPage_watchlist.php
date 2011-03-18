@@ -10,7 +10,7 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		parent::__construct($db, $settings, $prefs);
 		$this->_messageid = $messageid;
 		
-		if (array_search($action, array('add', 'remove', 'list') === false) {
+		if (array_search($action, array('add', 'remove', 'list')) === false) {
 			$action = 'list';
 		} # if
 		$this->_action = $action;
@@ -25,7 +25,7 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		$this->_pageTitle = "watchlist";
 		
 		# afhankelijk van wat re gekozen is, voer het uit
-		switch($action) {
+		switch($this->_action) {
 			case 'add'		: $db->addToWatchList($this->_messageId, ''); break;
 			case 'remove'	: $db->removeFromWatchlist($this->_messageId); break;
 			default			: ;
