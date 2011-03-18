@@ -105,7 +105,7 @@
 					<!-- Multi Download start -->
 					<tr class="nav">
 						<td colspan="9" style='text-align: right;' valign=middle>
-							<input type=image value=submit src='images/buttonmulti.png' border='0' title='Download Multi NZB'></form>
+							<input id='multisubmit' type='image' value='submit' src='images/buttonmulti.png' border='0' title='Download Multi NZB'></form>
 						</td>
 					</tr>
 					<!-- Multi Download Einde -->
