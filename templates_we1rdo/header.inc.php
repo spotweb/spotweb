@@ -5,6 +5,7 @@
 		<link rel='stylesheet' type='text/css' href='js/dynatree/skin-vista/ui.dynatree.css'>
 		<link rel="stylesheet" href="templates_we1rdo/style.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+		<link rel="alternate" type="application/atom+xml" href="<?php echo $tplHelper->changePage('atom') ?>"/>
 		<link rel='shortcut icon' href='templates_we1rdo/img/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->
@@ -204,6 +205,36 @@
 			return false;
 		} // matchTree()
 		
+		//// Check for checkboxes at submit
+		 $(function() {
+            $('input[id$=multisubmit]').click(function(e) {
+                var checked = $(':checkbox:checked').length;
+                if (checked == 0) {
+                    alert('Je moet minstens 1 spot selecteren!');
+                    e.preventDefault();
+                }
+            });
+        });
+		
+			//// Select or Deselect All checkboxes
+		var checked=false;
+		var frmname='';
+		function checkedAll(frmname)
+		{
+			var valus= document.getElementById(frmname);
+			if (checked==false)
+			{
+				checked=true;
+			}
+			else
+			{
+				checked = false;
+			}
+			for (var i =0; i < valus.elements.length; i++) 
+			{
+				valus.elements[i].checked=checked;
+			}
+		} //// Select or Deselect All checkboxes
 		</script>
 		
 	</head>

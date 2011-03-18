@@ -22,6 +22,59 @@ if (ini_get('safe_mode') ) {
 	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 } # if
 
+if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--export')) {
+	if (!$settings['retrieve_full']) {
+		die("Databases zonder retrieve_full kunnen we niet importeren dus exporteren is disabled.");
+	} # if
+	
+	try {
+		$db = new SpotDb($settings['db']);
+		$db->connect();
+	
+		$fp = fopen('export-db.csv', 'w');
+		$spotCount = $db->getSpotCount();
+		for ($i = 0; $i < $spotCount; $i = $i + 10000) { 	
+			$spots = $db->getSpots($i / 10000, 10000, '', array('field' => 'id', 'direction' => 'asc'));
+			
+			foreach($spots as $spot) {
+				fputcsv($fp, $spot);
+			} # foreach
+		} # for
+		fclose($fp);
+	} 
+	catch(Exception $x) {
+		die("Error exporting data: " . $x->getMessage() . PHP_EOL);
+	} # catch
+	
+	exit;
+} # export
+
+
+if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--import')) {
+	try {
+		$db = new SpotDb($settings['db']);
+		$db->connect();
+	
+		$fp = fopen('export-db.csv', 'r');
+		while (($line = fgetcsv($fp)) !== FALSE) {
+			$db->addSpot($line, $line);
+		} # while
+		
+	for ($i = 0; $i < $spotCount; $i = $i + 10000) { 	
+			$spots = $db->getSpots($i / 10000, 10000, '', array('field' => 'id', 'direction' => 'asc'));
+			
+			foreach($spots as $spot) {
+				fputcsv($fp, $spot);
+			} # foreach
+		} # for
+		fclose($fp);
+	} 
+	catch(Exception $x) {
+		die("Error exporting data: " . $x->getMessage() . PHP_EOL);
+	} # catch
+	
+	exit;
+} # import
 
 $req = new SpotReq();
 $req->initialize();

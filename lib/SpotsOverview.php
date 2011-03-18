@@ -23,10 +23,10 @@ class SpotsOverview {
 			# sanity en validatie checking
 			$fullSpot = $nntp->getFullSpot($msgId);
 			$this->_db->addFullSpot($fullSpot);
-		} else {
-			$spotParser = new SpotParser();
-			$fullSpot = array_merge($spotParser->parseFull($fullSpot['xml']), $fullSpot);
-		} # else
+		} # if
+		
+		$spotParser = new SpotParser();
+		$fullSpot = array_merge($spotParser->parseFull($fullSpot['xml']), $fullSpot);
 		
 		return $fullSpot;
 	} # getFullSpot
@@ -235,7 +235,7 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['type']) && $search['type'] == 'New') {
-			$textSearch .= ' (stamp >= ' . $this->_db->safe($_SESSION['last_visit']) . ")";
+			$textSearch .= ' (stamp >= ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
 		}
 
 		if (!empty($filterList)) {
