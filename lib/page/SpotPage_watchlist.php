@@ -8,7 +8,7 @@ class SpotPage_watchlist extends SpotPage_Abs {
 	
 	function __construct($db, $settings, $prefs, $messageid, $action) {
 		parent::__construct($db, $settings, $prefs);
-		$this->_messageid = $messageid;
+		$this->_messageid = trim($messageid);
 		
 		if (array_search($action, array('add', 'remove', 'list')) === false) {
 			$action = 'list';
@@ -18,19 +18,24 @@ class SpotPage_watchlist extends SpotPage_Abs {
 
 
 	function render() {
-		# Haal de volledige watchlist op
-		$watchList = $this->_db->getWatchList();
-
 		# zet de page title
 		$this->_pageTitle = "watchlist";
 		
+		# we moeten een messageid opgeven
+		if (empty($this->_messageid) && ($this->_action != 'list')) {
+			throw new Exception("Must give messageid");
+		} # if
+		
 		# afhankelijk van wat re gekozen is, voer het uit
 		switch($this->_action) {
-			case 'add'		: $db->addToWatchList($this->_messageId, ''); break;
-			case 'remove'	: $db->removeFromWatchlist($this->_messageId); break;
+			case 'add'		: $this->_db->addToWatchList($this->_messageid, ''); break;
+			case 'remove'	: $this->_db->removeFromWatchlist($this->_messageid); break;
 			default			: ;
 		} # switch
 		
+		# Haal de volledige watchlist op
+		$watchList = $this->_db->getWatchList();
+
 		#- display stuff -#
 		$this->template('header');
 		$this->template('watchlist', array('watchlist' => $watchList, 'action' => $this->_action));
