@@ -117,7 +117,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} # if
 						
 					} else {
-						// Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
+						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
 						if ($this->_settings['retention'] > 0 && $spot['Stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
 							$skipCount++;
 						} else {
@@ -154,6 +154,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					
 							# en voeg hem aan de database toe
 							$this->_db->addFullSpot($fullSpot);
+							$dbIdList['fullspot'][] = $msgId;
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
