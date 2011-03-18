@@ -84,10 +84,10 @@ $settings['spot_moderation'] = 'act';
 #
 # We definieeren in een aantal stappen wat er moet gebeuren met NZB files
 # Er zijn een aantal verschillende acties mogelijk:
-#	* disable			- Stuurt de NZB file naar de browser
+#	* disable			- Geen acties, toon enkel de 'download nzb' knop
 #	* display			- Stuurt de NZB file naar de server, intern gebruik
-#	* save				- Save de file op de server
-#	* runcommand		- Save de file op de server en roep een commando aan
+#	* save				- Save de file op disk
+#	* runcommand		- Save de file op disk en roep een commando aan
 #	* push-sabnzbd		- Roep sabnzbd+ aan via HTTP door SpotWeb, schrijft de NZB lokaal weg
 #	* client-sabnzbd	- Roep sabnzbd+ aan via de users' browser (oude default)
 #
