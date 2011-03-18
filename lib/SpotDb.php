@@ -373,9 +373,9 @@ class SpotDb
 					  $fullSpot['size']));
 	} # addFullSpot
 
-	function addToWatchlist($spot, $comment) {
+	function addToWatchlist($messageId, $comment) {
 		$this->_conn->exec("INSERT INTO watchlist(messageid, dateadded, comment) VALUES ('%s', %d, '%s')",
-				Array($fullSpot['messageid'], time(), $comment)); 
+				Array($messageId, time(), $comment)); 
 	} # addToWatchList
 
 	function removeFromWatchlist($messageid) {
