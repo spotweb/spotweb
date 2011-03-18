@@ -57,4 +57,4 @@
 	<body>
 		<div class="container">
 			<div id="page_header" align="center">
-			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') {
+			  <?php if(empty($_GET['page']) || $_GET['page'] ==
