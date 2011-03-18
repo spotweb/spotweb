@@ -205,7 +205,7 @@ table.footer tr td a {display:inline; color:#000; text-decoration:none;}
 table.footer tr td.prev {text-align:left; -moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px; padding:0 0 0 6px;}
 table.footer tr td.next {text-align:right; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 6px 0 0;}
 table.footer tr td.button {background:#fff; width:88px; padding:0 0 0 2px;}
-table.footer tr td.button input#multisubmit {background:url(img/button_nzb.png) no-repeat top left; display:block; width:88px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer;}
+table.footer tr td.button input#multisubmit {background:url(img/button_nzb.png) no-repeat top left; display:block; width:88px; height:14px; padding:3px 0; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:680px;}

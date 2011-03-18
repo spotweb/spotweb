@@ -115,7 +115,7 @@ try {
 			);
 			$page->render();
 			break;
-		}
+		} # atom
 
 		case 'index' : {
 				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
