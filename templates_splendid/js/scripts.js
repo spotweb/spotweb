@@ -20,6 +20,9 @@ function submitSearchForm(f) {
 	return false;
 }
 
+function scrollToTop() {
+	$('html, body').animate({scrollTop:0}, 'slow');
+}
 
 function setMainFilter(f) {
 	

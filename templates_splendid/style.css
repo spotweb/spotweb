@@ -376,7 +376,7 @@ body {
 	padding-left: 20px !important;
 }
 
-.filterlist li a:hover {
+.filterlist a:hover {
 	background-position: 0 -23px;
 }
 
@@ -401,7 +401,7 @@ a.big_button {
 	margin: 0 0 4px 20px;
 	text-shadow: 1px 1px #000;
 	display: block;
-	background: url('img/bg_buttons.gif') no-repeat left top !important;
+	background: url('img/bg_buttons.gif') no-repeat !important;
 }
 
 a.big_button:hover {
@@ -418,4 +418,30 @@ a.big_button div {
 	padding: 0 !important;
 	border: none;
 	vertical-align: top;
+}
+
+.ie_error {
+    padding: 4px;
+    color: rgb(0, 0, 0);
+    border: 1px solid rgb(255, 15, 15);
+    background-color: rgb(255, 184, 184);
+}
+
+a.volgende {
+	width: 110px !important;
+	height: 32px !important;
+	float: right;
+	background: url('img/b_volgende.gif') no-repeat;
+}
+
+a.vorige {
+	width: 110px !important;
+	height: 32px !important;
+	float: left;
+	background: url('img/b_vorige.gif') no-repeat;
+}
+
+a.volgende:hover,
+a.vorige:hover {
+	background-position: 0 -32px !important;
 }
