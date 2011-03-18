@@ -111,11 +111,11 @@
                 	<tr>
 						<td class="prev"><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
 						<td class="next"><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
-<?php if ($settings['show_nzbbutton']) { ?>
+<?php if ($spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
                         <td class="button">  
-                            <input id='multisubmit' type='image' value='Multi NZB' title='Download Multi NZB' />
-                            </form>
+                            <input id='multisubmit' type='button' value='Multi NZB' title='Download Multi NZB' />
                         </td>
+                        </form>
 <?php } ?>
 					</tr>
                 </tbody>
