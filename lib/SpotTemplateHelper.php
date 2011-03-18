@@ -252,5 +252,37 @@ class SpotTemplateHelper {
 	function isModerated($spot) {
 		return ($spot['moderated'] != 0);
 	} # isModerated
-	
+
+	function host() {
+		return $_SERVER['HTTP_HOST'];
+	}
+
+	function hostUrl() {
+		return (@$_SERVER['HTTPS'] ? 'https://' : 'http://') . $this->host() ;
+	}
+
+	function baseUrl() {
+		$parts = parse_url($this->hostUrl() . $_SERVER['REQUEST_URI']);
+		$path = array_key_exists(PHP_URL_PATH, $parts) ? $parts[PHP_URL_PATH] : '/';
+		return $this->hostUrl() . $path;
+	}
+
+	function selfUrl() {
+		return $this->baseUrl() . '?' . $_SERVER['QUERY_STRING'];
+	}
+
+	function changePage($page) {
+		$get = $_GET; // defensive copy
+		$get['page'] = $page;
+		return $this->baseUrl() . '?' . http_build_query($get);
+	}
+
+	function spotUrl($spot) {
+		return $this->baseUrl() . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
+	}
+
+	function nzbUrl($spot) {
+		return $this->hostUrl().'?page=getnzb&amp;action=display&amp;messageid=' . $spot['messageid'];
+	}
+
 } # class SpotTemplateHelper
