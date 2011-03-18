@@ -116,6 +116,26 @@ class SpotTemplateHelper {
 		
 		return false;
 	} # hasbeenDownloaded
+
+	function isBeingWatched($spot) {
+		# We gebruiken een static list en een array search omdat dit waarschijnlijk
+		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
+		static $wtList = null;
+		static $wtListCnt = 0;
+		
+		if ($wtList == null) {
+			$wtList = $this->_db->getWatchList();
+			$wtListCnt = count($wtList);
+		} # if
+		
+		for($i = 0; $i < $wtListCnt; $i++) {
+			if ($wtList[$i]['messageid'] == $spot['messageid']) {
+				return true;
+			} # if
+		} # for
+		
+		return false;
+	} # isBeingWatched
 	
 	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
