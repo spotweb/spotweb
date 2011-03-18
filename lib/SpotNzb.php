@@ -90,11 +90,37 @@ class SpotNzb {
 	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
-	function handleNzbAction($messageid, $action, $hdr_spotnntp, $nzb_spotnntp) {
+	function handleNzbAction($messageids, $action, $hdr_spotnntp, $nzb_spotnntp) {
+		if (!is_array($messageids)) {
+			$messageids = array($messageids);
+		} # if
+		
 		# Haal de volledige spot op en gebruik de informatie daarin om de NZB file op te halen
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($messageid, $hdr_spotnntp);
-		$nzb = $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp);
+		
+		$nzbList = array();
+		foreach($messageids as $thisMsgId) {
+			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $hdr_spotnntp);
+			$nzbList[] = $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp);
+		} # foreach
+		
+		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
+		# en plakken die in onze overkoepelende nzb
+		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
+											<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
+											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
+		$domNzbXml = dom_import_simplexml($nzbXml);
+		foreach($nzbList as $nzb) {
+			$oneNzbFile = simplexml_load_string($nzb);
+			
+			# add each file section to the larger XML object
+			foreach($oneNzbFile->file as $file) {
+				# Import the file into the larger NZB object
+				$domFile = $domNzbXml->ownerDocument->importNode(dom_import_simplexml($file), TRUE);
+				$domNzbXml->appendChild($domFile);
+			} # foreach
+		} # foreach
+		$nzb = $nzbXml->asXml();
 		
 		# handel dit alles af naar gelang de actie die gekozen is
 		switch ($action) { 
@@ -126,7 +152,9 @@ class SpotNzb {
 		
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings['keep_downloadlist']) {
-			$this->_db->addDownload($fullSpot['messageid']);
+			foreach($messageids as $thisMsgId) {
+				$this->_db->addDownload($thisMsgId);
+			} # foreach
 		} # if
 	} # handleNzbAction
 	 
