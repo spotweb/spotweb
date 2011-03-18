@@ -23,6 +23,7 @@ require_once "lib/page/SpotPage_markallasread.php";
 require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
+require_once "lib/page/SpotPage_watchlist.php";
 #- main() -#
 try {
 	# database object
@@ -34,7 +35,7 @@ try {
 	$req->initialize();
 
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage', 'selecttemplate', 'atom')) === false) {
+	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage', 'selecttemplate', 'atom', 'watchlist')) === false) {
 		$page = 'index';
 	} # if
 
@@ -44,6 +45,12 @@ try {
 				$page->render();
 				break;
 		} # getspot
+
+		case 'watchlist' : {
+				$page = new SpotPage_watchlist($db, $settings, $settings['prefs'], $req->getDef('messageid', ''), $req->getDef('action', ''));
+				$page->render();
+				break;
+		} # watchlist
 
 		case 'getnzb' : {
 				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], 
