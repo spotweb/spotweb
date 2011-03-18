@@ -15,7 +15,9 @@
                         <th class='poster'> <span class="sortby"><a href="?page=index&sortby=poster&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=poster&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Afzender </th> 
 						<th class='date'> <span class="sortby"><a href="?page=index&sortby=stamp&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=index&sortby=stamp&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
-						<th class='nzb'> NZB </th> 
+						<!-- Multi Download start -->
+						<th class='nzb'> NZB </th><th class='multinzb'><form action='' method="GET" id="checkboxget" name="checkboxget"><input type="hidden" name="page" value="getnzb"><input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'></th> 						
+						<!-- Multi Download einde -->
 <?php } ?>						
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
 						<th class='sabnzbd'> SAB </th> 
@@ -69,6 +71,12 @@
 				} # if
 				
 				echo "</a></td>";
+				# Multi Download start #
+					$multispotid = htmlspecialchars($spot['messageid']);
+					echo "<td>";
+					echo "<input type=checkbox name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+					echo "</td>";
+				# Multi Download einde #
 			} # if
 
 			# display the sabnzbd button
@@ -94,9 +102,17 @@
 		echo "</tr>\r\n";
 	}
 ?>
+					<!-- Multi Download start -->
+					<tr class="nav">
+						<td colspan="9" style='text-align: right;' valign=middle>
+							<input type=image value=submit src='images/buttonmulti.png' border='0' title='Download Multi NZB'></form>
+						</td>
+					</tr>
+					<!-- Multi Download Einde -->
 					<tr class="nav">
 						<td colspan="4" style='text-align: left;'><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
+						<!-- COLSPAN +1 voor multi spots nzb download -->
+						<td colspan="5" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
 					</tr>
 
 				</tbody>

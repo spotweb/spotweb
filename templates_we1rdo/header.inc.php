@@ -205,6 +205,25 @@
 			return false;
 		} // matchTree()
 		
+			//// Select or Deselect All checkboxes
+		var checked=false;
+		var frmname='';
+		function checkedAll(frmname)
+		{
+			var valus= document.getElementById(frmname);
+			if (checked==false)
+			{
+				checked=true;
+			}
+			else
+			{
+				checked = false;
+			}
+			for (var i =0; i < valus.elements.length; i++) 
+			{
+				valus.elements[i].checked=checked;
+			}
+		} //// Select or Deselect All checkboxes
 		</script>
 		
 	</head>
