@@ -199,7 +199,7 @@ class db_sqlite3 extends db_abs {
 												   messageid VARCHAR(128),
 												   dateadded INTEGER,
 												   comment TEXT);");
-			$this->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON spotsfull(messageid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
 		} # if
 		
 	} # Createdatabase
