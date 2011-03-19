@@ -161,14 +161,14 @@ class SpotParser {
 					# Break up the subcategories per subcat-type
 					if (strlen($expression) > 0) {
 						$subcats = explode('|', $expression);
-						$spot['SubCatA'] = '';
-						$spot['SubCatB'] = '';
-						$spot['SubCatC'] = '';
-						$spot['SubCatD'] = '';
+						$spot['subcata'] = '';
+						$spot['subcatb'] = '';
+						$spot['subcatc'] = '';
+						$spot['subcatd'] = '';
 						
 						foreach($subcats as $subcat) {
 							if (array_search(strtolower(substr($subcat, 0, 1)), array('a','b','c','d')) !== false) {
-								$spot['subcat' . strtoupper(substr($subcat, 0, 1))] .= $subcat . '|';
+								$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
 							} # if
 						} # foreach
 					} # if

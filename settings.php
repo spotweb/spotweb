@@ -16,6 +16,10 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
+# Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
+# sabnzbd integratie.
+$settings['spotweburl'] = 'http://server/spotweb/';
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -96,7 +100,6 @@ $settings['spot_moderation'] = 'act';
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
-#						- spotweburl - URL naar spotweb
 #						- url		 - 
 #
 $settings['nzbhandling']['action'] = 'push-sabnzbd';
@@ -105,7 +108,6 @@ $settings['nzbhandling']['command'] = '';
 $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
 $settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
-$settings['nzbhandling']['sabnzbd']['spotweburl'] = 'http://server/spotweb/';
 $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
 	
 #
@@ -253,7 +255,9 @@ if (($settings['templates']['autodetect']) &&
 		if ($detect->isMobile()) {
 			$settings['tpl_path'] = $settings['templates']['mobile']; 
 		} else { 
-			$chosenTemplate = $_COOKIE['template'];
+			if (isset($_COOKIE['template'])) {
+				$chosenTemplate = $_COOKIE['template'];
+			} # if 
 
 			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
 				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
