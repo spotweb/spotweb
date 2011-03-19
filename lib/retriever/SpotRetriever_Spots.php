@@ -93,8 +93,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
 
-				echo "Processing: " . $msgId;
-				
 				# als we de spot overview nog niet in de database hebben, haal hem dan op
 				if (!in_array($msgId, $dbIdList['spot'])) {
 					$hdrsRetrieved++;
