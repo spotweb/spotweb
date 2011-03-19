@@ -137,6 +137,7 @@ table.spots th {
 }
 table.spots th a {color:#fff; display:inline;}
 table.spots th.category {text-align:center; min-width:50px; width:50px; padding:0 2px 0 0;}
+table.spots th.watch {width:20px;}
 table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots th.genre {min-width:90px; width:120px;}
 table.spots th.poster {width:110px;}
@@ -168,6 +169,7 @@ table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
 table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td.watch a {cursor:pointer;}
 
 table.spots tr td img.sabnzbd-button {display:block; margin:0 0 1px;}
 table.spots tr td img.sabnzbd-button.loading {margin:0 0 0 2px;}
@@ -285,4 +287,4 @@ div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
 
 /* WATCHLIST */
-table.spots.watchlist tr th.delete {width:25px;}
+div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}

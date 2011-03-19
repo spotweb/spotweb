@@ -7,7 +7,8 @@
 					<tr class="head">
 						<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
 						<th class='title'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="<?php echo $tplHelper->makeSortUrl('title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Titel </th> 
-                        <?php if ($settings['retrieve_comments']) {
+                        <th class='watch'> </th>
+						<?php if ($settings['retrieve_comments']) {
                         	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
@@ -15,6 +16,8 @@
 						<th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="<?php echo $tplHelper->makeSortUrl('stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
+<?php } ?>
+<?php if ($settings['show_multinzb']) { ?>
                         <th class='multinzb'> 
                         	<form action="" method="GET" id="checkboxget" name="checkboxget">
                             	<input type='hidden' name='page' value='getnzb'>
@@ -32,6 +35,7 @@
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+		
 		if ($tplHelper->newSinceLastVisit($spot)) {
 			$newSpotClass = 'new';
 		} else {
@@ -43,17 +47,26 @@
 		} else {
 			$markSpot = '';
 		}
-
+	
 		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 		
 		$count++;
-		
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . $markSpot . "</a></td>";
-		
+			 
+		echo "<td class='watch'>";
+		if($tplHelper->isBeingWatched($spot)) { 
+			echo "<a onclick=\"removeWatchSpot('".$spot['messageid']."',".$spot['id'].")\" id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "<a onclick=\"addWatchSpot('".$spot['messageid']."',".$spot['id'].")\" style='display: none;' id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+		} else {
+			echo "<a onclick=\"removeWatchSpot('".$spot['messageid']."',".$spot['id'].")\" style='display: none;' id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "<a onclick=\"addWatchSpot('".$spot['messageid']."',".$spot['id'].")\" id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+		}
+		echo "</td>";
+
 		if ($settings['retrieve_comments']) {
 			echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($spot) . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
 		} # if
@@ -74,10 +87,12 @@
 				
 				echo "</a></td>";
 				
-				$multispotid = htmlspecialchars($spot['messageid']);
-				echo "<td>";
-				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
-				echo "</td>";
+				if ($settings['show_multinzb']) {
+					$multispotid = htmlspecialchars($spot['messageid']);
+					echo "<td>";
+					echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+					echo "</td>";
+				} # if
 			} # if
 
 			# display the sabnzbd button
@@ -92,13 +107,17 @@
 			if ($settings['show_nzbbutton']) {
 				echo "<td> &nbsp; </td>";
 			} # if
+			
+			# display (empty) MultiNZB td
+			if ($settings['show_multinzb']) {
+				echo "<td> &nbsp; </td>";
+			}
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				echo "<td> &nbsp; </td>";
 			} # if
 		} # else
-		
 		
 		echo "</tr>\r\n";
 	}
@@ -110,7 +129,7 @@
                 	<tr>
 						<td class="prev"><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
 						<td class="next"><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
-<?php if ($settings['show_nzbbutton']) { ?>
+<?php if ($settings['show_multinzb']) { ?>
                         <td class="button">  
                             <input id='multisubmit' type='submit' value='Multi NZB' title='Download Multi NZB' />
                         </td>

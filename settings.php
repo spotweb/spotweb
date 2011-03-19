@@ -166,6 +166,7 @@ $settings['show_updatebutton'] = false;
 
 # toon een download-nzb knop op het overzicht?
 $settings['show_nzbbutton'] = true;
+$settings['show_multinzb'] = true;
 
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
