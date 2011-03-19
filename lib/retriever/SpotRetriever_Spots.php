@@ -93,6 +93,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
 
+				echo "Processing: " . $msgId;
+				
 				# als we de spot overview nog niet in de database hebben, haal hem dan op
 				if (!in_array($msgId, $dbIdList['spot'])) {
 					$hdrsRetrieved++;
@@ -131,16 +133,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} else {
 							$this->_db->addSpot($spot);
 							$dbIdList['spot'][] = $msgId;
-							$lastProcessedId = $msgId;
 						
 							if ($spot['wassigned']) {
 								$signedCount++;
 							} # if
 						} # if
 					} # else
-				} else {
-					$lastProcessedId = $msgId;
-				} # else
+				} # if
 
 				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
 				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
@@ -186,6 +185,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} # if retrievefull
 				} # if fullspot is not in db yet
+
+				# als we hier komen is de spot iig beschikbaar in de database
+				$lastProcessedId = $msgId;
 			} # foreach
 
 			if (count($hdrList) > 0) {
