@@ -15,7 +15,7 @@ require_once "lib/SpotParser.php";
 require_once "lib/SpotNntp.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
 require_once "lib/retriever/SpotRetriever_Comments.php";
-
+require_once "lib/imexport/Spot_SpotMapping.php";
 
 # in safe mode, max execution time cannot be set, warn the user
 if (ini_get('safe_mode') ) {
@@ -37,7 +37,13 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--export')) {
 			$spots = $db->getSpots($i / 10000, 10000, '', array('field' => 'id', 'direction' => 'asc'));
 			
 			foreach($spots as $spot) {
-				fputcsv($fp, $spot);
+				$mappedSpot = array();
+				
+				foreach(Spot_SpotMapping::$fieldMapping as $key => $value) {
+					$mappedSpot[$value] = $spot[$key];
+				} # foreach
+				
+				fputcsv($fp, $mappedSpot);
 			} # foreach
 		} # for
 		fclose($fp);
@@ -57,16 +63,14 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--import')) {
 	
 		$fp = fopen('export-db.csv', 'r');
 		while (($line = fgetcsv($fp)) !== FALSE) {
+			$mappedSpot = array();
+			foreach($line as $key => $value) {
+				$mappedSpot[Spot_SpotMapping::$valueMapping[$key]] = $value;
+			} # foreach
+
 			$db->addSpot($line, $line);
 		} # while
 		
-	for ($i = 0; $i < $spotCount; $i = $i + 10000) { 	
-			$spots = $db->getSpots($i / 10000, 10000, '', array('field' => 'id', 'direction' => 'asc'));
-			
-			foreach($spots as $spot) {
-				fputcsv($fp, $spot);
-			} # foreach
-		} # for
 		fclose($fp);
 	} 
 	catch(Exception $x) {

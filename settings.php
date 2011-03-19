@@ -155,9 +155,9 @@ $settings['templates']['mobile'] = './templates_mobile/';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array(	'we1rdo'	=> './templates_we1rdo/', 
-											'splendid'	=> './templates_splendid/',
-											'mobile'	=> './templates_mobile/'
-										);
+						'mobile'	=> './templates_mobile/',
+						'splendid'	=> './templates_splendid/'
+					);
 
 # tonen we een update knop in de web ui?
 $settings['show_updatebutton'] = false;
