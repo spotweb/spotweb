@@ -34,7 +34,8 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		} # switch
 		
 		# Haal de volledige watchlist op
-		$watchList = $this->_db->getWatchList();
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		$watchList = $spotsOverview->getWatchList();
 
 		#- display stuff -#
 		$this->template('header');
