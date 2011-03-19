@@ -4,7 +4,7 @@
 <?php 
 $baseUrl = htmlspecialchars($tplHelper->makeBaseUrl());
 $selfUrl = htmlspecialchars($tplHelper->makeSelfUrl());
-$indexUrl = htmlspecialchars($tplHelper->getPageUrl('index'));
+$indexUrl = htmlspecialchars($tplHelper->getPageUrl('index', true));
 ?>
         <title>SpotWeb Spot overzicht</title>
         <link href="<?php echo $selfUrl ?>" rel="self" />

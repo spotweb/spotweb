@@ -280,3 +280,10 @@ if (($settings['templates']['autodetect']) &&
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
+
+#
+# Geef een error als de spotweb url niet opgegeven is
+#
+if ($settings['spotweburl'] == 'http://server/spotweb/') {
+	die("Geef een spotweburl op in je ownsettings.php");
+} # if
