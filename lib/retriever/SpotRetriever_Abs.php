@@ -62,7 +62,9 @@ abstract class SpotRetriever_Abs {
 			$messageId = '<' . $messageId . '>';
 			$curMsg = $this->_msgdata['last'];
 
+			echo "DEBUG: LastMessageNum: " . $curMsg . PHP_EOL;
 			echo "DEBUG: We zoeken naar: " . $messageId . PHP_EOL;
+			var_dump($this->_msgdata);
 			
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
@@ -70,10 +72,9 @@ abstract class SpotRetriever_Abs {
 			echo "DEBUG: We gaan zoeken vanaf: " . $curMsg . PHP_EOL;
 				
 				# get the list of headers (XHDR)
-				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement) + 1);
 
 			echo "DEBUG: We hebben " . count($hdrList) . " headers gevonden " . PHP_EOL;
-			var_dump($hdrList);
 				
 				foreach($hdrList as $msgNum => $msgId) {
 					if ($msgId == $messageId) {
