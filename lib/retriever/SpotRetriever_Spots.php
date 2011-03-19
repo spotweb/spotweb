@@ -94,15 +94,15 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['From'], 
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-													
-					# als er een parse error was, negeren we de spot volledig, ook niet
+							
+					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
-					if (($spot === false) || (!$spot['Verified'])){
+					if (($spot === false) || (!$spot['verified'])){
 						continue;
 					} # if
 													
-					if ($spot['KeyID'] == 2) {
-						$commandAr = explode(' ', strtolower($spot['Title']));
+					if ($spot['keyid'] == 2) {
+						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 						
 						# is dit een geldig commando?
@@ -118,13 +118,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} else {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
-						if ($this->_settings['retention'] > 0 && $spot['Stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
+						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
 							$skipCount++;
 						} else {
 							$this->_db->addSpot($spot);
 							$dbIdList['spot'][] = $msgId;
 						
-							if ($spot['WasSigned']) {
+							if ($spot['wassigned']) {
 								$signedCount++;
 							} # if
 						} # if
@@ -146,7 +146,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					#
 					# KeyID 2 is een 'moderator' post en kan dus niet getrieved worden
 					#
-					if (($this->_retrieveFull) && ($spot['KeyID'] != 2)) {
+					if (($this->_retrieveFull) && ($spot['keyid'] != 2)) {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;

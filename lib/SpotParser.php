@@ -98,10 +98,10 @@ class SpotParser {
 			return false;
 		} # if 
 		
-		$spot['Header'] = $tmpHdr[1];
-		$spot['Verified'] = false;
+		$spot['header'] = $tmpHdr[1];
+		$spot['verified'] = false;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
-		$fields = explode('.', $spot['Header']);
+		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
 			$spot['id'] = $fields[$_ID];
@@ -114,15 +114,15 @@ class SpotParser {
 				$spot['poster'] = Trim($spot['poster'][0]);
 				
 				// key id
-				$spot['KeyID'] = (int) substr($fields[$_CAT], 1, 1);
+				$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 				
 				// groupname
 				$spot['groupname'] = 'free.pt';
 				
-				if ($spot['KeyID'] >= 1) {
+				if ($spot['keyid'] >= 1) {
 					$expression = '';
 					$strInput = substr($fields[$_CAT], 2);
-					$recentKey = $spot['KeyID'] <> 1;
+					$recentKey = $spot['keyid'] <> 1;
 					
 					if ($recentKey) {	
 						if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
@@ -220,35 +220,34 @@ class SpotParser {
 						# somehow there is a check that the key is only validated for spots with key id 2 ?
 						# not sure about the code as it only seems to execute for more than 25000 spots or something?
 						#
-						$mustbeSigned = (($mustbeSigned) & ($spot['KeyID'] >= 2));
+						$mustbeSigned = (($mustbeSigned) & ($spot['keyid'] >= 2));
 						
 						# and verify the signature it
 						if ($mustbeSigned) {
-							$spot['HeaderSign'] = $fields[count($fields) - 1];
+							$spot['headersign'] = $fields[count($fields) - 1];
 							
-							if (strlen($spot['HeaderSign']) != 0) {
-								$spot['WasSigned'] = true;
+							if (strlen($spot['headersign']) != 0) {
+								$spot['wassigned'] = true;
 
 								# KeyID 7 betekent dat het serverless signed is
-								if ($spot['KeyID'] == 7) {
+								if ($spot['keyid'] == 7) {
 									$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-									$spot['Verified'] = (substr($userSignedHash, 0, 3) == '0000');
+									$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
 								} else {
 									# the signature this header is signed with
-									$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
+									$signature = base64_decode($this->unspecialString($spot['headersign']));
 
 									# This is the string to verify
-									$toCheck = $spot['title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['poster'];
-
+									$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 									
 									# Check the RSA signature on the spot
-									$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
+									$spot['verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
 								} # else
 							} # if
 						} # if must be signed
 						else {
-							$spot['Verified'] = true;
-							$spot['WasSigned'] = false;
+							$spot['verified'] = true;
+							$spot['wassigned'] = false;
 						} # if doesnt need to be signed, pretend that it is
 					} # if
 				} # if
