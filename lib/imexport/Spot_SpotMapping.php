@@ -20,9 +20,9 @@ class Spot_SpotMapping {
 				'moderated'		=> 15,
 				'userid'		=> 16,
 				'verified'		=> 17,
-				'usersignature'	=> 18,
-				'userkey'		=> 19,
-				'xmlsignature'	=> 20,
+				'user-signature'=> 18,
+				'user-key'		=> 19,
+				'xml-signature'	=> 20,
 				'fullxml'		=> 21);
 
 	public static $valueMapping = array();

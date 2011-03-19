@@ -132,15 +132,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$this->_db->addSpot($spot);
 							$dbIdList['spot'][] = $msgId;
 							$lastProcessedId = $msgId;
-						
+
 							if ($spot['wassigned']) {
 								$signedCount++;
 							} # if
 						} # if
 					} # else
 				} else {
-					# anders halen we hem uit de database want we hebben die nodig
-					$spot = $this->_db->getFullSpot($msgId);
 					$lastProcessedId = $msgId;
 				} # else
 
@@ -149,6 +147,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				if ((in_array($msgId, $dbIdList['spot'])) &&   # header moet in db zitten
 				   (!in_array($msgId, $dbIdList['fullspot']))) # maar de fullspot niet
 				   {
+					# anders halen we hem uit de database want we hebben die nodig
+					$spot = $this->_db->getFullSpot($msgId);
+					
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
 					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
@@ -205,7 +206,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 			$this->_db->setMaxArticleid($this->_server['host'], $curMsg);
 			$this->_db->commitTransaction();				
-			
+
 			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 	

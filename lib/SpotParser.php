@@ -8,7 +8,7 @@ class SpotParser {
 	function parseFull($xmlStr) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'size' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
+						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
 						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '', 'imageid' => '');
 
 						  
@@ -20,7 +20,7 @@ class SpotParser {
 		$tpl_spot['category'] = (string) $xml->Category;
 		$tpl_spot['website'] = (string) $xml->Website;
 		$tpl_spot['description'] = (string) $xml->Description;
-		$tpl_spot['size'] = (string) $xml->Size;
+		$tpl_spot['filesize'] = (string) $xml->Size;
 		$tpl_spot['poster'] = (string) $xml->Poster;
 		$tpl_spot['tag'] = (string) $xml->Tag;
 		$tpl_spot['title'] = (string) $xml->Title;

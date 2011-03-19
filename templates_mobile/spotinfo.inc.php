@@ -41,7 +41,7 @@
 		} # foreach
 	} # if
 ?>
-                        <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['size']); ?> </td> </tr>
+                        <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
                         <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a> </td> </tr>
                         <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['userid']; ?>) </td> </tr>
                         <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>

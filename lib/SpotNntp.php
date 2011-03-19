@@ -196,7 +196,7 @@ class SpotNntp {
 			# initialize some variables
 			$spotParser = new SpotParser();
 			
-			$spot = array('xml' => '',
+			$spot = array('fullxml' => '',
 						  'user-signature' => '',
 						  'user-key' => '',
 						  'verified' => false,
@@ -212,7 +212,7 @@ class SpotNntp {
 				$keys = explode(':', $str);
 				
 				switch($keys[0]) {
-					case 'X-XML' 			: $spot['xml'] .= substr($str, 7); break;
+					case 'X-XML' 			: $spot['fullxml'] .= substr($str, 7); break;
 					case 'X-User-Signature'	: $spot['user-signature'] = base64_decode($spotParser->unspecialString(substr($str, 18))); break;
 					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
 					case 'X-User-Key'		: {
@@ -243,7 +243,7 @@ class SpotNntp {
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
-			$spot = array_merge($spotParser->parseFull($spot['xml']), $spot);
+			$spot = array_merge($spotParser->parseFull($spot['fullxml']), $spot);
 			
 			return $spot;
 		} # getFullSpot 
