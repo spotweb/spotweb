@@ -249,6 +249,9 @@ div.details.red div.comments li span.user,
 div.details.red table.spotheader th.nzb a.nzb {color:#de2500;}
 
 div.details table.spotheader th.title {background-color:#777777; color:#fff; padding:2px 5px;}
+div.details table.spotheader th.watch {width:16px; padding:0 0 1px 0;}
+div.details table.spotheader th.watch a {cursor:pointer;}
+div.details table.spotheader th.watch img {display:block;}
 div.details table.spotheader th.nzb {width:115px; text-align:center; padding:0; color:#fff;}
 div.details table.spotheader th.nzb a.search {display:inline-block; color:#000; text-decoration:none; width:45%;}
 div.details table.spotheader th.nzb a.nzb {display:inline-block; text-decoration:none; width:45%;}
