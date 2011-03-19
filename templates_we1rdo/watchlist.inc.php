@@ -1,4 +1,5 @@
-<?php 
+<?php
+	# vul wat basis parameters op
 	$getUrl = $tplHelper->getQueryParams(); 
 	$sortUrl = $tplHelper->getQueryParams(array('sortby', 'sortdir'));
 ?>    
