@@ -45,7 +45,7 @@ class SpotTemplateHelper {
 
 		return $tmp;
 	} # makeSearchUrl
-
+	
 	/*
 	 * Geef het volledige path naar Spotweb terug
 	 */
@@ -89,10 +89,29 @@ class SpotTemplateHelper {
 	} # makeNzbUrl
 
 	/*
+	 * Geef het pad op naar de image
+	 */
+	function makeImageUrl($spot, $height, $width) {
+		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . $spot['messageid'] . '&amp;image[height]=' . $height . 'amp;image[width]=' . $width;
+	} # makeImageUrl
+
+	/*
+	 * Creert een sorteer url
+	 */
+	function makeSortUrl($sortby, $sortdir) {
+		return $this->makeBaseUrl() . '?page=index' . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+	} # makeImageUrl
+
+	/*
 	 * Creert een basis navigatie pagina
 	 */
-	function getPageUrl($page) {
-		return $this->makeBaseUrl() . '?page=' . $page . $this->getQueryParams();
+	function getPageUrl($page, $includeParams = false) {
+		$url = $this->makeBaseUrl() . '?page=' . $page;
+		if ($includeParams) {
+			$url .= $this->getQueryParams();
+		} # if
+		
+		return $url;
 	} # getPageUrl
 	
 	/*
@@ -218,10 +237,6 @@ class SpotTemplateHelper {
 		// geef de category een fatsoenlijke naam
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
 		$spot['formatname'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
-		
-		// fix the sabnzbdurl en searchurl
-		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
-		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// properly escape sevreal urls
 		if (!is_array($spot['image'])) {
