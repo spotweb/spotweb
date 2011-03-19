@@ -28,11 +28,11 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 			$spotNzb->handleNzbAction($this->_messageid, $this->_action, $hdr_spotnntp, $nzb_spotnntp);
 			
 			if ($this->_action != 'display') {
-				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings['nzbhandling']['sabnzbd']['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";			
+				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";			
 			} # if
 		}
 		catch(Exception $x) {
-			echo "<div data-role=page><div data-role=content><p>" . $x->getMessage() . "</p><a href='". $this->_settings['nzbhandling']['sabnzbd']['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";
+			echo "<div data-role=page><div data-role=content><p>" . $x->getMessage() . "</p><a href='". $this->_settings['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";
 		} # catch
 	} # render
 	

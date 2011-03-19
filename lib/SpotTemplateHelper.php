@@ -11,6 +11,12 @@ class SpotTemplateHelper {
 	protected $_db;
 	protected $_params;
 	
+	# We gebruiken een static watchlist en een array search omdat dit waarschijnlijk
+	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
+	# deze op classe niveau beschikbaar zodat de isBeingWatched() en getWatchList()
+	# dezelfde data gebruiken en maar 1 query nodig is
+	protected static $wtList = null;
+
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
@@ -45,6 +51,13 @@ class SpotTemplateHelper {
 
 		return $tmp;
 	} # makeSearchUrl
+	
+	/*
+	 * Geef het volledige path naar Spotweb terug
+	 */
+	function makeBaseUrl() {
+		return $this->_settings['spotweburl'];
+	} # makeBaseurl
 
 	/*
 	 * Creeert een linkje naar de sabnzbd API zoals gedefinieerd in de 
@@ -63,10 +76,57 @@ class SpotTemplateHelper {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
 			return $spotNzb->generateSabnzbdUrl($spot, $action);
 		} else {
-			return '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
+			return $this->makeBaseUrl() . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
 		} # else
 	} # makeSabnzbdUrl
 
+	/*
+	 * Creeert een linkje naar een specifieke spot
+	 */
+	function makeSpotUrl($spot) {
+		return $this->makeBaseUrl() . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
+	} # makeSpotUrl
+
+	/*
+	 * Creeert een linkje naar een specifieke nzb
+	 */
+	function makeNzbUrl($spot) {
+		return $this->makeBaseUrl() . '?page=getnzb&amp;action=display&amp;messageid=' . $spot['messageid'];
+	} # makeNzbUrl
+
+	/*
+	 * Geef het pad op naar de image
+	 */
+	function makeImageUrl($spot, $height, $width) {
+		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . $spot['messageid'] . '&amp;image[height]=' . $height . 'amp;image[width]=' . $width;
+	} # makeImageUrl
+
+	/*
+	 * Creert een sorteer url
+	 */
+	function makeSortUrl($sortby, $sortdir) {
+		return $this->makeBaseUrl() . '?page=index' . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+	} # makeImageUrl
+
+	/*
+	 * Creert een basis navigatie pagina
+	 */
+	function getPageUrl($page, $includeParams = false) {
+		$url = $this->makeBaseUrl() . '?page=' . $page;
+		if ($includeParams) {
+			$url .= $this->getQueryParams();
+		} # if
+		
+		return $url;
+	} # getPageUrl
+	
+	/*
+	 * Geeft het linkje terug naar ons zelf
+	 */
+	function makeSelfUrl() {
+		return $this->makeBaseUrl() . '?' . $this->getQueryParams();
+	} # makeSelfUrl
+	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
 	function format_size($size) {
 		$sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
@@ -118,18 +178,15 @@ class SpotTemplateHelper {
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
-		# We gebruiken een static list en een array search omdat dit waarschijnlijk
-		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
-		static $wtList = null;
 		static $wtListCnt = 0;
 		
-		if ($wtList == null) {
-			$wtList = $this->_db->getWatchList();
-			$wtListCnt = count($wtList);
+		if (self::$wtList == null) {
+			self::$wtList = $this->_db->getWatchList();
+			$wtListCnt = count(self::$wtList);
 		} # if
 		
 		for($i = 0; $i < $wtListCnt; $i++) {
-			if ($wtList[$i]['messageid'] == $spot['messageid']) {
+			if (self::$wtList[$i]['messageid'] == $spot['messageid']) {
 				return true;
 			} # if
 		} # for
@@ -143,12 +200,14 @@ class SpotTemplateHelper {
 		if (!is_array($dontInclude)) {
 			$dontInclude = array($dontInclude);
 		} # if
-		
-		foreach($this->_params['activefilter'] as $key => $val) {
-			if (array_search($key, $dontInclude) === false) {
-				$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
-			}
-		} # foreach
+	
+		if (isset($this->_params['activefilter'])) {
+			foreach($this->_params['activefilter'] as $key => $val) {
+				if (array_search($key, $dontInclude) === false) {
+					$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
+				}
+			} # foreach
+		} # if
 		
 		# zijn er sorteer opties meegestuurd?
 		if (array_search('sortdir', $dontInclude) === false) {
@@ -181,10 +240,6 @@ class SpotTemplateHelper {
 		// geef de category een fatsoenlijke naam
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
 		$spot['formatname'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
-		
-		// fix the sabnzbdurl en searchurl
-		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
-		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// properly escape sevreal urls
 		if (!is_array($spot['image'])) {
@@ -274,36 +329,12 @@ class SpotTemplateHelper {
 		return ($spot['moderated'] != 0);
 	} # isModerated
 
-	function host() {
-		return $_SERVER['HTTP_HOST'];
-	}
-
-	function hostUrl() {
-		return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $this->host() ;
-	}
-
-	function baseUrl() {
-		$parts = parse_url($this->hostUrl() . $_SERVER['REQUEST_URI']);
-		$path = array_key_exists(PHP_URL_PATH, $parts) ? $parts[PHP_URL_PATH] : '/';
-		return $this->hostUrl() . $path;
-	}
-
-	function selfUrl() {
-		return $this->baseUrl() . '?' . $_SERVER['QUERY_STRING'];
-	}
-
-	function changePage($page) {
-		$get = $_GET; // defensive copy
-		$get['page'] = $page;
-		return $this->baseUrl() . '?' . http_build_query($get);
-	}
-
-	function spotUrl($spot) {
-		return $this->baseUrl() . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
-	}
-
-	function nzbUrl($spot) {
-		return $this->hostUrl().'?page=getnzb&amp;action=display&amp;messageid=' . $spot['messageid'];
-	}
-
+	function getWatchList() {
+		if (self::$wtList == null) {
+			self::$wtList = $this->_db->getWatchList();
+		} # if
+		
+		return self::$wtList;
+	} # getWatchList
+	
 } # class SpotTemplateHelper

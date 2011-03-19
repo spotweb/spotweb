@@ -16,6 +16,10 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
+# Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
+# sabnzbd integratie.
+$settings['spotweburl'] = 'http://server/spotweb/';
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -96,7 +100,6 @@ $settings['spot_moderation'] = 'act';
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
-#						- spotweburl - URL naar spotweb
 #						- url		 - 
 #
 $settings['nzbhandling']['action'] = 'push-sabnzbd';
@@ -105,7 +108,6 @@ $settings['nzbhandling']['command'] = '';
 $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
 $settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
-$settings['nzbhandling']['sabnzbd']['spotweburl'] = 'http://server/spotweb/';
 $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
 	
 #
@@ -154,10 +156,10 @@ $settings['templates']['default'] = './templates_we1rdo/';
 $settings['templates']['mobile'] = './templates_mobile/';
 
 $settings['allow_user_template'] = true;
-$settings['available_templates'] = Array(	'we1rdo'	=> './templates_we1rdo/', 
-											'splendid'	=> './templates_splendid/',
-											'mobile'	=> './templates_mobile/'
-										);
+$settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
+						'mobile'	=> 'mobile',
+						'splendid'	=> 'splendid'
+					);
 
 # tonen we een update knop in de web ui?
 $settings['show_updatebutton'] = false;
@@ -244,7 +246,7 @@ if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <
 # Ga nu de template zetten
 #
 
-if (($settings['templates']['autodetect'] == true) && 
+if (($settings['templates']['autodetect']) && 
 	(isset($_SERVER['HTTP_USER_AGENT'])) &&
 	(isset($_SERVER['HTTP_ACCEPT'])) ) {
 		include_once('Mobile_Detect.php');
@@ -253,12 +255,17 @@ if (($settings['templates']['autodetect'] == true) &&
 		if ($detect->isMobile()) {
 			$settings['tpl_path'] = $settings['templates']['mobile']; 
 		} else { 
-			if ($settings['allow_user_template'] == true && isset($_COOKIE['template']) && isset($settings['available_templates'][$_COOKIE['template']])) {
+			if (isset($_COOKIE['template'])) {
+				$chosenTemplate = $_COOKIE['template'];
+			} # if 
+
+			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
+				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
 				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
-				$settings['tpl_path'] = $settings['available_templates'][$_COOKIE['template']];
+				$settings['tpl_path'] = './templates_' . $settings['available_templates'][$chosenTemplate] . '/';
 				
 				// verleng cookie
-				setcookie('template', $_COOKIE['template'], time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
+				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
 			} else {
 				$settings['tpl_path'] = $settings['templates']['default']; 
 			} # else
@@ -273,3 +280,10 @@ if (($settings['templates']['autodetect'] == true) &&
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
+
+#
+# Geef een error als de spotweb url niet opgegeven is
+#
+if ($settings['spotweburl'] == 'http://server/spotweb/') {
+	die("Geef een spotweburl op in je ownsettings.php");
+} # if

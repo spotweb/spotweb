@@ -1,6 +1,10 @@
 <?php
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
 	$setpath = $tplHelper->getSitePath();
+
+	// fix the sabnzbdurl en searchurl
+	$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
+	$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">

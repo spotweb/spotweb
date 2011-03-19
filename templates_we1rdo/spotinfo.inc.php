@@ -1,9 +1,13 @@
 <?php
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
+	
+	// fix the sabnzbdurl en searchurl
+	$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
+	$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
-                <img class="spotinfoimage" src="?page=getimage&amp;messageid=<?php echo $spot['messageid']; ?>&amp;image[height]=300&amp;image[width]=300">
+                <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>">
             </a>
 			<div class="spotinfo">
 <?php if (!$spot['verified']) { ?>
@@ -22,7 +26,7 @@
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
 <?php if (!empty($spot['nzb'])) { ?>
 								|
-                            	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
+                            	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
@@ -54,7 +58,7 @@
                         <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-                        <tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+                        <tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>'>NZB</a> </td> </tr>
                     </tbody>
 				</table>
       		</div>
