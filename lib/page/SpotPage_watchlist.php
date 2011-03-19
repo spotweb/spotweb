@@ -35,10 +35,17 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		
 		# Haal de volledige watchlist op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$watchList = $spotsOverview->getWatchList();
+		$watchList = $spotsOverview->loadWatchList();
+
+		# query wanneer de laatste keer de spots geupdate werden
+		$lastUpdateTime = $this->_db->getLastUpdate($this->_settings['nntp_hdr']['host']);
 
 		#- display stuff -#
 		$this->template('header');
+		$this->template('filters', array('search' => array(),
+								  'lastupdate' => $lastUpdateTime,
+								  'filters' => $this->_settings['filters'],
+  								  'activefilter' => $this->_params['search']));
 		$this->template('watchlist', array('watchlist' => $watchList, 'action' => $this->_action));
 		$this->template('footer');
 	} # render
