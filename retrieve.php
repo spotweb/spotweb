@@ -65,19 +65,21 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--import')) {
 		$db->connect();
 	
 		$fp = fopen('export-db.csv', 'r');
+		$db->beginTransaction();
 		while (($line = fgetcsv($fp)) !== FALSE) {
 			$mappedSpot = array();
 			foreach($line as $key => $value) {
 				$mappedSpot[Spot_SpotMapping::$valueMapping[$key]] = $value;
 			} # foreach
 
-			$db->addSpot($line, $line);
+			$db->addSpot($mappedSpot, $mappedSpot);
 		} # while
+		$db->commitTransaction();
 		
 		fclose($fp);
 	} 
 	catch(Exception $x) {
-		die("Error exporting data: " . $x->getMessage() . PHP_EOL);
+		die("Error importing data: " . $x->getMessage() . PHP_EOL);
 	} # catch
 	
 	exit;
@@ -120,6 +122,9 @@ try {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
 
+	/*DEBUG*/ echo "DEBUG: curMsg van searchMessageId(): " . $curMsg . PHP_EOL;
+	/*DEBUG*/ $curMsg = 227671;
+	
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
 	$db->setLastUpdate($settings['nntp_hdr']['host']);
