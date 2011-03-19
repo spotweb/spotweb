@@ -25,7 +25,7 @@ $settings['spotweburl'] = 'http://server/spotweb/';
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Default zet gemaakt door 'Nakebod'
+# Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
     Array("Reset filters", "images/icons/home.png", "&search[unfiltered]=true", "", array()),
 	Array("Nieuw", "images/icons/today.png", "&search[type]=New", "", array()),

@@ -33,17 +33,20 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--export')) {
 	
 		$fp = fopen('export-db.csv', 'w');
 		$spotCount = $db->getSpotCount();
-		for ($i = 0; $i < $spotCount; $i = $i + 10000) { 	
-			$spots = $db->getSpots($i / 10000, 10000, '', array('field' => 'id', 'direction' => 'asc'));
+		for ($i = 0; $i < $spotCount; $i = $i + 5000) { 	
+			$spots = $db->getSpots($i / 5000, 5000, '', array('field' => 'id', 'direction' => 'asc'), true);
 			
 			foreach($spots as $spot) {
 				$mappedSpot = array();
-				
-				foreach(Spot_SpotMapping::$fieldMapping as $key => $value) {
-					$mappedSpot[$value] = $spot[$key];
-				} # foreach
-				
-				fputcsv($fp, $mappedSpot);
+
+				# We exporteren alleen als we alle velden hebben
+				if (count($spot) == count(Spot_SpotMapping::$fieldMapping)) {
+					foreach(Spot_SpotMapping::$fieldMapping as $key => $value) {
+						$mappedSpot[$value] = $spot[$key];
+					} # foreach
+
+					fputcsv($fp, $mappedSpot);
+				} # if
 			} # foreach
 		} # for
 		fclose($fp);
@@ -114,7 +117,12 @@ try {
 	
 	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
 	if ($curMsg != 0) {
+		echo "DEBUG: Op zoek naar messageid: " . $db->getMaxMessageId('headers') . PHP_EOL;
+		
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
+
+		echo "DEBUG: Gevonden op: " . $curMsg;
+		die();
 	} # if
 
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
