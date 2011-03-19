@@ -181,7 +181,7 @@ class SpotTemplateHelper {
 		static $wtListCnt = 0;
 		
 		if (self::$wtList == null) {
-			self::$wtList = $this->_db->getWatchList();
+			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 			$wtListCnt = count(self::$wtList);
 		} # if
 		
@@ -331,7 +331,7 @@ class SpotTemplateHelper {
 
 	function getWatchList() {
 		if (self::$wtList == null) {
-			self::$wtList = $this->_db->getWatchList();
+			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 		} # if
 		
 		return self::$wtList;

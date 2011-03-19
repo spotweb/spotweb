@@ -50,6 +50,25 @@ class SpotsOverview {
 	function getNzb($msgIdList, $nntp) {
 		return $nntp->getNzb($msgIdList);
 	} # getNzb
+
+	/*
+	 * Geeft het overzichts van spots in de watchlist terug
+	 */
+	function loadWatchlist($sort) {
+		# welke manier willen we sorteren?
+		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
+		if (array_search($sort['field'], $sortFields) === false) {
+			$sort = array();
+			$sort['field'] = 'stamp';
+			$sort['direction'] = 'DESC';
+		} else {
+			if ($sort['direction'] != 'DESC') {
+				$sort['direction'] = 'ASC';
+			} # if
+		} # else
+
+		return $this->_db->getWatchList($sort);
+	} # loadWatchList
 	
 	/*
 	 * Laad de spots van af positie $stat, maximaal $limit spots.
