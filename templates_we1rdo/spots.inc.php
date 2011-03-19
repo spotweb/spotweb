@@ -86,13 +86,13 @@
 				} # if
 				
 				echo "</a></td>";
-				
-				if ($settings['show_multinzb']) {
-					$multispotid = htmlspecialchars($spot['messageid']);
-					echo "<td>";
-					echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
-					echo "</td>";
-				} # if
+			} # if
+			
+			if ($settings['show_multinzb']) {
+				$multispotid = htmlspecialchars($spot['messageid']);
+				echo "<td>";
+				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+				echo "</td>";
 			} # if
 
 			# display the sabnzbd button
