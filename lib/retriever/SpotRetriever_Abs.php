@@ -67,8 +67,6 @@ abstract class SpotRetriever_Abs {
 			$messageId = '<' . $messageId . '>';
 			$curMsg = $this->_msgdata['last'];
 
-			/*DEBUG*/ echo "DEBUG: We gaan op zoek naar: " . $messageId . PHP_EOL;
-
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
 
@@ -83,8 +81,6 @@ abstract class SpotRetriever_Abs {
 					} # if
 				} # for
 			} # while
-
-			/*DEBUG*/ echo "DEBUG: We hebben gezocht maar (niet?) gevonden: " . $curMsg . PHP_EOL;
 
 			return $curMsg;
 		} # searchMessageId
@@ -128,8 +124,6 @@ abstract class SpotRetriever_Abs {
 			
 			# we are done updating, make sure that if the newsserver deleted 
 			# earlier retrieved messages, we remove them from our database
-	/*DEBUG*/ echo "DEBUG: End of run, highestmessageid: " . $highestMessageId . PHP_EOL;
-
 			if ($highestMessageId != '') {
 				$this->updateLastRetrieved($highestMessageId);
 			} # if
