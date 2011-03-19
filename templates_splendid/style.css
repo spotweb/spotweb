@@ -134,8 +134,9 @@ table.spots th.genre {min-width:90px; width:110px;}
 table.spots th.poster {width:150px;}
 table.spots th.date {min-width:90px; width:140px;}
 table.spots th.nzb {width:30px;}
-table.spots th.sabnzbd {width:28px;}
-table.spots th.watch {width:28px;}
+table.spots th.sabnzbd {width:22px;}
+table.spots th.watch {width:22px;}
+th.watch {width:16px;}
 
 table.spots td {padding:0 0 0 5px;}
 
@@ -444,4 +445,14 @@ a.vorige {
 a.volgende:hover,
 a.vorige:hover {
 	background-position: 0 -32px !important;
+}
+
+
+
+#ajax_calls {
+	display: none;
+}
+
+#watchlist_table {
+
 }
