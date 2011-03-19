@@ -175,6 +175,26 @@
 				});
 			}); // click
 		});
+		
+		function addWatchSpot(spot,spot_id) {
+			
+			// Set watchspot
+			$.get("?page=watchlist&action=add&messageid="+spot);
+			
+			// Switch buttons
+			$('#watch_'+spot_id).hide();
+			$('#watched_'+spot_id).show();
+		}
+		
+		function removeWatchSpot(spot,spot_id) {
+			
+			// Set watchspot
+			$.get("?page=watchlist&action=remove&messageid="+spot);
+			
+			// Switch buttons
+			$('#watch_'+spot_id).show();
+			$('#watched_'+spot_id).hide();
+		}
 
 		function clearTree() {
 		  $("#tree").dynatree("getRoot").visit(function(node) {
