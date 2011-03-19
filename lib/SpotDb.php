@@ -111,12 +111,6 @@ class SpotDb
 		# vraag eerst het id op
 		$spot = $this->getFullSpot($messageId);
 		
-			/*DEBUG*/ echo "DEBUG: removeExtraSpots(): " . $messageId . PHP_EOL;
-			/*DEBUG*/ echo "DEBUG: spot: " . $spot['messageid'] . PHP_EOL;
-			/*DEBUG*/ echo "DEBUG: spotid: " . $spot['spotdbid'] . PHP_EOL;
-			/*DEBUG*/ echo "DEBUG: highestid: " . $this->_conn->singleQuery("SELECT max(id) as m FROM spots") . PHP_EOL;
-
-		
 		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($spot)) {
 			throw new Exception("Our highest spot is not in the database!?");

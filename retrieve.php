@@ -122,9 +122,6 @@ try {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
 
-	/*DEBUG*/ echo "DEBUG: curMsg van searchMessageId(): " . $curMsg . PHP_EOL;
-	/*DEBUG*/ $curMsg = 227671;
-	
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
 	$retriever->quit();
 	$db->setLastUpdate($settings['nntp_hdr']['host']);

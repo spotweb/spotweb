@@ -209,8 +209,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid($this->_server['host'], $curMsg);
 			$this->_db->commitTransaction();				
 
-	/*DEBUG*/ echo "DEBUG: We geven: " . $lastProcessedId . " als laatste messageid terug" . PHP_EOL;
-			
 			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 	
