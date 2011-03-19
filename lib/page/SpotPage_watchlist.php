@@ -5,8 +5,9 @@ require_once "lib/SpotCategories.php";
 class SpotPage_watchlist extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;
+	private $_params;
 	
-	function __construct($db, $settings, $prefs, $messageid, $action) {
+	function __construct($db, $settings, $prefs, $messageid, $action, $params) {
 		parent::__construct($db, $settings, $prefs);
 		$this->_messageid = trim($messageid);
 		
@@ -14,6 +15,7 @@ class SpotPage_watchlist extends SpotPage_Abs {
 			$action = 'list';
 		} # if
 		$this->_action = $action;
+		$this->_params = $params;
 	} # ctor
 
 
@@ -34,10 +36,19 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		} # switch
 		
 		# Haal de volledige watchlist op
-		$watchList = $this->_db->getWatchList();
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		$watchList = $spotsOverview->loadWatchList(array('field' => $this->_params['sortby'], 
+								  'direction' => $this->_params['sortdir']));
+
+		# query wanneer de laatste keer de spots geupdate werden
+		$lastUpdateTime = $this->_db->getLastUpdate($this->_settings['nntp_hdr']['host']);
 
 		#- display stuff -#
 		$this->template('header');
+		$this->template('filters', array('search' => array(),
+								  'lastupdate' => $lastUpdateTime,
+								  'filters' => $this->_settings['filters'],
+  								  'activefilter' => $this->_params['search']));
 		$this->template('watchlist', array('watchlist' => $watchList, 'action' => $this->_action));
 		$this->template('footer');
 	} # render
