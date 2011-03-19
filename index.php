@@ -47,7 +47,9 @@ try {
 		} # getspot
 
 		case 'watchlist' : {
-				$page = new SpotPage_watchlist($db, $settings, $settings['prefs'], $req->getDef('messageid', ''), $req->getDef('action', ''));
+				$page = new SpotPage_watchlist($db, $settings, $settings['prefs'], $req->getDef('messageid', ''), $req->getDef('action', ''),
+							Array('sortby' => $req->getDef('sortby', ''),
+								  'sortdir' => $req->getDef('sortdir', '')));
 				$page->render();
 				break;
 		} # watchlist
