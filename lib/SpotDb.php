@@ -202,7 +202,7 @@ class SpotDb
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 " . $sqlFilter . " 
-										 ORDER BY s." . $sort['field'] . " " . $sort['direction'] . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
 
 	/*
@@ -383,7 +383,7 @@ class SpotDb
 				Array($messageid));
 	} # removeFromWatchlist
 
-	function getWatchlist() {
+	function getWatchlist($sort) {
 		return $this->_conn->arrayQuery("SELECT w.messageid AS messageid, 
 										 w.dateadded AS dateadded, 
 										 w.comment AS comment, 
@@ -401,7 +401,8 @@ class SpotDb
 										 s.filesize AS filesize, 
 										 s.moderated AS moderated 
 									FROM watchlist w 
-									LEFT JOIN spots s ON s.messageid = w.messageid", Array());									
+									LEFT JOIN spots s ON s.messageid = w.messageid 
+									ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']));
 	} # addToWatchList
 
 	function beginTransaction() {
