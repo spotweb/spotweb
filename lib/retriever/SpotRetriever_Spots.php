@@ -61,6 +61,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		} # displayStatus
 		
 		/*
+		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
+		 * opgehaald hebben.
+		 */
+		function updateLastRetrieved($highestMessageId) {
+			$this->_db->removeExtraSpots($highestMessageId);
+		} # updateLastRetrieved
+		
+		/*
 		 * De daadwerkelijke processing van de headers
 		 */
 		function process($hdrList, $curMsg, $endMsg) {
@@ -72,9 +80,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$fullsRetrieved = 0;
 			$modCount = 0;
 			$skipCount = 0;
+			$lastProcessedId = '';
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
-			$t = microtime(true);
 			$dbIdList = $this->_db->matchMessageIds($hdrList);
 			
 			# en loop door elke header heen
@@ -123,6 +131,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} else {
 							$this->_db->addSpot($spot);
 							$dbIdList['spot'][] = $msgId;
+							$lastProcessedId = $msgId;
 						
 							if ($spot['wassigned']) {
 								$signedCount++;
@@ -132,6 +141,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				} else {
 					# anders halen we hem uit de database want we hebben die nodig
 					$spot = $this->_db->getFullSpot($msgId);
+					$lastProcessedId = $msgId;
 				} # else
 
 				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
@@ -196,7 +206,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid($this->_server['host'], $curMsg);
 			$this->_db->commitTransaction();				
 			
-			return count($hdrList);
+			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 	
 } # class SpotRetriever_Spots
