@@ -173,13 +173,27 @@ class SpotDb
 	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
 	 * 
 	 */
-	function getSpots($pageNr, $limit, $sqlFilter, $sort) {
+	function getSpots($pageNr, $limit, $sqlFilter, $sort, $getFull) {
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
 			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if
+		
+		# de optie getFull geeft aan of we de volledige fieldlist moeten 
+		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
+		# het geheugen gebruik, dus liefst niet.
+		if ($getFull) {
+			$extendedFieldList = ',
+							f.usersignature AS usersignature,
+							f.userkey AS userkey,
+							f.xmlsignature AS xmlsignature,
+							f.fullxml AS fullxml';
+		} else {
+			$extendedFieldList = '';
+		} # else
+
 										 
  		return $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
@@ -198,7 +212,8 @@ class SpotDb
 												s.moderated AS moderated,
 												f.userid AS userid,
 												f.verified AS verified,
-												f.filesize AS filesize												
+												f.filesize AS filesize" . 
+												$extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 " . $sqlFilter . " 
