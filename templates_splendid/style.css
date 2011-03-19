@@ -480,6 +480,10 @@ a.vorige:hover {
 	text-align: right;
 }
 
+#watchlist_table .delete {
+	width: 40px;
+}
+
 #watchlist_table th {
 	padding: 3px 0;
 	border-bottom: 1px solid #ccc;
