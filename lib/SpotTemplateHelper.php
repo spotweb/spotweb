@@ -11,6 +11,12 @@ class SpotTemplateHelper {
 	protected $_db;
 	protected $_params;
 	
+	# We gebruiken een static watchlist en een array search omdat dit waarschijnlijk
+	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
+	# deze op classe niveau beschikbaar zodat de isBeingWatched() en getWatchList()
+	# dezelfde data gebruiken en maar 1 query nodig is
+	protected static $wtList = null;
+
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
@@ -172,18 +178,15 @@ class SpotTemplateHelper {
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
-		# We gebruiken een static list en een array search omdat dit waarschijnlijk
-		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
-		static $wtList = null;
 		static $wtListCnt = 0;
 		
-		if ($wtList == null) {
-			$wtList = $this->_db->getWatchList();
-			$wtListCnt = count($wtList);
+		if (self::$wtList == null) {
+			self::$wtList = $this->_db->getWatchList();
+			$wtListCnt = count(self::$wtList);
 		} # if
 		
 		for($i = 0; $i < $wtListCnt; $i++) {
-			if ($wtList[$i]['messageid'] == $spot['messageid']) {
+			if (self::$wtList[$i]['messageid'] == $spot['messageid']) {
 				return true;
 			} # if
 		} # for
@@ -326,5 +329,12 @@ class SpotTemplateHelper {
 		return ($spot['moderated'] != 0);
 	} # isModerated
 
-
+	function getWatchList() {
+		if (self::$wtList == null) {
+			self::$wtList = $this->_db->getWatchList();
+		} # if
+		
+		return self::$wtList;
+	} # getWatchList
+	
 } # class SpotTemplateHelper
