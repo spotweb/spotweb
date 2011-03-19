@@ -216,7 +216,7 @@ class SpotNzb {
 			# Client roept sabnzbd aan
 			$tmp = htmlentities($tmp);
 			$tmp = str_replace('$SABNZBDMODE', 'addurl', $tmp);
-			$tmp = str_replace('$NZBURL', urlencode($sabnzbd['spotweburl'] . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
+			$tmp = str_replace('$NZBURL', urlencode($this->_settings['spotweburl'] . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
 		} elseif ($action == 'push-sabnzbd') {
 			# server roept sabnzbd aan
 			$tmp = str_replace('$SABNZBDMODE', 'addfile', $tmp);
