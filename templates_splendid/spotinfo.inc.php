@@ -5,17 +5,15 @@
 	$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
-            <a class="postimage" href="<?php echo $spot['website']; ?>">
-                <img class="spotinfoimage" src="<?php echo $spot['image']; ?>">
-            </a>
+            <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>"><img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>"></a>
 			<div class="spotinfo">
-<?php
-	if (!$spot['verified']) {
-?>
-				<div class="warning">Deze Spot is niet geverifieerd, de naam van de poster is niet bevestigd!</div>
-<?php
-	}
-?>
+<?php if (!$spot['verified']) { ?>
+				<div class="warning">Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
+<?php } 
+	  if($tplHelper->isModerated($spot)) { ?>
+				<div class="warning">Deze spot is als mogelijk onwenselijk gemodereerd!</div>
+<?php } ?>
+
 				<table class="spotheader">
 					<tbody>
                     	<tr>						
@@ -23,9 +21,9 @@
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
-                                |
 <?php if (!empty($spot['nzb'])) { ?>
-                            	<a class="nzb" href="?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
+								|
+                            	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
@@ -64,7 +62,7 @@ if($tplHelper->isBeingWatched($spot)) { ?>
                         <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-                        <tr> <th> NZB </th> <td> <a href='?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+                        <tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>'>NZB</a> </td> </tr>
                     </tbody>
 				</table>
       		</div>
@@ -73,7 +71,7 @@ if($tplHelper->isBeingWatched($spot)) { ?>
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments</h4>
+            	<h4>Comments <span class="commentcount"># <?php echo $tplHelper->getCommentCount($spot); ?></span></h4>
 					<ul>
 <?php
 		$count = 0;

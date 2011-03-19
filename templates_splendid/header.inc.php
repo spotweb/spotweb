@@ -52,6 +52,12 @@
 			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
 			  <div class="top_menu"><a href="?page=watchlist" class="spotlink"> Watchlist</a></div>
 			  <div class="menu_top"></div>
-			  <?php } ?>
+			  <?php 
+			    } else if($_GET['page'] == 'getspot') {
+			      echo "<div id=\"page_title\">Spotinfo</div>\n";
+			    } else {
+			      echo '<div id="page_title">'.ucfirst($_GET['page'])."</div>\n";
+			    }
+			  ?>
 			</div>
 <?php } ?>
