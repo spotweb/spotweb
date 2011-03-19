@@ -337,19 +337,19 @@ class SpotDb
 	function addSpot($spot, $fullSpot = array()) {
 		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
 				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-				 Array($spot['ID'],
-					   $spot['MessageID'],
-					   $spot['Category'],
-					   $spot['SubCat'],
-					   $spot['Poster'],
-					   $spot['GroupName'],
-					   $spot['SubCatA'],
-					   $spot['SubCatB'],
-					   $spot['SubCatC'],
-					   $spot['SubCatD'],
-					   $spot['Title'],
-					   $spot['Tag'],
-					   $spot['Stamp']));
+				 Array($spot['id'],
+					   $spot['messageid'],
+					   $spot['category'],
+					   $spot['subcat'],
+					   $spot['poster'],
+					   $spot['groupname'],
+					   $spot['subcata'],
+					   $spot['subcatb'],
+					   $spot['subcatc'],
+					   $spot['subcatd'],
+					   $spot['title'],
+					   $spot['tag'],
+					   $spot['stamp']));
 					   
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);

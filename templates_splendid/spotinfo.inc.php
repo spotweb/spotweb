@@ -1,5 +1,8 @@
 <?php
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
+	// fix the sabnzbdurl en searchurl
+	$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
+	$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" href="<?php echo $spot['website']; ?>">

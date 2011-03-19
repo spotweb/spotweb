@@ -98,31 +98,31 @@ class SpotParser {
 			return false;
 		} # if 
 		
-		$spot['Header'] = $tmpHdr[1];
-		$spot['Verified'] = false;
-		$spot['MessageID'] = substr($messageid, 1, strlen($messageid) - 2);
-		$fields = explode('.', $spot['Header']);
+		$spot['header'] = $tmpHdr[1];
+		$spot['verified'] = false;
+		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
+		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
-			$spot['ID'] = $fields[$_ID];
+			$spot['id'] = $fields[$_ID];
 
-			if ($spot['ID'] > 9) {
-				$spot['Category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
+			if ($spot['id'] > 9) {
+				$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 				
 				// extract de posters name
-				$spot['Poster'] = explode('<', $from);
-				$spot['Poster'] = Trim($spot['Poster'][0]);
+				$spot['poster'] = explode('<', $from);
+				$spot['poster'] = Trim($spot['poster'][0]);
 				
 				// key id
-				$spot['KeyID'] = (int) substr($fields[$_CAT], 1, 1);
+				$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 				
 				// groupname
-				$spot['GroupName'] = 'free.pt';
+				$spot['groupname'] = 'free.pt';
 				
-				if ($spot['KeyID'] >= 1) {
+				if ($spot['keyid'] >= 1) {
 					$expression = '';
 					$strInput = substr($fields[$_CAT], 2);
-					$recentKey = $spot['KeyID'] <> 1;
+					$recentKey = $spot['keyid'] <> 1;
 					
 					if ($recentKey) {	
 						if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
@@ -136,7 +136,7 @@ class SpotParser {
 							} # if
 						} # foeeach
 						
-						$spot['SubCat'] = (int) (substr($subcatAr[0], 1));
+						$spot['subcat'] = (int) (substr($subcatAr[0], 1));
 						
 					} else {
 						$list = array();
@@ -155,20 +155,20 @@ class SpotParser {
 							$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
 						} # foreach
 						
-						$spot['SubCat'] = (int) (substr($list[0], 1));
+						$spot['subcat'] = (int) (substr($list[0], 1));
 					} # else if $recentKey 
 
 					# Break up the subcategories per subcat-type
 					if (strlen($expression) > 0) {
 						$subcats = explode('|', $expression);
-						$spot['SubCatA'] = '';
-						$spot['SubCatB'] = '';
-						$spot['SubCatC'] = '';
-						$spot['SubCatD'] = '';
+						$spot['subcata'] = '';
+						$spot['subcatb'] = '';
+						$spot['subcatc'] = '';
+						$spot['subcatd'] = '';
 						
 						foreach($subcats as $subcat) {
 							if (array_search(strtolower(substr($subcat, 0, 1)), array('a','b','c','d')) !== false) {
-								$spot['SubCat' . strtoupper(substr($subcat, 0, 1))] .= $subcat . '|';
+								$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
 							} # if
 						} # foreach
 					} # if
@@ -184,11 +184,11 @@ class SpotParser {
 						if (strpos($subj, '|') !== false) {
 							$tmp = explode('|', $subj);
 							
-							$spot['Title'] = trim($tmp[0]);
-							$spot['Tag'] = trim($tmp[1]);
+							$spot['title'] = trim($tmp[0]);
+							$spot['tag'] = trim($tmp[1]);
 						} else {
-							$spot['Title'] = trim($subj);
-							$spot['Tag'] = '';
+							$spot['title'] = trim($subj);
+							$spot['tag'] = '';
 						} # else
 					} else {
 						$tmp = explode('|', $subj);
@@ -196,59 +196,58 @@ class SpotParser {
 							$tmp = array($subj);
 						} # if
 						
-						$spot['Tag'] = trim($tmp[count($tmp) - 1]);
+						$spot['tag'] = trim($tmp[count($tmp) - 1]);
 
 						# remove the tags from the array
 						array_pop($tmp);
 						array_pop($tmp);
 						
-						$spot['Title'] = trim(implode('|', $tmp));
+						$spot['title'] = trim(implode('|', $tmp));
 						
-						if ((strpos($spot['Title'], chr(0xc2)) !== false) | (strpos($spot['Title'], chr(0xc3)) !== false)) {
-							$spot['Title'] = trim($this->oldEncodingParse($spot['Title']));
+						if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
+							$spot['title'] = trim($this->oldEncodingParse($spot['title']));
 						} # if
 					} # if recentKey
 
-					$spot['Stamp'] = $fields[$_STAMP];
-					if (((strlen($spot['Title']) != 0) && (strlen($spot['Poster']) != 0)) && (($spot['ID'] >= 1000000) || $recentKey)) {
+					$spot['stamp'] = $fields[$_STAMP];
+					if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0)) && (($spot['id'] >= 1000000) || $recentKey)) {
 
 						# Vanaf spot-id 1385910 komen we KeyID's 2 tegen, dus vanaf daar gaan we alle niet-signed posts weigeren.
-						$mustbeSigned = $recentKey | (!$recentKey & ($spot['ID'] > 1385910));
+						$mustbeSigned = $recentKey | (!$recentKey & ($spot['id'] > 1385910));
 
 						# FIXME
 						#
 						# somehow there is a check that the key is only validated for spots with key id 2 ?
 						# not sure about the code as it only seems to execute for more than 25000 spots or something?
 						#
-						$mustbeSigned = (($mustbeSigned) & ($spot['KeyID'] >= 2));
+						$mustbeSigned = (($mustbeSigned) & ($spot['keyid'] >= 2));
 						
 						# and verify the signature it
 						if ($mustbeSigned) {
-							$spot['HeaderSign'] = $fields[count($fields) - 1];
+							$spot['headersign'] = $fields[count($fields) - 1];
 							
-							if (strlen($spot['HeaderSign']) != 0) {
-								$spot['WasSigned'] = true;
+							if (strlen($spot['headersign']) != 0) {
+								$spot['wassigned'] = true;
 
 								# KeyID 7 betekent dat het serverless signed is
-								if ($spot['KeyID'] == 7) {
-									$userSignedHash = sha1('<' . $spot['MessageID'] . '>', false);
-									$spot['Verified'] = (substr($userSignedHash, 0, 3) == '0000');
+								if ($spot['keyid'] == 7) {
+									$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+									$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
 								} else {
 									# the signature this header is signed with
-									$signature = base64_decode($this->unspecialString($spot['HeaderSign']));
+									$signature = base64_decode($this->unspecialString($spot['headersign']));
 
 									# This is the string to verify
-									$toCheck = $spot['Title'] . substr($spot['Header'], 0, strlen($spot['Header']) - strlen($spot['HeaderSign']) - 1) . $spot['Poster'];
-
+									$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 									
 									# Check the RSA signature on the spot
-									$spot['Verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['KeyID']]);
+									$spot['verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
 								} # else
 							} # if
 						} # if must be signed
 						else {
-							$spot['Verified'] = true;
-							$spot['WasSigned'] = false;
+							$spot['verified'] = true;
+							$spot['wassigned'] = false;
 						} # if doesnt need to be signed, pretend that it is
 					} # if
 				} # if
