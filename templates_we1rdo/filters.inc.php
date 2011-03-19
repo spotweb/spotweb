@@ -66,6 +66,20 @@
 ?>
                     </ul>
 
+					<h4>Watchlist</h4><br />
+                    <ul class="watchlist">
+<?php
+	$watchList = $tplHelper->getWatchList();
+	
+	foreach($watchList as $watch) {
+?>
+						<li>-<?php echo $watch['title']; ?></li>
+<?php
+	}
+?>
+					</ul>
+
+					
 					<h4>Maintenance</h4>
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
