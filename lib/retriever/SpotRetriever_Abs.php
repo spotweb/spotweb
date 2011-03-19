@@ -19,6 +19,11 @@ abstract class SpotRetriever_Abs {
 		 */
 		abstract function process($hdrList, $curMsg, $increment);
 		
+		/*
+		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
+		 * opgehaald hebben.
+		 */
+		abstract function updateLastRetrieved($highestMessageId);
 		
 		/*
 		 * NNTP Server waar geconnet moet worden
@@ -62,21 +67,12 @@ abstract class SpotRetriever_Abs {
 			$messageId = '<' . $messageId . '>';
 			$curMsg = $this->_msgdata['last'];
 
-			echo "DEBUG: LastMessageNum: " . $curMsg . PHP_EOL;
-			echo "DEBUG: We zoeken naar: " . $messageId . PHP_EOL;
-			var_dump($this->_spotnntp->getArticle('<' . $messageId . '>'));
-			var_dump($this->_msgdata);
-			
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
 
-			echo "DEBUG: We gaan zoeken vanaf: " . $curMsg . PHP_EOL;
-				
 				# get the list of headers (XHDR)
-				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement) + 1);
+				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
 
-			echo "DEBUG: We hebben " . count($hdrList) . " headers gevonden " . PHP_EOL;
-				
 				foreach($hdrList as $msgNum => $msgId) {
 					if ($msgId == $messageId) {
 						$curMsg = $msgNum;
@@ -94,6 +90,7 @@ abstract class SpotRetriever_Abs {
 		 */
 		function loopTillEnd($curMsg, $increment = 1000) {
 			$processed = 0;
+			$highestMessageId = '';
 			
 			# make sure we handle articlenumber wrap arounds
 			if ($curMsg < $this->_msgdata['first']) {
@@ -118,10 +115,18 @@ abstract class SpotRetriever_Abs {
 				} else {
 					$curMsg = ($hdrList[count($hdrList)-1]['Number'] + 1);
 				} # else
-
+				
 				# run the processing method
-				$processed += $this->process($hdrList, $saveCurMsg, $curMsg);
+				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg);
+				$processed += $processOutput['count'];
+				$highestMessageId = $processOutput['lastmsgid'];
 			} # while
+			
+			# we are done updating, make sure that if the newsserver deleted 
+			# earlier retrieved messages, we remove them from our database
+			if ($highestMessageId != '') {
+				$this->updateLastRetrieved($highestMessageId);
+			} # if
 	
 			$this->displayStatus("totalprocessed", $processed);
 		} # loopTillEnd()

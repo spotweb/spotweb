@@ -105,6 +105,42 @@ class SpotDb
 	} # setRetrieverRunning
 
 	/*
+	 * Remove extra spots 
+	 */
+	function removeExtraSpots($messageId) {
+		# vraag eerst het id op
+		$spot = $this->getFullSpot($messageId);
+		
+		# als deze spot leeg is, is er iets raars aan de hand
+		if (empty($spot)) {
+			throw new Exception("Our highest spot is not in the database!?");
+		} # if
+		
+		# en wis nu alles wat 'jonger' is dan deze spot
+		$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['spotdbid']));
+		
+		if (((int) $spot['fullspotdbid']) > 0) {
+			$this->_conn->exec("DELETE FROM spotsfull WHERE id > %d", Array( (int) $spot['fullspotdbid']));
+		} # if
+	} # removeExtraSpots
+
+	/*
+	 * Remove extra comments
+	 */
+	function removeExtraComments($messageId) {
+		# vraag eerst het id op
+		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
+		
+		# als deze spot leeg is, is er iets raars aan de hand
+		if (empty($commentId)) {
+			throw new Exception("Our highest comment is not in the database!?");
+		} # if
+		
+		# en wis nu alles wat 'jonger' is dan deze spot
+		$this->_conn->exec("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
+	} # removeExtraComments
+
+	/*
 	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
 	 */
 	function setLastUpdate($server) {
@@ -225,6 +261,8 @@ class SpotDb
 	 */
 	function getFullSpot($messageId) {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.*,
+												s.id AS spotdbid,
+												f.id AS fullspotdbid,
 												s.spotid AS id,
 												f.messageid AS messageid,
 												f.userid AS userid,

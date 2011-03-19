@@ -117,12 +117,7 @@ try {
 	
 	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
 	if ($curMsg != 0) {
-		echo "DEBUG: Op zoek naar messageid: " . $db->getMaxMessageId('headers') . PHP_EOL;
-		
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
-
-		echo "DEBUG: Gevonden op: " . $curMsg;
-		die();
 	} # if
 
 	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);

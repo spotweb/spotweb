@@ -46,6 +46,13 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			} # xml output
 		} # displayStatus
 
+		/*
+		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
+		 * opgehaald hebben.
+		 */
+		function updateLastRetrieved($highestMessageId) {
+			$this->_db->removeExtraComments($highestMessageId);
+		} # updateLastRetrieved
 		
 		/*
 		 * De daadwerkelijke processing van de headers
@@ -55,6 +62,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		
 			$this->_db->beginTransaction();
 			$signedCount = 0;
+			$lastProcessedId = '';
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
@@ -65,6 +73,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				# fix de references, niet alle news servers geven die goed door
 				$msgIdParts = explode(".", $commentId);
 				$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+				$lastProcessedId = $commentId;
 
 				# voeg spot aan db toe
 				$this->_db->addCommentRef($commentId,
@@ -80,7 +89,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
 			
-			return count($hdrList);
+			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 		
 } # class SpotRetriever_Comments
