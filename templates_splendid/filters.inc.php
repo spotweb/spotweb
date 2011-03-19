@@ -1,4 +1,9 @@
-<?php if(empty($_GET['ajax'])) { ?>
+<?php 
+// Set $_GET['page'] if it's not set
+if(empty($_GET['page'])) $_GET['page'] = '';
+
+// check if it's a ajax call or the page is watchlist
+if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 				<div style="float: left">
 				<div class="filter" id="menu">
 					<h4>Zoeken</h4>
