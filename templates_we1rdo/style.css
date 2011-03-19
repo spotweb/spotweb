@@ -283,3 +283,6 @@ div.details.red div.comments li.even {background-color:#ffeaea;}
 div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
+
+/* WATCHLIST */
+table.watchlist {}
