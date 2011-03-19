@@ -64,6 +64,7 @@ abstract class SpotRetriever_Abs {
 
 			echo "DEBUG: LastMessageNum: " . $curMsg . PHP_EOL;
 			echo "DEBUG: We zoeken naar: " . $messageId . PHP_EOL;
+			var_dump($this->_spotnntp->getArticle('<' . $messageId . '>'));
 			var_dump($this->_msgdata);
 			
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
