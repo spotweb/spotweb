@@ -29,6 +29,15 @@
                             	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
+							<th class='watch'>
+<?php if($tplHelper->isBeingWatched($spot)) { 
+	echo "<a onclick=\"removeWatchSpot('".$spot['messageid']."',".$spot['id'].")\" id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+	echo "<a onclick=\"addWatchSpot('".$spot['messageid']."',".$spot['id'].")\" style='display: none;' id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+} else {
+	echo "<a onclick=\"removeWatchSpot('".$spot['messageid']."',".$spot['id'].")\" style='display: none;' id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+	echo "<a onclick=\"addWatchSpot('".$spot['messageid']."',".$spot['id'].")\" id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+} ?>
+							</th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img width="20" height="17" src="templates_we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
