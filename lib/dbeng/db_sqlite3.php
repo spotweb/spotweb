@@ -89,7 +89,7 @@ class db_sqlite3 extends db_abs {
 											title TEXT,
 											tag TEXT,
 											stamp INTEGER,
-											filesize INTEGER DEFAULT 0,
+											filesize BIGINT DEFAULT 0,
 											moderated BOOLEAN DEFAULT FALSE);");
 			$this->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
 										maxarticleid INTEGER UNIQUE,
@@ -187,7 +187,7 @@ class db_sqlite3 extends db_abs {
 										userkey TEXT,
 										xmlsignature TEXT,
 										fullxml TEXT,
-										filesize INTEGER);");										
+										filesize BIGINT);");										
 
 			# create indices
 			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
