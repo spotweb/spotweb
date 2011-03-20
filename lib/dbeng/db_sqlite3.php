@@ -53,7 +53,7 @@ class db_sqlite3 extends db_abs {
 		$rows = array();
 
 		$res = $this->exec($s, $p); 
-		while ($rows[] = $res->fetch());
+		while ($rows[] = $res->fetch(SQLITE_ASSOC));
 
 		# remove last element (false element)
 		array_pop($rows); 
