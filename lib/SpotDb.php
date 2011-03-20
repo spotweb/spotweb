@@ -287,7 +287,21 @@ class SpotDb
 	 * geeft dit NULL terug
 	 */
 	function getFullSpot($messageId) {
-		$tmpArray = $this->_conn->arrayQuery("SELECT s.*,
+		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
+												s.messageid AS messageid,
+												s.spotid AS spotid,
+												s.category AS category,
+												s.subcat AS subcat,
+												s.poster AS poster,
+												s.groupname AS groupname,
+												s.subcata AS subcata,
+												s.subcatb AS subcatb,
+												s.subcatc AS subcatc,
+												s.subcatd AS subcatd,
+												s.title AS title,
+												s.tag AS tag,
+												s.stamp AS stamp,
+												s.moderated AS moderated,
 												s.id AS spotdbid,
 												f.id AS fullspotdbid,
 												s.spotid AS id,
@@ -305,6 +319,7 @@ class SpotDb
 		if (empty($tmpArray)) {
 			return ;
 		} # if
+		$tmpArray = $tmpArray[0];
 	
 		# If spot is fully stored in db and is of the new type, we process it to
 		# make it exactly the same as when retrieved using NNTP
