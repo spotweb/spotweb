@@ -18,7 +18,7 @@ $settings['nntp_hdr']['port'] = 119;
 
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie.
-$settings['spotweburl'] = 'http://server/spotweb/';
+$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -28,7 +28,7 @@ $settings['spotweburl'] = 'http://server/spotweb/';
 # Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
     Array("Reset filters", "images/icons/home.png", "&search[unfiltered]=true", "", array()),
-	Array("Nieuw", "images/icons/today.png", "&search[unfiltered]=true&search[type]=New", "", array()),
+	Array("Nieuw", "images/icons/today.png", "&search[type]=New", "", array()),
     Array("Beeld", "images/icons/film.png", "cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", "", 
         Array(
             Array("DivX", "images/icons/divx.png", "cat0_a0", ""),
@@ -166,7 +166,6 @@ $settings['show_updatebutton'] = false;
 
 # toon een download-nzb knop op het overzicht?
 $settings['show_nzbbutton'] = true;
-$settings['show_multinzb'] = true;
 
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
@@ -285,6 +284,6 @@ if (empty($settings['nntp_hdr']['host'])) {
 #
 # Geef een error als de spotweb url niet opgegeven is
 #
-if ($settings['spotweburl'] == 'http://server/spotweb/') {
+if ($settings['spotweburl'] == 'http://mijnuniekeservernaam/spotweb/') {
 	die("Geef een spotweburl op in je ownsettings.php");
 } # if
