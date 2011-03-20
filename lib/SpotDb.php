@@ -164,11 +164,40 @@ class SpotDb
 			return $cnt;
 		} # if
 	} # getSpotCount
+
+	/*
+	 * Match set of comments
+	 */
+	function matchCommentMessageIds($hdrList) {
+		$idList = array();
+		
+		# geen message id's gegeven? vraag het niet eens aan de db
+		if (count($hdrList) == 0) {
+			return $idList;
+		} # if
+		
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($hdrList as $hdr) {
+			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		# en vraag alle comments op die we kennen
+		$rs = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
+		
+		# geef hier een array terug die kant en klaar is voor array_search
+		foreach($rs as $msgids) {
+			$idList[] = $msgids['messageid'];
+		} # foreach
+		
+		return $idList;
+	} # matchCommentMessageIds
 	
 	/*
 	 * Match set of spots
 	 */
-	function matchMessageIds($hdrList) {
+	function matchSpotMessageIds($hdrList) {
 		$idList = array('spot' => array(), 'fullspot' => array());
 		
 		# geen message id's gegeven? vraag het niet eens aan de db

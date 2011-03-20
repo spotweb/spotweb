@@ -83,7 +83,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$lastProcessedId = '';
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
-			$dbIdList = $this->_db->matchMessageIds($hdrList);
+			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
 
 #var_dump($hdrList);
 			
