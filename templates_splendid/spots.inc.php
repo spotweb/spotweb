@@ -74,9 +74,8 @@
 <?php
 	$count = 0;
 	foreach($spots as $spot) {
-		# fix the sabnzbdurl en searchurl
-		$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
-		$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+		# Format the spot header
+		$spot = $tplHelper->formatSpotHeader($spot);
 		if ($tplHelper->newSinceLastVisit($spot)) {
 			$newSpotClass = 'new';
 		} else {
