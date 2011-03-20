@@ -88,6 +88,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 #var_dump($hdrList);
 			
 			# en loop door elke header heen
+			$spotParser = new SpotParser();
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);
@@ -95,11 +96,12 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
 
-				# als we de spot overview nog niet in de database hebben, haal hem dan op
-				if (!in_array($msgId, $dbIdList['spot'])) {
+				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
+				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
+				# die wel in de header zitten, zitten niet in de database (denk aan 'keyid')
+				if ((!in_array($msgId, $dbIdList['spot'])) || (!in_array($msgId, $dbIdList['fullspot']))) {
 					$hdrsRetrieved++;
 		
-					$spotParser = new SpotParser();
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Message-ID'],
@@ -131,13 +133,16 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
 							$skipCount++;
 						} else {
-							$this->_db->addSpot($spot);
-							$dbIdList['spot'][] = $msgId;
-							$lastProcessedId = $msgId;
+							# Hier kijken we alleen of de spotheader niet bestaat
+							if (!in_array($msgId, $dbIdList['spot'])) {
+								$this->_db->addSpot($spot);
+								$dbIdList['spot'][] = $msgId;
+								$lastProcessedId = $msgId;
 
-							if ($spot['wassigned']) {
-								$signedCount++;
-							} # if
+								if ($spot['wassigned']) {
+									$signedCount++;
+								} # if
+							} # if 
 						} # if
 					} # else
 				} else {
@@ -149,9 +154,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				if ((in_array($msgId, $dbIdList['spot'])) &&   # header moet in db zitten
 				   (!in_array($msgId, $dbIdList['fullspot']))) # maar de fullspot niet
 				   {
-					# anders halen we hem uit de database want we hebben die nodig
-					$spot = $this->_db->getSpotHeader($msgId);
-					
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
 					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
