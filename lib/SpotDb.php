@@ -109,19 +109,17 @@ class SpotDb
 	 */
 	function removeExtraSpots($messageId) {
 		# vraag eerst het id op
-		$spot = $this->getFullSpot($messageId);
-		
+		$spot = $this->getSpotHeader($messageId);
+
 		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($spot)) {
 			throw new Exception("Our highest spot is not in the database!?");
 		} # if
 		
-		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['spotdbid']));
-		
-		if (((int) $spot['fullspotdbid']) > 0) {
-			$this->_conn->exec("DELETE FROM spotsfull WHERE id > %d", Array( (int) $spot['fullspotdbid']));
-		} # if
+		# en wis nu alles wat 'jonger' is dan deze spot, geen join delete omdat
+		# sqlite dat niet kan
+		$this->_conn->exec("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
+		$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['id']));
 	} # removeExtraSpots
 
 	/*
@@ -257,7 +255,36 @@ class SpotDb
 	} # getSpots()
 
 	/*
-	 * Vraag 1 specifieke spot op
+	 * Geeft enkel de header van de spot terug
+	 */
+	function getSpotHeader($msgId) {
+		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
+												s.messageid AS messageid,
+												s.spotid AS spotid,
+												s.category AS category,
+												s.subcat AS subcat,
+												s.poster AS poster,
+												s.groupname AS groupname,
+												s.subcata AS subcata,
+												s.subcatb AS subcatb,
+												s.subcatc AS subcatc,
+												s.subcatd AS subcatd,
+												s.title AS title,
+												s.tag AS tag,
+												s.stamp AS stamp,
+												s.moderated AS moderated
+											  FROM spots AS s
+											  WHERE messageid = '%s'", Array($msgId));
+		if (empty($tmpArray)) {
+			return ;
+		} # if
+		return $tmpArray[0];
+	} # getSpotHeader 
+	
+	
+	/*
+	 * Vraag 1 specifieke spot op, als de volledig spot niet in de database zit
+	 * geeft dit NULL terug
 	 */
 	function getFullSpot($messageId) {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.*,
@@ -278,8 +305,7 @@ class SpotDb
 		if (empty($tmpArray)) {
 			return ;
 		} # if
-		$tmpArray = $tmpArray[0];
-		
+	
 		# If spot is fully stored in db and is of the new type, we process it to
 		# make it exactly the same as when retrieved using NNTP
 		if (!empty($tmpArray['fullxml']) && (!empty($tmpArray['user-signature']))) {

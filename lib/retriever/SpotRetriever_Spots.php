@@ -84,6 +84,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchMessageIds($hdrList);
+
+#var_dump($hdrList);
 			
 			# en loop door elke header heen
 			foreach($hdrList as $msgid => $msgheader) {
@@ -96,19 +98,26 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# als we de spot overview nog niet in de database hebben, haal hem dan op
 				if (!in_array($msgId, $dbIdList['spot'])) {
 					$hdrsRetrieved++;
-					
+		
+#echo "DEBUG: Niet dubbel: " . $msgId . PHP_EOL;
+
 					$spotParser = new SpotParser();
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-							
+
+#echo "DEBUG: Parsing === false " . ($spot === false) . PHP_EOL;
+#echo "DEBUG: Verified === false " . ($spot['verified'] === false) . PHP_EOL;
+
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
 						continue;
 					} # if
-													
+
+#echo "DEBUG: KeyID " . ($spot['keyid']) . PHP_EOL;
+					
 					if ($spot['keyid'] == 2) {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
@@ -127,6 +136,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} else {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
 						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
+#echo "DEBUG: Skipping vanwege retentie " . PHP_EOL;
 							$skipCount++;
 						} else {
 							$this->_db->addSpot($spot);
@@ -148,7 +158,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				   (!in_array($msgId, $dbIdList['fullspot']))) # maar de fullspot niet
 				   {
 					# anders halen we hem uit de database want we hebben die nodig
-					$spot = $this->_db->getFullSpot($msgId);
+					$spot = $this->_db->getSpotHeader($msgId);
 					
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
