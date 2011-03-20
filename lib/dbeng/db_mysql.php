@@ -119,7 +119,7 @@ class db_mysql extends db_abs {
 										title TEXT,
 										tag TEXT,
 										stamp INTEGER,
-										filesize INTEGER DEFAULT 0,
+										filesize BIGINT DEFAULT 0,
 										moderated BOOLEAN DEFAULT FALSE);");
 			$this->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
@@ -141,8 +141,18 @@ class db_mysql extends db_abs {
 		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
 		$q = $this->arrayQuery("SHOW COLUMNS FROM spots");
 		if (count($q) == 14) {
-			$this->rawExec("ALTER TABLE spots ADD COLUMN(filesize INTEGER DEFAULT 0,
+			$this->rawExec("ALTER TABLE spots ADD COLUMN(filesize BIGINT DEFAULT 0,
 										moderated BOOLEAN DEFAULT FALSE)");
+		} # if
+		
+
+		# Verander de grootte van de filesize column in spotsfull 
+		$q = $this->arrayQuery("SHOW COLUMNS FROM spotsfull LIKE 'filesize'");
+		if (count($q) == 1) {
+			if ($q[0]['Type'] == 'int(11)') {
+				$this->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0;");
+				$this->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0;");
+			} # if
 		} # if
 		
 		
@@ -201,7 +211,7 @@ class db_mysql extends db_abs {
 										userkey TEXT,
 										xmlsignature TEXT,
 										fullxml TEXT,
-										filesize INTEGER);");										
+										filesize BIGINT);");										
 
 			# create indices
 			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
