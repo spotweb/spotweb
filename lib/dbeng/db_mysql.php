@@ -146,16 +146,6 @@ class db_mysql extends db_abs {
 		} # if
 		
 
-		# Verander de grootte van de filesize column in spotsfull 
-		$q = $this->arrayQuery("SHOW COLUMNS FROM spotsfull LIKE 'filesize'");
-		if (count($q) == 1) {
-			if ($q[0]['Type'] == 'int(11)') {
-				$this->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0;");
-				$this->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0;");
-			} # if
-		} # if
-		
-		
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, daarvan droppen wij er 1
 		try {
 			$q = $this->arrayQuery("SHOW COLUMNS FROM commentsxover;");
@@ -172,7 +162,7 @@ class db_mysql extends db_abs {
 										   messageid VARCHAR(128),
 										   nntpref VARCHAR(128));");
 			$this->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
-			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON spotsfull(messageid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
@@ -217,6 +207,15 @@ class db_mysql extends db_abs {
 			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
 
+		# Verander de grootte van de filesize column in spotsfull 
+		$q = $this->arrayQuery("SHOW COLUMNS FROM spotsfull LIKE 'filesize'");
+		if (count($q) == 1) {
+			if ($q[0]['Type'] == 'int(11)') {
+				$this->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0;");
+				$this->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0;");
+			} # if
+		} # if
+		
 		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen unieke messageid
 		$q = $this->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_1' AND Non_unique = 1;");
 		if (count($q) == 2) {
