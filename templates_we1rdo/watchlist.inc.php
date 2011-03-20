@@ -35,11 +35,19 @@
             $watch['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($watch);
             $watch['searchurl'] = $tplHelper->makeSearchUrl($watch);
             
+			if ($tplHelper->newSinceLastVisit($watch)) {
+				$newSpotClass = 'new';
+			} else {
+				$newSpotClass = '';
+			} # else
+			
             if($tplHelper->isModerated($watch)) { 
                 $markSpot = '<span class="markSpot">!</span>';
             } else {
                 $markSpot = '';
             }
+			
+			$subcatFilter =  SpotCategories::SubcatToFilter($watch['category'], $watch['subcata']);
             
 			echo "<tr class='" . $tplHelper->cat2color($watch) . "'>" . 
 				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
