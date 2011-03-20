@@ -250,6 +250,9 @@ class SpotTemplateHelper {
 		$spot['website'] = htmlentities($spot['website']);
 		$spot['poster'] = htmlentities($spot['poster']);
 		$spot['tag'] = htmlentities($spot['tag']);
+
+		// title escapen
+		$spot['title'] = htmlentities(strip_tags($spot['title']));
 		
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);
