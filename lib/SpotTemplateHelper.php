@@ -102,11 +102,23 @@ class SpotTemplateHelper {
 	} # makeImageUrl
 
 	/*
-	 * Creert een sorteer url
+	 * Creert een Poster url
 	 */
-	function makeSortUrl($sortby, $sortdir) {
-		return $this->makeBaseUrl() . '?page=index' . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
-	} # makeImageUrl
+	function makePosterUrl($spot)
+		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . $spot['poster'];
+	} # makePosterUrl
+
+	/*
+	 * Creert een basis navigatie pagina
+	 */
+	function getPageUrl($page, $includeParams = false) {
+		$url = $this->makeBaseUrl() . '?page=' . $page;
+		if ($includeParams) {
+			$url .= $this->getQueryParams();
+		} # if
+		
+		return $url;
+	} # getPageUrl
 
 	/*
 	 * Creert een basis navigatie pagina

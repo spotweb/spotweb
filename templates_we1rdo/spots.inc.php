@@ -71,7 +71,7 @@
 		} # if
 		
 		echo "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
-			 "<td>" . $spot['poster'] . "</td>" .
+			 "<td><a href='" . $tplHelper->makePosterUrl($spot) . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
 
