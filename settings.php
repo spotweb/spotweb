@@ -31,13 +31,13 @@ $settings['filters'] = array(
 	Array("Nieuw", "images/icons/today.png", "&search[type]=New", "", array()),
     Array("Beeld", "images/icons/film.png", "cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", "", 
         Array(
-            Array("DivX", "images/icons/divx.png", "cat0_a0", ""),
-            Array("WMV", "images/icons/wmv.png", "cat0_a1", ""),
-            Array("MPEG", "images/icons/mpg.png", "cat0_a2", ""),
-            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10", ""),
-            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9", ""),
+            Array("DivX", "images/icons/divx.png", "cat0_a0,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("WMV", "images/icons/wmv.png", "cat0_a1,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("MPEG", "images/icons/mpg.png", "cat0_a2,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
             Array("Series", "images/icons/tv.png", "cat0_d11", ""),
-            Array("Boeken", "images/icons/book.png", "cat0_a5", ""),
+            Array("Boeken", "images/icons/book.png", "cat0_a5,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
             Array("Erotiek", "images/icons/female.png", "cat0_d23,cat0_d24,cat0_d25,cat0_d26", "")
         )
     ),    
