@@ -1,12 +1,12 @@
   <table cellpadding="0" cellspacing="0" id="watchlist_table">
     <tr>
       <th class="title">Titel</th>
-      <th>Datum toegevoegd</th>
+      <th class="date">Datum toegevoegd</th>
       <!--<th>Comment</th>-->
 <?php if($settings['show_nzbbutton']) { ?>
       <th>NZB</th>
 <?php } ?>
-      <th>Verwijder</th>
+      <th class="delete">Verwijder</th>
       <th class="sab">SAB</th>
     </tr>
 <?php
@@ -24,6 +24,6 @@ if($settings['show_nzbbutton']) {
 } # foreach
 ?>
     <tr>
-      <td colspan="8" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
+      <td colspan="5" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
     </tr>
   </table>
