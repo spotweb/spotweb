@@ -91,13 +91,14 @@ class SpotNntp {
 			
 			# vervolgens splitsen we het op in een header array en een body array
 			$i = 0;
-			while( (count($art) > $i) && ($art[$i] != '')) {
+			$lnCount = count($art);
+			while( ($i < $lnCount) && ($art[$i] != '')) {
 				$result['header'][] = $art[$i];
 				$i++;
 			} # while
 			$i++;
 
-			while( (count($art) > $i) && ($art[$i] != '')) {
+			while($i < $lnCount) {
 				$result['body'][] = $art[$i];
 				$i++;
 			} # while
