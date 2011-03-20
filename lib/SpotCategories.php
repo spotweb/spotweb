@@ -60,7 +60,7 @@ class SpotCategories {
   			  2 =>
 				Array(0 => "WIN",
 					  1 => "MAC",
-					  2 => "LNX",
+					  2 => "TUX",
 					  3 => "PS",
 					  4 => "PS2",
 					  5 => "PSP",
@@ -77,7 +77,7 @@ class SpotCategories {
   			  3 =>
 				Array(0 => "WIN",
 					  1 => "MAC",
-					  2 => "LNX",
+					  2 => "TUX",
 					  3 => "OS/2",
 					  4 => "WinPh",
 					  5 => "NAV",
