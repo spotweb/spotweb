@@ -223,6 +223,21 @@ class SpotTemplateHelper {
 		
 		return $getUrl;
 	} # getQueryParams
+
+	/* 
+	 * Safely escape de velden en vul wat velden in
+	 */
+	function formatSpotHeader($spot) {
+		# fix the sabnzbdurl en searchurl
+		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
+		$spot['searchurl'] = $this->makeSearchUrl($spot);
+		
+		// title escapen
+		$spot['title'] = htmlentities(strip_tags($spot['title']));
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+
+		return $spot;
+	} # formatSpotHeader
 	
 	/*
 	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,
@@ -248,8 +263,8 @@ class SpotTemplateHelper {
 			$spot['image'] = '';
 		} # else
 		$spot['website'] = htmlentities($spot['website']);
-		$spot['poster'] = htmlentities($spot['poster']);
-		$spot['tag'] = htmlentities($spot['tag']);
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
 		$spot['title'] = htmlentities(strip_tags($spot['title']));
