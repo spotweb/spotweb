@@ -250,6 +250,8 @@ class SpotsOverview {
 				$field = 'tag';
 			} else if ($search['type'] == 'Poster') {
 				$field = 'poster';
+			} else if ($search['type'] == 'UserID') {
+				$field = 'userid';
 			} # else
 			
 			$textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')";
