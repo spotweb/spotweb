@@ -63,21 +63,29 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$this->_db->beginTransaction();
 			$signedCount = 0;
 			$lastProcessedId = '';
+			
+			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
+			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
+			
+			# en loop door elke header heen
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
 
 				# strip de reference van de <>'s
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
-				
-				# fix de references, niet alle news servers geven die goed door
-				$msgIdParts = explode(".", $commentId);
-				$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
-				$lastProcessedId = $commentId;
 
-				# voeg spot aan db toe
-				$this->_db->addCommentRef($commentId,
-								   $msgheader['References']);
+				# als we de comment nog niet in de database hebben, haal hem dan op
+				if (!in_array($commentId, $dbIdList)) {
+					# fix de references, niet alle news servers geven die goed door
+					$msgIdParts = explode(".", $commentId);
+					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+					$lastProcessedId = $commentId;
+
+					# voeg spot aan db toe
+					$this->_db->addCommentRef($commentId,
+									   $msgheader['References']);
+				} # if
 			} # foreach
 
 			if (count($hdrList) > 0) {
