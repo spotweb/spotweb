@@ -121,6 +121,7 @@ class SpotsOverview {
 	 */
 	function filterToQuery(&$search) {
 		$filterList = array();
+		$strongNotList = array();
 		$dyn2search = array();
 
 		# dont filter anything
@@ -177,6 +178,13 @@ class SpotsOverview {
 				} elseif (substr($dynaList[$i], 0, 1) == '!') {
 					# als het een NOT is, haal hem dan uit de lijst
 					$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+				} elseif (substr($dynaList[$i], 0, 1) == '~') {
+					# als het een STRONG NOT is, haal hem dan uit de lijst
+					$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+					
+					# en voeg hem toe aan een strong NOT list (~cat0_d12)
+					$strongNotTmp = explode("_", $dynaList[$i]);
+					$strongNotList[(int) substr($strongNotTmp[0], 3)][] = $strongNotTmp[1];
 				} else {
 					$newTreeQuery .= "," . $dynaList[$i];
 				} # else
@@ -241,7 +249,7 @@ class SpotsOverview {
 			} # foreach
 		} # if
 
-		# Add a list of possible head categories
+		# Add a list of possible text searches
 		$textSearch = '';
 		if ((!empty($search['text'])) && ((isset($search['type'])))) {
 			$field = 'title';
@@ -257,6 +265,20 @@ class SpotsOverview {
 			$textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')";
 		} # if
 
+		# strong nots
+		$notSearch = '';
+		if (!empty($strongNotList)) {
+			$notSearchTmp = array();
+			
+			foreach(array_keys($strongNotList) as $strongNotCat) {
+				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
+					$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcatd LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+				} # foreach				
+			} # forEach
+			
+			$notSearch = join(' AND ', $notSearchTmp);
+		} # if
+		
 		# New spots
 		if (isset($search['type']) && $search['type'] == 'New') {
 			if (isset($_SESSION['last_visit'])) {
@@ -265,7 +287,10 @@ class SpotsOverview {
 		} # if
 
 		if (!empty($filterList)) {
-			return '(' . (join(' OR ', $filterList) . ') ' . (empty($textSearch) ? "" : " AND " . $textSearch));
+			return '(' . (join(' OR ', $filterList) . ') ' . 
+							(empty($textSearch) ? "" : " AND " . $textSearch) .
+							(empty($notSearch) ? "" : " AND " . $notSearch)
+						);
 		} else {
 			return $textSearch;
 		} # if

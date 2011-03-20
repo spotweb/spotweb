@@ -29,15 +29,15 @@ $settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 $settings['filters'] = array(    
     Array("Reset filters", "images/icons/home.png", "&search[unfiltered]=true", "", array()),
 	Array("Nieuw", "images/icons/today.png", "&search[unfiltered]=true&search[type]=New", "", array()),
-    Array("Beeld", "images/icons/film.png", "cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", "", 
+    Array("Beeld", "images/icons/film.png", "~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", "", 
         Array(
-            Array("DivX", "images/icons/divx.png", "cat0_a0,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
-            Array("WMV", "images/icons/wmv.png", "cat0_a1,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
-            Array("MPEG", "images/icons/mpg.png", "cat0_a2,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
-            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
-            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
+            Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
+            Array("MPEG", "images/icons/mpg.png", "cat0_a2,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
+            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
+            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
             Array("Series", "images/icons/tv.png", "cat0_d11", ""),
-            Array("Boeken", "images/icons/book.png", "cat0_a5,cat0_d,!cat0_d11,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26,!cat0_a5", ""),
+            Array("Boeken", "images/icons/book.png", "cat0_a5,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
             Array("Erotiek", "images/icons/female.png", "cat0_d23,cat0_d24,cat0_d25,cat0_d26", "")
         )
     ),    
@@ -215,7 +215,7 @@ $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME'
 $settings['index_filter'] = array();
 
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => 'cat0,cat1,cat2,cat3,!cat0_d23,!cat0_d24,!cat0_d25,!cat0_d26');
+# $settings['index_filter'] = array('tree' => '~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26');
 
 #
 # RSA keys
