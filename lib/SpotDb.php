@@ -424,12 +424,14 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # sqlite3
 			default			: {
-				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover USING spots
+				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -448,10 +450,11 @@ class SpotDb
 	function deleteSpotsRetention($retention) {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 		
-		$this->_conn->exec('DELETE FROM spots, spotsfull, commentsxover USING spots
+		$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist USING spots
 			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-			WHERE spots.stamp < ' . (time() - $retention) );
+			LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
+			WHERE spots.stamp < " . (time() - $retention) );
 	} # deleteSpotsRetention
 
 	/*
