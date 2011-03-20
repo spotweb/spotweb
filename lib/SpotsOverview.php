@@ -275,7 +275,7 @@ class SpotsOverview {
 					$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcatd LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
 				} # foreach				
 			} # forEach
-			
+
 			$notSearch = join(' AND ', $notSearchTmp);
 		} # if
 		
@@ -286,14 +286,18 @@ class SpotsOverview {
 			} # if
 		} # if
 
+		$endFilter = array();
 		if (!empty($filterList)) {
-			return '(' . (join(' OR ', $filterList) . ') ' . 
-							(empty($textSearch) ? "" : " AND " . $textSearch) .
-							(empty($notSearch) ? "" : " AND " . $notSearch)
-						);
-		} else {
-			return $textSearch;
+			$endFilter[] = '(' . join(' OR ', $filterList) . ') ';
 		} # if
+		if (!empty($textSearch)) {
+			$endFilter[] = $textSearch;
+		} # if
+		if (!empty($notSearch)) {
+			$endFilter[] = $notSearch;
+		} # if
+		
+		return join(" AND ", $endFilter);
 	} # filterToQuery
 	
 	
