@@ -18,11 +18,15 @@ class SpotsOverview {
 	function getFullSpot($msgId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId);
 		
-		if ((empty($fullSpot)) || (!isset($fullSpot['verified']))) {
+		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
 			$fullSpot = $nntp->getFullSpot($msgId);
 			$this->_db->addFullSpot($fullSpot);
+			
+			# we halen de fullspot opnieuw op zodat we de 'xover' informatie en de 
+			# niet xover informatie in 1 hebben
+			$fullSpot = $this->_db->getFullSpot($msgId);
 		} # if
 		
 		$spotParser = new SpotParser();
