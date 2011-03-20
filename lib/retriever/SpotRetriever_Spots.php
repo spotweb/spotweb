@@ -99,24 +99,17 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				if (!in_array($msgId, $dbIdList['spot'])) {
 					$hdrsRetrieved++;
 		
-#echo "DEBUG: Niet dubbel: " . $msgId . PHP_EOL;
-
 					$spotParser = new SpotParser();
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 
-#echo "DEBUG: Parsing === false " . ($spot === false) . PHP_EOL;
-#echo "DEBUG: Verified === false " . ($spot['verified'] === false) . PHP_EOL;
-
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
 						continue;
 					} # if
-
-#echo "DEBUG: KeyID " . ($spot['keyid']) . PHP_EOL;
 					
 					if ($spot['keyid'] == 2) {
 						$commandAr = explode(' ', strtolower($spot['title']));
@@ -136,7 +129,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} else {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
 						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
-#echo "DEBUG: Skipping vanwege retentie " . PHP_EOL;
 							$skipCount++;
 						} else {
 							$this->_db->addSpot($spot);

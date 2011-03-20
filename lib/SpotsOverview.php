@@ -31,7 +31,6 @@ class SpotsOverview {
 		
 		$spotParser = new SpotParser();
 		$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
-		
 		return $fullSpot;
 	} # getFullSpot
 	
