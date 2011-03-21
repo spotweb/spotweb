@@ -1,3 +1,12 @@
+$(window).ready(function() {
+	$('#filtermenu li').hover(function() {
+		$(this).css({'background-position': '0 -23px'});
+	}, function() {
+		$(this).css({'background-position': '0 0'});
+	});
+});
+
+
 function submitSearchForm(f) {
 	
 	var formField = $("#search-tree");
