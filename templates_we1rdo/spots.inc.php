@@ -31,6 +31,17 @@
 
 <?php
 	$count = 0;
+	
+	if (count($spots) == 0) {
+		$colSpan = 6;
+		if ($settings['retrieve_comments']) { $colSpan++; }
+		if ($settings['show_nzbbutton']) { $colSpan++; }
+		if ($settings['show_multinzb']) { $colSpan++; }
+		if ($settings['nzbhandling']['action'] != 'disable') { $colSpan++; }
+		
+		echo "\t\t\t\t\t\t\t<tr><td colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
+	} # if
+	
 	foreach($spots as $spot) {
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
