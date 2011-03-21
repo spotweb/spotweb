@@ -6,7 +6,6 @@
 	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
 ?>
 						<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></input>
-						<table class="filters">
 <?php
 	if ($settings['retrieve_full']) {
 		$filterColCount = 4;
@@ -14,26 +13,23 @@
 		$filterColCount = 3;
 	} # if
 ?>
+                        <table class="filters">
 							<tbody>
-								<tr> 
-									<td> <input type="radio" name="search[type]" value="Titel"  <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?>>Titel</input> </td>
-									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?>>Afzender</input> </td>
-									<td> <input type="radio" name="search[type]" value="Tag"	<?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?>>Tag</input> </td>
-<?php									
-	if ($settings['retrieve_full']) {
-?>
-									<td> <input type="radio" name="search[type]" value="UserID"	<?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?>>UserID</input> </td>
-<?php 
-	}
-?>									
+								<tr<?php if ($filterColCount == 3) {echo " class='short'";} ?>> 
+									<td> <input type="radio" name="search[type]" value="Titel"  <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> /><label>Titel</label> </td>
+									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> /><label>Poster</label> </td>
+									<td> <input type="radio" name="search[type]" value="Tag"	<?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> /><label>Tag</label> </td>
+<?php if ($settings['retrieve_full']) { ?>
+									<td> <input type="radio" name="search[type]" value="UserID"	<?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> /><label>UserID</label> </td>
+<?php } ?>									
 								</tr>
 								
 								<tr>
 									<td colspan="<?php echo $filterColCount;?>"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"></input></td>
 								</tr>
 
-								<tr> 
-									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>>Vergeet filters voor zoekopdracht</input> </td>
+								<tr class="unfiltered"> 
+									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?> /><label>Vergeet filters voor zoekopdracht</label> </td>
 								</tr>
 							</tbody>
 						</table>
