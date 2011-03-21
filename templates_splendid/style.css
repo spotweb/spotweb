@@ -514,3 +514,38 @@ a.vorige:hover {
 #watchlist_table tr.spot:hover {
 	background-position: 0 -23px;
 }
+
+.multinzb {
+	width: 22px;
+}
+
+
+/* POPUP MENU */
+
+#download_menu {
+	width: 160px;
+	height: 34px;
+	font-size: 12px;
+	text-align: right;
+	position: fixed;
+	right: 0;
+	top: -100px;
+	overflow: hidden;
+	float: right;
+	background: url('img/bg_loading.png') no-repeat top left;
+}
+
+#download_menu div {
+	height: 34px;
+	padding: 8px 40px 0 0;
+	background: url('../images/download-small.png') no-repeat 126px 6px;
+}
+
+#download_menu a {
+	color: #252E33;
+	text-decoration: none;
+}
+
+#download_menu a:hover {
+	text-decoration: underline;
+}

@@ -40,6 +40,7 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					<h4>Filters</h4><br />
                     
                     <ul class="filterlist">
+                      <li><a href="?page=watchlist" class="spotlink"><img src="images/icons/fav.png"> Watchlist </a></li>
 <?php
     foreach($filters as $filter) {
 ?>
