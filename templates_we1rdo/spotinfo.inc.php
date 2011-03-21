@@ -20,7 +20,7 @@
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
-<?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400) { ?>
+<?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
 								|
                             	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								

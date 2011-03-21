@@ -251,6 +251,10 @@ class SpotTemplateHelper {
 	 * vullen we een aantal defaults in.
 	 */
 	function formatSpot($spot, $comments) {
+                # fix the sabnzbdurl en searchurl
+                $spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
+                $spot['searchurl'] = $this->makeSearchUrl($spot);
+
 		// Category is altijd een integer bij ons
 		$spot['category'] = (int) $spot['category'];
 		
