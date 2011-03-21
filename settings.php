@@ -17,7 +17,7 @@ $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
-# sabnzbd integratie.
+# sabnzbd integratie. Let op de afsluitende slash "/"!
 $settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
