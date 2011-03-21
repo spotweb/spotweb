@@ -55,7 +55,6 @@
 		<div class="container">
 			<div id="page_header" align="center">
 			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
-			  <div class="top_menu"><a href="?page=watchlist" class="spotlink"> Watchlist</a></div>
 			  <div class="menu_top"></div>
 			  <?php 
 			    } else if($_GET['page'] == 'getspot') {

@@ -59,9 +59,12 @@
 				  $('#total_spots').html(total_checked+' spots');
 				}
 				if(total_checked > 0) {
+					$('#download_menu').show();
 					$('#download_menu').animate({'top': '0'}, 500, 'swing');
 				} else {
-					$('#download_menu').animate({'top': '-100px'}, 500, 'swing');
+					$('#download_menu').animate({'top': '-100px'}, 500, 'swing', function() {
+					  $('#download_menu').hide();
+					});
 				}
 			});
 			
