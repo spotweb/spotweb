@@ -113,18 +113,17 @@
     ?>
     
         </table>
+<?php if ($settings['show_multinzb']) { ?>
         <table class="footer">
             <tbody>
                 <tr>
-                    <td> </td>
-<?php if ($settings['show_multinzb']) { ?>
                     <td class="button">  
-                        <input id='multisubmit' type='submit' value='Multi NZB' title='Download Multi NZB' />
+                        <input id='multisubmit' type='submit' value='' title='Download Multi NZB' />
                     </td>
                     </form>
-<?php } ?>
                 </tr>
             </tbody>
         </table>
-        
+<?php } ?>
+
 	</div>
