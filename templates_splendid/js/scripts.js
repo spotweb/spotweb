@@ -33,6 +33,14 @@ function setMainFilter(f) {
 	return false;
 }
 
+function loadSpots(url) {
+	$('#page_loading').show();
+	$('#spots').load(url, function() {
+		$('#page_loading').hide();
+	});
+	clearTree();
+}
+
 function addWatchSpot(spot,spot_id) {
 	
 	// Set watchspot
