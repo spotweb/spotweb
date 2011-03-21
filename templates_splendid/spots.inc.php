@@ -44,6 +44,30 @@
 					dataType: "text"
 				});
 			});
+			
+			var tog = false; // or true if they are checked on load 
+			$('.checkboxes').click(function() { 
+				$("input[type=checkbox]").attr("checked",!tog); 
+				tog = !tog; 
+			});
+			
+			$('#spot_table input[type="checkbox"]').bind('click',function(e) {
+				var total_checked = $('#spot_table input:checked').length;
+				if(total_checked == 1) {
+				  $('#total_spots').html(total_checked+' spot');
+				} else {
+				  $('#total_spots').html(total_checked+' spots');
+				}
+				if(total_checked > 0) {
+					$('#download_menu').show();
+					$('#download_menu').animate({'top': '0'}, 500, 'swing');
+				} else {
+					$('#download_menu').animate({'top': '-100px'}, 500, 'swing', function() {
+					  $('#download_menu').hide();
+					});
+				}
+			});
+			
 		});
 		
 		$(window).resize(function() {
@@ -64,7 +88,10 @@
 						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th> 
-<?php } ?>						
+<?php } ?>
+<?php if ($settings['show_multinzb']) { ?>
+                        <th class="multinzb"><input type="checkbox" name="checkall" class="checkboxes"></th>
+<?php } ?>				
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
 						<th class='sabnzbd'> SAB </th> 
 <?php } ?>						
@@ -109,7 +136,14 @@
 				
 				echo "</a></td>";
 			} # if
-
+			
+			if ($settings['show_multinzb']) {
+				$multispotid = htmlspecialchars($spot['messageid']);
+				echo "<td>";
+				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+				echo "</td>";
+			} # if
+			
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				//echo "<td><a target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Voeg spot toe aan SabNZBd+ queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
@@ -140,12 +174,12 @@
 	}
 ?>
 					<tr>
-					  <td colspan="8" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
+					  <td colspan="10" class="shadow"><img src="templates_splendid/img/shadow.gif" width="100%" height="7" border="0" alt="" /></td>
 					</tr>
 					
 					<tr>
-						<td colspan="4" style='text-align: left;padding: 0'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()" class="vorige"></a><?php }?></td>
-						<td colspan="4" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()" class="volgende"></a><?php }?></td>
+						<td colspan="5" style='text-align: left;padding: 0'><?php if ($prevPage >= 0) { ?> <a onclick="$('#spots').load('?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>&ajax=1');scrollToTop()" class="vorige"></a><?php }?></td>
+						<td colspan="5" style='text-align: right;'><?php if ($nextPage > 0) { ?> <a onclick="$('#spots').load('?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>&ajax=1');scrollToTop()" class="volgende"></a><?php }?></td>
 					</tr>
 
 				</tbody>
