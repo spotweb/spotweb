@@ -132,7 +132,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
 						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
 							$skipCount++;
-						} elseif ($this->_settings['getFTDspots'] == false && $spot['stamp'] <= 1290578400) {
+						} elseif ($spot['stamp'] < $this->_settings['retrieve_newer_than']) { 
 							$skipCount++;
 						} else {
 							# Hier kijken we alleen of de spotheader niet bestaat
