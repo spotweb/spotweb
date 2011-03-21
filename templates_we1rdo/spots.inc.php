@@ -123,20 +123,26 @@
 ?>
 				</tbody>
 			</table>
+<?php if ($settings['show_multinzb'] || $prevPage >= 0 || $nextPage > 0) { ?>
 			<table class="footer">
             	<tbody>
                 	<tr>
-						<td class="prev"><?php if ($prevPage >= 0) { ?> <a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">< Vorige</a><?php }?></td>
-						<td class="next"><?php if ($nextPage > 0) { ?> <a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">Volgende ></a><?php }?></td>
-<?php if ($settings['show_multinzb']) { ?>
-                        <td class="button">  
-                            <input id='multisubmit' type='submit' value='Multi NZB' title='Download Multi NZB' />
-                        </td>
+<?php if ($prevPage >= 0) { ?> 
+                        <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">&lt;&lt;</a></td>
+<?php }?> 
+						<td class="button">
+<?php if ($settings['show_multinzb']) { ?> 
+                            <input id='multisubmit' type='submit' value='' title='Download Multi NZB' />
                         </form>
+<?php } ?>
+						</td>
+<?php if ($nextPage > 0) { ?> 
+                        <td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">&gt;&gt;</a></td>
 <?php } ?>
 					</tr>
                 </tbody>
             </table>
+<?php } ?>
 			
 		</div>
 

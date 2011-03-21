@@ -171,8 +171,8 @@ table.spots tr td.new {font-weight:bold;}
 table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 table.spots tr td.watch a {cursor:pointer;}
 
-table.spots tr td img.sabnzbd-button {display:block; margin:0 0 1px;}
-table.spots tr td img.sabnzbd-button.loading {margin:0 0 0 2px;}
+table.spots tr td img.sabnzbd-button {display:block; margin:0 0 1px 1px;}
+table.spots tr td img.sabnzbd-button.loading {margin:0 0 0 3px;}
 
 table.spots tr.blue td {background-color:#daecff;}
 table.spots tr.orange td {background-color:#fffad3;}
@@ -202,12 +202,17 @@ table.spots tr.green a.nzb {color:#00de00;}
 table.spots tr.red a.nzb {color:#de2500;}
 
 table.footer {width:100%; border-collapse:separate; border-spacing:0;}
-table.footer tr td {background-color:#ececec; height:20px; font-weight:bold;}
-table.footer tr td a {display:inline; color:#000; text-decoration:none;}
-table.footer tr td.prev {text-align:left; -moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px; padding:0 0 0 6px;}
-table.footer tr td.next {text-align:right; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; padding:0 6px 0 0;}
-table.footer tr td.button {background:#fff; width:88px; padding:0 0 0 2px;}
-table.footer tr td.button input#multisubmit {background:url(img/button_nzb.png) no-repeat top left; display:block; width:88px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer;}
+table.footer tr td.prev,
+table.footer tr td.next {background-color:#ececec; height:20px; font-weight:bold; width:30px; text-align:center; padding:0;}
+table.footer tr td a {display:block; color:#000; text-decoration:none; line-height:16px;}
+
+table.footer tr td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
+table.footer tr td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
+table.footer tr td:first-child:last-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+
+table.footer tr td.button {background:url(img/footer_bg.png) repeat-x top left; padding:0 3px 0 0; height:20px;}
+table.footer tr td.button:last-child {padding:0 33px 0 0;}
+table.footer tr td.button input#multisubmit {background:url(img/download_dark.png) no-repeat right center; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; float:right; padding:0;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:680px;}
