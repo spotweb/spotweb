@@ -484,8 +484,15 @@ class SpotDb
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
+		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
+		# versies een verkeerde afronding geeft bij >32bits getallen.
+		if (!is_numeric($fullSpot['filesize'])) {
+			$fullSpot['fileSize'] = 0;
+		} # if
+	
+		# en voeg het aan de database toe
 		$this->_conn->exec("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
-				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
 					  (int) $fullSpot['verified'],
