@@ -91,14 +91,14 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
-		return $this->makeBaseUrl() . '?page=getnzb&amp;action=display&amp;messageid=' . $spot['messageid'];
+		return $this->makeBaseUrl() . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']);
 	} # makeNzbUrl
 
 	/*
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
-		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . $spot['messageid'] . '&amp;image[height]=' . $height . 'amp;image[width]=' . $width;
+		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . 'amp;image[width]=' . $width;
 	} # makeImageUrl
 
 	/*
@@ -112,7 +112,7 @@ class SpotTemplateHelper {
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . $spot['poster'];
+		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
 	} # makePosterUrl
 
 	/*

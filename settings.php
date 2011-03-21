@@ -125,8 +125,8 @@ $settings['prefs']['perpage'] = 100;
 # Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen
 $settings['retention'] = 0;
 
-# wil je oude FTD spots ophalen? Dit zijn spots zonder NZB file van vóór 24 november 2010
-$settings['getFTDspots'] = true;
+# Zet een minimum datum vanaf wanneer je spots op wilt halen, om alle spots van FTD te skippen geef je hier 1290578400 op
+$settings['retrieve_newer_than'] = 0;
 
 # hoe willen we datums geformatteerd hebben? Geef een strng in compatibel met http://php.net/strftime of 'human' voor 
 # een human-readable verhaal
