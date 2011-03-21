@@ -417,7 +417,7 @@ a.big_button:hover {
 }
 
 a.big_button div {
-	padding: 2px 14px 2px 0;
+	padding: 2px 40px 2px 0;
 }
 
 .shadow,
@@ -472,6 +472,10 @@ a.vorige:hover {
 #watchlist_table .title {
 	padding-left: 20px;
 	text-align: left;
+}
+
+#watchlist_table .date {
+	width: 180px;
 }
 
 #watchlist_table .sab {

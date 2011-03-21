@@ -87,11 +87,11 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 <?php
 	if ($settings['keep_downloadlist']) {
 ?>
-						<li> <a href="?page=erasedls" id="removedllistbtn" class="big_button erasedlsbtn"><div>Remove history of downloads</div></a></li>
+						<li> <a href="?page=erasedls" id="removedllistbtn" class="big_button erasedlsbtn"><div>Reset download geschiedenis</div></a></li>
 <?php
 	}
 ?>
-						<li> <a href="?page=markallasread" id="markallasreadbtn" class="big_button markallasreadbtn"><div>Mark all as read</div></a></li>
+						<li> <a href="?page=markallasread" id="markallasreadbtn" class="big_button markallasreadbtn"><div>Markeer als gelezen</div></a></li>
 					</ul>
 
 				</div><br style="clear: both" />
