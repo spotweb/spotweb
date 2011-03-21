@@ -54,12 +54,6 @@ div.filter ul.dynatree-container li {margin:0;}
 div.filter ul.dynatree-container a {display:inline-block; font:11px Helvetica, Arial, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
 
 /* FILTERS */
-div.filter {
-	width:270px;
-	float:left;
-	padding-top:2px;
-	/* position:fixed; -- small screen won't be able to scroll vertically in the sidebar, with position:fixed; enabled */
-}
 
 div.filter h4 {
 	background-color:#777777;
@@ -73,25 +67,6 @@ div.filter h4 {
 	margin:0 0 5px 0;
 }
 
-div.filter ul {margin:0 ; padding:0;}
-div.filter ul ul {margin:0;}
-div.filter li {list-style:none; margin:0;}
-div.filter li li {margin:2px 0 0;}
-
-div.filter a {
-	display:block;
-	width:100%;
-	background-color:#ececec;
-	line-height:20px;
-	text-decoration:none;
-	color:#252E33;
-}
-
-div.filter a img {
-	border:0;
-	float:left;
-	margin:2px 7px 2px 7px;
-}
 
 /* MAINTENANCE */
 ul.maintenancebox li.info {text-align:center; margin:10px 0; height:16px; line-height:16px;}
@@ -322,6 +297,73 @@ body {
 	background: url('img/bg_menu.jpg') repeat-y;
 }
 
+#filtermenu {
+	margin: 0;
+	padding: 0 2px 0 0;
+	border-top: 1px solid #ccc;
+}
+
+#filtermenu a {
+	color: #252E33;
+	text-shadow: 1px 1px #fff;
+	text-decoration: none;
+}
+
+#filtermenu a:hover {
+	color: #000;
+}
+
+#filtermenu ul {
+	padding: 0;
+	margin: 0;
+}
+
+#filtermenu li {
+	padding: 0;
+	margin: 0;
+	font-size: 12px;
+	height: 23px;
+	list-style: none;
+	background: url('img/bg_menu_item.jpg');
+}
+
+#filtermenu li div {
+	width: 250px;
+	overflow: hidden;
+}
+
+#filtermenu li img {
+	float: left;
+	margin: 2px 4px 0 20px;
+	border: none;
+}
+
+#filtermenu li a {
+	display: block;
+	float: left;
+	width: 250px;
+	line-height: 22px;
+}
+
+#filtermenu .subfilter {
+	padding-left: 20px;
+}
+
+#filtermenu .subsubfilter {
+	padding-left: 40px;
+}
+
+.maintenancebox {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.maintenancebox a {
+	line-height: 20px;
+	text-decoration: none;
+}
+
 #menu h4 {
 	color: #212121;
 	font-size: 16px;
@@ -367,35 +409,6 @@ body {
 	outline: none;
 }
 
-.filterlist {
-	width: 253px !important;
-	overflow: hidden;
-}
-
-.filterlist li a {
-	font-size: 12px;
-	height: 23px;
-	padding-left: 10px;
-	cursor: pointer;
-	background: url('img/bg_menu_item.jpg');
-}
-
-.subfilterlist a {
-	padding-left: 20px !important;
-}
-
-.filterlist a:hover {
-	background-position: 0 -23px;
-}
-
-.filterlist {
-	border-top: 1px solid #d9d9d9;
-}
-
-.subfilterlist {
-	border-top: none;
-}
-
 a.big_button {
 	width: 214px !important;
 	height: 24px !important;
@@ -417,7 +430,7 @@ a.big_button:hover {
 }
 
 a.big_button div {
-	padding: 2px 40px 2px 0;
+	padding: 2px 24px 2px 0;
 }
 
 .shadow,
@@ -532,6 +545,7 @@ a.vorige:hover {
 	top: -100px;
 	overflow: hidden;
 	float: right;
+	display: none;
 	background: url('img/bg_loading.png') no-repeat top left;
 }
 
