@@ -110,14 +110,14 @@ class db_mysql extends db_abs {
 										spotid INTEGER,
 										category INTEGER, 
 										subcat INTEGER,
-										poster TEXT,
-										groupname TEXT,
-										subcata VARCHAR(24),
-										subcatb VARCHAR(24),
-										subcatc VARCHAR(24),
-										subcatd VARCHAR(24),
-										title TEXT,
-										tag TEXT,
+										poster VARCHAR(128),
+										groupname VARCHAR(128),
+										subcata VARCHAR(64),
+										subcatb VARCHAR(64),
+										subcatc VARCHAR(64),
+										subcatd VARCHAR(64),
+										title VARCHAR(128),
+										tag VARCHAR(128),
 										stamp INTEGER,
 										filesize BIGINT DEFAULT 0,
 										moderated BOOLEAN DEFAULT FALSE);");
@@ -130,6 +130,8 @@ class db_mysql extends db_abs {
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
+			$this->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
+			$this->rawExec("CREATE INDEX idx_spots_5 ON spots(poster);");
 		} # if
 
 		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
@@ -220,6 +222,12 @@ class db_mysql extends db_abs {
 		$q = $this->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_1' AND Non_unique = 1;");
 		if (count($q) == 2) {
 			$this->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_1, ADD UNIQUE idx_spotsfull_1 (messageid, userid);");
+		} # if
+
+		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen index op de userid
+		$q = $this->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_2';");
+		if (count($q) == 2) {
+			$this->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 		} # if
 
 		$q = $this->arrayQuery("SHOW TABLES LIKE 'watchlist'");

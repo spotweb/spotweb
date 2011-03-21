@@ -80,14 +80,14 @@ class db_sqlite3 extends db_abs {
 											spotid INTEGER,
 											category INTEGER, 
 											subcat INTEGER,
-											poster TEXT,
-											groupname TEXT,
-											subcata TEXT,
-											subcatb TEXT,
-											subcatc TEXT,
-											subcatd TEXT,
-											title TEXT,
-											tag TEXT,
+											poster VARCHAR(128),
+											groupname VARCHAR(128),
+											subcata VARCHAR(64),
+											subcatb VARCHAR(64),
+											subcatc VARCHAR(64),
+											subcatd VARCHAR(64),
+											title VARCHAR(128),
+											tag VARCHAR(128),
 											stamp INTEGER,
 											filesize BIGINT DEFAULT 0,
 											moderated BOOLEAN DEFAULT FALSE);");
@@ -99,6 +99,8 @@ class db_sqlite3 extends db_abs {
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
+			$this->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
+			$this->rawExec("CREATE INDEX idx_spots_5 ON spots(poster);");
 		} # if
 
 
@@ -147,7 +149,7 @@ class db_sqlite3 extends db_abs {
 		if (empty($q)) {
 			$q = $this->arrayQuery("CREATE INDEX idx_spots_4 ON spots(stamp);");
 		}# if
-		
+
 		$q = $this->arrayQuery("PRAGMA table_info(downloadlist)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
@@ -177,6 +179,12 @@ class db_sqlite3 extends db_abs {
 			} # foreach
 		} # if
 
+		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen index op de userid
+		$q = $this->arrayQuery("PRAGMA index_info(idx_spotsfull_2)");
+		if (count($q) == 2) {
+			$this->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
+		} # if
+		
 		$q = $this->arrayQuery("PRAGMA table_info(spotsfull)");
 		if (empty($q)) {
 			$this->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY, 
@@ -190,7 +198,7 @@ class db_sqlite3 extends db_abs {
 										filesize BIGINT);");										
 
 			# create indices
-			$this->rawExec("CREATE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
+			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 		} # if
 		
 		$q = $this->arrayQuery("PRAGMA table_info(watchlist)");
