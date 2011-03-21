@@ -109,6 +109,13 @@ class SpotTemplateHelper {
 	} # makeImageUrl
 
 	/*
+	 * Creert een Poster url
+	 */
+	function makePosterUrl($spot) {
+		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . $spot['poster'];
+	} # makePosterUrl
+
+	/*
 	 * Creert een basis navigatie pagina
 	 */
 	function getPageUrl($page, $includeParams = false) {
