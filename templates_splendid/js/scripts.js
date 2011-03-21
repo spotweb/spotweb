@@ -33,14 +33,6 @@ function setMainFilter(f) {
 	return false;
 }
 
-function loadSpots(url) {
-	$('#page_loading').show();
-	$('#spots').load(url, function() {
-		$('#page_loading').hide();
-	});
-	clearTree();
-}
-
 function addWatchSpot(spot,spot_id) {
 	
 	// Set watchspot
@@ -59,6 +51,19 @@ function removeWatchSpot(spot,spot_id) {
 	// Switch buttons
 	$('#watch_'+spot_id).show();
 	$('#watched_'+spot_id).hide();
+}
+
+function downloadMultiple() {
+	
+	var download_url = '?page=getnzb';
+	$('#spot_table input:checked').each(function() {
+		download_url += '&messageid%5B%5D='+$(this).val();
+	});
+	
+	window.location=download_url;
+	$("input[type=checkbox]").attr("checked", false);
+	$(document).find('#download_menu').animate({'top': '-100px'}, 500, 'swing');
+	
 }
 
 

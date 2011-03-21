@@ -47,6 +47,11 @@
 	</head>
 	
 	<body>
+		
+		<div id="download_menu">
+		  <div><a onclick="downloadMultiple()">Download <span id="total_spots"></span></a></div>
+		</div>
+		
 		<div class="container">
 			<div id="page_header" align="center">
 			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
