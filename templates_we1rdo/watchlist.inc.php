@@ -32,8 +32,8 @@
             
     <?php
         foreach($watchlist as $watch) {
-            # Format the spot header
-            $watch = $tplHelper->formatSpotHeader($watch);
+			# Format the spot header
+			$watch = $tplHelper->formatSpotHeader($watch);
             
 			if ($tplHelper->newSinceLastVisit($watch)) {
 				$newSpotClass = 'new';
