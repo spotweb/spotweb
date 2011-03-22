@@ -32,8 +32,8 @@
             
     <?php
         foreach($watchlist as $watch) {
-            $watch['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($watch);
-            $watch['searchurl'] = $tplHelper->makeSearchUrl($watch);
+            # Format the spot header
+            $watch = $tplHelper->formatSpotHeader($watch);
             
 			if ($tplHelper->newSinceLastVisit($watch)) {
 				$newSpotClass = 'new';
