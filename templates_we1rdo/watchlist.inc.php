@@ -7,14 +7,14 @@
         <table class="spots">
             <tr class="head">
                 <th class='category'> Cat. </th> 
-                <th class='title'> <span class="sortby"><a href="?page=watchlist&sortby=title&sortdir=ASC" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=watchlist&sortby=title&sortdir=DESC" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Titel </th> 
+                <th class='title'> <span class="sortby"><a href="?page=watchlist&sortby=title&sortdir=ASC" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="?page=watchlist&sortby=title&sortdir=DESC" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
 				<th class='watch'> </th>
 				<?php if ($settings['retrieve_comments']) {
                     echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
                 } # if ?>
                 <th class='genre'> Genre </th>
-                <th class='poster'> <span class="sortby"><a href="?page=watchlist&sortby=poster&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=watchlist&sortby=poster&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Afzender </th> 
-                <th class='date'> <span class="sortby"><a href="?page=watchlist&sortby=stamp&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a href="?page=watchlist&sortby=stamp&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Datum </th> 
+                <th class='poster'> <span class="sortby"><a href="?page=watchlist&sortby=poster&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="?page=watchlist&sortby=poster&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
+                <th class='date'> <span class="sortby"><a href="?page=watchlist&sortby=stamp&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="?page=watchlist&sortby=stamp&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
 <?php } ?>
@@ -50,15 +50,15 @@
 			$subcatFilter =  SpotCategories::SubcatToFilter($watch['category'], $watch['subcata']);
             
 			echo "<tr class='" . $tplHelper->cat2color($watch) . "'>" . 
-				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie &quote;" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "&quote;'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
+				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
 				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $watch['title'] . $markSpot . "</a></td>";
 			
 			echo "<td class='watch'>";
-				echo "<a href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a></a>";
+				echo "<a href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
 			echo "</td>";
 			
 			if ($settings['retrieve_comments']) {
-				echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($watch) . "#comments' title='" . $tplHelper->getCommentCount($watch) . " comments bij &quote;" . $watch['title'] . "&quote;' class='spotlink'>" . $tplHelper->getCommentCount($watch) . "</a></td>";
+				echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($watch) . "#comments' title='" . $tplHelper->getCommentCount($watch) . " comments bij \"" . $watch['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($watch) . "</a></td>";
 			} # if
 			
 			echo "<td>" . SpotCategories::Cat2Desc($watch['category'], $watch['subcat' . SpotCategories::SubcatNumberFromHeadcat($watch['category'])]) . "</td>" .
@@ -88,9 +88,9 @@
 				# display the sabnzbd button
 				if (!empty($watch['sabnzbdurl'])) {
 					if ($tplHelper->hasBeenDownloaded($watch)) {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/succes.png'></a></td>";
+						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
 					} else {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/download.png'></a></td>";	
+						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
 					} # else
 				} # if
 			} else {

@@ -3,9 +3,9 @@
 	<head>
 		<title><?php echo $pagetitle?></title>
 		<link rel='stylesheet' type='text/css' href='<?php echo $tplHelper->makeBaseUrl(); ?>js/dynatree/skin-vista/ui.dynatree.css'>
-		<link rel="stylesheet" href="<?php echo $tplHelper->makeBaseUrl(); ?>templates_we1rdo/style.css" type="text/css">
-		<link rel="stylesheet" type="text/css" href="<?php echo $tplHelper->makeBaseUrl(); ?>js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
-		<link rel="alternate" type="application/atom+xml" href="<?php echo $tplHelper->getPageUrl('atom', true) ?>"/>
+		<link rel="stylesheet" href='<?php echo $tplHelper->makeBaseUrl(); ?>templates_we1rdo/style.css' type='text/css'>
+		<link rel="stylesheet" type='text/css' href='<?php echo $tplHelper->makeBaseUrl(); ?>js/fancybox/jquery.fancybox-1.3.4.css' media='screen'>
+		<link rel="alternate" type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
 		<link rel='shortcut icon' href='<?php echo $tplHelper->makeBaseUrl(); ?>templates_we1rdo/img/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->
