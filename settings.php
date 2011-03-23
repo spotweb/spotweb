@@ -287,9 +287,7 @@ if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
 
-#
-# Geef een error als de spotweb url niet opgegeven is
-#
-if ($settings['spotweburl'] == 'http://mijnuniekeservernaam/spotweb/') {
-	die("Geef een spotweburl op in je ownsettings.php");
+# Voeg een sluitende slash toe als die er nog niet is
+if (substr($settings['spotweburl'], -1) != '/') {
+	$settings['spotweburl'] .= '/';
 } # if
