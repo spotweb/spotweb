@@ -50,7 +50,7 @@
 			$subcatFilter =  SpotCategories::SubcatToFilter($watch['category'], $watch['subcata']);
             
 			echo "<tr class='" . $tplHelper->cat2color($watch) . "'>" . 
-				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
+				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie &quote;" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "&quote;'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
 				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $watch['title'] . $markSpot . "</a></td>";
 			
 			echo "<td class='watch'>";
@@ -58,7 +58,7 @@
 			echo "</td>";
 			
 			if ($settings['retrieve_comments']) {
-				echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($watch) . "#comments' title='" . $tplHelper->getCommentCount($watch) . " comments bij \"" . $watch['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($watch) . "</a></td>";
+				echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($watch) . "#comments' title='" . $tplHelper->getCommentCount($watch) . " comments bij &quote;" . $watch['title'] . "&quote;' class='spotlink'>" . $tplHelper->getCommentCount($watch) . "</a></td>";
 			} # if
 			
 			echo "<td>" . SpotCategories::Cat2Desc($watch['category'], $watch['subcat' . SpotCategories::SubcatNumberFromHeadcat($watch['category'])]) . "</td>" .
