@@ -178,12 +178,12 @@
 
 		function toggleWatchSpot(spot,action,spot_id) {
 			
-			// Set watchspot
+			// Add/remove watchspot
 			$.get("?page=watchlist&action="+action+"&messageid="+spot);
 			
 			// Switch buttons
-			$('#watch_'+spot_id).toggle();
-			$('#watched_'+spot_id).toggle();
+			$('#watchremove_'+spot_id).toggle();
+			$('#watchadd_'+spot_id).toggle();
 		}
 
 		function clearTree() {
