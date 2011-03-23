@@ -116,6 +116,13 @@ class SpotTemplateHelper {
 	} # makePosterUrl
 
 	/*
+	 * Creeert een linkje naar een zoekopdracht op userid
+	 */
+	function makeUserIdUrl($spot) {
+		return $this->makeBaseUrl() . '&amp;search[type]=UserID&amp;search[text]= ' . urlencode($spot['userid']);
+	} # makeNzbUrl
+	
+	/*
 	 * Creert een basis navigatie pagina
 	 */
 	function getPageUrl($page, $includeParams = false) {
@@ -254,7 +261,7 @@ class SpotTemplateHelper {
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
-
+		
 		// Category is altijd een integer bij ons
 		$spot['category'] = (int) $spot['category'];
 		
