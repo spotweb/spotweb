@@ -1,6 +1,6 @@
 				<div class="filter">
-					<h4 class="search">Zoeken</h4>
-
+					<h4 class="search"><span class="viewState"><a class="hideSearch" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showSearch" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Zoeken </h4>
+                    
 					<form id="filterform" action="">
 <?php
 	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
@@ -42,9 +42,9 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'></input>
 					</form>
 
-<h4>Filters</h4>
+					<h4><span class="viewState"><a class="hideFilters" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showFilters" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Filters </h4>
                     
-                    <ul class="filterlist">
+                    <ul class="filterlist filters">
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png"> Watchlist </a></li>
 <?php
     foreach($filters as $filter) {
@@ -76,7 +76,7 @@
 ?>
                     </ul>
 					
-					<h4>Maintenance</h4>
+					<h4><span class="viewState"><a class="hideMaintenance" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showMaintenance" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Maintenance</h4>
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
