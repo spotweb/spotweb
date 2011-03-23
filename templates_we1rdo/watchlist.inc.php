@@ -1,20 +1,15 @@
-<?php
-	# vul wat basis parameters op
-	$getUrl = $tplHelper->getQueryParams(); 
-	$sortUrl = $tplHelper->getQueryParams(array('sortby', 'sortdir'));
-?>    
     <div class="spots watchlist">
         <table class="spots">
             <tr class="head">
                 <th class='category'> Cat. </th> 
-                <th class='title'> <span class="sortby"><a href="?page=watchlist&sortby=title&sortdir=ASC" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="?page=watchlist&sortby=title&sortdir=DESC" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
+                <th class='title'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
 				<th class='watch'> </th>
 				<?php if ($settings['retrieve_comments']) {
                     echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
                 } # if ?>
                 <th class='genre'> Genre </th>
-                <th class='poster'> <span class="sortby"><a href="?page=watchlist&sortby=poster&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="?page=watchlist&sortby=poster&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
-                <th class='date'> <span class="sortby"><a href="?page=watchlist&sortby=stamp&sortdir=DESC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="?page=watchlist&sortby=stamp&sortdir=ASC<?php echo $sortUrl;?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
+                <th class='poster'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
+                <th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('watchlist', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
 <?php } ?>
@@ -54,7 +49,7 @@
 				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $watch['title'] . $markSpot . "</a></td>";
 			
 			echo "<td class='watch'>";
-				echo "<a href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "\t<a href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
 			echo "</td>";
 			
 			if ($settings['retrieve_comments']) {

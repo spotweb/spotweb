@@ -104,9 +104,9 @@ class SpotTemplateHelper {
 	/*
 	 * Creert een sorteer url
 	 */
-	function makeSortUrl($sortby, $sortdir) {
-		return $this->makeBaseUrl() . '?page=index' . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
-	} # makeImageUrl
+	function makeSortUrl($page, $sortby, $sortdir) {
+		return $this->makeBaseUrl() . '?page=' . $page . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+	} # makeSortUrl
 
 	/*
 	 * Creert een Poster url
@@ -247,7 +247,7 @@ class SpotTemplateHelper {
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['title'] = htmlentities(strip_tags($spot['title']));
 		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
 
 		return $spot;
@@ -285,7 +285,7 @@ class SpotTemplateHelper {
 		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['title'] = htmlentities(strip_tags($spot['title']));
 		
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);
