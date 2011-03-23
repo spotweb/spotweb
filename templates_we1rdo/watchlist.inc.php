@@ -88,7 +88,7 @@
 				# display the sabnzbd button
 				if (!empty($watch['sabnzbdurl'])) {
 					if ($tplHelper->hasBeenDownloaded($watch)) {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
+						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you already downloaded this spot)'></a></td>";
 					} else {
 						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
 					} # else
