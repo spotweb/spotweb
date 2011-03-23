@@ -68,13 +68,11 @@
 			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . $markSpot . "</a></td>";
 			 
 		echo "<td class='watch'>";
-		if($tplHelper->isBeingWatched($spot)) { 
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\" id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\" style='display: none;' id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
-		} else {
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\" style='display: none;' id='watched_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\" id='watch_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
-		}
+		// { 
+
+		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+
 		echo "</td>";
 
 		if ($settings['retrieve_comments']) {
