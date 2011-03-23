@@ -177,7 +177,6 @@
 		});
 
 		function toggleWatchSpot(spot,action,spot_id) {
-			
 			// Add/remove watchspot
 			$.get("?page=watchlist&action="+action+"&messageid="+spot);
 			
