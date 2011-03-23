@@ -176,10 +176,6 @@
 			}); // click
 		});
 
-		function toggleWatchSpot(spot,action,spot_id) {
-			// Add/remove watchspot
-			$.get("?page=watchlist&action="+action+"&messageid="+spot);
-		
 		$(function(){
 			var theStateSearch = $.cookie("viewSearch");
 			
@@ -230,15 +226,9 @@
 			$("ul.filters").css('display', theStateFilters);
 		});
 		
-		function addWatchSpot(spot,spot_id) {
-			
-			// Set watchspot
-			$.get("?page=watchlist&action=add&messageid="+spot);
-			
-			// Switch buttons
-			$('#watch_'+spot_id).hide();
-			$('#watched_'+spot_id).show();
-		}
+		function toggleWatchSpot(spot,action,spot_id) {
+			// Add/remove watchspot
+			$.get("?page=watchlist&action="+action+"&messageid="+spot);
 		
 			
 			// Switch buttons
