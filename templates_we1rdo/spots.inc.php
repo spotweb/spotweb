@@ -13,7 +13,7 @@
 						} # if ?>
 						<th class='genre'> Genre </th> 
                         <th class='poster'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
-						<th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
+						<th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
 <?php } ?>
