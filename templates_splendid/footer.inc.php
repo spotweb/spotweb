@@ -1,6 +1,1 @@
-<?php if(empty($_GET['ajax'])) { ?>
-			</div>
-		</div>
-	</body>
-</html>
-<?php } ?>
+<?php if(empty($_GET['ajax'])) { ?></div></div></body></html><?php } ?>

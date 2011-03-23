@@ -63,7 +63,7 @@
                         <tr><td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank"><?php echo $spot['website'];?></a> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
-                        <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target = "_parent" href="?search[type]=UserID&search[text]=<?php echo $spot['userid']; ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
+                        <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
                         <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
@@ -83,7 +83,7 @@
 		foreach($comments as $comment) {
 			if ($comment['verified']) {
 ?>
-					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<a class="userid" target = "_parent" href="?search[type]=UserID&search[text]=<?php echo $comment['userid']; ?>" title='Zoek naar spots van "<?php echo $comment['from']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
+					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $comment['from']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
 						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
