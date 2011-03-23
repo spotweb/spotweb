@@ -112,9 +112,16 @@ class SpotTemplateHelper {
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
+		return $this->makeSelfUrl() . '?search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
 	} # makePosterUrl
 
+	/*
+	 * Creeert een linkje naar een zoekopdracht op userid
+	 */
+	function makeUserIdUrl($spot) {
+		return $this->makeSelfUrl() . '?search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
+	} # makeNzbUrl
+	
 	/*
 	 * Creert een basis navigatie pagina
 	 */
@@ -254,7 +261,7 @@ class SpotTemplateHelper {
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
-
+		
 		// Category is altijd een integer bij ons
 		$spot['category'] = (int) $spot['category'];
 		

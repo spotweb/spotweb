@@ -199,6 +199,7 @@ class db_sqlite3 extends db_abs {
 
 			# create indices
 			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
+			$this->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 		} # if
 		
 		$q = $this->arrayQuery("PRAGMA table_info(watchlist)");
