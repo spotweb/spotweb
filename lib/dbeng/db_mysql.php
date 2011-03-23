@@ -207,6 +207,7 @@ class db_mysql extends db_abs {
 
 			# create indices
 			$this->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
+			$this->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 		} # if
 
 		# Verander de grootte van de filesize column in spotsfull 
