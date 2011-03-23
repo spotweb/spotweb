@@ -240,7 +240,7 @@ class SpotTemplateHelper {
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
 
 		return $spot;
@@ -278,7 +278,7 @@ class SpotTemplateHelper {
 		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);
