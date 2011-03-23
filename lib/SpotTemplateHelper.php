@@ -119,7 +119,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeSelfUrl() . '?search[type]=UserID&amp;search[text]= ' . urlencode($spot['userid']);
+		return $this->makeSelfUrl() . '?search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
 	} # makeNzbUrl
 	
 	/*
