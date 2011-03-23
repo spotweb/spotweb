@@ -291,4 +291,3 @@ if (empty($settings['nntp_hdr']['host'])) {
 if (substr($settings['spotweburl'], -1) != '/') {
 	$settings['spotweburl'] .= '/';
 } # if
-} # if
