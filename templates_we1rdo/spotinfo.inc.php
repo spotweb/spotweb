@@ -6,12 +6,16 @@
                 <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>">
             </a>
 			<div class="spotinfo">
-<?php if (!$spot['verified']) { ?>
-				<div class="warning">Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!</div>
-<?php } 
-	  if($tplHelper->isModerated($spot)) { ?>
-				<div class="warning">Deze spot is als mogelijk onwenselijk gemodereerd!</div>
-<?php } ?>
+<?php if (!$spot['verified'] || $tplHelper->isModerated($spot)) {
+	echo "<div class='warning'>";
+	if (!$spot['verified']) {
+		echo "Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!<br>";
+	}
+	if ($tplHelper->isModerated($spot)) {
+		echo "Deze spot is als mogelijk onwenselijk gemodereerd!";
+	}
+	echo "</div>";
+} ?>
 
 				<table class="spotheader">
 					<tbody>
@@ -59,7 +63,7 @@
                         <tr><td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank"><?php echo $spot['website'];?></a> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
-                        <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['userid']; ?>) </td> </tr>
+                        <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target = "_parent" href="?search[type]=UserID&search[text]=<?php echo $spot['userid']; ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
                         <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
@@ -79,7 +83,7 @@
 		foreach($comments as $comment) {
 			if ($comment['verified']) {
 ?>
-					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<?php echo $comment['userid']; ?>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
+					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<a class="userid" target = "_parent" href="?search[type]=UserID&search[text]=<?php echo $comment['userid']; ?>" title='Zoek naar spots van "<?php echo $comment['from']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
 						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
