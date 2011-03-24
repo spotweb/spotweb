@@ -176,10 +176,12 @@
 			}); // click
 		});
 		
-		function toggleFilterBlock(block,cookieName,view) {
+		function toggleFilterBlock(linkName,block,cookieName,view) {
 			$(block).toggle();
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 			this.theState = view;
+			$('#'+linkName+'_block').toggle();
+			$('#'+linkName+'_none').toggle();
 		}
 
 		//Cookie uitlezen en in die staat op scherm toveren
@@ -187,9 +189,12 @@
 			var theStateSearch = $.cookie("viewSearch");
 			var theStateFilters = $.cookie("viewFilters");
 			var theStateMaintenance = $.cookie("viewMaintenance");
-			$("#filterform").css('display', theStateSearch);
+			$('#filterform').css('display', theStateSearch);
+			$('#filterform_'+theStateSearch).css('display', 'block');
 			$("ul.filters").css('display', theStateFilters);
+			$('#filters_'+theStateFilters).css('display', 'block');
 			$("ul.maintenancebox").css('display', theStateMaintenance);
+			$('#maintenancebox_'+theStateMaintenance).css('display', 'block');
 		});
 		
 		function toggleWatchSpot(spot,action,spot_id) {
