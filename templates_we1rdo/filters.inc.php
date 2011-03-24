@@ -1,5 +1,8 @@
 				<div class="filter">
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filterform', 'viewSearch', 'none')" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a> <a onclick="toggleFilterBlock('#filterform', 'viewSearch', 'block')" class="showSearch" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a></span> Zoeken </h4>
+					<h4 class="search"><span class="viewState">
+					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'none')" style="display:none" id="filterform_block" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a>
+					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'block')" style="display:none" id="filterform_none" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a>
+					</span> Zoeken </h4>
                     
 					<form id="filterform" action="">
 <?php
@@ -42,8 +45,11 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('ul.filters', 'viewFilters', 'none')" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a> <a onclick="toggleFilterBlock('ul.filters', 'viewFilters', 'block')" class="showSearch" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a></span> Filters </h4>
-                    
+ 					<h4 class="search"><span class="viewState">
+					<a onclick="toggleFilterBlock('filters', 'ul.filters', 'viewFilters', 'none')" style="display:none" id="filters_block" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a>
+					<a onclick="toggleFilterBlock('filters', 'ul.filters', 'viewFilters', 'block')" style="display:none" id="filters_none" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a>
+					</span> Filters </h4>
+					
                     <ul class="filterlist filters">
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
 <?php
@@ -76,7 +82,11 @@
 ?>
                     </ul>
 					
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('ul.maintenancebox', 'viewMaintenance', 'none')" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a> <a onclick="toggleFilterBlock('ul.maintenancebox', 'viewMaintenance', 'block')" class="showSearch" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a></span> Onderhoud </h4>
+					<h4 class="search"><span class="viewState">
+					<a onclick="toggleFilterBlock('maintenancebox', 'ul.maintenancebox', 'viewMaintenance', 'none')" style="display:none" id="maintenancebox_block" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a>
+					<a onclick="toggleFilterBlock('maintenancebox', 'ul.maintenancebox', 'viewMaintenance', 'block')" style="display:none" id="maintenancebox_none" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a>
+					</span> Onderhoud </h4>
+
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
