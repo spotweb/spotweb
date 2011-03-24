@@ -171,24 +171,8 @@ class SpotTemplateHelper {
 		if (!$this->_settings['keep_downloadlist']) {
 			return false;
 		} # if
-		
-		# We gebruiken een static list en een array search omdat dit waarschijnlijk
-		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
-		static $dlList = null;
-		static $dlListCnt = 0;
-		
-		if ($dlList == null) {
-			$dlList = $this->_db->getDownloads();
-			$dlListCnt = count($dlList);
-		} # if
-		
-		for($i = 0; $i < $dlListCnt; $i++) {
-			if ($dlList[$i]['messageid'] == $spot['messageid']) {
-				return true;
-			} # if
-		} # for
-		
-		return false;
+
+		return ($spot['downloadstamp'] != NULL);
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
@@ -247,8 +231,8 @@ class SpotTemplateHelper {
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
 
 		return $spot;
 	} # formatSpotHeader
@@ -281,11 +265,11 @@ class SpotTemplateHelper {
 			$spot['image'] = '';
 		} # else
 		$spot['website'] = htmlentities($spot['website']);
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
 		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);

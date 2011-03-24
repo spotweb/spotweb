@@ -29,8 +29,8 @@
 			});
 
 			$("a.spotlink").fancybox({
-				'width'			: '80%',
-				'height' 		: '94%',
+				'width'			: '100%',
+				'height' 		: '100%',
 				'autoScale' 	: false,
 				'transitionIn'	: 'none',
 				'transitionOut'	: 'none',
@@ -70,7 +70,7 @@
 				return true;
 			});
 
-			$(".erasedlsbtn").click(function(e) {
+			$("#removedllistbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -93,7 +93,7 @@
 				});
 			}); // erasedlsbtn
 			
-			$(".updatespotsbtn").click(function(e) {
+			$("#updatespotsbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -124,7 +124,7 @@
 				});
 			}); // updatebutton
 			
-			$(".markallasreadbtn").click(function(e) {
+			$("#markallasreadbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -176,71 +176,61 @@
 			}); // click
 		});
 
+		//Scrolling along
+		$().ready(function() {
+			$('#filterscroll').bind('change', function() {
+				var scrolling = $(this).is(':checked');
+				$.cookie('scrolling', scrolling, { path: '/', expires: 7 });
+				toggleScrolling(scrolling);
+			});
+
+			var scrolling = $.cookie("scrolling");
+			toggleScrolling(scrolling);
+		});
+		
+		function toggleScrolling(state) {
+			if (state == true || state == 'true') {
+				$('#filterscroll').attr('checked','checked');
+				$(window).scroll(function(){ $("#filter").stop() .animate({"marginTop": ($(window).scrollTop()) + "px"}, 200); });
+			} else {
+				$(window).scroll(function(){ $("#filter").stop() });
+			}
+		}
+		
+		function toggleFilterBlock(imageName,block,cookieName) {
+			$(block).toggle();
+			if ($.cookie(cookieName) == 'block') { var view = 'none'; } else { var view = 'block'; }
+			toggleFilterImage(imageName, view);
+			$.cookie(cookieName, view, { path: '/', expires: 7 });
+		}
+		
+		function toggleFilterImage(imageName, state) {
+			if (state == 'block') {
+				$(imageName).attr({src:'templates_we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
+			} else {
+				$(imageName).attr({src:'templates_we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
+			}
+		}
+
+		//Cookie uitlezen en in die staat op scherm toveren
+		$(function(){
+			var theStateSearch = $.cookie("viewSearch");
+			var theStateFilters = $.cookie("viewFilters");
+			var theStateMaintenance = $.cookie("viewMaintenance");
+			$('#filterform').css('display', theStateSearch);
+			toggleFilterImage('#filterform_img', theStateSearch);
+
+			$('ul.filters').css('display', theStateFilters);
+			toggleFilterImage('#filters_img', theStateFilters);
+
+			$('ul.maintenancebox').css('display', theStateMaintenance);
+			toggleFilterImage('#maintenance_img', theStateMaintenance);
+		});
+		
 		function toggleWatchSpot(spot,action,spot_id) {
 			// Add/remove watchspot
 			$.get("?page=watchlist&action="+action+"&messageid="+spot);
-		
-		$(function(){
-			var theStateSearch = $.cookie("viewSearch");
-			
-			$(".showSearch").click(function(e) {
-					$("#filterform").show();
-					$.cookie("viewSearch", "block", { path: '/', expires: 7 });
-					theStateSearch = "block";
-			});
-			
-			$(".hideSearch").click(function(e) {
-					$("#filterform").hide();
-					$.cookie("viewSearch", "none", { path: '/', expires: 7 });
-					theStateSearch = "none"
-			});
-			
-			$("#filterform").css('display', theStateSearch);
 
-			var theStateMaintenance = $.cookie("viewMaintenance");
-			
-			$(".showMaintenance").click(function(e) {
-					$("ul.maintenancebox").show();
-					$.cookie("viewMaintenance", "block", { path: '/', expires: 7 });
-					theStateMaintenance = "block";
-			});
-			
-			$(".hideMaintenance").click(function(e) {
-					$("ul.maintenancebox").hide();
-					$.cookie("viewMaintenance", "none", { path: '/', expires: 7 });
-					theStateMaintenance = "none"
-			});
-			
-			$("ul.maintenancebox").css('display', theStateMaintenance);
-			
-			var theStateFilters = $.cookie("viewFilters");
-			
-			$(".showFilters").click(function(e) {
-					$("ul.filters").show();
-					$.cookie("viewFilters", "block", { path: '/', expires: 7 });
-					theStateFilters = "block";
-			});
-			
-			$(".hideFilters").click(function(e) {
-					$("ul.filters").hide();
-					$.cookie("viewFilters", "none", { path: '/', expires: 7 });
-					theStateFilters = "none"
-			});
-			
-			$("ul.filters").css('display', theStateFilters);
-		});
-		
-		function addWatchSpot(spot,spot_id) {
-			
-			// Set watchspot
-			$.get("?page=watchlist&action=add&messageid="+spot);
-			
-			// Switch buttons
-			$('#watch_'+spot_id).hide();
-			$('#watched_'+spot_id).show();
-		}
-		
-			
 			// Switch buttons
 			$('#watchremove_'+spot_id).toggle();
 			$('#watchadd_'+spot_id).toggle();

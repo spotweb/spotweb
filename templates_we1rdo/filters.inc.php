@@ -1,6 +1,6 @@
-				<div class="filter">
-					<h4 class="search"><span class="viewState"><a class="hideSearch" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showSearch" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Zoeken </h4>
-                    
+				<div id="filter" class="filter"><h4 class="search"><div><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll"><label>Scroll</label></div><span class="viewState">
+				<a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
+
 					<form id="filterform" action="">
 <?php
 	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
@@ -42,8 +42,8 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4><span class="viewState"><a class="hideFilters" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showFilters" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Filters </h4>
-                    
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
+					
                     <ul class="filterlist filters">
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
 <?php
@@ -75,25 +75,26 @@
     } # foreach
 ?>
                     </ul>
-					
-					<h4><span class="viewState"><a class="hideMaintenance" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' /></a> <a class="showMaintenance" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' /></a></span> Maintenance</h4>
+
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="" alt="" /></a></span> Onderhoud </h4>
+
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
 	if ($settings['show_updatebutton']) {
 ?>
-						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="updatespotsbtn">Update Spots</a></li>
+						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
 <?php
 	}
 ?>
 <?php
 	if ($settings['keep_downloadlist']) {
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
 <?php
 	}
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="markallasreadbtn">Mark all as read</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
 
 				</div>
