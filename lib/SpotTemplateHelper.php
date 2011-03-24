@@ -247,8 +247,8 @@ class SpotTemplateHelper {
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
 
 		return $spot;
 	} # formatSpotHeader
@@ -281,11 +281,11 @@ class SpotTemplateHelper {
 			$spot['image'] = '';
 		} # else
 		$spot['website'] = htmlentities($spot['website']);
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']));
+		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
 		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']));
+		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		
 		// description
 		$spot['description'] = $this->formatDescription($spot['description']);
