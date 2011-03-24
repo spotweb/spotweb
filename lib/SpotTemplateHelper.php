@@ -171,24 +171,8 @@ class SpotTemplateHelper {
 		if (!$this->_settings['keep_downloadlist']) {
 			return false;
 		} # if
-		
-		# We gebruiken een static list en een array search omdat dit waarschijnlijk
-		# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm.
-		static $dlList = null;
-		static $dlListCnt = 0;
-		
-		if ($dlList == null) {
-			$dlList = $this->_db->getDownloads();
-			$dlListCnt = count($dlList);
-		} # if
-		
-		for($i = 0; $i < $dlListCnt; $i++) {
-			if ($dlList[$i]['messageid'] == $spot['messageid']) {
-				return true;
-			} # if
-		} # for
-		
-		return false;
+
+		return ($spot['downloadstamp'] != NULL);
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
