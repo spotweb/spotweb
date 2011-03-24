@@ -172,6 +172,8 @@ table.spots th:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radiu
 table.spots th:last-child,
 table.spots td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 
+table.spots td.noresults {text-align:center; padding:5px 0;}
+
 table.spots tr td.category {
 	color:#fff;
 	font-weight:bold;

@@ -39,7 +39,7 @@
 		if ($settings['show_multinzb']) { $colSpan++; }
 		if ($settings['nzbhandling']['action'] != 'disable') { $colSpan++; }
 		
-		echo "\t\t\t\t\t\t\t<tr><td colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
+		echo "\t\t\t\t\t\t\t<tr><td class='noresults' colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
 	} # if
 	
 	foreach($spots as $spot) {
