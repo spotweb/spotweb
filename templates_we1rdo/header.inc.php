@@ -176,18 +176,29 @@
 			}); // click
 		});
 		
+		//Scrolling along
+		$().ready(function() {
+			$(window).scroll(function(){			
+			$("#filter")
+				.stop()
+				.animate({"marginTop": ($(window).scrollTop()) + "px"}, 200);			
+			});
+		});
+		
 		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
 			if ($.cookie(cookieName) == 'block') { var view = 'none'; } else { var view = 'block'; }
-			toggleFilterImage(imageName, view);
+			var view = toggleFilterImage(imageName, view);
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 		}
 		
 		function toggleFilterImage(imageName, state) {
 			if (state == 'block') {
 				$(imageName).attr({src:'templates_we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
+				return 'none';
 			} else {
 				$(imageName).attr({src:'templates_we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
+				return 'block';
 			}
 		}
 

@@ -1,4 +1,4 @@
-				<div class="filter">
+				<div id="filter" class="filter">
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
