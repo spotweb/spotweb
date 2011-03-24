@@ -16,8 +16,8 @@ div.filter h4 span.viewState img {margin:0; float:none;}
 
 div.filter h4 div {position:absolute; overflow:hidden; display:block; float:left; left:1px; height:20px; margin:0; padding:0;}
 div.filter h4 div input[type=checkbox] {opacity:0; position:absolute; left:1px; margin:0; width:100%; height:20px; float:left; cursor:pointer;}
-div.filter h4 div input[type=checkbox]+label {background:url(img/input.png) repeat-x top left; width:100%; color:#000; line-height:20px; display:block; text-align:center; -moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
-div.filter h4 div input[type=checkbox]:checked + label {background:url(img/input_checked.png) repeat-x top left; color:#fff; -moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
+div.filter h4 div input[type=checkbox]+label {color:#000; line-height:20px;}
+div.filter h4 div input[type=checkbox]:checked + label {color:#fff;}
 
 form#filterform table {border-collapse:separate; border-spacing:0 5px; display:block; margin:-5px 0 0 0;}
 form#filterform td {padding:0;}

@@ -1,4 +1,4 @@
-				<div id="filter" class="filter"><h4 class="search"><div><input type="checkbox" name="filterscroll" value="Scroll"><label>Scroll</label></div><span class="viewState">
+				<div id="filter" class="filter"><h4 class="search"><div><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll"><label>Scroll</label></div><span class="viewState">
 				<a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">

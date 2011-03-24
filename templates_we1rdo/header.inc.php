@@ -175,16 +175,20 @@
 				});
 			}); // click
 		});
-		
+
 		//Scrolling along
 		$().ready(function() {
-			$(window).scroll(function(){			
-			$("#filter")
-				.stop()
-				.animate({"marginTop": ($(window).scrollTop()) + "px"}, 200);			
+			$('#filterscroll').bind('change', function() {
+				var thisCheck = $(this);
+				$.cookie('scrolling', thisCheck.is(':checked'), { path: '/', expires: 7 });
 			});
-		});
 
+			if ($.cookie("scrolling") == 'true') {
+				$('#filterscroll').attr('checked','checked');
+				$(window).scroll(function(){ $("#filter").stop() .animate({"marginTop": ($(window).scrollTop()) + "px"}, 200); });
+			}
+		});
+		
 		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
 			if ($.cookie(cookieName) == 'block') { var view = 'none'; } else { var view = 'block'; }
