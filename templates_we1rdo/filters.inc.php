@@ -1,9 +1,9 @@
 				<div class="filter">
 					<h4 class="search"><span class="viewState">
-					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'none')" style="display:none" id="filterform_block" title="Verbergen"><img src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a>
-					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'block')" style="display:none" id="filterform_none" title="Uitklappen"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a>
+					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'none')" style="display:none" id="filterform_block"><img id="filterform_img" src='templates_we1rdo/img/arrow_up.png' alt='Verbergen' /></a>
+					<a onclick="toggleFilterBlock('filterform', '#filterform', 'viewSearch', 'block')" style="display:none" id="filterform_none"><img src='templates_we1rdo/img/arrow_down.png' alt='Uitklappen' /></a>
 					</span> Zoeken </h4>
-                    
+
 					<form id="filterform" action="">
 <?php
 	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
@@ -99,11 +99,11 @@
 <?php
 	if ($settings['keep_downloadlist']) {
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="erasedlsbtn">Remove history of downloads</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="erasedlsbtn">Verwijder downloadgeschiedenis</a></li>
 <?php
 	}
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="markallasreadbtn">Mark all as read</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="markallasreadbtn">Markeer alles als gelezen</a></li>
 					</ul>
 
 				</div>
