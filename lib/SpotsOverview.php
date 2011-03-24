@@ -282,8 +282,13 @@ class SpotsOverview {
 		# New spots
 		if (isset($search['type']) && $search['type'] == 'New') {
 			if (isset($_SESSION['last_visit'])) {
-				$textSearch .= ' (stamp >= ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
+				$textSearch .= ' (s.stamp >= ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
 			} # if
+		} # if
+
+		# Downloaded spots
+		if (isset($search['type']) && $search['type'] == 'Downloaded') {
+			$textSearch .= ' (d.stamp IS NOT NULL)';
 		} # if
 
 		$endFilter = array();
