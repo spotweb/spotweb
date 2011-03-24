@@ -1,5 +1,5 @@
 				<div class="filter">
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')" id="filterform_block"><img id="filterform_img" /></a></span> Zoeken </h4>
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" /></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
 <?php
@@ -42,7 +42,7 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')" id="filterform_block"><img id="filters_img" /></a></span> Filters </h4>
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" /></a></span> Filters </h4>
 					
                     <ul class="filterlist filters">
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
@@ -76,7 +76,7 @@
 ?>
                     </ul>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')" id="filterform_block"><img id="maintenance_img" /></a></span> Onderhoud </h4>
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" /></a></span> Onderhoud </h4>
 
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
