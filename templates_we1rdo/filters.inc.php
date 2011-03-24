@@ -83,18 +83,18 @@
 <?php
 	if ($settings['show_updatebutton']) {
 ?>
-						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="updatespotsbtn">Update Spots</a></li>
+						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
 <?php
 	}
 ?>
 <?php
 	if ($settings['keep_downloadlist']) {
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="erasedlsbtn">Verwijder downloadgeschiedenis</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
 <?php
 	}
 ?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="markallasreadbtn">Markeer alles als gelezen</a></li>
+						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
 
 				</div>
