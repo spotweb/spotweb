@@ -179,15 +179,23 @@
 		//Scrolling along
 		$().ready(function() {
 			$('#filterscroll').bind('change', function() {
-				var thisCheck = $(this);
-				$.cookie('scrolling', thisCheck.is(':checked'), { path: '/', expires: 7 });
+				var scrolling = $(this).is(':checked');
+				$.cookie('scrolling', scrolling, { path: '/', expires: 7 });
+				toggleScrolling(scrolling);
 			});
 
-			if ($.cookie("scrolling") == 'true') {
+			var scrolling = $.cookie("scrolling");
+			toggleScrolling(scrolling);
+		});
+		
+		function toggleScrolling(state) {
+			if (state == true || state == 'true') {
 				$('#filterscroll').attr('checked','checked');
 				$(window).scroll(function(){ $("#filter").stop() .animate({"marginTop": ($(window).scrollTop()) + "px"}, 200); });
+			} else {
+				$(window).scroll(function(){ $("#filter").stop() });
 			}
-		});
+		}
 		
 		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
