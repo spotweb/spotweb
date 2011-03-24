@@ -262,7 +262,6 @@ class SpotsOverview {
 				$field = 'userid';
 			} # else
 			
-			//Like naar BOOLEAN text search
 			$textSearch .= " MATCH($field) AGAINST('" . $this->_db->safe($search['text']) . "' IN BOOLEAN MODE)";
 		} # if
 
