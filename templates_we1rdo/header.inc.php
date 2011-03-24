@@ -191,9 +191,9 @@
 			var theStateMaintenance = $.cookie("viewMaintenance");
 			$('#filterform').css('display', theStateSearch);
 			$('#filterform_'+theStateSearch).css('display', 'block');
-			$("ul.filters").css('display', theStateFilters);
+			$('ul.filters').css('display', theStateFilters);
 			$('#filters_'+theStateFilters).css('display', 'block');
-			$("ul.maintenancebox").css('display', theStateMaintenance);
+			$('ul.maintenancebox').css('display', theStateMaintenance);
 			$('#maintenancebox_'+theStateMaintenance).css('display', 'block');
 		});
 		
