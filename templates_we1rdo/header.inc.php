@@ -175,62 +175,27 @@
 				});
 			}); // click
 		});
+		
+		function toggleFilterBlock(block,cookieName,view) {
+			$(block).toggle();
+			$.cookie(cookieName, view, { path: '/', expires: 7 });
+			this.theState = view;
+		}
 
+		//Cookie uitlezen en in die staat op scherm toveren
 		$(function(){
 			var theStateSearch = $.cookie("viewSearch");
-			
-			$(".showSearch").click(function(e) {
-					$("#filterform").show();
-					$.cookie("viewSearch", "block", { path: '/', expires: 7 });
-					theStateSearch = "block";
-			});
-			
-			$(".hideSearch").click(function(e) {
-					$("#filterform").hide();
-					$.cookie("viewSearch", "none", { path: '/', expires: 7 });
-					theStateSearch = "none"
-			});
-			
-			$("#filterform").css('display', theStateSearch);
-
-			var theStateMaintenance = $.cookie("viewMaintenance");
-			
-			$(".showMaintenance").click(function(e) {
-					$("ul.maintenancebox").show();
-					$.cookie("viewMaintenance", "block", { path: '/', expires: 7 });
-					theStateMaintenance = "block";
-			});
-			
-			$(".hideMaintenance").click(function(e) {
-					$("ul.maintenancebox").hide();
-					$.cookie("viewMaintenance", "none", { path: '/', expires: 7 });
-					theStateMaintenance = "none"
-			});
-			
-			$("ul.maintenancebox").css('display', theStateMaintenance);
-			
 			var theStateFilters = $.cookie("viewFilters");
-			
-			$(".showFilters").click(function(e) {
-					$("ul.filters").show();
-					$.cookie("viewFilters", "block", { path: '/', expires: 7 });
-					theStateFilters = "block";
-			});
-			
-			$(".hideFilters").click(function(e) {
-					$("ul.filters").hide();
-					$.cookie("viewFilters", "none", { path: '/', expires: 7 });
-					theStateFilters = "none"
-			});
-			
+			var theStateMaintenance = $.cookie("viewMaintenance");
+			$("#filterform").css('display', theStateSearch);
 			$("ul.filters").css('display', theStateFilters);
+			$("ul.maintenancebox").css('display', theStateMaintenance);
 		});
 		
 		function toggleWatchSpot(spot,action,spot_id) {
 			// Add/remove watchspot
 			$.get("?page=watchlist&action="+action+"&messageid="+spot);
-		
-			
+
 			// Switch buttons
 			$('#watchremove_'+spot_id).toggle();
 			$('#watchadd_'+spot_id).toggle();
