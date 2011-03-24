@@ -29,8 +29,8 @@
 			});
 
 			$("a.spotlink").fancybox({
-				'width'			: '80%',
-				'height' 		: '94%',
+				'width'			: '100%',
+				'height' 		: '100%',
 				'autoScale' 	: false,
 				'transitionIn'	: 'none',
 				'transitionOut'	: 'none',
