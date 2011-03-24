@@ -10,8 +10,8 @@ div.clear {
 /* ZOEKEN */
 div.filter h4.search {margin:0 0 5px 0;}
 
-div.filter h4 span.viewState {position:absolute; right:1px; display:block; height:14px; background-color:#333; margin:3px 3px 3px 0; padding:0 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
-div.filter h4 span.viewState a {display:inline; line-height:normal; background:none; cursor:pointer;}
+div.filter h4 span.viewState {position:absolute; right:1px; display:block; height:14px; background-color:#333; margin:3px 3px 3px 0; padding:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+div.filter h4 span.viewState a {display:inline; line-height:normal; background:none; cursor:pointer; padding:0 5px;}
 div.filter h4 span.viewState img {margin:0; float:none;}
 
 div.filter h4 div {position:absolute; overflow:hidden; display:block; float:left; left:5px; height:16px; margin:2px 0; padding:0;}
