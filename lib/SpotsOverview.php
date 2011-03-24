@@ -262,7 +262,7 @@ class SpotsOverview {
 				$field = 'userid';
 			} # else
 			
-			if($settings['db']['engine'] == 'mysql')
+			if($this->_settings['db']['engine'] == 'mysql')
 			{
 				$textSearch .= " MATCH($field) AGAINST('" . $this->_db->safe($search['text']) . "' IN BOOLEAN MODE)";
 			}
