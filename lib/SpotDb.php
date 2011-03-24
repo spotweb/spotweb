@@ -273,12 +273,14 @@ class SpotDb
 												s.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
+												d.stamp AS downloadstamp,
 												f.userid AS userid,
-												f.verified AS verified,
+												f.verified AS verified,												
 												f.filesize AS filesize" . 
 												$extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 										 " . $sqlFilter . " 
 										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
@@ -334,6 +336,7 @@ class SpotDb
 												s.id AS spotdbid,
 												f.id AS fullspotdbid,
 												s.spotid AS id,
+												d.stamp AS downloadstamp,
 												f.messageid AS messageid,
 												f.userid AS userid,
 												f.verified AS verified,
@@ -343,6 +346,7 @@ class SpotDb
 												f.fullxml AS fullxml,
 												f.filesize AS filesize
 												FROM spots AS s 
+												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 												JOIN spotsfull AS f ON f.messageid = s.messageid 
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
