@@ -70,7 +70,7 @@
 				return true;
 			});
 
-			$(".erasedlsbtn").click(function(e) {
+			$("#removedllistbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -93,7 +93,7 @@
 				});
 			}); // erasedlsbtn
 			
-			$(".updatespotsbtn").click(function(e) {
+			$("#updatespotsbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -124,7 +124,7 @@
 				});
 			}); // updatebutton
 			
-			$(".markallasreadbtn").click(function(e) {
+			$("#markallasreadbtn").click(function(e) {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
