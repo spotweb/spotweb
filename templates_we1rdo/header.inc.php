@@ -176,12 +176,21 @@
 			}); // click
 		});
 		
-		function toggleFilterBlock(linkName,block,cookieName,view) {
+		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
+			var view = toggleFilterImage(imageName, $.cookie(cookieName));
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 			this.theState = view;
-			$('#'+linkName+'_block').toggle();
-			$('#'+linkName+'_none').toggle();
+		}
+		
+		function toggleFilterImage(imageName, state) {
+			if (state == 'block') {
+				$(imageName).attr({src:'templates_we1rdo/img/arrow_up.png', alt:'Verbergen'});
+				return 'none';
+			} else {
+				$(imageName).attr({src:'templates_we1rdo/img/arrow_down.png', alt:'Uitklappen'});
+				return 'block';
+			}
 		}
 
 		//Cookie uitlezen en in die staat op scherm toveren
@@ -190,11 +199,13 @@
 			var theStateFilters = $.cookie("viewFilters");
 			var theStateMaintenance = $.cookie("viewMaintenance");
 			$('#filterform').css('display', theStateSearch);
-			$('#filterform_'+theStateSearch).css('display', 'block');
+			toggleFilterImage('#filterform_img', theStateSearch);
+
 			$('ul.filters').css('display', theStateFilters);
-			$('#filters_'+theStateFilters).css('display', 'block');
+			toggleFilterImage('#filters_img', theStateFilters);
+
 			$('ul.maintenancebox').css('display', theStateMaintenance);
-			$('#maintenancebox_'+theStateMaintenance).css('display', 'block');
+			toggleFilterImage('#maintenance_img', theStateMaintenance);
 		});
 		
 		function toggleWatchSpot(spot,action,spot_id) {
