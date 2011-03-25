@@ -83,8 +83,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					$lastProcessedId = $commentId;
 
 					# voeg spot aan db toe
-					$this->_db->addCommentRef($commentId,
-									   $msgheader['References']);
+					$this->_db->addCommentRef($commentId, $msgheader['References']);
 				} # if
 			} # foreach
 
