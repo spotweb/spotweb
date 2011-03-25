@@ -98,5 +98,4 @@
 ?>
 						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
-
 				</div>
