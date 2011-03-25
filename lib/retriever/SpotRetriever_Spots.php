@@ -104,13 +104,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
+													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-					if (time() < strtotime($msgheader['Date'])) {
-						$spot['stamp'] = time();
-					} else {
-						$spot['stamp'] = strtotime($msgheader['Date']);
-					}
 
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.

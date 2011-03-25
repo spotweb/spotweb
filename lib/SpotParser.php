@@ -78,7 +78,7 @@ class SpotParser {
 		return $tpl_spot;
 	} # parseFull()
 
-	function parseXover($subj, $from, $messageid, $rsakeys) {
+	function parseXover($subj, $from, $date, $messageid, $rsakeys) {
 		$_ID = 2;
 		$_CAT = 0;
 
@@ -100,6 +100,13 @@ class SpotParser {
 		$spot['header'] = $tmpHdr[1];
 		$spot['verified'] = false;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
+
+		if (time() < strtotime($date)) {
+			$spot['stamp'] = time();
+		} else {
+			$spot['stamp'] = strtotime($date);
+		} # if
+		
 		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
