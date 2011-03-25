@@ -292,6 +292,12 @@ if (($settings['templates']['autodetect']) &&
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
 
+# Fix eventueel oude template paths naar nieuwe template paths
+if (substr($settings['tpl_path'], 0, strlen('./templates_')) == './templates_') {
+	echo "LET OP! De lokatie van de templates is gewijzigd, pas je ownsettings.php aan!<br>";
+	$settings['tpl_path'] = str_replace('templates_', 'templates/', $settings['tpl_path']);
+} # if
+
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
 #
