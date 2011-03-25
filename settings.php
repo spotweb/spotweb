@@ -153,8 +153,8 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 # het detecteren komt pas na het laden van de ownsettings.
 
 $settings['templates']['autodetect'] = true;
-$settings['templates']['default'] = './templates/we1rdo/';
-$settings['templates']['mobile'] = './templates/mobile/';
+$settings['templates']['default'] = 'templates/we1rdo/';
+$settings['templates']['mobile'] = 'templates/mobile/';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
@@ -247,7 +247,7 @@ $settings['retrieve_increment'] = 1000;
 # je instellingen bewaard blijven.
 #
 if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 # QuickLinks
 $settings['quicklinks'] = Array();
@@ -280,7 +280,7 @@ if (($settings['templates']['autodetect']) &&
 			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
 				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
 				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
-				$settings['tpl_path'] = './templates/' . $settings['available_templates'][$chosenTemplate] . '/';
+				$settings['tpl_path'] = 'templates/' . $settings['available_templates'][$chosenTemplate] . '/';
 				
 				// verleng cookie
 				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
