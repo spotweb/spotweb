@@ -46,6 +46,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->template('header');
 		$this->template('filters', array('search' => $this->_params['search'],
 								  'lastupdate' => $lastUpdateTime,
+								  'quicklinks' => $this->_settings['quicklinks'],
 								  'filters' => $this->_settings['filters'],
   								  'activefilter' => $this->_params['search']));
 		$this->template('spots', array('spots' => $spotsTmp['list'],

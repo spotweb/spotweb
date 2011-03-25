@@ -7,10 +7,9 @@
 ?>
 						<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>">
 <?php
+	$filterColCount = 3;
 	if ($settings['retrieve_full']) {
-		$filterColCount = 4;
-	} else {
-		$filterColCount = 3;
+		$filterColCount++;
 	} # if
 ?>
                         <table class="filters">
@@ -45,14 +44,14 @@
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewFilters')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					
 					<ul class="filterlist quicklinks">
-						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true"; ?>"><img src="images/icons/home.png" alt='Reset filters'> Reset filters </a></li>
-						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New"; ?>"><img src="images/icons/today.png" alt='Nieuw'> Nieuw </a></li>
-						<?php if ($settings['keep_watchlist']) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
-						<?php }
-						if ($settings['keep_downloadlist']) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded"; ?>"><img src="images/icons/download.png" alt='Gedownload'> Gedownload </a></li>
-						<?php } ?>
+<?php
+    foreach($quicklinks as $quicklink) {
+?>
+							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $tplHelper->getPageUrl('index'); ?>&amp;search[tree]=<?php echo $quicklink[2];?>">
+							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; ?></a>
+<?php
+    }
+?>
 					</ul>
 						
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>

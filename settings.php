@@ -249,6 +249,17 @@ $settings['retrieve_increment'] = 1000;
 if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
+# QuickLinks
+$settings['quicklinks'] = Array();
+$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "&amp;search[tree]=&amp;search[unfiltered]=true", "");
+$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New", "");
+if ($settings['keep_watchlist']) {
+	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+}
+if ($settings['keep_downloadlist']) {
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/fav.png", "?&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "");
+}
+
 #
 # Ga nu de template zetten
 #
