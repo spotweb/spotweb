@@ -174,6 +174,9 @@ $settings['show_multinzb'] = true;
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
 
+# moeten we een watchlist bijhouden?
+$settings['keep_watchlist'] = true;
+
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
 if (isset($_SERVER['HTTP_HOST'])) {
