@@ -42,11 +42,16 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					<ul id="quicklinksmenu">
 <?php
     foreach($quicklinks as $quicklink) {
-?>					
+      if($quicklink[0] == 'Watchlist') {
+?>
+                        <li><div><a class="quicklink spotlink" href="<?php echo $quicklink[2]; ?>">
+						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
+<?php } else { ?>
                         <li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $quicklink[2];?>&ajax=1');clearTree();">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
 <?php
-}
+	  }
+	}
 ?>
                     </ul><br /><br />
 

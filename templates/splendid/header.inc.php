@@ -40,6 +40,16 @@
 		<script type='text/javascript'>
 		$(function() {
 			$('#spots').load('?search[tree]=<?php if(!empty($settings['index_filter']['tree'])) echo $settings['index_filter']['tree'] ?>&ajax=1');
+			
+			$("a.spotlink").fancybox({
+				'width'			: '80%',
+				'height' 		: '94%',
+				'autoScale' 	: false,
+				'transitionIn'	: 'none',
+				'transitionOut'	: 'none',
+				'type'			: 'iframe'
+			})
+			
 		});
 		var min_width = 295;
 		</script>
