@@ -45,9 +45,7 @@
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
 					
                     <ul class="filterlist filters"> 
-						<?php if ($settings['keep_watchlist']) { ?>
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
-						<?php } ?>
 <?php
     foreach($filters as $filter) {
 ?>
@@ -98,4 +96,5 @@
 ?>
 						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
+
 				</div>
