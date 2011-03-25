@@ -80,7 +80,7 @@ class SpotDb
 	} # func. getMaxMessageId
 	
 	function getMaxMessageTime() {
-		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY id DESC LIMIT 1");
+		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY stamp DESC LIMIT 1");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
