@@ -44,7 +44,7 @@
 
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
 					
-                    <ul class="filterlist filters">
+                    <ul class="filterlist filters"> 
                     	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
 <?php
     foreach($filters as $filter) {

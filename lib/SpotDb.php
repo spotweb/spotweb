@@ -78,6 +78,15 @@ class SpotDb
 		
 		return $msgId;
 	} # func. getMaxMessageId
+	
+	function getMaxMessageTime() {
+		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY id DESC LIMIT 1");
+		if ($stamp == null) {
+			$stamp = time();
+		} # if
+		
+		return $stamp;
+	}
 	 
 	/*
 	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
@@ -416,7 +425,14 @@ class SpotDb
 	 * Wis de lijst met downloads
 	 */
 	function emptyDownloadList() {
-		return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
+		switch ($this->_dbsettings['engine']) {
+			case 'sqlite3'	: { 
+				return $this->_conn->exec("DELETE FROM downloadlist;");
+			} # sqlite3
+			default			: {
+				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");      
+			} # default
+		} # switch
 	} # emptyDownloadList()
 
 	/*
@@ -532,13 +548,15 @@ class SpotDb
 										 s.subcatb AS subcatb, 
 										 s.subcatc AS subcatc, 
 										 s.subcatd AS subcatd, 
+										 d.stamp AS downloadstamp,
 										 s.title AS title, 
 										 s.tag AS tag, 
 										 s.stamp AS stamp, 
 										 s.filesize AS filesize, 
 										 s.moderated AS moderated 
 									FROM watchlist w 
-									LEFT JOIN spots s ON s.messageid = w.messageid 
+									LEFT JOIN spots AS s ON s.messageid = w.messageid
+									LEFT JOIN downloadlist AS d on d.messageid = w.messageid
 									ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']));
 	} # addToWatchList
 
