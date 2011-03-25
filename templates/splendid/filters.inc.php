@@ -37,17 +37,21 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 						
 					</form><br />
 					
+					<h4>QuickLinks</h4><br />
+					
+					<ul id="quicklinksmenu">
+<?php
+    foreach($quicklinks as $quicklink) {
+?>					
+                        <li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $quicklink[2];?>&ajax=1');clearTree();"><img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
+<?php
+}
+?>
+                    </ul><br /><br />
+
 					<h4>Filters</h4><br />
                     
                     <ul id="filtermenu">
-                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true"><img src="images/icons/home.png" alt='Reset filters'> Reset filters </a></li>
-                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New"><img src="images/icons/today.png" alt='Nieuw'> Nieuw </a></li>
-					  <?php if ($settings['keep_watchlist']) { ?>
-                      <li><div><a href="?page=watchlist" class="spotlink"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></div></li>
-                      <?php }
-					  if ($settings['keep_downloadlist']) { ?>
-                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded"><img src="images/icons/download.png" alt='Gedownload'> Gedownload </a></li>
-                      <?php } ?>
 <?php
     foreach($filters as $filter) {
 ?>
