@@ -17,7 +17,7 @@
 		<!-- Stylesheets -->
 		<style type="text/css">
 		  @import url('js/dynatree/skin-vista/ui.dynatree.css');
-		  @import url('templates_splendid/style.css');
+		  @import url('templates/splendid/style.css');
 		  @import url('js/fancybox/jquery.fancybox-1.3.4.css');
 		</style>
 
@@ -27,8 +27,8 @@
 		<script src='js/jquery/jquery-ui.custom.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery.cookie.js' type='text/javascript'></script>
 		
-		<script src='templates_splendid/js/gen_tree.js' type='text/javascript'></script>
-		<script src='templates_splendid/js/scripts.js' type='text/javascript'></script>
+		<script src='templates/splendid/js/gen_tree.js' type='text/javascript'></script>
+		<script src='templates/splendid/js/scripts.js' type='text/javascript'></script>
 
 		<!-- dynatree iteslf -->
 		<script src='js/dynatree/jquery.dynatree.min.js' type='text/javascript'></script>

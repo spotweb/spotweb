@@ -104,6 +104,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
+													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 

@@ -47,6 +47,7 @@ class SpotPage_watchlist extends SpotPage_Abs {
 		$this->template('header');
 		$this->template('filters', array('search' => array(),
 								  'lastupdate' => $lastUpdateTime,
+								  'quicklinks' => $this->_settings['quicklinks'],
 								  'filters' => $this->_settings['filters'],
   								  'activefilter' => array()));
 		$this->template('watchlist', array('watchlist' => $watchList, 'action' => $this->_action));

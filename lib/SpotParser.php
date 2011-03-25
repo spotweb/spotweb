@@ -78,10 +78,9 @@ class SpotParser {
 		return $tpl_spot;
 	} # parseFull()
 
-	function parseXover($subj, $from, $messageid, $rsakeys) {
+	function parseXover($subj, $from, $date, $messageid, $rsakeys) {
 		$_ID = 2;
 		$_CAT = 0;
-		$_STAMP = 3;
 
 		// initialiseer wat variabelen
 		$spot = array();
@@ -101,6 +100,13 @@ class SpotParser {
 		$spot['header'] = $tmpHdr[1];
 		$spot['verified'] = false;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
+
+		if (time() < strtotime($date)) {
+			$spot['stamp'] = time();
+		} else {
+			$spot['stamp'] = strtotime($date);
+		} # if
+		
 		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
@@ -209,7 +215,6 @@ class SpotParser {
 						} # if
 					} # if recentKey
 
-					$spot['stamp'] = $fields[$_STAMP];
 					if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0)) && (($spot['id'] >= 1000000) || $recentKey)) {
 
 						# Vanaf spot-id 1385910 komen we KeyID's 2 tegen, dus vanaf daar gaan we alle niet-signed posts weigeren.
