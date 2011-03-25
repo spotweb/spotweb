@@ -215,10 +215,14 @@
 		//Cookie uitlezen en in die staat op scherm toveren
 		$(function(){
 			var theStateSearch = $.cookie("viewSearch");
-			var theStateFilters = $.cookie("viewFilters");
+			var theStateQuickLinks = $.cookie("viewMaintenance");
+			var theStateFilters = $.cookie("viewQuickLinks");
 			var theStateMaintenance = $.cookie("viewMaintenance");
 			$('#filterform').css('display', theStateSearch);
 			toggleFilterImage('#filterform_img', theStateSearch);
+
+			$('ul.quicklinks').css('display', theStateQuickLinks);
+			toggleFilterImage('#quicklinks_img', theStateQuickLinks);
 
 			$('ul.filters').css('display', theStateFilters);
 			toggleFilterImage('#filters_img', theStateFilters);

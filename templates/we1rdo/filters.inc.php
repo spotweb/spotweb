@@ -42,9 +42,9 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewFilters')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					
-                    <ul class="filterlist filters">
+					<ul class="filterlist quicklinks">
 						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true"; ?>"><img src="images/icons/home.png" alt='Reset filters'> Reset filters </a></li>
 						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New"; ?>"><img src="images/icons/today.png" alt='Nieuw'> Nieuw </a></li>
 						<?php if ($settings['keep_watchlist']) { ?>
@@ -53,6 +53,12 @@
 						if ($settings['keep_downloadlist']) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('index') . "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded"; ?>"><img src="images/icons/download.png" alt='Gedownload'> Gedownload </a></li>
 						<?php } ?>
+					</ul>
+						
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
+					
+                    <ul class="filterlist filters">
+
 						
 <?php
     foreach($filters as $filter) {
