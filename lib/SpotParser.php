@@ -81,7 +81,6 @@ class SpotParser {
 	function parseXover($subj, $from, $messageid, $rsakeys) {
 		$_ID = 2;
 		$_CAT = 0;
-		$_STAMP = 3;
 
 		// initialiseer wat variabelen
 		$spot = array();
@@ -209,7 +208,6 @@ class SpotParser {
 						} # if
 					} # if recentKey
 
-					$spot['stamp'] = $fields[$_STAMP];
 					if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0)) && (($spot['id'] >= 1000000) || $recentKey)) {
 
 						# Vanaf spot-id 1385910 komen we KeyID's 2 tegen, dus vanaf daar gaan we alle niet-signed posts weigeren.
