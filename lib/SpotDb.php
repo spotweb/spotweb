@@ -539,7 +539,7 @@ class SpotDb
 										 s.filesize AS filesize, 
 										 s.moderated AS moderated 
 									FROM watchlist w 
-									LEFT JOIN spots s ON s.messageid = w.messageid
+									LEFT JOIN spots AS s ON s.messageid = w.messageid
 									LEFT JOIN downloadlist AS d on d.messageid = w.messageid
 									ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']));
 	} # addToWatchList
