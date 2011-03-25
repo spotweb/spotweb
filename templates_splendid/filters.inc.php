@@ -40,7 +40,12 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					<h4>Filters</h4><br />
                     
                     <ul id="filtermenu">
-                      <li><div><a href="?page=watchlist" class="spotlink"><img src="images/icons/fav.png"> Watchlist </a></div></li>
+                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true"><img src="images/icons/home.png" alt='Reset filters'> Reset filters </a></li>
+                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New"><img src="images/icons/today.png" alt='Nieuw'> Nieuw </a></li>
+                      <li><div><a href="?page=watchlist" class="spotlink"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></div></li>
+                      <?php if ($settings['keep_downloadlist']) { ?>
+                      <li><a href="?page=index&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded"><img src="images/icons/download.png" alt='Gedownload'> Gedownload </a></li>
+                      <?php } ?>
 <?php
     foreach($filters as $filter) {
 ?>
