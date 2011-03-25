@@ -58,7 +58,6 @@
 					
                     <ul class="filterlist filters">
 
-						
 <?php
     foreach($filters as $filter) {
 ?>
