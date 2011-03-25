@@ -94,8 +94,10 @@
 <?php } ?>				
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
 						<th class='sabnzbd'> SAB </th> 
-<?php } ?>						
+<?php }
+if ($settings['keep_watchlist']) { ?>						
 						<th class='watch'></th>
+<?php } ?>
 					</tr>
 
 <?php
@@ -160,16 +162,17 @@
 			} # if
 		} # else
 		
-		echo "<td>\n";
-		
-		if($tplHelper->isBeingWatched($spot)) { ?>
-			<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watched_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
-			<a onclick="addWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>);" style="display: none" id="watch_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch.png" alt="Plaats in watchlist" title="Plaats in watchlist" border="0" /></a>
-		<?php } else { ?>
-			<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" style="display: none" id="watched_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
-			<a onclick="addWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watch_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch.png" alt="Plaats in watchlist" title="Plaats in watchlist" border="0" /></a>
-		<?php }
-		echo "  </td>\n";
+		if ($settings['keep_watchlist']) {
+			echo "<td>\n";
+			if($tplHelper->isBeingWatched($spot)) { ?>
+				<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watched_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
+				<a onclick="addWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>);" style="display: none" id="watch_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch.png" alt="Plaats in watchlist" title="Plaats in watchlist" border="0" /></a>
+			<?php } else { ?>
+				<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" style="display: none" id="watched_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
+				<a onclick="addWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watch_<?php echo $spot['id'] ?>"><img src="templates_splendid/img/watch.png" alt="Plaats in watchlist" title="Plaats in watchlist" border="0" /></a>
+			<?php }
+			echo "  </td>\n";
+		}		
 		echo "</tr>\r\n";
 	}
 ?>
