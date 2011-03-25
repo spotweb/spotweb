@@ -41,7 +41,7 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewFilters')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					
 					<ul class="filterlist quicklinks">
 <?php
