@@ -100,7 +100,7 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					</ul>
 
 				</div><br style="clear: both" />
-				<img src="templates_splendid/img/menu_end.jpg" width="255" height="24" border="0" />
+				<img src="templates/splendid/img/menu_end.jpg" width="255" height="24" border="0" />
 			</div>
 
 <?php } ?>

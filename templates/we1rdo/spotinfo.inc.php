@@ -30,14 +30,14 @@
 <?php } ?>								
                             </th>
 							<th class='watch'>
-<?php	echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>"; ?>
+<?php	echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates/we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates/we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>"; ?>
 							</th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
-                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img width="20" height="17" src="templates_we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
 	<?php } else { ?>
-                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates_we1rdo/img/download.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates/we1rdo/img/download.png" class="sabnzbd-button"></a></th>
 <?php } } ?>								
                         </tr>
                     </table>
