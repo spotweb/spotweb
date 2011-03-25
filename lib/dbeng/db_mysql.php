@@ -127,6 +127,9 @@ class db_mysql extends db_abs {
 										   lastrun INTEGER DEFAULT 0);");
 
 			# create indices
+			$this->rawExec("CREATE FULLTEXT INDEX idx_title ON spots(title)");
+			$this->rawExec("CREATE FULLTEXT INDEX idx_tag ON spots(tag)");
+			$this->rawExec("CREATE FULLTEXT INDEX idx_poster ON spots(poster)");
 			$this->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
