@@ -257,7 +257,7 @@ if ($settings['keep_watchlist']) {
 	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
 }
 if ($settings['keep_downloadlist']) {
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "spotlink");
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "");
 }
 
 #
