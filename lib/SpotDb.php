@@ -78,6 +78,15 @@ class SpotDb
 		
 		return $msgId;
 	} # func. getMaxMessageId
+	
+	function getMaxMessageTime() {
+		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY id DESC LIMIT 1");
+		if ($stamp == null) {
+			$stamp = time();
+		} # if
+		
+		return $stamp;
+	}
 	 
 	/*
 	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
