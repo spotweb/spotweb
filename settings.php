@@ -251,13 +251,13 @@ if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <
 
 # QuickLinks
 $settings['quicklinks'] = Array();
-$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "&amp;search[tree]=&amp;search[unfiltered]=true", "");
-$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New", "");
+$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
+$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New", "");
 if ($settings['keep_watchlist']) {
 	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
 }
 if ($settings['keep_downloadlist']) {
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/fav.png", "?&amp;search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "");
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "spotlink");
 }
 
 #
