@@ -47,7 +47,7 @@
 <?php
     foreach($quicklinks as $quicklink) {
 ?>
-							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $tplHelper->getPageUrl('index'); ?>&amp;search[tree]=<?php echo $quicklink[2];?>">
+							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $quicklink[2]; ?>">
 							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; ?></a>
 <?php
     }
