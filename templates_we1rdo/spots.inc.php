@@ -7,8 +7,10 @@
 					<tr class="head">
 						<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
 						<th class='title'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
-                        <th class='watch'> </th>
-						<?php if ($settings['retrieve_comments']) {
+                        <?php if ($settings['keep_watchlist']) { ?>
+						<th class='watch'> </th>
+						<?php }
+						if ($settings['retrieve_comments']) {
                         	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
@@ -33,10 +35,11 @@
 	$count = 0;
 	
 	if (count($spots) == 0) {
-		$colSpan = 6;
+		$colSpan = 5;
 		if ($settings['retrieve_comments']) { $colSpan++; }
 		if ($settings['show_nzbbutton']) { $colSpan++; }
 		if ($settings['show_multinzb']) { $colSpan++; }
+		if ($settings['keep_watchlist']) { $colSpan++; }
 		if ($settings['nzbhandling']['action'] != 'disable') { $colSpan++; }
 		
 		echo "\t\t\t\t\t\t\t<tr><td class='noresults' colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
@@ -66,11 +69,13 @@
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . $markSpot . "</a></td>";
-			 
-		echo "<td class='watch'>";
-		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
-		echo "</td>";
+
+		if ($settings['keep_watchlist']) {
+			echo "<td class='watch'>";
+			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+			echo "</td>";
+		}
 
 		if ($settings['retrieve_comments']) {
 			echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($spot) . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
