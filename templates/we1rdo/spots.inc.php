@@ -6,7 +6,7 @@
 					<tbody>
 					<tr class="head">
 						<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
-						<th class='title'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
+						<th class='title'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"><img src='templates/we1rdo/img/arrow_up.png' alt='Sorteren op Titel [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"><img src='templates/we1rdo/img/arrow_down.png' alt='Sorteren op Titel [Z-0]' /></a></span> Titel </th> 
                         <?php if ($settings['keep_watchlist']) { ?>
 						<th class='watch'> </th>
 						<?php }
@@ -14,8 +14,8 @@
                         	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 						} # if ?>
 						<th class='genre'> Genre </th> 
-                        <th class='poster'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
-						<th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates_we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates_we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
+                        <th class='poster'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"><img src='templates/we1rdo/img/arrow_up.png' alt='Sorteren op Afzender [0-Z]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"><img src='templates/we1rdo/img/arrow_down.png' alt='Sorteren op Afzender [Z-0]' /></a></span> Afzender </th> 
+						<th class='date'> <span class="sortby"><a href="<?php echo $tplHelper->makeSortUrl('stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"><img src='templates/we1rdo/img/arrow_up.png' alt='Sorteren op Leeftijd [oplopend]' /></a> <a href="<?php echo $tplHelper->makeSortUrl('stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"><img src='templates/we1rdo/img/arrow_down.png' alt='Sorteren op Leeftijd [aflopend]' /></a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
 <?php } ?>
@@ -72,8 +72,8 @@
 
 		if ($settings['keep_watchlist']) {
 			echo "<td class='watch'>";
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates_we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates_we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates/we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates/we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
 			echo "</td>";
 		}
 
@@ -108,9 +108,9 @@
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($tplHelper->hasBeenDownloaded($spot)) {
-					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
+					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you allready downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
 				} else {
-					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates_we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
+					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
 				} # else
 			} # if
 		} else {
