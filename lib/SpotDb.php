@@ -80,7 +80,7 @@ class SpotDb
 	} # func. getMaxMessageId
 	
 	function getMaxMessageTime() {
-		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY id DESC LIMIT 1");
+		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY stamp DESC LIMIT 1");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
@@ -426,11 +426,11 @@ class SpotDb
 	 */
 	function emptyDownloadList() {
 		switch ($this->_dbsettings['engine']) {
-			case 'sqlite3'	: { 
+			case 'sqlite3'	: {
 				return $this->_conn->exec("DELETE FROM downloadlist;");
 			} # sqlite3
 			default			: {
-				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");      
+				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
 			} # default
 		} # switch
 	} # emptyDownloadList()

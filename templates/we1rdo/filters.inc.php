@@ -7,10 +7,9 @@
 ?>
 						<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>">
 <?php
+	$filterColCount = 3;
 	if ($settings['retrieve_full']) {
-		$filterColCount = 4;
-	} else {
-		$filterColCount = 3;
+		$filterColCount++;
 	} # if
 ?>
                         <table class="filters">
@@ -42,10 +41,23 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
+					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
+					
+					<ul class="filterlist quicklinks">
+<?php
+    foreach($quicklinks as $quicklink) {
+?>
+							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $quicklink[2]; ?>">
+							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; ?></a>
+<?php
+    }
+?>
+					</ul>
+						
 					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
 					
-                    <ul class="filterlist filters"> 
-                    	<li><a href="<?php echo $tplHelper->getPageUrl('watchlist'); ?>"><img src="images/icons/fav.png" alt='Watchlist'> Watchlist </a></li>
+                    <ul class="filterlist filters">
+
 <?php
     foreach($filters as $filter) {
 ?>
@@ -96,5 +108,4 @@
 ?>
 						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
-
 				</div>

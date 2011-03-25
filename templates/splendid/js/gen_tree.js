@@ -43,7 +43,7 @@ $(function(){
 						alert('Error removing downloadlist');
 					},
 					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates_splendid/img/loading.gif' />");
+						var x = $("li.info").html("<img src='templates/splendid/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
 						var x = setTimeout( function() { $("li.info").html("Geschiedenis is geleegd!") }, 1000);
@@ -75,7 +75,7 @@ $(function(){
 						} // if 
 					},
 					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates_splendid/img/loading.gif' />");
+						var x = $("li.info").html("<img src='templates/splendid/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
 						var x = $("li.info").html("Spots zijn geupdate!");
@@ -97,7 +97,7 @@ $(function(){
 						alert('Error marking all as read');
 					},
 					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates_splendid/img/loading.gif' />");
+						var x = $("li.info").html("<img src='templates/splendid/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
 						var x = setTimeout( function() { $("li.info").html("Alle spots zijn gemarkeerd als gelezen!") }, 1000);
@@ -126,10 +126,10 @@ $(function(){
 						// niet te zien
 					},
 					beforeSend: function(jqXHR, settings) {
-						$(temp).html("<img class='sabnzbd-button' src='templates_splendid/img/loading.gif' />");
+						$(temp).html("<img class='sabnzbd-button' src='templates/splendid/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						setTimeout( function() { $(temp).html("<img class='sabnzbd-button' src='templates_splendid/img/succes.png' />") }, 1000);
+						setTimeout( function() { $(temp).html("<img class='sabnzbd-button' src='templates/splendid/img/succes.png' />") }, 1000);
 					}, // # complete
 					dataType: "text"
 				});

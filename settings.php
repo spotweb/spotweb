@@ -27,9 +27,6 @@ $settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
-    Array("Reset filters", "images/icons/home.png", "&search[unfiltered]=true", "", array()),
-	Array("Nieuw", "images/icons/today.png", "&search[unfiltered]=true&search[type]=New", "", array()),
-	Array("Gedownload", "images/icons/download.png", "&search[unfiltered]=true&search[type]=Downloaded", "", array()),
     Array("Beeld", "images/icons/film.png", "cat0_a,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", "", 
         Array(
             Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_d11,~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26", ""),
@@ -156,8 +153,8 @@ $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt
 # het detecteren komt pas na het laden van de ownsettings.
 
 $settings['templates']['autodetect'] = true;
-$settings['templates']['default'] = './templates_we1rdo/';
-$settings['templates']['mobile'] = './templates_mobile/';
+$settings['templates']['default'] = 'templates/we1rdo/';
+$settings['templates']['mobile'] = 'templates/mobile/';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
@@ -176,6 +173,9 @@ $settings['show_multinzb'] = true;
 
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
+
+# moeten we een watchlist bijhouden?
+$settings['keep_watchlist'] = true;
 
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
@@ -247,7 +247,18 @@ $settings['retrieve_increment'] = 1000;
 # je instellingen bewaard blijven.
 #
 if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('./ownsettings.php')) { include_once('./ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+
+# QuickLinks
+$settings['quicklinks'] = Array();
+$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
+$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New", "");
+if ($settings['keep_watchlist']) {
+	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+}
+if ($settings['keep_downloadlist']) {
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "");
+}
 
 #
 # Ga nu de template zetten
@@ -269,7 +280,7 @@ if (($settings['templates']['autodetect']) &&
 			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
 				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
 				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
-				$settings['tpl_path'] = './templates_' . $settings['available_templates'][$chosenTemplate] . '/';
+				$settings['tpl_path'] = 'templates/' . $settings['available_templates'][$chosenTemplate] . '/';
 				
 				// verleng cookie
 				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
@@ -280,6 +291,12 @@ if (($settings['templates']['autodetect']) &&
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
+
+# Fix eventueel oude template paths naar nieuwe template paths
+if (substr($settings['tpl_path'], 0, strlen('./templates_')) == './templates_') {
+	echo "LET OP! De lokatie van de templates is gewijzigd, pas je ownsettings.php aan!<br>";
+	$settings['tpl_path'] = str_replace('templates_', 'templates/', $settings['tpl_path']);
+} # if
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server

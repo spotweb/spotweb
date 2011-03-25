@@ -37,10 +37,22 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 						
 					</form><br />
 					
+					<h4>QuickLinks</h4><br />
+					
+					<ul id="quicklinksmenu">
+<?php
+    foreach($quicklinks as $quicklink) {
+?>					
+                        <li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $quicklink[2];?>&ajax=1');clearTree();">
+						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
+<?php
+}
+?>
+                    </ul><br /><br />
+
 					<h4>Filters</h4><br />
                     
                     <ul id="filtermenu">
-                      <li><div><a href="?page=watchlist" class="spotlink"><img src="images/icons/fav.png"> Watchlist </a></div></li>
 <?php
     foreach($filters as $filter) {
 ?>
@@ -93,7 +105,7 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					</ul>
 
 				</div><br style="clear: both" />
-				<img src="templates_splendid/img/menu_end.jpg" width="255" height="24" border="0" />
+				<img src="templates/splendid/img/menu_end.jpg" width="255" height="24" border="0" />
 			</div>
 
 <?php } ?>
