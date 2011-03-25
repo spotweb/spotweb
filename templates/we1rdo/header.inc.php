@@ -215,8 +215,8 @@
 		//Cookie uitlezen en in die staat op scherm toveren
 		$(function(){
 			var theStateSearch = $.cookie("viewSearch");
-			var theStateQuickLinks = $.cookie("viewMaintenance");
-			var theStateFilters = $.cookie("viewQuickLinks");
+			var theStateQuickLinks = $.cookie("viewQuickLinks");
+			var theStateFilters = $.cookie("viewFilters");
 			var theStateMaintenance = $.cookie("viewMaintenance");
 			$('#filterform').css('display', theStateSearch);
 			toggleFilterImage('#filterform_img', theStateSearch);
