@@ -532,13 +532,15 @@ class SpotDb
 										 s.subcatb AS subcatb, 
 										 s.subcatc AS subcatc, 
 										 s.subcatd AS subcatd, 
+										 d.stamp AS downloadstamp,
 										 s.title AS title, 
 										 s.tag AS tag, 
 										 s.stamp AS stamp, 
 										 s.filesize AS filesize, 
 										 s.moderated AS moderated 
 									FROM watchlist w 
-									LEFT JOIN spots s ON s.messageid = w.messageid 
+									LEFT JOIN spots s ON s.messageid = w.messageid
+									LEFT JOIN downloadlist AS d on d.messageid = w.messageid
 									ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']));
 	} # addToWatchList
 
