@@ -262,14 +262,10 @@ class SpotsOverview {
 				$field = 'userid';
 			} # else
 			
-			if($this->_settings['db']['engine'] == 'mysql')
-			{
-				$textSearch .= " MATCH($field) AGAINST('" . $this->_db->safe($search['text']) . "' IN BOOLEAN MODE)";
-			}
-			else
-			{
-				$textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')";
-			}
+			switch($this->_settings['db']['engine'] == 'mysql') {
+				case 'mysql'	: $textSearch .= " MATCH($field) AGAINST('" . $this->_db->safe($search['text']) . "' IN BOOLEAN MODE)"; break;
+				default			: $textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')"; break;
+			} # switch
 		} # if
 
 		# strong nots
