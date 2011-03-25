@@ -84,6 +84,9 @@
 <?php	
 			} # if
 		} # foreach
+		if ($count == 0) {
+			echo "Geen (geverifieerde) comments gevonden.";
+		}
 ?>
 				</ul>
             </div>
