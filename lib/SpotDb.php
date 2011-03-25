@@ -416,7 +416,14 @@ class SpotDb
 	 * Wis de lijst met downloads
 	 */
 	function emptyDownloadList() {
-		return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
+		switch ($this->_dbsettings['engine']) {
+			case 'sqlite3'	: { 
+				return $this->_conn->exec("DELETE FROM downloadlist;");
+			} # sqlite3
+			default			: {
+				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");      
+			} # default
+		} # switch
 	} # emptyDownloadList()
 
 	/*
