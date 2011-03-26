@@ -148,18 +148,10 @@ class SpotNntp {
 					} # foreach
 
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
-					if ((!empty($tmpAr['user-signature'])) && (!empty($tmpAr['user-key']))) {
-						$tmpAr['verified'] = $spotSigning->checkRsaSignature('<' . $tmpAr['messageid'] .  '>', $tmpAr['user-signature'], $tmpAr['user-key']);
-						if (!$tmpAr['verified']) {
-							$tmpAr['verified'] = $spotSigning->checkRsaSignature('<' . $tmpAr['messageid'] .  '>' . implode("\r\n", $tmpAr['body']) . "\r\n\r\n" . $tmpAr['from'], $tmpAr['user-signature'], $tmpAr['user-key']);
-						} # if
-						
-						if ($tmpAr['verified']) {
-							$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
-						} # if
-					} else {
-						$tmpAr['verified'] = false;
-					} # else
+					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
+					if ($tmpAr['verified']) {
+						$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
+					} # if
 
 					$comments[] = $tmpAr; 
 				} 
@@ -232,15 +224,7 @@ class SpotNntp {
 			} # foreach
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
-			if ((!empty($spot['user-signature'])) && (!empty($spot['user-key']))) {
-				$spot['verified'] = $spotSigning->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
-				
-				if (!$spot['verified']) {
-					$spot['verified'] = $spotSigning->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
-				} # if 
-			} else {
-				$spot['verified'] = false;
-			} # else
+			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
 
 			# als de spot verified is, toon dan de userid van deze user
 			if ($spot['verified']) {

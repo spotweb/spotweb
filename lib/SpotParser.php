@@ -240,13 +240,9 @@ class SpotParser {
 								} else {
 									# the signature this header is signed with
 									$signature = $this->unspecialString($spot['headersign']);
-
-									# This is the string to verify
-									$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 									
-									# Check the RSA signature on the spot
-									$spotSigning = new SpotSigning();
-									$spot['verified'] = $spotSigning->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
+									$spotSigning = new SpotSigning(...);
+									$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature);
 								} # else
 							} # if
 						} # if must be signed
