@@ -366,7 +366,7 @@ class SpotDb
 		# If spot is fully stored in db and is of the new type, we process it to
 		# make it exactly the same as when retrieved using NNTP
 		if (!empty($tmpArray['fullxml']) && (!empty($tmpArray['user-signature']))) {
-			$tmpArray['user-signature'] = base64_decode($tmpArray['user-signature']);
+			$tmpArray['user-signature'] = $tmpArray['user-signature'];
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 		
@@ -519,7 +519,7 @@ class SpotDb
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
 					  (int) $fullSpot['verified'],
-					  base64_encode($fullSpot['user-signature']),
+					  $fullSpot['user-signature'],
 					  base64_encode(serialize($fullSpot['user-key'])),
 					  $fullSpot['xml-signature'],
 					  $fullSpot['fullxml'],

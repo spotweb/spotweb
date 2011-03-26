@@ -22,7 +22,7 @@ class SpotPage_atom extends SpotPage_Abs {
 								  'direction' => $this->_params['sortdir']));
 		
 		$fullSpots = array();
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
+		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
 
 		foreach($spotsTmp['list'] as $spot) {
 			try {
