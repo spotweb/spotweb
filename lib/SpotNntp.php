@@ -1,5 +1,7 @@
 <?php
 require_once "Net/NNTP/Client.php";
+require_once "lib/SpotSigning.php";
+require_once "lib/SpotParser.php";
 
 class SpotNntp {
 		private $_server;
@@ -116,6 +118,7 @@ class SpotNntp {
 		
 		function getComments($commentList) {
 			$comments = array();
+			$spotSigning = new SpotSigning();
 			$spotParser = new SpotParser();
 			
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
@@ -132,7 +135,7 @@ class SpotNntp {
 						switch($keys[0]) {
 							case 'From'				: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
 							case 'Date'				: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
-							case 'X-User-Signature'	: $tmpAr['user-signature'] = base64_decode($spotParser->unspecialString(substr($hdr, 18))); break;
+							case 'X-User-Signature'	: $tmpAr['user-signature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
 							case 'X-User-Key'		: {
 									$xml = simplexml_load_string(substr($hdr, 12)); 
 									if ($xml !== false) {
@@ -146,13 +149,13 @@ class SpotNntp {
 
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
 					if ((!empty($tmpAr['user-signature'])) && (!empty($tmpAr['user-key']))) {
-						$tmpAr['verified'] = $spotParser->checkRsaSignature('<' . $tmpAr['messageid'] .  '>', $tmpAr['user-signature'], $tmpAr['user-key']);
+						$tmpAr['verified'] = $spotSigning->checkRsaSignature('<' . $tmpAr['messageid'] .  '>', $tmpAr['user-signature'], $tmpAr['user-key']);
 						if (!$tmpAr['verified']) {
-							$tmpAr['verified'] = $spotParser->checkRsaSignature('<' . $tmpAr['messageid'] .  '>' . implode("\r\n", $tmpAr['body']) . "\r\n\r\n" . $tmpAr['from'], $tmpAr['user-signature'], $tmpAr['user-key']);
+							$tmpAr['verified'] = $spotSigning->checkRsaSignature('<' . $tmpAr['messageid'] .  '>' . implode("\r\n", $tmpAr['body']) . "\r\n\r\n" . $tmpAr['from'], $tmpAr['user-signature'], $tmpAr['user-key']);
 						} # if
 						
 						if ($tmpAr['verified']) {
-							$tmpAr['userid'] = $spotParser->calculateUserid($tmpAr['user-key']['modulo']);
+							$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
 						} # if
 					} else {
 						$tmpAr['verified'] = false;
@@ -195,6 +198,7 @@ class SpotNntp {
 		
 		function getFullSpot($msgId) {
 			# initialize some variables
+			$spotSigning = new SpotSigning();
 			$spotParser = new SpotParser();
 			
 			$spot = array('fullxml' => '',
@@ -214,7 +218,7 @@ class SpotNntp {
 				
 				switch($keys[0]) {
 					case 'X-XML' 			: $spot['fullxml'] .= substr($str, 7); break;
-					case 'X-User-Signature'	: $spot['user-signature'] = base64_decode($spotParser->unspecialString(substr($str, 18))); break;
+					case 'X-User-Signature'	: $spot['user-signature'] = $spotParser->unspecialString(substr($str, 18)); break;
 					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($str, 12)); 
@@ -229,10 +233,10 @@ class SpotNntp {
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			if ((!empty($spot['user-signature'])) && (!empty($spot['user-key']))) {
-				$spot['verified'] = $spotParser->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
+				$spot['verified'] = $spotSigning->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
 				
 				if (!$spot['verified']) {
-					$spot['verified'] = $spotParser->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+					$spot['verified'] = $spotSigning->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
 				} # if 
 			} else {
 				$spot['verified'] = false;
@@ -240,7 +244,7 @@ class SpotNntp {
 
 			# als de spot verified is, toon dan de userid van deze user
 			if ($spot['verified']) {
-				$spot['userid'] = $spotParser->calculateUserid($spot['user-key']['modulo']);
+				$spot['userid'] = $spotSigning->calculateUserid($spot['user-key']['modulo']);
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
