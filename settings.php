@@ -131,6 +131,10 @@ $settings['retrieve_newer_than'] = 0;
 # $settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
 $settings['prefs']['date_formatting'] = "human";
 
+# Is OpenSSL juist geconfigureerd en geladen als module? Zet dit dan op true, dan gaat het signen en verifieeren
+# van spots en comments sneller
+$settings['use_openssl'] = false; 
+
 # settings 
 $settings['hdr_group'] = 'free.pt';
 $settings['nzb_group'] = 'alt.binaries.ftd';
