@@ -3,6 +3,7 @@ require_once "Math/BigInteger.php";
 require_once "Crypt/RSA.php";
 require_once "settings.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
+require_once "lib/SpotSigning.php";
 
 class SpotParser {
 	function parseFull($xmlStr) {
@@ -240,13 +241,14 @@ class SpotParser {
 									$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
 								} else {
 									# the signature this header is signed with
-									$signature = base64_decode($this->unspecialString($spot['headersign']));
+									$signature = $this->unspecialString($spot['headersign']);
 
 									# This is the string to verify
 									$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 									
 									# Check the RSA signature on the spot
-									$spot['verified'] = $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
+									$spotSigning = new SpotSigning();
+									$spot['verified'] = $spotSigning->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
 								} # else
 							} # if
 						} # if must be signed
@@ -271,13 +273,6 @@ class SpotParser {
 		return $strInput;
 	} # fixPadding
 
-	/*private */function unspecialString($strInput) {
-		$strInput = $this->fixPadding($strInput);
-		$strInput = str_replace('-s', '/', $strInput);
-		$strInput = str_replace('-p', '+', $strInput);
-		
-		return $strInput;
-	} # unspecialString
 	
 	/*private */function unspecialZipStr($strInput) {
 		$strInput = str_replace('=C', "\n", $strInput);
@@ -424,35 +419,14 @@ class SpotParser {
 		
 		return $builder2;
 	} # oldEncodingParse
-
-	public function checkRsaSignature($toCheck, $signature, $rsaKey) {
-		# Initialize the public key to verify with
-		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
-		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
-		
-		# and verify the signature
-		$rsa = new Crypt_RSA();
-		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		
-		# Supress notice if the signature was invalid
-		$saveErrorReporting = error_reporting(E_ERROR);
-		$tmpSave = $rsa->verify($toCheck, $signature);
-		error_reporting($saveErrorReporting);
-		
-		return $tmpSave;
-	} # checkRsaSignature
 	
-	public function calculateUserid($userKey) {
-		$userSignCrc = crc32(base64_decode($userKey));
-		
-		$userIdTmp = chr($userSignCrc & 0xFF) .
-						chr(($userSignCrc >> 8) & 0xFF ).
-						chr(($userSignCrc >> 16) & 0xFF) .
-						chr(($userSignCrc >> 24) & 0xFF);
-		
-		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-	} # calculateUserId
 	
+	/*private */function unspecialString($strInput) {
+		$strInput = $this->fixPadding($strInput);
+		$strInput = str_replace('-s', '/', $strInput);
+		$strInput = str_replace('-p', '+', $strInput);
+		
+		return $strInput;
+	} # unspecialString
 } # class Spot
 
