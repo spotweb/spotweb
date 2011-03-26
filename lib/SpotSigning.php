@@ -70,10 +70,61 @@ class SpotSigning {
 	 * Converteer een voor ons bruikbare publickey, naar een publickey
 	 * formaat gebruikt door de SpotNet native client
 	 */
-	function pubkeyToXml($pubkey) {
+	public function pubkeyToXml($pubkey) {
 		return "<RSAKeyValue><Modulus>" . $pubkey['n'] . '</Modulus><Exponent>' . $pubkey['e'] . '</Exponent></RSAKeyValue>';
 	} # pubkeyToXml 
 		
+	
+	/*
+	 * Helper functie om een spot header (resultaat uit een xover of getHeader()) te verifieeren
+	 */
+	public function verifySpotHeader($spot, $signature) {
+		# This is the string to verify
+		$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
+		
+		# Check the RSA signature on the spot
+		return $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
+	} # verifySpotHeader()
+
+	/*
+	 * Helper functie om een fullspot te verifieeren
+	 */
+	public function verifyFullSpot($spot) {
+		if ((empty($spot['user-signature'])) || (empty($spot['user-key']))) {
+			return false;
+		} # if
+		
+		$verified = $spotSigning->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
+		if (!$verified) {
+			$verified = $spotSigning->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+		} # if
+		
+		return $verified;
+	} # verifySpotHeader()
+	
+	/*
+	 * Helper functie om een comment header te verifieeren
+	 */
+	public function verifyComment($comment) {
+		if ((empty($tmpAr['user-signature'])) || (empty($tmpAr['user-key']))) {
+			return false;
+		} # if
+
+		$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+		if (!$verified) {
+			$verified = $spotSigning->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
+															implode("\r\n", $comment['body']) . "\r\n\r\n" . 
+															$comment['from'], 
+														$comment['user-signature'], 
+														$comment['user-key']);
+		} # if
+		
+		return $verified;
+	} # verifyComment()
+	
+	/*
+	 * 'Bereken' de userid aan de hand van z'n publickey
+	 */
 	public function calculateUserid($userKey) {
 		$userSignCrc = crc32(base64_decode($userKey));
 		
