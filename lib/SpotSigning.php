@@ -40,6 +40,18 @@ class SpotSigning {
 	 * - Het bericht dat gesigned is (message)
 	 */
 	public function signMessage($privatekey, $message) {
+		/**
+		 * Test code:
+		 * 
+		 * $rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		 * extract($rsa->createKey());
+		 * $spotSigning = new SpotSigning();
+		 * $x = $spotSigning->signMessage($privatekey, 'testmessage');
+		 * var_dump($x);
+		 * var_dump($spotSigning->checkRsaSignature('testmessage', $x['signature'], $x['publickey']));
+		 *
+		 */
+		 
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
 		$rsa->loadKey($privatekey);
