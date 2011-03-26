@@ -285,7 +285,7 @@ class SpotsOverview {
 		# New spots
 		if (isset($search['type']) && $search['type'] == 'New') {
 			if (isset($_SESSION['last_visit'])) {
-				$textSearch .= ' (s.stamp >= ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
+				$textSearch .= ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
 			} # if
 		} # if
 
