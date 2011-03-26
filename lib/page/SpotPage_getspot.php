@@ -12,7 +12,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 
 
 	function render() {
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr']);
+		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
 		
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);

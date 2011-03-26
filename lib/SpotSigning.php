@@ -4,20 +4,20 @@ require_once "Crypt/RSA.php";
 
 class SpotSigning {
 
-	public function __constructor($useOpenSsl) {
+	public function __construct($useOpenSsl) {
 		if ($useOpenSsl) {
 			define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
 		} # if
 	} # ctor
 
-	public function checkRsaSignature($toCheck, $signature, $rsaKey) {
+	private function checkRsaSignature($toCheck, $signature, $rsaKey) {
 		# de signature is base64 encoded, eerst decoden
 		$signature = base64_decode($signature);
 		
 		# Initialize the public key to verify with
 		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
 		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
-
+		
 		# and verify the signature
 		$rsa = new Crypt_RSA();
 		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
@@ -27,7 +27,7 @@ class SpotSigning {
 		$saveErrorReporting = error_reporting(E_ERROR);
 		$tmpSave = $rsa->verify($toCheck, $signature);
 		error_reporting($saveErrorReporting);
-		
+
 		return $tmpSave;
 	} # checkRsaSignature
 	
@@ -78,7 +78,7 @@ class SpotSigning {
 	/*
 	 * Helper functie om een spot header (resultaat uit een xover of getHeader()) te verifieeren
 	 */
-	public function verifySpotHeader($spot, $signature) {
+	public function verifySpotHeader($spot, $signature, $rsakeys) {
 		# This is the string to verify
 		$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 		
@@ -94,9 +94,9 @@ class SpotSigning {
 			return false;
 		} # if
 		
-		$verified = $spotSigning->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
+		$verified = $this->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
 		if (!$verified) {
-			$verified = $spotSigning->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+			$verified = $this->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
 		} # if
 		
 		return $verified;
@@ -106,19 +106,19 @@ class SpotSigning {
 	 * Helper functie om een comment header te verifieeren
 	 */
 	public function verifyComment($comment) {
-		if ((empty($tmpAr['user-signature'])) || (empty($tmpAr['user-key']))) {
+		if ((empty($comment['user-signature'])) || (empty($comment['user-key']))) {
 			return false;
 		} # if
 
 		$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
 		if (!$verified) {
-			$verified = $spotSigning->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
-															implode("\r\n", $comment['body']) . "\r\n\r\n" . 
+			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
+															implode("\r\n", $comment['body']) . "\r\n" . 
 															$comment['from'], 
-														$comment['user-signature'], 
-														$comment['user-key']);
+												$comment['user-signature'], 
+												$comment['user-key']);
 		} # if
-		
+
 		return $verified;
 	} # verifyComment()
 	

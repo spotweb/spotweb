@@ -4,6 +4,7 @@ require_once "lib/SpotSigning.php";
 require_once "lib/SpotParser.php";
 
 class SpotNntp {
+		private $_use_openssl;
 		private $_server;
 		private $_user;
 		private $_pass;
@@ -14,7 +15,7 @@ class SpotNntp {
 		private $_nntp;
 		private $_connected;
 		
-		function __construct($server) { 
+		function __construct($server, $use_openssl) { 
 			$error = '';
 			
 			$this->_connected = false;
@@ -23,6 +24,9 @@ class SpotNntp {
 			$this->_serverport = $server['port'];
 			$this->_user = $server['user'];
 			$this->_pass = $server['pass'];
+			
+			# Moeten we OpenSSL gebruiken om RSA encryptie te versnellen?
+			$this->_use_openssl = $use_openssl;
 			
 			# Set pear error handling to be used by exceptions
 			PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);			
@@ -118,7 +122,7 @@ class SpotNntp {
 		
 		function getComments($commentList) {
 			$comments = array();
-			$spotSigning = new SpotSigning();
+			$spotSigning = new SpotSigning($this->_use_openssl);
 			$spotParser = new SpotParser();
 			
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
@@ -190,7 +194,7 @@ class SpotNntp {
 		
 		function getFullSpot($msgId) {
 			# initialize some variables
-			$spotSigning = new SpotSigning();
+			$spotSigning = new SpotSigning($this->_use_openssl);
 			$spotParser = new SpotParser();
 			
 			$spot = array('fullxml' => '',

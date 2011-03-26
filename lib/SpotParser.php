@@ -77,7 +77,7 @@ class SpotParser {
 		return $tpl_spot;
 	} # parseFull()
 
-	function parseXover($subj, $from, $date, $messageid, $rsakeys) {
+	function parseXover($subj, $from, $date, $messageid, $rsakeys, $use_openssl) {
 		$_ID = 2;
 		$_CAT = 0;
 
@@ -241,8 +241,8 @@ class SpotParser {
 									# the signature this header is signed with
 									$signature = $this->unspecialString($spot['headersign']);
 									
-									$spotSigning = new SpotSigning(...);
-									$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature);
+									$spotSigning = new SpotSigning($use_openssl);
+									$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature, $rsakeys);
 								} # else
 							} # if
 						} # if must be signed
