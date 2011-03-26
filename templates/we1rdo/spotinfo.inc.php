@@ -85,7 +85,7 @@
 			} # if
 		} # foreach
 		if ($count == 0) {
-			echo "Geen (geverifieerde) comments gevonden.";
+			echo "<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>";
 		}
 ?>
 				</ul>
