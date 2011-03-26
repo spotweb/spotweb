@@ -1,6 +1,4 @@
 <?php
-require_once "Math/BigInteger.php";
-require_once "Crypt/RSA.php";
 require_once "settings.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/SpotSigning.php";
