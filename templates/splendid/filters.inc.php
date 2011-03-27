@@ -42,13 +42,16 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					<ul id="quicklinksmenu">
 <?php
     foreach($quicklinks as $quicklink) {
-      if($quicklink[0] == 'Watchlist') {
+		if (stripos($quicklink[2], 'search[type]=New')) {
+			$newQuickCount = $tplHelper->getNewSpotCount("cat0_a,cat1_a,cat2_a,cat3_a");
+		} else { $newQuickCount = 0; }
+		if($quicklink[0] == 'Watchlist') {
 ?>
                         <li><div><a class="quicklink spotlink" href="<?php echo $quicklink[2]; ?>">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
 <?php } else { ?>
                         <li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $quicklink[2];?>&ajax=1');clearTree();">
-						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
+						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; if ($newQuickCount > 0) { echo " (" . $newQuickCount . ")"; } ?></a></div></li>
 <?php
 	  }
 	}
@@ -60,23 +63,30 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
                     <ul id="filtermenu">
 <?php
     foreach($filters as $filter) {
+		$newCount = $tplHelper->getNewSpotCount($filter[2]);
 ?>
-                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>><div><a class="filter <?php echo $filter[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $filter[2];?>&ajax=1');clearTree();"><img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; ?></a></div></li>
+                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>><div><a class="filter <?php echo $filter[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $filter[2];?>&ajax=1');clearTree();">
+						<img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a></div></li>
 <?php
         if (!empty($filter[4])) {
+			
             //echo "\t\t\t\t\t\t\t<ul class=''>\r\n";
             foreach($filter[4] as $subFilter) {
+				$newSubCount = $tplHelper->getNewSpotCount($subFilter[2]);
 				$strFilter = '?search[tree]=' . $subFilter[2];
 ?>
-            			<li><div><a class="subfilter <?php echo $subFilter[3];?>" onclick="$('#spots').load('<?php echo $strFilter;?>&ajax=1');clearTree();"><img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; ?></a></div></li>
+            			<li><div><a class="subfilter <?php echo $subFilter[3];?>" onclick="$('#spots').load('<?php echo $strFilter;?>&ajax=1');clearTree();">
+						<img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; if ($newSubCount > 0) { echo " (" . $newSubCount . ")"; } ?></a></div></li>
             			
 <?php
 				if (!empty($subFilter[4])) {
 					//echo "\t\t\t\t\t\t\t<ul class=''>\r\n";
 					foreach($subFilter[4] as $sub2Filter) {
+						$newSub2Count = $tplHelper->getNewSpotCount($sub2Filter[2]);
 						$strFilter = '';
 		?>
-							<li><div><a class="subsubfilter <?php echo $sub2Filter[3];?>" onclick="$('#spots').load('<?php echo $strFilter;?>&ajax=1');clearTree();"><img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; ?></a></div></li>
+							<li><div><a class="subsubfilter <?php echo $sub2Filter[3];?>" onclick="$('#spots').load('<?php echo $strFilter;?>&ajax=1');clearTree();">
+							<img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; if ($newSubCount > 0) { echo " (" . $newSubCount . ")"; } if ($newSub2Count > 0) { echo " (" . $newSub2Count . ")"; } ?></a></div></li>
 		<?php
 					} # foreach 
 					//echo "\t\t\t\t\t\t\t</ul>\r\n";
