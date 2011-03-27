@@ -50,9 +50,9 @@
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
-		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $quicklink[2];
 		if (stripos($quicklink[2], 'search[type]=New') && $settings['count_newspots']) {
-			$newQuickCount = $tplHelper->getFilteredSpotCount($strFilter, '');
+			$strCountFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
+			$newQuickCount = $tplHelper->getFilteredSpotCount($strCountFilter);
 		} else { $newQuickCount = 0; }
 ?>
 							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $quicklink[2]; ?>">
@@ -70,7 +70,8 @@
     foreach($filters as $filter) {
 		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
 		if ($settings['count_newspots']) {
-			$newCount = $tplHelper->getFilteredSpotCount($strFilter, 'new');
+			$strCountFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2] . '&amp;search[type]=New';
+			$newCount = $tplHelper->getFilteredSpotCount($strCountFilter);
 		} else { $newCount = 0; }
 ?>
 						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $strFilter;?>">
@@ -81,7 +82,8 @@
             foreach($filter[4] as $subFilter) {
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
 				if ($settings['count_newspots']) {
-					$newSubCount = $tplHelper->getFilteredSpotCount($strFilter, 'new');
+					$strCountFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2] . '&amp;search[type]=New';
+					$newSubCount = $tplHelper->getFilteredSpotCount($strCountFilter);
 				} else { $newSubCount = 0; }
 ?>
 							<li> <a class="filter <?php echo $subFilter[3];?>" href="<?php echo $strFilter;?>">
@@ -92,7 +94,8 @@
 					foreach($subFilter[4] as $sub2Filter) {
 						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
 						if ($settings['count_newspots']) {
-							$newSub2Count = $tplHelper->getFilteredSpotCount($strFilter, 'new');
+							$strCountFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2] . '&amp;search[type]=New';
+							$newSub2Count = $tplHelper->getFilteredSpotCount($strCountFilter);
 						} else { $newSub2Count = 0; }
 		?>
 							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="<?php echo $strFilter;?>">

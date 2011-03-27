@@ -170,7 +170,7 @@ class SpotDb
 	function getLastUpdate($server) {
 		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
 	} # getLastUpdate
-
+	
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
@@ -179,17 +179,17 @@ class SpotDb
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
-						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter;
+						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter; 
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
-
+		
 		if ($cnt == null) {
 			return 0;
 		} else {
 			return $cnt;
 		} # if
 	} # getSpotCount
-
+	
 	/*
 	 * Match set of comments
 	 */
