@@ -31,19 +31,4 @@ class CustomTplHelper extends SpotTemplateHelper {
 		} # else
 	} # filter2cat 
 	
-	function getSitePath() {
-		$site = $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80) {
-			$port = ':' . $_SERVER['SERVER_PORT'];
-		} else {
-			$port = '';
-		} # else
-		$source = $_SERVER['REQUEST_URI'];
-		$getpath = explode('/',$source);
-		$setpath = $site . $port . "/" . $getpath[1] . "/";
-		
-		return 'http://' . $setpath;
-	} # getSitePath
-	
-	
 } # class CustomTplHelper

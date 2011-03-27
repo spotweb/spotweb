@@ -35,7 +35,7 @@
 							</th>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
-                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you allready downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
 	<?php } else { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates/we1rdo/img/download.png" class="sabnzbd-button"></a></th>
 <?php } } ?>								
@@ -62,7 +62,14 @@
                         <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                         <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+<?php
+		if (!empty($spot['nzb'])) {
+?>		
                         <tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>'>NZB</a> </td> </tr>
+<?php
+		}
+?>
+						
                     </tbody>
 				</table>
       		</div>
