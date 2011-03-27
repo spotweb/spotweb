@@ -1,5 +1,6 @@
-				<div id="filter" class="filter"><h4 class="search"><div><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll"><label>Scroll</label></div><span class="viewState">
-				<a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
+				<div id="filter" class="filter">
+                	<div class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll"><label>Scroll</label></div>
+                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
 <?php
@@ -41,7 +42,7 @@
 						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
+					<h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					
 					<ul class="filterlist quicklinks">
 <?php
@@ -58,7 +59,7 @@
 ?>
 					</ul>
 						
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
+					<h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
 					
                     <ul class="filterlist filters">
 
@@ -105,7 +106,7 @@
 ?>
                     </ul>
 
-					<h4 class="search"><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="" alt="" /></a></span> Onderhoud </h4>
+					<h4><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="" alt="" /></a></span> Onderhoud </h4>
 
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
