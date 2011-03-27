@@ -286,8 +286,10 @@ class SpotsOverview {
 		# New spots
 		if (isset($search['type']) && $search['type'] == 'New') {
 			if (isset($_SESSION['last_visit'])) {
-				$textSearch .= ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ")";
+				$newSpotsSearchTmp[] = ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
 			} # if
+			
+			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
 		# Downloaded spots
@@ -305,7 +307,10 @@ class SpotsOverview {
 		if (!empty($notSearch)) {
 			$endFilter[] = $notSearch;
 		} # if
-		
+		if (!empty($newSpotsSearch)) {
+			$endFilter[] = $newSpotsSearch;
+		} # if
+
 		return join(" AND ", $endFilter);
 	} # filterToQuery
 	
