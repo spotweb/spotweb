@@ -4,6 +4,8 @@
  */
 require_once "lib/dbeng/db_sqlite3.php";
 require_once "lib/dbeng/db_mysql.php";
+require_once "lib/dbeng/db_pdo_sqlite.php";
+require_once "lib/dbeng/db_pdo_mysql.php";
 
 class SpotDb
 {
@@ -31,7 +33,15 @@ class SpotDb
 												$this->_dbsettings['dbname']); 
 							  break;
 							  
-		    default			: throw new Exception('Unknown DB engine specified, please choose either sqlite3 or mysql');
+			case 'pdo_mysql': $this->_conn = new db_pdo_mysql($this->_dbsettings['host'],
+												$this->_dbsettings['user'],
+												$this->_dbsettings['pass'],
+												$this->_dbsettings['dbname']);
+							  break;
+			case 'pdo_sqlite': $this->_conn = new db_pdo_sqlite($this->_dbsettings['path']);
+							   break;
+				
+			default			: throw new Exception('Unknown DB engine specified, please choose either sqlite3 or mysql');
 		} # switch
 		
 		$this->_conn->connect();
