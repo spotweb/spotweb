@@ -32,18 +32,13 @@ class SpotTemplateHelper {
 	} # getSpotCount
 
 	/*
-	 * Geef het aantal nieuwe spots terug 
-	 */
+	* Geef het aantal nieuwe spots terug
+	*/
 	function getNewSpotCount($filter) {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$poofFilter = explode("&", $filter);
-		$filter = array("tree" => $poofFilter[0]);
-		unset($poofFilter[0]);
-		foreach($poofFilter as $filter) {
-			$filter[$filter[0]] = $filter[1];
-		}
-		$filter['type'] = "New";
-		$sqlFilter = $spotsOverview->filterToQuery($filter);
+		parse_str(html_entity_decode($filter), $query_params);
+		$sqlFilter = $spotsOverview->filterToQuery($query_params['search']);
+		//var_dump($sqlFilter);
 		return $this->_db->getSpotCount($sqlFilter);
 	} # getNewSpotCount
 

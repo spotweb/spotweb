@@ -164,12 +164,12 @@ class SpotDb
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
-	function getSpotCount($filter="") {
-		if ($filter == "") {
-			$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
-		} else {
-			$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots AS s WHERE " . $filter);
-		}
+	function getSpotCount($sqlfilter=NULL) {
+		$query = "SELECT COUNT(1) FROM spots AS s";
+		if ($sqlfilter) { $query .= " LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+									WHERE" . $sqlfilter; }
+		//echo $query;
+		$cnt = $this->_conn->singleQuery($query);
 		
 		if ($cnt == null) {
 			return 0;
