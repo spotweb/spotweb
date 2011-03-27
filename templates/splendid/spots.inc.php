@@ -128,7 +128,7 @@ if ($settings['keep_watchlist']) { ?>
 			 
 
 		# only display the NZB button from 24 nov or later
-		if ($spot['stamp'] > 1290578400 ) {
+		if ($spot['stamp'] > 1290578400) {
 			if ($settings['show_nzbbutton']) {
 				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' title ='Download NZB' class='nzb'>NZB";
 				
