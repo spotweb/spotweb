@@ -192,9 +192,9 @@
 		function toggleScrolling(state) {
 			if (state == true || state == 'true') {
 				$('#filterscroll').attr('checked','checked');
-				$(window).scroll(function(){ $("#filter").stop() .animate({"marginTop": ($(window).scrollTop()) + "px"}, 200); });
+				$("#filter").css('position', 'fixed');
 			} else {
-				$(window).scroll(function(){ $("#filter").stop() });
+				$("#filter").css('position', 'relative');
 			}
 		}
 		
