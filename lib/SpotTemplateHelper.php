@@ -35,7 +35,7 @@ class SpotTemplateHelper {
 	* Geef het aantal spots terug maar dan rekening houdende met het filter
 	*/
 	function getFilteredSpotCount($filter, $extrafilter) {
-		if ($extrafilter == 'new') { $filter .= "&amp;search[extrafilter]=New"; }
+		if ($extrafilter == 'new') { $filter .= "&amp;search[value][]=New:0"; }
 		parse_str(html_entity_decode($filter), $query_params);
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$sqlFilter = $spotsOverview->filterToQuery($query_params['search']);
