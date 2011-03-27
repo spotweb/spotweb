@@ -119,6 +119,11 @@ class SpotSigning {
 												$comment['user-key']);
 		} # if
 
+		if (!$verified) {
+			$userSignedHash = sha1('<' . $msgAr['messageid'] . '>', false);
+			$verified = (substr($userSignedHash, 0, 3) == '0000');
+		} # if
+
 		return $verified;
 	} # verifyComment()
 	
