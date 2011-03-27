@@ -71,9 +71,9 @@
 						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $strFilter;?>">
 						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a>
 <?php
-        if (!empty($filter[4])) {
-            echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
-            foreach($filter[4] as $subFilter) {
+		if (!empty($filter[4])) {
+			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
+			foreach($filter[4] as $subFilter) {
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
 				if ($settings['count_newspots']) {
 					$newSubCount = $tplHelper->getFilteredSpotCount($strFilter, 'new');

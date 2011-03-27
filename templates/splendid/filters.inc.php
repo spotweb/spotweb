@@ -41,17 +41,17 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 					
 					<ul id="quicklinksmenu">
 <?php
-    foreach($quicklinks as $quicklink) {
+	foreach($quicklinks as $quicklink) {
 		$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
 		if (stripos($quicklink[2], 'New:0') && $settings['count_newspots']) {
 			$newQuickCount = $tplHelper->getFilteredSpotCount($strFilter, '');
 		} else { $newQuickCount = 0; }
 		if($quicklink[0] == 'Watchlist') {
 ?>
-                        <li><div><a class="quicklink spotlink" href="<?php echo $quicklink[2]; ?>">
+						<li><div><a class="quicklink spotlink" href="<?php echo $quicklink[2]; ?>">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
 <?php } else { ?>
-                        <li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $quicklink[2];?>&ajax=1');clearTree();">
+						<li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $quicklink[2];?>&ajax=1');clearTree();">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; if ($newQuickCount > 0) { echo " (" . $newQuickCount . ")"; } ?></a></div></li>
 <?php
 	  }
@@ -66,17 +66,16 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
     foreach($filters as $filter) {
 		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
 		if ($settings['count_newspots']) {
-			
 			$newCount = $tplHelper->getFilteredSpotCount($strFilter, 'new');
 		} else { $newCount = 0; }
 ?>
-                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>><div><a class="filter <?php echo $filter[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $filter[2];?>&ajax=1');clearTree();">
+						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>><div><a class="filter <?php echo $filter[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $filter[2];?>&ajax=1');clearTree();">
 						<img src='<?php echo $filter[1]; ?>'><?php echo $filter[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a></div></li>
 <?php
         if (!empty($filter[4])) {
 			
             //echo "\t\t\t\t\t\t\t<ul class=''>\r\n";
-            foreach($filter[4] as $subFilter) {
+			foreach($filter[4] as $subFilter) {
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
 				if ($settings['count_newspots']) {
 					$newSubCount = $tplHelper->getFilteredSpotCount($strFilter, 'new');
