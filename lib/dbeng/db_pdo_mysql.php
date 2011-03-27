@@ -8,7 +8,7 @@ class db_pdo_mysql extends db_pdo {
 	private $_db_pass;
 	private $_db_db;
 	
-	private $_conn;
+	protected $_conn;
 
     private $_rows = 0;
 

@@ -4,7 +4,7 @@ require_once "lib/dbeng/db_pdo.php";
 
 class db_pdo_sqlite extends db_pdo {
 	private $_db_path;
-	private $_conn;
+	protected $_conn;
 	
 	function __construct($path) {
 		$this->_db_path = $path;
