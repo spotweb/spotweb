@@ -55,7 +55,7 @@ class SpotTemplateHelper {
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
 	 */
 	function makeSearchUrl($spot) {
-		if (!isset($spot['filename'])) {
+		if (empty($spot['filename'])) {
 			$tmp = str_replace('$SPOTFNAME', $spot['title'], $this->_settings['search_url']);
 		} else {
 			$tmp = str_replace('$SPOTFNAME', $spot['filename'], $this->_settings['search_url']);
