@@ -25,22 +25,23 @@ class SpotTemplateHelper {
 	} # ctor
 
 	/*
-	 * Geef het aantal spots terug 
+	 * Geef het aantal spots terug
 	 */
-	function getSpotCount() {
-		return $this->_db->getSpotCount('');
+	function getSpotCount($sqlFilter) {
+		return $this->_db->getSpotCount($sqlFilter);
 	} # getSpotCount
 
 	/*
-	* Geef het aantal nieuwe spots terug
+	* Geef het aantal spots terug maar dan rekening houdende met het filter
 	*/
-	function getNewSpotCount($filter) {
+	function getFilteredSpotCount($filter) {
 		parse_str(html_entity_decode($filter), $query_params);
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$sqlFilter = $spotsOverview->filterToQuery($query_params['search']);
-		return $this->_db->getSpotCount($sqlFilter);
-	} # getNewSpotCount
+	
+		return $this->getSpotCount($sqlFilter);
+	} # getFilteredSpotCount
 
 	/*
 	 * Geef het aantal spots terug 
