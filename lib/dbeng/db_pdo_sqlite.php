@@ -1,6 +1,6 @@
 <?php
 # a mess
-require_once "lib/dbeng/db_abs.php";
+require_once "lib/dbeng/db_pdo.php";
 
 class db_pdo_sqlite extends db_pdo {
 	private $_db_path;
