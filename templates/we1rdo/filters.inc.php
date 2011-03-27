@@ -46,10 +46,12 @@
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
-		$newCount = $tplHelper->getNewSpotCount($quicklink[2]);
+		if (stripos($quicklink[2], 'search[type]=New')) {
+			$newQuickCount = $tplHelper->getNewSpotCount("cat0_a,cat1_a,cat2_a,cat3_a");
+		} else { $newQuickCount = 0; }
 ?>
 							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $quicklink[2]; ?>">
-							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a>
+							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newQuickCount > 0) { echo " (" . $newQuickCount . ")"; } ?></a>
 <?php
     }
 ?>
