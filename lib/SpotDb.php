@@ -4,6 +4,8 @@
  */
 require_once "lib/dbeng/db_sqlite3.php";
 require_once "lib/dbeng/db_mysql.php";
+require_once "lib/dbeng/db_pdo_sqlite.php";
+require_once "lib/dbeng/db_pdo_mysql.php";
 
 class SpotDb
 {
