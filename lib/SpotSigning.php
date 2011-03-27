@@ -106,21 +106,21 @@ class SpotSigning {
 	 * Helper functie om een comment header te verifieeren
 	 */
 	public function verifyComment($comment) {
-		if ((empty($comment['user-signature'])) || (empty($comment['user-key']))) {
-			return false;
+		$verified = false;
+		
+		if ((!empty($comment['user-signature'])) && (!empty($comment['user-key']))) {
+			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+			if (!$verified) {
+				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
+																implode("\r\n", $comment['body']) . "\r\n" . 
+																$comment['from'], 
+													$comment['user-signature'], 
+													$comment['user-key']);
+			} # if
 		} # if
-
-		$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+		
 		if (!$verified) {
-			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
-															implode("\r\n", $comment['body']) . "\r\n" . 
-															$comment['from'], 
-												$comment['user-signature'], 
-												$comment['user-key']);
-		} # if
-
-		if (!$verified) {
-			$userSignedHash = sha1('<' . $msgAr['messageid'] . '>', false);
+			$userSignedHash = sha1('<' . $comment['messageid'] . '>', false);
 			$verified = (substr($userSignedHash, 0, 3) == '0000');
 		} # if
 
