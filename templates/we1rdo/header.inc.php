@@ -1,8 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
+    	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 		<title><?php echo $pagetitle?></title>
-		<base href='<?php echo $tplHelper->makeBaseUrl(); ?>' />
+		<base href='<?php echo $tplHelper->makeBaseUrl(); ?>'>
 		<link rel='stylesheet' type='text/css' href='js/dynatree/skin-vista/ui.dynatree.css'>
 		<link rel='stylesheet' href='templates/we1rdo/style.css' type='text/css'>
 		<link rel='stylesheet' type='text/css' href='js/fancybox/jquery.fancybox-1.3.4.css' media='screen'>
@@ -219,9 +220,10 @@
 			var theStateQuickLinks = $.cookie("viewQuickLinks");
 			var theStateFilters = $.cookie("viewFilters");
 			var theStateMaintenance = $.cookie("viewMaintenance");
-			$('#filterform').css('display', theStateSearch);
+			
+			$('.hide').css('display', theStateSearch);
 			toggleFilterImage('#filterform_img', theStateSearch);
-
+			
 			$('ul.quicklinks').css('display', theStateQuickLinks);
 			toggleFilterImage('#quicklinks_img', theStateQuickLinks);
 

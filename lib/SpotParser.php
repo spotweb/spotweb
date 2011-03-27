@@ -8,8 +8,8 @@ class SpotParser {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
-						  'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 'subcatc' => '', 'subcatd' => '', 'imageid' => '');
-
+						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
+						  'subcatc' => '', 'subcatd' => '', 'imageid' => '');
 
 		/* 
 		 * Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
@@ -24,7 +24,17 @@ class SpotParser {
 		$tpl_spot['tag'] = (string) $xml->Tag;
 		$tpl_spot['title'] = (string) $xml->Title;
 		$tpl_spot['key-id'] = (string) $xml->{"Key-ID"};
-		
+
+		# Sommige (enkel oude?) spots bevatten de filename
+		if (!empty($xml->Filename)) {
+			$tpl_spot['filename'] = (string) $xml->Filename;
+		} # if
+
+		# Sommige (enkel oude?) spots bevatten de newsgroup
+		if (!empty($xml->Newsgroup)) {
+			$tpl_spot['newsgroup'] = (string) $xml->newsgroup;
+		} # if
+
 		# Images behandelen we op een speciale manier, in de oude spots
 		# was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid
 		if (empty($xml->Image->Segment)) {

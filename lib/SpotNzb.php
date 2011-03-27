@@ -147,8 +147,11 @@ class SpotNzb {
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
 			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $hdr_spotnntp);
-			$nzbList[] = array('spot' => $fullSpot, 
-							   'nzb' => $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp));
+			
+			if (!empty($fullSpot['nzb'])) {
+				$nzbList[] = array('spot' => $fullSpot, 
+								   'nzb' => $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp));
+			} # if
 		} # foreach
 		
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
