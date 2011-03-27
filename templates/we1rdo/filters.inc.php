@@ -1,10 +1,12 @@
 				<div id="filter" class="filter">
-                	<div class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll"><label>Scroll</label></div>
-                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '#filterform', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
+                    <h4><div class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label> </label></div><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '.hide', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
 <?php
 	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
+	if (empty($search['type'])) {
+		$search['type'] = 'Titel';
+	} # if
 ?>
 						<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>">
 <?php
@@ -25,25 +27,22 @@
 								</tr>
 								
 								<tr>
-									<td colspan="<?php echo $filterColCount;?>"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"></td>
+									<td colspan="<?php echo $filterColCount;?>"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><span class="filtersubmit"><input type='submit' class="filtersubmit" value='>>'></span></td>
 								</tr>
 
-								<tr class="unfiltered"> 
+								<tr class="unfiltered hide">
 									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?> /><label>Vergeet filters voor zoekopdracht</label> </td>
 								</tr>
 							</tbody>
 						</table>
 
-                        <div id="tree"> 
+                        <div id="tree" class="hide"> 
                             <ul>
                             </ul>
                         </div>
-						
-						<input type='submit' class="filtersubmit" value='Zoek en filter'>
 					</form>
-
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					
+                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
@@ -58,9 +57,8 @@
     }
 ?>
 					</ul>
-						
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>
 					
+                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>				
                     <ul class="filterlist filters">
 
 <?php
