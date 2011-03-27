@@ -177,6 +177,9 @@ $settings['show_nzbbutton'] = true;
 # toon een multi-nzb knop?
 $settings['show_multinzb'] = true;
 
+# toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
+$settings['count_newspots'] = true;
+
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
 
