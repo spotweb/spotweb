@@ -63,7 +63,7 @@
     foreach($filters as $filter) {
 		$newCount = $tplHelper->getNewSpotCount($filter[2]);
 ?>
-                        <li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $tplHelper->getPageUrl('index'); ?>&amp;search[tree]=<?php echo $filter[2];?>">
+						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $tplHelper->getPageUrl('index'); ?>&amp;search[tree]=<?php echo $filter[2];?>">
 						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a>
 <?php
         if (!empty($filter[4])) {
@@ -72,8 +72,8 @@
 				$newSubCount = $tplHelper->getNewSpotCount($subFilter[2]);
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
 ?>
-            			<li> <a class="filter <?php echo $subFilter[3];?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; if ($newSubCount > 0) { echo " (" . $newSubCount . ")"; } ?></a>
+							<li> <a class="filter <?php echo $subFilter[3];?>" href="<?php echo $strFilter;?>">
+							<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; if ($newSubCount > 0) { echo " (" . $newSubCount . ")"; } ?></a>
 <?php
 				if (!empty($subFilter[4])) {
 					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
