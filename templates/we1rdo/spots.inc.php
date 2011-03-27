@@ -2,7 +2,7 @@
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
 			<div class="spots">
-				<table class="spots">
+				<table class="spots" summary="Spots">
 					<tbody>
 					<tr class="head">
 						<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
@@ -108,9 +108,9 @@
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($tplHelper->hasBeenDownloaded($spot)) {
-					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
+					echo "<td><a class='sabnzbd-button' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you allready downloaded this spot)'></a></td>";
 				} else {
-					echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
+					echo "<td><a class='sabnzbd-button' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
 				} # else
 			} # if
 		} else {
@@ -135,7 +135,7 @@
 				</tbody>
 			</table>
 <?php if ($settings['show_multinzb'] || $prevPage >= 0 || $nextPage > 0) { ?>
-			<table class="footer">
+			<table class="footer" summary="Footer">
             	<tbody>
                 	<tr>
 <?php if ($prevPage >= 0) { ?> 
