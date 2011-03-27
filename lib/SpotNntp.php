@@ -131,6 +131,7 @@ class SpotNntp {
 				try {
 					$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');	
 					$tmpAr['messageid'] = $comment['messageid'];
+					
 
 					# extract de velden we die we willen hebben
 					foreach($tmpAr['header'] as $hdr) {
@@ -153,6 +154,11 @@ class SpotNntp {
 
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
 					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
+					if (!$tmpAr['verified']) {
+						$userSignedHash = sha1('<' . $msgAr['messageid'] . '>', false);
+						$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+					} # if
+					
 					if ($tmpAr['verified']) {
 						$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
 					} # if
