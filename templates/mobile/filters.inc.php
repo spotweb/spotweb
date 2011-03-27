@@ -1,4 +1,4 @@
-<?php $setpath = $tplHelper->getSitePath(); ?>
+<?php 	$setpath = $tplHelper->makeBaseUrl(); ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Zoek</h1>
