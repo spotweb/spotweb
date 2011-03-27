@@ -96,12 +96,14 @@ $settings['spot_moderation'] = 'act';
 # Settings:
 #   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
+#	prepare_action		- Wat moet er gebeuren met NZB's? Mogelijke params: 'merge' en 'zip'
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
 #						- url		 - 
 #
 $settings['nzbhandling']['action'] = 'push-sabnzbd';
 $settings['nzbhandling']['local_dir'] = '';
+$settings['nzbhandling']['prepare_action'] = 'merge';
 $settings['nzbhandling']['command'] = '';
 $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
