@@ -70,7 +70,7 @@
 			$newCount = $tplHelper->getNewSpotCount($strCountFilter);
 		} else { $newCount = 0; }
 ?>
-						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $strFilter;?>">">
+						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $strFilter;?>">
 						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount > 0) { echo " (" . $newCount . ")"; } ?></a>
 <?php
         if (!empty($filter[4])) {
