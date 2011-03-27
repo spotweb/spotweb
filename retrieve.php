@@ -32,7 +32,7 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--export')) {
 		$db->connect();
 	
 		$fp = fopen('export-db.csv', 'w');
-		$spotCount = $db->getSpotCount();
+		$spotCount = $db->getSpotCount('');
 		for ($i = 0; $i < $spotCount; $i = $i + 5000) { 	
 			$spots = $db->getSpots($i / 5000, 5000, '', array('field' => 'id', 'direction' => 'asc'), true);
 			
@@ -115,7 +115,7 @@ try {
 										 $req->getDef('output', ''),
 										 $settings['retrieve_full']);
 	$msgdata = $retriever->connect($settings['hdr_group']);
-	$retriever->displayStatus('dbcount', $db->getSpotCount());
+	$retriever->displayStatus('dbcount', $db->getSpotCount(''));
 	
 	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
 	if ($curMsg != 0) {
