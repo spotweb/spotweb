@@ -219,9 +219,10 @@
 			var theStateQuickLinks = $.cookie("viewQuickLinks");
 			var theStateFilters = $.cookie("viewFilters");
 			var theStateMaintenance = $.cookie("viewMaintenance");
-			$('#filterform').css('display', theStateSearch);
+			
+			$('.hide').css('display', theStateSearch);
 			toggleFilterImage('#filterform_img', theStateSearch);
-
+			
 			$('ul.quicklinks').css('display', theStateQuickLinks);
 			toggleFilterImage('#quicklinks_img', theStateQuickLinks);
 
