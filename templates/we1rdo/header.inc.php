@@ -194,7 +194,7 @@
 				$('#filterscroll').attr('checked','checked');
 				$("#filter").css('position', 'fixed');
 			} else {
-				$("#filter").css('position', 'relative');
+				$("#filter").css('position', 'static');
 			}
 		}
 		

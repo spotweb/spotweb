@@ -18,6 +18,8 @@ div.filter {
 	width:230px;
 	float:left;
 	padding-top:2px;
+	left:8px;
+	top:8px;
 }
 
 div.filter h4 {
