@@ -143,7 +143,7 @@ $settings['nzb_group'] = 'alt.binaries.ftd';
 $settings['comment_group'] = 'free.usenet';
 
 # db
-$settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3 en mysql
+$settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3, pdo_sqlite, mysql en pdo_mysql
 $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # Als je MySQL wilt gebruiken, vul dan onderstaande in
@@ -261,12 +261,12 @@ if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== d
 # QuickLinks
 $settings['quicklinks'] = Array();
 $settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
-$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=New", "");
+$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
 if ($settings['keep_watchlist']) {
 	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
 }
 if ($settings['keep_downloadlist']) {
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[type]=Downloaded", "");
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
 }
 
 #
