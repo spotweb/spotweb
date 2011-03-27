@@ -156,7 +156,7 @@ class SpotNzb {
 		
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
-		switch($this->_settings['prepare_action']) {
+		switch($this->_settings['nzbhandling']['prepare_action']) {
 			case 'zip'	: {
 				$nzb = $this->zipNzbList($nzbList); 
 				$mimeType = 'application/x-zip-compressed';
