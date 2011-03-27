@@ -3,7 +3,7 @@
 ?>
     	<div class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
-                <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>">
+                <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
             </a>
 			<div class="spotinfo">
 <?php if (!$spot['verified'] || $tplHelper->isModerated($spot)) {
@@ -37,12 +37,12 @@
 } ?>                     
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
-                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button" alt="Add NZB to SabNZBd queue (you already downloaded this spot)"></a></th>
 	<?php } else { ?>
-                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates/we1rdo/img/download.png" class="sabnzbd-button"></a></th>
+                            <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates/we1rdo/img/download.png" class="sabnzbd-button" alt="Add NZB to SabNZBd queue"></a></th>
 <?php } } ?>								
                         </tr>
-                    </table>
+                    </tbody>
                 </table>
                 
 				<table class="spotinfo">
