@@ -127,7 +127,6 @@ class SpotsOverview {
 		# dont filter anything
 		if (empty($search)) {
 			return '';
-
 		} # if
 
 		# We hebben twee soorten filters:
@@ -148,7 +147,7 @@ class SpotsOverview {
 			unset($search['type']);
 		} # if
 		
-		if (!isset($search['value'])) {
+		if ((!isset($search['value'])) || (!is_array($search['value']))) {
 			$search['value'] = array();
 		} # if
 
