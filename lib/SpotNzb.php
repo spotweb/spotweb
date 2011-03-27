@@ -154,19 +154,19 @@ class SpotNzb {
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
 		switch($this->_settings['prepare_action']) {
-			case 'merge'	: {
-				$nzb = $this->mergeNzbList($nzbList); 
-				$mimeType = 'application/x-nzb';
-				$fileName = urlencode($fullSpot['title']) . '.nzb';
-				break;
-			} # merge
-			
-			default 		: {
+			case 'zip'	: {
 				$nzb = $this->zipNzbList($nzbList); 
 				$mimeType = 'application/x-zip-compressed';
 				$fileName = 'SpotWeb_' . microtime(true) . '.zip';
 				break;
 			} # zip
+			
+			default 		: {
+				$nzb = $this->mergeNzbList($nzbList); 
+				$mimeType = 'application/x-nzb';
+				$fileName = urlencode($fullSpot['title']) . '.nzb';
+				break;
+			} # merge
 		} # switch
 
 		# handel dit alles af naar gelang de actie die gekozen is
