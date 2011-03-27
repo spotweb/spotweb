@@ -284,7 +284,7 @@ class SpotsOverview {
 		} # if
 		
 		# New spots
-		if (isset($search['type']) && $search['type'] == 'New') {
+		if ((isset($search['type']) && $search['type'] == 'New') || (isset($search['extrafilter']) && $search['extrafilter'] == 'New')) {
 			if (isset($_SESSION['last_visit'])) {
 				$newSpotsSearchTmp[] = ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
 			} # if
