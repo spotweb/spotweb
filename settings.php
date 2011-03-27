@@ -248,16 +248,6 @@ $settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMig
 #
 $settings['retrieve_increment'] = 1000;
 
-#
-# Include eventueel eigen settings, dit is ook een PHP file. 
-# Settings welke hierin staan zullen de instellingen van deze file overiden.
-#
-# We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
-# je instellingen bewaard blijven.
-#
-if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-
 # QuickLinks
 $settings['quicklinks'] = Array();
 $settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
@@ -268,6 +258,16 @@ if ($settings['keep_watchlist']) {
 if ($settings['keep_downloadlist']) {
 	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
 }
+
+#
+# Include eventueel eigen settings, dit is ook een PHP file. 
+# Settings welke hierin staan zullen de instellingen van deze file overiden.
+#
+# We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
+# je instellingen bewaard blijven.
+#
+if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 #
 # Ga nu de template zetten
