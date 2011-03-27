@@ -166,9 +166,7 @@ class SpotDb
 	 */
 	function getSpotCount($sqlfilter=NULL) {
 		$query = "SELECT COUNT(1) FROM spots AS s";
-		if ($sqlfilter) { $query .= " LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-									WHERE" . $sqlfilter; }
-		//echo $query;
+		if ($sqlfilter) { $query .= " LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE" . $sqlfilter; }
 		$cnt = $this->_conn->singleQuery($query);
 		
 		if ($cnt == null) {
