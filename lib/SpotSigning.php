@@ -120,7 +120,7 @@ class SpotSigning {
 		} # if
 
 		if (!$verified) {
-			$userSignedHash = sha1('<' . $msgAr['messageid'] . '>', false);
+			$userSignedHash = sha1('<' . $comment['messageid'] . '>', false);
 			$verified = (substr($userSignedHash, 0, 3) == '0000');
 		} # if
 
