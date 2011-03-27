@@ -46,7 +46,7 @@ class SpotNzb {
 	/*
 	 * Roept sabnzbd aan en parseert de output
 	 */
-	function runHttp($fullSpot, $nzb, $action) {
+	function runHttp($fullSpot, $file, $action) {
 		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
 		# equivalent to <input type="file" name="nzbfile"/>
 		@define('FORM_FIELD', 'nzbfile'); 
@@ -63,9 +63,9 @@ class SpotNzb {
 		# bouw nu de content
 		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
 		$content .= 
-            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $this->cleanForFileSystem($fullSpot['title']) . ".nzb\"\r\n" .
-			"Content-Type: application/x-nzb\r\n\r\n" . 
-			$nzb."\r\n";
+            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $file['name'] . "\"\r\n" .
+			"Content-Type: " . $file['mimetype'] . "\r\n\r\n" . 
+			$file['content'] ."\r\n";
 			
 		# signal end of request (note the trailing "--")
 		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
@@ -88,6 +88,52 @@ class SpotNzb {
 	} # runHttp
 
 	/*
+	 * Voeg een lijst van NZB XML files samen tot 1 XML file
+	 */
+	function mergeNzbList($nzbList) {
+		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
+											<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
+											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
+		$domNzbXml = dom_import_simplexml($nzbXml);
+		foreach($nzbList as $nzb) {
+			$oneNzbFile = simplexml_load_string($nzb['nzb']);
+			
+			# add each file section to the larger XML object
+			foreach($oneNzbFile->file as $file) {
+				# Import the file into the larger NZB object
+				$domFile = $domNzbXml->ownerDocument->importNode(dom_import_simplexml($file), TRUE);
+				$domNzbXml->appendChild($domFile);
+			} # foreach
+		} # foreach
+		return $nzbXml->asXml();
+	} # mergeNzbList
+
+	/*
+	 * Stop de lijst van NZB XML files in 1 zip file
+	 */
+	function zipNzbList($nzbList) {
+		$tmpZip = tempnam(sys_get_temp_dir(), 'SpotWebZip');
+		$zip = new ZipArchive;
+		$res = $zip->open($tmpZip, ZipArchive::CREATE);
+		if ($res !== TRUE) {
+			throw new Exception("Unable to create temporary ZIP file: " . $res);
+		} # if
+		
+		foreach($nzbList as $nzb) {
+			$zip->addFromString($this->cleanForFileSystem($nzb['spot']['title']) . '.nzb', $nzb['nzb']);
+		} # foreach
+		$zip->close();
+		
+		# lees de tempfile uit 
+		$zipFile = file_get_contents($tmpZip);
+		
+		# en wis de tijdelijke file
+		unlink($tmpZip);
+		
+		return $zipFile;
+	} # zipNzbList
+		
+	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
 	function handleNzbAction($messageids, $action, $hdr_spotnntp, $nzb_spotnntp) {
@@ -101,35 +147,36 @@ class SpotNzb {
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
 			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $hdr_spotnntp);
-			$nzbList[] = $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp);
+			$nzbList[] = array('spot' => $fullSpot, 
+							   'nzb' => $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp));
 		} # foreach
 		
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
-		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
-											<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
-											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
-		$domNzbXml = dom_import_simplexml($nzbXml);
-		foreach($nzbList as $nzb) {
-			$oneNzbFile = simplexml_load_string($nzb);
+		switch($this->_settings['prepare_action']) {
+			case 'merge'	: {
+				$nzb = $this->mergeNzbList($nzbList); 
+				$mimeType = 'application/x-nzb';
+				$fileName = urlencode($fullSpot['title']) . '.nzb';
+				break;
+			} # merge
 			
-			# add each file section to the larger XML object
-			foreach($oneNzbFile->file as $file) {
-				# Import the file into the larger NZB object
-				$domFile = $domNzbXml->ownerDocument->importNode(dom_import_simplexml($file), TRUE);
-				$domNzbXml->appendChild($domFile);
-			} # foreach
-		} # foreach
-		$nzb = $nzbXml->asXml();
-		
+			default 		: {
+				$nzb = $this->zipNzbList($nzbList); 
+				$mimeType = 'application/x-zip-compressed';
+				$fileName = 'SpotWeb_' . microtime(true) . '.zip';
+				break;
+			} # zip
+		} # switch
+
 		# handel dit alles af naar gelang de actie die gekozen is
 		switch ($action) { 
 			case 'disable'			: break;
 			
 			# gewoon nzb file output geven
 			case 'display'			: {
-				Header("Content-Type: application/x-nzb");
-				Header("Content-Disposition: attachment; filename=\"" . urlencode($fullSpot['title']) . ".nzb\"");
+				Header("Content-Type: " . $mimeType);
+				Header("Content-Disposition: attachment; filename=\"" . $fileName . "\"");
 				echo $nzb;
 				break;
 			} # display
@@ -143,7 +190,8 @@ class SpotNzb {
 			} # runcommand
 			
 			case 'push-sabnzbd'		: {
-				$this->runHttp($fullSpot, $nzb, $action);
+				$fileParams = array('content' => $nzb, 'name' => $fileName, 'mimetype' => $mimeType);
+				$this->runHttp($fullSpot, $fileParams, $action);
 				break;
 			} # push-sabnzbd
 			
