@@ -12,7 +12,7 @@ catch(Exception $x) {
 
 if(empty($_SESSION['last_visit'])) {
 	if(!isset($_COOKIE['last_visit'])) {
-		$_SESSION['last_visit'] = false;
+		$_SESSION['last_visit'] = $db->getMaxMessageTime();
 	} else {
 		$_SESSION['last_visit'] = $_COOKIE['last_visit'];
 	} # else

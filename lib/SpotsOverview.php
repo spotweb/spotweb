@@ -116,7 +116,7 @@ class SpotsOverview {
 	
 	
 	/*
-	 * Converteer een array met search termen (tree, type en text) naar een SQL
+	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
 	function filterToQuery(&$search) {
@@ -128,13 +128,43 @@ class SpotsOverview {
 		if (empty($search)) {
 			return '';
 		} # if
+
+		# We hebben twee soorten filters:
+		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
+		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
+		#
+		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:value, dus
+		#		  bijvoorbeeld new:0 (nieuwe posts) of tag:spotweb. 
+		#
+		# We converteren oude type zoekopdrachten automatisch naar het nieuwe type.
+		#
+		if (isset($search['type'])) {
+			if (!isset($search['text'])) {
+				$search['text'] = '';
+			} # if
+			
+			$search['value'][] = $search['type'] . ':' . $search['text'];
+			unset($search['type']);
+		} # if
+		
+		if ((!isset($search['value'])) || (!is_array($search['value']))) {
+			$search['value'] = array();
+		} # if
+
+		# en we converteren het nieuwe type (field:value) naar een array zodat we er makkelijk door kunnen lopen
+		$filterValueList = array();
+		foreach($search['value'] as $value) {
+			$tmpFilter = explode(':', $value);
+			$filterValueList[$tmpFilter[0]] = $tmpFilter[1];
+		} # for
+		$search['filterValues'] = $filterValueList;
 		
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search = array_merge($search, $this->_settings['index_filter']);
 		} # if
-
+		
 		# convert the dynatree list to a list 
 		if (!empty($search['tree'])) {
 			# explode the dynaList
@@ -250,24 +280,25 @@ class SpotsOverview {
 		} # if
 
 		# Add a list of possible text searches
-		$textSearch = '';
-		if ((!empty($search['text'])) && ((isset($search['type'])))) {
-			$field = 'title';
+		$textSearch = array();
+		foreach($search['filterValues'] as $searchType => $searchValue) {
+			$field = '';
 		
-			if ($search['type'] == 'Tag') {
-				$field = 'tag';
-			} else if ($search['type'] == 'Poster') {
-				$field = 'poster';
-			} else if ($search['type'] == 'UserID') {
-				$field = 'userid';
-			} # else
-			
-			switch($this->_settings['db']['engine']) {
-				# disabled vanwege https://github.com/spotweb/spotweb/issues#issue/364
-				#     case 'mysql'	: $textSearch .= " MATCH($field) AGAINST('" . $this->_db->safe($search['text']) . "' IN BOOLEAN MODE)"; break;
-				default			: $textSearch .= ' (' . $field . " LIKE '%" . $this->_db->safe($search['text']) . "%')"; break;
+			switch($searchType) {
+				case 'Tag'		: $field = 'tag'; break;
+				case 'Poster'	: $field = 'poster'; break;
+				case 'UseriD'	: $field = 'userid'; break;
+				case 'Titel'	: $field = 'title'; break;
 			} # switch
-		} # if
+			
+			if (!empty($field)) {
+				switch($this->_settings['db']['engine']) {
+					# disabled vanwege https://github.com/spotweb/spotweb/issues#issue/364
+					#     case 'mysql'	: $textSearch[] = " MATCH($field) AGAINST('" . $this->_db->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
+					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')"; break;
+				} # switch
+			} # if
+		} # foreach
 
 		# strong nots
 		$notSearch = '';
@@ -284,17 +315,16 @@ class SpotsOverview {
 		} # if
 		
 		# New spots
-		if (isset($search['type']) && $search['type'] == 'New') {
+		if (isset($search['filterValues']['New'])) {
 			if (isset($_SESSION['last_visit'])) {
 				$newSpotsSearchTmp[] = ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
 			} # if
-			
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
 		# Downloaded spots
-		if (isset($search['type']) && $search['type'] == 'Downloaded') {
-			$textSearch .= ' (d.stamp IS NOT NULL)';
+		if (isset($search['filterValues']['Downloaded'])) {
+			$textSearch[] = ' (d.stamp IS NOT NULL)';
 		} # if
 
 		$endFilter = array();
@@ -302,7 +332,7 @@ class SpotsOverview {
 			$endFilter[] = '(' . join(' OR ', $filterList) . ') ';
 		} # if
 		if (!empty($textSearch)) {
-			$endFilter[] = $textSearch;
+			$endFilter[] = join(' AND ', $textSearch);
 		} # if
 		if (!empty($notSearch)) {
 			$endFilter[] = $notSearch;
@@ -310,7 +340,7 @@ class SpotsOverview {
 		if (!empty($newSpotsSearch)) {
 			$endFilter[] = $newSpotsSearch;
 		} # if
-
+		
 		return join(" AND ", $endFilter);
 	} # filterToQuery
 	
