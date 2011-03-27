@@ -164,8 +164,12 @@ class SpotDb
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
-	function getSpotCount() {
-		$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
+	function getSpotCount($filter="") {
+		if ($filter == "") {
+			$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots");
+		} else {
+			$cnt = $this->_conn->singleQuery("SELECT COUNT(1) FROM spots AS s WHERE " . $filter);
+		}
 		
 		if ($cnt == null) {
 			return 0;
@@ -173,7 +177,7 @@ class SpotDb
 			return $cnt;
 		} # if
 	} # getSpotCount
-
+	
 	/*
 	 * Match set of comments
 	 */
