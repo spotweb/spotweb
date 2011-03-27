@@ -8,10 +8,10 @@ div.clear {
 }
 
 /* SIDEBAR */
-div.filter div.scroll {margin:3px 0 4px 0;}
-div.scroll input#filterscroll {opacity:0; position:absolute; margin:0; width:13px; height:13px; float:left; cursor:pointer;}
-div.scroll input#filterscroll+label {background:url(img/pinned.png) no-repeat top left; width:13px; height:13px; display:block;}
-div.scroll input#filterscroll:checked + label {background:url(img/unpinned.png) no-repeat top left;}
+div.filter span.scroll {margin:3px 0 4px 0; position:absolute; overflow:hidden; left:5px;}
+span.scroll input#filterscroll {opacity:0; position:absolute; margin:0; width:13px; height:13px; float:left; cursor:pointer;}
+span.scroll input#filterscroll+label {background:url(img/pinned.png) no-repeat top left; width:13px; height:13px; display:block;}
+span.scroll input#filterscroll:checked + label {background:url(img/unpinned.png) no-repeat top left;}
 
 div.filter {
 	width:230px;
@@ -38,11 +38,6 @@ div.filter h4 {
 div.filter h4 span.viewState {position:absolute; right:1px; display:block; height:14px; background-color:#333; margin:3px 3px 3px 0; padding:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.filter h4 span.viewState a {display:inline; line-height:normal; background:none; cursor:pointer; padding:0 5px;}
 div.filter h4 span.viewState img {margin:0; float:none;}
-
-div.filter h4 div {position:absolute; overflow:hidden; display:block; float:left; left:5px; height:16px; margin:2px 0; padding:0;}
-div.filter h4 div input[type=checkbox] {opacity:0; position:absolute; left:0; margin:0; width:100%; height:16px; float:left; cursor:pointer;}
-div.filter h4 div input[type=checkbox]+label {color:#777; line-height:16px; display:block;}
-div.filter h4 div input[type=checkbox]:checked + label {color:#bbb;}
 
 form#filterform table {border-collapse:separate; border-spacing:0 5px; display:block; margin:-5px 0 0 0; *border-collapse: collapse;}
 form#filterform td {padding:0; position:relative;}

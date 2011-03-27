@@ -1,5 +1,5 @@
 				<div id="filter" class="filter">
-                    <h4><div class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label> </label></div><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '.hide', 'viewSearch')"><img id="filterform_img" src="" alt="" /></a></span> Zoeken </h4>
+                    <h4><span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label> </label></span><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '.hide', 'viewSearch')"><img id="filterform_img" src="" alt=""></a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
 <?php
@@ -8,7 +8,7 @@
 		$search['type'] = 'Titel';
 	} # if
 ?>
-						<input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>">
+						<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></div>
 <?php
 	$filterColCount = 3;
 	if ($settings['retrieve_full']) {
@@ -18,11 +18,11 @@
                         <table class="filters">
 							<tbody>
 								<tr<?php if ($filterColCount == 3) {echo " class='short'";} ?>> 
-									<td> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> /><label>Titel</label> </td>
-									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> /><label>Poster</label> </td>
-									<td> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> /><label>Tag</label> </td>
+									<td> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label> </td>
+									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label> </td>
+									<td> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label> </td>
 <?php if ($settings['retrieve_full']) { ?>
-									<td> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> /><label>UserID</label> </td>
+									<td> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label> </td>
 <?php } ?>									
 								</tr>
 								
@@ -31,7 +31,7 @@
 								</tr>
 
 								<tr class="unfiltered hide">
-									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?> /><label>Vergeet filters voor zoekopdracht</label> </td>
+									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label> </td>
 								</tr>
 							</tbody>
 						</table>
@@ -42,7 +42,7 @@
                         </div>
 					</form>
 					
-                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt="" /></a></span> Quick Links </h4>
+                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="" alt=""></a></span> Quick Links </h4>
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
@@ -58,7 +58,7 @@
 ?>
 					</ul>
 					
-                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt="" /></a></span> Filters </h4>				
+                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="" alt=""></a></span> Filters </h4>				
                     <ul class="filterlist filters">
 
 <?php
@@ -107,7 +107,7 @@
 ?>
                     </ul>
 
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="" alt="" /></a></span> Onderhoud </h4>
+					<h4><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="" alt=""></a></span> Onderhoud </h4>
 
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
