@@ -310,11 +310,7 @@ class SpotsOverview {
 					} # foreach
 			
 					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-					if (ereg(" AND | OR | NOT ", $searchValue)) {
-						$searchMatchMode = "NATURAL LANGUAGE MODE";
-					} else {
-						$searchMatchMode = "BOOLEAN MODE";
-					} # if
+					$searchMatchMode = (ereg(" AND | OR | NOT ", $searchValue)) ? "NATURAL LANGUAGE MODE" : "BOOLEAN MODE";
 				} # if
 			
 				//Sanitise
