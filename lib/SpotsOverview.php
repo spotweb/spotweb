@@ -296,18 +296,18 @@ class SpotsOverview {
 				if ($this->_settings['db']['engine'] == 'mysql') {
 					$tempSearch = str_replace(array(',', '.', '+', '-', 'AND', 'And', 'NOT', 'Not'), '', $searchValue);
 					$tempTerms = explode(' ', $tempSearch);
-					$longCount = 0;
+					$shortCount = 0;
 					foreach($tempTerms as $term){
-						if(strlen($term) >= $this->_db->getSqlServerVariable("ft_min_word_len")){
-							$longCount++;
+						if(strlen($term) < $this->_db->getSqlServerVariable("ft_min_word_len")){
+							$shortCount++;
 						}
 					} # foreach
 					
-					if ($longCount > 0) {
-						$short = false;
-					} else {
+					if ($shortCount > 0) {
 						$short = true;
 						$searchValue = $tempSearch;
+					} else {
+						$short = false;
 					} # if
 			
 					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
@@ -376,7 +376,7 @@ class SpotsOverview {
 		if (!empty($newSpotsSearch)) {
 			$endFilter[] = $newSpotsSearch;
 		} # if
-		
+
 		return join(" AND ", $endFilter);
 	} # filterToQuery
 	
