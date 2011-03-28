@@ -126,7 +126,7 @@ class SpotParser {
 				
 				// extract de posters name
 				$spot['poster'] = explode('<', $from);
-				$spot['poster'] = Trim($spot['poster'][0]);
+				$spot['poster'] = trim($spot['poster'][0]);
 				
 				// key id
 				$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
@@ -187,7 +187,7 @@ class SpotParser {
 							} # if
 						} # foreach
 					} # if
-						
+				
 					if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 						# Make sure its as simple as possible
 						$subj = str_replace('?= =?', '?==?', $subj);

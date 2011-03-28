@@ -17,7 +17,7 @@ abstract class db_pdo extends db_abs {
 	public function prepareSql($s, $p) {
 		if (empty($p)) {
             return $this->_conn->prepare($s);
-        }
+        } # if
         
 		$pattern = '/(\'?\%[ds]\'?)/';
         $matches = array();
