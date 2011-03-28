@@ -205,7 +205,22 @@
 			toggleFilterImage(imageName, view);
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 		}
-		
+
+		//Cookie uitlezen en in die staat op scherm toveren
+		$(function(){
+			var items = {
+				'viewSearch': ['.hide', '#filterform_img'],
+				'viewQuickLinks': ['ul.quicklinks', '#quicklinks_img'],
+				'viewFilters': ['display', '#filters_img'],
+				'viewMaintenance': ['ul.maintenancebox', '#maintenance_img']
+			};
+			$.each(items, function(key, value) {
+				var theState = $.cookie(key);
+				$(value[0]).css('display', theState);
+				toggleFilterImage(value[1], theState);
+			});
+		});
+
 		function toggleFilterImage(imageName, state) {
 			if (state == 'block') {
 				$(imageName).attr({src:'templates/we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
@@ -214,26 +229,6 @@
 			}
 		}
 
-		//Cookie uitlezen en in die staat op scherm toveren
-		$(function(){
-			var theStateSearch = $.cookie("viewSearch");
-			var theStateQuickLinks = $.cookie("viewQuickLinks");
-			var theStateFilters = $.cookie("viewFilters");
-			var theStateMaintenance = $.cookie("viewMaintenance");
-			
-			$('.hide').css('display', theStateSearch);
-			toggleFilterImage('#filterform_img', theStateSearch);
-			
-			$('ul.quicklinks').css('display', theStateQuickLinks);
-			toggleFilterImage('#quicklinks_img', theStateQuickLinks);
-
-			$('ul.filters').css('display', theStateFilters);
-			toggleFilterImage('#filters_img', theStateFilters);
-
-			$('ul.maintenancebox').css('display', theStateMaintenance);
-			toggleFilterImage('#maintenance_img', theStateMaintenance);
-		});
-		
 		function toggleWatchSpot(spot,action,spot_id) {
 			// Add/remove watchspot
 			$.get("?page=watchlist&action="+action+"&messageid="+spot);
@@ -248,7 +243,7 @@
 				node.select(false);
 		  });
 		} // clearTree()
-		
+
 		function matchTree(s, dosubmit) {
 			clearTree();
 			
