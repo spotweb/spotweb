@@ -13,11 +13,10 @@ class db_pdo_sqlite extends db_pdo {
 	function connect() {
 		if (!$this->_conn instanceof PDO) {
 			$this->_conn = new PDO('sqlite:' . $this->_db_path);
-				
+			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			
 			$this->createDatabase();
-        }
-		
-		$this->createDatabase();
+        } # if		
 	} # connect()
 	
 	function safe($s) {
