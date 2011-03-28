@@ -292,11 +292,39 @@ class SpotsOverview {
 			} # switch
 			
 			if (!empty($field)) {
-				$trimmedSearchValue = trim($searchValue);
+				// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
+				if (ereg(" AND | and | And ",$searchValue,$matches)) {
+					$burst = $matches[0];
+					$terms = explode($burst,$searchValue);
+					$searchValue = "";
+					for ($i=0; $i<count($terms); $i++) {
+						$searchValue .= " +" . $terms[$i];
+					}
+					$boolean = true;
+				} elseif (ereg(" OR | or | Or ",$searchValue, $matches)) {
+					$burst = $matches[0];
+					$terms = explode($burst,$searchValue);
+					$searchValue = "";
+					for ($i=0; $i<count($terms); $i++) {
+						$searchValue .= " " . $terms[$i];
+					}
+					$boolean = true;
+				}  else {
+					$boolean = false;
+				}
+
+				// Sanitise search
+				$searchValue = trim($searchValue);
+				if (get_magic_quotes_gpc()) { $searchValue = stripslashes($searchValue); }// echo $searchValue;
+
 				switch($this->_settings['db']['engine']) {
-					# disabled vanwege https://github.com/spotweb/spotweb/issues#issue/364
-					//case 'mysql'	: $textSearch[] = " MATCH($field) AGAINST('" . $this->_db->safe($trimmedSearchValue) . "' IN BOOLEAN MODE)"; break;
-					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($trimmedSearchValue) . "%')"; break;
+					case 'mysql'	:	if (($boolean)) {
+											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $this->_db->safe($searchValue) . "' IN BOOLEAN MODE)";
+										} else {
+											$textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')";
+										}
+										break;
+					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')"; break;
 				} # switch
 			} # if
 		} # foreach
