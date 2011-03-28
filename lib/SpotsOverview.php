@@ -322,7 +322,6 @@ class SpotsOverview {
 				switch($this->_settings['db']['engine']) {
 					case 'mysql'	:	if ($searchMode) {
 											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $searchMode . ")";
-											echo " MATCH(" . $field . ") AGAINST ('" . $searchValue . "\" IN " . $searchMode . ")";
 										} else {
 											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
 										}
