@@ -299,10 +299,11 @@ class SpotsOverview {
 			if (!empty($field) && !empty($searchValue)) {
 				// MySQL kan niet zoeken op te korte termen in FULLTEXT
 				if ($this->_settings['db']['engine'] == 'mysql') {
-					$tempSearch = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
-					foreach(explode(' ', $tempSearch) as $term){
+					$searchMode = "match";
+					$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
+					foreach(explode(' ', $tempSearchValue) as $term){
 						if(strlen($term) < $this->FulltextMinWordLen){
-							$searchValue = $tempSearch;
+							$searchValue = $tempSearchValue;
 							$searchMode = "normal";
 							break;
 						}
