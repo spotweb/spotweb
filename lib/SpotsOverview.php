@@ -303,21 +303,21 @@ class SpotsOverview {
 							$searchValue = $tempSearch;
 							$short = true;
 						}
-					}
-				} # if
+					} # foreach
 			
-				// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-				if ($short) {
-					$boolean = false;
-				} elseif (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue)) {
-					$boolean = "NATURAL LANGUAGE";
-				} elseif (ereg("\+|-", $searchValue)) {
-					$boolean = "BOOLEAN";
-				} elseif (ereg(" ", $searchValue)) {
-					$boolean = "BOOLEAN";
-				} else {
-					$boolean = false;
-				}
+					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
+					if ($short) {
+						$boolean = false;
+					} elseif (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue)) {
+						$boolean = "NATURAL LANGUAGE";
+					} elseif (ereg("\+|-", $searchValue)) {
+						$boolean = "BOOLEAN";
+					} elseif (ereg(" ", $searchValue)) {
+						$boolean = "BOOLEAN";
+					} else {
+						$boolean = false;
+					} # if
+				} # if
 			
 				//Sanitise
 				$searchValue = trim($searchValue);
