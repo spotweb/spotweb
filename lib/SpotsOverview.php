@@ -293,38 +293,26 @@ class SpotsOverview {
 			
 			if (!empty($field)) {
 				// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-				if (ereg(" AND | and | And ",$searchValue,$matches)) {
-					$burst = $matches[0];
-					$terms = explode($burst,$searchValue);
-					$searchValue = "";
-					for ($i=0; $i<count($terms); $i++) {
-						$searchValue .= " +" . $terms[$i];
-					}
-					$boolean = true;
-				} elseif (ereg(" OR | or | Or ",$searchValue, $matches)) {
-					$burst = $matches[0];
-					$terms = explode($burst,$searchValue);
-					$searchValue = "";
-					for ($i=0; $i<count($terms); $i++) {
-						$searchValue .= " " . $terms[$i];
-					}
-					$boolean = true;
-				}  else {
-					$boolean = false;
+				$boolean = false;
+				if (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue,$matches)) {
+					$boolean = "NATURAL LANGUAGE MODE";
 				}
-
-				// Sanitise search
+				elseif (ereg("\+|-", $searchValue, $matches)) {
+					$boolean = "BOOLEAN MODE";
+				}
+				
+				//Sanitise
 				$searchValue = trim($searchValue);
-				if (get_magic_quotes_gpc()) { $searchValue = stripslashes($searchValue); }// echo $searchValue;
+				$searchValue = $this->_db->safe($searchValue);
 
 				switch($this->_settings['db']['engine']) {
-					case 'mysql'	:	if (($boolean)) {
-											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $this->_db->safe($searchValue) . "' IN BOOLEAN MODE)";
+					case 'mysql'	:	if ($boolean) {
+											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $boolean . ")";
 										} else {
-											$textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')";
+											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
 										}
 										break;
-					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')"; break;
+					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')"; break;
 				} # switch
 			} # if
 		} # foreach
