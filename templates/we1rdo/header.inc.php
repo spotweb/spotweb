@@ -197,23 +197,24 @@
 			} else {
 				$("#filter").css('position', 'static');
 			}
-		}
-		
+		} // toggleScrolling
+
 		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
 			if ($.cookie(cookieName) == 'block') { var view = 'none'; } else { var view = 'block'; }
 			toggleFilterImage(imageName, view);
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
-		}
+		} // toggleFitlerBlock
 
 		//Cookie uitlezen en in die staat op scherm toveren
 		$(function(){
-			var items = {
-				'viewSearch': ['.hide', '#filterform_img'],
-				'viewQuickLinks': ['ul.quicklinks', '#quicklinks_img'],
-				'viewFilters': ['display', '#filters_img'],
-				'viewMaintenance': ['ul.maintenancebox', '#maintenance_img']
+			var items = {'viewSearch': ['.hide', '#filterform_img'],
+						'viewQuickLinks': ['ul.quicklinks', '#quicklinks_img'],
+						'viewFilters': ['display', '#filters_img'],
+						'viewMaintenance': ['ul.maintenancebox', '#maintenance_img']
 			};
+			
+			// array doorlopen en actie ondernemen
 			$.each(items, function(key, value) {
 				var theState = $.cookie(key);
 				$(value[0]).css('display', theState);
@@ -227,7 +228,7 @@
 			} else {
 				$(imageName).attr({src:'templates/we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
 			}
-		}
+		} // toggleFilterImage
 
 		function toggleWatchSpot(spot,action,spot_id) {
 			// Add/remove watchspot
@@ -236,7 +237,7 @@
 			// Switch buttons
 			$('#watchremove_'+spot_id).toggle();
 			$('#watchadd_'+spot_id).toggle();
-		}
+		} // toggleWatchSpot
 
 		function clearTree() {
 		  $("#tree").dynatree("getRoot").visit(function(node) {
