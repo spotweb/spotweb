@@ -26,7 +26,8 @@ class SpotDb
 		switch ($this->_dbsettings['engine']) {
 			case 'sqlite3'	: $this->_conn = new db_sqlite3($this->_dbsettings['path']);
 							  break;
-							  
+							 
+							 
 			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
@@ -442,6 +443,7 @@ class SpotDb
 	 */
 	function emptyDownloadList() {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite': 
 			case 'sqlite3'	: {
 				return $this->_conn->exec("DELETE FROM downloadlist;");
 			} # sqlite3
@@ -456,6 +458,7 @@ class SpotDb
 	 */
 	function deleteSpot($msgId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite' : 
 			case 'sqlite3'	: { 
 				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
