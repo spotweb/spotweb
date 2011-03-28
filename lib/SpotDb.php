@@ -97,6 +97,12 @@ class SpotDb
 		
 		return $stamp;
 	}
+	
+	function getSqlServerVariable($name) {
+		$q = $this->_conn->exec("SHOW variables WHERE Variable_name = '" . $name . "'");
+		$value = mysql_fetch_assoc($q);
+		return $value['Value'];
+	} // getServerVariable
 	 
 	/*
 	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
