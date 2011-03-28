@@ -297,25 +297,21 @@ class SpotsOverview {
 					$tempSearch = str_replace(array(',', '.', '+', '-', 'AND', 'And', 'NOT', 'Not'), '', $searchValue);
 					$tempTerms = explode(' ', $tempSearch);
 					$minSearchlength = $this->_db->getSqlServerVariable("ft_min_word_len");
-					$short = false;
+					$short = true;
 					foreach($tempTerms as $term){
-						if(strlen($term) <= $minSearchlength){
-							$searchValue = $tempSearch;
-							$short = true;
+						if(strlen($term) >= $minSearchlength){
+							//$searchValue = $tempSearch;
+							$short = false;
 						}
 					} # foreach
 			
 					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
 					if ($short) {
-						$boolean = false;
+						$searchMode = false;
 					} elseif (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue)) {
-						$boolean = "NATURAL LANGUAGE";
-					} elseif (ereg("\+|-", $searchValue)) {
-						$boolean = "BOOLEAN";
-					} elseif (ereg(" ", $searchValue)) {
-						$boolean = "BOOLEAN";
+						$searchMode = "NATURAL LANGUAGE MODE";
 					} else {
-						$boolean = false;
+						$searchMode = "BOOLEAN MODE";
 					} # if
 				} # if
 			
@@ -324,8 +320,9 @@ class SpotsOverview {
 				$searchValue = $this->_db->safe($searchValue);
 
 				switch($this->_settings['db']['engine']) {
-					case 'mysql'	:	if ($boolean) {
-											$textSearch[] = " MATCH(" . $field . ") AGAINST (\"" . $searchValue . "\" IN " . $boolean . " MODE)";
+					case 'mysql'	:	if ($searchMode) {
+											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "\" IN " . $searchMode . ")";
+											echo " MATCH(" . $field . ") AGAINST ('" . $searchValue . "\" IN " . $searchMode . ")";
 										} else {
 											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
 										}
