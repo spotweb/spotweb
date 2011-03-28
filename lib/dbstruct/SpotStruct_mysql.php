@@ -39,13 +39,13 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 
 		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
-		$q = $$this->_dbcon->arrayQuery("SHOW INDEX FROM spots WHERE Key_name = 'idx_spots_3' AND Non_unique = 1;");
+		$q = $this->_dbcon->arrayQuery("SHOW INDEX FROM spots WHERE Key_name = 'idx_spots_3' AND Non_unique = 1;");
 		if (count($q) == 1) {
 			$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_3, ADD UNIQUE idx_spots_3 (messageid);");
 		} # if
 
 		# Controleer of de 'spots' tabel wel recent is, de oude versie had geen unieke messageid
-		$q = $$this->_dbcon->arrayQuery("SHOW COLUMNS FROM spots");
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM spots");
 		if (count($q) == 14) {
 			$this->_dbcon->rawExec("ALTER TABLE spots ADD COLUMN(filesize BIGINT DEFAULT 0,
 										moderated BOOLEAN DEFAULT FALSE)");
@@ -54,7 +54,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 		# Controleer of de 'commentsxover' tabel wel recent is, de oude versie had 3 kolommen, daarvan droppen wij er 1
 		try {
-			$q = $$this->_dbcon->arrayQuery("SHOW COLUMNS FROM commentsxover;");
+			$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM commentsxover;");
 			if (count($q) == 4) {
 				$this->_dbcon->rawExec("DROP TABLE commentsxover");
 			} # if
@@ -62,7 +62,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		 ;
 		}
 
-		$q = $$this->_dbcon->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE 'commentsxover'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
@@ -72,18 +72,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 		
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
-		$q = $$this->_dbcon->arrayQuery("SHOW COLUMNS FROM nntp;");
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM nntp;");
 		if (count($q) == 2) {
 			$this->_dbcon->rawExec("ALTER TABLE nntp ADD COLUMN(nowrunning INTEGER DEFAULT 0);");
 		} # if
 
 		# Controleer of er wel een index zit op 'spots' tabel 
-		$q = $$this->_dbcon->arrayQuery("SHOW INDEXES FROM spots WHERE key_name = 'idx_spots_4'");
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spots WHERE key_name = 'idx_spots_4'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
 		} # if
 
-		$q = $$this->_dbcon->arrayQuery("SHOW TABLES LIKE 'downloadlist'");
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE 'downloadlist'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
@@ -92,12 +92,12 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 3 kolommen (server,maxarticleid,nowrunning)
-		$q = $$this->_dbcon->arrayQuery("SHOW COLUMNS FROM nntp;");
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM nntp;");
 		if (count($q) == 3) {
 			$this->_dbcon->rawExec("ALTER TABLE nntp ADD COLUMN(lastrun INTEGER DEFAULT 0);");
 		} # if
 		
-		$q = $$this->_dbcon->arrayQuery("SHOW TABLES LIKE 'spotsfull'");
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE 'spotsfull'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128),
@@ -115,7 +115,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 
 		# Verander de grootte van de filesize column in spotsfull 
-		$q = $$this->_dbcon->arrayQuery("SHOW COLUMNS FROM spotsfull LIKE 'filesize'");
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM spotsfull LIKE 'filesize'");
 		if (count($q) == 1) {
 			if ($q[0]['Type'] == 'int(11)') {
 				$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0;");
@@ -124,18 +124,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 		
 		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen unieke messageid
-		$q = $$this->_dbcon->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_1' AND Non_unique = 1;");
+		$q = $this->_dbcon->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_1' AND Non_unique = 1;");
 		if (count($q) == 2) {
 			$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_1, ADD UNIQUE idx_spotsfull_1 (messageid, userid);");
 		} # if
 
 		# Controleer of de 'spotsfull' tabel wel recent is, de oude versie had geen index op de userid
-		$q = $$this->_dbcon->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_2';");
+		$q = $this->_dbcon->arrayQuery("SHOW INDEX FROM spotsfull WHERE Key_name = 'idx_spotsfull_2';");
 		if (count($q) == 2) {
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 		} # if
 
-		$q = $$this->_dbcon->arrayQuery("SHOW TABLES LIKE 'watchlist'");
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE 'watchlist'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 												   messageid VARCHAR(128),
