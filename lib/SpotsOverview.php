@@ -10,6 +10,7 @@ class SpotsOverview {
 	function __construct($db, $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
+		$this->FulltextMinWordLen = $this->_db->getSqlServerVariable("ft_min_word_len");
 	} # ctor
 	
 	/*
@@ -292,25 +293,22 @@ class SpotsOverview {
 			} # switch
 			
 			if (!empty($field) && !empty($searchValue)) {
-				// MySQL kan niet zoeken op te korten termen in FULLTEXT
+				// MySQL kan niet zoeken op te korte termen in FULLTEXT
 				if ($this->_settings['db']['engine'] == 'mysql') {
-					$tempSearch = str_replace(array(',', '.', '+', '-', 'AND', 'And', 'NOT', 'Not'), '', $searchValue);
-					$tempTerms = explode(' ', $tempSearch);
-					$short = false;
-					foreach($tempTerms as $term){
-						if(strlen($term) < $this->_db->getSqlServerVariable("ft_min_word_len")){
-							$short = true;
+					$tempSearch = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
+					foreach(explode(' ', $tempSearch) as $term){
+						if(strlen($term) < $this->FulltextMinWordLen){
 							$searchValue = $tempSearch;
+							$searchMode = "normal";
+							break;
 						}
 					} # foreach
 			
 					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-					if ($short) {
-						$searchMode = false;
-					} elseif (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue)) {
-						$searchMode = "NATURAL LANGUAGE MODE";
+					if (ereg(" AND | OR | NOT ", $searchValue)) {
+						$searchMatchMode = "NATURAL LANGUAGE MODE";
 					} else {
-						$searchMode = "BOOLEAN MODE";
+						$searchMatchMode = "BOOLEAN MODE";
 					} # if
 				} # if
 			
@@ -319,10 +317,10 @@ class SpotsOverview {
 				$searchValue = $this->_db->safe($searchValue);
 
 				switch($this->_settings['db']['engine']) {
-					case 'mysql'	:	if ($searchMode) {
-											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $searchMode . ")";
-										} else {
+					case 'mysql'	:	if ($searchMode == "normal") {
 											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
+										} else {
+											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $searchMatchMode . ")";
 										}
 										break;
 					default			:	$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')"; break;
