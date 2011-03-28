@@ -292,10 +292,11 @@ class SpotsOverview {
 			} # switch
 			
 			if (!empty($field)) {
+				$trimmedSearchValue = trim($searchValue);
 				switch($this->_settings['db']['engine']) {
 					# disabled vanwege https://github.com/spotweb/spotweb/issues#issue/364
-					#     case 'mysql'	: $textSearch[] = " MATCH($field) AGAINST('" . $this->_db->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
-					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($searchValue) . "%')"; break;
+					//case 'mysql'	: $textSearch[] = " MATCH($field) AGAINST('" . $this->_db->safe($trimmedSearchValue) . "' IN BOOLEAN MODE)"; break;
+					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $this->_db->safe($trimmedSearchValue) . "%')"; break;
 				} # switch
 			} # if
 		} # foreach
