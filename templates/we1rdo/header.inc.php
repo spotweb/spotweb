@@ -223,7 +223,7 @@
 		});
 
 		function toggleFilterImage(imageName, state) {
-			if (state == 'block') {
+			if (state == 'block' || state == null) {
 				$(imageName).attr({src:'templates/we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
 			} else {
 				$(imageName).attr({src:'templates/we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
