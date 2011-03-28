@@ -291,28 +291,46 @@ class SpotsOverview {
 				case 'Titel'	: $field = 'title'; break;
 			} # switch
 			
-			if (!empty($field)) {
+			if (!empty($field) && !empty($searchValue)) {
+				// MySQL kan niet zoeken op te korten termen in FULLTEXT
+				if ($this->_settings['db']['engine'] == 'mysql') {
+					$tempSearch = str_replace(array(',', '.', '+', '-', 'AND', 'And', 'NOT', 'Not'), '', $searchValue);
+					$tempTerms = explode(' ', $tempSearch);
+					$minSearchlength = $this->_db->getSqlServerVariable("ft_min_word_len");
+					$short = false;
+					foreach($tempTerms as $term){
+						if(strlen($term) <= $minSearchlength){
+							$searchValue = $tempSearch;
+							$short = true;
+						}
+					}
+				} # if
+			
 				// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-				$boolean = false;
-				if (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue,$matches)) {
-					$boolean = "NATURAL LANGUAGE MODE";
+				if ($short) {
+					$boolean = false;
+				} elseif (ereg(" AND | And | OR | Or | NOT | Not ", $searchValue)) {
+					$boolean = "NATURAL LANGUAGE";
+				} elseif (ereg("\+|-", $searchValue)) {
+					$boolean = "BOOLEAN";
+				} elseif (ereg(" ", $searchValue)) {
+					$boolean = "BOOLEAN";
+				} else {
+					$boolean = false;
 				}
-				elseif (ereg("\+|-", $searchValue, $matches)) {
-					$boolean = "BOOLEAN MODE";
-				}
-				
+			
 				//Sanitise
 				$searchValue = trim($searchValue);
 				$searchValue = $this->_db->safe($searchValue);
 
 				switch($this->_settings['db']['engine']) {
 					case 'mysql'	:	if ($boolean) {
-											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $boolean . ")";
+											$textSearch[] = " MATCH(" . $field . ") AGAINST (\"" . $searchValue . "\" IN " . $boolean . " MODE)";
 										} else {
 											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
 										}
 										break;
-					default			: $textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')"; break;
+					default			:	$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')"; break;
 				} # switch
 			} # if
 		} # foreach
