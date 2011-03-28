@@ -23,9 +23,10 @@ class db_pdo_mysql extends db_pdo {
 	function connect() {
        	if (!$this->_conn instanceof PDO) {
 			$this->_conn = new PDO('mysql:dbname=' . $this->_db_db . ';host=' . $this->_db_host, $this->_db_user, $this->_db_user);
-				
+			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  
 			$this->createDatabase();
-        }
+        } # if
     } # connect()
 		
 	function safe($s) {
