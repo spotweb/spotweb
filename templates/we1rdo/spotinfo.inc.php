@@ -29,10 +29,12 @@
                             	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
 <?php } ?>								
                             </th>
-							<th class='watch'>
-<?php	echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates/we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
-		echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates/we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>"; ?>
-							</th>
+<?php if ($settings['keep_watchlist']) {
+	echo "<th class='watch'>";
+	echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display:none;'"; } echo " id='watchremove_".$spot['id']."'><img src='templates/we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+	echo "<a onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display:none;'"; } echo " id='watchadd_".$spot['id']."'><img src='templates/we1rdo/img/fav_light.png' alt='Plaats in watchlist' title='Plaats in watchlist' /></a>";
+	echo "</th>";
+} ?>                     
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 	<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button" alt="Add NZB to SabNZBd queue (you already downloaded this spot)"></a></th>
