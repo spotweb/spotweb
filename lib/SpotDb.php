@@ -14,7 +14,6 @@ class SpotDb
 	
     function __construct($db)
     {
-		global $settings;		
 		$this->_dbsettings = $db;
 	} # __ctor
 
@@ -48,6 +47,13 @@ class SpotDb
 		$this->_conn->connect();
     } # ctor
 
+	/*
+	 * Geeft het database connectie object terug
+	 */
+	function getDbHandle() {
+		return $this->_conn;
+	} # getDbHandle
+	
 	/* 
 	 * Update of insert the maximum article id in de database.
 	 */
