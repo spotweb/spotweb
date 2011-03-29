@@ -315,6 +315,7 @@ class SpotsOverview {
 			
 				//Sanitise
 				$searchValue = trim($searchValue);
+				//$searchValue = str_replace("&quot;", "\"", $searchValue); // Dit is niet de geschikte plek hiervoor, maar eerder in het process leek op korte termijn even niet mogelijk. Commented als todo-list idee
 				$searchValue = $this->_db->safe($searchValue);
 
 				switch($this->_settings['db']['engine']) {
