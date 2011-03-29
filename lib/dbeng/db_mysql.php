@@ -110,7 +110,7 @@ class db_mysql extends db_abs {
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $searchValue) {
-		$searchMode = "match-natural";
+		$searchMode = 'match-natural';
 		$searchValue = trim($searchValue);
 		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
 
@@ -127,7 +127,7 @@ class db_mysql extends db_abs {
 		foreach($termList as $term) {
 			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
 				$searchValue = $tempSearchValue;
-				$searchMode = "normal";
+				$searchMode = 'normal';
 				break;
 			} # if
 		} # foreach
@@ -144,7 +144,7 @@ class db_mysql extends db_abs {
 		
 
 		switch($searchMode) {
-			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
+			case 'normal'			: $queryPart = " WHERE " . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN NATURAL LANGUAGE MODE)"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
 		} # else
