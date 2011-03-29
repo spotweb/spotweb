@@ -104,5 +104,53 @@ class db_mysql extends db_abs {
 		$rows = $this->get_mysql_info();
 		return $rows['rows_matched'];
 	} # rows()
+	
+	/*
+	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
+	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 */
+	function createTextQuery($field, $searchValue) {
+		$searchMode = "match-natural";
+		$searchValue = trim($searchValue);
+		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
+
+		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
+		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
+		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
+		# instelling is, en vallen eventueel terug op een normale 'LIKE' zoekopdracht.
+		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
+		$minWordLen = $serverSetting[0]['Value'];
+
+		# bekijk elk woord individueel, is het korter dan $minWordLen, gaan we terug naar normale 
+		# LIKE  modus
+		$termList = explode(' ', $tempSearchValue);
+		foreach($termList as $term) {
+			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
+				$searchValue = $tempSearchValue;
+				$searchMode = "normal";
+				break;
+			} # if
+		} # foreach
+		
+		# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
+		# vinden, schakelen we over naar boolean match
+		$termList = explode(' ', $searchValue);
+		foreach($termList as $term) {
+			if (array_search($term[0], array('+', '-')) !== false) {
+				$searchMode = 'match-boolean';
+				break;
+			} # if
+		} # foreach
+		
+
+		switch($searchMode) {
+			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
+			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN NATURAL LANGUAGE MODE)"; break;
+			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
+		} # else
+		
+		return $queryPart;
+	} # createTextQuery()
+	
 
 } # class

@@ -10,7 +10,6 @@ class SpotsOverview {
 	function __construct($db, $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		$this->FulltextMinWordLen = $this->_db->getSqlServerVariable("ft_min_word_len");
 	} # ctor
 	
 	/*
@@ -297,36 +296,7 @@ class SpotsOverview {
 			} # switch
 			
 			if (!empty($field) && !empty($searchValue)) {
-				// MySQL kan niet zoeken op te korte termen in FULLTEXT
-				if ($this->_settings['db']['engine'] == 'mysql') {
-					$searchMode = "match";
-					$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
-					foreach(explode(' ', $tempSearchValue) as $term){
-						if(strlen($term) < $this->FulltextMinWordLen && strlen($term) > 0){
-							$searchValue = $tempSearchValue;
-							$searchMode = "normal";
-							break;
-						}
-					} # foreach
-			
-					// Handling the Boolean Phrases (http://www.joedolson.com/Search-Engine-in-PHP-MySQL.php)
-					$searchMatchMode = (ereg('\+|-|"', $searchValue)) ? "BOOLEAN MODE" : "NATURAL LANGUAGE MODE";
-				} # if
-			
-				//Sanitise
-				$searchValue = trim($searchValue);
-				//$searchValue = str_replace("&quot;", "\"", $searchValue); // Dit is niet de geschikte plek hiervoor, maar eerder in het process leek op korte termijn even niet mogelijk. Commented als todo-list idee
-				$searchValue = $this->_db->safe($searchValue);
-
-				switch($this->_settings['db']['engine']) {
-					case 'mysql'	:	if ($searchMode == "normal") {
-											$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')";
-										} else {
-											$textSearch[] = " MATCH(" . $field . ") AGAINST ('" . $searchValue . "' IN " . $searchMatchMode . ")";
-										}
-										break;
-					default			:	$textSearch[] = ' (' . $field . " LIKE '%" . $searchValue . "%')"; break;
-				} # switch
+				$textSearch[] = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
 			} # if
 		} # foreach
 
@@ -370,7 +340,7 @@ class SpotsOverview {
 		if (!empty($newSpotsSearch)) {
 			$endFilter[] = $newSpotsSearch;
 		} # if
-
+		
 		return join(" AND ", $endFilter);
 	} # filterToQuery
 	
