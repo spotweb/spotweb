@@ -144,7 +144,7 @@ class db_mysql extends db_abs {
 		
 
 		switch($searchMode) {
-			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
+			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($searchValue) . "%')"; break;
 			
 			/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
