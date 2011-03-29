@@ -97,14 +97,15 @@ class SpotDb
 		} # if
 		
 		return $stamp;
-	}
+	} # getMaxMessageTime()
 	
-	function getSqlServerVariable($name) {
-		$q = $this->_conn->exec("SHOW variables WHERE Variable_name = '" . $name . "'");
-		$value = mysql_fetch_assoc($q);
-		return $value['Value'];
-	} // getServerVariable
-	 
+	/*
+	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
+	 */
+	function createTextQuery($field, $value) {
+		return $this->_conn->createTextQuery($field, $value);
+	} # createTextQuery()
+
 	/*
 	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
 	 */

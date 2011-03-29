@@ -67,5 +67,13 @@ abstract class db_abs {
 	function exec($s, $p = array()) {
 		return $this->rawExec($this->prepareSql($s, $p));
 	} # exec()
+	
+	/*
+	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
+	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 */
+	function createTextQuery($field, $value) {
+		return " " . $field . " LIKE '%" . $this->safe($value) . "%'";
+	} # createTextQuery
 
 }
