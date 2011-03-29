@@ -273,10 +273,6 @@ class SpotDb
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
-		if (!empty($sqlFilter)) {
-			$sqlFilter = ' WHERE ' . $sqlFilter;
-		} # if
-		
 		# de optie getFull geeft aan of we de volledige fieldlist moeten 
 		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
 		# het geheugen gebruik, dus liefst niet.
