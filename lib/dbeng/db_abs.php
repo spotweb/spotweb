@@ -33,7 +33,7 @@ abstract class db_abs {
 	 * FALSE in geval van een error
 	 */
 	abstract function arrayQuery($sql, $params = array());
-	
+
 	/*
 	 * Voert de database specifieke "safe-parameter" functie uit.
 	 */

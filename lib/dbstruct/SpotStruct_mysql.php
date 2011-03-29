@@ -145,4 +145,21 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # Createdatabase
 	
+	function updateSchema() {
+		# Controleer of er wel een fulltext index zit op 'spots' tabel 
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spots WHERE key_name = 'idx_spots_fts_1'");
+		if (empty($q)) {
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_3 ON spots(tag);");
+		} # if
+	
+
+		# Controleer of er wel een fulltext index zit op 'spotsfull' tabel 
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spotsfull WHERE key_name = 'idx_spotsfull_fts_1'");
+		if (empty($q)) {
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
+		} # if 
+	} # updateSchema
+	
 } # class

@@ -47,13 +47,21 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		if ($this->_settings['count_newspots'] == false) {
+		if (!$this->_settings['count_newspots']) {
 			return '';
 		} # if
 		
 		$filterStr .= "&search[value][]=New:0";
 		$newCount = $this->getFilteredSpotCount($filterStr);
 
+		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots 
+		# zijn, SpotWeb niet ontzettend traag wordt. Op het moment dat er een
+		# persistency laag achter settings komt ewl mee oppassen :P
+		if ($newCount > 5000) {
+			$this->_settings['count_newspots'] = false;
+		} # if
+		
+		# en geef het aantal terug dat we willen hebben
 		if ($newCount > 0) {
 			return ' (' . $newCount . ')';
 		} else {

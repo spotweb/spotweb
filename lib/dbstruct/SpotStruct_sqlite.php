@@ -150,4 +150,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		
 	} # Createdatabase
 	
+	function updateSchema() {
+	} # updateSchema
+	
 } # class

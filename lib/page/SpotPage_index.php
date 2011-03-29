@@ -31,6 +31,7 @@ class SpotPage_index extends SpotPage_Abs {
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 
+							
 		# als er geen volgende pagina is, ook niet tonen
 		if (!$spotsTmp['hasmore']) {
 			$nextPage = -1;
@@ -38,12 +39,13 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# query wanneer de laatste keer de spots geupdate werden
 		$lastUpdateTime = $this->_db->getLastUpdate($this->_settings['nntp_hdr']['host']);
-
+								  
 		# zet de page title
 		$this->_pageTitle = "overzicht";
 		
 		#- display stuff -#
 		$this->template('header');
+
 		$this->template('filters', array('search' => $this->_params['search'],
 								  'lastupdate' => $lastUpdateTime,
 								  'quicklinks' => $this->_settings['quicklinks'],

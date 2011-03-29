@@ -8,4 +8,5 @@ abstract class SpotStruct_abs {
 	} # __construct
 	
 	abstract function createDatabase();
+	abstract function updateSchema();
 } # class
