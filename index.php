@@ -24,12 +24,13 @@ require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
 require_once "lib/page/SpotPage_watchlist.php";
+
 #- main() -#
 try {
 	# database object
 	$db = new SpotDb($settings['db']);
 	$db->connect();
-	
+
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
@@ -39,6 +40,7 @@ try {
 		$page = 'index';
 	} # if
 
+		
 	switch($page) {
 		case 'getspot' : {
 				$page = new SpotPage_getspot($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
