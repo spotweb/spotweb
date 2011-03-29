@@ -119,9 +119,14 @@ class SpotSigning {
 			} # if
 		} # if
 		
-		if (!$verified) {
-			$userSignedHash = sha1('<' . $comment['messageid'] . '>', false);
-			$verified = (substr($userSignedHash, 0, 3) == '0000');
+		# als een sport qua RSA signature al klopt, kunnen we ook nog controleren op de users'
+		# hash, deze zou eigenlijk ook moeten kloppen. 
+		# Deze hash is puur gemaakt om rekenkracht te vereisen aan de kant van de poster om 
+		# eventuele floods te voorkomen, de hash is dus ook op zich door iedereen te creeeren.
+		#
+		if ($verified) {
+			# $userSignedHash = sha1('<' . $comment['messageid'] . '>', false);
+			# $verified = (substr($userSignedHash, 0, 3) == '0000');
 		} # if
 
 		return $verified;
