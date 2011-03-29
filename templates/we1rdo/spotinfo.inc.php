@@ -88,7 +88,7 @@
 			if ($comment['verified']) {
 ?>
 					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='Zoek naar spots van "<?php echo $comment['from']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
-						<?php echo join("<br>", preg_replace("/\[img=(.*?)\]/si","<img src=\"images/smileys/\\1.gif\" border=\"0\">",$comment['body'])); ?>
+						<?php echo join("<br>", $tplHelper->parseUBB($comment['body'])); ?>
 					</li>
 <?php	
 			} # if
