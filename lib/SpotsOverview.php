@@ -296,7 +296,7 @@ class SpotsOverview {
 			} # switch
 			
 			if (!empty($field) && !empty($searchValue)) {
-				$textSearch[] = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
+				$textSearch[] = $this->_db->createTextQuery($field, $searchValue);
 			} # if
 		} # foreach
 
