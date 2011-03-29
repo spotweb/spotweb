@@ -47,7 +47,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		if ($this->_settings['count_newspots'] == false) {
+		if (!$this->_settings['count_newspots']) {
 			return '';
 		} # if
 		
