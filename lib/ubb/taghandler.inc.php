@@ -28,7 +28,14 @@
 					Array('i' => 
 						Array('closetags' => Array('i'),
 							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_italic') )
+							  'handler' => Array('TagHandler', 'handle_italic') ),
+							  
+
+						  'img' =>
+							Array('closetags' => Array('img'),
+								  'allowedchildren' => Array(''),
+								  'handler' => Array('TagHandler', 'handle_img') )
+							  
 				),
 
 			/* ------- u ------------------- */
@@ -51,6 +58,12 @@
 			} // else
 		} // gettagconfig
 
+		/*
+		 * Add additional configuration for a tag 
+		 */
+		function setadditionalinfo($tagname, $name, $value) {
+			TagHandler::$tagconfig[$tagname[0]][$tagname][$name] = $value;
+		} # setadditionalinfo
 
 		/*
 		 * Set the list of denied tags	
@@ -111,6 +124,22 @@
 		} // handle_br
 
 		
+		/* handle the img tag */
+		function handle_img($params, $contents) {
+				# are only specific images allowed?
+				if (isset(TagHandler::$tagconfig['i']['img']['allowedimgs'])) {
+					if (!isset(TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) { 
+						return TagHandler::handle_empty($params, $contents);
+					} else {
+						$contents = TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
+					} # if
+				} # if
+				
+				return Array('prepend' => '<img src="',
+							 'content' => $contents,
+							 'append' => '">');
+		} // handle_img
+
 		/* handle the noubb tag */
 		function handle_noubb($params, $contents) {
 			return Array('prepend' => '',

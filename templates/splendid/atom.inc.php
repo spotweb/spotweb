@@ -17,7 +17,7 @@ $indexUrl = htmlspecialchars($tplHelper->changePage('index'));
 <?php foreach($spots as $spot):
 $spotLink = $tplHelper->spotUrl($spot);
 $id = 'tag:' . $tplHelper->host() . ',2011:spot/'. urlencode($spot['messageid']);
-$spot['description'] = @$tplHelper->formatDescription($spot['description']); ?>
+$spot['description'] = @$tplHelper->formatContent($spot['description']); ?>
         <entry>
                 <title><?php echo htmlspecialchars($spot['title']) ?></title>
                 <author><name><?php echo htmlspecialchars($spot['poster'])?></name></author>

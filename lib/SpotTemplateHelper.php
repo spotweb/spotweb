@@ -182,10 +182,11 @@ class SpotTemplateHelper {
 	} # format_size
 
 	
-	function formatDescription($tmp) {
+	function formatContent($tmp) {
 		# initialize ubb parser
 		$parser = new UbbParse($tmp);
 		TagHandler::setDeniedTags( Array() );
+		TagHandler::setadditionalinfo('img', 'allowedimgs', $this->getSmileyList() );
         $tmp = $parser->parse();
 		$tmp = $tmp[0];
 	
@@ -195,7 +196,7 @@ class SpotTemplateHelper {
 		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
 		
 		return $tmp;
-	} # formatDescription
+	} # formatContent
 	
 	function hasbeenDownloaded($spot) {
 		if (!$this->_settings['keep_downloadlist']) {
@@ -308,12 +309,19 @@ class SpotTemplateHelper {
 		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		
 		// description
-		$spot['description'] = $this->formatDescription($spot['description']);
+		$spot['description'] = $this->formatContent($spot['description']);
 		
 		// escape de HTML voor de comments
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
 			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
+			
+			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
+			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
+			# om zeker te zijn dat we altijd een array terugkrijgen
+			$tmpBody = implode("\n", $comments[$i]['body']);
+			$tmpBody = $this->formatContent($tmpBody);
+			$comments[$i]['body'] = explode("\n", $tmpBody);
 		} # for
 		
 		return array($spot, $comments);
@@ -392,5 +400,12 @@ class SpotTemplateHelper {
 		
 		return self::$wtList;
 	} # getWatchList
+	
+	/*
+	 * Geeft een lijst van mogelijke smilies terug
+	 */
+	function getSmileyList() {
+		return array();
+	} # getSmileyList
 	
 } # class SpotTemplateHelper
