@@ -23,6 +23,15 @@ class CustomTplHelper extends SpotTemplateHelper {
 		} elseif (stripos($s, 'cat3') !== false) {
 			return "red";
 		} # else
-	} # filter2cat 
+	} # filter2cat
+	
+	function parseUBB($a) {
+		$a = preg_replace("/\[b\](.*?)\[\/b\]/si","<b>\\1</b>",$a);
+		$a = preg_replace("/\[i\](.*?)\[\/i\]/si","<i>\\1</i>",$a);
+		$a = preg_replace("/\[u\](.*?)\[\/u\]/si","<u>\\1</u>",$a);
+		$a = preg_replace("/\[img=(.*?)\]/si","<img src=\"images/smileys/\\1.gif\" border=\"0\">",$a);
+		
+		return $a;
+	} # parseUBB
 	
 } # class CustomTplHelper
