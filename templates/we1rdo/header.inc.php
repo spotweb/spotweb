@@ -201,7 +201,7 @@
 
 		function toggleFilterBlock(imageName,block,cookieName) {
 			$(block).toggle();
-			if ($.cookie(cookieName) == 'block') { var view = 'none'; } else { var view = 'block'; }
+			if ($.cookie(cookieName) == 'none') { var view = 'block'; } else { var view = 'none'; }
 			toggleFilterImage(imageName, view);
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 		} // toggleFitlerBlock
@@ -223,10 +223,10 @@
 		});
 
 		function toggleFilterImage(imageName, state) {
-			if (state == 'block' || state == null) {
-				$(imageName).attr({src:'templates/we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
-			} else {
+			if (state == 'none') {
 				$(imageName).attr({src:'templates/we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
+			} else {
+				$(imageName).attr({src:'templates/we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
 			}
 		} // toggleFilterImage
 
