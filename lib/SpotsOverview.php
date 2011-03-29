@@ -302,7 +302,7 @@ class SpotsOverview {
 					$searchMode = "match";
 					$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
 					foreach(explode(' ', $tempSearchValue) as $term){
-						if(strlen($term) < $this->FulltextMinWordLen){
+						if(strlen($term) < $this->FulltextMinWordLen && strlen($term) > 0){
 							$searchValue = $tempSearchValue;
 							$searchMode = "normal";
 							break;
