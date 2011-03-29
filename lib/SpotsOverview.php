@@ -101,6 +101,10 @@ class SpotsOverview {
 		$hasMore = ($spotCnt > $limit);
 			
 		for ($i = 0; $i < $spotCnt; $i++) {
+			# We forceren category naar een integer, sqlite kan namelijk een lege
+			# string terug ipv een category nummer
+			$spotList[$i]['category'] = (int) $spotList[$i]['category'];
+			
 			# We trekken de lijst van subcategorieen uitelkaar 
 			$spotList[$i]['subcatlist'] = explode("|", 
 							$spotList[$i]['subcata'] . 
