@@ -25,13 +25,37 @@ class CustomTplHelper extends SpotTemplateHelper {
 		} # else
 	} # filter2cat
 	
-	function parseUBB($a) {
-		$a = preg_replace("/\[b\](.*?)\[\/b\]/si","<b>\\1</b>",$a);
-		$a = preg_replace("/\[i\](.*?)\[\/i\]/si","<i>\\1</i>",$a);
-		$a = preg_replace("/\[u\](.*?)\[\/u\]/si","<u>\\1</u>",$a);
-		$a = preg_replace("/\[img=(.*?)\]/si","<img src=\"images/smileys/\\1.gif\" border=\"0\">",$a);
-		
-		return $a;
+	function getSmileyList() {
+		return array('biggrin' => 'templates/we1rdo/smileys/biggrin.gif',
+				'bloos' => 'templates/we1rdo/smileys/bloos.gif',
+				'buigen' => 'templates/we1rdo/smileys/buigen.gif',
+				'censored' => 'templates/we1rdo/smileys/censored.gif',
+				'clown' => 'templates/we1rdo/smileys/clown.gif',
+				'confused' => 'templates/we1rdo/smileys/confused.gif',
+				'cool' => 'templates/we1rdo/smileys/cool.gif',
+				'exactly' => 'templates/we1rdo/smileys/exactly.gif',
+				'frown' => 'templates/we1rdo/smileys/frown.gif',
+				'grijns' => 'templates/we1rdo/smileys/grijns.gif',
+				'heh' => 'templates/we1rdo/smileys/heh.gif',
+				'huh' => 'templates/we1rdo/smileys/huh.gif',
+				'klappen' => 'templates/we1rdo/smileys/klappen.gif',
+				'knipoog' => 'templates/we1rdo/smileys/knipoog.gif',
+				'kwijl' => 'templates/we1rdo/smileys/kwijl.gif',
+				'lollig' => 'templates/we1rdo/smileys/lollig.gif',
+				'maf' => 'templates/we1rdo/smileys/maf.gif',
+				'ogen' => 'templates/we1rdo/smileys/ogen.gif',
+				'oops' => 'templates/we1rdo/smileys/oops.gif',
+				'pijl' => 'templates/we1rdo/smileys/pijl.gif',
+				'redface' => 'templates/we1rdo/smileys/redface.gif',
+				'respekt' => 'templates/we1rdo/smileys/respekt.gif',
+				'schater' => 'templates/we1rdo/smileys/schater.gif',
+				'shiny' => 'templates/we1rdo/smileys/shiny.gif',
+				'sleephappy' => 'templates/we1rdo/smileys/sleephappy.gif',
+				'smile' => 'templates/we1rdo/smileys/smile.gif',
+				'uitroepteken' => 'templates/we1rdo/smileys/uitroepteken.gif',
+				'vlag' => 'templates/we1rdo/smileys/vlag.gif',
+				'vraagteken' => 'templates/we1rdo/smileys/vraagteken.gif',
+				'wink' => 'templates/we1rdo/smileys/wink.gif');
 	} # parseUBB
 	
 } # class CustomTplHelper
