@@ -192,9 +192,10 @@
 		
 		function toggleScrolling(state) {
 			if (state == true || state == 'true') {
-				$('#filterscroll').attr('checked','checked');
+				$('#filterscroll').attr({checked:'checked', title:'Klik om sidebar niet meer mee te laten scrollen'});
 				$("#filter").css('position', 'fixed');
 			} else {
+				$('#filterscroll').attr({title:'Klik om sidebar mee te laten scrollen'});
 				$("#filter").css('position', 'static');
 			}
 		} // toggleScrolling
