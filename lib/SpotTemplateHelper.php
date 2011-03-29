@@ -308,7 +308,7 @@ class SpotTemplateHelper {
 		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		
 		// description
-		$spot['description'] = htmlentities(strip_tags($this->formatDescription($spot['description'])), ENT_QUOTES);;
+		$spot['description'] = $this->formatDescription($spot['description']);
 		
 		// escape de HTML voor de comments
 		$commentCount = count($comments);
