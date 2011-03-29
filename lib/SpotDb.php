@@ -497,6 +497,7 @@ class SpotDb
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 		
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite': 
 			case 'sqlite3'	: {
 				$this->_conn->exec("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
 				$this->_conn->exec("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
@@ -506,7 +507,7 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
-			} # sqlite3
+			} # sqlite3 en pdo_sqlite
 			default		: {
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
