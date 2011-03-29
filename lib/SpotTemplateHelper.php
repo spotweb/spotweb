@@ -128,7 +128,7 @@ class SpotTemplateHelper {
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
-		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . 'amp;image[width]=' . $width;
+		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width;
 	} # makeImageUrl
 
 	/*
