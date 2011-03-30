@@ -299,9 +299,9 @@ div.details table.spotheader th.title {background:url(img/sprite_x.png) repeat-x
 div.details table.spotheader th.watch {width:16px; padding:0 0 1px 0;}
 div.details table.spotheader th.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 div.details table.spotheader th.watch a.remove {background-position:-56px -80px;}
-div.details table.spotheader th.nzb {width:115px; min-width:115px; text-align:center; padding:0; color:#fff;}
-div.details table.spotheader th.nzb a.search {display:inline-block; color:#000; text-decoration:none; width:45%;}
-div.details table.spotheader th.nzb a.nzb {display:inline-block; text-decoration:none; width:45%;}
+div.details table.spotheader th.nzb {width:92px; min-width:92px; text-align:center; padding:0; color:#fff;}
+div.details table.spotheader th.nzb a.search {display:inline-block; float:left; color:#000; text-decoration:none; width:38px; padding:0 2px 0 6px;}
+div.details table.spotheader th.nzb a.nzb {display:inline-block; float:right; text-decoration:none; width:32px; padding:0 3px 0 0;}
 div.details table.spotheader th.sabnzbd {width:20px; padding:0;}
 div.details table.spotheader th.sabnzbd a.sabnzbd-button {display:block; width:20px; height:17px; margin:0 0 1px 0; background:url(img/sprite.png) no-repeat 0 -94px;}
 div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center left; margin:0 0 0 3px;}

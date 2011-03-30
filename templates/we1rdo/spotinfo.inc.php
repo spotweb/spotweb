@@ -22,13 +22,10 @@
                     	<tr>
                         	<th class="category"><span><?php echo $spot['formatname'];?></span></th>
                             <th class="title"><?php echo $spot['title'];?></th>
-                            <th class="nzb">
-                            	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
+                            <th class="nzb"><a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
-								|
-                            	<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
-<?php } ?>								
-                            </th>
+								|<a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} ?></a>
+<?php } ?></th>
 <?php if ($settings['keep_watchlist']) {
 	echo "<th class='watch'>";
 	echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist'> </a>";
