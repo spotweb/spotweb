@@ -111,25 +111,26 @@ class db_mysql extends db_abs {
 	 */
 	function createTextQuery($field, $searchValue) {
 		$searchValue = trim($searchValue);
-		$tempSearchValue = str_replace(array('+','-','~','<','>','AND','NOT','OR'), '', $searchValue);
+		$booleanValues = array('+', '-', '~', '<', '>', '*', '|', 'AND', 'NOT', 'OR');
 
-		$searchMode = $this->getSearchMode($searchValue, $tempSearchValue);
+		$searchMode = $this->getSearchMode($searchValue, $booleanValues);
+
+		# Bij een LIKE search strippen we de Boolean eruit, zodat deze niet het resultaat beïnvloeden
 		if ($searchMode == 'normal') {
-			$searchValue = $tempSearchValue;
+			$searchValue = str_replace($booleanValues, '', $searchValue);
 		}
 
 		switch($searchMode) {
 			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($searchValue) . "%')"; break;
-			
 			/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
 		} # else
-		echo $searchMode;
+
 		return $queryPart;
 	} # createTextQuery()
 
-    function getSearchMode($search, $replacedSearch) {
+	function getSearchMode($search, $booleanValues) {
 		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
 		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
 		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
@@ -137,27 +138,33 @@ class db_mysql extends db_abs {
 		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
+		$replacedSearch = str_replace($booleanValues, '', $search);
 		$termList = explode(" ", $replacedSearch);
 		foreach($termList as $term) {
 			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-				return 'normal';
+				return 'normal'; /* direct terugschakelen op LIKE search, verdere tests zijn niet nodig */
 			} # if
 		} # foreach
 
 		# Als alle woorden langer zijn dan $minWordLen gaan we testen op de bekende Boolean
 		# waarden om de uiteindelijke zoekmethode te identificeren.
-        $termList = explode(" ", $search);
-        foreach($termList as $term) {
-                if (strpos('+-~<>', $term[0]) !== false) {
-                    return 'match-boolean';
-                } # if
+		$termList = explode(" ", $search);
+		foreach($termList as $term) {
+			if (strpos('+-~<>', $term[0]) !== false) {
+				return 'match-boolean';
+			} # if
 
-                if (strpos('*', substr($term, -1)) !== false) {
-                    return 'match-boolean';
-                } # if
-        } # foreach
+			if (strpos('*', substr($term, -1)) !== false) {
+				return 'match-boolean';
+			} # if
+			
+			# Helaas staat niet alles aan het begin of eind
+			if (strpos('*|', $term) !== false) {
+				return 'match-boolean';
+			} # if
+		} # foreach
 
-        return 'match-natural';
-    } # getSearchMode
+		return 'match-natural';
+	} # getSearchMode
 
 } # class
