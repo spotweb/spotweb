@@ -119,7 +119,7 @@ class SpotSigning {
 			} # if
 		} # if
 		
-		# als een sport qua RSA signature al klopt, kunnen we ook nog controleren op de users'
+		# als een spot qua RSA signature al klopt, kunnen we ook nog controleren op de users'
 		# hash, deze zou eigenlijk ook moeten kloppen. 
 		# Deze hash is puur gemaakt om rekenkracht te vereisen aan de kant van de poster om 
 		# eventuele floods te voorkomen, de hash is dus ook op zich door iedereen te creeeren.
