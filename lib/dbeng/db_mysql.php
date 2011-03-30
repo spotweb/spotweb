@@ -132,16 +132,9 @@ class db_mysql extends db_abs {
 			} # if
 		} # foreach
 		
-		# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
-		# vinden, schakelen we over naar boolean match
-		$termList = explode(' ', $searchValue);
-		foreach($termList as $term) {
-			if (array_search($term[0], array('+', '-')) !== false || array_search($term[strlen($term)-1], array('*')) !== false) {
-				$searchMode = 'match-boolean';
-				break;
-			} # if
-		} # foreach
-		
+		if ($this->isBooleanSearch($searchValue)) {
+			$searchMode = 'match-boolean';
+		} # if
 
 		switch($searchMode) {
 			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($searchValue) . "%')"; break;
@@ -153,6 +146,22 @@ class db_mysql extends db_abs {
 		
 		return $queryPart;
 	} # createTextQuery()
-	
+
+	# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
+	# vinden, schakelen we over naar boolean match
+    function isBooleanSearch($search) {
+        $termList = explode(" ", $search);
+        foreach($termList as $term) {
+                if (strpos('+-~<>', $term[0]) !== false) {
+                    return true;
+                } # if
+
+                if (strpos('*', substr($term, -1)) !== false) {
+                    return true;
+                } # if
+        } # foreach
+
+        return false;
+    } # isBooleanSearch	
 
 } # class
