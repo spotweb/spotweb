@@ -59,7 +59,7 @@
 				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $watch['title'] . $markSpot . "</a></td>";
 			
 			echo "<td class='watch'>";
-			echo "\t<a href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "'><img src='templates/we1rdo/img/fav.png' alt='Verwijder uit watchlist' title='Verwijder uit watchlist'/></a>";
+			echo "\t<a class='remove' href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "' title='Verwijder uit watchlist'> </a>";
 			echo "</td>";
 			
 			if ($settings['retrieve_comments']) {
@@ -93,9 +93,9 @@
 				# display the sabnzbd button
 				if (!empty($watch['sabnzbdurl'])) {
 					if ($tplHelper->hasBeenDownloaded($watch)) {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/succes.png' alt='Add NZB to SabNZBd queue (you already downloaded this spot)'></a></td>";
+						echo "<td><a class='sabnzbd-button succes' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
 					} else {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img width='20' height='17' class='sabnzbd-button' src='templates/we1rdo/img/download.png' alt='Add NZB to SabNZBd queue'></a></td>";	
+						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'> </a></td>";	
 					} # else
 				} # if
 			} else {

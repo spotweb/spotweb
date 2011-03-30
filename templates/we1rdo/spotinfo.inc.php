@@ -20,7 +20,7 @@
 				<table class="spotheader">
 					<tbody>
                     	<tr>						
-                        	<th class="category"><?php echo $spot['formatname'];?></th>
+                        	<th class="category"><span><?php echo $spot['formatname'];?></span></th>
                             <th class="title"><?php echo $spot['title'];?></th>
                             <th class="nzb">
                             	<a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
@@ -40,11 +40,11 @@
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"><img width="20" height="17" src="templates/we1rdo/img/succes.png" class="sabnzbd-button" alt="Add NZB to SabNZBd queue (you already downloaded this spot)"></a></th>
 	<?php } else { ?>
                             <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"><img width="20" height="17" src="templates/we1rdo/img/download.png" class="sabnzbd-button" alt="Add NZB to SabNZBd queue"></a></th>
-<?php } } ?>								
+<?php } } ?>
                         </tr>
                     </tbody>
                 </table>
-                
+
 				<table class="spotinfo">
                 	<tbody>
                         <tr><th> Categorie </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
