@@ -110,31 +110,13 @@ class db_mysql extends db_abs {
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $searchValue) {
-		$searchMode = 'match-natural';
 		$searchValue = trim($searchValue);
-		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
+		$tempSearchValue = str_replace(array('+','-','~','<','>','AND','NOT','OR'), '', $searchValue);
 
-		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
-		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
-		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
-		# instelling is, en vallen eventueel terug op een normale 'LIKE' zoekopdracht.
-		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
-		$minWordLen = $serverSetting[0]['Value'];
-
-		# bekijk elk woord individueel, is het korter dan $minWordLen, gaan we terug naar normale 
-		# LIKE  modus
-		$termList = explode(' ', $tempSearchValue);
-		foreach($termList as $term) {
-			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-				$searchValue = $tempSearchValue;
-				$searchMode = 'normal';
-				break;
-			} # if
-		} # foreach
-		
-		if ($this->isBooleanSearch($searchValue)) {
-			$searchMode = 'match-boolean';
-		} # if
+		$searchMode = $this->getSearchMode($searchValue, $tempSearchValue);
+		if ($searchMode == 'normal') {
+			$searchValue = $tempSearchValue;
+		}
 
 		switch($searchMode) {
 			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($searchValue) . "%')"; break;
@@ -143,25 +125,39 @@ class db_mysql extends db_abs {
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
 		} # else
-		
+		echo $searchMode;
 		return $queryPart;
 	} # createTextQuery()
 
-	# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
-	# vinden, schakelen we over naar boolean match
-    function isBooleanSearch($search) {
+    function getSearchMode($search, $replacedSearch) {
+		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
+		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
+		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
+		# instelling is, en vallen eventueel terug op een normale 'LIKE' zoekopdracht.
+		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
+		$minWordLen = $serverSetting[0]['Value'];
+
+		$termList = explode(" ", $replacedSearch);
+		foreach($termList as $term) {
+			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
+				return 'normal';
+			} # if
+		} # foreach
+
+		# Als alle woorden langer zijn dan $minWordLen gaan we testen op de bekende Boolean
+		# waarden om de uiteindelijke zoekmethode te identificeren.
         $termList = explode(" ", $search);
         foreach($termList as $term) {
                 if (strpos('+-~<>', $term[0]) !== false) {
-                    return true;
+                    return 'match-boolean';
                 } # if
 
                 if (strpos('*', substr($term, -1)) !== false) {
-                    return true;
+                    return 'match-boolean';
                 } # if
         } # foreach
 
-        return false;
-    } # isBooleanSearch	
+        return 'match-natural';
+    } # getSearchMode
 
 } # class
