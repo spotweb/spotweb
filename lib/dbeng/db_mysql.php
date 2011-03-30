@@ -136,7 +136,7 @@ class db_mysql extends db_abs {
 		# vinden, schakelen we over naar boolean match
 		$termList = explode(' ', $searchValue);
 		foreach($termList as $term) {
-			if (array_search($term[0], array('+', '-')) !== false) {
+			if (array_search($term[0], array('+', '-')) !== false || array_search($term[strlen($term)-1], array('*')) !== false) {
 				$searchMode = 'match-boolean';
 				break;
 			} # if
