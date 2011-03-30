@@ -74,7 +74,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		# Controleer of de 'nntp' tabel wel recent is, de oude versie had 2 kolommen (server,maxarticleid)
 		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM nntp;");
 		if (count($q) == 2) {
-			$this->_dbcon->rawExec("ALTER TABLE nntp ADD COLUMN(nowrunning INTEGER DEFAULT 0) ENGINE = MYISAM;");
+			$this->_dbcon->rawExec("ALTER TABLE nntp ADD COLUMN(nowrunning INTEGER DEFAULT 0);");
 		} # if
 
 		# Controleer of er wel een index zit op 'spots' tabel 
