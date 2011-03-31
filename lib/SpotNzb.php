@@ -167,7 +167,7 @@ class SpotNzb {
 			default 		: {
 				$nzb = $this->mergeNzbList($nzbList); 
 				$mimeType = 'application/x-nzb';
-				$fileName = urlencode($fullSpot['title']) . '.nzb';
+				$fileName = $fullSpot['title'] . '.nzb';
 				break;
 			} # merge
 		} # switch
