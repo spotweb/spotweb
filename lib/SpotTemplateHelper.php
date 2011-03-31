@@ -63,7 +63,7 @@ class SpotTemplateHelper {
 		
 		# en geef het aantal terug dat we willen hebben
 		if ($newCount > 0) {
-			return ' (' . $newCount . ')';
+			return $newCount;
 		} else {
 			return '';
 		} # else
