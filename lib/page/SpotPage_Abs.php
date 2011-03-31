@@ -13,6 +13,20 @@ abstract class SpotPage_Abs {
 		$this->_prefs = $prefs;
 	} # ctor
 	
+	# Geef the tpl helper terug
+	function getTplHelper($params) {
+		if (file_exists($this->_settings['tpl_path'] . '/CustomTplHelper.php')) {
+			require_once $this->_settings['tpl_path'] . '/CustomTplHelper.php';
+			
+			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db, $params);
+		} else {
+			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db, $params);
+		} # else
+		
+		return $tplHelper;
+	} # getTplHelper
+		
+	
 	/*
 	 * Display de template
 	 */
@@ -20,15 +34,8 @@ abstract class SpotPage_Abs {
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
+		$tplHelper = $this->getTplHelper($params);
 	
-		if (file_exists($settings['tpl_path'] . '/CustomTplHelper.php')) {
-			require_once $settings['tpl_path'] . '/CustomTplHelper.php';
-			
-			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db, $params);
-		} else {
-			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db, $params);
-		} # else
-		
 		require_once($settings['tpl_path'] . $tpl . '.inc.php');
 	} # template
 	
