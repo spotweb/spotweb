@@ -168,10 +168,14 @@
 						// niet te zien
 					},
 					beforeSend: function(jqXHR, settings) {
-						$(temp).html("<img class='sabnzbd-button loading' src='templates/we1rdo/img/loading.gif' />");
+						$(temp).removeClass("succes");
+						$(temp).addClass("loading");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						setTimeout( function() { $(temp).html("<img class='sabnzbd-button' src='templates/we1rdo/img/succes.png' />") }, 1000);
+						setTimeout( function() { 
+							$(temp).removeClass("loading");
+							$(temp).addClass("succes");
+						}, 1000);
 					}, // # complete
 					dataType: "text"
 				});
@@ -200,19 +204,19 @@
 			}
 		} // toggleScrolling
 
-		function toggleFilterBlock(imageName,block,cookieName) {
+		function toggleFilterBlock(linkName,block,cookieName) {
 			$(block).toggle();
 			if ($.cookie(cookieName) == 'none') { var view = 'block'; } else { var view = 'none'; }
-			toggleFilterImage(imageName, view);
+			toggleFilterImage(linkName, view);
 			$.cookie(cookieName, view, { path: '/', expires: 7 });
 		} // toggleFitlerBlock
 
 		//Cookie uitlezen en in die staat op scherm toveren
 		$(function(){
-			var items = {'viewSearch': ['.hide', '#filterform_img'],
-						'viewQuickLinks': ['ul.quicklinks', '#quicklinks_img'],
-						'viewFilters': ['display', '#filters_img'],
-						'viewMaintenance': ['ul.maintenancebox', '#maintenance_img']
+			var items = {'viewSearch': ['.hide', '#filterform_link'],
+						'viewQuickLinks': ['ul.quicklinks', '#quicklinks_link'],
+						'viewFilters': ['ul.filters', '#filters_link'],
+						'viewMaintenance': ['ul.maintenancebox', '#maintenance_link']
 			};
 			
 			// array doorlopen en actie ondernemen
@@ -223,11 +227,13 @@
 			});
 		});
 
-		function toggleFilterImage(imageName, state) {
+		function toggleFilterImage(linkName, state) {
 			if (state == 'none') {
-				$(imageName).attr({src:'templates/we1rdo/img/arrow_down.png', alt:'Uitklappen', title:'Uitklappen'});
+				$(linkName).removeClass("up");
+				$(linkName).addClass("down");
 			} else {
-				$(imageName).attr({src:'templates/we1rdo/img/arrow_up.png', alt:'Verbergen', title:'Verbergen'});
+				$(linkName).removeClass("down");
+				$(linkName).addClass("up");
 			}
 		} // toggleFilterImage
 

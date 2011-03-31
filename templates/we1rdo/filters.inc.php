@@ -1,5 +1,5 @@
 				<div id="filter" class="filter">
-                    <h4><span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span><span class="viewState"><a onclick="toggleFilterBlock('#filterform_img', '.hide', 'viewSearch')"><img id="filterform_img" src="templates/we1rdo/img/loading.gif" alt="Bezig met inladen..."></a></span> Zoeken </h4>
+                    <h4><span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span><span class="viewState"><a id="filterform_link" onclick="toggleFilterBlock('#filterform_link', '.hide', 'viewSearch')"> </a></span> Zoeken </h4>
 
 					<form id="filterform" action="">
 <?php
@@ -27,7 +27,7 @@
 								</tr>
 								
 								<tr>
-									<td colspan="<?php echo $filterColCount;?>"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><span class="filtersubmit"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></span></td>
+									<td colspan='<?php echo $filterColCount;?>'><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><span class="filtersubmit"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></span></td>
 								</tr>
 
 								<tr class="unfiltered hide">
@@ -39,7 +39,7 @@
 						<div id="tree" class="hide"></div>
 					</form>
 					
-                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#quicklinks_img', 'ul.quicklinks', 'viewQuickLinks')"><img id="quicklinks_img" src="templates/we1rdo/img/loading.gif" alt="Bezig met inladen..."></a></span> Quick Links </h4>
+                    <h4><span class="viewState"><a id="quicklinks_link" onclick="toggleFilterBlock('#quicklinks_link', 'ul.quicklinks', 'viewQuickLinks')"> </a></span> Quick Links </h4>
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
@@ -52,7 +52,7 @@
 ?>
 					</ul>
 					
-                    <h4><span class="viewState"><a onclick="toggleFilterBlock('#filters_img', 'ul.filters', 'viewFilters')"><img id="filters_img" src="templates/we1rdo/img/loading.gif" alt="Bezig met inladen..."></a></span> Filters </h4>				
+                    <h4><span class="viewState"><a id="filters_link" onclick="toggleFilterBlock('#filters_link', 'ul.filters', 'viewFilters')"> </a></span> Filters </h4>
                     <ul class="filterlist filters">
 
 <?php
@@ -89,7 +89,7 @@
 ?>
                     </ul>
 
-					<h4><span class="viewState"><a onclick="toggleFilterBlock('#maintenance_img', 'ul.maintenancebox', 'viewMaintenance')"><img id="maintenance_img" src="templates/we1rdo/img/loading.gif" alt="Bezig met inladen..."></a></span> Onderhoud </h4>
+					<h4><span class="viewState"><a id="maintenance_link" onclick="toggleFilterBlock('#maintenance_link', 'ul.maintenancebox', 'viewMaintenance')"> </a></span> Onderhoud </h4>
 
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
