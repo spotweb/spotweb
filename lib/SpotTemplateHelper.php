@@ -177,7 +177,6 @@ class SpotTemplateHelper {
 	 */
 	function makeSelfUrl() {
 		return $this->makeBaseUrl() . '?' . htmlentities($_SERVER['QUERY_STRING']);
-		//return $this->makeBaseUrl() . '?' . $this->getQueryParams();
 	} # makeSelfUrl
 	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
