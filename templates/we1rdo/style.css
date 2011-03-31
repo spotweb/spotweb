@@ -124,8 +124,14 @@ div.filter a {
 	-webkit-border-radius:4px;
 	border-radius:4px;
 	text-decoration:none;
-	color:#000;
 	font-weight:bold;
+	color:#444;
+}
+div.filter a.hasnew {
+	color:#000;
+}
+div.filter a.selected {
+	color:#00F;
 }
 
 div.filter > ul > li.blue a {background-color:#daecff;}

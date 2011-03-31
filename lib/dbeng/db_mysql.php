@@ -104,16 +104,26 @@ class db_mysql extends db_abs {
 		$rows = $this->get_mysql_info();
 		return $rows['rows_matched'];
 	} # rows()
-	
+
 	/*
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $searchValue) {
-		$searchMode = "match-natural";
 		$searchValue = trim($searchValue);
-		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
+		$search = $this->getSearchMode($searchValue);
 
+		switch($search['searchMode']) {
+			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($search['searchValue']) . "%')"; break;
+			/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
+			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "')"; break;
+			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "' IN BOOLEAN MODE)"; break;
+		} # switch
+
+		return $queryPart;
+	} # createTextQuery()
+
+	function getSearchMode($search) {
 		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
 		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
 		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
@@ -121,38 +131,41 @@ class db_mysql extends db_abs {
 		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
-		# bekijk elk woord individueel, is het korter dan $minWordLen, gaan we terug naar normale 
-		# LIKE  modus
-		$termList = explode(' ', $tempSearchValue);
+		$replacedSearch = str_replace(array('+', '-', '~', '<', '>', '*', '|', 'AND', 'NOT', 'OR'), '', $search);
+		$termList = explode(" ", $replacedSearch);
 		foreach($termList as $term) {
 			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-				$searchValue = $tempSearchValue;
-				$searchMode = "normal";
-				break;
+				return array('searchMode' => 'normal', 'searchValue' => $replacedSearch); /* direct terugschakelen op LIKE search, verdere tests zijn niet nodig */
 			} # if
 		} # foreach
-		
-		# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
-		# vinden, schakelen we over naar boolean match
-		$termList = explode(' ', $searchValue);
-		foreach($termList as $term) {
-			if (array_search($term[0], array('+', '-')) !== false) {
-				$searchMode = 'match-boolean';
-				break;
-			} # if
-		} # foreach
-		
 
-		switch($searchMode) {
-			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
-			
-			/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
-			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
-			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
-		} # else
-		
-		return $queryPart;
-	} # createTextQuery()
-	
+		# Als alle woorden langer zijn dan $minWordLen gaan we de bekende Boolean syntax vervangen
+		# voor hun NATURAL tegenhanger. Zo krijgen we altijd hetzelfde resultaat, ongeacht de invoermethode.
+		$termList = explode(" ", $search);
+		$newSearchTerms = array();
+		foreach($termList as $term) {
+			if (strpos('+', $term[0]) !== false) {
+				$newSearchTerms[] = $this->str_replace_once('+', 'AND ', $term);
+			} elseif (strpos('-', $term[0]) !== false) {
+				$newSearchTerms[] = $this->str_replace_once('-', 'NOT ', $term);
+			} elseif (strpos('|', $term[0]) !== false) {
+				$newSearchTerms[] = $this->str_replace_once('|', 'OR ', $term);
+			} elseif (strpos('~', $term[0]) !== false) {
+				$newSearchTerms[] = $this->str_replace_once('~', 'NEAR ', $term);
+			} else {
+				$newSearchTerms[] = $term;
+			} # if
+		} # foreach
+
+		return array('searchMode' => 'match-natural', 'searchValue' => implode(" ", $newSearchTerms));
+	} # getSearchMode
+
+	function str_replace_once($needle, $replace, $haystack) {
+		$pos = strpos($haystack, $needle);
+		if ($pos === false) {
+			return $haystack;
+		}
+		return substr_replace($haystack, $replace, $pos, strlen($needle));
+	} # str_replace_once
 
 } # class
