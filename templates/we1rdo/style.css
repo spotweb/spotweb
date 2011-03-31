@@ -141,13 +141,16 @@ div.filter a img {
 /* MAINTENANCE */
 ul.maintenancebox li.info {text-align:center; margin:10px 0; height:16px; line-height:16px;}
 ul.maintenancebox li a.maintenancebtn {
-	background:url(img/button.png) no-repeat left top;
+	background:url(img/sprite_button.png) no-repeat 0 0;
 	width:210px;
 	margin:0 10px 5px 10px;
 	line-height:20px;
 	color:#fff;
 	font-weight:bold;
 	text-align:center;
+}
+ul.maintenancebox li a.maintenancebtn:focus {
+	background-position:0 -20px;
 }
 
 /* SPOTS */
