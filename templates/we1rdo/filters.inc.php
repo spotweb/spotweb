@@ -43,10 +43,9 @@
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
-	$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $quicklink[2];
 ?>
-							<li> <a class="filter <?php echo $quicklink[3]; ?>" href="<?php echo $quicklink[2]; ?>">
-							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0')) { echo $tplHelper->getNewCountForFilter($strFilter); } ?></a>
+							<li> <a class="filter <?php echo " " . $quicklink[3]; if ($tplHelper->makeSelfUrl() == $tplHelper->makeBaseUrl() . $quicklink[2]) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
+							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0')) { echo "<span class='newspots'>".$tplHelper->getNewCountForFilter($quicklink[2])."</span>"; } ?></a>
 <?php
     }
 ?>
@@ -58,25 +57,29 @@
 <?php
     foreach($filters as $filter) {
 		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
+		$newCount = $tplHelper->getNewCountForFilter($strFilter);
 ?>
-						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>> <a class="filter <?php echo $filter[3]; ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; echo $tplHelper->getNewCountForFilter($strFilter); ?></a>
+						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>>
+						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; echo "<span class='newspots'>$newCount</span>"; ?></a>
 <?php
 		if (!empty($filter[4])) {
 			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 			foreach($filter[4] as $subFilter) {
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
+				$newSubCount = $tplHelper->getNewCountForFilter($strFilter);
 ?>
-							<li> <a class="filter <?php echo $subFilter[3];?>" href="<?php echo $strFilter;?>">
-							<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; echo $tplHelper->getNewCountForFilter($strFilter); ?></a>
+							<li> <a class="filter<?php echo " " . $subFilter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+							<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; echo "<span class='newspots'>$newSubCount</span>"; ?></a>
 <?php
 				if (!empty($subFilter[4])) {
 					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
 					foreach($subFilter[4] as $sub2Filter) {
 						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
+						$newSub2Count = $tplHelper->getNewCountForFilter($strFilter);
 		?>
-							<li> <a class="filter <?php echo $sub2Filter[3];?>" href="<?php echo $strFilter;?>">
-							<img src='<?php echo $sub2Filter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $sub2Filter[0]; echo $tplHelper->getNewCountForFilter($strFilter); ?></a>
+							<li> <a class="filter<?php echo " " . $sub2Filter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+							<img src='<?php echo $sub2Filter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $sub2Filter[0]; echo "<span class='newspots'>$newSub2Count</span>"; ?></a>
 		<?php
 					} # foreach 
 					echo "\t\t\t\t\t\t\t</ul>\r\n";
