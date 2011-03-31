@@ -138,19 +138,22 @@ class db_mysql extends db_abs {
 				return array('searchMode' => 'normal', 'searchValue' => $replacedSearch); /* direct terugschakelen op LIKE search, verdere tests zijn niet nodig */
 			} # if
 		} # foreach
-
+		
 		# Als alle woorden langer zijn dan $minWordLen gaan we de bekende Boolean syntax vervangen
 		# voor hun NATURAL tegenhanger. Zo krijgen we altijd hetzelfde resultaat, ongeacht de invoermethode.
+		# Uitzondering hierop zijn wildcards, welke niet altijd correct door natural behandeld kunnen worden.
 		$termList = explode(" ", $search);
 		$newSearchTerms = array();
 		foreach($termList as $term) {
-			if (strpos('+', $term[0]) !== false) {
+			if (array_search($term[strlen($term)-1], array('*')) !== false) {
+				return array('searchMode' => 'match-boolean', 'searchValue' => $search);
+			} elseif ($term[0] == '+') {
 				$newSearchTerms[] = $this->str_replace_once('+', 'AND ', $term);
-			} elseif (strpos('-', $term[0]) !== false) {
+			} elseif ($term[0] == '-') {
 				$newSearchTerms[] = $this->str_replace_once('-', 'NOT ', $term);
-			} elseif (strpos('|', $term[0]) !== false) {
+			} elseif ($term[0] == '|') {
 				$newSearchTerms[] = $this->str_replace_once('|', 'OR ', $term);
-			} elseif (strpos('~', $term[0]) !== false) {
+			} elseif ($term[0] == '~') {
 				$newSearchTerms[] = $this->str_replace_once('~', 'NEAR ', $term);
 			} else {
 				$newSearchTerms[] = $term;
