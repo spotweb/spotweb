@@ -119,7 +119,7 @@ class db_mysql extends db_abs {
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "')"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "' IN BOOLEAN MODE)"; break;
 		} # switch
-
+echo $queryPart;
 		return $queryPart;
 	} # createTextQuery()
 
@@ -145,16 +145,14 @@ class db_mysql extends db_abs {
 		# voor hun NATURAL tegenhanger. Zo krijgen we altijd hetzelfde resultaat, ongeacht de invoermethode.
 		# Uitzondering hierop zijn wildcards, welke niet altijd correct door natural behandeld kunnen worden.
 		$termList = explode(" ", $search);
+		$operatorMapping = array(	'+' => 'AND ',
+									'-' => 'NOT ',
+									'|' => 'OR ',
+									'~' => 'NEAR ');
 		$newSearchTerms = array();
 		foreach($termList as $term) {
-			if ($term[0] == '+') {
-				$newSearchTerms[] = $this->str_replace_once('+', 'AND ', $term);
-			} elseif ($term[0] == '-') {
-				$newSearchTerms[] = $this->str_replace_once('-', 'NOT ', $term);
-			} elseif ($term[0] == '|') {
-				$newSearchTerms[] = $this->str_replace_once('|', 'OR ', $term);
-			} elseif ($term[0] == '~') {
-				$newSearchTerms[] = $this->str_replace_once('~', 'NEAR ', $term);
+			if (isset($operatorMapping[$term[0]])) {
+				$newSearchTerms[] = str_replace($term[0], $operatorMapping[$term[0]], $term);
 			} else {
 				$newSearchTerms[] = $term;
 			} # if
@@ -162,13 +160,5 @@ class db_mysql extends db_abs {
 
 		return array('searchMode' => 'match-natural', 'searchValue' => implode(" ", $newSearchTerms));
 	} # getSearchMode
-
-	function str_replace_once($needle, $replace, $haystack) {
-		$pos = strpos($haystack, $needle);
-		if ($pos === false) {
-			return $haystack;
-		}
-		return substr_replace($haystack, $replace, $pos, strlen($needle));
-	} # str_replace_once
 
 } # class
