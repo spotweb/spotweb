@@ -56,7 +56,7 @@
             
 			echo "<tr class='" . $tplHelper->cat2color($watch) . "'>" . 
 				 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($watch['category'], $watch['subcata']) . "</a></td>" .
-				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $watch['title'] . $markSpot . "</a></td>";
+				 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($watch) . "' title='" . $watch['title'] . "' class='spotlink'>" . $markSpot . $watch['title'] . "</a></td>";
 			
 			echo "<td class='watch'>";
 			echo "\t<a class='remove' href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "' title='Verwijder uit watchlist'> </a>";
