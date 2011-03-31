@@ -142,7 +142,7 @@ div.filter a img {
 }
 
 /* MAINTENANCE */
-ul.maintenancebox li.info {text-align:center; margin:10px 0; height:16px; line-height:16px;}
+ul.maintenancebox li.info {text-align:center; margin:5px 0; height:16px; line-height:16px;}
 ul.maintenancebox li a.maintenancebtn {
 	background:url(img/sprite_button.png) no-repeat 0 0;
 	width:210px;
