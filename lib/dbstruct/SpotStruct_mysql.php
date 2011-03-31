@@ -21,11 +21,11 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										tag VARCHAR(128),
 										stamp INTEGER,
 										filesize BIGINT DEFAULT 0,
-										moderated BOOLEAN DEFAULT FALSE);");
+										moderated BOOLEAN DEFAULT FALSE) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
-										   lastrun INTEGER DEFAULT 0);");
+										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM;");
 
 			# create indices
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_title ON spots(title)");
@@ -66,7 +66,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
-										   nntpref VARCHAR(128));");
+										   nntpref VARCHAR(128)) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 		} # if
@@ -87,7 +87,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
-										   stamp INTEGER);");
+										   stamp INTEGER) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 		} # if
 
@@ -107,7 +107,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey TEXT,
 										xmlsignature TEXT,
 										fullxml TEXT,
-										filesize BIGINT);");										
+										filesize BIGINT) ENGINE = MYISAM;");										
 
 			# create indices
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
@@ -140,7 +140,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 												   messageid VARCHAR(128),
 												   dateadded INTEGER,
-												   comment TEXT);");
+												   comment TEXT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
 		} # if
 	} # Createdatabase

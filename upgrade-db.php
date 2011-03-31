@@ -18,7 +18,7 @@ try {
 		case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($db->getDbHandle()); break;
 		
 		case 'sqlite3'			:
-		case 'pdo_sqlite'		: $dbStruct = new SpotStruct_mysql($db->getDbHandle()); break;
+		case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($db->getDbHandle()); break;
 		
 		default					: throw new Exception("Onbekende database engine");
 	} # switch

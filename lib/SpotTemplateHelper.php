@@ -56,7 +56,7 @@ class SpotTemplateHelper {
 
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots 
 		# zijn, SpotWeb niet ontzettend traag wordt. Op het moment dat er een
-		# persistency laag achter settings komt ewl mee oppassen :P
+		# persistency laag achter settings komt wel mee oppassen :P
 		if ($newCount > 5000) {
 			$this->_settings['count_newspots'] = false;
 		} # if
@@ -176,7 +176,8 @@ class SpotTemplateHelper {
 	 * Geeft het linkje terug naar ons zelf
 	 */
 	function makeSelfUrl() {
-		return $this->makeBaseUrl() . '?' . $this->getQueryParams();
+		return $this->makeBaseUrl() . '?' . htmlentities($_SERVER['QUERY_STRING']);
+		//return $this->makeBaseUrl() . '?' . $this->getQueryParams();
 	} # makeSelfUrl
 	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
