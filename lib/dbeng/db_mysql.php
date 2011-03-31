@@ -136,7 +136,9 @@ class db_mysql extends db_abs {
 		foreach($termList as $term) {
 			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
 				return array('searchMode' => 'normal', 'searchValue' => $replacedSearch); /* direct terugschakelen op LIKE search, verdere tests zijn niet nodig */
-			} # if
+			} elseif (array_search($term[strlen($term)-1], array('*')) !== false) {
+				return array('searchMode' => 'match-boolean', 'searchValue' => $search);
+			}
 		} # foreach
 		
 		# Als alle woorden langer zijn dan $minWordLen gaan we de bekende Boolean syntax vervangen
@@ -145,9 +147,7 @@ class db_mysql extends db_abs {
 		$termList = explode(" ", $search);
 		$newSearchTerms = array();
 		foreach($termList as $term) {
-			if (array_search($term[strlen($term)-1], array('*')) !== false) {
-				return array('searchMode' => 'match-boolean', 'searchValue' => $search);
-			} elseif ($term[0] == '+') {
+			if ($term[0] == '+') {
 				$newSearchTerms[] = $this->str_replace_once('+', 'AND ', $term);
 			} elseif ($term[0] == '-') {
 				$newSearchTerms[] = $this->str_replace_once('-', 'NOT ', $term);
