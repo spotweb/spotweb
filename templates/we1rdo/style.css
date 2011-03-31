@@ -235,6 +235,11 @@ table.spots tr.orange td.category a {background:url(img/sprite.png) no-repeat 0 
 table.spots tr.green td.category a {background:url(img/sprite.png) no-repeat 0 -40px;}
 table.spots tr.red td.category a {background:url(img/sprite.png) no-repeat 0 -60px;}
 
+table.spots tr:hover.blue td.category a {background-position:-52px 0; color:#008edf;}
+table.spots tr:hover.orange td.category a {background-position:-52px -20px; color:#e9a213;}
+table.spots tr:hover.green td.category a {background-position:-52px -40px; color:#00de00;}
+table.spots tr:hover.red td.category a {background-position:-52px -60px; color:#de2500;}
+
 table.spots tr td.comments {text-align:center; padding:0; background-image:url(img/sprite_y.png); background-repeat:repeat-y;}
 table.spots tr td.comments a {font-weight:bold; color:#fff;}
 table.spots tr:hover td.comments a {color:#000;}
