@@ -125,19 +125,27 @@ div.filter a {
 	border-radius:4px;
 	text-decoration:none;
 	font-weight:bold;
-	color:#444;
-}
-div.filter a.hasnew {
 	color:#000;
-}
-div.filter a.selected {
-	color:#00F;
 }
 
 div.filter > ul > li.blue a {background-color:#daecff;}
 div.filter > ul > li.orange a {background-color:#fffad3;}
 div.filter > ul > li.green a {background-color:#cbffcb;}
 div.filter > ul > li.red a {background-color:#fedede;}
+
+div.filter a span.newspots {float:right; line-height:14px; margin:3px 3px 3px 0; padding:0 4px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
+div.filter li a.selected span.newspots {background-color:#222; color:#fff;}
+
+div.filter li span.newspots,
+div.filter a.selected {background-color:#c8c8c8;}
+div.filter li.blue span.newspots,
+div.filter > ul > li.blue a.selected {background-color:#a6d1ff;}
+div.filter li.orange span.newspots,
+div.filter > ul > li.orange a.selected {background-color:#f1d872;}
+div.filter li.green span.newspots,
+div.filter > ul > li.green a.selected {background-color:#8cef8c;}
+div.filter li.red span.newspots,
+div.filter > ul > li.red a.selected {background-color:#fca9a9;}
 
 div.filter > ul > li a:hover {background-color:#fff;}
 
