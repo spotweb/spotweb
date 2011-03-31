@@ -51,19 +51,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
-										   lastrun INTEGER DEFAULT 0);");
+										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM;");
 
 			# commentsxover
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
-										   nntpref VARCHAR(128));");
+										   nntpref VARCHAR(128)) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 			
 			# downloadlist
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128),
-										   stamp INTEGER);");
+										   stamp INTEGER) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 
 			# watchlist
