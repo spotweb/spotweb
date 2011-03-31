@@ -111,7 +111,6 @@ class db_mysql extends db_abs {
 	 */
 	function createTextQuery($field, $searchValue) {
 		$searchValue = trim($searchValue);
-		$searchValue = str_replace('&quot;', '"', $searchValue );
 		$search = $this->getSearchMode($searchValue);
 
 		switch($search['searchMode']) {
