@@ -133,8 +133,8 @@ div.filter > ul > li.orange a {background-color:#fffad3;}
 div.filter > ul > li.green a {background-color:#cbffcb;}
 div.filter > ul > li.red a {background-color:#fedede;}
 
-div.filter a span.newspots {float:right; line-height:14px; margin:3px 3px 3px 0; padding:0 4px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
-div.filter li a.selected span.newspots {background-color:#222; color:#fff;}
+div.filter a span.newspots {color:#fff; float:right; line-height:14px; margin:3px 3px 3px 0; padding:0 4px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
+div.filter li a.selected span.newspots {background-color:#222;}
 
 div.filter li span.newspots,
 div.filter a.selected {background-color:#c8c8c8;}
