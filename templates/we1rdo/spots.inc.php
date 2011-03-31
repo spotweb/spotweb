@@ -27,7 +27,7 @@
                         </th>
 <?php } ?>						
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
-						<th class='sabnzbd'> SAB </th> 
+						<th class='sabnzbd'> SAB </th>
 <?php } ?>						
 					</tr>
 
@@ -68,7 +68,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $spot['title'] . $markSpot . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($settings['keep_watchlist']) {
 			echo "<td class='watch'>";

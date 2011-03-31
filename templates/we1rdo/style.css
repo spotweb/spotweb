@@ -1,5 +1,5 @@
 /* GENERAL */
-body {margin:8px;}
+body {margin:5px;}
 
 div.container {
 	font:11px Arial, Helvetica, sans-serif;
@@ -18,8 +18,8 @@ span.scroll input#filterscroll:checked + label {background:url(img/sprite.png) n
 div.filter {
 	width:230px;
 	float:left;
-	left:8px;
-	top:8px;
+	left:5px;
+	top:5px;
 }
 
 div.filter h4 {
@@ -152,7 +152,7 @@ ul.maintenancebox li a.maintenancebtn {
 
 /* SPOTS */
 div.spots {
-	margin:0 0 0 240px;
+	margin:0 0 0 235px;
 	min-width:750px;
 }
 
