@@ -122,13 +122,13 @@ div.filter a {
 	border-radius:4px;
 	text-decoration:none;
 	font-weight:bold;
-	color:#444;
+	color:#000;
 }
 div.filter a.hasnew {
 	color:#000;
 }
 div.filter a.selected {
-	color:#00F;
+	color:#000;
 }
 
 div.filter > ul > li.blue a {background-color:#daecff;}
