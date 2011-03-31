@@ -43,7 +43,7 @@
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
-	$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $quicklink[2];
+	$strFilter = $tplHelper->getPageUrl('') . '&amp;search[tree]=' . $quicklink[2];
 ?>
 							<li> <a class="filter hasnew<?php echo " " . $quicklink[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0')) { echo $tplHelper->getNewCountForFilter($strFilter); } ?></a>
