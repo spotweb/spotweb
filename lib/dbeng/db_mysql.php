@@ -119,7 +119,7 @@ class db_mysql extends db_abs {
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "')"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "' IN BOOLEAN MODE)"; break;
 		} # switch
-
+//echo $queryPart;
 		return $queryPart;
 	} # createTextQuery()
 
