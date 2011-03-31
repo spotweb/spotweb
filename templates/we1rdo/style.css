@@ -10,10 +10,10 @@ div.clear {
 }
 
 /* SIDEBAR */
-div.filter span.scroll {position:absolute; overflow:hidden; top:3px; left:3px;}
-span.scroll input#filterscroll {opacity:0; position:absolute; left:0; margin:0; width:13px; height:13px; float:left; cursor:pointer;}
-span.scroll input#filterscroll+label {background:url(img/sprite.png) no-repeat -14px -80px; width:13px; height:13px; display:block;}
-span.scroll input#filterscroll:checked + label {background:url(img/sprite.png) no-repeat -27px -80px;}
+div.filter span.scroll {position:absolute; overflow:hidden; top:2px; left:0px;}
+span.scroll input#filterscroll {opacity:0; position:absolute; left:0; margin:0; width:19px; height:15px; float:left; cursor:pointer;}
+span.scroll input#filterscroll+label {background:url(img/sprite.png) no-repeat -40px -96px; width:19px; height:15px; display:block;}
+span.scroll input#filterscroll:checked + label {background:url(img/sprite.png) no-repeat -59px -96px;}
 
 div.filter {
 	width:230px;
@@ -37,10 +37,10 @@ div.filter h4 {
 }
 
 /* ZOEKEN */
-div.filter h4 span.viewState {position:absolute; top:3px; right:4px; display:block; height:14px; background-color:#333; margin:0; padding:0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
-div.filter h4 span.viewState a {display:block; width:7px; height:14px; line-height:normal; cursor:pointer; margin:0 5px; background:#333;}
+div.filter h4 span.viewState {position:absolute; top:3px; right:4px; display:block; height:14px; background-color:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+div.filter h4 span.viewState a {display:block; width:17px; height:14px; line-height:normal; cursor:pointer; background:#333;}
 div.filter h4 span.viewState a.up {background:#333 url(img/sprite.png) no-repeat 0 -80px;}
-div.filter h4 span.viewState a.down {background:#333 url(img/sprite.png) no-repeat -7px -80px;}
+div.filter h4 span.viewState a.down {background:#333 url(img/sprite.png) no-repeat -17px -80px;}
 
 form#filterform {margin:0;}
 form#filterform table {border-collapse:separate; border-spacing:0; display:block; *border-collapse: collapse;}
@@ -75,18 +75,21 @@ input.searchbox {
 }
 
 span.filtersubmit input {
+	background:url(img/sprite_x.png) repeat-x 0 -80px;
 	border:0;
 	padding:0;
 	height:18px;
-	background:none;
 	font:11px Arial, Helvetica, sans-serif;
 	cursor:pointer;
 	font-weight:bold;
 	width:100%;
+	-moz-border-radius:0 4px 4px 0;
+	-webkit-border-radius:0 4px 4px 0;
+	border-radius:0 4px 4px 0;
 }
+span.filtersubmit input:focus {background-position:0 -98px;}
 
 span.filtersubmit {
-	background:url(img/sprite_x.png) repeat-x 0 -80px;
 	border:1px solid #c6c6c6;
 	-moz-border-radius:0 4px 4px 0;
 	-webkit-border-radius:0 4px 4px 0;
@@ -189,10 +192,10 @@ table.spots th.multinzb {width:20px; padding:0;}
 table.spots th.multinzb input {margin:0 0 0 9px; padding:0; display:block;}
 table.spots th.sabnzbd {min-width:28px; width:28px;}
 
-table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#333; margin:3px 3px 3px 0; padding:0 3px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
-table.spots th span.sortby a {width:7px; height:14px; display:block; float:left; margin:0 2px;}
+table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#333; margin:3px 3px 3px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+table.spots th span.sortby a {width:17px; height:14px; display:block; float:left;}
 table.spots th span.sortby a.up {background:url(img/sprite.png) no-repeat 0 -80px;}
-table.spots th span.sortby a.down {background:url(img/sprite.png) no-repeat -7px -80px;}
+table.spots th span.sortby a.down {background:url(img/sprite.png) no-repeat -17px -80px;}
 
 table.spots td {padding:0 0 0 5px; border-top:2px solid #fff;}
 
@@ -267,7 +270,7 @@ table.footer tr td:first-child:last-child {-moz-border-radius:4px; -webkit-borde
 
 table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0; height:20px;}
 table.footer tr td.button:last-child {padding:0 33px 0 0;}
-table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -72px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; float:right; padding:0;}
+table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; float:right; padding:0;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:7px 10px 10px; min-width:680px;}
