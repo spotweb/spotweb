@@ -45,7 +45,7 @@
     foreach($quicklinks as $quicklink) {
 ?>
 							<li> <a class="filter <?php echo " " . $quicklink[3]; if ($tplHelper->makeSelfUrl() == $tplHelper->makeBaseUrl() . $quicklink[2]) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
-							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0')) { echo "<span class='newspots'>".$tplHelper->getNewCountForFilter($quicklink[2])."</span>"; } ?></a>
+							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0') && $tplHelper->getNewCountForFilter($quicklink[2])) { echo "<span class='newspots'>".$tplHelper->getNewCountForFilter($quicklink[2])."</span>"; } ?></a>
 <?php
     }
 ?>
