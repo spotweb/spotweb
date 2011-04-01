@@ -133,21 +133,22 @@ div.filter > ul > li.orange a {background-color:#fffad3;}
 div.filter > ul > li.green a {background-color:#cbffcb;}
 div.filter > ul > li.red a {background-color:#fedede;}
 
-div.filter a span.newspots {color:#444; float:right; line-height:14px; margin:3px 3px 3px 0; padding:0 4px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
+div.filter a span.newspots {color:#333; margin:0px 3px 0px 5px; padding:0 3px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
 div.filter li a.selected span.newspots {background-color:#222; color:#fff;}
 
 div.filter li span.newspots,
 div.filter a.selected {background-color:#c8c8c8;}
-div.filter li.blue span.newspots {background-color:#a6d1ff; color:#008edf;}
+div.filter li.blue span.newspots {background-color:#a6d1ff; color:#00456c;}
 div.filter > ul > li.blue a.selected {background-color:#a6d1ff;}
-div.filter li.orange span.newspots {background-color:#f1d872; color:#c58400;}
+div.filter li.orange span.newspots {background-color:#f1d872; color:#875b00;}
 div.filter > ul > li.orange a.selected {background-color:#f1d872;}
-div.filter li.green span.newspots {background-color:#8cef8c; color:#008b00;}
+div.filter li.green span.newspots {background-color:#8cef8c; color:#006f00;}
 div.filter > ul > li.green a.selected {background-color:#8cef8c;}
-div.filter li.red span.newspots {background-color:#fca9a9; color:#b51e00;}
+div.filter li.red span.newspots {background-color:#fca9a9; color:#771400;}
 div.filter > ul > li.red a.selected {background-color:#fca9a9;}
 
 div.filter > ul > li a:hover {background-color:#fff;}
+div.filter > ul > li a:hover span.newspots {background-color:#fff; color:#000;}
 
 div.filter a img {
 	border:0;
