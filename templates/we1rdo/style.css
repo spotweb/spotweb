@@ -200,7 +200,7 @@ table.spots th.category {text-align:center; min-width:50px; width:50px; padding:
 table.spots th.watch {width:20px;}
 table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots th.genre {min-width:90px; width:120px;}
-table.spots th.poster {width:110px;}
+table.spots th.poster {min-width:95px; width:110px;}
 table.spots th.date {min-width:90px; width:140px;}
 table.spots th.nzb {width:30px;}
 table.spots th.multinzb {width:20px; padding:0;}
