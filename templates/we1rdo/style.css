@@ -276,7 +276,7 @@ table.spots tr.green a.nzb {color:#00de00;}
 table.spots tr.red a.nzb {color:#de2500;}
 
 table.footer {width:100%; border-collapse:separate; border-spacing:0; *border-collapse:collapse;}
-table.footer tr td {border-top:2px solid #fff;}
+table.footer tr td {*border-top:2px solid #fff;}
 table.footer tr td.prev,
 table.footer tr td.next {background-color:#ececec; height:20px; font-weight:bold; width:30px; text-align:center; padding:0;}
 table.footer tr td a {display:block; color:#000; text-decoration:none; line-height:16px;}
