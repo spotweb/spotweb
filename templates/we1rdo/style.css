@@ -186,7 +186,7 @@ table.spots {
 	*border-collapse:collapse;
 }
 
-table.spots a {color:#000; text-decoration:none; display:block; width:100%;}
+table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px;}
 table.spots img {border:0;}
 
 table.spots th {
