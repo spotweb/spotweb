@@ -1,5 +1,5 @@
 /* GENERAL */
-body {margin:5px;}
+body {margin:3px 5px 5px 5px;}
 
 div.container {
 	font:11px Arial, Helvetica, sans-serif;
@@ -19,7 +19,8 @@ div.filter {
 	width:230px;
 	float:left;
 	left:5px;
-	top:5px;
+	top:3px;
+	padding-top:2px;
 }
 
 div.filter h4 {
@@ -175,11 +176,12 @@ ul.maintenancebox li a.maintenancebtn:focus {
 div.spots {
 	margin:0 0 0 235px;
 	min-width:750px;
+	*padding:2px 0 0 0;
 }
 
 table.spots {
 	border-collapse:separate;
-	border-spacing:0;
+	border-spacing:0 2px;
 	width:100%;
 	*border-collapse:collapse;
 }
@@ -212,7 +214,7 @@ table.spots th span.sortby a {width:17px; height:14px; display:block; float:left
 table.spots th span.sortby a.up {background:url(img/sprite.png) no-repeat 0 -80px;}
 table.spots th span.sortby a.down {background:url(img/sprite.png) no-repeat -17px -80px;}
 
-table.spots td {padding:0 0 0 5px; border-top:2px solid #fff;}
+table.spots td {padding:0 0 0 5px; *border-top:2px solid #fff;}
 
 table.spots td:nth-child(2),
 table.spots th:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
