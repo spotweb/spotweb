@@ -12,20 +12,19 @@
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function(){
-			$("a.spotlink").click(function(e){
-				if(e.metaKey || e.altKey || e.shiftKey || e.button == 1) {
-					e.stopImmediatePropagation();
-				}
+			$("a.spotlink").click(function(e) {
+				e.preventDefault();
+				
+				$("#overlay").show();
+				$(".container").css('position', 'fixed');
+				$("#overlay").load(this.href+' #details');
 			});
-
-			$("a.spotlink").fancybox({
-				'width'			: '100%',
-				'height' 		: '100%',
-				'autoScale' 	: false,
-				'transitionIn'	: 'none',
-				'transitionOut'	: 'none',
-				'type'			: 'iframe'
-			})
+			
+			$("a.closeDetails").click(function(e) {
+				$("#overlay").html('');
+				$("#overlay").hide();
+				$(".container").css('position', 'static');
+			});
 		});
 
 		$(function(){
@@ -298,4 +297,6 @@
 	</head>
 	
 	<body>
+    	<a class="closeDetails">Close</a>
+    	<div id="overlay"></div>
 		<div class="container">

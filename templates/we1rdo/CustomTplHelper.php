@@ -66,7 +66,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 								'js/jquery/jquery-ui.custom.min.js',
 								'js/jquery/jquery.cookie.js',
 								'js/dynatree/jquery.dynatree.min.js',
-								'js/fancybox/jquery.fancybox-1.3.4.pack.js'
+								// 'js/fancybox/jquery.fancybox-1.3.4.pack.js'
 								);
 				break;
 			} # case js
@@ -74,7 +74,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
 							 'templates/we1rdo/style.css',
-							 'js/fancybox/jquery.fancybox-1.3.4.css'
+							 // 'js/fancybox/jquery.fancybox-1.3.4.css'
 							 );
 				break;
 			} # case css
