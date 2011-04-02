@@ -223,19 +223,11 @@ table.spots td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius
 
 table.spots td.noresults {text-align:center; padding:5px 0;}
 
-table.spots tr td.category {
-	color:#fff;
-	font-weight:bold;
-	text-align:center;
-	line-height:20px;
-	padding:0 2px 0 0;
-	background-color:#fff !important;
-	vertical-align:top;
-}
+table.spots tr td.category {color:#fff; font-weight:bold; text-align:center; line-height:20px; padding:0 2px 0 0; background:none !important; vertical-align:top;}
 table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
-table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:3px 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 table.spots tr td.watch a.remove {background-position:-56px -80px;}
 
