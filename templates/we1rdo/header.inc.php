@@ -16,20 +16,18 @@
 				e.preventDefault();
 				
 				$("#overlay").show();
-				$("#overlay").html('<img class="loading" src="templates/we1rdo/img/loading.gif" />');
+				$("#overlay").addClass('loading');
 				
 				$("#overlay").load(this.href+' #details', function() {
 					$("#overlay").removeClass('loading');
-					$(".container").css('overflow', 'hidden');
 				});
 			});
-			
-			$("a.closeDetails").click(function(e) {
-				$(".container").css('overflow', 'auto');
-				$("#overlay").hide();
-				$("#overlay").html('');
-			});
 		});
+		
+		function closeDetails() {
+			$("#overlay").hide();
+			$("#details").remove();
+		}
 
 		$(function(){
 			// Attach the dynatree widget to an existing <div id="tree"> element
@@ -301,6 +299,5 @@
 	</head>
 	
 	<body>
-    	<a class="closeDetails">Close</a>
     	<div id="overlay"></div>
 		<div class="container">
