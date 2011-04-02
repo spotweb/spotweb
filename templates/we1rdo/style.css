@@ -235,7 +235,7 @@ table.spots tr td.category {
 table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
-table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:0 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:3px 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 table.spots tr td.watch a.remove {background-position:-56px -80px;}
 
@@ -378,4 +378,13 @@ div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 /* OVERLAY */
+div.container {position:absolute; left:0; right:0; top:0; height:100%; overflow:auto; padding:0 5px 0 0;}
+div#filter {padding-top:5px; left:5px; top:0; position:relative;}
+div.spots {margin:3px 0 0 240px; padding:0 0 5px 0;}
+
+a.closeDetails {position:fixed; top:0; left:0; z-index:2;}
+
 div#overlay {position:fixed; top:0; left:0; right:0; padding:0 5px 0 0; margin:0 0 0 240px; height:100%; background-color:#fff; z-index:1; display:none; overflow:auto;}
+div#overlay img.loading {position:absolute; left:50%; top:50%;}
+div#overlay div.details {padding:2px 0 5px 0;}
+div#overlay div.details div.warning {margin:3px 5px 0 5px;}
