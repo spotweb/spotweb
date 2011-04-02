@@ -97,7 +97,7 @@ class SpotDb
 	} # func. getMaxMessageId
 	
 	function getMaxMessageTime() {
-		$stamp = $this->_conn->singleQuery("SELECT stamp FROM spots ORDER BY stamp DESC LIMIT 1");
+		$stamp = $this->_conn->singleQuery("SELECT MAX(stamp) AS stamp FROM spots");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
@@ -296,6 +296,15 @@ class SpotDb
 			$extendedFieldList = '';
 		} # else
 
+		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
+		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
+		# het voor MySQL ISAM een stuk sneller
+		if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
+			$sort['field'] = 'reversestamp';
+			$sort['direction'] = 'ASC';
+		} # if
+		
+		# en voer de query uit
 										 
  		return $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
@@ -528,8 +537,8 @@ class SpotDb
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp) 
-				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp, reversestamp) 
+				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['id'],
 					   $spot['messageid'],
 					   $spot['category'],
@@ -542,7 +551,8 @@ class SpotDb
 					   $spot['subcatd'],
 					   $spot['title'],
 					   $spot['tag'],
-					   $spot['stamp']));
+					   $spot['stamp'],
+					   ($spot['stamp'] * -1)) );
 					   
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);

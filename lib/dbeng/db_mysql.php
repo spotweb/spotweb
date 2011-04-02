@@ -50,14 +50,20 @@ class db_mysql extends db_abs {
 	} # rawExec
 
 	function singleQuery($s, $p = array()) {
+		$startT = microtime(true);
+		
 		$res = $this->exec($s, $p);
 		$row = mysql_fetch_array($res);
 		mysql_free_result($res);
+		
+		#$endT = microtime(true);
+		#echo "QUERY: " . $s . " ==> " . ($endT - $startT) . "<br>";
 		
 		return $row[0];
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
+		#$startT = microtime(true);
 		$rows = array();
 
 		$res = $this->exec($s, $p); 
@@ -67,6 +73,8 @@ class db_mysql extends db_abs {
 		array_pop($rows); 
 		
 		mysql_free_result($res);
+		#$endT = microtime(true);
+		#echo "QUERY: " . $s . " ==> " . ($endT - $startT) . "<br>";
 		return $rows;
 	} # arrayQuery
 
@@ -78,6 +86,7 @@ class db_mysql extends db_abs {
 	 *    http://nl.php.net/manual/en/function.mysql-info.php#36008
 	 */
 	function get_mysql_info() {
+		#$startT = microtime(true);
 		$strInfo = mysql_info($this->_conn);
 	   
 		$return = array();
@@ -96,7 +105,9 @@ class db_mysql extends db_abs {
 		$return['skipped'] = $skipped[1];
 		$return['rows_matched'] = $rows_matched[1];
 		$return['changed'] = $changed[1];
-	   
+   		#$endT = microtime(true);
+		#echo "MYSQLINFO:  ==> " . ($endT - $startT) . "<br>";
+
 		return $return;
 	} # get_mysql_info()
 	

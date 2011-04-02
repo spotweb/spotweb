@@ -15,7 +15,7 @@ class SpotTemplateHelper {
 	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
 	# deze op classe niveau beschikbaar zodat de isBeingWatched() en getWatchList()
 	# dezelfde data gebruiken en maar 1 query nodig is
-	protected static $wtList = null;
+	protected static $wtList = -1;
 
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
@@ -216,8 +216,8 @@ class SpotTemplateHelper {
 
 	function isBeingWatched($spot) {
 		static $wtListCnt = 0;
-		
-		if (self::$wtList == null) {
+
+		if (self::$wtList == -1) {
 			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 			$wtListCnt = count(self::$wtList);
 		} # if
@@ -402,7 +402,7 @@ class SpotTemplateHelper {
 	} # isModerated
 
 	function getWatchList() {
-		if (self::$wtList == null) {
+		if (self::$wtList == -1) {
 			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 		} # if
 		
@@ -415,5 +415,31 @@ class SpotTemplateHelper {
 	function getSmileyList() {
 		return array();
 	} # getSmileyList
+	
+	# Functie voor in combinatie met SpotPage_statics.php -
+	# deze functie hoort een lijst van onze static files terug te geven die door de SpotPage_statics
+	# dan geserved wordt als nooit meer veranderend. 
+	function getStaticFiles($type) {
+		return array();
+	} # getStaticFiles
+
+	# Functie voor in combinatie met SpotPage_statics.php -
+	# deze functie kijkt wat de laatste timetsamp is van de file en kan gebruikt worden in de templates.
+	# Omdat stat() behoorlijk traag is, is het voor betere performance aan te raden handmatig je versie nummer
+	# op te hogen in je template en deze functie niet te gebruiken
+	function getStaticModTime($type) {
+		$fileTime = 0;
+		$fileList = $this->getStaticFiles($type);
+		
+		foreach($fileList as $file) {
+			$thisftime = filemtime($file);
+			
+			if ($thisftime > $fileTime) {
+				$fileTime = $thisftime;
+			} # if
+		} # foreach
+		
+		return $fileTime;
+	} # getStaticFiles
 	
 } # class SpotTemplateHelper

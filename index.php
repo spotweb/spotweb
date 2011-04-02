@@ -24,6 +24,7 @@ require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
 require_once "lib/page/SpotPage_watchlist.php";
+require_once "lib/page/SpotPage_statics.php";
 
 #- main() -#
 try {
@@ -34,12 +35,7 @@ try {
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
-
 	$page = $req->getDef('page', 'index');
-	if (array_search($page, array('index', 'catsjson', 'getnzb', 'getnzbmobile','getspotmobile','getspot', 'erasedls', 'markallasread', 'getimage', 'selecttemplate', 'atom', 'watchlist')) === false) {
-		$page = 'index';
-	} # if
-
 		
 	switch($page) {
 		case 'getspot' : {
@@ -120,8 +116,15 @@ try {
 			$page->render();
 			break;
 		} # atom
+		
+		case 'statics' : {
+				$page = new SpotPage_statics($db, $settings, $settings['prefs'], 
+							Array('type' => $req->getDef('type', '')));
+				$page->render();
+				break;
+		} # statics
 
-		case 'index' : {
+		default : {
 				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
 							Array('search' => $req->getDef('search', $settings['index_filter']),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -130,7 +133,7 @@ try {
 					);
 				$page->render();
 				break;
-		} # getspot
+		} # default
 	} # switch
 }
 catch(Exception $x) {
