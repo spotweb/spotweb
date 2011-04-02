@@ -15,7 +15,7 @@ class SpotTemplateHelper {
 	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
 	# deze op classe niveau beschikbaar zodat de isBeingWatched() en getWatchList()
 	# dezelfde data gebruiken en maar 1 query nodig is
-	protected static $wtList = null;
+	protected static $wtList = -1;
 
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
@@ -73,6 +73,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug 
 	 */
 	function getCommentCount($spot) {
+	return 0;
 		return $this->_db->getCommentCount($spot['messageid']);
 	} # getCommentCount
 	
@@ -216,8 +217,8 @@ class SpotTemplateHelper {
 
 	function isBeingWatched($spot) {
 		static $wtListCnt = 0;
-		
-		if (self::$wtList == null) {
+
+		if (self::$wtList == -1) {
 			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 			$wtListCnt = count(self::$wtList);
 		} # if
@@ -402,7 +403,7 @@ class SpotTemplateHelper {
 	} # isModerated
 
 	function getWatchList() {
-		if (self::$wtList == null) {
+		if (self::$wtList == -1) {
 			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
 		} # if
 		
