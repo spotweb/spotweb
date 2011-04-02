@@ -21,6 +21,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 											title VARCHAR(128),
 											tag VARCHAR(128),
 											stamp INTEGER,
+											reversestamp INTEGER DEFAULT 0,
 											filesize BIGINT DEFAULT 0,
 											moderated BOOLEAN DEFAULT FALSE);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
@@ -74,6 +75,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	} # createDatabase
 	
 	function updateSchema() {
+		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren 
+		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(spots)");
+		if (count($q) == 16) {
+			$this->_dbcon->rawExec("ALTER TABLE spots ADD COLUMN reversestamp INTEGER DEFAULT 0");
+			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
+		} # if 
 	} # updateSchema
 	
 } # class
