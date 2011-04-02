@@ -2,11 +2,9 @@
 html {overflow:auto; height:100%;}
 body {margin:3px 5px 5px 5px;}
 
-div.container {position:absolute; top:0; left:0; right:0; width:100%; height:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
+div.container {position:absolute; top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
 
-div.clear {
-	clear:both;
-}
+div.clear {clear:both;}
 
 /* SIDEBAR */
 div.filter span.scroll {position:absolute; overflow:hidden; top:2px; left:0px;}
@@ -166,9 +164,9 @@ ul.maintenancebox li a.maintenancebtn:focus {
 }
 
 /* SPOTS */
-div.spots {margin:0 5px 0 240px; padding:0 0 5px 0; min-width:750px; *padding:2px 0 0 0;}
+div.spots {margin:0 5px 0 240px; padding:0 0 5px 0; min-width:750px; *padding:2px 0 5px 0;}
 
-table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; *border-collapse:collapse; margin:3px 0 0 0; *margin:5px 0 0 0;}
+table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; height:100%; *border-collapse:collapse; margin:3px 0 0 0; *margin:5px 0 0 0;}
 
 table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px;}
 table.spots img {border:0;}
@@ -213,7 +211,7 @@ table.spots tr td.category {
 	text-align:center;
 	line-height:20px;
 	padding:0 2px 0 0;
-	background-color:#fff !important;
+	background:none !important;
 	vertical-align:top;
 }
 table.spots tr td.category a {color:#fff;}
