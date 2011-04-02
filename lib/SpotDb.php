@@ -552,7 +552,7 @@ class SpotDb
 					   $spot['title'],
 					   $spot['tag'],
 					   $spot['stamp']),
-					   ($sport['stamp'] * -1) );
+					   ($spot['stamp'] * -1) );
 					   
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
