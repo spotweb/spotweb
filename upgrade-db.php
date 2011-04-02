@@ -7,6 +7,11 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	die("Sorry, db-upgrade.php kan enkel vanuit de server zelf uitgevoerd worden, niet via de webbrowser!");
 } # if
 
+# Risky warning, might trip up some stuff
+if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
+	chdir(__DIR__);
+} # if
+
 
 try {
 	# Instantieeer een struct object
@@ -32,5 +37,4 @@ try {
 	echo "   " . $x->getMessage() . "\r\n";
 	die(1);
 } # catch
-
 

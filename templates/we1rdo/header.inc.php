@@ -4,22 +4,10 @@
     	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 		<title><?php echo $pagetitle?></title>
 		<base href='<?php echo $tplHelper->makeBaseUrl(); ?>'>
-		<link rel='stylesheet' type='text/css' href='js/dynatree/skin-vista/ui.dynatree.css'>
-		<link rel='stylesheet' href='templates/we1rdo/style.css' type='text/css'>
-		<link rel='stylesheet' type='text/css' href='js/fancybox/jquery.fancybox-1.3.4.css' media='screen'>
+		<link rel='stylesheet' type='text/css' href='?page=statics&type=css&mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
-		<link rel='shortcut icon' href='templates/we1rdo/img/favicon.ico'>
-
-		<!-- Jquery, necessary for dynatree -->
-		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
-		<script src='js/jquery/jquery-ui.custom.min.js' type='text/javascript'></script>
-		<script src='js/jquery/jquery.cookie.js' type='text/javascript'></script>
-
-		<!-- dynatree iteslf -->
-		<script src='js/dynatree/jquery.dynatree.min.js' type='text/javascript'></script>
-
-		<!-- fancybox -->
-		<script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		<link rel='shortcut icon' href='?page=statics&type=ico&mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
+		<script src='?page=statics&type=js&mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>

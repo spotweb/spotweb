@@ -20,6 +20,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										title VARCHAR(128),
 										tag VARCHAR(128),
 										stamp INTEGER,
+										reversestamp INTEGER DEFAULT 0,
 										filesize BIGINT DEFAULT 0,
 										moderated BOOLEAN DEFAULT FALSE) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
@@ -88,6 +89,13 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spotsfull WHERE key_name = 'idx_spotsfull_fts_1'");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
+		} # if 
+
+		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren 
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM spots WHERE Field = 'reversestamp'");
+		if (empty($q)) {
+			$this->_dbcon->rawExec("ALTER TABLE spots ADD COLUMN(reversestamp INTEGER DEFAULT 0)");
+			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
 		} # if 
 	} # updateSchema
 	

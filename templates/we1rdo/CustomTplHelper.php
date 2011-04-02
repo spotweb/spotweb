@@ -56,6 +56,36 @@ class CustomTplHelper extends SpotTemplateHelper {
 				'vlag' => 'templates/we1rdo/smileys/vlag.gif',
 				'vraagteken' => 'templates/we1rdo/smileys/vraagteken.gif',
 				'wink' => 'templates/we1rdo/smileys/wink.gif');
-	} # parseUBB
+	} # getSmileyList
+	
+	# Geeft een lijst van onze static files terug die door de static page gelezen wordt
+	function getStaticFiles($type) {
+		switch($type) {
+			case 'js'	: {
+				return array('js/jquery/jquery.min.js', 
+								'js/jquery/jquery-ui.custom.min.js',
+								'js/jquery/jquery.cookie.js',
+								'js/dynatree/jquery.dynatree.min.js',
+								'js/fancybox/jquery.fancybox-1.3.4.pack.js'
+								);
+				break;
+			} # case js
+			
+			case 'css'	: {
+				return array('js/dynatree/skin-vista/ui.dynatree.css',
+							 'templates/we1rdo/style.css',
+							 'js/fancybox/jquery.fancybox-1.3.4.css'
+							 );
+				break;
+			} # case css
+							 
+			case 'ico'	: {
+				return array('templates/we1rdo/img/favicon.ico');
+				break;
+			} # case 'ico'
+		} # switch
+		
+		return array();
+	} # getStaticFiles 
 	
 } # class CustomTplHelper
