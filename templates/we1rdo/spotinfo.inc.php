@@ -1,7 +1,7 @@
 <?php
 	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
 ?>
-    	<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
+        <div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
                 <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
             </a>

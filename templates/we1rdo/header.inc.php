@@ -16,14 +16,18 @@
 				e.preventDefault();
 				
 				$("#overlay").show();
-				$(".container").css('position', 'fixed');
-				$("#overlay").load(this.href+' #details');
+				$("#overlay").html('<img class="loading" src="templates/we1rdo/img/loading.gif" />');
+				
+				$("#overlay").load(this.href+' #details', function() {
+					$("#overlay").removeClass('loading');
+					$(".container").css('overflow', 'hidden');
+				});
 			});
 			
 			$("a.closeDetails").click(function(e) {
-				$("#overlay").html('');
+				$(".container").css('overflow', 'auto');
 				$("#overlay").hide();
-				$(".container").css('position', 'static');
+				$("#overlay").html('');
 			});
 		});
 
@@ -187,7 +191,7 @@
 				$("#filter").css('position', 'fixed');
 			} else {
 				$('#filterscroll').attr({title:'Klik om sidebar mee te laten scrollen'});
-				$("#filter").css('position', 'static');
+				$("#filter").css('position', 'relative');
 			}
 		} // toggleScrolling
 
