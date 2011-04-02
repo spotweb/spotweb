@@ -23,9 +23,8 @@ class SpotDb
 	 */
 	function connect() {
 		switch ($this->_dbsettings['engine']) {
-			case 'sqlite3'	: $this->_conn = new db_sqlite3($this->_dbsettings['path']);
+			case 'sqlite3'	: throw new Exception("Standaard sqlite is niet meer ondersteund. Gebruik 'pdo_sqlite', maar gooi eerst je database file weg voor je dit doet!");
 							  break;
-							 
 							 
 			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
