@@ -28,6 +28,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_5 ON spots(poster);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_6 ON spots(reversestamp);");
 
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
@@ -74,27 +75,46 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # createDatabase
 
-	function updateSchema() {
-		# Controleer of er wel een fulltext index zit op 'spots' tabel 
-		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spots WHERE key_name = 'idx_spots_fts_1'");
-		if (empty($q)) {
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_3 ON spots(tag);");
+	/* controleert of een index bestaat */
+	function indexExists($tablename, $idxname) {
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));
+		return !empty($q);
+	} # indexExists
+
+	/* controleert of een column bestaat */
+	function columnExists($tablename, $colname) {
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = '%s'", Array($colname));
+		return !empty($q);
+	} # columnExists
+
+
+	/* Add an index, kijkt eerst wel of deze index al bestaat */
+	function addIndex($idxname, $idxType, $tablename, $colList) {
+		if (!$this->indexExists($tablename, $idxname)) {
+			$this->_dbcon->rawExec("CREATE " . $idxType . " INDEX " . $idxname . " ON " . $tablename . "(" . $colList . ");");
 		} # if
+	} # addIndex
 
-		# Controleer of er wel een fulltext index zit op 'spotsfull' tabel 
-		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM spotsfull WHERE key_name = 'idx_spotsfull_fts_1'");
-		if (empty($q)) {
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
-		} # if 
+	/* dropt een index als deze bestaat */
+	function dropIndex($idxname, $tablename) {
+		if ($this->indexExists($tablename, $idxname)) {
+			$this->_dbcon->rawExec("DROP INDEX " . $idxname);
+		} # if
+	} # dropIndex
+	
+	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
+	function addColumn($colName, $tablename, $colDef) {
+		if (!$this->columnExists($tablename, $colName)) {
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN(" . $colName . " " . $colDef . ")");
+		} # if
+	} # addColumn
 
-		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren 
-		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM spots WHERE Field = 'reversestamp'");
-		if (empty($q)) {
-			$this->_dbcon->rawExec("ALTER TABLE spots ADD COLUMN(reversestamp INTEGER DEFAULT 0)");
-			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
-		} # if 
-	} # updateSchema
+	/* dropt een kolom (mits db dit ondersteunt) */
+	function dropColumn($colName, $tablename) {
+		if ($this->columnExists($tablename, $colName)) {
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP COLUMN " . $colName);
+		} # if
+	} # dropColumn
+	
 	
 } # class
