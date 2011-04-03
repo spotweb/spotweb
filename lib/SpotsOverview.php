@@ -213,8 +213,9 @@ class SpotsOverview {
 					# als het een NOT is, haal hem dan uit de lijst
 					$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
 				} elseif (substr($dynaList[$i], 0, 1) == '~') {
-					# als het een STRONG NOT is, haal hem dan uit de lijst
-					$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+					# als het een STRONG NOT is, zorg dat hij in de lijst blijft omdat we die moeten
+					# meegeven aan de nextpage urls en dergelijke.
+					$newTreeQuery .= "," . $dynaList[$i];
 					
 					# en voeg hem toe aan een strong NOT list (~cat0_d12)
 					$strongNotTmp = explode("_", $dynaList[$i]);
@@ -223,7 +224,7 @@ class SpotsOverview {
 					$newTreeQuery .= "," . $dynaList[$i];
 				} # else
 			} # foreach
-
+			
 			# explode the dynaList
 			$search['tree'] = $newTreeQuery;
 			$dynaList = explode(',', $search['tree']);
@@ -313,7 +314,7 @@ class SpotsOverview {
 
 			$notSearch = join(' AND ', $notSearchTmp);
 		} # if
-		
+
 		# New spots
 		if (isset($search['filterValues']['New'])) {
 			if (isset($_SESSION['last_visit'])) {
