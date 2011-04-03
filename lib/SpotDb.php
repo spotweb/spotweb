@@ -303,7 +303,6 @@ class SpotDb
 		} # if
 		
 		# en voer de query uit
-										 
  		return $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.spotid AS spotid,
@@ -439,8 +438,10 @@ class SpotDb
 	 * Voeg een spot toe aan de lijst van gedownloade files
 	 */
 	function addDownload($messageid) {
-		$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
-								Array($messageid, time()));
+		if (!$this->hasBeenDownload($messageid)) {
+			$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
+									Array($messageid, time()));
+		} # if
 	} # addDownload
 
 	/*
@@ -536,10 +537,10 @@ class SpotDb
 	 */
 	function addSpot($spot, $fullSpot = array()) {
 		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp, reversestamp) 
-				VALUES(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+				VALUES(%d, '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['id'],
 					   $spot['messageid'],
-					   $spot['category'],
+					   (int) $spot['category'],
 					   $spot['subcat'],
 					   $spot['poster'],
 					   $spot['groupname'],
