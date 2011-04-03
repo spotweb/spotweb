@@ -438,8 +438,10 @@ class SpotDb
 	 * Voeg een spot toe aan de lijst van gedownloade files
 	 */
 	function addDownload($messageid) {
-		$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
-								Array($messageid, time()));
+		if (!$this->hasBeenDownload($messageid)) {
+			$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
+									Array($messageid, time()));
+		} # if
 	} # addDownload
 
 	/*
