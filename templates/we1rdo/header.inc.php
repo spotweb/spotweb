@@ -137,8 +137,8 @@
 					dataType: "xml"
 				});
 			}); // markallasreadbtn
-						
-			$("a.sabnzbd-button").click(function(e) {
+			
+			function downloadSabnzbd() {
 				e.preventDefault();
 
 				var surl = this.href.split("?");
@@ -168,7 +168,7 @@
 					}, // # complete
 					dataType: "text"
 				});
-			}); // click
+			}
 		});
 
 		//Scrolling along
