@@ -205,15 +205,7 @@ table.spots td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius
 
 table.spots td.noresults {text-align:center; padding:5px 0;}
 
-table.spots tr td.category {
-	color:#fff;
-	font-weight:bold;
-	text-align:center;
-	line-height:20px;
-	padding:0 2px 0 0;
-	background:none !important;
-	vertical-align:top;
-}
+table.spots tr td.category {color:#fff; font-weight:bold; text-align:center; line-height:20px; padding:0 2px 0 0; background:none !important; vertical-align:top;}
 table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
