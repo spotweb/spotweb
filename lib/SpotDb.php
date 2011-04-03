@@ -298,7 +298,7 @@ class SpotDb
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
 		if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
-			$sort['field'] = 'reversestamp';
+			$sort['field'] = 'stamp*-1';
 			$sort['direction'] = 'ASC';
 		} # if
 		
