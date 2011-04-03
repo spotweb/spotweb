@@ -52,7 +52,7 @@ class SpotNzb {
 		@define('FORM_FIELD', 'nzbfile'); 
 
 		# URL to run
-		$url = $this->generateSabnzbdUrl($fullSpot, $action);
+		$url = urlencode($this->generateSabnzbdUrl($fullSpot, $action));
 		
 		# dit is gecopieerd van:
 		#	http://stackoverflow.com/questions/4003989/upload-a-file-using-file-get-contents
