@@ -30,7 +30,7 @@ echo "</th>";
             <table class="spotdetails">
             	<tr>
                 	<td class="img">
-                        <a class="postimage" rel="noreferrer" href="<?php echo $spot['image']; ?>">
+                        <a class="postimage" target="_blank" href="<?php echo $spot['image']; ?>">
                             <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
                         </a>
 					</td>
