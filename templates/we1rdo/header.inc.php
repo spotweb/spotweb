@@ -145,6 +145,11 @@
 				$(".sab_"+id).removeClass("loading").addClass("succes");	
 			});
 		}
+		
+		function gotoNew(url) {
+			$("a").click(function(){ return false; });
+			window.location = url+'&search[value][]=New:0';
+		}
 
 		//Scrolling along
 		$().ready(function() {
