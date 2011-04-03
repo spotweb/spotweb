@@ -160,11 +160,13 @@
 		
 		function toggleScrolling(state) {
 			if (state == true || state == 'true') {
-				$('#filterscroll').attr({checked:'checked', title:'Klik om sidebar niet meer mee te laten scrollen'});
+				$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
 				$("#filter").css('position', 'fixed');
+				$("#overlay").css('left', '235px');
 			} else {
-				$('#filterscroll').attr({title:'Klik om sidebar mee te laten scrollen'});
+				$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
 				$("#filter").css('position', 'relative');
+				$("#overlay").css('left', '0');
 			}
 		} // toggleScrolling
 
