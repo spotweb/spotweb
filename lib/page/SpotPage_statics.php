@@ -43,12 +43,17 @@ class SpotPage_statics extends SpotPage_Abs {
 	function render() {
 		$tplHelper = $this->getTplHelper(array());
 		
+		# we willen geen sessie omdat dat onze cache headers verpest
+		session_destroy();
+		
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type'])); 
 		
-		# stuur een expires header zodat dit een jaar geldig is
+		# stuur een expires header zodat dit een jaar of 10 geldig is
+		Header("Cache-Control: public");
 		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
 		Header("Content-Length: " . strlen($mergedInfo['body']));
+		Header("Pragma: ");
 		
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
