@@ -593,7 +593,8 @@ class SpotDb
 	} # removeFromWatchlist
 
 	function getWatchlist($sort) {
-		return $this->_conn->arrayQuery("SELECT w.messageid AS messageid, 
+		return $this->_conn->arrayQuery("SELECT w.id AS id,
+										 w.messageid AS messageid, 
 										 w.dateadded AS dateadded, 
 										 w.comment AS comment, 
 										 s.title AS title, 
