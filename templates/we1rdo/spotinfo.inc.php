@@ -20,9 +20,9 @@ echo "</th>";
 } ?>                     
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
-                        <th class="sabnzbd"><a class="sabnzbd-button succes" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue (you already downloaded this spot)"> </a></th>
+                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot)"> </a></th>
 <?php } else { ?>
-                        <th class="sabnzbd"><a class="sabnzbd-button" href="<?php echo $spot['sabnzbdurl'];?>" title="Add NZB to SabNZBd queue"> </a></th>
+                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue"> </a></th>
 <?php } } ?>
                     </tr>
                 </tbody>
