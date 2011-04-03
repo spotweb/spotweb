@@ -55,8 +55,8 @@ $settings['filters'] = array(
             Array("Mac / Linux", "images/icons/linux.png", "cat2_a1,cat2_a2", ""),
             Array("Playstation", "images/icons/playstation.png", "cat2_a3,cat2_a4,cat2_a5,cat2_a12", ""),
             Array("XBox", "images/icons/xbox.png", "cat2_a6,cat2_a7", ""),
-            Array("Nintendo", "images/icons/nintendo_ds.png", "cat2_a9,cat2_a10,cat2_a11", ""),
-            Array("PDA", "images/icons/pda.png", "cat2_a13", "")
+            Array("Nintendo", "images/icons/nintendo_ds.png", "cat2_a8,cat2_a9,cat2_a10,cat2_a11", ""),
+            Array("Smartphone / PDA", "images/icons/pda.png", "cat2_a13,cat2_a14,cat2_a15", "")
         )
     ),
     Array("Applicaties", "images/icons/application.png", "cat3_a", "", 
@@ -147,7 +147,7 @@ $settings['nzb_group'] = 'alt.binaries.ftd';
 $settings['comment_group'] = 'free.usenet';
 
 # db
-$settings['db']['engine'] = 'sqlite3'; 			# <== keuze uit sqlite3, pdo_sqlite, mysql en pdo_mysql
+$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
 $settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # Als je MySQL wilt gebruiken, vul dan onderstaande in

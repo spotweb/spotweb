@@ -19,7 +19,7 @@
 <?php if ($settings['show_nzbbutton']) { ?>
 						<th class='nzb'> NZB </th>
 <?php } ?>
-<?php if ($settings['show_multinzb']) { ?>
+<?php if ($settings['show_multinzb'] && !count($spots) == 0) { ?>
                         <th class='multinzb'> 
                         	<form action="" method="GET" id="checkboxget" name="checkboxget">
                             	<input type='hidden' name='page' value='getnzb'>
@@ -134,7 +134,7 @@
 ?>
 				</tbody>
 			</table>
-<?php if ($settings['show_multinzb'] || $prevPage >= 0 || $nextPage > 0) { ?>
+<?php if ($settings['show_multinzb'] && !count($spots) == 0 || $prevPage >= 0 || $nextPage > 0) { ?>
 			<table class="footer" summary="Footer">
             	<tbody>
                 	<tr>
