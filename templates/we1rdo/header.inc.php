@@ -12,23 +12,6 @@
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function(){
-			$("a.spotlink").click(function(e){
-				if(e.metaKey || e.altKey || e.shiftKey || e.button == 1) {
-					e.stopImmediatePropagation();
-				}
-			});
-
-			$("a.spotlink").fancybox({
-				'width'			: '100%',
-				'height' 		: '100%',
-				'autoScale' 	: false,
-				'transitionIn'	: 'none',
-				'transitionOut'	: 'none',
-				'type'			: 'iframe'
-			})
-		});
-
-		$(function(){
 			// Attach the dynatree widget to an existing <div id="tree"> element
 			// and pass the tree options as an argument to the dynatree() function:
 			$("#tree").dynatree({
@@ -44,7 +27,6 @@
 				} // onPostInit
 			});
 
-			
 			$("#filterform").submit(function() {
 				var formField = $("#search-tree");
 				
@@ -136,103 +118,7 @@
 					dataType: "xml"
 				});
 			}); // markallasreadbtn
-						
-			$("a.sabnzbd-button").click(function(e) {
-				e.preventDefault();
-
-				var surl = this.href.split("?");
-				var temp = $(this);
-			
-				$.ajax({
-					url: surl[0],
-					data: surl[1],
-					context: $(temp),
-					error: function(jqXHR, textStatus, errorThrown) {
-						// zie bij success(): alert(textStatus);
-					},
-					success: function(data, textStatus, jqXHR) {
-						// We kunnen de returncode niet checken want cross-site
-						// scripting is niet toegestaan, dus krijgen we de inhoud 
-						// niet te zien
-					},
-					beforeSend: function(jqXHR, settings) {
-						$(temp).removeClass("succes");
-						$(temp).addClass("loading");
-					}, // # beforeSend
-					complete: function(jqXHR, textStatus) {
-						setTimeout( function() { 
-							$(temp).removeClass("loading");
-							$(temp).addClass("succes");
-						}, 1000);
-					}, // # complete
-					dataType: "text"
-				});
-			}); // click
 		});
-
-		//Scrolling along
-		$().ready(function() {
-			$('#filterscroll').bind('change', function() {
-				var scrolling = $(this).is(':checked');
-				$.cookie('scrolling', scrolling, { path: '/', expires: 7 });
-				toggleScrolling(scrolling);
-			});
-
-			var scrolling = $.cookie("scrolling");
-			toggleScrolling(scrolling);
-		});
-		
-		function toggleScrolling(state) {
-			if (state == true || state == 'true') {
-				$('#filterscroll').attr({checked:'checked', title:'Klik om sidebar niet meer mee te laten scrollen'});
-				$("#filter").css('position', 'fixed');
-			} else {
-				$('#filterscroll').attr({title:'Klik om sidebar mee te laten scrollen'});
-				$("#filter").css('position', 'static');
-			}
-		} // toggleScrolling
-
-		function toggleFilterBlock(linkName,block,cookieName) {
-			$(block).toggle();
-			if ($.cookie(cookieName) == 'none') { var view = 'block'; } else { var view = 'none'; }
-			toggleFilterImage(linkName, view);
-			$.cookie(cookieName, view, { path: '/', expires: 7 });
-		} // toggleFitlerBlock
-
-		//Cookie uitlezen en in die staat op scherm toveren
-		$(function(){
-			var items = {'viewSearch': ['.hide', '#filterform_link'],
-						'viewQuickLinks': ['ul.quicklinks', '#quicklinks_link'],
-						'viewFilters': ['ul.filters', '#filters_link'],
-						'viewMaintenance': ['ul.maintenancebox', '#maintenance_link']
-			};
-			
-			// array doorlopen en actie ondernemen
-			$.each(items, function(key, value) {
-				var theState = $.cookie(key);
-				$(value[0]).css('display', theState);
-				toggleFilterImage(value[1], theState);
-			});
-		});
-
-		function toggleFilterImage(linkName, state) {
-			if (state == 'none') {
-				$(linkName).removeClass("up");
-				$(linkName).addClass("down");
-			} else {
-				$(linkName).removeClass("down");
-				$(linkName).addClass("up");
-			}
-		} // toggleFilterImage
-
-		function toggleWatchSpot(spot,action,spot_id) {
-			// Add/remove watchspot
-			$.get("?page=watchlist&action="+action+"&messageid="+spot);
-
-			// Switch buttons
-			$('#watchremove_'+spot_id).toggle();
-			$('#watchadd_'+spot_id).toggle();
-		} // toggleWatchSpot
 
 		function clearTree() {
 		  $("#tree").dynatree("getRoot").visit(function(node) {
@@ -263,7 +149,7 @@
 			return false;
 		} // matchTree()
 		
-		//// Check for checkboxes at submit
+		// Check for checkboxes at submit
 		 $(function() {
             $('input[id$=multisubmit]').click(function(e) {
                 var checked = $(':checkbox:checked').length;
@@ -274,7 +160,7 @@
             });
         });
 		
-			//// Select or Deselect All checkboxes
+		// Select or Deselect All checkboxes
 		var checked=false;
 		var frmname='';
 		function checkedAll(frmname)
@@ -292,10 +178,9 @@
 			{
 				valus.elements[i].checked=checked;
 			}
-		} //// Select or Deselect All checkboxes
+		} // Select or Deselect All checkboxes
 		</script>
-		
 	</head>
-	
 	<body>
+    	<div id="overlay"></div>
 		<div class="container">
