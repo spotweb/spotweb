@@ -4,10 +4,10 @@
     	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 		<title><?php echo $pagetitle?></title>
 		<base href='<?php echo $tplHelper->makeBaseUrl(); ?>'>
-		<link rel='stylesheet' type='text/css' href='?page=statics&type=css&mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
+		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
-		<link rel='shortcut icon' href='?page=statics&type=ico&mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
-		<script src='?page=statics&type=js&mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
+		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
+		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
