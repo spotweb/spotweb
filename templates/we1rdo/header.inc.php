@@ -137,39 +137,14 @@
 					dataType: "xml"
 				});
 			}); // markallasreadbtn
-			
-			function downloadSabnzbd() {
-				e.preventDefault();
-
-				var surl = this.href.split("?");
-				var temp = $(this);
-			
-				$.ajax({
-					url: surl[0],
-					data: surl[1],
-					context: $(temp),
-					error: function(jqXHR, textStatus, errorThrown) {
-						// zie bij success(): alert(textStatus);
-					},
-					success: function(data, textStatus, jqXHR) {
-						// We kunnen de returncode niet checken want cross-site
-						// scripting is niet toegestaan, dus krijgen we de inhoud 
-						// niet te zien
-					},
-					beforeSend: function(jqXHR, settings) {
-						$(temp).removeClass("succes");
-						$(temp).addClass("loading");
-					}, // # beforeSend
-					complete: function(jqXHR, textStatus) {
-						setTimeout( function() { 
-							$(temp).removeClass("loading");
-							$(temp).addClass("succes");
-						}, 1000);
-					}, // # complete
-					dataType: "text"
-				});
-			}
 		});
+		
+		function downloadSabnzbd(id,url) {
+			$(".sab_"+id).removeClass("succes").addClass("loading");
+			$.get(url, function(data) {
+				$(".sab_"+id).removeClass("loading").addClass("succes");	
+			});
+		}
 
 		//Scrolling along
 		$().ready(function() {

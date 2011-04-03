@@ -213,9 +213,16 @@ table.spots tr td span.markSpot {float:right; display:block; background-color:#e
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 table.spots tr td.watch a.remove {background-position:-56px -80px;}
 
-table.spots tr td a.sabnzbd-button {display:block; width:20px; height:17px; margin:0 0 1px 1px; background:url(img/sprite.png) no-repeat 0 -94px;}
-table.spots tr td a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center left; margin:0 0 0 3px;}
+div.details table.spotheader th.sabnzbd a.sabnzbd-button,
+table.spots tr td a.sabnzbd-button {display:block; width:20px; height:17px; cursor:pointer; margin:0 0 1px 1px; background:url(img/sprite.png) no-repeat 0 -94px;}
+div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading,
+table.spots tr td a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center center; margin:0 0 0 1px;}
+div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes,
 table.spots tr td a.sabnzbd-button.succes {background-position:-20px -94px;}
+
+div.details table.spotheader th.sabnzbd a.sabnzbd-button {}
+div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading {}
+
 
 table.spots tr.blue td {background-color:#daecff;}
 table.spots tr.orange td {background-color:#fffad3;}
@@ -315,9 +322,6 @@ div.details table.spotheader th.nzb {width:92px; min-width:92px; text-align:cent
 div.details table.spotheader th.nzb a.search {display:inline-block; float:left; color:#000; text-decoration:none; padding:0 6px; border-right:1px solid #fff;}
 div.details table.spotheader th.nzb a.nzb {display:inline-block; float:right; text-decoration:none; padding:0 6px;}
 div.details table.spotheader th.sabnzbd {width:20px; padding:0;}
-div.details table.spotheader th.sabnzbd a.sabnzbd-button {display:block; width:20px; height:17px; margin:0 0 1px 0; background:url(img/sprite.png) no-repeat 0 -94px;}
-div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center left; margin:0 0 0 3px;}
-div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes {background-position:-20px -94px;}
 
 div.details table.spotinfo {width:100%; border-collapse:separate; border-spacing:5px 2px; *margin-top:1px;}
 div.details table.spotinfo th,

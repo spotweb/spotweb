@@ -93,9 +93,9 @@
 				# display the sabnzbd button
 				if (!empty($watch['sabnzbdurl'])) {
 					if ($tplHelper->hasBeenDownloaded($watch)) {
-						echo "<td><a class='sabnzbd-button succes' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
+						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
 					} else {
-						echo "<td><a class='sabnzbd-button' target='_blank' href='" . $watch['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'> </a></td>";	
+						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button' title='Add NZB to SabNZBd queue'> </a></td>";
 					} # else
 				} # if
 			} else {

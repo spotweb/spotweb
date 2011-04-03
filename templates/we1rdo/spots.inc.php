@@ -108,9 +108,9 @@
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($tplHelper->hasBeenDownloaded($spot)) {
-					echo "<td><a onclick='downloadSabnzbd()' class='sabnzbd-button succes' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
+					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
 				} else {
-					echo "<td><a onclick='downloadSabnzbd()' class='sabnzbd-button' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'> </a></td>";	
+					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue'> </a></td>";	
 				} # else
 			} # if
 		} else {
