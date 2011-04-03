@@ -31,11 +31,12 @@ abstract class db_pdo extends db_abs {
                 break;
             }
             if ($p[$idx-1] == null) {
-                $stmt->bindValue($idx, '', PDO::PARAM_STR);
+                $stmt->bindValue($idx, null, PDO::PARAM_NULL);
             } else {
                 switch ($m) {
                     case '%d':
-                        $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_INT);
+						# we converteren expliciet naar strval, omdat PDO anders een 0 naar '' omzet
+                        $stmt->bindParam($idx, strval($p[$idx-1]), PDO::PARAM_INT);
                         break;
                     default:
                         $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_STR);

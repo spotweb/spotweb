@@ -241,11 +241,15 @@ class SpotTemplateHelper {
 		if (isset($this->_params['activefilter'])) {
 			foreach($this->_params['activefilter'] as $key => $val) {
 				if (array_search($key, $dontInclude) === false) {
-					if (!is_array($val)) {
-						$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
+					if (!is_array($val)) { 
+						if (!empty($val)) {
+							$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
+						} # if
 					} else {
 						foreach($val as $valVal) {
-							$getUrl .= '&amp;search[' .  $key . '][]=' . urlencode($valVal);
+							if (!empty($valVal)) {
+								$getUrl .= '&amp;search[' .  $key . '][]=' . urlencode($valVal);
+							} # if
 						} # foreach
 					} # else
 				}
