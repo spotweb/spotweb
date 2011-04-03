@@ -252,7 +252,7 @@ class SpotsOverview {
 
 			foreach($dyn2search['cat'] as $catid => $cat) {
 				$catid = (int) $catid;
-				$tmpStr = "((category = " . $catid . ")";
+				$tmpStr = "((category = " . (int) $catid . ")";
 				
 				# Now start adding the sub categories
 				if ((is_array($cat)) && (!empty($cat))) {
