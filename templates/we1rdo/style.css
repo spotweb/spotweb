@@ -159,9 +159,8 @@ ul.maintenancebox li a.maintenancebtn {
 	font-weight:bold;
 	text-align:center;
 }
-ul.maintenancebox li a.maintenancebtn:focus {
-	background-position:0 -20px;
-}
+ul.maintenancebox li a.maintenancebtn:focus,
+ul.maintenancebox li a.maintenancebtn:hover {background-position:0 -20px;}
 
 /* SPOTS */
 div.spots {margin:0 5px 0 240px; padding:0 0 5px 0; min-width:750px; *padding:2px 0 5px 0;}
