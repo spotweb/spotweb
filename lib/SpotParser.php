@@ -90,6 +90,7 @@ class SpotParser {
 	function parseXover($subj, $from, $date, $messageid, $rsakeys, $use_openssl) {
 		$_ID = 2;
 		$_CAT = 0;
+		$_FSIZE = 1;
 
 		// initialiseer wat variabelen
 		$spot = array();
@@ -108,6 +109,7 @@ class SpotParser {
 		
 		$spot['header'] = $tmpHdr[1];
 		$spot['verified'] = false;
+		$spot['filesize'] = 0;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
 
 		if (time() < strtotime($date)) {
@@ -120,6 +122,7 @@ class SpotParser {
 
 		if (count($fields) >= 6) {
 			$spot['id'] = $fields[$_ID];
+			$spot['filesize'] = $fields[$_FSIZE];
 
 			if ($spot['id'] > 9) {
 				$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;

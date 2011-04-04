@@ -536,8 +536,8 @@ class SpotDb
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp, reversestamp) 
-				VALUES(%d, '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+		$this->_conn->exec("INSERT INTO spots(spotid, messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, title, tag, stamp, reversestamp, filesize) 
+				VALUES(%d, '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['id'],
 					   $spot['messageid'],
 					   (int) $spot['category'],
@@ -551,7 +551,8 @@ class SpotDb
 					   $spot['title'],
 					   $spot['tag'],
 					   $spot['stamp'],
-					   ($spot['stamp'] * -1)) );
+					   ($spot['stamp'] * -1),
+					   $spot['filesize']) );
 					   
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
