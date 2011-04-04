@@ -249,6 +249,7 @@ table.spots tr.orange td.comments {background-position:-34px 0;}
 table.spots tr.green td.comments {background-position:-68px 0;}
 table.spots tr.red td.comments {background-position:-102px 0;}
 
+table.spots tr.active a.spotlink:before {content: "> ";}
 table.spots a.nzb {font-weight:bold;}
 table.spots tr.blue a.nzb {color:#008edf;}
 table.spots tr.orange a.nzb {color:#e9a213;}
