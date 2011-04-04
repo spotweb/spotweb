@@ -2,7 +2,7 @@
 html {overflow:auto; height:100%;}
 body {margin:3px 5px 5px 5px;}
 
-div.container {position:fixed; top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
+div.container {position:absolute; /* LET OP! DEBUG AANPASSING, HOORT "position: fixed;" TE STAAN */ top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
 
 div.clear {clear:both;}
 
