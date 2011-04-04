@@ -1,5 +1,5 @@
 // Zorg ervoor dat overlay op juiste moment zichtbaar is
-$(function(){
+$(function(){	
 	$("a.spotlink").click(function(e) {
 		e.preventDefault();
 		
