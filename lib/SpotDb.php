@@ -301,7 +301,7 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
-		
+
 		# en voer de query uit
  		return $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
