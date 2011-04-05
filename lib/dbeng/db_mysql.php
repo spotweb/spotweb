@@ -205,13 +205,23 @@ class db_mysql extends db_abs {
 		# vinden, schakelen we over naar boolean match
 		$termList = explode(' ', $searchValue);
 		foreach($termList as $term) {
-			if (array_search($term[0], array('+', '-')) !== false) {
+			# We strippen een aantal karakters omdat dat niet de search 
+			# methode mag beinvloeden, bv. (<test) oid.
+			$strippedTerm = trim($term, "()'\"");
+		
+			# als er boolean phrases in zitten, is het een boolean search
+			if (strpos('+-~<>', $strippedTerm[0]) !== false) {
+				$searchMode = 'match-boolean';
+				break;
+			} # if
+			
+			if (strpos('*', substr($strippedTerm, -1)) !== false) {
 				$searchMode = 'match-boolean';
 				break;
 			} # if
 
 			# als het een stop word is, dan vallen we ook terug naar de like search
-			if (array_search($term, $this->stop_words) !== false) {
+			if (array_search($strippedTerm, $this->stop_words) !== false) {
 				$searchMode = 'normal';
 				break;
 			} # if
