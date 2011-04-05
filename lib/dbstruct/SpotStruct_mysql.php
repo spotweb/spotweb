@@ -43,9 +43,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey TEXT,
 										xmlsignature TEXT,
 										fullxml TEXT,
-										filesize BIGINT) ENGINE = MYISAM;");										
-
-			# create indices
+										filesize BIGINT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 			

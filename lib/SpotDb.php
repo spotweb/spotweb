@@ -318,10 +318,10 @@ class SpotDb
 												s.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
+												s.filesize AS filesize,
 												d.stamp AS downloadstamp,
 												f.userid AS userid,
-												f.verified AS verified,												
-												f.filesize AS filesize" . 
+												f.verified AS verified" . 
 												$extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid

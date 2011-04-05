@@ -65,6 +65,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 				return array('js/jquery/jquery.min.js', 
 								'js/jquery/jquery-ui.custom.min.js',
 								'js/jquery/jquery.cookie.js',
+								'js/jquery/jquery.hotkeys.js',
 								'js/dynatree/jquery.dynatree.min.js',
 								'templates/we1rdo/js/scripts.js'
 								);
