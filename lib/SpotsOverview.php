@@ -159,7 +159,7 @@ class SpotsOverview {
 		$filterValueList = array();
 		foreach($search['value'] as $value) {
 			$tmpFilter = explode(':', $value);
-			$filterValueList[$tmpFilter[0]] = $tmpFilter[1];
+			$filterValueList[$tmpFilter[0]] = join(":", array_slice($tmpFilter, 1));
 		} # for
 		$search['filterValues'] = $filterValueList;
 		
@@ -287,17 +287,48 @@ class SpotsOverview {
 		# Add a list of possible text searches
 		$textSearch = array();
 		foreach($search['filterValues'] as $searchType => $searchValue) {
-			$field = '';
-		
-			switch($searchType) {
-				case 'Tag'		: $field = 'tag'; break;
-				case 'Poster'	: $field = 'poster'; break;
-				case 'UseriD'	: $field = 'userid'; break;
-				case 'Titel'	: $field = 'title'; break;
-			} # switch
-			
-			if (!empty($field) && !empty($searchValue)) {
-				$textSearch[] = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
+			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
+			# voer dan dit pad uit
+			if (in_array($searchType, array('Tag', 'Poster', 'UserID', 'Titel'))) {
+				$field = '';
+
+				switch($searchType) {
+					case 'Tag'		: $field = 'tag'; break;
+					case 'Poster'	: $field = 'poster'; break;
+					case 'UserID'	: $field = 'userid'; break;
+					case 'Titel'	: $field = 'title'; break;
+				} # switch
+				
+				if (!empty($field) && !empty($searchValue)) {
+					$textSearch[] = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
+				} # if
+			} else {
+				# Anders is het geen textsearch maar een vergelijkings operator, 
+				# eerst willen we de vergelijking eruit halen.
+				#
+				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
+				#   filesize:>=:4000000
+				$tmpFilter = explode(":", $searchValue);
+				
+				if (count($tmpFilter) >= 2) {
+					$filterOperator = $tmpFilter[0];
+					$searchValue = join(":", array_slice($tmpFilter, 1));
+					
+					# valideer eerst de operatoren
+					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
+						break;
+					} # if
+				
+					# en valideer dan de zoekvelden
+					$filterFieldMapping = array('filesize' => 's.filesize',
+										  'date' => 's.stamp');
+					if (!isset($filterFieldMapping[$searchType])) {
+						break;
+					} # if
+
+					# en creeer de query string
+					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $this->_db->safe($searchValue) . ') ';
+				} # if
 			} # if
 		} # foreach
 
