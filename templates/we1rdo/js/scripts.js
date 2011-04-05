@@ -75,7 +75,6 @@ function openSpot() {
 	} else {
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
->>>>>>> targeter/hotkeys
 }
 
 function closeDetails() {
