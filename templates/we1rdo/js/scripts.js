@@ -8,9 +8,19 @@ $(function(){
 		
 		$("#overlay").load(this.href+' #details', function() {
 			$("#overlay").removeClass('loading');
+			loadSpotImage();
 		});
 	});
 });
+
+function loadSpotImage() {
+	$('img.spotinfoimage').hide();
+	$('a.postimage').addClass('loading');
+	$('img.spotinfoimage').load(function() {
+		$('a.postimage').removeClass('loading');
+		$(this).show();
+	});
+}
 
 function closeDetails() {
 	$("#overlay").hide();
