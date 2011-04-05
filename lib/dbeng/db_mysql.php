@@ -221,7 +221,7 @@ class db_mysql extends db_abs {
 			} # if
 
 			# als het een stop word is, dan vallen we ook terug naar de like search
-			if (array_search($strippedTerm, $this->stop_words) !== false) {
+			if (in_array($strippedTerm, $this->stop_words) !== false) {
 				$searchMode = 'normal';
 				break;
 			} # if
