@@ -18,7 +18,6 @@ $(function(){
 
 });
 
-
 // Laadt de spotImage wanneer spotinfo wordt geopend
 function loadSpotImage() {
 	$('img.spotinfoimage').hide();
@@ -80,6 +79,7 @@ function openSpot() {
 	}
 }
 
+// Sluit spotinfo overlay
 function closeDetails() {
 	$("#overlay").hide();
 	$("#details").remove();
