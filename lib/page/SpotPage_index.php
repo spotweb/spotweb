@@ -14,7 +14,7 @@ class SpotPage_index extends SpotPage_Abs {
 	function render() {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$filter = $spotsOverview->filterToQuery($this->_params['search']);
-
+		
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
 		# dat de index pagina wordt aangeroepen

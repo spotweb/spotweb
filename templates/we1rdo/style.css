@@ -1,8 +1,8 @@
 /* GENERAL */
 html {overflow:auto; height:100%;}
-body {margin:3px 5px 5px 5px;}
+body {margin:0;}
 
-div.container {position:fixed; top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
+div.container {position:absolute; *position:fixed; top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
 
 div.clear {clear:both;}
 
@@ -219,10 +219,6 @@ table.spots tr td a.sabnzbd-button.loading {background:url(img/loading.gif) no-r
 div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes,
 table.spots tr td a.sabnzbd-button.succes {background-position:-20px -94px;}
 
-div.details table.spotheader th.sabnzbd a.sabnzbd-button {}
-div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading {}
-
-
 table.spots tr.blue td {background-color:#daecff;}
 table.spots tr.orange td {background-color:#fffad3;}
 table.spots tr.green td {background-color:#cbffcb;}
@@ -249,6 +245,7 @@ table.spots tr.orange td.comments {background-position:-34px 0;}
 table.spots tr.green td.comments {background-position:-68px 0;}
 table.spots tr.red td.comments {background-position:-102px 0;}
 
+table.spots tr.active a.spotlink:before {content: "> ";}
 table.spots a.nzb {font-weight:bold;}
 table.spots tr.blue a.nzb {color:#008edf;}
 table.spots tr.orange a.nzb {color:#e9a213;}
@@ -273,11 +270,13 @@ table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-r
 div.details {font:11px Arial, Helvetica, sans-serif; padding:0 0 5px 0; min-width:680px;}
 
 div.details a.postimage {display:block;}
-div.details a.postimage img {display:block; max-width:300px; border:0; margin:0;}
+div.details a.postimage img {display:block; border:0; margin:0; max-width:260px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 div.details table.spotdetails {margin:0 0 0 5px; border-collapse:collapse; *margin:0 3px 0 5px;}
 div.details table.spotdetails td {padding:0; vertical-align:top;}
 div.details table.spotdetails td.img {padding:2px 0 0 0; *padding:3px 3px 0 0;}
+div.details table.spotdetails td.img a.loading {width:80px; background:url(img/loading.gif) no-repeat 50% 100%; padding:2px 0 24px 0; text-decoration:none; text-align:center; color:#000;}
+div.details table.spotdetails td.img a.loading:before {content: "Loading Image";}
 div.details table.spotdetails td.info {width:100%;}
 
 div.details div.warning {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:2px 5px 3px 5px; *margin:3px 2px 3px 2px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}

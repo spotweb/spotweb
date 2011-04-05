@@ -7,7 +7,7 @@ class SpotReq {
 		SpotReq::$_merged = array_merge($_POST, $_GET);
     }
     
-    function get($varName, $escapeType = 'html') {
+    function get($varName, $escapeType = 'none') {
 		if( is_array($varName) ) {
 			return SpotReq::escape(SpotReq::$_merged[$varName[0]][$varName[1]], $escapeType);
 		} else {
@@ -25,7 +25,7 @@ class SpotReq {
 		}
     } 
  
-    function getDef($varName, $defValue, $escapeType = 'html') {
+    function getDef($varName, $defValue, $escapeType = 'none') {
 		if( !isset(SpotReq::$_merged[$varName]) ) {
 			return $defValue;
 		} else {
@@ -33,7 +33,7 @@ class SpotReq {
 		}
     }
 
-    function getSrvVar($varName, $defValue = '', $escapeType = 'html') {
+    function getSrvVar($varName, $defValue = '', $escapeType = 'none') {
 		if( isset($_SERVER[$varName]) ) {
 			return SpotReq::escape($_SERVER[$varName], $escapeType);
 		} else {
@@ -52,6 +52,9 @@ class SpotReq {
     	    // and start escaping
 			switch( $escapeType ) {
 				case 'html'  : return htmlspecialchars($var);
+							   break;
+				
+				case 'none'	 : return $var;
 							   break;
 				
 				default : die('Unknown escape type: ' . $escapeType);

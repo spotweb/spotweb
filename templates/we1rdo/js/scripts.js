@@ -1,5 +1,5 @@
 // Zorg ervoor dat overlay op juiste moment zichtbaar is
-$(function(){
+$(function(){	
 	$("a.spotlink").click(function(e) {
 		e.preventDefault();
 		
@@ -8,15 +8,74 @@ $(function(){
 		
 		$("#overlay").load(this.href+' #details', function() {
 			$("#overlay").removeClass('loading');
+			loadSpotImage();
 		});
 	});
 
-	$(document).keyup(function(e){
-		if(e.which == 27) {
-			closeDetails();
-		}
+	$(document).bind('keydown', 'esc', function(e){
+		closeDetails();
 	});
+
 });
+
+// Keyboard navigation
+$(function(){
+	$('table.spots tbody tr').first().addClass('active');
+	$(document).bind('keydown', 'k', prevSpot);
+	$(document).bind('keydown', 'j', nextSpot);
+	$(document).bind('keydown', 'o', openSpot);
+	$(document).bind('keydown', 'return', openSpot);
+	$(document).bind('keydown', 'u', closeDetails);
+	$(document).bind('keydown', 'esc', closeDetails);
+});
+
+function loadSpotImage() {
+	$('img.spotinfoimage').hide();
+	$('a.postimage').addClass('loading');
+	$('img.spotinfoimage').load(function() {
+		$('a.postimage').removeClass('loading');
+		$(this).show();
+	});
+
+function nextSpot() {
+	var $current = $('table.spots tbody tr.active');
+	var $next = $current.size() == 1 ? $current.next().first() : $('table.spots tbody tr[2]');
+	if($next.size() == 1) {
+		$current.removeClass('active');
+		$next.addClass('active');
+
+		if($("#overlay").is(':visible')) {
+			openSpot();
+		}
+	}
+}
+
+function prevSpot() {
+	var $current = $('table.spots tbody tr.active');
+	var $prev = $current.prevUntil('tr.header').first();
+	if($prev.size() == 1) {
+		$current.removeClass('active');
+		$prev.addClass('active');
+
+		if($("#overlay").is(':visible')) {
+			openSpot();
+		}
+	}
+}
+
+function openSpot() {
+	if($("#overlay").is(':visible')){
+		var $link = $('table.spots tbody tr.active a.spotlink');
+		console.log($link.attr('href'));
+		$('#overlay').empty();
+		$('#overlay').addClass('loading');
+		$("#overlay").load($link.attr('href')+' #details', function() {
+			$("#overlay").removeClass('loading');
+		});
+	} else {
+		$('table.spots tbody tr.active a.spotlink').click();
+	}
+}
 
 function closeDetails() {
 	$("#overlay").hide();
