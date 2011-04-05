@@ -22,7 +22,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										stamp INTEGER,
 										reversestamp INTEGER DEFAULT 0,
 										filesize BIGINT DEFAULT 0,
-										moderated BOOLEAN DEFAULT FALSE);");
+										moderated BOOLEAN DEFAULT FALSE) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
@@ -43,7 +43,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey TEXT,
 										xmlsignature TEXT,
 										fullxml TEXT,
-										filesize BIGINT);");										
+										filesize BIGINT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 			
@@ -70,7 +70,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 												   messageid VARCHAR(128),
 												   dateadded INTEGER,
-												   comment TEXT);");
+												   comment TEXT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
 		} # if
 	} # createDatabase
