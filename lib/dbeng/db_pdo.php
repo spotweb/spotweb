@@ -29,8 +29,9 @@ abstract class db_pdo extends db_abs {
         foreach ($matches[1] as $m) {
             if (!isset($p[$idx-1])) {
                 break;
-            }
-            if ($p[$idx-1] == null) {
+            } # if
+			
+            if (is_null($p[$idx-1])) {	
                 $stmt->bindValue($idx, null, PDO::PARAM_NULL);
             } else {
                 switch ($m) {

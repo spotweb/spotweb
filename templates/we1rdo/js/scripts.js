@@ -11,6 +11,12 @@ $(function(){
 			loadSpotImage();
 		});
 	});
+
+	$(document).keyup(function(e){
+		if(e.which == 27) {
+			closeDetails();
+		}
+	});
 });
 
 function loadSpotImage() {
