@@ -18,6 +18,17 @@ $(function(){
 
 });
 
+
+// Laadt de spotImage wanneer spotinfo wordt geopend
+function loadSpotImage() {
+	$('img.spotinfoimage').hide();
+	$('a.postimage').addClass('loading');
+	$('img.spotinfoimage').load(function() {
+		$('a.postimage').removeClass('loading');
+		$(this).show();
+	});
+}
+
 // Keyboard navigation
 $(function(){
 	$('table.spots tbody tr').first().addClass('active');
@@ -28,14 +39,6 @@ $(function(){
 	$(document).bind('keydown', 'u', closeDetails);
 	$(document).bind('keydown', 'esc', closeDetails);
 });
-
-function loadSpotImage() {
-	$('img.spotinfoimage').hide();
-	$('a.postimage').addClass('loading');
-	$('img.spotinfoimage').load(function() {
-		$('a.postimage').removeClass('loading');
-		$(this).show();
-	});
 
 function nextSpot() {
 	var $current = $('table.spots tbody tr.active');
