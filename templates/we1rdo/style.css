@@ -274,7 +274,7 @@ div.details a.postimage img {display:block; border:0; margin:0; max-width:260px;
 div.details table.spotdetails {margin:0 0 0 5px; border-collapse:collapse; *margin:0 3px 0 5px;}
 div.details table.spotdetails td {padding:0; vertical-align:top;}
 div.details table.spotdetails td.img {padding:2px 0 0 0; *padding:3px 3px 0 0;}
-div.details table.spotdetails td.img a.loading {display:block; min-width:80px; background:url(img/loading.gif) no-repeat 50% 100%; padding:2px 0 25px 0; text-decoration:none; text-align:center; color:#000;}
+div.details table.spotdetails td.img a.loading {width:80px; background:url(img/loading.gif) no-repeat 50% 100%; padding:2px 0 24px 0; text-decoration:none; text-align:center; color:#000;}
 div.details table.spotdetails td.img a.loading:before {content: "Loading Image";}
 div.details table.spotdetails td.info {width:100%;}
 
