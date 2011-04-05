@@ -209,9 +209,14 @@ class db_mysql extends db_abs {
 				$searchMode = 'match-boolean';
 				break;
 			} # if
+
+			# als het een stop word is, dan vallen we ook terug naar de like search
+			if (array_search($term, $this->stop_words) !== false) {
+				$searchMode = 'normal';
+				break;
+			} # if
 		} # foreach
 		
-
 		switch($searchMode) {
 			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
 			
