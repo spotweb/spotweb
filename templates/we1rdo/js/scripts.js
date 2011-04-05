@@ -30,7 +30,7 @@ $(function(){
 
 function nextSpot() {
 	var $current = $('table.spots tbody tr.active');
-	var $next = $current.size() == 1 ? $current.next() : $('table.spots tbody tr[2]');
+	var $next = $current.size() == 1 ? $current.next().first() : $('table.spots tbody tr[2]');
 	if($next.size() == 1) {
 		$current.removeClass('active');
 		$next.addClass('active');
@@ -43,7 +43,7 @@ function nextSpot() {
 
 function prevSpot() {
 	var $current = $('table.spots tbody tr.active');
-	var $prev = $current.prevUntil('tr.header');
+	var $prev = $current.prevUntil('tr.header').first();
 	if($prev.size() == 1) {
 		$current.removeClass('active');
 		$prev.addClass('active');
