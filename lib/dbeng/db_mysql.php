@@ -173,26 +173,16 @@ class db_mysql extends db_abs {
 		$rows = $this->get_mysql_info();
 		return $rows['rows_matched'];
 	} # rows()
-
+	
 	/*
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $searchValue) {
+		$searchMode = "match-natural";
 		$searchValue = trim($searchValue);
-		$search = $this->getSearchMode($searchValue);
+		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
 
-		switch($search['searchMode']) {
-			case 'normal'			: $queryPart = " (" . $field . " LIKE '%" . $this->safe($search['searchValue']) . "%')"; break;
-			/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
-			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "')"; break;
-			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($search['searchValue']) . "' IN BOOLEAN MODE)"; break;
-		} # switch
-
-		return $queryPart;
-	} # createTextQuery()
-
-	function getSearchMode($search) {
 		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
 		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
 		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
@@ -200,35 +190,21 @@ class db_mysql extends db_abs {
 		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
-		$replacedSearch = str_replace(array('+', '-', '~', '<', '>', '*', '|', 'AND', 'NOT', 'OR'), '', $search);
-		$termList = explode(" ", $replacedSearch);
+		# bekijk elk woord individueel, is het korter dan $minWordLen, gaan we terug naar normale 
+		# LIKE  modus
+		$termList = explode(' ', $tempSearchValue);
 		foreach($termList as $term) {
 			if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-				return array('searchMode' => 'normal', 'searchValue' => $replacedSearch); /* direct terugschakelen op LIKE search, verdere tests zijn niet nodig */
-			}
+				$searchValue = $tempSearchValue;
+				$searchMode = "normal";
+				break;
+			} # if
 		} # foreach
-
-		# Wildcards kunnen niet altijd correct door natural behandeld worden. Ze staan ook niet altijd aan het begin of eind
-		if (strpos($search, '*') !== false) {
-			return array('searchMode' => 'match-boolean', 'searchValue' => $search);
-		}
-
-		# Als alle woorden langer zijn dan $minWordLen gaan we de bekende Boolean syntax vervangen
-		# voor hun NATURAL tegenhanger. Zo krijgen we altijd hetzelfde resultaat, ongeacht de invoermethode.
-		# Uitzondering hierop zijn wildcards, welke niet altijd correct door natural behandeld kunnen worden.
-		$termList = explode(" ", $search);
-		$operatorMapping = array(	'+' => 'AND ',
-									'-' => 'NOT ',
-									'|' => 'OR ',
-									'~' => 'NEAR ');
-		$newSearchTerms = array();
+		
+		# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
+		# vinden, schakelen we over naar boolean match
+		$termList = explode(' ', $searchValue);
 		foreach($termList as $term) {
-<<<<<<< HEAD
-			if (isset($operatorMapping[$term[0]])) {
-				$newSearchTerms[] = str_replace($term[0], $operatorMapping[$term[0]], $term);
-			} else {
-				$newSearchTerms[] = $term;
-=======
 			# We strippen een aantal karakters omdat dat niet de search 
 			# methode mag beinvloeden, bv. (<test) oid.
 			$strippedTerm = trim($term, "()'\"");
@@ -242,7 +218,6 @@ class db_mysql extends db_abs {
 			if (strpos('*', substr($strippedTerm, -1)) !== false) {
 				$searchMode = 'match-boolean';
 				break;
->>>>>>> upstream/master
 			} # if
 
 			# als het een stop word is, dan vallen we ook terug naar de like search
@@ -251,11 +226,6 @@ class db_mysql extends db_abs {
 				break;
 			} # if
 		} # foreach
-<<<<<<< HEAD
-
-		return array('searchMode' => 'match-natural', 'searchValue' => implode(" ", $newSearchTerms));
-	} # getSearchMode
-=======
 		
 		switch($searchMode) {
 			case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
@@ -268,6 +238,5 @@ class db_mysql extends db_abs {
 		return $queryPart;
 	} # createTextQuery()
 	
->>>>>>> upstream/master
 
 } # class
