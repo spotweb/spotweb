@@ -426,7 +426,13 @@ class SpotParser {
 		
 		return $builder2;
 	} # oldEncodingParse
-	
+
+	function specialString($strInput) {
+		$strInput = str_replace('/', '-s', $strInput);
+		$strInput = str_replace('+', '-p', $strInput);
+		
+		return $strInput;
+	} # specialString
 	
 	/*private */function unspecialString($strInput) {
 		$strInput = $this->fixPadding($strInput);
