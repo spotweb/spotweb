@@ -37,13 +37,21 @@ class SpotsOverview {
 	/*
 	 * Geef de lijst met comments terug 
 	 */
-	function getSpotComments($msgId, $nntp) {
+	function getSpotComments($msgId, $nntp, $start, $length) {
 		if (!$this->_settings['retrieve_comments']) {
 			return array();
 		} # if
 	
 		# Vraag een lijst op met alle comments messageid's
 		$commentList = $this->_db->getCommentRef($msgId);
+		
+		# haal enkel die comments op wat we denken nodig te hebben
+		# volgens de parameters
+		if (($start > 0) || ($length > 0)) {
+			$commentList = array_slice($commentList, $start, $length);
+		} # if
+		
+		# en haal de comments zelf op
 		return $nntp->getComments($commentList);
 	} # getSpotComments()
 	

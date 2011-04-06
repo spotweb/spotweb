@@ -1,5 +1,6 @@
 <?php
 require_once "lib/SpotTemplateHelper.php";
+require_once "lib/SpotsOverview.php";
 
 abstract class SpotPage_Abs {
 	protected $_db;
@@ -34,8 +35,11 @@ abstract class SpotPage_Abs {
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
+		
+		# We maken een aantal variabelen / objecten standaard beschikbaar in de template.
 		$tplHelper = $this->getTplHelper($params);
-	
+
+		# en we spelen de template af
 		require_once($settings['tpl_path'] . $tpl . '.inc.php');
 	} # template
 	
