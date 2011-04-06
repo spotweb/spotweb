@@ -25,6 +25,7 @@ require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
 require_once "lib/page/SpotPage_watchlist.php";
 require_once "lib/page/SpotPage_statics.php";
+require_once "lib/page/SpotPage_render.php";
 
 #- main() -#
 try {
@@ -38,6 +39,18 @@ try {
 	$page = $req->getDef('page', 'index');
 		
 	switch($page) {
+		case 'render' : {
+				$page = new SpotPage_render($db, $settings, $settings['prefs'], $req->getDef('tplname', ''),
+							Array('search' => $req->getDef('search', $settings['index_filter']),
+								  'messageid' => $req->getDef('messageid', ''),
+								  'pagenr' => $req->getDef('pagenr', 0),
+								  'sortby' => $req->getDef('sortby', ''),
+								  'sortdir' => $req->getDef('sortdir', '')));
+
+				$page->render();
+				break;
+		} # render
+		
 		case 'getspot' : {
 				$page = new SpotPage_getspot($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
 				$page->render();

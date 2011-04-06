@@ -31,6 +31,17 @@ class SpotTemplateHelper {
 		return $this->_db->getSpotCount($sqlFilter);
 	} # getSpotCount
 
+	/* 
+	 * Geeft de waarde van een parameter terug
+	 */
+	function getParam($name) {
+		if (isset($this->_params[$name])) {
+			return $this->_params[$name];
+		} else {
+			return NULL;
+		} # if
+	} # getParam
+	
 	/*
  	 * Geef het aantal spots terug maar dan rekening houdende met het filter
  	 */
@@ -76,6 +87,16 @@ class SpotTemplateHelper {
 		return $this->_db->getCommentCount($spot['messageid']);
 	} # getCommentCount
 	
+	/*
+	 * Geeft een aantal spots terug
+	 */
+	function getSpotComments($msgId, $start, $length) {
+		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
+	} # getSpotComments
+
 	
 	/*
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
@@ -285,12 +306,32 @@ class SpotTemplateHelper {
 
 		return $spot;
 	} # formatSpotHeader
+
+	/*
+	 * Formatteert (maakt op) een lijst van comments
+	 */
+	function formatComments($comments) {
+		// escape de HTML voor de comments
+		$commentCount = count($comments);
+		for($i = 0; $i < $commentCount; $i++ ){
+			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
+			
+			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
+			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
+			# om zeker te zijn dat we altijd een array terugkrijgen
+			$tmpBody = implode("\n", $comments[$i]['body']);
+			$tmpBody = $this->formatContent($tmpBody);
+			$comments[$i]['body'] = explode("\n", $tmpBody);
+		} # for
+		
+		return $comments;
+	} # formatComments
 	
 	/*
 	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,
 	 * vullen we een aantal defaults in.
 	 */
-	function formatSpot($spot, $comments) {
+	function formatSpot($spot) {
 		# fix the sabnzbdurl en searchurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
@@ -322,21 +363,8 @@ class SpotTemplateHelper {
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
-		
-		// escape de HTML voor de comments
-		$commentCount = count($comments);
-		for($i = 0; $i < $commentCount; $i++ ){
-			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
-			
-			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
-			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
-			# om zeker te zijn dat we altijd een array terugkrijgen
-			$tmpBody = implode("\n", $comments[$i]['body']);
-			$tmpBody = $this->formatContent($tmpBody);
-			$comments[$i]['body'] = explode("\n", $tmpBody);
-		} # for
-		
-		return array($spot, $comments);
+				
+		return $spot;
 	} # formatSpot
 	
 	
