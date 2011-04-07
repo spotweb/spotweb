@@ -63,6 +63,11 @@ class SpotNntp {
 				// dummy, we dont care about exceptions during quitting time
 			} # catch
 		} # quit()
+
+		function post($article) {
+			$this->connect();
+			return $this->_nntp->post($article);
+		} # post()
 		
 		function getHeader($msgid) {
 			$this->connect();
@@ -175,6 +180,26 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
+		function postComment($user, $newsgroup, $inReplyTo, $content) {
+			#FIXME TOTAAL ONGETEST FIXME
+			
+			# We genereren een uniek messageid dat ook nog eens als eerste vier bytes 0000 geeft
+			# van een SHA1 hash
+			$newMessageId = $spotSigning->makeExpensiveHash("<" . $inReplyTo, "@spot.net>");
+			
+			# en sign het messageid
+			$signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
+			
+			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
+			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
+			$header .= 'Message-ID: ' . $newMessageId . "\r\n";
+			$header .= 'References: <' . $inReplyTo. ">\r\n";
+			$header .= 'X-User-Signature: ' . $spotParser->specialString($signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($signature['publickey']) . "\r\n";
+			
+			return $this->post(array($header, $content));
+		} # postComment
+		
 		function getImage($segment) {
 			$nzb = implode('', $this->getBody('<' . $segment . '>'));
 			$spotParser = new SpotParser();

@@ -126,11 +126,38 @@ class SpotSigning {
 		#
 		if ($verified) {
 			# $userSignedHash = sha1('<' . $comment['messageid'] . '>', false);
-			# $verified = (substr($userSignedHash, 0, 3) == '0000');
+			# $verified = (substr($userSignedHash, 0, 4) == '0000');
 		} # if
 
 		return $verified;
 	} # verifyComment()
+	
+	/*
+	 * Bereken een SHA1 hash van het bericht en doe dit net zo lang tot de eerste bytes
+	 * bestaan uit 00.
+	 */
+	function makeExpensiveHash($prefix, $suffix) {
+		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+		$runCount = 0;
+		
+		$hash = $prefix . $suffix;
+		
+		while(substr($hash, 0, 4) !== '0000') {	
+			if ($runCount > 100000) {
+				throw new Exception("Unable to calculate SHA1 hash: " . $runCount);
+			} # if
+			$runCount++;
+			
+			$uniquePart = '';
+			for($i = 0; $i < 15; $i++) {
+				$uniquePart .= $possibleChars[mt_rand(0, strlen($possibleChars) - 1)];
+			} # for
+			
+			$hash = sha1($prefix . '.' . $uniquePart . $suffix, false);			
+		} # while
+		
+		return $prefix . '.' . $uniquePart . $suffix;
+	} # makeExpensiveHash
 	
 	/*
 	 * 'Bereken' de userid aan de hand van z'n publickey

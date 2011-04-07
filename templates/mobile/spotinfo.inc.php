@@ -1,5 +1,7 @@
 <?php
-	list($spot, $comments) = $tplHelper->formatSpot($spot, $comments);
+	$spot = $tplHelper->formatSpot($spot);
+	$comments = $tplHelper->formatComments($comments);
+
 	$setpath = $tplHelper->makeBaseUrl();
 	
 	// fix the sabnzbdurl en searchurl
