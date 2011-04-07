@@ -180,28 +180,35 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
-		function postComment($user, $newsgroup, $inReplyTo, $content) {
-			
+		function postComment($user, $server, $newsgroup, $inReplyTo, $content) {
+
+			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
+		
 			# We genereren een uniek messageid dat ook nog eens als eerste vier bytes 0000 geeft
-			# van een SHA1 hash
-
+			# van een SHA1 hash. 
+			
 			# FIXME: De '0' in de message-id betekend: Geen beoordeling. 
-                        #             Geef 1 t/m 9 op om samen met de reactie een beoordeling (rating) te versturen.
-                        #             Spotweb zou dan in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
+			# Geef 1 t/m 9 op om samen met de reactie een beoordeling (rating) te versturen.
+			# Spotweb zou dan in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
 
-                        # FIXME: 'random' hoort eigenlijk een korte random base64 string (zonder '+' en  '/') te zijn
+			# FIXME: 'random' hoort eigenlijk een korte random base64 string (zonder '+' en  '/') te zijn
 
 			$newMessageId = $spotSigning->makeExpensiveHash("<" . $inReplyTo . ".0.random", "@spot.net>");
 			
 			# en sign het messageid
-			$signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
+			$user_signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
+			
+			# ook door de php server 
+			$server_signature = $spotSigning->signMessage($server['privatekey'], $newMessageId);
 			
 			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: ' . $newMessageId . "\r\n";
 			$header .= 'References: <' . $inReplyTo. ">\r\n";
-			$header .= 'X-User-Signature: ' . $spotParser->specialString($signature['signature']) . "\r\n";
-			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($signature['publickey']) . "\r\n";
+			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$header .= 'X-Newsreader: SpotWeb 0.9\r\n";
 			$header .= 'X-No-Archive: yes\r\n";
 			
