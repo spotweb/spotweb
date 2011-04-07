@@ -262,16 +262,20 @@ $settings['retrieve_increment'] = 1000;
 if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
-# QuickLinks
-$settings['quicklinks'] = Array();
-$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
-$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
-if ($settings['keep_watchlist']) {
-	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
-}
-if ($settings['keep_downloadlist']) {
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
-}
+# QuickLinks, we testen eerst of hij niet al door iemand anders is gezet in ownsettings.php en
+# anders vullen we hem zelf op. We kunnen dit niet boven ownsettings.php plaatsen want dan missen
+# we de keep_watchlist en keep_downloadlist settings.
+if (!isset($settings['quicklinks'])) {
+	$settings['quicklinks'] = Array();
+	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
+	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
+	if ($settings['keep_watchlist']) {
+		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+	}
+	if ($settings['keep_downloadlist']) {
+		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
+	}
+} # if isset
 
 #
 # Ga nu de template zetten
