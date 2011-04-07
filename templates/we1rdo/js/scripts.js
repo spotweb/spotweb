@@ -10,8 +10,8 @@ $(function(){
 		
 		$("#overlay").load(this.href+' #details', function() {
 			$("#overlay").removeClass('loading');
-			loadSpotImage();
 			loadComments(messageid,'5','0');
+			loadSpotImage();
 		});
 	});
 
