@@ -1,6 +1,5 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
-	$comments = $tplHelper->formatComments($comments);
 ?>
         <div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <table class="spotheader">

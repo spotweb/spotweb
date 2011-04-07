@@ -10,8 +10,8 @@ $(function(){
 		
 		$("#overlay").load(this.href+' #details', function() {
 			$("#overlay").removeClass('loading');
-			loadComments(messageid,'5','0');
 			loadSpotImage();
+			loadComments(messageid,'5','0');
 		});
 	});
 
@@ -27,7 +27,7 @@ function loadComments(messageid,perpage,pagenr) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
 		
-		$("#commentslist").append($(html).fadeIn(500));
+		$("#commentslist").append($(html).fadeIn('slow'));
 		
 		pagenr++;
 		if (count > 0) { 
