@@ -536,7 +536,7 @@ class SpotDb
 	 */
 	function addSpot($spot, $fullSpot = array()) {
 		$this->_conn->exec("INSERT INTO spots(messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, subcatz, title, tag, stamp, reversestamp, filesize) 
-				VALUES(%d, '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
 					   (int) $spot['category'],
 					   $spot['subcat'],

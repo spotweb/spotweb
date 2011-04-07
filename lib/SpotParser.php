@@ -7,7 +7,7 @@ class SpotParser {
 	function parseFull($xmlStr) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 'key-id' => '',
+						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
 						  'subcatc' => '', 'subcatd' => '', 'imageid' => '', 'subcatz' => '');
 
@@ -120,145 +120,143 @@ class SpotParser {
 		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
-
 			$spot['filesize'] = $fields[$_FSIZE];
+			$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 
-			if ($spot['id'] > 9) {
-				$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
+			// extract de posters name
+			$spot['poster'] = explode('<', $from);
+			$spot['poster'] = trim($spot['poster'][0]);
 
-				// extract de posters name
-				$spot['poster'] = explode('<', $from);
-				$spot['poster'] = trim($spot['poster'][0]);
+			// key id
+			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 
-				// key id
-				$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
+			// groupname
+			$spot['groupname'] = 'free.pt';
 
-				// groupname
-				$spot['groupname'] = 'free.pt';
+			if ($spot['keyid'] >= 0) {
 
-				if ($spot['keyid'] >= 0) {
+				$expression = '';
+				$strInput = substr($fields[$_CAT], 2);
+				$recentKey = $spot['keyid'] <> 1;
 
+				if ($recentKey) {	
+					if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
+						exit;
+					} # if
+
+					$subcatAr = $this->splitBySizEx($strInput, 3);
+					foreach($subcatAr as $str) {
+						if (strlen($str) > 0) {
+							$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . '|';
+						} # if
+					} # foeeach
+
+					$spot['subcat'] = (int) (substr($subcatAr[0], 1));
+
+				} else {
+					$list = array();
+					for($i = 0; $i < strlen($strInput); $i++) {
+						if (($strInput[$i] == 0) && (!is_numeric($strInput[$i])) && (strlen($expression) > 0)) {
+							$list[] = $expression;
+							$expression = '';
+						} # if
+
+						$expression .= $strInput[$i];
+					} # for
+
+					$list[] = $expression;
 					$expression = '';
-					$strInput = substr($fields[$_CAT], 2);
-					$recentKey = $spot['keyid'] <> 1;
+					foreach($list as $str) {
+						$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
+					} # foreach
 
-					if ($recentKey) {	
-						if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
-							exit;
+					$spot['subcat'] = (int) (substr($list[0], 1));
+				} # else if $recentKey 
+
+				# Break up the subcategories per subcat-type
+				if (strlen($expression) > 0) {
+					$subcats = explode('|', $expression);
+					$spot['subcata'] = '';
+					$spot['subcatb'] = '';
+					$spot['subcatc'] = '';
+					$spot['subcatd'] = '';
+					$spot['subcatz'] = '';
+
+					foreach($subcats as $subcat) {
+						if (array_search(strtolower(substr($subcat, 0, 1)), array('a','b','c','d','z')) !== false) {
+							$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
 						} # if
+					} # foreach
+				} # if
 
-						$subcatAr = $this->splitBySizEx($strInput, 3);
-						foreach($subcatAr as $str) {
-							if (strlen($str) > 0) {
-								$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . '|';
-							} # if
-						} # foeeach
+				if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
+					# Make sure its as simple as possible
+					$subj = str_replace('?= =?', '?==?', $subj);
+					$subj = str_replace('\r', '', trim($this->oldEncodingParse($subj)));
+					$subj = str_replace('\n', '', $subj);
+				} # if
 
-						$spot['subcat'] = (int) (substr($subcatAr[0], 1));
-
-					} else {
-						$list = array();
-						for($i = 0; $i < strlen($strInput); $i++) {
-							if (($strInput[$i] == 0) && (!is_numeric($strInput[$i])) && (strlen($expression) > 0)) {
-								$list[] = $expression;
-								$expression = '';
-							} # if
-
-							$expression .= $strInput[$i];
-						} # for
-
-						$list[] = $expression;
-						$expression = '';
-						foreach($list as $str) {
-							$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
-						} # foreach
-
-						$spot['subcat'] = (int) (substr($list[0], 1));
-					} # else if $recentKey 
-
-					# Break up the subcategories per subcat-type
-					if (strlen($expression) > 0) {
-						$subcats = explode('|', $expression);
-						$spot['subcata'] = '';
-						$spot['subcatb'] = '';
-						$spot['subcatc'] = '';
-						$spot['subcatd'] = '';
-						$spot['subcatz'] = '';
-
-						foreach($subcats as $subcat) {
-							if (array_search(strtolower(substr($subcat, 0, 1)), array('a','b','c','d','z')) !== false) {
-								$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
-							} # if
-						} # foreach
-					} # if
-
-					if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
-						# Make sure its as simple as possible
-						$subj = str_replace('?= =?', '?==?', $subj);
-						$subj = str_replace('\r', '', trim($this->oldEncodingParse($subj)));
-						$subj = str_replace('\n', '', $subj);
-					} # if
-
-					if ($recentKey) {
-						if (strpos($subj, '|') !== false) {
-							$tmp = explode('|', $subj);
-
-							$spot['title'] = trim($tmp[0]);
-							$spot['tag'] = trim($tmp[1]);
-						} else {
-							$spot['title'] = trim($subj);
-							$spot['tag'] = '';
-						} # else
-					} else {
+				if ($recentKey) {
+					if (strpos($subj, '|') !== false) {
 						$tmp = explode('|', $subj);
-						if (count($tmp) <= 1) {
-							$tmp = array($subj);
-						} # if
 
-						$spot['tag'] = trim($tmp[count($tmp) - 1]);
-
-						# remove the tags from the array
-						array_pop($tmp);
-						array_pop($tmp);
-
-						$spot['title'] = trim(implode('|', $tmp));
-
-						if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
-							$spot['title'] = trim($this->oldEncodingParse($spot['title']));
-						} # if
-					} # if recentKey
-
-					if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0)) {
-
-						$mustbeSigned = $recentKey | (!$recentKey & ($spot['id'] > 1383670));
-
-						if ($mustbeSigned) {
-
-							$spot['headersign'] = $fields[count($fields) - 1];
-
-							if (strlen($spot['headersign']) != 0) {
-
-								$spot['wassigned'] = true;
-
-								# KeyID 7 betekent dat alleen een hashcash vereist is
-
-								if ($spot['keyid'] == 7) {
-									$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-									$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
-								} else {
-									# the signature this header is signed with
-									$signature = $this->unspecialString($spot['headersign']);
-
-									$spotSigning = new SpotSigning($use_openssl);
-									$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature, $rsakeys);
-								} # else
-							} # if
-						} # if must be signed
-						else {
-							$spot['verified'] = true;
-							$spot['wassigned'] = false;
-						} # if doesnt need to be signed, pretend that it is
+						$spot['title'] = trim($tmp[0]);
+						$spot['tag'] = trim($tmp[1]);
+					} else {
+						$spot['title'] = trim($subj);
+						$spot['tag'] = '';
+					} # else
+				} else {
+					$tmp = explode('|', $subj);
+					if (count($tmp) <= 1) {
+						$tmp = array($subj);
 					} # if
+
+					$spot['tag'] = trim($tmp[count($tmp) - 1]);
+
+					# remove the tags from the array
+					array_pop($tmp);
+					array_pop($tmp);
+
+					$spot['title'] = trim(implode('|', $tmp));
+
+					if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
+						$spot['title'] = trim($this->oldEncodingParse($spot['title']));
+					} # if
+				} # if recentKey
+
+				if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0))) {
+
+					# We hebben hier nog het SpotID nodig omdat we moeten kunnen controleren of
+					# spots veprlicht gesigned moeten worden of niet.
+					$mustbeSigned = $recentKey | (!$recentKey & ($fields[$_ID] > 1383670));
+
+					if ($mustbeSigned) {
+
+						$spot['headersign'] = $fields[count($fields) - 1];
+
+						if (strlen($spot['headersign']) != 0) {
+
+							$spot['wassigned'] = true;
+
+							# KeyID 7 betekent dat alleen een hashcash vereist is
+
+							if ($spot['keyid'] == 7) {
+								$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+								$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+							} else {
+								# the signature this header is signed with
+								$signature = $this->unspecialString($spot['headersign']);
+
+								$spotSigning = new SpotSigning($use_openssl);
+								$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature, $rsakeys);
+							} # else
+						} # if
+					} # if must be signed
+					else {
+						$spot['verified'] = true;
+						$spot['wassigned'] = false;
+					} # if doesnt need to be signed, pretend that it is
 				} # if
 			} # if
 
