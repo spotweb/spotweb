@@ -188,7 +188,7 @@ class SpotNntp {
 			# van een SHA1 hash. 
 			
 			# FIXME: De '0' in de message-id betekend: Geen beoordeling. 
-			# Geef 1 t/m 9 op om samen met de reactie een beoordeling (rating) te versturen.
+			# Geef 1 t/m 10 op om samen met de reactie een beoordeling (rating) te versturen.
 			# Spotweb zou dan in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
 
 			# FIXME: 'random' hoort eigenlijk een korte random base64 string (zonder '+' en  '/') te zijn
@@ -209,6 +209,16 @@ class SpotNntp {
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+
+			# $header .= 'X-User-Rating: ' 
+			# Zelfde rating als in de Message-ID staat
+
+			# $header .= 'X-User-Avatar: ' 
+			# Message-ID van een avatar
+
+			# $header .= 'X-User-Gravatar: ' 
+			# Hashcode van een Gravatar
+
 			$header .= 'X-Newsreader: SpotWeb 0.9\r\n";
 			$header .= 'X-No-Archive: yes\r\n";
 			
