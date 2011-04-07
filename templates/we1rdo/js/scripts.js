@@ -3,11 +3,14 @@ $(function(){
 	$("a.spotlink").click(function(e) {
 		e.preventDefault();
 		
+		var messageid = this.href.split("=")[2];
+		
 		$("#overlay").show();
 		$("#overlay").addClass('loading');
 		
 		$("#overlay").load(this.href+' #details', function() {
 			$("#overlay").removeClass('loading');
+			loadComments(messageid,'5','0');
 			loadSpotImage();
 		});
 	});
@@ -17,6 +20,21 @@ $(function(){
 	});
 
 });
+
+// Haal de comments op en zet ze per batch op het scherm
+function loadComments(messageid,perpage,pagenr) {
+	$.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
+		count = $(html+' > li').length / 2;
+		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
+		
+		$("#commentslist").append($(html).fadeIn(500));
+		
+		pagenr++;
+		if (count > 0) { 
+			loadComments(messageid,'5',pagenr);
+		}
+	});
+}
 
 // Laadt de spotImage wanneer spotinfo wordt geopend
 function loadSpotImage() {
