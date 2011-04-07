@@ -118,7 +118,8 @@ class SpotsOverview {
 							$spotList[$i]['subcata'] . 
 							$spotList[$i]['subcatb'] . 
 							$spotList[$i]['subcatc'] . 
-							$spotList[$i]['subcatd']);
+							$spotList[$i]['subcatd'] . 
+							$spotList[$i]['subcatz']);
 		} # foreach
 
 		return array('list' => $spotList, 

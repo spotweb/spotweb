@@ -9,7 +9,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# spots
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
 											messageid VARCHAR(128),
-											spotid INTEGER,
 											category INTEGER, 
 											subcat INTEGER,
 											poster VARCHAR(128),
@@ -18,6 +17,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 											subcatb VARCHAR(64),
 											subcatc VARCHAR(64),
 											subcatd VARCHAR(64),
+											subcatz VARCHAR(64),
 											title VARCHAR(128),
 											tag VARCHAR(128),
 											stamp INTEGER,
