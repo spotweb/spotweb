@@ -8,7 +8,6 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128),
-										spotid INTEGER,
 										category INTEGER, 
 										subcat INTEGER,
 										poster VARCHAR(128),
@@ -17,6 +16,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										subcatb VARCHAR(64),
 										subcatc VARCHAR(64),
 										subcatd VARCHAR(64),
+										subcatz VARCHAR(64),
 										title VARCHAR(128),
 										tag VARCHAR(128),
 										stamp INTEGER,
