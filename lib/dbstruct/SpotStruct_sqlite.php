@@ -122,5 +122,17 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		throw new Exception("Dropping of columns is not supported in sqlite");
 	} # dropColumn
 	
+	/* controleert of een tabel bestaat */
+	function tableExists($tablename) {
+		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(" . $tablename . ")");
+		return !empty($q);
+	} # tableExists
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	function createTable($tablename) {
+		if (!$this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
+		} # if
+	} # createTable
 	
 } # class

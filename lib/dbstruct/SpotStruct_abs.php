@@ -26,6 +26,12 @@ abstract class SpotStruct_abs {
 	
 	/* controleert of een kolom bestaat */
 	abstract function columnExists($tablename, $colname);
+
+	/* controleert of een tabel bestaat */
+	abstract function tableExists($tablename);
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	abstract function createTable($tablename);
 	
 	function updateSchema() {
 		# Fulltext indexes
