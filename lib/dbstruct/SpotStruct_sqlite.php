@@ -71,6 +71,18 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 												   dateadded INTEGER,
 												   comment TEXT);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+
+			# commentsfull
+			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
+									  `id` integer PRIMARY KEY,
+									  `messageid` varchar(128) DEFAULT NULL,
+									  `fromhdr` varchar(128) DEFAULT NULL,
+									  `stamp` int(11) DEFAULT NULL,
+									  `usersignature` varchar(128) DEFAULT NULL,
+									  `userkey` varchar(128) DEFAULT NULL,
+									  `userid` varchar(128) DEFAULT NULL,
+									  `verified` tinyint(1) DEFAULT NULL)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull ON commentsfull(messageid, stamp)");
 		} # if
 	} # createDatabase
 	
@@ -113,7 +125,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
 	function addColumn($colName, $tablename, $colDef) {
 		if (!$this->columnExists($tablename, $colName)) {
-			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN " . $colName . " " . $coldef);
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN " . $colName . " " . $colDef);
 		} # if
 	} # addColumn
 	

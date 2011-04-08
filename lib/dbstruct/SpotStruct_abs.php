@@ -47,10 +47,24 @@ abstract class SpotStruct_abs {
 		} # if
 		$this->addIndex("idx_spots_6", "", "spots", "reversestamp");
 
+		# voeg de subcatz kolom toe zodat we hier in een type spot kunnen kenmerken
 		if (!$this->columnExists('spots', 'subcatz')) {
 			$this->addColumn("subcatz", "spots", "VARCHAR(64)");
 		} # if
 
+		# commentsfull tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('commentsfull')) {
+			$this->createTable('commentsfull');
+			
+			$this->addColumn('messageid', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('fromhdr', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('stamp', 'commentsfull', 'INTEGER');
+			$this->addColumn('usersignature', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('userkey', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('userid', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('verified', 'commentsfull', 'BOOLEAN');
+			$this->addIndex("idx_commentsfull_1", "", "commentsfull", "messageid, stamp");
+		} # if
 	} # updateSchema
 	
 } # class
