@@ -28,6 +28,7 @@ function loadComments(messageid,perpage,pagenr) {
 		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
+		$("#commentslist > li:nth-child(even)").addClass('even');
 		
 		pagenr++;
 		if (count > 0) { 
