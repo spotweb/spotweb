@@ -115,6 +115,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP COLUMN " . $colName);
 		} # if
 	} # dropColumn
+
+	/* controleert of een tabel bestaat */
+	function tableExists($tablename) {
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE " . $tablename);
+		return !empty($q);
+	} # tableExists
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	function createTable($tablename) {
+		if (!$this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT)");
+		} # if
+	} # createTable
 	
 	
 } # class
