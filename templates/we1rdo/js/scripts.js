@@ -5,20 +5,34 @@ function openSpot(url) {
 	$("#overlay").show();
 	$("#overlay").addClass('loading');
 	
+	var scrollLocation = $("div.container").scrollTop();
 	$("#overlay").load(url+' #details', function() {
 		$("#overlay").removeClass('loading');
+		
+		$("a.closeDetails").click(function(){ 
+			closeDetails(scrollLocation); 
+		});
+		
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
 }
 
-// Laadt nieuwe pagina wanneer de onderkant wordt bereikt
+// Sluit spotinfo overlay
+function closeDetails(scrollLocation) {
+	$("div.container").scrollTop(scrollLocation);
+	$("#overlay").hide();
+	$("#details").remove();
+}
+
+// Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	var pagenr = $('#nextPage').val();
 	$("div.container").scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
 		
 		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
 				$("#overlay").hide().removeClass('loading');
@@ -27,6 +41,7 @@ $(function(){
 				
 				pagenr++;
 				$("td.next > a").attr("href", url);
+				$("div.container").scrollTop(scrollLocation);
 			});
 		}
 	});
@@ -107,12 +122,6 @@ function openSpotNav() {
 	} else {
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
-}
-
-// Sluit spotinfo overlay
-function closeDetails() {
-	$("#overlay").hide();
-	$("#details").remove();
 }
 
 // Regel positie en gedrag van sidebar (fixed / relative)

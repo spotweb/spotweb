@@ -5,7 +5,7 @@
             <table class="spotheader">
                 <tbody>
                     <tr>
-                    	<th class="back"> <a class="closeDetails" onclick="closeDetails()">&lt;&lt;</a> </th>
+                    	<th class="back"> <a class="closeDetails">&lt;&lt;</a> </th>
                         <th class="category"><span><?php echo $spot['formatname'];?></span></th>
                         <th class="title"><?php echo $spot['title'];?></th>
                         <th class="nzb"><a target="_blank" class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
