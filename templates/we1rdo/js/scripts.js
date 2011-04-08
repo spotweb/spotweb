@@ -14,11 +14,6 @@ $(function(){
 			loadSpotImage();
 		});
 	});
-
-	$(document).bind('keydown', 'esc', function(e){
-		closeDetails();
-	});
-
 });
 
 // Haal de comments op en zet ze per batch op het scherm

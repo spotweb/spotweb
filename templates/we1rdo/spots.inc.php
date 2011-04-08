@@ -32,8 +32,6 @@
 					</tr>
 
 <?php
-	$count = 0;
-	
 	if (count($spots) == 0) {
 		$colSpan = 5;
 		if ($settings['retrieve_comments']) { $colSpan++; }
@@ -62,11 +60,9 @@
 		}
 	
 		$subcatFilter = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
-		
-		$count++;
 
 		echo "\t\t\t\t\t\t\t";
-		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . "'>" . 
+		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
