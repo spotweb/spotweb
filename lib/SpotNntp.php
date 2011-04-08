@@ -202,7 +202,7 @@ class SpotNntp {
 			$server_signature = $spotSigning->signMessage($server['privatekey'], $newMessageId);
 			
 			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
-			$header .= 'Subject: Re:' . $title . "\r\n";
+			$header .= 'Subject: Re: ' . $title . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: ' . $newMessageId . "\r\n";
 			$header .= 'References: <' . $inReplyTo. ">\r\n";
