@@ -427,14 +427,15 @@ class SpotDb
 	 */
 	function addCommentsFull($commentList) {
 		foreach($commentList as $comment) {
-			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, verified) 
-					VALUES ('%s', '%s', %d, '%s', '%s', '%s', %d)",
+			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
+					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],
 						  $comment['fromhdr'],
 						  $comment['stamp'],
 						  $comment['usersignature'],
-						  base64_encode(serialize($comment['userkey'])),
+						  serialize($comment['user-key']),
 						  $comment['userid'],
+						  implode("\r\n", $comment['body']),
 						  $comment['verified']));
 		} # foreach
 	} # addCommentFull
@@ -451,9 +452,10 @@ class SpotDb
 		$msgIdList = substr($msgIdList, 0, -2);
 		
 		# en vraag de comments daadwerkelijk op
-		$commentList = $this->_conn->arrayQuery("SELECT messageid, fromhdr, stamp, usersignature, userkey, userid FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
+		$commentList = $this->_conn->arrayQuery("SELECT messageid, fromhdr, stamp, usersignature, userkey as \"user-key\", userid, body, verified FROM commentsfull WHERE messageid IN (" . $msgIdList . ")", array());
 		for($i = 0; $i < count($commentList); $i++) {
-			$commentList[$i]['userkey'] = unserialize(base64_decode($tmpArraycommentList[$i]['userkey']));
+			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
+			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 		} # foreach
 		
 		return $commentList;
@@ -463,7 +465,13 @@ class SpotDb
 	 * Geef al het commentaar references voor een specifieke spot terug
 	 */
 	function getCommentRef($nntpref) {
-		return $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+		$tmpList = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+		$msgIdList = array();
+		foreach($tmpList as $value) {
+			$msgIdList[] = $value['messageid'];
+		} # foreach
+		
+		return $msgIdList;
 	} # getCommentRef
 
 	/*

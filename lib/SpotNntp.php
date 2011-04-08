@@ -118,11 +118,11 @@ class SpotNntp {
 		} # getArticle
 		
 		function cbCommentDateSort($a, $b) {
-			if ($a['date'] == $b['date']) {
+			if ($a['stamp'] == $b['stamp']) {
 				return 0;
 			} # if
 			
-			return ($a['date'] < $b['date']) ? -1 : 1;
+			return ($a['stamp'] < $b['stamp']) ? -1 : 1;
 		} # cbCommentDateSort
 		
 		function getComments($commentList) {
@@ -134,18 +134,20 @@ class SpotNntp {
 			# als comment text zelf.
 			foreach($commentList as $comment) {
 				try {
-					$tmpAr = $this->getArticle('<' . $comment['messageid'] . '>');	
-					$tmpAr['messageid'] = $comment['messageid'];
-					
+					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'usersignature' => '', 
+										'user-key' => '', 'userid' => '', 'verified' => false);
+										
+					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment . '>'));
+					$tmpAr['messageid'] = $comment;
 
 					# extract de velden we die we willen hebben
 					foreach($tmpAr['header'] as $hdr) {
 						$keys = explode(':', $hdr);
 						
 						switch($keys[0]) {
-							case 'From'				: $tmpAr['from'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
-							case 'Date'				: $tmpAr['date'] = strtotime(substr($hdr, strlen('Date: '))); break;
-							case 'X-User-Signature'	: $tmpAr['user-signature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
+							case 'From'				: $tmpAr['fromhdr'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+							case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
+							case 'X-User-Signature'	: $tmpAr['usersignature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
 							case 'X-User-Key'		: {
 									$xml = simplexml_load_string(substr($hdr, 12)); 
 									if ($xml !== false) {
@@ -175,8 +177,7 @@ class SpotNntp {
 
 			# sorteer de comments per datum
 			usort($comments, array($this, 'cbCommentDateSort'));
-			
-			
+
 			return $comments;
 		} # getComments
 
