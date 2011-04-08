@@ -72,6 +72,20 @@ class SpotStruct_mysql extends SpotStruct_abs {
 												   dateadded INTEGER,
 												   comment TEXT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+			
+			# commentsfull
+			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
+									  `id` int(11) NOT NULL AUTO_INCREMENT,
+									  `messageid` varchar(128) DEFAULT NULL,
+									  `fromhdr` varchar(128) DEFAULT NULL,
+									  `stamp` int(11) DEFAULT NULL,
+									  `usersignature` varchar(128) DEFAULT NULL,
+									  `userkey` varchar(128) DEFAULT NULL,
+									  `userid` varchar(128) DEFAULT NULL,
+									  `verified` tinyint(1) DEFAULT NULL,
+									  PRIMARY KEY (`id`)
+									) ENGINE=MyISAM");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull ON commentsfull(messageid, stamp)");
 		} # if
 	} # createDatabase
 
@@ -118,7 +132,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 	/* controleert of een tabel bestaat */
 	function tableExists($tablename) {
-		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE " . $tablename);
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE '" . $tablename . "'");
 		return !empty($q);
 	} # tableExists
 
