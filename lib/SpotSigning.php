@@ -108,13 +108,13 @@ class SpotSigning {
 	public function verifyComment($comment) {
 		$verified = false;
 		
-		if ((!empty($comment['user-signature'])) && (!empty($comment['user-key']))) {
-			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+		if ((!empty($comment['usersignature'])) && (!empty($comment['user-key']))) {
+			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key']);
 			if (!$verified) {
 				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
 																implode("\r\n", $comment['body']) . "\r\n" . 
 																$comment['from'], 
-													$comment['user-signature'], 
+													$comment['usersignature'], 
 													$comment['user-key']);
 			} # if
 		} # if

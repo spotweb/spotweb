@@ -71,6 +71,21 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 												   dateadded INTEGER,
 												   comment TEXT);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+
+			# commentsfull
+			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
+									  `id` integer PRIMARY KEY,
+									  `messageid` varchar(128) DEFAULT NULL,
+									  `fromhdr` varchar(128) DEFAULT NULL,
+									  `stamp` int(11) DEFAULT NULL,
+									  `usersignature` varchar(128) DEFAULT NULL,
+									  `userkey` varchar(128) DEFAULT NULL,
+									  `userid` varchar(128) DEFAULT NULL,
+									  `hashcash` varchar(128) DEFAULT NULL,
+									  `body` TEXT DEFAULT '',
+									  `verified` tinyint(1) DEFAULT NULL)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_2 ON commentsfull(messageid,stamp)");
 		} # if
 	} # createDatabase
 	
@@ -113,7 +128,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
 	function addColumn($colName, $tablename, $colDef) {
 		if (!$this->columnExists($tablename, $colName)) {
-			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN " . $colName . " " . $coldef);
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN " . $colName . " " . $colDef);
 		} # if
 	} # addColumn
 	
@@ -122,5 +137,17 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		throw new Exception("Dropping of columns is not supported in sqlite");
 	} # dropColumn
 	
+	/* controleert of een tabel bestaat */
+	function tableExists($tablename) {
+		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(" . $tablename . ")");
+		return !empty($q);
+	} # tableExists
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	function createTable($tablename) {
+		if (!$this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
+		} # if
+	} # createTable
 	
 } # class

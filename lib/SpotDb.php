@@ -159,6 +159,7 @@ class SpotDb
 	function removeExtraComments($messageId) {
 		# vraag eerst het id op
 		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
+		$fullCommentId = $this->_conn->singleQuery("SELECT id FROM commentsfull WHERE messageid = '%s'", Array($messageId));
 		
 		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($commentId)) {
@@ -167,6 +168,7 @@ class SpotDb
 		
 		# en wis nu alles wat 'jonger' is dan deze spot
 		$this->_conn->exec("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
+		$this->_conn->exec("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
 	} # removeExtraComments
 
 	/*
@@ -206,6 +208,8 @@ class SpotDb
 	 * Match set of comments
 	 */
 	function matchCommentMessageIds($hdrList) {
+		# We negeren commentsfull hier een beetje express, als die een 
+		# keer ontbreken dan fixen we dat later wel.
 		$idList = array();
 		
 		# geen message id's gegeven? vraag het niet eens aan de db
@@ -401,7 +405,6 @@ class SpotDb
 		# If spot is fully stored in db and is of the new type, we process it to
 		# make it exactly the same as when retrieved using NNTP
 		if (!empty($tmpArray['fullxml']) && (!empty($tmpArray['user-signature']))) {
-			$tmpArray['user-signature'] = $tmpArray['user-signature'];
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 		
@@ -418,12 +421,62 @@ class SpotDb
 		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref) VALUES('%s', '%s')",
 								Array($messageid, $nntpref));
 	} # addCommentRef
+
+	/*
+	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
+	 */
+	function addCommentsFull($commentList) {
+		foreach($commentList as $comment) {
+			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
+					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
+					Array($comment['messageid'],
+						  $comment['fromhdr'],
+						  $comment['stamp'],
+						  $comment['usersignature'],
+						  serialize($comment['user-key']),
+						  $comment['userid'],
+						  implode("\r\n", $comment['body']),
+						  $comment['verified']));
+		} # foreach
+	} # addCommentFull
+
+	/*
+	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
+	 */
+	function getCommentsFull($commentMsgIds) {
+		# als er geen comments gevraagd worden, vragen we het niet eens aan de db
+		if (empty($commentMsgIds)) {
+			return array();
+		} # if
+		
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($commentMsgIds as $msgId) {
+			$msgIdList .= "'" . $this->_conn->safe($msgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+		
+		# en vraag de comments daadwerkelijk op
+		$commentList = $this->_conn->arrayQuery("SELECT messageid, fromhdr, stamp, usersignature, userkey as \"user-key\", userid, body, verified FROM commentsfull WHERE messageid IN (" . $msgIdList . ")", array());
+		for($i = 0; $i < count($commentList); $i++) {
+			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
+			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+		} # foreach
+		
+		return $commentList;
+	} # getCommentsFull
 	
 	/*
-	 * Geef al het commentaar voor een specifieke spot terug
+	 * Geef al het commentaar references voor een specifieke spot terug
 	 */
 	function getCommentRef($nntpref) {
-		return $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+		$tmpList = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+		$msgIdList = array();
+		foreach($tmpList as $value) {
+			$msgIdList[] = $value['messageid'];
+		} # foreach
+		
+		return $msgIdList;
 	} # getCommentRef
 
 	/*
@@ -463,10 +516,9 @@ class SpotDb
 	 */
 	function emptyDownloadList() {
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': 
-			case 'sqlite3'	: {
+			case 'pdo_sqlite': {
 				return $this->_conn->exec("DELETE FROM downloadlist;");
-			} # sqlite3
+			} # pdo_sqlite
 			default			: {
 				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
 			} # default
@@ -482,14 +534,16 @@ class SpotDb
 			case 'sqlite3'	: { 
 				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # sqlite3
 			default			: {
-				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist USING spots
+				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
 									LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
@@ -515,6 +569,9 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
 				$this->_conn->exec("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN 
+									(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref not in 
+									(SELECT messageid FROM spots))") ;
 				$this->_conn->exec("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
@@ -522,9 +579,10 @@ class SpotDb
 				break;
 			} # sqlite3 en pdo_sqlite
 			default		: {
-				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist USING spots
+				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+					LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
 					LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default

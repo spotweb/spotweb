@@ -72,6 +72,23 @@ class SpotStruct_mysql extends SpotStruct_abs {
 												   dateadded INTEGER,
 												   comment TEXT) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+			
+			# commentsfull
+			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
+									  `id` int(11) NOT NULL AUTO_INCREMENT,
+									  `messageid` varchar(128) DEFAULT NULL,
+									  `fromhdr` varchar(128) DEFAULT NULL,
+									  `stamp` int(11) DEFAULT NULL,
+									  `usersignature` varchar(128) DEFAULT NULL,
+									  `userkey` varchar(128) DEFAULT NULL,
+									  `userid` varchar(128) DEFAULT NULL,
+									  `hashcash` varchar(128) DEFAULT NULL,
+									  `body` TEXT DEFAULT '',
+									  `verified` tinyint(1) DEFAULT NULL,
+									  PRIMARY KEY (`id`)
+									) ENGINE=MyISAM");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull_2 ON commentsfull(messageid, stamp)");
 		} # if
 	} # createDatabase
 
@@ -115,6 +132,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP COLUMN " . $colName);
 		} # if
 	} # dropColumn
+
+	/* controleert of een tabel bestaat */
+	function tableExists($tablename) {
+		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE '" . $tablename . "'");
+		return !empty($q);
+	} # tableExists
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	function createTable($tablename) {
+		if (!$this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT)");
+		} # if
+	} # createTable
 	
 	
 } # class
