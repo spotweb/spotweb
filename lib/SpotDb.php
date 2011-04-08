@@ -444,6 +444,11 @@ class SpotDb
 	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
 	 */
 	function getCommentsFull($commentMsgIds) {
+		# als er geen comments gevraagd worden, vragen we het niet eens aan de db
+		if (empty($commentMsgIds)) {
+			return array();
+		} # if
+		
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($commentMsgIds as $msgId) {
