@@ -82,10 +82,13 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  `usersignature` varchar(128) DEFAULT NULL,
 									  `userkey` varchar(128) DEFAULT NULL,
 									  `userid` varchar(128) DEFAULT NULL,
+									  `hashcash` varchar(128) DEFAULT NULL,
+									  `body` TEXT DEFAULT '',
 									  `verified` tinyint(1) DEFAULT NULL,
 									  PRIMARY KEY (`id`)
 									) ENGINE=MyISAM");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull ON commentsfull(messageid, stamp)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull_2 ON commentsfull(messageid, stamp)");
 		} # if
 	} # createDatabase
 
