@@ -180,7 +180,7 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
-		function postComment($user, $server, $newsgroup, $inReplyTo, $content) {
+		function postComment($user, $server, $newsgroup, $inReplyTo, $title, $content) {
 
 			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
 		
@@ -202,6 +202,7 @@ class SpotNntp {
 			$server_signature = $spotSigning->signMessage($server['privatekey'], $newMessageId);
 			
 			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
+			$header .= 'Subject: Re:' . $title . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: ' . $newMessageId . "\r\n";
 			$header .= 'References: <' . $inReplyTo. ">\r\n";
