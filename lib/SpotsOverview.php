@@ -276,7 +276,13 @@ class SpotsOverview {
 						$subcatValues = array();
 						
 						foreach($subcatItem as $subcatValue) {
-							$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+							# equality ipv like doen
+							if (in_array($subcat, array('a', 'z'))) {
+								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
+							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
+								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+							} # if
 						} # foreach
 						
 						# voeg de subfilter values (bv. alle formaten films) samen met een OR
@@ -348,7 +354,15 @@ class SpotsOverview {
 			
 			foreach(array_keys($strongNotList) as $strongNotCat) {
 				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-					$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcatd LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+					$subcat = $strongNotSubcat[0];
+
+					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+					# equality ipv like doen
+					if (in_array($subcat, array('a', 'z'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
+					} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+					} # if
 				} # foreach				
 			} # forEach
 

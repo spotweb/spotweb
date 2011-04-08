@@ -81,7 +81,17 @@ class SpotParser {
 				$tpl_spot['subcat' . $subCatVal[0]] .= $subCatVal . '|';
 			} # if
 		} # foreach
-
+		
+		# we zetten de Z4 category erbij op het moment dat een oude spot in de erotiek
+		# category valt, dit maakt ons filter een stuk simpeler.
+		if (empty($tpl_spot['subcatz'])) {
+			foreach($tpl_spot['subcatlist'] as $subCatVal) {
+				if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
+					$tpl_spot['subcatz'] = 'z4|';
+				} # if
+			} # foreach
+		} # if
+		
 		# and return the parsed XML
 		return $tpl_spot;
 	} # parseFull()
@@ -187,6 +197,18 @@ class SpotParser {
 							$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
 						} # if
 					} # foreach
+					
+					# we zetten de Z4 category erbij op het moment dat een oude spot in de erotiek
+					# category valt, dit maakt ons erotiek filter een stuk simpeler.
+					if (empty($spot['subcatz'])) {
+						$genreSubcatList = explode('|', $spot['subcatd']);
+						foreach($genreSubcatList as $subCatVal) {
+							if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
+								$spot['subcatz'] = 'z4|';
+							} # if
+						} # foreach
+					} # if
+
 				} # if
 
 				if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
