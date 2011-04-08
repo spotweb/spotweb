@@ -1,24 +1,35 @@
-// Zorg ervoor dat overlay op juiste moment zichtbaar is
-$(function(){	
-	$("a.spotlink").click(function(e) {
-		e.preventDefault();
-		
-		var messageid = this.href.split("=")[2];
-		
-		$("#overlay").show();
-		$("#overlay").addClass('loading');
-		
-		$("#overlay").load(this.href+' #details', function() {
-			$("#overlay").removeClass('loading');
-			loadSpotImage();
-			loadComments(messageid,'5','0');
-		});
+// openSpot in overlay
+function openSpot(url) {
+	var messageid = url.split("=")[2];
+	
+	$("#overlay").show();
+	$("#overlay").addClass('loading');
+	
+	$("#overlay").load(url+' #details', function() {
+		$("#overlay").removeClass('loading');
+		loadComments(messageid,'5','0');
+		loadSpotImage();
 	});
+}
 
-	$(document).bind('keydown', 'esc', function(e){
-		closeDetails();
+// Laadt nieuwe pagina wanneer de onderkant wordt bereikt
+$(function(){
+	var pagenr = $('#nextPage').val();
+	$("div.container").scroll(function() {
+		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
+		
+		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+			$("#overlay").show().addClass('loading');
+			$("div#overlay").load(url, function() {
+				$("#overlay").hide().removeClass('loading');
+				$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
+				$("div#overlay").empty();
+				
+				pagenr++;
+				$("td.next > a").attr("href", url);
+			});
+		}
 	});
-
 });
 
 // Haal de comments op en zet ze per batch op het scherm
@@ -28,6 +39,7 @@ function loadComments(messageid,perpage,pagenr) {
 		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
+		$("#commentslist > li:nth-child(even)").addClass('even');
 		
 		pagenr++;
 		if (count > 0) { 
@@ -51,8 +63,8 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', prevSpot);
 	$(document).bind('keydown', 'j', nextSpot);
-	$(document).bind('keydown', 'o', openSpot);
-	$(document).bind('keydown', 'return', openSpot);
+	$(document).bind('keydown', 'o', openSpotNav);
+	$(document).bind('keydown', 'return', openSpotNav);
 	$(document).bind('keydown', 'u', closeDetails);
 	$(document).bind('keydown', 'esc', closeDetails);
 });
@@ -65,7 +77,7 @@ function nextSpot() {
 		$next.addClass('active');
 
 		if($("#overlay").is(':visible')) {
-			openSpot();
+			openSpotNav();
 		}
 	}
 }
@@ -78,12 +90,12 @@ function prevSpot() {
 		$prev.addClass('active');
 
 		if($("#overlay").is(':visible')) {
-			openSpot();
+			openSpotNav();
 		}
 	}
 }
 
-function openSpot() {
+function openSpotNav() {
 	if($("#overlay").is(':visible')){
 		var $link = $('table.spots tbody tr.active a.spotlink');
 		console.log($link.attr('href'));
