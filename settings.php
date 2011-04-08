@@ -232,7 +232,9 @@ $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME'
 $settings['index_filter'] = array();
 
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => '~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26');
+# $settings['index_filter'] = array('tree' => '~cat0_d23,~cat0_d24,~cat0_d25,~cat0_d26,~cat0_z,~cat0_d72,~cat0_d73,~cat0_d74,~cat0_d75,' . 
+#					'~cat0_d76,~cat0_d77,~cat0_d78,~cat0_d79,~cat0_d80,~cat0_d81,~cat0_d82,~cat0_d83,~cat0_d84,~cat0_d85,~cat0_d86,' .
+#					'~cat0_d87,~cat0_d88,~cat0_d89');
 
 #
 # RSA keys
@@ -262,16 +264,20 @@ $settings['retrieve_increment'] = 1000;
 if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
-# QuickLinks
-$settings['quicklinks'] = Array();
-$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
-$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
-if ($settings['keep_watchlist']) {
-	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
-}
-if ($settings['keep_downloadlist']) {
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
-}
+# QuickLinks, we testen eerst of hij niet al door iemand anders is gezet in ownsettings.php en
+# anders vullen we hem zelf op. We kunnen dit niet boven ownsettings.php plaatsen want dan missen
+# we de keep_watchlist en keep_downloadlist settings.
+if (!isset($settings['quicklinks'])) {
+	$settings['quicklinks'] = Array();
+	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
+	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
+	if ($settings['keep_watchlist']) {
+		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+	}
+	if ($settings['keep_downloadlist']) {
+		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
+	}
+} # if isset
 
 #
 # Ga nu de template zetten
