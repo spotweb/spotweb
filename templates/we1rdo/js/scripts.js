@@ -1,18 +1,34 @@
-// Zorg ervoor dat overlay op juiste moment zichtbaar is
-$(function(){	
-	$("a.spotlink").click(function(e) {
-		e.preventDefault();
+// openSpot in overlay
+function openSpot(url) {
+	var messageid = url.split("=")[2];
+	
+	$("#overlay").show();
+	$("#overlay").addClass('loading');
+	
+	$("#overlay").load(url+' #details', function() {
+		$("#overlay").removeClass('loading');
+		loadComments(messageid,'5','0');
+		loadSpotImage();
+	});
+}
+
+// Laadt nieuwe pagina wanneer de onderkant wordt bereikt
+$(function(){
+	var pagenr = $('#nextPage').val();
+	$("div.container").scroll(function() {
+		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
 		
-		var messageid = this.href.split("=")[2];
-		
-		$("#overlay").show();
-		$("#overlay").addClass('loading');
-		
-		$("#overlay").load(this.href+' #details', function() {
-			$("#overlay").removeClass('loading');
-			loadComments(messageid,'5','0');
-			loadSpotImage();
-		});
+		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+			$("#overlay").show().addClass('loading');
+			$("div#overlay").load(url, function() {
+				$("#overlay").hide().removeClass('loading');
+				$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
+				$("div#overlay").empty();
+				
+				pagenr++;
+				$("td.next > a").attr("href", url);
+			});
+		}
 	});
 });
 
@@ -47,8 +63,8 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', prevSpot);
 	$(document).bind('keydown', 'j', nextSpot);
-	$(document).bind('keydown', 'o', openSpot);
-	$(document).bind('keydown', 'return', openSpot);
+	$(document).bind('keydown', 'o', openSpotNav);
+	$(document).bind('keydown', 'return', openSpotNav);
 	$(document).bind('keydown', 'u', closeDetails);
 	$(document).bind('keydown', 'esc', closeDetails);
 });
@@ -61,7 +77,7 @@ function nextSpot() {
 		$next.addClass('active');
 
 		if($("#overlay").is(':visible')) {
-			openSpot();
+			openSpotNav();
 		}
 	}
 }
@@ -74,12 +90,12 @@ function prevSpot() {
 		$prev.addClass('active');
 
 		if($("#overlay").is(':visible')) {
-			openSpot();
+			openSpotNav();
 		}
 	}
 }
 
-function openSpot() {
+function openSpotNav() {
 	if($("#overlay").is(':visible')){
 		var $link = $('table.spots tbody tr.active a.spotlink');
 		console.log($link.attr('href'));

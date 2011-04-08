@@ -167,7 +167,7 @@ div.spots {margin:0 5px 0 240px; padding:0 0 5px 0; min-width:750px; *padding:2p
 
 table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; *border-collapse:collapse; margin:3px 0 0 0; *margin:5px 0 0 0;}
 
-table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px;}
+table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px; cursor:pointer;}
 table.spots img {border:0;}
 
 table.spots th {
