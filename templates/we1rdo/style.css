@@ -292,16 +292,16 @@ div.details.red table.spotheader th.category span {background:url(img/sprite.png
 
 div.details.blue table.spotinfo th,
 div.details.blue table.spotheader th.nzb,
-div.details.blue div.comments li.odd {background-color:#daecff;}
+div.details.blue div.comments li {background-color:#daecff;}
 div.details.orange table.spotinfo th,
 div.details.orange table.spotheader th.nzb,
-div.details.orange div.comments li.odd {background-color:#fffad3;}
+div.details.orange div.comments li {background-color:#fffad3;}
 div.details.green table.spotinfo th,
 div.details.green table.spotheader th.nzb,
-div.details.green div.comments li.odd {background-color:#cbffcb;}
+div.details.green div.comments li {background-color:#cbffcb;}
 div.details.red table.spotinfo th,
 div.details.red table.spotheader th.nzb,
-div.details.red div.comments li.odd {background-color:#fedede;}
+div.details.red div.comments li {background-color:#fedede;}
 
 div.details.blue div.comments li span.user,
 div.details.blue table.spotheader th.nzb a.nzb {color:#008edf;}
