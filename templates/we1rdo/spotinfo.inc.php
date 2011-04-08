@@ -1,6 +1,5 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
-	$comments = $tplHelper->formatComments($comments);
 ?>
         <div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
             <table class="spotheader">
@@ -64,7 +63,7 @@ echo "</th>";
                                 <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
                                 <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
-                                <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+                                <tr> <th> Zoekmachine </th> <td> <a target="_blank" href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
 <?php
 		if (!empty($spot['nzb'])) {
 ?>		
@@ -83,23 +82,8 @@ echo "</th>";
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments <span class="commentcount"># <?php echo count($comments); ?></span></h4>
-					<ul>
-<?php
-		$count = 0;
-		foreach($comments as $comment) {
-			if ($comment['verified']) {
-?>
-					<li class="<?php $count++; echo ($count % 2 ? "odd" : "even"); ?>"> <strong> Gepost door <span class="user"><?php echo $comment['from']; ?></span> (<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='Zoek naar spots van "<?php echo $comment['from']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> </strong> <br>
-						<?php echo join("<br>", $comment['body']); ?>
-					</li>
-<?php	
-			} # if
-		} # foreach
-		if ($count == 0) {
-			echo "<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>";
-		}
-?>
+            	<h4>Comments <span class="commentcount"># <?php echo $tplHelper->getCommentCount($spot); ?></span></h4>
+				<ul id="commentslist">
 				</ul>
             </div>
 		</div>

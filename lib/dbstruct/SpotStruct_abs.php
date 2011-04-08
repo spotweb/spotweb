@@ -40,6 +40,11 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
 		} # if
 		$this->addIndex("idx_spots_6", "", "spots", "reversestamp");
+
+		if (!$this->columnExists('spots', 'subcatz')) {
+			$this->addColumn("subcatz", "spots", "VARCHAR(64)");
+		} # if
+
 	} # updateSchema
 	
 } # class
