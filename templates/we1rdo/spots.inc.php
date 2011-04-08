@@ -1,36 +1,38 @@
 <?php 
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-			<div class="spots">
+			<!-- <div class="melding" style="position:fixed; left:0; top:0; width:auto; height:auto; background:#000; color:#fff; padding:2px;"></div> -->
+            <div class="spots">
 				<table class="spots" summary="Spots">
-					<tbody>
-					<tr class="head">
-						<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
-						<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
-                        <?php if ($settings['keep_watchlist']) { ?>
-						<th class='watch'> </th>
-						<?php }
-						if ($settings['retrieve_comments']) {
-                        	echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
-						} # if ?>
-						<th class='genre'> Genre </th> 
-                        <th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
-						<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
+					<thead>
+                        <tr class="head">
+                            <th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
+                            <th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
+                            <?php if ($settings['keep_watchlist']) { ?>
+                            <th class='watch'> </th>
+                            <?php }
+                            if ($settings['retrieve_comments']) {
+                                echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
+                            } # if ?>
+                            <th class='genre'> Genre </th> 
+                            <th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
+                            <th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
 <?php if ($settings['show_nzbbutton']) { ?>
-						<th class='nzb'> NZB </th>
+							<th class='nzb'> NZB </th>
 <?php } ?>
 <?php if ($settings['show_multinzb'] && !count($spots) == 0) { ?>
-                        <th class='multinzb'> 
-                        	<form action="" method="GET" id="checkboxget" name="checkboxget">
-                            	<input type='hidden' name='page' value='getnzb'>
-                                <input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
-                        </th>
+                            <th class='multinzb'> 
+                                <form action="" method="GET" id="checkboxget" name="checkboxget">
+                                    <input type='hidden' name='page' value='getnzb'>
+                                    <input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
+                            </th>
 <?php } ?>						
 <?php if ($settings['nzbhandling']['action'] != 'disable') { ?>
-						<th class='sabnzbd'> SAB </th>
+							<th class='sabnzbd'> SAB </th>
 <?php } ?>						
-					</tr>
-
+						</tr>
+					</thead>
+                    <tbody id="spots">
 <?php
 	if (count($spots) == 0) {
 		$colSpan = 5;
@@ -64,7 +66,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='" . $tplHelper->makeSpotUrl($spot) . "' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot('".$tplHelper->makeSpotUrl($spot)."')\" title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($settings['keep_watchlist']) {
 			echo "<td class='watch'>";
@@ -74,7 +76,7 @@
 		}
 
 		if ($settings['retrieve_comments']) {
-			echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($spot) . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
+			echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($spot) . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
 		} # if
 		
 		echo "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
@@ -149,9 +151,9 @@
 					</tr>
                 </tbody>
             </table>
+			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
+			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />
 <?php } ?>
 			
 		</div>
-
 		<div class="clear"></div>
-		

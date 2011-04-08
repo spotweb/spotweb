@@ -183,4 +183,4 @@
 	</head>
 	<body>
     	<div id="overlay"></div>
-		<div class="container">
+		<div class="container" id="container">
