@@ -24,6 +24,10 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
 
+# Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
+# robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
+$settings['deny_robots'] = true;
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
