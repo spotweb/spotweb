@@ -2,7 +2,7 @@
 function openSpot(url) {
 	var messageid = url.split("=")[2];
 	
-	$("#overlay").show();
+	$("#overlay").empty().show();
 	$("#overlay").addClass('loading');
 	
 	var scrollLocation = $(document).scrollTop();
@@ -106,8 +106,8 @@ $(function(){
 	$(document).bind('keydown', 'j', nextSpot);
 	$(document).bind('keydown', 'o', openSpotNav);
 	$(document).bind('keydown', 'return', openSpotNav);
-	$(document).bind('keydown', 'u', closeDetails);
-	$(document).bind('keydown', 'esc', closeDetails);
+	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
 });
 
 function nextSpot() {
@@ -118,6 +118,7 @@ function nextSpot() {
 		$next.addClass('active');
 
 		if($("#overlay").is(':visible')) {
+			$("a.closeDetails").click();
 			openSpotNav();
 		}
 	}
@@ -131,6 +132,7 @@ function prevSpot() {
 		$prev.addClass('active');
 
 		if($("#overlay").is(':visible')) {
+			$("a.closeDetails").click();
 			openSpotNav();
 		}
 	}
@@ -138,13 +140,9 @@ function prevSpot() {
 
 function openSpotNav() {
 	if($("#overlay").is(':visible')){
-		var $link = $('table.spots tbody tr.active a.spotlink');
-		console.log($link.attr('href'));
-		$('#overlay').empty();
-		$('#overlay').addClass('loading');
-		$("#overlay").load($link.attr('href')+' #details', function() {
-			$("#overlay").removeClass('loading');
-		});
+		var url = $('table.spots tbody tr.active a.spotlink').attr('href');
+		console.log(url);
+		openSpot(url);
 	} else {
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
