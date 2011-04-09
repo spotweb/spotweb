@@ -20,9 +20,9 @@ function openSpot(url) {
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
-	$("div.container").scrollTop(scrollLocation);
 	$("#overlay").hide();
 	$("#details").remove();
+	$("div.container").scrollTop(scrollLocation);
 }
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
@@ -71,6 +71,19 @@ function loadSpotImage() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
 	});
+}
+
+function toggleSpotImage(url) {
+	if($("div#details").is(':visible')) {
+		$("div#details").hide();
+		$("div#overlay").append('<div class="fullImage"><a class="postimagefull" style="display:block;" onclick="toggleSpotImage()"><img class="spotinfoimage" src="'+url+'" /></a></div>');
+		$("img.spotinfoimage").load(function(){
+			
+		});
+	} else {
+		$("div.fullImage").remove();
+		$("div#details").show();
+	}
 }
 
 // Keyboard navigation
