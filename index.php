@@ -135,8 +135,7 @@ try {
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),
 								  'messageid' => $req->getDef('messageid', ''),
-								  'action' => $req->getDef('action', ''),
-								  )
+								  'action' => $req->getDef('action', ''))
 					);
 				$page->render();
 				break;
