@@ -70,6 +70,11 @@ function loadSpotImage() {
 	$('img.spotinfoimage').load(function() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
+		$('a.postimage').css({
+			'width': $("img.spotinfoimage").width(),
+			'height': $("img.spotinfoimage").height()
+		})
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
 	});
 }
 
@@ -77,11 +82,9 @@ function toggleImageSize(url) {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
 	} else {
-		$('a.postimage').css({
-			'width': $("img.spotinfoimage").width(),
-			'height': $("img.spotinfoimage").height()
-		});
+		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
 		$("img.spotinfoimage").addClass("full");
 		$("img.spotinfoimage").css({
 			'max-width': $("div#overlay").width(),
