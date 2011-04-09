@@ -113,7 +113,7 @@ class SpotSigning {
 			if (!$verified) {
 				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
 																implode("\r\n", $comment['body']) . "\r\n" . 
-																$comment['from'], 
+																$comment['fromhdr'], 
 													$comment['usersignature'], 
 													$comment['user-key']);
 			} # if
