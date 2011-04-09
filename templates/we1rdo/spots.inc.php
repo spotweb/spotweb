@@ -136,7 +136,7 @@
             	<tbody>
                 	<tr>
 <?php if ($prevPage >= 0) { ?> 
-                        <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">&lt;&lt;</a></td>
+                        <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
 <?php }?> 
 						<td class="button">
 <?php if ($settings['show_multinzb']) { ?> 
@@ -145,13 +145,13 @@
 <?php } ?>
 						</td>
 <?php if ($nextPage > 0) { ?> 
-                        <td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl;?>">&gt;&gt;</a></td>
+                        <td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
 <?php } ?>
 					</tr>
                 </tbody>
             </table>
-			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
-			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />
+			<input type="hidden" id="nextPage" value="<?php echo $nextPage; ?>" />
+			<input type="hidden" id="getURL" value="<?php echo $getUrl; ?>" />
 <?php } ?>
 			
 		</div>
