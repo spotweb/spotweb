@@ -5,7 +5,7 @@
             <table class="spotheader">
                 <tbody>
                     <tr>
-                    	<th class="back"> <a class="closeDetails" onclick="closeDetails()">&lt;&lt;</a> </th>
+                    	<th class="back"> <a class="closeDetails">&lt;&lt;</a> </th>
                         <th class="category"><span><?php echo $spot['formatname'];?></span></th>
                         <th class="title"><?php echo $spot['title'];?></th>
                         <th class="nzb"><a target="_blank" class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
@@ -30,7 +30,7 @@ echo "</th>";
             <table class="spotdetails">
             	<tr>
                 	<td class="img">
-                        <a class="postimage" target="_blank" href="<?php echo $spot['image']; ?>">
+                        <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage" target="_blank">
                             <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
                         </a>
 					</td>
@@ -82,7 +82,7 @@ echo "</th>";
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments <span class="commentcount"># <?php echo $tplHelper->getCommentCount($spot); ?></span></h4>
+            	<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
 				</ul>
             </div>

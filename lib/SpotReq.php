@@ -15,6 +15,47 @@ class SpotReq {
 		}
     }    
     
+	function isXsrfValid($action, $secret) {
+		if (!isset($_POST['xsrfid'])) {
+			return false;
+		} # if
+		
+		# Explode the different values, if we don't agree
+		# on the amount of values, exit immediately
+		$xsrfVals = explode(":", $_POST['xsrfid']);
+		if (count($xsrfVals) != 3) {
+			return false;
+		} # if
+		
+		# start validating, a cookie is only valid for 30 minutes
+		if ($xsrfCookie[0] < (time() - 1800)) {
+			return false;
+		} # if
+		
+		# if action isn't the action we requested
+		if ($xsrfCookie[1] != $action) {
+			return false;
+		} # if
+		
+		# and check the hash
+		if (sha1($xsrfCookie[0] . ':' . $xsrfCookie[1] . $secret) != $xsrfCookie[3]) {
+			return false;
+		} # if
+		
+		return true;
+	} # isXsrfValid
+	
+	function generateXsrfCookie($action, $secret) {
+		# XSRF cookie contains 3 fields:
+		#   1 - Current timestamp in unixtime
+		#	2 - action (for example, 'login' or 'postcomment')
+		#	3 - sha1 of the preceding 2 strings including ':', but the secret key appended as salt
+		$xsrfCookie = time() . ':' . $action;
+		$xsrfCookie .= ':' . sha1($xsrfCookie . $secret);
+		
+		return array('field' => 'xsrfid',
+					 'value' => $xsrfCookie);
+	} # generateXsrfCookie
    
     function doesExist($varName) {
 		if( is_array($varName) ) {

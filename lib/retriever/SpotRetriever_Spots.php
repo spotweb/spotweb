@@ -26,7 +26,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo "Retrieving new Spots from server..." . PHP_EOL; break;
+					case 'start'			: echo "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
 					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
 					case 'dbcount'			: echo "Spots in database:	" . $txt . "" . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
@@ -119,6 +119,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 						
+						# FIXME: Message-ID kan ook van een comment zijn,
+						# onderstaande code gaat uit van een spot.
+
 						# is dit een geldig commando?
 						if (array_search($commandAr[0], $validCommands) !== false) {
 							switch($this->_settings['spot_moderation']) {

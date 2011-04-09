@@ -82,12 +82,12 @@ class SpotParser {
 			} # if
 		} # foreach
 		
-		# we zetten de Z4 category erbij op het moment dat een oude spot in de erotiek
+		# we zetten de Z3 category erbij op het moment dat een oude spot in de erotiek
 		# category valt, dit maakt ons filter een stuk simpeler.
 		if (empty($tpl_spot['subcatz'])) {
 			foreach($tpl_spot['subcatlist'] as $subCatVal) {
 				if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
-					$tpl_spot['subcatz'] = 'z4|';
+					$tpl_spot['subcatz'] = 'z3|';
 				} # if
 			} # foreach
 		} # if
@@ -97,7 +97,6 @@ class SpotParser {
 	} # parseFull()
 
 	function parseXover($subj, $from, $date, $messageid, $rsakeys, $use_openssl) {
-		$_ID = 2;
 		$_CAT = 0;
 		$_FSIZE = 1;
 
@@ -198,13 +197,13 @@ class SpotParser {
 						} # if
 					} # foreach
 					
-					# we zetten de Z4 category erbij op het moment dat een oude spot in de erotiek
+					# we zetten de Z3 category erbij op het moment dat een oude spot in de erotiek
 					# category valt, dit maakt ons erotiek filter een stuk simpeler.
 					if (empty($spot['subcatz'])) {
 						$genreSubcatList = explode('|', $spot['subcatd']);
 						foreach($genreSubcatList as $subCatVal) {
 							if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
-								$spot['subcatz'] = 'z4|';
+								$spot['subcatz'] = 'z3|';
 							} # if
 						} # foreach
 					} # if
@@ -248,13 +247,11 @@ class SpotParser {
 				} # if recentKey
 
 				if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0))) {
-
-					# We hebben hier nog het SpotID nodig omdat we moeten kunnen controleren of
-					# spots veprlicht gesigned moeten worden of niet.
-					$mustbeSigned = $recentKey | (!$recentKey & ($fields[$_ID] > 1383670));
-
+	
+					# Als er een recentkey is (key <> 1), OF de spot is in 2010 geplaatst, dan moet
+					# de spot gesigned zijn.
+					$mustbeSigned = $recentKey | ($spot['stamp'] > 1262304000);
 					if ($mustbeSigned) {
-
 						$spot['headersign'] = $fields[count($fields) - 1];
 
 						if (strlen($spot['headersign']) != 0) {

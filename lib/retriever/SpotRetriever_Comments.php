@@ -21,7 +21,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo "Retrieving new comments from server..." . PHP_EOL; break;
+					case 'start'			: echo "Retrieving new comments from server " . $txt . "..." . PHP_EOL; break;
 					case 'done'				: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
