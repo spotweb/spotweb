@@ -265,7 +265,7 @@ table.footer tr td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-r
 table.footer tr td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 table.footer tr td:first-child:last-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
-table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0;}
+table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0; height:20px;}
 table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; position:absolute; bottom:5px; right:38px; padding:0;}
 
 /* SPOT DETAILS */

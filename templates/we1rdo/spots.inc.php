@@ -131,7 +131,7 @@
 ?>
 				</tbody>
 			</table>
-<?php if ($settings['show_multinzb'] && !count($spots) == 0 || $prevPage >= 0 || $nextPage > 0) { ?>
+<?php if ($settings['show_multinzb'] || !count($spots) == 0 || $prevPage >= 0 || $nextPage > 0) { ?>
 			<table class="footer" summary="Footer">
             	<tbody>
                 	<tr>
