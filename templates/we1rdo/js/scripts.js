@@ -51,11 +51,14 @@ $(function(){
 function loadComments(messageid,perpage,pagenr) {
 	$.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
-		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
+		if (count == 0 && pagenr == 0) { 
+			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+		} else {
+			$("span.commentcount").html('# '+$("#commentslist").children().size());
+		}
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
-		$("span.commentcount").html('# '+$("#commentslist").children().size());
 		
 		pagenr++;
 		if (count > 0) { 

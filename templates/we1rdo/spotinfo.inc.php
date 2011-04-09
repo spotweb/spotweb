@@ -82,7 +82,7 @@ echo "</th>";
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
             <div class="comments" id="comments">
-            	<h4>Comments <span class="commentcount">#</span></h4>
+            	<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
 				</ul>
             </div>
