@@ -131,7 +131,7 @@ function spotNav(direction) {
 		next.addClass('active');
 	}
 	
-	$(document).scrollTop($('table.spots tbody tr.active').offset().top - 2)
+	// $(document).scrollTop($('table.spots tbody tr.active').offset().top - 2)
 
 	if($("#overlay").is(':visible')) {
 		$("a.closeDetails").click();
