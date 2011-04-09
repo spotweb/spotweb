@@ -26,6 +26,12 @@ abstract class SpotStruct_abs {
 	
 	/* controleert of een kolom bestaat */
 	abstract function columnExists($tablename, $colname);
+
+	/* controleert of een tabel bestaat */
+	abstract function tableExists($tablename);
+
+	/* ceeert een lege tabel met enkel een ID veld */
+	abstract function createTable($tablename);
 	
 	function updateSchema() {
 		# Fulltext indexes
@@ -41,10 +47,27 @@ abstract class SpotStruct_abs {
 		} # if
 		$this->addIndex("idx_spots_6", "", "spots", "reversestamp");
 
+		# voeg de subcatz kolom toe zodat we hier in een type spot kunnen kenmerken
 		if (!$this->columnExists('spots', 'subcatz')) {
 			$this->addColumn("subcatz", "spots", "VARCHAR(64)");
 		} # if
 
+		# commentsfull tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('commentsfull')) {
+			$this->createTable('commentsfull');
+			
+			$this->addColumn('messageid', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('fromhdr', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('stamp', 'commentsfull', 'INTEGER');
+			$this->addColumn('usersignature', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('userkey', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('userid', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('hashcash', 'commentsfull', 'VARCHAR(128)');
+			$this->addColumn('body', 'commentsfull', 'TEXT');
+			$this->addColumn('verified', 'commentsfull', 'BOOLEAN');
+			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid");
+			$this->addIndex("idx_commentsfull_2", "", "commentsfull", "messageid,stamp");
+		} # if
 	} # updateSchema
 	
 } # class
