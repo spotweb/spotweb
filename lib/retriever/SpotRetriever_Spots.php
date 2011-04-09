@@ -84,9 +84,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
-
 #var_dump($hdrList);
-			
+
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
 			foreach($hdrList as $msgid => $msgheader) {

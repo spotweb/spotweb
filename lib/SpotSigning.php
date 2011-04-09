@@ -1,5 +1,6 @@
 <?php
 require_once "Math/BigInteger.php";
+require_once "lib/SpotSeclibToOpenSsl.php";
 require_once "Crypt/RSA.php";
 
 class SpotSigning {
@@ -9,6 +10,7 @@ class SpotSigning {
 			define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
 		} # if
 	} # ctor
+
 
 	private function checkRsaSignature($toCheck, $signature, $rsaKey) {
 		# de signature is base64 encoded, eerst decoden
@@ -22,11 +24,18 @@ class SpotSigning {
 		$rsa = new Crypt_RSA();
 		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		
-		# Supress notice if the signature was invalid
-		$saveErrorReporting = error_reporting(E_ERROR);
-		$tmpSave = $rsa->verify($toCheck, $signature);
-		error_reporting($saveErrorReporting);
+
+		# Controleer of we de native OpenSSL libraries moeten
+		# gebruiken om RSA signatures te controleren
+		if (CRYPT_RSA_MODE != CRYPT_RSA_MODE_OPENSSL) {
+			# Supress notice if the signature was invalid
+			$saveErrorReporting = error_reporting(E_ERROR);
+			$tmpSave = $rsa->verify($toCheck, $signature);
+			error_reporting($saveErrorReporting);
+		} else {
+			$nativeVerify = new SpotSeclibToOpenSsl();
+			$tmpSave = $nativeVerify->verify($rsa, $toCheck, $signature);
+		} # else
 
 		return $tmpSave;
 	} # checkRsaSignature

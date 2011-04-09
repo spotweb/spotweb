@@ -2,6 +2,7 @@
 require_once "settings.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/SpotSigning.php";
+require_once "lib/SpotCategories.php";
 
 class SpotParser {
 	function parseFull($xmlStr) {
@@ -85,11 +86,7 @@ class SpotParser {
 		# we zetten de Z3 category erbij op het moment dat een oude spot in de erotiek
 		# category valt, dit maakt ons filter een stuk simpeler.
 		if (empty($tpl_spot['subcatz'])) {
-			foreach($tpl_spot['subcatlist'] as $subCatVal) {
-				if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
-					$tpl_spot['subcatz'] = 'z3|';
-				} # if
-			} # foreach
+			$tpl_spot['subcatz'] = SpotCategories::createSubcatZ($tpl_spot['category'], $tpl_spot['subcata'] . $tpl_spot['subcatb'] . $tpl_spot['subcatd']);
 		} # if
 		
 		# and return the parsed XML
@@ -192,20 +189,14 @@ class SpotParser {
 					$spot['subcatz'] = '';
 
 					foreach($subcats as $subcat) {
-						if (array_search(strtolower(substr($subcat, 0, 1)), array('a','b','c','d','z')) !== false) {
+						if (in_array(strtolower(substr($subcat, 0, 1)), array('a','b','c','d','z')) !== false) {
 							$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
 						} # if
 					} # foreach
 					
-					# we zetten de Z3 category erbij op het moment dat een oude spot in de erotiek
-					# category valt, dit maakt ons erotiek filter een stuk simpeler.
+					# We vullen hier de z categorieen alvast op in het geval er geen Z category gegeven is
 					if (empty($spot['subcatz'])) {
-						$genreSubcatList = explode('|', $spot['subcatd']);
-						foreach($genreSubcatList as $subCatVal) {
-							if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89', $subCatVal) !== false) {
-								$spot['subcatz'] = 'z3|';
-							} # if
-						} # foreach
+						$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
 					} # if
 
 				} # if
