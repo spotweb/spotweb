@@ -1,7 +1,6 @@
 <?php 
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-			<!-- <div class="melding" style="position:fixed; left:0; top:0; width:auto; height:auto; background:#000; color:#fff; padding:2px;"></div> -->
             <div class="spots">
 				<table class="spots" summary="Spots">
 					<thead>
@@ -66,12 +65,12 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot('".$tplHelper->makeSpotUrl($spot)."')\" title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot(this,'".$tplHelper->makeSpotUrl($spot)."')\" title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($settings['keep_watchlist']) {
 			echo "<td class='watch'>";
-			echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist'> </a>";
-			echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist'> </a>";
+			echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist (w)'> </a>";
+			echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist (w)'> </a>";
 			echo "</td>";
 		}
 
@@ -87,7 +86,7 @@
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($settings['show_nzbbutton']) {
-				echo "<td><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB' class='nzb'>NZB";
+				echo "<td><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB (n)' class='nzb'>NZB";
 				
 				if ($tplHelper->hasBeenDownloaded($spot)) {
 					echo '*';
@@ -106,9 +105,9 @@
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($tplHelper->hasBeenDownloaded($spot)) {
-					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
+					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot) (s)'> </a></td>";
 				} else {
-					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue'> </a></td>";	
+					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue (s)'> </a></td>";	
 				} # else
 			} # if
 		} else {
