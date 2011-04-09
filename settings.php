@@ -279,6 +279,7 @@ if (!isset($settings['quicklinks'])) {
 	if ($settings['keep_downloadlist']) {
 		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
 	}
+	$settings['quicklinks'][] = Array('Help', "images/icons/help.png", "?page=help", "");
 } # if isset
 
 #
