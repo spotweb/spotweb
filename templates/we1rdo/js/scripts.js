@@ -126,12 +126,11 @@ function spotNav(direction) {
 	if (direction == 'prev' && prev.size() == 1) {
 		current.removeClass('active');
 		prev.addClass('active');
-		$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 	} else if (direction == 'next' && next.size() == 1) {
 		current.removeClass('active');
 		next.addClass('active');
-		$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 	}
+	$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 
 	if($("#overlay").is(':visible')) {
 		$("a.closeDetails").click();
