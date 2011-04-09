@@ -1,12 +1,16 @@
 // openSpot in overlay
-function openSpot(url) {
+function openSpot(id,url) {
+	$("table.spots tr.active").removeClass("active");
+	$(id).parent().parent().addClass('active');
+	
 	var messageid = url.split("=")[2];
 	
-	$("#overlay").show();
+	$("#overlay").empty().show();
 	$("#overlay").addClass('loading');
 	
-	var scrollLocation = $("div.container").scrollTop();
+	var scrollLocation = $(document).scrollTop();
 	$("#overlay").load(url+' #details', function() {
+		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading');
 		
 		$("a.closeDetails").click(function(){ 
@@ -20,18 +24,19 @@ function openSpot(url) {
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
+	$("div.container").removeClass("hidden").addClass("visible");
 	$("#overlay").hide();
 	$("#details").remove();
-	$("div.container").scrollTop(scrollLocation);
+	$(document).scrollTop(scrollLocation);
 }
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	var pagenr = $('#nextPage').val();
-	$("div.container").scroll(function() {
+	$(window).scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
-		
-		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+
+		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0) {
 			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
@@ -78,7 +83,7 @@ function loadSpotImage() {
 			'width': $("img.spotinfoimage").width(),
 			'height': $("img.spotinfoimage").height()
 		})
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
 	});
 }
 
@@ -86,7 +91,7 @@ function toggleImageSize(url) {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
 	} else {
 		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
 		$("img.spotinfoimage").addClass("full");
@@ -97,53 +102,39 @@ function toggleImageSize(url) {
 	}
 }
 
-// Keyboard navigation
+// Bind keys to functions
 $(function(){
 	$('table.spots tbody tr').first().addClass('active');
-	$(document).bind('keydown', 'k', prevSpot);
-	$(document).bind('keydown', 'j', nextSpot);
-	$(document).bind('keydown', 'o', openSpotNav);
-	$(document).bind('keydown', 'return', openSpotNav);
-	$(document).bind('keydown', 'u', closeDetails);
-	$(document).bind('keydown', 'esc', closeDetails);
+	$(document).bind('keydown', 'k', function(){if($("div#overlay").is(":hidden")) {spotNav('prev')}});
+	$(document).bind('keydown', 'j', function(){if($("div#overlay").is(":hidden")) {spotNav('next')}});
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'i', toggleImageSize);
+	$(document).bind('keydown', 's', function(){if($("#overlay").is(':visible')) {$("#overlay a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
+	$(document).bind('keydown', 'n', function(){if($("#overlay").is(':visible')) {location.href = $("#overlay a.nzb").attr('href')} else if($("th.nzb").is(":visible")) {location.href = $("tr.active a.nzb").attr('href')}});
+	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible')) {$("#overlay th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
 });
 
-function nextSpot() {
-	var $current = $('table.spots tbody tr.active');
-	var $next = $current.size() == 1 ? $current.next().first() : $('table.spots tbody tr[2]');
-	if($next.size() == 1) {
-		$current.removeClass('active');
-		$next.addClass('active');
-
-		if($("#overlay").is(':visible')) {
-			openSpotNav();
-		}
+// Keyboard navigation functions
+function spotNav(direction) {
+	var current = $('table.spots tbody tr.active');
+	var prev = current.prevUntil('tr.header').first();
+	var next = current.next().first();
+	
+	if (direction == 'prev' && prev.size() == 1) {
+		current.removeClass('active');
+		prev.addClass('active');
+	} else if (direction == 'next' && next.size() == 1) {
+		current.removeClass('active');
+		next.addClass('active');
 	}
-}
+	
+	$(document).scrollTop($('table.spots tbody tr.active').offset().top - 2)
 
-function prevSpot() {
-	var $current = $('table.spots tbody tr.active');
-	var $prev = $current.prevUntil('tr.header').first();
-	if($prev.size() == 1) {
-		$current.removeClass('active');
-		$prev.addClass('active');
-
-		if($("#overlay").is(':visible')) {
-			openSpotNav();
-		}
-	}
-}
-
-function openSpotNav() {
-	if($("#overlay").is(':visible')){
-		var $link = $('table.spots tbody tr.active a.spotlink');
-		console.log($link.attr('href'));
-		$('#overlay').empty();
-		$('#overlay').addClass('loading');
-		$("#overlay").load($link.attr('href')+' #details', function() {
-			$("#overlay").removeClass('loading');
-		});
-	} else {
+	if($("#overlay").is(':visible')) {
+		$("a.closeDetails").click();
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
 }
