@@ -258,10 +258,8 @@ class SpotParser {
 								# the signature this header is signed with
 								$signature = $this->unspecialString($spot['headersign']);
 
-$miepmiep = microtime(true);							
 								$spotSigning = new SpotSigning($use_openssl);
 								$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature, $rsakeys);
-echo "Signature verification took: " . (microtime(true) - $miepmiep) . "\r\n";							
 							} # else
 						} # if
 					} # if must be signed
