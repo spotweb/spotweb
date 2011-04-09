@@ -97,7 +97,6 @@ class SpotParser {
 	} # parseFull()
 
 	function parseXover($subj, $from, $date, $messageid, $rsakeys, $use_openssl) {
-		$_ID = 2;
 		$_CAT = 0;
 		$_FSIZE = 1;
 
@@ -248,13 +247,11 @@ class SpotParser {
 				} # if recentKey
 
 				if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0))) {
-
-					# We hebben hier nog het SpotID nodig omdat we moeten kunnen controleren of
-					# spots veprlicht gesigned moeten worden of niet.
-					$mustbeSigned = $recentKey | (!$recentKey & ($fields[$_ID] > 1383670));
-
+	
+					# Als er een recentkey is (key <> 1), OF de spot is in 2010 geplaatst, dan moet
+					# de spot gesigned zijn.
+					$mustbeSigned = $recentKey | ($spot['stamp'] > 1262304000);
 					if ($mustbeSigned) {
-
 						$spot['headersign'] = $fields[count($fields) - 1];
 
 						if (strlen($spot['headersign']) != 0) {
