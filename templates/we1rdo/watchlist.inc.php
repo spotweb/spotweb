@@ -61,7 +61,7 @@
 			 	 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot(this,'".$tplHelper->makeSpotUrl($watch)."')\" title='" . $watch['title'] . "' class='spotlink'>" . $markSpot . $watch['title'] . "</a></td>";
 			
 			echo "<td class='watch'>";
-			echo "\t<a class='remove' href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "' title='Verwijder uit watchlist'> </a>";
+			echo "\t<a class='remove' href='?page=watchlist&amp;action=remove&messageid=" . $watch['messageid'] . "' title='Verwijder uit watchlist (w)'> </a>";
 			echo "</td>";
 			
 			if ($settings['retrieve_comments']) {
@@ -76,7 +76,7 @@
 			# only display the NZB button from 24 nov or later
 			if ($watch['stamp'] > 1290578400 ) {
 				if ($settings['show_nzbbutton']) {
-					echo "<td><a href='" . $tplHelper->makeNzbUrl($watch) . "' title ='Download NZB' class='nzb'>NZB";
+					echo "<td><a href='" . $tplHelper->makeNzbUrl($watch) . "' title ='Download NZB (n)' class='nzb'>NZB";
 					
 					if ($tplHelper->hasBeenDownloaded($watch)) {
 						echo '*';
@@ -95,9 +95,9 @@
 				# display the sabnzbd button
 				if (!empty($watch['sabnzbdurl'])) {
 					if ($tplHelper->hasBeenDownloaded($watch)) {
-						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot)'> </a></td>";
+						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot) (s)'> </a></td>";
 					} else {
-						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button' title='Add NZB to SabNZBd queue'> </a></td>";
+						echo "<td><a onclick=\"downloadSabnzbd('".$watch['id']."','".$watch['sabnzbdurl']."')\" class='sab_".$watch['id']." sabnzbd-button' title='Add NZB to SabNZBd queue (s)'> </a></td>";
 					} # else
 				} # if
 			} else {
