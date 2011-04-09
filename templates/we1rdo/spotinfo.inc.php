@@ -5,24 +5,24 @@
             <table class="spotheader">
                 <tbody>
                     <tr>
-                    	<th class="back"> <a class="closeDetails">&lt;&lt;</a> </th>
+                    	<th class="back"> <a class="closeDetails" title="Ga terug naar het overzicht (esc / u)">&lt;&lt;</a> </th>
                         <th class="category"><span><?php echo $spot['formatname'];?></span></th>
                         <th class="title"><?php echo $spot['title'];?></th>
                         <th class="nzb"><a target="_blank" class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings['show_nzbbutton']) { ?>
-                            <a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} else { echo '&nbsp;';} ?></a>
+                            <a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} else { echo '&nbsp;';} ?></a>
 <?php } ?></th>
 <?php if ($settings['keep_watchlist']) {
 echo "<th class='watch'>";
-echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist'> </a>";
-echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist'> </a>";
+echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist (w)'> </a>";
+echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist (w)'> </a>";
 echo "</th>";
 } ?>                     
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
-                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot)"> </a></th>
+                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot) (s)"> </a></th>
 <?php } else { ?>
-                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue"> </a></th>
+                        <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>
 <?php } } ?>
                     </tr>
                 </tbody>
@@ -64,13 +64,9 @@ echo "</th>";
                                 <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
                                 <tr> <th> Zoekmachine </th> <td> <a target="_blank" href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-<?php
-		if (!empty($spot['nzb'])) {
-?>		
-                        		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>'>NZB</a> </td> </tr>
-<?php
-		}
-?>
+<?php if (!empty($spot['nzb'])) { ?>		
+                        		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
+<?php } ?>
 						
                             </tbody>
                         </table>
