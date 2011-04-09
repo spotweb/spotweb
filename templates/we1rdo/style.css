@@ -2,7 +2,9 @@
 html {overflow:auto; height:100%;}
 body {margin:0;}
 
-div.container {position:absolute; *position:fixed; top:0; left:0; right:0; bottom:0; width:100%; overflow:auto; font:11px Arial, Helvetica, sans-serif;}
+div.container {position:relative; font:11px Arial, Helvetica, sans-serif;}
+div.container.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden;}
+div.container.visible {}
 
 div.clear {clear:both;}
 
@@ -165,7 +167,7 @@ ul.maintenancebox li a.maintenancebtn:hover {background-position:0 -20px;}
 /* SPOTS */
 div.spots {margin:0 5px 0 240px; padding:0 0 5px 0; min-width:750px; *padding:2px 0 5px 0;}
 
-table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; *border-collapse:collapse; margin:3px 0 0 0; *margin:5px 0 0 0;}
+table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; *border-collapse:collapse; padding:3px 0 0 0; *margin:5px 0 0 0;}
 
 table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px; cursor:pointer;}
 table.spots img {border:0;}
@@ -236,6 +238,8 @@ table.spots tr:hover.orange td.category a {background-position:-52px -20px; colo
 table.spots tr:hover.green td.category a {background-position:-52px -40px; color:#00de00;}
 table.spots tr:hover.red td.category a {background-position:-52px -60px; color:#de2500;}
 
+table.spots tr.active a.spotlink:before {content:"> ";}
+
 table.spots tr td.comments {text-align:center; padding:0; background-image:url(img/sprite_y.png); background-repeat:repeat-y;}
 table.spots tr td.comments a {font-weight:bold; color:#fff;}
 table.spots tr:hover td.comments a {color:#000;}
@@ -245,7 +249,6 @@ table.spots tr.orange td.comments {background-position:-34px 0;}
 table.spots tr.green td.comments {background-position:-68px 0;}
 table.spots tr.red td.comments {background-position:-102px 0;}
 
-table.spots tr.active a.spotlink:before {content: "> ";}
 table.spots a.nzb {font-weight:bold;}
 table.spots tr.blue a.nzb {color:#008edf;}
 table.spots tr.orange a.nzb {color:#e9a213;}
@@ -262,9 +265,8 @@ table.footer tr td:first-child {-moz-border-radius:4px 0 0 4px; -webkit-border-r
 table.footer tr td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 table.footer tr td:first-child:last-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
-table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0; height:20px;}
-table.footer tr td.button:last-child {padding:0 33px 0 0;}
-table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; float:right; padding:0;}
+table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0;}
+table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; position:absolute; bottom:5px; right:38px; padding:0;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:0 0 5px 0; min-width:680px;}
