@@ -51,6 +51,6 @@ var ro = new RepeatingOperation(function(prefix, suffix, runCount) {
 	
 	alert(prefix + '.' + uniquePart + suffix + ' ==> ' + runCount);
 	alert($.sha1(prefix + '.' + uniquePart + suffix));
-}, 500); // new RepeatingOperation met 10000 iteraties
+}, 500); // new RepeatingOperation met 500 iteraties
 	
 // ro.step("<PqPs1LvROTU9PpfTQALQI.0.random", "@spot.net>", 0);
