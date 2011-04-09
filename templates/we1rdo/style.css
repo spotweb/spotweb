@@ -366,3 +366,4 @@ a.closeDetails {display:block; background:url(img/sprite_x.png) repeat-x 0 -60px
 
 div#overlay {position:fixed; top:0; bottom:0; left:235px; right:0; background-color:#fff; z-index:1; display:none; overflow:auto;}
 div#overlay.loading {background:#fff url(img/loading.gif) no-repeat 50% 50%; opacity:0.75; filter:alpha(opacity = 75);}
+div#overlay.loading.notrans {opacity:1; filter:alpha(opacity = 100);}
