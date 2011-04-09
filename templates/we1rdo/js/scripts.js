@@ -3,11 +3,14 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', function(){spotNav('prev')});
 	$(document).bind('keydown', 'j', function(){spotNav('next')});
-	$(document).bind('keydown', 'o', function(){$('table.spots tbody tr.active a.spotlink').click()});
-	$(document).bind('keydown', 'i', toggleImageSize);
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
 	$(document).bind('keydown', 'return', function(){$('table.spots tbody tr.active a.spotlink').click()});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'i', toggleImageSize);
+	$(document).bind('keydown', 's', function(){if($("#overlay").is(':visible')) {$("#overlay a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
+	$(document).bind('keydown', 'n', function(){if($("#overlay").is(':visible')) {location.href = $("#overlay a.nzb").attr('href')} else {location.href = $("tr.active a.nzb").attr('href')}});
+	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible')) {$("#overlay th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
 });
 
 // openSpot in overlay
