@@ -4,7 +4,7 @@ $(function(){
 	$(document).bind('keydown', 'k', function(){spotNav('prev')});
 	$(document).bind('keydown', 'j', function(){spotNav('next')});
 	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){$('table.spots tbody tr.active a.spotlink').click()});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'i', toggleImageSize);
