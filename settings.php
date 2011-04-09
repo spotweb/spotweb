@@ -236,7 +236,7 @@ $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME'
 $settings['index_filter'] = array();
 
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => '~cat0_z4');
+# $settings['index_filter'] = array('tree' => '~cat0_z3');
 
 #
 # RSA keys
