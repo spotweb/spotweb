@@ -1,18 +1,3 @@
-// Bind keys to functions
-$(function(){
-	$('table.spots tbody tr').first().addClass('active');
-	$(document).bind('keydown', 'k', function(){spotNav('prev')});
-	$(document).bind('keydown', 'j', function(){spotNav('next')});
-	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
-	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
-	$(document).bind('keydown', 'i', toggleImageSize);
-	$(document).bind('keydown', 's', function(){if($("#overlay").is(':visible')) {$("#overlay a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
-	$(document).bind('keydown', 'n', function(){if($("#overlay").is(':visible')) {location.href = $("#overlay a.nzb").attr('href')} else if($("th.nzb").is(":visible")) {location.href = $("tr.active a.nzb").attr('href')}});
-	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible')) {$("#overlay th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
-});
-
 // openSpot in overlay
 function openSpot(id,url) {
 	$("table.spots tr.active").removeClass("active");
@@ -48,10 +33,10 @@ function closeDetails(scrollLocation) {
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	var pagenr = $('#nextPage').val();
-	$(document).scroll(function() {
+	$(window).scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
-		
-		if($(document).scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+
+		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0) {
 			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
@@ -98,7 +83,7 @@ function loadSpotImage() {
 			'width': $("img.spotinfoimage").width(),
 			'height': $("img.spotinfoimage").height()
 		})
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
 	});
 }
 
@@ -106,7 +91,7 @@ function toggleImageSize(url) {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
 	} else {
 		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
 		$("img.spotinfoimage").addClass("full");
@@ -117,7 +102,22 @@ function toggleImageSize(url) {
 	}
 }
 
-// Keyboard navigation
+// Bind keys to functions
+$(function(){
+	$('table.spots tbody tr').first().addClass('active');
+	$(document).bind('keydown', 'k', function(){if($("div#overlay").is(":hidden")) {spotNav('prev')}});
+	$(document).bind('keydown', 'j', function(){if($("div#overlay").is(":hidden")) {spotNav('next')}});
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'i', toggleImageSize);
+	$(document).bind('keydown', 's', function(){if($("#overlay").is(':visible')) {$("#overlay a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
+	$(document).bind('keydown', 'n', function(){if($("#overlay").is(':visible')) {location.href = $("#overlay a.nzb").attr('href')} else if($("th.nzb").is(":visible")) {location.href = $("tr.active a.nzb").attr('href')}});
+	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible')) {$("#overlay th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
+});
+
+// Keyboard navigation functions
 function spotNav(direction) {
 	var current = $('table.spots tbody tr.active');
 	var prev = current.prevUntil('tr.header').first();
@@ -130,6 +130,8 @@ function spotNav(direction) {
 		current.removeClass('active');
 		next.addClass('active');
 	}
+	
+	$(document).scrollTop($('table.spots tbody tr.active').offset().top - 2)
 
 	if($("#overlay").is(':visible')) {
 		$("a.closeDetails").click();
