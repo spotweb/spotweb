@@ -30,7 +30,7 @@ echo "</th>";
             <table class="spotdetails">
             	<tr>
                 	<td class="img">
-                        <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage" target="_blank" title="Klik om dit plaatje op ware grootte te laten zien">
+                        <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage" target="_blank">
                             <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
                         </a>
 					</td>

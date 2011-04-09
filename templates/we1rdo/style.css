@@ -269,7 +269,7 @@ table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-r
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:0 0 5px 0; min-width:680px;}
 
-div.details a.postimage {display:block; position:relative; cursor:pointer;}
+div.details a.postimage {display:block; position:relative; cursor:pointer; float:left;}
 div.details a.postimage img {display:block; border:0; margin:0; max-width:260px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details a.postimage img.full {position:absolute; top:0; left:0; z-index:3;}
 
