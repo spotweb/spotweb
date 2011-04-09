@@ -39,7 +39,7 @@ class SpotDb
 			case 'pdo_sqlite': $this->_conn = new db_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 				
-			default			: throw new Exception('Unknown DB engine specified, please choose either sqlite3 or mysql');
+			default			: throw new Exception('Unknown DB engine specified, please choose pdo_sqlite, mysql or pdo_mysql');
 		} # switch
 		
 		$this->_conn->connect();
@@ -326,8 +326,8 @@ class SpotDb
 												d.stamp AS downloadstamp,
 												f.userid AS userid,
 												f.verified AS verified,
-												w.dateadded as w_dateadded" .
-												$extendedFieldList . "
+												w.dateadded as w_dateadded
+												" . $extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
@@ -540,6 +540,7 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # sqlite3
@@ -547,7 +548,8 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-									LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
+									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+									LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
 									LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
@@ -578,6 +580,8 @@ class SpotDb
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->exec("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->exec("DELETE FROM downloadlist WHERE downloadlist.messageid not in 
+									(SELECT messageid FROM spots)") ;
 				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
@@ -586,7 +590,8 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-					LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
+					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+					LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
 					LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
