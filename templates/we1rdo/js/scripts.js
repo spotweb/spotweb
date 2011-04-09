@@ -1,5 +1,20 @@
+// Bind keys to functions
+$(function(){
+	$('table.spots tbody tr').first().addClass('active');
+	$(document).bind('keydown', 'k', function(){spotNav('prev')});
+	$(document).bind('keydown', 'j', function(){spotNav('next')});
+	$(document).bind('keydown', 'o', function(){$('table.spots tbody tr.active a.spotlink').click()});
+	$(document).bind('keydown', 'i', toggleImageSize);
+	$(document).bind('keydown', 'return', function(){$('table.spots tbody tr.active a.spotlink').click()});
+	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
+	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
+});
+
 // openSpot in overlay
-function openSpot(url) {
+function openSpot(id,url) {
+	$("table.spots tr.active").removeClass("active");
+	$(id).parent().parent().addClass('active');
+	
 	var messageid = url.split("=")[2];
 	
 	$("#overlay").empty().show();
@@ -100,51 +115,21 @@ function toggleImageSize(url) {
 }
 
 // Keyboard navigation
-$(function(){
-	$('table.spots tbody tr').first().addClass('active');
-	$(document).bind('keydown', 'k', prevSpot);
-	$(document).bind('keydown', 'j', nextSpot);
-	$(document).bind('keydown', 'o', openSpotNav);
-	$(document).bind('keydown', 'i', toggleImageSize);
-	$(document).bind('keydown', 'return', openSpotNav);
-	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
-	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
-});
-
-function nextSpot() {
-	var $current = $('table.spots tbody tr.active');
-	var $next = $current.size() == 1 ? $current.next().first() : $('table.spots tbody tr[2]');
-	if($next.size() == 1) {
-		$current.removeClass('active');
-		$next.addClass('active');
-
-		if($("#overlay").is(':visible')) {
-			$("a.closeDetails").click();
-			openSpotNav();
-		}
+function spotNav(direction) {
+	var current = $('table.spots tbody tr.active');
+	var prev = current.prevUntil('tr.header').first();
+	var next = current.next().first();
+	
+	if (direction == 'prev' && prev.size() == 1) {
+		current.removeClass('active');
+		prev.addClass('active');
+	} else if (direction == 'next' && next.size() == 1) {
+		current.removeClass('active');
+		next.addClass('active');
 	}
-}
 
-function prevSpot() {
-	var $current = $('table.spots tbody tr.active');
-	var $prev = $current.prevUntil('tr.header').first();
-	if($prev.size() == 1) {
-		$current.removeClass('active');
-		$prev.addClass('active');
-
-		if($("#overlay").is(':visible')) {
-			$("a.closeDetails").click();
-			openSpotNav();
-		}
-	}
-}
-
-function openSpotNav() {
-	if($("#overlay").is(':visible')){
-		var url = $('table.spots tbody tr.active a.spotlink').attr('href');
-		console.log(url);
-		openSpot(url);
-	} else {
+	if($("#overlay").is(':visible')) {
+		$("a.closeDetails").click();
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
 }
