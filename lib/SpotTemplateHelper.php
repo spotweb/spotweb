@@ -236,22 +236,13 @@ class SpotTemplateHelper {
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
-		static $wtListCnt = 0;
-
-		if (self::$wtList == -1) {
-			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
-			$wtListCnt = count(self::$wtList);
+		if (!$this->_settings['keep_watchlist']) {
+			return false;
 		} # if
 		
-		for($i = 0; $i < $wtListCnt; $i++) {
-			if (self::$wtList[$i]['messageid'] == $spot['messageid']) {
-				return true;
-			} # if
-		} # for
-		
-		return false;
+		return ($spot['watchdateadded'] != NULL);
 	} # isBeingWatched
-	
+
 	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
 		
