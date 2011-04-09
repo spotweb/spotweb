@@ -326,7 +326,7 @@ class SpotDb
 												d.stamp AS downloadstamp,
 												f.userid AS userid,
 												f.verified AS verified,
-												w.dateadded as watchdateadded" .
+												w.dateadded as w_dateadded" .
 												$extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
