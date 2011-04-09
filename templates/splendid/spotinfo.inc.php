@@ -1,5 +1,6 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
+	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 0);
 	$comments = $tplHelper->formatComments($comments);
 	
 	// fix the sabnzbdurl en searchurl
