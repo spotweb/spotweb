@@ -105,6 +105,7 @@ $(function(){
 	$(document).bind('keydown', 'k', prevSpot);
 	$(document).bind('keydown', 'j', nextSpot);
 	$(document).bind('keydown', 'o', openSpotNav);
+	$(document).bind('keydown', 'i', toggleImageSize);
 	$(document).bind('keydown', 'return', openSpotNav);
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});

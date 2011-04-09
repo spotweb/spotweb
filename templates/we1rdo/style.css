@@ -238,6 +238,8 @@ table.spots tr:hover.orange td.category a {background-position:-52px -20px; colo
 table.spots tr:hover.green td.category a {background-position:-52px -40px; color:#00de00;}
 table.spots tr:hover.red td.category a {background-position:-52px -60px; color:#de2500;}
 
+table.spots tr.active a.spotlink:before {content:"> ";}
+
 table.spots tr td.comments {text-align:center; padding:0; background-image:url(img/sprite_y.png); background-repeat:repeat-y;}
 table.spots tr td.comments a {font-weight:bold; color:#fff;}
 table.spots tr:hover td.comments a {color:#000;}
@@ -247,7 +249,6 @@ table.spots tr.orange td.comments {background-position:-34px 0;}
 table.spots tr.green td.comments {background-position:-68px 0;}
 table.spots tr.red td.comments {background-position:-102px 0;}
 
-table.spots tr.active a.spotlink:before {content: "> ";}
 table.spots a.nzb {font-weight:bold;}
 table.spots tr.blue a.nzb {color:#008edf;}
 table.spots tr.orange a.nzb {color:#e9a213;}
