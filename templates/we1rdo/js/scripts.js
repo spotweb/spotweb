@@ -5,20 +5,34 @@ function openSpot(url) {
 	$("#overlay").show();
 	$("#overlay").addClass('loading');
 	
+	var scrollLocation = $("div.container").scrollTop();
 	$("#overlay").load(url+' #details', function() {
 		$("#overlay").removeClass('loading');
+		
+		$("a.closeDetails").click(function(){ 
+			closeDetails(scrollLocation); 
+		});
+		
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
 }
 
-// Laadt nieuwe pagina wanneer de onderkant wordt bereikt
+// Sluit spotinfo overlay
+function closeDetails(scrollLocation) {
+	$("#overlay").hide();
+	$("#details").remove();
+	$("div.container").scrollTop(scrollLocation);
+}
+
+// Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	var pagenr = $('#nextPage').val();
 	$("div.container").scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
 		
 		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
 				$("#overlay").hide().removeClass('loading');
@@ -27,6 +41,7 @@ $(function(){
 				
 				pagenr++;
 				$("td.next > a").attr("href", url);
+				$("div.container").scrollTop(scrollLocation);
 			});
 		}
 	});
@@ -36,7 +51,11 @@ $(function(){
 function loadComments(messageid,perpage,pagenr) {
 	$.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
-		if (count == 0 && pagenr == 0) { $("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); }
+		if (count == 0 && pagenr == 0) { 
+			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+		} else {
+			$("span.commentcount").html('# '+$("#commentslist").children().size());
+		}
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
@@ -55,7 +74,27 @@ function loadSpotImage() {
 	$('img.spotinfoimage').load(function() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
+		$('a.postimage').css({
+			'width': $("img.spotinfoimage").width(),
+			'height': $("img.spotinfoimage").height()
+		})
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
 	});
+}
+
+function toggleImageSize(url) {
+	if($("img.spotinfoimage").hasClass("full")) {
+		$("img.spotinfoimage").removeClass("full");
+		$("img.spotinfoimage").removeAttr("style");
+		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien');
+	} else {
+		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
+		$("img.spotinfoimage").addClass("full");
+		$("img.spotinfoimage").css({
+			'max-width': $("div#overlay").width() - 5,
+			'max-height': $("div#overlay").height() - 35
+		});
+	}
 }
 
 // Keyboard navigation
@@ -107,12 +146,6 @@ function openSpotNav() {
 	} else {
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
-}
-
-// Sluit spotinfo overlay
-function closeDetails() {
-	$("#overlay").hide();
-	$("#details").remove();
 }
 
 // Regel positie en gedrag van sidebar (fixed / relative)

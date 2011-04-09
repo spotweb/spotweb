@@ -19,10 +19,14 @@ $settings['nntp_hdr']['port'] = 119;
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
-	$settings['spotweburl'] = (strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https') === FALSE ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . '/';
+	$settings['spotweburl'] = (strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https') === FALSE ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' ? dirname($_SERVER['PHP_SELF']). '/' : '/');
 } else {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
+
+# Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
+# robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
+$settings['deny_robots'] = true;
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -232,7 +236,7 @@ $settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME'
 $settings['index_filter'] = array();
 
 # als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => '~cat0_z4');
+# $settings['index_filter'] = array('tree' => '~cat0_z3');
 
 #
 # RSA keys

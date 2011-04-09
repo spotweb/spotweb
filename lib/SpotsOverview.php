@@ -65,7 +65,43 @@ class SpotsOverview {
 		
 		# en haal de overgebleven comments op van de NNTP server
 		if (!empty($commentList)) {
-			$newComments = $nntp->getComments($commentList);
+			# Als we de comments maar in delen moeten ophalen, gaan we loopen tot we
+			# net genoeg comments hebben. We moeten wel loopen omdat we niet weten 
+			# welke comments verified zijn tot we ze opgehaald hebben
+			if (($start > 0) || ($length > 0)) {
+				$newComments = array();
+				
+				# tmpoffset is puur de offset van de nog op te halen comments, heeft
+				# op zich niks te maken met de pagina nummering
+				$tmpOffset = 0;
+				
+				# we houden een aparte counter bij voor de geverifieerde spot, dit is omdat
+				# als we newcomments zouden filteren wat betreft verified spots, we de niet
+				# verified spots niet in de datbase zouden stoppen. Dit zou er dna weer voor
+				# zorgen dat we die steeds bij elke run moeten ophalen van de NNTP server.
+				$retrievedVerified = 0;
+				
+				# en ga ze ophalen
+				while (($retrievedVerified < $length) && ( ($tmpOffset) < count($commentList) )) {
+					$tempList = $nntp->getComments(array_slice($commentList, $tmpOffset, $tmpOffset + $length));
+					#file_put_contents("/tmp/test.txt", "Retrieved remaining comment: " . $tmpOffset . " to: " . ($tmpOffset + $length) . "\r\n", FILE_APPEND);
+					#file_put_contents("/tmp/test.txt", ", commentList count: " . count($commentList) . "\r\n", FILE_APPEND);
+				
+					$tmpOffset += $length;
+					foreach($tempList as $comment) {
+						$newComments[] = $comment;
+						if ($comment['verified']) {
+							$retrievedVerified++;
+						} # if
+					} # foreach
+
+					#file_put_contents("/tmp/test.txt", ", tempList count: " . count($tempList) . "\r\n", FILE_APPEND);
+					#file_put_contents("/tmp/test.txt", ", newComment count: " . count($newComments) . "\r\n", FILE_APPEND);
+					#file_put_contents("/tmp/test.txt", ", fullComment count: " . count($fullComments) . "\r\n", FILE_APPEND);
+				} # while
+			} else {
+				$newComments = $nntp->getComments($commentList);
+			} # else
 			
 			# voeg ze aan de database toe
 			$this->_db->addCommentsFull($newComments);
@@ -77,9 +113,8 @@ class SpotsOverview {
 		# filter de comments op enkel geverifieerde comments
 		$fullComments = array_filter($fullComments, array($this, 'cbVerifiedOnly'));
 
-		
 		# geef enkel die comments terug die gevraagd zijn. We vragen wel alles op
-		# zodat we weten welke we moetne negeren.
+		# zodat we weten welke we moeten negeren.
 		if (($start > 0) || ($length > 0)) {
 			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
