@@ -394,9 +394,11 @@ class SpotDb
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
-												f.filesize AS filesize
+												f.filesize AS filesize,
+												w.dateadded as w_dateadded
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
+												LEFT JOIN watchlist AS w on s.messageid = w.messageid
 												JOIN spotsfull AS f ON f.messageid = s.messageid 
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
