@@ -1,17 +1,21 @@
 // openSpot in overlay
 function openSpot(id,url) {
+	if($("#overlay").is(":visible")) {
+		$("#overlay").addClass('notrans');
+	}
+	
 	$("table.spots tr.active").removeClass("active");
 	$(id).parent().parent().addClass('active');
 	
 	var messageid = url.split("=")[2];
 	
-	$("#overlay").empty().show();
 	$("#overlay").addClass('loading');
+	$("#overlay").empty().show();
 	
 	var scrollLocation = $(document).scrollTop();
 	$("#overlay").load(url+' #details', function() {
 		$("div.container").removeClass("visible").addClass("hidden");
-		$("#overlay").removeClass('loading');
+		$("#overlay").removeClass('loading notrans');
 		
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
@@ -105,8 +109,8 @@ function toggleImageSize(url) {
 // Bind keys to functions
 $(function(){
 	$('table.spots tbody tr').first().addClass('active');
-	$(document).bind('keydown', 'k', function(){if($("div#overlay").is(":hidden")) {spotNav('prev')}});
-	$(document).bind('keydown', 'j', function(){if($("div#overlay").is(":hidden")) {spotNav('next')}});
+	$(document).bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
+	$(document).bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
 	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
 	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
@@ -118,7 +122,7 @@ $(function(){
 });
 
 // Keyboard navigation functions
-function spotNav(direction) {
+function spotNav(direction) {	
 	var current = $('table.spots tbody tr.active');
 	var prev = current.prevUntil('tr.header').first();
 	var next = current.next().first();
@@ -133,7 +137,6 @@ function spotNav(direction) {
 	$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 
 	if($("#overlay").is(':visible')) {
-		$("a.closeDetails").click();
 		$('table.spots tbody tr.active a.spotlink').click();
 	}
 }
