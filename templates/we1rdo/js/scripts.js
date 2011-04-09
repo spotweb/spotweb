@@ -55,6 +55,7 @@ function loadComments(messageid,perpage,pagenr) {
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		$("span.commentcount").html('# '+$("#commentslist").children().size());
 		
 		pagenr++;
 		if (count > 0) { 
