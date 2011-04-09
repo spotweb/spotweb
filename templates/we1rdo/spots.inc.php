@@ -1,7 +1,6 @@
 <?php 
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-			<!-- <div class="melding" style="position:fixed; left:0; top:0; width:auto; height:auto; background:#000; color:#fff; padding:2px;"></div> -->
             <div class="spots">
 				<table class="spots" summary="Spots">
 					<thead>
@@ -66,7 +65,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot('".$tplHelper->makeSpotUrl($spot)."')\" title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick=\"openSpot(this,'".$tplHelper->makeSpotUrl($spot)."')\" title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($settings['keep_watchlist']) {
 			echo "<td class='watch'>";
