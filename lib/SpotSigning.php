@@ -108,13 +108,13 @@ class SpotSigning {
 	public function verifyComment($comment) {
 		$verified = false;
 		
-		if ((!empty($comment['user-signature'])) && (!empty($comment['user-key']))) {
-			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+		if ((!empty($comment['usersignature'])) && (!empty($comment['user-key']))) {
+			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key']);
 			if (!$verified) {
 				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
 																implode("\r\n", $comment['body']) . "\r\n" . 
 																$comment['from'], 
-													$comment['user-signature'], 
+													$comment['usersignature'], 
 													$comment['user-key']);
 			} # if
 		} # if
@@ -137,11 +137,12 @@ class SpotSigning {
 	 * bestaan uit 00.
 	 */
 	function makeExpensiveHash($prefix, $suffix) {
+		# FIXME: Dit zou eigenlijk CPU van de clientside (via javascript) moeten kosten, geen server-resources
 		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 		$runCount = 0;
 		
 		$hash = $prefix . $suffix;
-		
+
 		while(substr($hash, 0, 4) !== '0000') {	
 			if ($runCount > 100000) {
 				throw new Exception("Unable to calculate SHA1 hash: " . $runCount);

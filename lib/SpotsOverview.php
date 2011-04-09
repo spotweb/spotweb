@@ -33,6 +33,14 @@ class SpotsOverview {
 		$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
 		return $fullSpot;
 	} # getFullSpot
+
+
+	/*
+	 * Callback functie om enkel verified 'iets' terug te geven
+	 */
+	function cbVerifiedOnly($x) {
+		return $x['verified'];
+	} # cbVerifiedOnly
 	
 	/*
 	 * Geef de lijst met comments terug 
@@ -45,14 +53,38 @@ class SpotsOverview {
 		# Vraag een lijst op met alle comments messageid's
 		$commentList = $this->_db->getCommentRef($msgId);
 		
-		# haal enkel die comments op wat we denken nodig te hebben
-		# volgens de parameters
+		# we hebben nu de lijst met messageid's, vraag die full
+		# comments op die al in de database zitten
+		$fullComments = $this->_db->getCommentsFull($commentList);
+		
+		# loop nu door de commentids heen, en die unsetten we feitelijk
+		# in the commentlist
+		foreach($fullComments as $fullComment) {
+			unset($commentList[array_search($fullComment['messageid'], $commentList)]);
+		} # foreach
+		
+		# en haal de overgebleven comments op van de NNTP server
+		if (!empty($commentList)) {
+			$newComments = $nntp->getComments($commentList);
+			
+			# voeg ze aan de database toe
+			$this->_db->addCommentsFull($newComments);
+			
+			# en voeg de oude en de nieuwe comments samen
+			$fullComments = array_merge($fullComments, $newComments);
+		} # foreach
+		
+		# filter de comments op enkel geverifieerde comments
+		$fullComments = array_filter($fullComments, array($this, 'cbVerifiedOnly'));
+
+		
+		# geef enkel die comments terug die gevraagd zijn. We vragen wel alles op
+		# zodat we weten welke we moetne negeren.
 		if (($start > 0) || ($length > 0)) {
-			$commentList = array_slice($commentList, $start, $length);
+			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
 		
-		# en haal de comments zelf op
-		return $nntp->getComments($commentList);
+		return $fullComments;
 	} # getSpotComments()
 	
 	/* 
@@ -276,7 +308,13 @@ class SpotsOverview {
 						$subcatValues = array();
 						
 						foreach($subcatItem as $subcatValue) {
-							$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+							# equality ipv like doen
+							if (in_array($subcat, array('a', 'z'))) {
+								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
+							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
+								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+							} # if
 						} # foreach
 						
 						# voeg de subfilter values (bv. alle formaten films) samen met een OR
@@ -348,7 +386,15 @@ class SpotsOverview {
 			
 			foreach(array_keys($strongNotList) as $strongNotCat) {
 				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-					$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcatd LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+					$subcat = $strongNotSubcat[0];
+
+					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+					# equality ipv like doen
+					if (in_array($subcat, array('a', 'z'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
+					} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+					} # if
 				} # foreach				
 			} # forEach
 

@@ -119,6 +119,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 						
+						# FIXME: Message-ID kan ook van een comment zijn,
+						# onderstaande code gaat uit van een spot.
+
 						# is dit een geldig commando?
 						if (array_search($commandAr[0], $validCommands) !== false) {
 							switch($this->_settings['spot_moderation']) {
