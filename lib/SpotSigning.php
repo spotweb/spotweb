@@ -113,7 +113,7 @@ class SpotSigning {
 			if (!$verified) {
 				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
 																implode("\r\n", $comment['body']) . "\r\n" . 
-																$comment['from'], 
+																$comment['fromhdr'], 
 													$comment['usersignature'], 
 													$comment['user-key']);
 			} # if
@@ -144,7 +144,7 @@ class SpotSigning {
 		$hash = $prefix . $suffix;
 
 		while(substr($hash, 0, 4) !== '0000') {	
-			if ($runCount > 100000) {
+			if ($runCount > 400000) {
 				throw new Exception("Unable to calculate SHA1 hash: " . $runCount);
 			} # if
 			$runCount++;
