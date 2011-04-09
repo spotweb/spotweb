@@ -11,12 +11,6 @@ class SpotTemplateHelper {
 	protected $_db;
 	protected $_params;
 	
-	# We gebruiken een static watchlist en een array search omdat dit waarschijnlijk
-	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
-	# deze op classe niveau beschikbaar zodat de isBeingWatched()
-	# dezelfde data gebruikt en maar 1 query nodig is
-	protected static $wtList = -1;
-
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
