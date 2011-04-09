@@ -1,7 +1,6 @@
 <?php 
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-			<!-- <div class="melding" style="position:fixed; left:0; top:0; width:auto; height:auto; background:#000; color:#fff; padding:2px;"></div> -->
             <div class="spots">
 				<table class="spots" summary="Spots">
 					<thead>

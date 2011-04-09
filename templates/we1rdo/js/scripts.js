@@ -5,8 +5,9 @@ function openSpot(url) {
 	$("#overlay").show();
 	$("#overlay").addClass('loading');
 	
-	var scrollLocation = $("div.container").scrollTop();
+	var scrollLocation = $(document).scrollTop();
 	$("#overlay").load(url+' #details', function() {
+		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading');
 		
 		$("a.closeDetails").click(function(){ 
@@ -20,18 +21,19 @@ function openSpot(url) {
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
+	$("div.container").removeClass("hidden").addClass("visible");
 	$("#overlay").hide();
 	$("#details").remove();
-	$("div.container").scrollTop(scrollLocation);
+	$(document).scrollTop(scrollLocation);
 }
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	var pagenr = $('#nextPage').val();
-	$("div.container").scroll(function() {
+	$(document).scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
 		
-		if($("div.container").scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
+		if($(document).scrollTop() >= $("div.spots").height() - $(window).height() && $("div.spots").height() >= $(window).height() && pagenr > 0) {
 			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
