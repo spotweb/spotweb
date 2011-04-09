@@ -23,7 +23,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 		
 		#- display stuff -#
 		$this->template('header');
-		$this->template('spotinfo', array('spot' => $fullSpot, 'comments' => $comments));
+		$this->template('spotinfo', array('spot' => $fullSpot));
 		$this->template('footer');
 	} # render
 	
