@@ -87,8 +87,8 @@ function toggleImageSize(url) {
 		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
 		$("img.spotinfoimage").addClass("full");
 		$("img.spotinfoimage").css({
-			'max-width': $("div#overlay").width(),
-			'max-height': $("div#overlay").height()
+			'max-width': $("div#overlay").width() - 5,
+			'max-height': $("div#overlay").height() - 35
 		});
 	}
 }
