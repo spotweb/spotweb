@@ -44,7 +44,7 @@ abstract class SpotRetriever_Abs {
 			$this->_db->setRetrieverRunning($this->_server['host'], true);
 
 			# zo niet, dan gaan we draaien
-			$this->displayStatus("start", "");
+			$this->displayStatus("start", $this->_server['host']);
 			$this->_spotnntp = new SpotNntp($this->_server, $this->_settings['use_openssl']);
 			$this->_msgdata = $this->_spotnntp->selectGroup($group);
 			
