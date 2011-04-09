@@ -73,16 +73,20 @@ function loadSpotImage() {
 	});
 }
 
-function toggleSpotImage(url) {
-	if($("div#details").is(':visible')) {
-		$("div#details").hide();
-		$("div#overlay").append('<div class="fullImage"><a class="postimagefull" style="display:block;" onclick="toggleSpotImage()"><img class="spotinfoimage" src="'+url+'" /></a></div>');
-		$("img.spotinfoimage").load(function(){
-			
-		});
+function toggleImageSize(url) {
+	if($("img.spotinfoimage").hasClass("full")) {
+		$("img.spotinfoimage").removeClass("full");
+		$("img.spotinfoimage").removeAttr("style");
 	} else {
-		$("div.fullImage").remove();
-		$("div#details").show();
+		$('a.postimage').css({
+			'width': $("img.spotinfoimage").width(),
+			'height': $("img.spotinfoimage").height()
+		});
+		$("img.spotinfoimage").addClass("full");
+		$("img.spotinfoimage").css({
+			'max-width': $("div#overlay").width(),
+			'max-height': $("div#overlay").height()
+		});
 	}
 }
 
