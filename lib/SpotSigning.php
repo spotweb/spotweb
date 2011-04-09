@@ -137,11 +137,14 @@ class SpotSigning {
 	 * bestaan uit 00.
 	 */
 	function makeExpensiveHash($prefix, $suffix) {
+
+		# FIXME: Dit zou eigenlijk CPU van de clientside (via javascript) moeten kosten, geen server-resources
+
 		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 		$runCount = 0;
 		
 		$hash = $prefix . $suffix;
-		
+
 		while(substr($hash, 0, 4) !== '0000') {	
 			if ($runCount > 100000) {
 				throw new Exception("Unable to calculate SHA1 hash: " . $runCount);
