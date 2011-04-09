@@ -129,11 +129,14 @@ try {
 		} # statics
 
 		default : {
-				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
+				$page = new SpotPage_index($db, $settings, $settings['prefs'],
 							Array('search' => $req->getDef('search', $settings['index_filter']),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
-								  'sortdir' => $req->getDef('sortdir', ''))
+								  'sortdir' => $req->getDef('sortdir', ''),
+								  'messageid' => $req->getDef('messageid', ''),
+								  'action' => $req->getDef('action', ''),
+								  )
 					);
 				$page->render();
 				break;

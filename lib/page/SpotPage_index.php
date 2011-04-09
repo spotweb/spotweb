@@ -7,8 +7,14 @@ class SpotPage_index extends SpotPage_Abs {
 
 	function __construct($db, $settings, $prefs, $params) {
 		parent::__construct($db, $settings, $prefs);
-		
+
 		$this->_params = $params;
+
+		$action = $this->_params['action'];
+		if (array_search($action, array('add', 'remove')) === false) {
+			$action = '';
+		}
+		$this->_action = $action;		
 	} # ctor
 
 	function render() {
@@ -25,6 +31,15 @@ class SpotPage_index extends SpotPage_Abs {
 		} else {
 			$prevPage = max($pageNr - 1, 0);
 		} # else
+		
+		# afhankelijk van wat er gekozen is, voer het uit
+		if (isset($this->_params['search']['filterValues']['Watch'])) {
+			switch($this->_action) {
+				case 'remove'	: $this->_db->removeFromWatchlist($this->_params['messageid']); break;
+				case 'add'		: $this->_db->addToWatchList($this->_params['messageid'], ''); break;
+				default			: ;
+			}
+		}
 		
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter, 
