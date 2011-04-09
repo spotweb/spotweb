@@ -36,7 +36,7 @@ $(function(){
 	$(window).scroll(function() {
 		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
 
-		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0) {
+		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
 			var scrollLocation = $("div.container").scrollTop();
 			$("#overlay").show().addClass('loading');
 			$("div#overlay").load(url, function() {
@@ -126,12 +126,12 @@ function spotNav(direction) {
 	if (direction == 'prev' && prev.size() == 1) {
 		current.removeClass('active');
 		prev.addClass('active');
+		$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 	} else if (direction == 'next' && next.size() == 1) {
 		current.removeClass('active');
 		next.addClass('active');
+		$(document).scrollTop($('table.spots tr.active').offset().top - 2)
 	}
-	
-	$(document).scrollTop($('table.spots tbody tr.active').offset().top - 2)
 
 	if($("#overlay").is(':visible')) {
 		$("a.closeDetails").click();
