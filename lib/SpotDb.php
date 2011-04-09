@@ -325,11 +325,13 @@ class SpotDb
 												s.filesize AS filesize,
 												d.stamp AS downloadstamp,
 												f.userid AS userid,
-												f.verified AS verified" . 
+												f.verified AS verified,
+												w.dateadded as dateadded" .
 												$extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
+										 LEFT JOIN watchlist AS w on s.messageid = w.messageid
 										 " . $sqlFilter . " 
 										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()

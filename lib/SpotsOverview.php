@@ -448,6 +448,11 @@ class SpotsOverview {
 		if (isset($search['filterValues']['Downloaded'])) {
 			$textSearch[] = ' (d.stamp IS NOT NULL)';
 		} # if
+		
+		# Spots in watchlist
+		if (isset($search['filterValues']['Watch'])) {
+			$textSearch[] = ' (w.dateadded IS NOT NULL)';
+		}
 
 		$endFilter = array();
 		if (!empty($filterList)) {

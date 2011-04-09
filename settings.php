@@ -274,12 +274,12 @@ if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
 	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
 	if ($settings['keep_watchlist']) {
-		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "");
 	}
 	if ($settings['keep_downloadlist']) {
 		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
 	}
-	$settings['quicklinks'][] = Array('Help', "images/icons/help.png", "?page=help", "");
+	$settings['quicklinks'][] = Array('Help', "images/icons/help.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Help:0", "");
 } # if isset
 
 #
