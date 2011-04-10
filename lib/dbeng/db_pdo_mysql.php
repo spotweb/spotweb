@@ -23,7 +23,19 @@ class db_pdo_mysql extends db_pdo {
 	
 	function connect() {
        	if (!$this->_conn instanceof PDO) {
-			$this->_conn = new PDO('mysql:dbname=' . $this->_db_db . ';host=' . $this->_db_host, $this->_db_user, $this->_db_user);
+			if ($this->_db_host[0] === '/') {
+				$this->_db_conn = "unix_socket=" . $this->_db_host;
+			} else {
+				$this->_db_conn = "host=" . $this->_db_host . ";port=3306";
+			}
+
+			try {
+				$this->_conn = new PDO('mysql:' . $this->_db_conn . ';dbname=' . $this->_db_db, $this->_db_user, $this->_db_pass);
+			} catch (PDOException $e) {
+				print "Error!: " . $e->getMessage() . "<br/>";
+				die();
+			}
+
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		
 			# Create the database structure
