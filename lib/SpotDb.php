@@ -516,13 +516,6 @@ class SpotDb
 	} # hasBeenDownload
 
 	/*
-	 * Geef een lijst terug van alle downloads
-	 */
-	function getDownloads() {
-		return $this->_conn->arrayQuery("SELECT s.title AS title, dl.stamp AS stamp, dl.messageid AS messageid FROM downloadlist dl, spots s WHERE dl.messageid = s.messageid");
-	} # getDownloads
-
-	/*
 	 * Wis de lijst met downloads
 	 */
 	function emptyDownloadList() {
