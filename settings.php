@@ -16,6 +16,9 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
+# Password salt -- dit is een unieke string die verplicht ingevuld en veranderd moet worden
+$settings['pass_salt'] = 'unieke string';
+
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -313,10 +316,9 @@ if (($settings['templates']['autodetect']) &&
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
 
-# Fix eventueel oude template paths naar nieuwe template paths
-if (substr($settings['tpl_path'], 0, strlen('./templates_')) == './templates_') {
-	echo "LET OP! De lokatie van de templates is gewijzigd, pas je ownsettings.php aan!<br>";
-	$settings['tpl_path'] = str_replace('templates_', 'templates/', $settings['tpl_path']);
+# Controleer dat er wel een password salt ingevuld is
+if ($settings['pass_salt'] == 'unieke string') {
+	die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
 } # if
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
