@@ -28,6 +28,7 @@ try {
 	} # switch
 	
 	echo "Updating schema..\r\n";
+	$dbStruct->createDatabase();
 	$dbStruct->updateSchema();
 	echo "Schema update done\r\n";
 
