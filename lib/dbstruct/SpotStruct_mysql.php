@@ -62,14 +62,16 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			# downloadlist
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) NOT NULL,
-										   stamp INTEGER) ENGINE = MYISAM;");
+										   stamp INTEGER,
+										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
 
 			# watchlist
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 												   messageid VARCHAR(128) NOT NULL,
 												   dateadded INTEGER,
-												   comment TEXT) ENGINE = MYISAM;");
+												   comment TEXT,
+												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid);");
 			
 			# commentsfull

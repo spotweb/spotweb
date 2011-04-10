@@ -84,6 +84,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					# als dit een nieuw soort comment is met rating vul die dan ook op
 					if (count($msgIdParts) >= 4) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
+					} else {
+						$msgheader['rating'] = 0;
 					} # if
 					$lastProcessedId = $commentId;
 
