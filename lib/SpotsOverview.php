@@ -46,7 +46,7 @@ class SpotsOverview {
 	 * Geef de lijst met comments terug 
 	 */
 	function getSpotComments($msgId, $nntp, $start, $length) {
-		if (!$this->_settings['retrieve_comments']) {
+		if (!$this->_settings->get('retrieve_comments')) {
 			return array();
 		} # if
 	
@@ -225,7 +225,7 @@ class SpotsOverview {
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
-			$search = array_merge($search, $this->_settings['index_filter']);
+			$search = array_merge($search, $this->_settings->get('index_filter'));
 		} # if
 		
 		# convert the dynatree list to a list 

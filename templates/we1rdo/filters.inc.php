@@ -11,7 +11,7 @@
 						<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></div>
 <?php
 	$filterColCount = 3;
-	if ($settings['retrieve_full']) {
+	if ($settings->get('retrieve_full')) {
 		$filterColCount++;
 	} # if
 ?>
@@ -21,7 +21,7 @@
 									<td> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label> </td>
 									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label> </td>
 									<td> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label> </td>
-<?php if ($settings['retrieve_full']) { ?>
+<?php if ($settings->get('retrieve_full')) { ?>
 									<td> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label> </td>
 <?php } ?>									
 								</tr>
@@ -97,14 +97,14 @@
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
-	if ($settings['show_updatebutton']) {
+	if ($settings->get('show_updatebutton')) {
 ?>
 						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
 <?php
 	}
 ?>
 <?php
-	if ($settings['keep_downloadlist']) {
+	if ($settings->get('keep_downloadlist')) {
 ?>
 						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
 <?php

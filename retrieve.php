@@ -11,6 +11,7 @@ require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";
 require_once "lib/SpotParser.php";
 require_once "lib/SpotNntp.php";
+require_once "lib/SpotSettings.php";
 require_once "lib/retriever/SpotRetriever_Spots.php";
 require_once "lib/retriever/SpotRetriever_Comments.php";
 require_once "lib/imexport/Spot_SpotMapping.php";
@@ -40,31 +41,37 @@ if (!$db->schemaValid()) {
 	die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 } # if
 
+# Creer het settings object
+$settings = SpotSettings::singleton($db, $settings);
+
+# We vragen de nntp_hdr settings alvast op
+$settings_nntp_hdr = $settings->get('nntp_hdr');
+	
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
 if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
-	$db->setRetrieverRunning($settings['nntp_hdr']['host'], false);
+	$db->setRetrieverRunning($settings_nntp_hdr['host'], false);
 } # if
 
 ## Spots
 try {
-
-	$retriever = new SpotRetriever_Spots($settings['nntp_hdr'], 
+	$rsaKeys = $settings->get('rsa_keys');
+	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
 										 $db, 
 										 $settings,										 
-										 $settings['rsa_keys'], 
+										 $rsaKeys, 
 										 $req->getDef('output', ''),
-										 $settings['retrieve_full']);
-	$msgdata = $retriever->connect($settings['hdr_group']);
+										 $settings->get('retrieve_full'));
+	$msgdata = $retriever->connect($settings->get('hdr_group'));
 	$retriever->displayStatus('dbcount', $db->getSpotCount(''));
 	
-	$curMsg = $db->getMaxArticleId($settings['nntp_hdr']['host']);
+	$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
 	if ($curMsg != 0) {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
 
-	$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
+	$retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 	$retriever->quit();
-	$db->setLastUpdate($settings['nntp_hdr']['host']);
+	$db->setLastUpdate($settings_nntp_hdr['host']);
 } 
 catch(RetrieverRunningException $x) {
 	echo PHP_EOL . PHP_EOL;
@@ -79,19 +86,19 @@ catch(Exception $x) {
 
 ## Comments
 try {
-	if ($settings['retrieve_comments']) {
-		$retriever = new SpotRetriever_Comments($settings['nntp_hdr'], 
+	if ($settings->get('retrieve_comments')) {
+		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
 												$db,
 												$settings,
 												$req->getDef('output', ''));
-		$msgdata = $retriever->connect($settings['comment_group']);
+		$msgdata = $retriever->connect($settings->get('comment_group'));
 
 		$curMsg = $db->getMaxArticleId('comments');
 		if ($curMsg != 0) {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
 
-		$retriever->loopTillEnd($curMsg, $settings['retrieve_increment']);
+		$retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 		$retriever->quit();
 	} # if
 }
@@ -107,8 +114,8 @@ catch(RetrieverRunningException $x) {
 
 ## Retention cleanup
 try {
-	if ($settings['retention'] > 0) {
-		$db->deleteSpotsRetention($settings['retention']);
+	if ($settings->get('retention') > 0) {
+		$db->deleteSpotsRetention($settings->get('retention'));
 	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;

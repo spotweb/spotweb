@@ -25,8 +25,9 @@ class SpotNzb {
 	/*
 	 * Voer een commando uit, geeft een exception als commando mislukt
 	 */	 
-	function runCommand($fullSpot) {
-		$cmdToRun = $this->_settings['nzbhandler']['command'];
+	 function runCommand($fullSpot) {
+		$cmdToRun = $this->_settings->get('nzbhandler');
+		$cmdToRun = $cmdToRun['command'];
 		$cmdToRun = str_replace('$SPOTTITLE', $this->cleanForFileSystem($fullSpot['title']), $cmdToRun);
 		$cmdToRun = str_replace('$NZBPATH', $this->makeNzbLocalPath($fullSpot['title']), $cmdToRun);
 		
@@ -156,7 +157,8 @@ class SpotNzb {
 		
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
-		switch($this->_settings['nzbhandling']['prepare_action']) {
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		switch($nzbHandling['prepare_action']) {
 			case 'zip'	: {
 				$nzb = $this->zipNzbList($nzbList); 
 				$mimeType = 'application/x-zip-compressed';
@@ -202,7 +204,7 @@ class SpotNzb {
 		} # switch
 		
 		# en voeg hem toe aan de lijst met downloads
-		if ($this->_settings['keep_downloadlist']) {
+		if ($this->_settings->get('keep_downloadlist')) {
 			foreach($messageids as $thisMsgId) {
 				$this->_db->addDownload($thisMsgId, $ourUserId);
 			} # foreach
@@ -231,11 +233,12 @@ class SpotNzb {
 	 * Genereert het volledige path naar de NZB locatie waar files opgeslagen moeten worden
 	 */
 	function makeNzbLocalPath($spot) {
-		if (empty($this->_settings['nzbhandling']['local_dir'])) {
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		if (empty($nzbHandling['local_dir'])) {
 			throw new InvalidLocalDirException("Unable to save NZB file, local dir is empty");
 		} # if
 		
-		$path = $this->_settings['nzbhandling']['local_dir'];
+		$path = $nzbHandling['local_dir'];
 		$fname = $this->cleanForFileSystem($spot['title']);
 		
 		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
@@ -253,7 +256,8 @@ class SpotNzb {
 	 */
 	function generateSabnzbdUrl($spot, $action) {
 		# en creeer die sabnzbd url
-		$sabnzbd = $this->_settings['nzbhandling']['sabnzbd'];
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		$sabnzbd = $nzbHandling['sabnzbd'];
 		$tmp = $sabnzbd['url'];
 		
 		# vervang een aantal variables		
@@ -267,7 +271,7 @@ class SpotNzb {
 			# Client roept sabnzbd aan
 			$tmp = htmlentities($tmp);
 			$tmp = str_replace('$SABNZBDMODE', 'addurl', $tmp);
-			$tmp = str_replace('$NZBURL', urlencode($this->_settings['spotweburl'] . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
+			$tmp = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
 		} elseif ($action == 'push-sabnzbd') {
 			# server roept sabnzbd aan
 			$tmp = str_replace('$SABNZBDMODE', 'addfile', $tmp);
@@ -285,11 +289,12 @@ class SpotNzb {
 		$spot['category'] = (int) $spot['category'];
 		
 		# vind een geschikte category
-		$category = $this->_settings['sabnzbd']['categories'][$spot['category']]['default'];
+		$sabnzbd = $this->_settings->get('sabnzbd');
+		$category = $sabnzbd['categories'][$spot['category']]['default'];
 
 		foreach($spot['subcatlist'] as $cat) {
-			if (isset($this->_settings['sabnzbd']['categories'][$spot['category']][$cat])) {
-				$category = $this->_settings['sabnzbd']['categories'][$spot['category']][$cat];
+			if (isset($sabnzbd['categories'][$spot['category'][$cat]])) {
+				$category = $sabnzbd['categories'][$spot['category'][$cat]];
 			} # if
 		} # foreach
 		

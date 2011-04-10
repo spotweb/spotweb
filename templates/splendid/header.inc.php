@@ -39,7 +39,7 @@
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function() {
-			$('#spots').load('?search[tree]=<?php if(!empty($settings['index_filter']['tree'])) echo $settings['index_filter']['tree'] ?>&ajax=1');
+			$('#spots').load('?search[tree]=<?php $indexFilterTmp = $settings->get('index_filter'); if(!empty($indexFilterTmp['tree'])) echo $indexFilterTmp['tree'] ?>&ajax=1');
 			
 			$("a.spotlink").fancybox({
 				'width'			: '80%',
