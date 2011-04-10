@@ -1,32 +1,49 @@
 <?php
 require_once "Math/BigInteger.php";
+require_once "lib/SpotSeclibToOpenSsl.php";
 require_once "Crypt/RSA.php";
 
 class SpotSigning {
 
 	public function __construct($useOpenSsl) {
-		if (($useOpenSsl) && (!defined('CRYPT_RSA_MODE'))) {
-			define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
-		} # if
+		if (!defined('CRYPT_RSA_MODE')) {
+			if ($useOpenSsl) {
+				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
+			} else {
+				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL);
+ 			} # else
+		} # if not defined
 	} # ctor
+
 
 	private function checkRsaSignature($toCheck, $signature, $rsaKey) {
 		# de signature is base64 encoded, eerst decoden
 		$signature = base64_decode($signature);
-		
-		# Initialize the public key to verify with
-		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
-		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
-		
-		# and verify the signature
-		$rsa = new Crypt_RSA();
-		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		
-		# Supress notice if the signature was invalid
-		$saveErrorReporting = error_reporting(E_ERROR);
-		$tmpSave = $rsa->verify($toCheck, $signature);
-		error_reporting($saveErrorReporting);
+
+		# Controleer of we de native OpenSSL libraries moeten
+		# gebruiken om RSA signatures te controleren
+		if (CRYPT_RSA_MODE != CRYPT_RSA_MODE_OPENSSL) {
+			# Initialize the public key to verify with
+			$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
+			$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
+					
+			# and verify the signature
+			$rsa = new Crypt_RSA();
+			$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
+			$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+
+			# Supress notice if the signature was invalid
+			$saveErrorReporting = error_reporting(E_ERROR);
+			$tmpSave = $rsa->verify($toCheck, $signature);
+			error_reporting($saveErrorReporting);
+		} else {
+			# Initialize the public key to verify with
+			$pubKey['n'] = base64_decode($rsaKey['modulo']);
+			$pubKey['e'] = base64_decode($rsaKey['exponent']);
+
+			$nativeVerify = new SpotSeclibToOpenSsl();
+			$tmpSave = $nativeVerify->verify($pubKey, $toCheck, $signature);
+		} # else
 
 		return $tmpSave;
 	} # checkRsaSignature
@@ -134,11 +151,11 @@ class SpotSigning {
 	
 	/*
 	 * Bereken een SHA1 hash van het bericht en doe dit net zo lang tot de eerste bytes
-	 * bestaan uit 00.
+	 * bestaan uit 0000. 
+	 *
+	 * Normaal gebruik je hiervoor de JS variant.
 	 */
 	function makeExpensiveHash($prefix, $suffix) {
-		# FIXME: Dit zou eigenlijk CPU van de clientside (via javascript) moeten kosten, geen server-resources
-		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 		$runCount = 0;
 		
 		$hash = $prefix . $suffix;
@@ -149,10 +166,7 @@ class SpotSigning {
 			} # if
 			$runCount++;
 			
-			$uniquePart = '';
-			for($i = 0; $i < 15; $i++) {
-				$uniquePart .= $possibleChars[mt_rand(0, strlen($possibleChars) - 1)];
-			} # for
+			$uniquePart = $this->makeRandomStr(15);
 			
 			$hash = sha1($prefix . '.' . $uniquePart . $suffix, false);			
 		} # while
@@ -160,6 +174,18 @@ class SpotSigning {
 		return $prefix . '.' . $uniquePart . $suffix;
 	} # makeExpensiveHash
 	
+	function makeRandomStr($len) {
+		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+		
+		$unique = '';
+		for($i = 0; $i < $len; $i++) {
+			$unique .= $possibleChars[mt_rand(0, strlen($possibleChars) - 1)];
+		} # for
+		
+		return $unique;
+	} # makeRandomStr
+				
+		
 	/*
 	 * 'Bereken' de userid aan de hand van z'n publickey
 	 */

@@ -68,6 +68,12 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid");
 			$this->addIndex("idx_commentsfull_2", "", "commentsfull", "messageid,stamp");
 		} # if
+
+		# voeg de spotrating kolom toe
+		if (!$this->columnExists('commentsxover', 'spotrating')) {
+			$this->addColumn("spotrating", "commentsxover", "INTEGER DEFAULT 0");
+		} # if
+
 	} # updateSchema
 	
 } # class

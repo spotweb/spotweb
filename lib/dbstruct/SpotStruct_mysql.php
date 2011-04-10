@@ -7,28 +7,26 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$q = $this->_dbcon->arrayQuery("SHOW TABLES");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128),
+										messageid varchar(128) NOT NULL,
 										category INTEGER, 
 										subcat INTEGER,
-										poster VARCHAR(128),
+										poster VARCHAR(128) NOT NULL,
 										groupname VARCHAR(128),
 										subcata VARCHAR(64),
 										subcatb VARCHAR(64),
 										subcatc VARCHAR(64),
 										subcatd VARCHAR(64),
 										subcatz VARCHAR(64),
-										title VARCHAR(128),
+										title VARCHAR(128) NOT NULL,
 										tag VARCHAR(128),
-										stamp INTEGER,
+										stamp INTEGER(10) UNSIGNED,
 										reversestamp INTEGER DEFAULT 0,
-										filesize BIGINT DEFAULT 0,
-										moderated BOOLEAN DEFAULT FALSE) ENGINE = MYISAM;");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_3 ON spots(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_5 ON spots(poster);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_6 ON spots(reversestamp);");
+										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0,
+										moderated BOOLEAN) ENGINE = MYISAM;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(category, subcata, subcatb, subcatc, subcatd, subcatz DESC);");
 
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
@@ -36,16 +34,16 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 			# spotsfull
 			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128),
+										messageid varchar(128) NOT NULL,
 										userid varchar(32),
 										verified BOOLEAN,
-										usersignature TEXT,
-										userkey TEXT,
-										xmlsignature TEXT,
+										usersignature VARCHAR(128),
+										userkey VARCHAR(200),
+										xmlsignature VARCHAR(128),
 										fullxml TEXT,
-										filesize BIGINT) ENGINE = MYISAM;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
+										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
 			
 			# NNTP table
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
@@ -55,40 +53,37 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 			# commentsxover
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128),
-										   nntpref VARCHAR(128)) ENGINE = MYISAM;");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
+										   messageid VARCHAR(128) NOT NULL,
+										   nntpref VARCHAR(128),
+										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
 			
 			# downloadlist
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128),
+										   messageid VARCHAR(128) NOT NULL,
 										   stamp INTEGER) ENGINE = MYISAM;");
-			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
 
 			# watchlist
-			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-												   messageid VARCHAR(128),
+			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
+												   messageid VARCHAR(128) NOT NULL,
 												   dateadded INTEGER,
 												   comment TEXT) ENGINE = MYISAM;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid);");
 			
 			# commentsfull
-			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
-									  `id` int(11) NOT NULL AUTO_INCREMENT,
-									  `messageid` varchar(128) DEFAULT NULL,
-									  `fromhdr` varchar(128) DEFAULT NULL,
-									  `stamp` int(11) DEFAULT NULL,
-									  `usersignature` varchar(128) DEFAULT NULL,
-									  `userkey` varchar(128) DEFAULT NULL,
-									  `userid` varchar(128) DEFAULT NULL,
-									  `hashcash` varchar(128) DEFAULT NULL,
-									  `body` TEXT DEFAULT '',
-									  `verified` tinyint(1) DEFAULT NULL,
-									  PRIMARY KEY (`id`)
-									) ENGINE=MyISAM");
+			$this->_dbcon->rawExec("CREATE TABLE commentsfull (id INTEGER PRIMARY KEY AUTO_INCREMENT,
+									  messageid VARCHAR(128) NOT NULL,
+									  fromhdr VARCHAR(128),
+									  stamp INTEGER(10) UNSIGNED,
+									  usersignature VARCHAR(128),
+									  userkey VARCHAR(200),
+									  userid VARCHAR(32),
+									  hashcash VARCHAR(128),
+									  body TEXT,
+									  verified BOOLEAN) ENGINE=MyISAM");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsfull_2 ON commentsfull(messageid, stamp)");
 		} # if
 	} # createDatabase
 

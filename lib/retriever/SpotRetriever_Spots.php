@@ -84,9 +84,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
-
 #var_dump($hdrList);
-			
+
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
 			foreach($hdrList as $msgid => $msgheader) {
@@ -95,13 +94,17 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
+				
+				# definieer een paar booleans zodat we niet steeds een array lookup moeten doen
+				# en de code wat duidelijker is
+				$header_isInDb = isset($dbIdList['spot'][$msgId]);
+				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
 
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
 				# die wel in de header zitten, zitten niet in de database (denk aan 'keyid')
-				if ((!in_array($msgId, $dbIdList['spot'])) || (!in_array($msgId, $dbIdList['fullspot']))) {
+				if ((!$header_isInDb) || (!$fullspot_isInDb)) {
 					$hdrsRetrieved++;
-		
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Date'],
@@ -109,12 +112,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$this->_rsakeys,
 													$this->_settings['use_openssl']);
 
+											
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
 						continue;
 					} # if
-					
+
 					if ($spot['keyid'] == 2) {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
@@ -123,7 +127,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						# onderstaande code gaat uit van een spot.
 
 						# is dit een geldig commando?
-						if (array_search($commandAr[0], $validCommands) !== false) {
+						if (in_array($commandAr[0], $validCommands) !== false) {
 							switch($this->_settings['spot_moderation']) {
 								case 'disable'	: break;
 								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]); break;
@@ -141,9 +145,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$skipCount++;
 						} else {
 							# Hier kijken we alleen of de spotheader niet bestaat
-							if (!in_array($msgId, $dbIdList['spot'])) {
+							if (!$header_isInDb) {
 								$this->_db->addSpot($spot);
-								$dbIdList['spot'][] = $msgId;
+								$header_isInDb = true;
 								$lastProcessedId = $msgId;
 
 								if ($spot['wassigned']) {
@@ -151,6 +155,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 								} # if
 							} # if 
 						} # if
+					
 					} # else
 				} else {
 					$lastProcessedId = $msgId;
@@ -158,8 +163,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
 				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
-				if ((in_array($msgId, $dbIdList['spot'])) &&   # header moet in db zitten
-				   (!in_array($msgId, $dbIdList['fullspot']))) # maar de fullspot niet
+				if (($header_isInDb)  &&		# header moet in db zitten
+					(!$fullspot_isInDb)) 		# maar de fullspot niet
 				   {
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
@@ -176,7 +181,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					
 							# en voeg hem aan de database toe
 							$this->_db->addFullSpot($fullSpot);
-							$dbIdList['fullspot'][] = $msgId;
+							$fullspot_isInDb = true;
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
@@ -198,6 +203,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} # if retrievefull
 				} # if fullspot is not in db yet
 			} # foreach
+
 
 			if (count($hdrList) > 0) {
 				$this->displayStatus("hdrparsed", $hdrsRetrieved);

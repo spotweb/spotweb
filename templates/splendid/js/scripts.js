@@ -45,7 +45,7 @@ function setMainFilter(f) {
 function addWatchSpot(spot,spot_id) {
 	
 	// Set watchspot
-	$.get("?page=watchlist&action=add&messageid="+spot);
+	$.get("?search[tree]=&search[unfiltered]=true&search[value][]=Watch:0&action=add&messageid="+spot);
 	
 	// Switch buttons
 	$('#watch_'+spot_id).hide();
@@ -55,7 +55,7 @@ function addWatchSpot(spot,spot_id) {
 function removeWatchSpot(spot,spot_id) {
 	
 	// Set watchspot
-	$.get("?page=watchlist&action=remove&messageid="+spot);
+	$.get("?search[tree]=&search[unfiltered]=true&search[value][]=Watch:0&action=remove&messageid="+spot);
 	
 	// Switch buttons
 	$('#watch_'+spot_id).show();

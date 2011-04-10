@@ -25,5 +25,5 @@ class db_pdo_sqlite extends db_pdo {
 	function safe($s) {
 		return sqlite_escape_string($s);
 	} # safe
-
+	
 } # class

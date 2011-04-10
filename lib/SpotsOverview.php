@@ -118,8 +118,10 @@ class SpotsOverview {
 		if (($start > 0) || ($length > 0)) {
 			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
-		
-		return $fullComments;
+
+		# omdat we soms array elementen unsetten, is de array niet meer
+		# volledig oplopend. We laten daarom de array hernummeren
+		return array_values($fullComments);
 	} # getSpotComments()
 	
 	/* 
@@ -129,25 +131,6 @@ class SpotsOverview {
 		return $nntp->getNzb($msgIdList);
 	} # getNzb
 
-	/*
-	 * Geeft het overzichts van spots in de watchlist terug
-	 */
-	function loadWatchlist($sort) {
-		# welke manier willen we sorteren?
-		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
-		if (array_search($sort['field'], $sortFields) === false) {
-			$sort = array();
-			$sort['field'] = 'stamp';
-			$sort['direction'] = 'DESC';
-		} else {
-			if ($sort['direction'] != 'DESC') {
-				$sort['direction'] = 'ASC';
-			} # if
-		} # else
-
-		return $this->_db->getWatchList($sort);
-	} # loadWatchList
-	
 	/*
 	 * Laad de spots van af positie $stat, maximaal $limit spots.
 	 *
@@ -444,9 +427,11 @@ class SpotsOverview {
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
-		# Downloaded spots
+		# Spots in Downloadlist or Watchlist
 		if (isset($search['filterValues']['Downloaded'])) {
 			$textSearch[] = ' (d.stamp IS NOT NULL)';
+		} elseif (isset($search['filterValues']['Watch'])) {
+			$textSearch[] = ' (w.dateadded IS NOT NULL)';
 		} # if
 
 		$endFilter = array();

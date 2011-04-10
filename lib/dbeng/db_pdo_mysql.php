@@ -20,20 +20,34 @@ class db_pdo_mysql extends db_pdo {
 		$this->_db_pass = $pass;
 		$this->_db_db = $db;
 	}
-	
+
 	function connect() {
-       	if (!$this->_conn instanceof PDO) {
-			$this->_conn = new PDO('mysql:dbname=' . $this->_db_db . ';host=' . $this->_db_host, $this->_db_user, $this->_db_user);
+		if (!$this->_conn instanceof PDO) {
+			if ($this->_db_host[0] === '/') {
+				$this->_db_conn = "unix_socket=" . $this->_db_host;
+			} else {
+				$this->_db_conn = "host=" . $this->_db_host . ";port=3306";
+			}
+
+			try {
+				$this->_conn = new PDO('mysql:' . $this->_db_conn . ';dbname=' . $this->_db_db, $this->_db_user, $this->_db_pass);
+			} catch (PDOException $e) {
+				print "Error!: " . $e->getMessage() . "<br/>";
+				die();
+			}
+
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		
 			# Create the database structure
 			$dbStruct = new SpotStruct_mysql($this);
 			$dbStruct->createDatabase();
-        } # if
-    } # connect()
-		
+		} # if
+	} # connect()
+
 	function safe($s) {
-		return mysql_real_escape_string($s);
+		$search=array("\\","\0","\n","\r","\x1a","'",'"');
+		$replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+		return str_replace($search, $replace, $s);
 	} # safe
 
 } # class

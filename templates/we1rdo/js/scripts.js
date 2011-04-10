@@ -242,7 +242,7 @@ function gotoNew(url) {
 // Toevoegen en verwijderen van spots aan watchlist
 function toggleWatchSpot(spot,action,spot_id) {
 	// Add/remove watchspot
-	$.get("?page=watchlist&action="+action+"&messageid="+spot);
+	$.get("?search[tree]=&search[unfiltered]=true&search[value][]=Watch:0&action="+action+"&messageid="+spot);
 
 	// Switch buttons
 	$('#watchremove_'+spot_id).toggle();

@@ -39,7 +39,7 @@ class SpotDb
 			case 'pdo_sqlite': $this->_conn = new db_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 				
-			default			: throw new Exception('Unknown DB engine specified, please choose either sqlite3 or mysql');
+			default			: throw new Exception('Unknown DB engine specified, please choose pdo_sqlite, mysql or pdo_mysql');
 		} # switch
 		
 		$this->_conn->connect();
@@ -257,15 +257,15 @@ class SpotDb
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as spot, messageid AS fullspot FROM spotsfull WHERE messageid IN (" . $msgIdList . ")");
-									  
+								
 		# en lossen we het hier op
 		foreach($rs as $msgids) {
 			if (!empty($msgids['spot'])) {
-				$idList['spot'][] = $msgids['spot'];
+				$idList['spot'][$msgids['spot']] = 1;
 			} # if
 			
 			if (!empty($msgids['fullspot'])) {
-				$idList['fullspot'][] = $msgids['fullspot'];
+				$idList['fullspot'][$msgids['fullspot']] = 1;
 			} # if
 		} # foreach
 		
@@ -325,11 +325,13 @@ class SpotDb
 												s.filesize AS filesize,
 												d.stamp AS downloadstamp,
 												f.userid AS userid,
-												f.verified AS verified" . 
-												$extendedFieldList . "
+												f.verified AS verified,
+												w.dateadded as w_dateadded
+												" . $extendedFieldList . "
 										 FROM spots AS s 
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
+										 LEFT JOIN watchlist AS w on s.messageid = w.messageid
 										 " . $sqlFilter . " 
 										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
@@ -392,9 +394,11 @@ class SpotDb
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
-												f.filesize AS filesize
+												f.filesize AS filesize,
+												w.dateadded as w_dateadded
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
+												LEFT JOIN watchlist AS w on s.messageid = w.messageid
 												JOIN spotsfull AS f ON f.messageid = s.messageid 
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
@@ -417,9 +421,9 @@ class SpotDb
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
-	function addCommentRef($messageid, $nntpref) {
-		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref) VALUES('%s', '%s')",
-								Array($messageid, $nntpref));
+	function addCommentRef($messageid, $nntpref, $rating) {
+		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
+								Array($messageid, $nntpref, $rating));
 	} # addCommentRef
 
 	/*
@@ -465,6 +469,13 @@ class SpotDb
 		
 		return $commentList;
 	} # getCommentsFull
+	
+	/*
+	 * Geeft de gemiddelde spot rating terug
+	 */
+	function getSpotRating($msgId) {
+		return $this->_conn->singleQuery("SELECT AVG(spotrating) AS rating FROM commentsxover WHERE nntpref = '%s' GROUP BY nntpref;", Array($nntpref));
+	} # getSpotRating
 	
 	/*
 	 * Geef al het commentaar references voor een specifieke spot terug
@@ -536,6 +547,7 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->exec("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # sqlite3
@@ -543,7 +555,8 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-									LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
+									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+									LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
 									LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
@@ -574,6 +587,8 @@ class SpotDb
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->exec("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->exec("DELETE FROM downloadlist WHERE downloadlist.messageid not in 
+									(SELECT messageid FROM spots)") ;
 				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
@@ -582,7 +597,8 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-					LEFT JOIN commentsfull ON commentsfull.messageid=commentsxover.nntpref
+					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+					LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
 					LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
@@ -650,41 +666,16 @@ class SpotDb
 				Array($messageid));
 	} # removeFromWatchlist
 
-	function getWatchlist($sort) {
-		return $this->_conn->arrayQuery("SELECT w.id AS id,
-										 w.messageid AS messageid, 
-										 w.dateadded AS dateadded, 
-										 w.comment AS comment, 
-										 s.title AS title, 
-										 s.category AS category, 
-										 s.poster AS poster, 
-										 s.subcata AS subcata, 
-										 s.subcatb AS subcatb, 
-										 s.subcatc AS subcatc, 
-										 s.subcatd AS subcatd, 
-										 s.subcatz AS subcatz,
-										 d.stamp AS downloadstamp,
-										 s.title AS title, 
-										 s.tag AS tag, 
-										 s.stamp AS stamp, 
-										 s.filesize AS filesize, 
-										 s.moderated AS moderated 
-									FROM watchlist w 
-									LEFT JOIN spots AS s ON s.messageid = w.messageid
-									LEFT JOIN downloadlist AS d on d.messageid = w.messageid
-									ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']));
-	} # addToWatchList
-
 	function beginTransaction() {
-		$this->_conn->exec('BEGIN;');
+		$this->_conn->beginTransaction();
 	} # beginTransaction
 
 	function abortTransaction() {
-		$this->_conn->exec('ROLLBACK;');
+		$this->_conn->rollback();
 	} # abortTransaction
 	
 	function commitTransaction() {
-		$this->_conn->exec('COMMIT;');
+		$this->_conn->commit();
 	} # commitTransaction
 	
 	function safe($q) {
