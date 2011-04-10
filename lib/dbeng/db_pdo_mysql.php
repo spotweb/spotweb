@@ -20,9 +20,9 @@ class db_pdo_mysql extends db_pdo {
 		$this->_db_pass = $pass;
 		$this->_db_db = $db;
 	}
-	
+
 	function connect() {
-       	if (!$this->_conn instanceof PDO) {
+		if (!$this->_conn instanceof PDO) {
 			if ($this->_db_host[0] === '/') {
 				$this->_db_conn = "unix_socket=" . $this->_db_host;
 			} else {
@@ -41,11 +41,13 @@ class db_pdo_mysql extends db_pdo {
 			# Create the database structure
 			$dbStruct = new SpotStruct_mysql($this);
 			$dbStruct->createDatabase();
-        } # if
-    } # connect()
-		
+		} # if
+	} # connect()
+
 	function safe($s) {
-		return mysql_real_escape_string($s);
+		$search=array("\\","\0","\n","\r","\x1a","'",'"');
+		$replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+		return str_replace($search, $replace, $s);
 	} # safe
 
 } # class
