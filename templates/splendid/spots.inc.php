@@ -157,7 +157,7 @@ if ($settings->get('keep_watchlist')) { ?>
 			} # if
 
 			# display the sabnzbd button
-			if (isset($settings->get('sabnzbd'))) {
+			if ($settings->exists('sabnzbd')) {
 				echo "<td> &nbsp; </td>";
 			} # if
 		} # else
