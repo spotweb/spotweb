@@ -143,7 +143,7 @@ $settings['prefs']['date_formatting'] = "human";
 
 # Is OpenSSL juist geconfigureerd en geladen als module? Zet dit dan op true, dan gaat het signen en verifieeren
 # van spots en comments sneller
-$settings['use_openssl'] = false; 
+$settings['use_openssl'] = true; 
 
 # settings 
 $settings['hdr_group'] = 'free.pt';
@@ -274,7 +274,7 @@ if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
 	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
 	if ($settings['keep_watchlist']) {
-		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?page=watchlist", "");
+		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "");
 	}
 	if ($settings['keep_downloadlist']) {
 		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");

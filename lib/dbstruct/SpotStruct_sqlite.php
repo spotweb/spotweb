@@ -55,7 +55,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# commentsxover table
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
 										   messageid VARCHAR(128),
-										   nntpref VARCHAR(128));");
+										   nntpref VARCHAR(128),
+										   spotrating INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 			

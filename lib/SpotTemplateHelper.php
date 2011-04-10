@@ -11,12 +11,6 @@ class SpotTemplateHelper {
 	protected $_db;
 	protected $_params;
 	
-	# We gebruiken een static watchlist en een array search omdat dit waarschijnlijk
-	# sneller is dan 100 tot 1000 queries per pagina in het overzichtsscherm. We maken
-	# deze op classe niveau beschikbaar zodat de isBeingWatched() en getWatchList()
-	# dezelfde data gebruiken en maar 1 query nodig is
-	protected static $wtList = -1;
-
 	function __construct($settings, $prefs, $db, $params) {
 		$this->_settings = $settings;
 		$this->_prefs = $prefs;
@@ -236,22 +230,13 @@ class SpotTemplateHelper {
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
-		static $wtListCnt = 0;
-
-		if (self::$wtList == -1) {
-			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
-			$wtListCnt = count(self::$wtList);
+		if (!$this->_settings['keep_watchlist']) {
+			return false;
 		} # if
 		
-		for($i = 0; $i < $wtListCnt; $i++) {
-			if (self::$wtList[$i]['messageid'] == $spot['messageid']) {
-				return true;
-			} # if
-		} # for
-		
-		return false;
+		return ($spot['w_dateadded'] != NULL);
 	} # isBeingWatched
-	
+
 	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
 		
@@ -423,7 +408,6 @@ class SpotTemplateHelper {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
-				case 'watchlist'	:
 				default 			: return strftime($this->_settings['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else
@@ -433,14 +417,6 @@ class SpotTemplateHelper {
 		return ($spot['moderated'] != 0);
 	} # isModerated
 
-	function getWatchList() {
-		if (self::$wtList == -1) {
-			self::$wtList = $this->_db->getWatchList(array('field' => 'stamp', 'direction' => 'desc'));
-		} # if
-		
-		return self::$wtList;
-	} # getWatchList
-	
 	/*
 	 * Geeft een lijst van mogelijke smilies terug
 	 */

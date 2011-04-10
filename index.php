@@ -23,7 +23,6 @@ require_once "lib/page/SpotPage_markallasread.php";
 require_once "lib/page/SpotPage_getimage.php";
 require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
-require_once "lib/page/SpotPage_watchlist.php";
 require_once "lib/page/SpotPage_statics.php";
 require_once "lib/page/SpotPage_render.php";
 
@@ -56,14 +55,6 @@ try {
 				$page->render();
 				break;
 		} # getspot
-
-		case 'watchlist' : {
-				$page = new SpotPage_watchlist($db, $settings, $settings['prefs'], $req->getDef('messageid', ''), $req->getDef('action', ''),
-							Array('sortby' => $req->getDef('sortby', ''),
-								  'sortdir' => $req->getDef('sortdir', '')));
-				$page->render();
-				break;
-		} # watchlist
 
 		case 'getnzb' : {
 				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], 
@@ -138,11 +129,13 @@ try {
 		} # statics
 
 		default : {
-				$page = new SpotPage_index($db, $settings, $settings['prefs'], 
+				$page = new SpotPage_index($db, $settings, $settings['prefs'],
 							Array('search' => $req->getDef('search', $settings['index_filter']),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
-								  'sortdir' => $req->getDef('sortdir', ''))
+								  'sortdir' => $req->getDef('sortdir', ''),
+								  'messageid' => $req->getDef('messageid', ''),
+								  'action' => $req->getDef('action', ''))
 					);
 				$page->render();
 				break;

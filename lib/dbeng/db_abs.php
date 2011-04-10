@@ -41,10 +41,25 @@ abstract class db_abs {
 
 	/*
 	 * Geef het aantal affected rows terug
-	 *
 	 */
 	abstract function rows();
 	
+	/* 
+	 * Begins an transaction
+	 */
+	abstract function beginTransaction();
+	
+	/* 
+	 * Commits an transaction
+	 */
+	abstract function commit();
+	
+	/* 
+	 * Rolls back an transaction
+	 */
+	abstract function rollback();
+	
+
 	/*
 	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
 	 */

@@ -2,8 +2,8 @@
 // Set $_GET['page'] if it's not set
 if(empty($_GET['page'])) $_GET['page'] = '';
 
-// check if it's a ajax call or the page is watchlist
-if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
+// check if it's a ajax call
+if(empty($_GET['ajax'])) { ?>
 				<div style="float: left">
 				<div class="filter" id="menu">
 					<h4>Zoeken</h4>
@@ -43,15 +43,10 @@ if(empty($_GET['ajax']) && $_GET['page'] != "watchlist") { ?>
 <?php
 	foreach($quicklinks as $quicklink) {
 		$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
-		if($quicklink[0] == 'Watchlist') {
 ?>
-						<li><div><a class="quicklink spotlink" href="<?php echo $quicklink[2]; ?>">
-						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; ?></a></div></li>
-<?php } else { ?>
 						<li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $strFilter;?>&amp;ajax=1');clearTree();">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0')) { echo "(".$tplHelper->getNewCountForFilter($quicklink[2]).")"; } ?></a></div></li>
 <?php
-	  }
 	}
 ?>
                     </ul><br /><br />

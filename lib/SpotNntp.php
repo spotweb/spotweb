@@ -181,20 +181,17 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
-		function postComment($user, $server, $newsgroup, $inReplyTo, $title, $content) {
-
+		function postComment($user, $server, $rating, $newsgroup, $inReplyTo, $title, $content) {
 			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
 		
 			# We genereren een uniek messageid dat ook nog eens als eerste vier bytes 0000 geeft
 			# van een SHA1 hash. 
 			
-			# FIXME: De '0' in de message-id betekend: Geen beoordeling. 
-			# Geef 1 t/m 10 op om samen met de reactie een beoordeling (rating) te versturen.
-			# Spotweb zou dan in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
-
-			# FIXME: 'random' hoort eigenlijk een korte random base64 string (zonder '+' en  '/') te zijn
-
-			$newMessageId = $spotSigning->makeExpensiveHash("<" . $inReplyTo . ".0.random", "@spot.net>");
+			# Rating is 1 t/m 10, en bevat een rating van de spot waar dit commentaar over gaat
+			# Spotweb zou in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
+			$newMessageId = $spotSigning->makeExpensiveHash("<" . $inReplyTo . "." . $rating . "." . 
+								$spotParser->specialString(base64_encode($spotSigning->makeRandomStr(4))), 
+								"@spot.net>");
 			
 			# en sign het messageid
 			$user_signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
@@ -211,10 +208,8 @@ class SpotNntp {
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
-
-			# $header .= 'X-User-Rating: ' 
-			# Zelfde rating als in de Message-ID staat
-
+			$header .= 'X-User-Rating: ' . $rating . "\r\n";
+			
 			# $header .= 'X-User-Avatar: ' 
 			# Message-ID van een avatar
 

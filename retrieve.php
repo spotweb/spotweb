@@ -20,69 +20,6 @@ if (ini_get('safe_mode') ) {
 	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 } # if
 
-if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--export')) {
-	if (!$settings['retrieve_full']) {
-		die("Databases zonder retrieve_full kunnen we niet importeren dus exporteren is disabled.");
-	} # if
-	
-	try {
-		$db = new SpotDb($settings['db']);
-		$db->connect();
-	
-		$fp = fopen('export-db.csv', 'w');
-		$spotCount = $db->getSpotCount('');
-		for ($i = 0; $i < $spotCount; $i = $i + 5000) { 	
-			$spots = $db->getSpots($i / 5000, 5000, '', array('field' => 'id', 'direction' => 'asc'), true);
-			
-			foreach($spots as $spot) {
-				$mappedSpot = array();
-
-				# We exporteren alleen als we alle velden hebben
-				if (count($spot) == count(Spot_SpotMapping::$fieldMapping)) {
-					foreach(Spot_SpotMapping::$fieldMapping as $key => $value) {
-						$mappedSpot[$value] = $spot[$key];
-					} # foreach
-
-					fputcsv($fp, $mappedSpot);
-				} # if
-			} # foreach
-		} # for
-		fclose($fp);
-	} 
-	catch(Exception $x) {
-		die("Error exporting data: " . $x->getMessage() . PHP_EOL);
-	} # catch
-	
-	exit;
-} # export
-
-
-if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--import')) {
-	try {
-		$db = new SpotDb($settings['db']);
-		$db->connect();
-	
-		$fp = fopen('export-db.csv', 'r');
-		$db->beginTransaction();
-		while (($line = fgetcsv($fp)) !== FALSE) {
-			$mappedSpot = array();
-			foreach($line as $key => $value) {
-				$mappedSpot[Spot_SpotMapping::$valueMapping[$key]] = $value;
-			} # foreach
-
-			$db->addSpot($mappedSpot, $mappedSpot);
-		} # while
-		$db->commitTransaction();
-		
-		fclose($fp);
-	} 
-	catch(Exception $x) {
-		die("Error importing data: " . $x->getMessage() . PHP_EOL);
-	} # catch
-	
-	exit;
-} # import
-
 $req = new SpotReq();
 $req->initialize();
 
