@@ -101,28 +101,25 @@ class SpotParser {
 		$spot = array();
 
 		// Eerst splitsen we de header string op in enkel de category info e.d.
-		$tmpHdr = preg_split('(<|>)', $from);
-
-		if (count($tmpHdr) < 2) {
-			return null;
+		$fromInfoPos = strpos($from, '<');
+		if ($fromInfoPos === false) {
+			return false;
+		} else {
+			# Haal de postername en de <>'s weg
+			$fromAddress = explode('@', substr($from, $fromInfoPos + 1, -1));
+			$spot['header'] = $fromAddress[1];
 		} # if
 
-		$tmpHdr = explode('@', $tmpHdr[1]);
-		if (count($tmpHdr) < 2) {
-			return false;
-		} # if 
-
-		$spot['header'] = $tmpHdr[1];
 		$spot['verified'] = false;
 		$spot['filesize'] = 0;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
 
+		# als de spot in de toekomst ligt, dan corrigeren we dat naar nu
 		if (time() < strtotime($date)) {
 			$spot['stamp'] = time();
 		} else {
 			$spot['stamp'] = strtotime($date);
 		} # if
-
 		$fields = explode('.', $spot['header']);
 
 		if (count($fields) >= 6) {
@@ -130,15 +127,14 @@ class SpotParser {
 			$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 
 			// extract de posters name
-			$spot['poster'] = explode('<', $from);
-			$spot['poster'] = trim($spot['poster'][0]);
+			$spot['poster'] = substr($from, 0, $fromInfoPos -1);
 
 			// key id
 			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 
+
 			// groupname
 			$spot['groupname'] = 'free.pt';
-
 			if ($spot['keyid'] >= 0) {
 
 				$expression = '';
@@ -147,7 +143,7 @@ class SpotParser {
 
 				if ($recentKey) {	
 					if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
-						exit;
+						return;
 					} # if
 
 					$subcatAr = $this->splitBySizEx($strInput, 3);
@@ -239,9 +235,9 @@ class SpotParser {
 
 				if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0))) {
 	
-					# Als er een recentkey is (key <> 1), OF de spot is in 2010 geplaatst, dan moet
+					# Als er een recentkey is (key <> 1), OF de spot is na 2010 geplaatst, dan moet
 					# de spot gesigned zijn.
-					$mustbeSigned = $recentKey | ($spot['stamp'] > 1262304000);
+					$mustbeSigned = $recentKey | ($spot['stamp'] > 1293870080);
 					if ($mustbeSigned) {
 						$spot['headersign'] = $fields[count($fields) - 1];
 

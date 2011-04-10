@@ -136,6 +136,27 @@ class db_mysql extends db_abs {
 		return $rows;
 	} # arrayQuery
 
+	/* 
+	 * Begins an transaction
+	 */
+	function beginTransaction() {
+		$this->exec('BEGIN;');
+	} # beginTransaction
+	
+	/* 
+	 * Commits an transaction
+	 */
+	function commit() {
+		$this->exec('COMMIT;');
+	} # commit
+	
+	/* 
+	 * Rolls back an transaction
+	 */
+	function rollback() {
+		$this->exec('ROLLBACK;');
+	} # rollback
+	
 	/*
 	 * Utility functie omdat MySQL 0 rows affected teruggeeft als je
 	 * een update uitvoert op een rij die hetzelfde blijft.
