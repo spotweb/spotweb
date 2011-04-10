@@ -17,6 +17,11 @@ function openSpot(id,url) {
 		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading notrans');
 		
+		if($("#overlay").children().size() == 0) {
+			alert("Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht...");
+			closeDetails(scrollLocation);
+		}
+		
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
