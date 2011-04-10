@@ -124,7 +124,7 @@
         <table class="footer">
             <tbody>
                 <tr>
-                    <td class="button">  
+                    <td class="button last">  
                         <input id='multisubmit' type='submit' value='' title='Download Multi NZB' />
                     </td>
                     </form>
