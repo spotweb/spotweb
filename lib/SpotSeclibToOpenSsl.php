@@ -10,7 +10,10 @@ class SpotSeclibToOpenSsl {
 
 	function verify($rsa, $toCheck, $signature) {
 		$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($rsa));
-		return openssl_verify($toCheck, $signature, $openSslPubKey);
+		$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
+		openssl_free_key($openSslPubKey);
+		
+		return $verified;
 	} # verify
 
 	function _getOidElementLength($component) {
