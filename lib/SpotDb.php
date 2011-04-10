@@ -257,15 +257,15 @@ class SpotDb
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as spot, messageid AS fullspot FROM spotsfull WHERE messageid IN (" . $msgIdList . ")");
-									  
+								
 		# en lossen we het hier op
 		foreach($rs as $msgids) {
 			if (!empty($msgids['spot'])) {
-				$idList['spot'][] = $msgids['spot'];
+				$idList['spot'][$msgids['spot']] = 1;
 			} # if
 			
 			if (!empty($msgids['fullspot'])) {
-				$idList['fullspot'][] = $msgids['fullspot'];
+				$idList['fullspot'][$msgids['fullspot']] = 1;
 			} # if
 		} # foreach
 		
@@ -676,15 +676,15 @@ class SpotDb
 	} # addToWatchList
 
 	function beginTransaction() {
-		$this->_conn->exec('BEGIN;');
+		$this->_conn->beginTransaction();
 	} # beginTransaction
 
 	function abortTransaction() {
-		$this->_conn->exec('ROLLBACK;');
+		$this->_conn->rollback();
 	} # abortTransaction
 	
 	function commitTransaction() {
-		$this->_conn->exec('COMMIT;');
+		$this->_conn->commit();
 	} # commitTransaction
 	
 	function safe($q) {
