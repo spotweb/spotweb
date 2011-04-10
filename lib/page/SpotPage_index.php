@@ -43,7 +43,8 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentUser['userid'],
-							$pageNr, $this->_settings['prefs']['perpage'], $filter, 
+							$pageNr, $this->_currentUser['prefs']['perpage'],
+							$filter,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 
@@ -54,7 +55,8 @@ class SpotPage_index extends SpotPage_Abs {
 		} # if
 		
 		# query wanneer de laatste keer de spots geupdate werden
-		$lastUpdateTime = $this->_db->getLastUpdate($this->_settings['nntp_hdr']['host']);
+		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
+		$lastUpdateTime = $this->_db->getLastUpdate($nntp_hdr_settings['host']);
 								  
 		# zet de page title
 		$this->_pageTitle = "overzicht";
@@ -64,8 +66,8 @@ class SpotPage_index extends SpotPage_Abs {
 
 		$this->template('filters', array('search' => $this->_params['search'],
 								  'lastupdate' => $lastUpdateTime,
-								  'quicklinks' => $this->_settings['quicklinks'],
-								  'filters' => $this->_settings['filters'],
+								  'quicklinks' => $this->_settings->get('quicklinks'),
+								  'filters' => $this->_settings->get('filters'),
   								  'activefilter' => $this->_params['search']));
 		$this->template('spots', array('spots' => $spotsTmp['list'],
 		                        'nextPage' => $nextPage,

@@ -52,7 +52,9 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		if (!$this->_settings['count_newspots']) {
+		static $skipNewCount = false;
+		
+		if ((!$this->_settings->get('count_newspots')) || ($skipNewCount)) {
 			return '';
 		} # if
 		
@@ -60,10 +62,9 @@ class SpotTemplateHelper {
 		$newCount = $this->getFilteredSpotCount($filterStr);
 
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots 
-		# zijn, SpotWeb niet ontzettend traag wordt. Op het moment dat er een
-		# persistency laag achter settings komt wel mee oppassen :P
+		# zijn, SpotWeb niet ontzettend traag wordt. 
 		if ($newCount > 5000) {
-			$this->_settings['count_newspots'] = false;
+			$skipNewCount = true;
 		} # if
 		
 		# en geef het aantal terug dat we willen hebben
@@ -85,7 +86,7 @@ class SpotTemplateHelper {
 	 * Geeft een aantal comments terug
 	 */
 	function getSpotComments($msgId, $start, $length) {
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
@@ -95,7 +96,7 @@ class SpotTemplateHelper {
 	 * Geeft een full spot terug
 	 */
 	function getFullSpot($msgId) {
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		return $spotsOverview->getFullSpot($msgId, $this->_currentUser['userid'], $spotnntp);
@@ -107,9 +108,9 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		if (empty($spot['filename'])) {
-			$tmp = str_replace('$SPOTFNAME', $spot['title'], $this->_settings['search_url']);
+			$tmp = str_replace('$SPOTFNAME', $spot['title'], $this->_settings->get('search_url'));
 		} else {
-			$tmp = str_replace('$SPOTFNAME', $spot['filename'], $this->_settings['search_url']);
+			$tmp = str_replace('$SPOTFNAME', $spot['filename'], $this->_settings->get('search_url'));
 		} # else 
 
 		return $tmp;
@@ -119,7 +120,7 @@ class SpotTemplateHelper {
 	 * Geef het volledige path naar Spotweb terug
 	 */
 	function makeBaseUrl() {
-		return $this->_settings['spotweburl'];
+		return $this->_settings->get('spotweburl');
 	} # makeBaseurl
 
 	/*
@@ -127,7 +128,8 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
-		$action = $this->_settings['nzbhandling']['action'];
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		$action = $nzbHandling['action'];
 		# geef geen url terug als we disabled zijn
 		if ($action == 'disable') {
 			return '';
@@ -232,7 +234,7 @@ class SpotTemplateHelper {
 	} # formatContent
 	
 	function hasbeenDownloaded($spot) {
-		if (!$this->_settings['keep_downloadlist']) {
+		if (!$this->_settings->get('keep_downloadlist')) {
 			return false;
 		} # if
 
@@ -240,7 +242,7 @@ class SpotTemplateHelper {
 	} # hasbeenDownloaded
 
 	function isBeingWatched($spot) {
-		if (!$this->_settings['keep_watchlist']) {
+		if (!$this->_settings->get('keep_watchlist')) {
 			return false;
 		} # if
 		
@@ -407,18 +409,14 @@ class SpotTemplateHelper {
 
 
 	function formatDate($stamp, $type) {
-		if (!isset($this->_settings['prefs']['date_formatting'])) {
-			$this->_settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
-		} # if
-		
-		if ($this->_settings['prefs']['date_formatting'] == 'human') {
+		if ($this->_currentUser['prefs']['date_formatting'] == 'human') {
 			return $this->time_ago($stamp);
 		} else {
 			switch($type) {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
-				default 			: return strftime($this->_settings['prefs']['date_formatting'], $stamp);
+				default 			: return strftime($this->_currentUser['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else
 	} # formatDate

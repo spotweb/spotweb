@@ -11,7 +11,8 @@ require_once "lib/SpotsOverview.php";
 require_once "lib/SpotCategories.php";
 require_once "lib/SpotNntp.php";
 require_once "lib/SpotCookie.php";
-require_once "lib/SpotUser.php";
+require_once "lib/SpotSettings.php";
+require_once "lib/SpotUserSystem.php";
 require_once "lib/page/SpotPage_index.php";
 require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getnzbmobile.php";
@@ -33,14 +34,17 @@ try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
 
+	# Creer het settings object
+	$settings = SpotSettings::singleton($db, $settings);
+	
 	# Controleer eerst of het schema nog wel geldig is
 	if (!$db->schemaValid()) {
 		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 	
 	# Haal het userobject op dat 'ingelogged' is
-	$spotUser = new SpotUser($db, $settings);
-	$currentUser = $spotUser->auth('anonymous', '');
+	$spotUserSystem = new SpotUserSystem($db, $settings);
+	$currentUser = $spotUserSystem->auth('anonymous', '');
 	
 	# helper functions for passed variables
 	$req = new SpotReq();
@@ -50,7 +54,7 @@ try {
 	switch($page) {
 		case 'render' : {
 				$page = new SpotPage_render($db, $settings, $currentUser, $req->getDef('tplname', ''),
-							Array('search' => $req->getDef('search', $settings['index_filter']),
+							Array('search' => $req->getDef('search', $settings->get('index_filter')),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
@@ -122,7 +126,7 @@ try {
 
 		case 'atom' : {
 			$page = new SpotPage_atom($db, $settings, $currentUser,
-					Array('search' => $req->getDef('search', $settings['index_filter']),
+					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
 						  'sortdir' => $req->getDef('sortdir', ''))
@@ -140,7 +144,7 @@ try {
 
 		default : {
 				$page = new SpotPage_index($db, $settings, $currentUser,
-							Array('search' => $req->getDef('search', $settings['index_filter']),
+							Array('search' => $req->getDef('search', $settings->get('index_filter')),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),

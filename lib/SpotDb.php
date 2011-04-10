@@ -138,15 +138,19 @@ class SpotDb
 	 */
 	function getMaxMessageId($headers) {
 		if ($headers == 'headers') {
-			$msgId = $this->_conn->singleQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 1");
+			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 5000");
 		} else {
-			$msgId = $this->_conn->singleQuery("SELECT messageid FROM commentsxover ORDER BY id DESC LIMIT 1");
+			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover ORDER BY id DESC LIMIT 5000");
 		} # else
-		if ($msgId == null) {
-			$msgId = '';
+		if ($msgIds == null) {
+			return array();
 		} # if
 		
-		return $msgId;
+		$tempMsgIdList = array();
+		for($i = 0; $i < count($msgIds); $i++) {
+			$tempMsgIdList['<' . $msgIds[$i]['messageid'] . '>'] = 1;
+		} # for
+		return $tempMsgIdList;
 	} # func. getMaxMessageId
 	
 	function getMaxMessageTime() {

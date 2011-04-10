@@ -14,13 +14,15 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 
 	
 	function render() {
-		$hdr_spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		$hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
 
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
-		if ($this->_settings['nntp_hdr']['host'] == $this->_settings['nntp_nzb']['host']) {
+		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
+		$settings_nntp_nzb = $this->_settings->get('nzb');
+		if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
 			$nzb_spotnntp = $hdr_spotnntp;
 		} else {
-			$nzb_spotnntp = new SpotNntp($this->_settings['nntp_nzb'], $this->_settings['use_openssl']);
+			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'), $this->_settings->get('use_openssl'));
 		} # else
 
 		try {
@@ -29,11 +31,11 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 							$this->_action, $hdr_spotnntp, $nzb_spotnntp);
 			
 			if ($this->_action != 'display') {
-				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";			
+				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings->get('spotweburl') ."' rel=external data-role='button'>OK</a></div></div>";			
 			} # if
 		}
 		catch(Exception $x) {
-			echo "<div data-role=page><div data-role=content><p>" . $x->getMessage() . "</p><a href='". $this->_settings['spotweburl'] ."' rel=external data-role='button'>OK</a></div></div>";
+			echo "<div data-role=page><div data-role=content><p>" . $x->getMessage() . "</p><a href='". $this->_settings->get('spotweburl') ."' rel=external data-role='button'>OK</a></div></div>";
 		} # catch
 	} # render
 	

@@ -18,12 +18,14 @@ class SpotPage_atom extends SpotPage_Abs {
 
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentUser['userid'],
-							$pageNr, $this->_settings['prefs']['perpage'], $filter, 
+							$pageNr, 
+							$this->_currentUser['prefs']['perpage'],
+							$filter,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 		
 		$fullSpots = array();
-		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
 
 		foreach($spotsTmp['list'] as $spot) {
 			try {

@@ -110,7 +110,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys,
-													$this->_settings['use_openssl']);
+													$this->_settings->get('use_openssl'));
 
 											
 					# als er een parse error was, negeren we de spot volledig, ook niet-
@@ -128,7 +128,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 						# is dit een geldig commando?
 						if (in_array($commandAr[0], $validCommands) !== false) {
-							switch($this->_settings['spot_moderation']) {
+							switch($this->_settings->get('spot_moderation')) {
 								case 'disable'	: break;
 								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]); break;
 								default			: $this->_db->deleteSpot($commandAr[1]); break;
@@ -139,9 +139,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} else {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
-						if ($this->_settings['retention'] > 0 && $spot['stamp'] < time()-($this->_settings['retention'] * 24 * 60 * 60)) {
+						if ($this->_settings->get('retention') > 0 && $spot['stamp'] < time()-($this->_settings->get('retention') * 24 * 60 * 60)) {
 							$skipCount++;
-						} elseif ($spot['stamp'] < $this->_settings['retrieve_newer_than']) { 
+						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
 							$skipCount++;
 						} else {
 							# Hier kijken we alleen of de spotheader niet bestaat

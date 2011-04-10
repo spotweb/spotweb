@@ -16,8 +16,8 @@ abstract class SpotPage_Abs {
 	
 	# Geef the tpl helper terug
 	function getTplHelper($params) {
-		if (file_exists($this->_settings['tpl_path'] . '/CustomTplHelper.php')) {
-			require_once $this->_settings['tpl_path'] . '/CustomTplHelper.php';
+		if (file_exists($this->_settings->get('tpl_path') . '/CustomTplHelper.php')) {
+			require_once $this->_settings->get('tpl_path') . '/CustomTplHelper.php';
 			
 			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentUser, $this->_db, $params);
 		} else {
@@ -38,9 +38,10 @@ abstract class SpotPage_Abs {
 		
 		# We maken een aantal variabelen / objecten standaard beschikbaar in de template.
 		$tplHelper = $this->getTplHelper($params);
+		$currentUser = $this->_currentUser;
 
 		# en we spelen de template af
-		require_once($settings['tpl_path'] . $tpl . '.inc.php');
+		require_once($settings->get('tpl_path') . $tpl . '.inc.php');
 	} # template
 	
 	/*

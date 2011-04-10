@@ -94,14 +94,14 @@ if(empty($_GET['ajax'])) { ?>
 					<ul class="maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php
-	if ($settings['show_updatebutton']) {
+	if ($settings->get('show_updatebutton')) {
 ?>
 						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="big_button updatespotsbtn"><div>Update Spots</div></a></li>
 <?php
 	}
 ?>
 <?php
-	if ($settings['keep_downloadlist']) {
+	if ($settings->get('keep_downloadlist')) {
 ?>
 						<li> <a href="?page=erasedls" id="removedllistbtn" class="big_button erasedlsbtn"><div>Reset download geschiedenis</div></a></li>
 <?php

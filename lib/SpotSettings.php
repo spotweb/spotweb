@@ -7,15 +7,15 @@ class SpotSettings {
 	private static $_instance = null;
 	
 	private $_db;
-	private $_settings;
+	private static $_settings;
 	
 	/* 
 	 * Instantieert een nieuwe settings klasse
 	 */
-	public static function singleton($db) {
+	public static function singleton($db, $settings) {
 		if (SpotSettings::$_instance === null) {
 			SpotSettings::$_instance = new SpotSettings($db);
-			SpotSettings::$_settings = $db->getAllSettings();
+			SpotSettings::$_instance->_settings = array_merge($settings, $db->getAllSettings());
 		} # if
 		
 		return SpotSettings::$_instance;
@@ -49,9 +49,6 @@ class SpotSettings {
 	 */
 	private function __construct($db) {
 		$this->_db = $db;
-		
-		$this->_settings = $db->getAllSettings();
-		var_dump($this->_settings);
 	} # ctor
 	
 } # class SpotSettings
