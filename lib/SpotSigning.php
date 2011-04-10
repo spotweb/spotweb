@@ -47,6 +47,19 @@ class SpotSigning {
 
 		return $tmpSave;
 	} # checkRsaSignature
+
+	/*
+	 * Creeert een private en public key paar
+	 */
+	public function createPrivateKey() {
+		$rsa = new Crypt_RSA();
+		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		
+		# We krijgen de keys base encoded terug		
+		$keyPair = $rsa->createKey();
+		return array('public' => $keyPair['publickey'],
+					 'private' => $keyPair['privatekey']);
+	} # createPrivateKey 
 	
 	/*
 	 * RSA signed een bericht, en geeft alle componenten terug
@@ -173,7 +186,10 @@ class SpotSigning {
 		
 		return $prefix . '.' . $uniquePart . $suffix;
 	} # makeExpensiveHash
-	
+
+	/*
+	 * Creeert een random strng van A-Za-z,0-9 van $len length
+	 */
 	function makeRandomStr($len) {
 		$possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 		
