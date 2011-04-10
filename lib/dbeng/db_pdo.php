@@ -73,7 +73,28 @@ abstract class db_pdo extends db_abs {
  
     	return $stmt;
     }
-     
+
+	/* 
+	 * Begins an transaction
+	 */
+	function beginTransaction() {
+		$this->_conn->beginTransaction();
+	} # beginTransaction
+	
+	/* 
+	 * Commits an transaction
+	 */
+	function commit() {
+		$this->_conn->commit();
+	} # commit
+	
+	/* 
+	 * Rolls back an transaction
+	 */
+	function rollback() {
+		$this->_conn->rollback();
+	} # rollback
+	
     function rows() {
 		return $this->_rows_changed;
 	} # rows()
@@ -102,5 +123,6 @@ abstract class db_pdo extends db_abs {
 		
 		return $stmt->fetchAll();
 	} # arrayQuery
-}
-?>
+
+	
+} # class
