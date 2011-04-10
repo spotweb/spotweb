@@ -80,10 +80,15 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+					
+					# als dit een nieuw soort comment is met rating vul die dan ook op
+					if (count($msgIdParts) >= 4) {
+						$msgheader['rating'] = (int) $msgIdParts[1];
+					} # if
 					$lastProcessedId = $commentId;
 
 					# voeg spot aan db toe
-					$this->_db->addCommentRef($commentId, $msgheader['References']);
+					$this->_db->addCommentRef($commentId, $msgheader['References'], $msgheader['rating']);
 				} # if
 			} # foreach
 

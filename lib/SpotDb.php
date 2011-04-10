@@ -421,9 +421,9 @@ class SpotDb
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
-	function addCommentRef($messageid, $nntpref) {
-		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref) VALUES('%s', '%s')",
-								Array($messageid, $nntpref));
+	function addCommentRef($messageid, $nntpref, $rating) {
+		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
+								Array($messageid, $nntpref, $rating));
 	} # addCommentRef
 
 	/*
@@ -469,6 +469,13 @@ class SpotDb
 		
 		return $commentList;
 	} # getCommentsFull
+	
+	/*
+	 * Geeft de gemiddelde spot rating terug
+	 */
+	function getSpotRating($msgId) {
+		return $this->_conn->singleQuery("SELECT AVG(spotrating) AS rating FROM commentsxover WHERE nntpref = '%s' GROUP BY nntpref;", Array($nntpref));
+	} # getSpotRating
 	
 	/*
 	 * Geef al het commentaar references voor een specifieke spot terug
