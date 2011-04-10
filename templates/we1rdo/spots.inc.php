@@ -154,7 +154,6 @@
             <input type="hidden" id="perPage" value="<?php echo $settings['prefs']['perpage'] ?>" />
 			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
 			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />
->>>>>>> upstream/master
 <?php } ?>
 			
 		</div>
