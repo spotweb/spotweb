@@ -1,6 +1,6 @@
 <?php
 
-class SpotUser {
+class SpotUserSystem {
 	private $_db;
 	private $_settings;
 	
@@ -16,7 +16,7 @@ class SpotUser {
 	 */
 	function auth($user, $password) {
 		# Salt het password met het unieke salt in settings.php
-		$password = sha1(substr($this->_settings['pass_salt'], 1, 3) . $password . $this->_settings['pass_salt']);
+		$password = sha1(substr($this->_settings->get('pass_salt'), 1, 3) . $password . $this->_settings->get('pass_salt'));
 
 		# authenticeer de user?
 		$userId = $this->_db->authUser($user, $password);
@@ -54,7 +54,10 @@ class SpotUser {
 	 * Geeft een user record terug
 	 */
 	function getUser($userid) {
-		return $this->_db->getUser($userid);
+		$tmpUser = $this->_db->getUser($userid);
+		$tmpUser['prefs'] = $this->_settings->get('prefs');
+		
+		return $tmpUser;
 	} # getUser()
 	
 	/*
@@ -72,4 +75,4 @@ class SpotUser {
 		$this->setUser($user);
 	} # removeUser()
 	
-} # class SpotUser
+} # class SpotUserSystem
