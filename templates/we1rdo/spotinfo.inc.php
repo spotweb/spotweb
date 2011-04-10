@@ -83,3 +83,17 @@ echo "</th>";
 				</ul>
             </div>
 		</div>
+        
+        <input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
+        <script>
+			$(document).ready(function(){
+				$("a.closeDetails").click(function(){ 
+					window.close();
+				});
+				$("#details").addClass("external");
+				
+				var messageid = $('#messageid').val();
+				loadSpotImage();
+				loadComments(messageid,'5','0');
+			});
+		</script>
