@@ -140,21 +140,21 @@ class db_mysql extends db_abs {
 	 * Begins an transaction
 	 */
 	function beginTransaction() {
-		$this->_conn->exec('BEGIN;');
+		$this->exec('BEGIN;');
 	} # beginTransaction
 	
 	/* 
 	 * Commits an transaction
 	 */
 	function commit() {
-		$this->_conn->exec('COMMIT;');
+		$this->exec('COMMIT;');
 	} # commit
 	
 	/* 
 	 * Rolls back an transaction
 	 */
 	function rollback() {
-		$this->_conn->exec('ROLLBACK;');
+		$this->exec('ROLLBACK;');
 	} # rollback
 	
 	/*
