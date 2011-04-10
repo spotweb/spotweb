@@ -136,7 +136,7 @@ class SpotNzb {
 	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
-	function handleNzbAction($messageids, $action, $hdr_spotnntp, $nzb_spotnntp) {
+	function handleNzbAction($messageids, $ourUserId, $action, $hdr_spotnntp, $nzb_spotnntp) {
 		if (!is_array($messageids)) {
 			$messageids = array($messageids);
 		} # if
@@ -146,7 +146,7 @@ class SpotNzb {
 		
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
-			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $hdr_spotnntp);
+			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $ourUserId, $hdr_spotnntp);
 			
 			if (!empty($fullSpot['nzb'])) {
 				$nzbList[] = array('spot' => $fullSpot, 
@@ -204,7 +204,7 @@ class SpotNzb {
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings['keep_downloadlist']) {
 			foreach($messageids as $thisMsgId) {
-				$this->_db->addDownload($thisMsgId);
+				$this->_db->addDownload($thisMsgId, $ourUserId);
 			} # foreach
 		} # if
 	} # handleNzbAction

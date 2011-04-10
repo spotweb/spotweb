@@ -6,8 +6,8 @@ class SpotPage_getnzb extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;
 	
-	function __construct($db, $settings, $prefs, $params) {
-		parent::__construct($db, $settings, $prefs);
+	function __construct($db, $settings, $currentUser, $params) {
+		parent::__construct($db, $settings, $currentUser);
 		$this->_messageid = $params['messageid'];
 		$this->_action = $params['action'];
 	} # ctor
@@ -25,7 +25,8 @@ class SpotPage_getnzb extends SpotPage_Abs {
 
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
-			$spotNzb->handleNzbAction($this->_messageid, $this->_action, $hdr_spotnntp, $nzb_spotnntp);
+			$spotNzb->handleNzbAction($this->_messageid, $this->_currentUser['userid'], 
+										$this->_action, $hdr_spotnntp, $nzb_spotnntp);
 			
 			if ($this->_action != 'display') {
 				echo "<xml><result>OK</result><msg></msg></xml>";

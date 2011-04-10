@@ -15,8 +15,8 @@ class SpotsOverview {
 	/*
 	 * Geef een volledig Spot array terug
 	 */
-	function getFullSpot($msgId, $nntp) {
-		$fullSpot = $this->_db->getFullSpot($msgId);
+	function getFullSpot($msgId, $ourUserId, $nntp) {
+		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
@@ -26,7 +26,7 @@ class SpotsOverview {
 			
 			# we halen de fullspot opnieuw op zodat we de 'xover' informatie en de 
 			# niet xover informatie in 1 hebben
-			$fullSpot = $this->_db->getFullSpot($msgId);
+			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		} # if
 		
 		$spotParser = new SpotParser();
@@ -137,7 +137,7 @@ class SpotsOverview {
 	 * $sqlfilter is een kant en klaar SQL statement waarmee de spotweb
 	 * filter ingesteld wordt;
 	 */
-	function loadSpots($start, $limit, $sqlFilter, $sort) {
+	function loadSpots($ourUserId, $start, $limit, $sqlFilter, $sort) {
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
 		if (array_search($sort['field'], $sortFields) === false) {
@@ -151,7 +151,7 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spotrs op
-		$spotList = $this->_db->getSpots($start, $limit + 1, $sqlFilter, $sort, false);
+		$spotList = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
 		$spotCnt = count($spotList);
 
 		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 

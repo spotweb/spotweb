@@ -74,6 +74,15 @@ abstract class SpotStruct_abs {
 			$this->addColumn("spotrating", "commentsxover", "INTEGER DEFAULT 0");
 		} # if
 
+		# voeg de ouruserid kolom toe aan de watchlist tabel
+		if (!$this->columnExists('watchlist', 'ouruserid')) {
+			$this->addColumn("ouruserid", "watchlist", "INTEGER DEFAULT 0");
+		} # if
+
+		# voeg de ouruserid kolom toe aan de downloadlist tabel
+		if (!$this->columnExists('downloadlist', 'ouruserid')) {
+			$this->addColumn("ouruserid", "downloadlist", "INTEGER DEFAULT 0");
+		} # if
 	} # updateSchema
 	
 } # class
