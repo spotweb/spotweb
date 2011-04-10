@@ -107,6 +107,9 @@ class SpotParser {
 		} else {
 			# Haal de postername en de <>'s weg
 			$fromAddress = explode('@', substr($from, $fromInfoPos + 1, -1));
+			if (count($fromAddress) < 2) {
+				return false;
+			} # if
 			$spot['header'] = $fromAddress[1];
 		} # if
 
