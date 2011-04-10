@@ -51,6 +51,46 @@ class SpotDb
 	function getDbHandle() {
 		return $this->_conn;
 	} # getDbHandle
+
+	/*
+	 * Haalt een user op uit de database 
+	 */
+	function getUser($userid) {
+		$tpl_user = array(
+				'userid'		=> 0,
+				'username'		=> 'anonymous',
+				'firstname'		=> 'John',
+				'lastname'		=> 'Doe',
+				'mail'			=> 'john@example.com',
+				'lastlogin'		=> time(),
+				'lastvisit'		=> time() - 3600,
+				'banned'		=> false);
+				
+		return $tpl_user;
+	} # getUser
+
+	/*
+	 * Update de informatie over een user
+	 */
+	function setUser($user) {
+		throw new Exception("Niet geimplementeerd");
+	} # setUser
+	
+	/* 
+	 * Voeg een user toe
+	 */
+	function addUser($user) {
+		throw new Exception("Niet geimplementeerd");
+	} # addUser
+
+	/*
+	 * Kan de user inloggen met opgegeven password?
+	 *
+	 * Een userid als de user gevonden kan worden, of false voor failure
+	 */
+	function authUser($username, $password) {
+		return 0;
+	} # verifyUser
 	
 	/* 
 	 * Update of insert the maximum article id in de database.
@@ -277,13 +317,18 @@ class SpotDb
 	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
 	 * 
 	 */
-	function getSpots($pageNr, $limit, $sqlFilter, $sort, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $sqlFilter, $sort, $getFull) {
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
-			$sqlFilter = ' WHERE ' . $sqlFilter;
-		} # if
+			$sqlFilter .= ' AND ';
+		} # if 
+		
+		# Voeg nu onze userid filter toe omdat we enkel de watchlist en downloadlist
+		# van onze eigen user willen zien
+		$sqlFilter .= '	((d.ouruserid = ' . $this->safe($ourUserId) . ') OR (d.ouruserid IS NULL)) ' .
+					  ' AND ((w.ouruserid = ' . $this->safe($ourUserId) . ') OR (w.ouruserid IS NULL)) ';
 		
 		# de optie getFull geeft aan of we de volledige fieldlist moeten 
 		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
@@ -297,7 +342,7 @@ class SpotDb
 		} else {
 			$extendedFieldList = '';
 		} # else
-
+		
 		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
@@ -332,7 +377,7 @@ class SpotDb
 										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 										 LEFT JOIN watchlist AS w on s.messageid = w.messageid
-										 " . $sqlFilter . " 
+										 WHERE " . $sqlFilter . " 
 										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 	} # getSpots()
 
@@ -368,7 +413,7 @@ class SpotDb
 	 * Vraag 1 specifieke spot op, als de volledig spot niet in de database zit
 	 * geeft dit NULL terug
 	 */
-	function getFullSpot($messageId) {
+	function getFullSpot($messageId, $ourUserId) {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -400,7 +445,9 @@ class SpotDb
 												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 												LEFT JOIN watchlist AS w on s.messageid = w.messageid
 												JOIN spotsfull AS f ON f.messageid = s.messageid 
-										  WHERE s.messageid = '%s'", Array($messageId));
+										  WHERE s.messageid = '%s'
+											AND ((w.ouruserid = %d) OR (w.ouruserid IS NULL)) 
+											AND ((d.ouruserid = %d) OR (d.ouruserid IS NULL))", Array($messageId, $ourUserId, $ourUserId));
 		if (empty($tmpArray)) {
 			return ;
 		} # if
@@ -500,40 +547,26 @@ class SpotDb
 	/*
 	 * Voeg een spot toe aan de lijst van gedownloade files
 	 */
-	function addDownload($messageid) {
-		if (!$this->hasBeenDownload($messageid)) {
-			$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp) VALUES('%s', '%d')",
-									Array($messageid, time()));
+	function addDownload($messageid, $ourUserId) {
+		if (!$this->hasBeenDownload($messageid, $ourUserId)) {
+			$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp, ouruserid) VALUES('%s', '%d', %d)",
+									Array($messageid, time(), $ourUserId));
 		} # if
 	} # addDownload
 
 	/*
 	 * Is een messageid al gedownload?
 	 */
-	function hasBeenDownload($messageid) {
-		$artId = $this->_conn->singleQuery("SELECT stamp FROM downloadlist WHERE messageid = '%s'", Array($messageid));
+	function hasBeenDownload($messageid, $ourUserId) {
+		$artId = $this->_conn->singleQuery("SELECT stamp FROM downloadlist WHERE messageid = '%s' AND ouruserid = %d", Array($messageid, $ourUserId));
 		return (!empty($artId));
 	} # hasBeenDownload
 
 	/*
-	 * Geef een lijst terug van alle downloads
-	 */
-	function getDownloads() {
-		return $this->_conn->arrayQuery("SELECT s.title AS title, dl.stamp AS stamp, dl.messageid AS messageid FROM downloadlist dl, spots s WHERE dl.messageid = s.messageid");
-	} # getDownloads
-
-	/*
 	 * Wis de lijst met downloads
 	 */
-	function emptyDownloadList() {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': {
-				return $this->_conn->exec("DELETE FROM downloadlist;");
-			} # pdo_sqlite
-			default			: {
-				return $this->_conn->exec("TRUNCATE TABLE downloadlist;");
-			} # default
-		} # switch
+	function emptyDownloadList($ourUserId) {
+		return $this->_conn->exec("DELETE FROM downloadlist WHERE ouruserid = %d", array($ourUserId));
 	} # emptyDownloadList()
 
 	/*

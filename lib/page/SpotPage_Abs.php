@@ -5,13 +5,13 @@ require_once "lib/SpotsOverview.php";
 abstract class SpotPage_Abs {
 	protected $_db;
 	protected $_settings;
-	protected $_prefs;
 	protected $_pageTitle;
+	protected $_currentUser;
 	
-	function __construct($db, $settings, $prefs) {
+	function __construct($db, $settings, $currentUser) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		$this->_prefs = $prefs;
+		$this->_currentUser = $currentUser;
 	} # ctor
 	
 	# Geef the tpl helper terug
@@ -19,9 +19,9 @@ abstract class SpotPage_Abs {
 		if (file_exists($this->_settings['tpl_path'] . '/CustomTplHelper.php')) {
 			require_once $this->_settings['tpl_path'] . '/CustomTplHelper.php';
 			
-			$tplHelper = new CustomTplHelper($this->_settings, $this->_prefs, $this->_db, $params);
+			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentUser, $this->_db, $params);
 		} else {
-			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_prefs, $this->_db, $params);
+			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentUser, $this->_db, $params);
 		} # else
 		
 		return $tplHelper;

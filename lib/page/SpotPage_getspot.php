@@ -5,8 +5,8 @@ require_once "lib/SpotCategories.php";
 class SpotPage_getspot extends SpotPage_Abs {
 	private $_messageid;
 	
-	function __construct($db, $settings, $prefs, $messageid) {
-		parent::__construct($db, $settings, $prefs);
+	function __construct($db, $settings, $currentUser, $messageid) {
+		parent::__construct($db, $settings, $currentUser);
 		$this->_messageid = $messageid;
 	} # ctor
 
@@ -16,7 +16,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 		
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $spotnntp);
+		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $this->_currentUser['userid'], $spotnntp);
 
 		# zet de page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];

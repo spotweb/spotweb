@@ -5,8 +5,8 @@ require_once "lib/SpotCategories.php";
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
-	function __construct($db, $settings, $prefs, $params) {
-		parent::__construct($db, $settings, $prefs);
+	function __construct($db, $settings, $currentUser, $params) {
+		parent::__construct($db, $settings, $currentUser);
 
 		$this->_params = $params;
 
@@ -42,7 +42,8 @@ class SpotPage_index extends SpotPage_Abs {
 		}
 		
 		# laad de spots
-		$spotsTmp = $spotsOverview->loadSpots($pageNr, $this->_prefs['perpage'], $filter, 
+		$spotsTmp = $spotsOverview->loadSpots($this->_currentUser['userid'],
+							$pageNr, $this->_settings['prefs']['perpage'], $filter, 
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 

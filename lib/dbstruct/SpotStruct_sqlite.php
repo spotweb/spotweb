@@ -63,14 +63,16 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# downloadlist table
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
 										   messageid VARCHAR(128),
-										   stamp INTEGER);");
+										   stamp INTEGER,
+										   ouruserid INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 			
 			# watchlist table
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 
 												   messageid VARCHAR(128),
 												   dateadded INTEGER,
-												   comment TEXT);");
+												   comment TEXT,
+												   ouruserid INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
 
 			# commentsfull
