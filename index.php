@@ -33,6 +33,11 @@ try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
 
+	# Controleer eerst of het schema nog wel geldig is
+	if (!$db->schemaValid()) {
+		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+	} # if
+	
 	# Haal het userobject op dat 'ingelogged' is
 	$spotUser = new SpotUser($db, $settings);
 	$currentUser = $spotUser->auth('anonymous', '');

@@ -5,6 +5,7 @@
 require_once "lib/dbeng/db_mysql.php";
 require_once "lib/dbeng/db_pdo_sqlite.php";
 require_once "lib/dbeng/db_pdo_mysql.php";
+require_once "lib/dbstruct/SpotStruct_abs.php";
 
 class SpotDb
 {
@@ -568,6 +569,16 @@ class SpotDb
 		} # if
 	} # addDownload
 
+	/* 
+	 * Is onze database versie nog wel geldig?
+	 */
+	function schemaValid() {
+		$schemaVer = $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
+		
+		# SPOTDB_SCHEMA_VERSION is gedefinieerd in SpotStruct_Abs
+		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
+	} # schemaValid
+	
 	/*
 	 * Is een messageid al gedownload?
 	 */
