@@ -35,6 +35,11 @@ catch(Exception $x) {
 	die("Unable to connect to database: " . $x->getMessage() . PHP_EOL);
 } # catch
 
+# Controleer dat we niet een schema upgrade verwachten
+if (!$db->schemaValid()) {
+	die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+} # if
+
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
 if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 	$db->setRetrieverRunning($settings['nntp_hdr']['host'], false);
