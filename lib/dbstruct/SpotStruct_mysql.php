@@ -90,7 +90,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			# settings
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTO_INCREMENT,
 									  name VARCHAR(128) NOT NULL,
-									  value VARCHAR(128)) ENGINE=MyISAM");
+									  value TEXT) ENGINE=MyISAM");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
 		} # if
 	} # createDatabase
@@ -149,5 +149,11 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # createTable
 	
+	/* drop een table */
+	function dropTable($tablename) {
+		if ($this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("DROP TABLE " . $tablename);
+		} # if
+	} # dropTable
 	
 } # class
