@@ -54,7 +54,8 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			# commentsxover
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) NOT NULL,
-										   nntpref VARCHAR(128)) ENGINE = MYISAM;");
+										   nntpref VARCHAR(128),
+										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
 			
