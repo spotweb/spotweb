@@ -45,7 +45,7 @@ abstract class SpotRetriever_Abs {
 
 			# zo niet, dan gaan we draaien
 			$this->displayStatus("start", $this->_server['host']);
-			$this->_spotnntp = new SpotNntp($this->_server, $this->_settings['use_openssl']);
+			$this->_spotnntp = new SpotNntp($this->_server, $this->_settings->get('use_openssl'));
 			$this->_msgdata = $this->_spotnntp->selectGroup($group);
 			
 			return $this->_msgdata;
@@ -53,10 +53,10 @@ abstract class SpotRetriever_Abs {
 		
 
 		/*
-		 * Zoekt het juiste articlenummer voor een opgegeven messageid
+		 * Zoekt het juiste articlenummer voor een opgegeven lijst van messageids
 		 */
-		function searchMessageid($messageId) {
-			if (empty($messageId)) {
+		function searchMessageid($messageIdList) {
+			if (empty($messageIdList)) {
 				return 0;
 			} # if
 				
@@ -64,17 +64,21 @@ abstract class SpotRetriever_Abs {
 			
 			$found = false;
 			$decrement = 5000;
-			$messageId = '<' . $messageId . '>';
 			$curMsg = $this->_msgdata['last'];
 
+			# en start met zoeken
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
 
 				# get the list of headers (XHDR)
 				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				
+				# we draaien de messageid's lijst om, omdat we willen dat we de meest recente
+				# messageid als uitgangspunt nemen
+				$hdrList = array_reverse($hdrList, true);
 
 				foreach($hdrList as $msgNum => $msgId) {
-					if ($msgId == $messageId) {
+					if (isset($messageIdList[$msgId])) {
 						$curMsg = $msgNum;
 						$found = true;
 						break;
