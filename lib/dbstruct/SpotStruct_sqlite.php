@@ -89,6 +89,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 									  `verified` tinyint(1) DEFAULT NULL)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_2 ON commentsfull(messageid,stamp)");
+
+			# settings
+			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY,
+									  name VARCHAR(128) NOT NULL,
+									  value VARCHAR(128))");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
 		} # if
 	} # createDatabase
 	

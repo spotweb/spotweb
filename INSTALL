@@ -32,10 +32,11 @@ Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controler
 1. Pak het archief uit naar een directory onder je webroot
 2. Zorg ervoor dat deze directory enkel beschikbaar is voor je eigen PC's of je eigen account (bv. het met een .htaccess)
 3. Open 'settings.php' in een text editor, en geef de settings voor de NNTP server in
-4. Voer - liefst op een shell prompt - retrieve.php uit. Je kan dit ook eventueel via 
+4. Voer nu 'upgrade-db.php' uit om de database aan te maken
+5. Voer - liefst op een shell prompt - retrieve.php uit. Je kan dit ook eventueel via 
    je webbrowser doen (ga naar http://jouwserver/jouwdir/retrieve.php), maar dat zal met regelmaat een timeout geven de eerste keer.
-5. Als retrieve.php geen errors geeft, kan je naar http://jouwserver/jouwdir/ surfen om dit script te gebruiken
-6. Voer met regelmaat 'retrieve.php' uit om de database te updaten
+6. Als retrieve.php geen errors geeft, kan je naar http://jouwserver/jouwdir/ surfen om dit script te gebruiken
+7. Voer met regelmaat 'retrieve.php' uit om de database te updaten
 
 == Troubleshooting ==
 Als je een lege pagina krijgt is het meestal een probleem in je settings.php danwel ownsettings.php. In je Apache (of webserver)

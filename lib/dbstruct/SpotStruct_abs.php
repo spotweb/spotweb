@@ -1,10 +1,13 @@
 <?php
+define('SPOTDB_SCHEMA_VERSION', '0.01');
 
 abstract class SpotStruct_abs {
+	protected $_spotdb;
 	protected $_dbcon;
 	
-	public function __construct($dbCon) {
-		$this->_dbcon = $dbCon;
+	public function __construct($spotdb) {
+		$this->_spotdb = $spotdb;
+		$this->_dbcon = $spotdb->getDbHandle();
 	} # __construct
 	
 	abstract function createDatabase();
@@ -83,6 +86,18 @@ abstract class SpotStruct_abs {
 		if (!$this->columnExists('downloadlist', 'ouruserid')) {
 			$this->addColumn("ouruserid", "downloadlist", "INTEGER DEFAULT 0");
 		} # if
+		
+		# settings tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('settings')) {
+			$this->createTable('settings');
+			
+			$this->addColumn('name', 'settings', 'VARCHAR(128)');
+			$this->addColumn('value', 'settings', 'VARCHAR(128)');
+			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
+		} # if
+		
+		# voeg het database schema versie nummer toe
+		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
 	
 } # class
