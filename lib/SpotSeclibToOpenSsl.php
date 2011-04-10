@@ -8,8 +8,8 @@ require_once "Crypt/RSA.php";
  */
 class SpotSeclibToOpenSsl {
 
-	function verify($rsa, $toCheck, $signature) {
-		$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($rsa));
+	function verify($pubKey, $toCheck, $signature) {
+		$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($pubKey));
 		$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
 		openssl_free_key($openSslPubKey);
 		
@@ -49,7 +49,7 @@ class SpotSeclibToOpenSsl {
 	} # _encodeObjectId
 
 
-	function seclibToOpenSsl($rsa) {
+	function seclibToOpenSsl($pubKey) {
 		/* 
 		 * Structuur van de OpenSSL publickey is als volgt:
 		 *
@@ -64,11 +64,11 @@ class SpotSeclibToOpenSsl {
 		 *
 		 * Dit willen we nabootsen met deze encoding
 		 */
-		$publicExponent = $rsa->exponent->toBytes(true);
-		$modulus = $rsa->modulus->toBytes(true);
+		$publicExponent = $pubKey['e'];
+		$modulus = $pubKey['n'];
 		$components = array(
-			'modulus' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $rsa->_encodeLength(strlen($modulus)), $modulus),
-			'publicExponent' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $rsa->_encodeLength(strlen($publicExponent)), $publicExponent)
+			'modulus' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $this->_encodeLength(strlen($modulus)), $modulus),
+			'publicExponent' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $this->_encodeLength(strlen($publicExponent)), $publicExponent)
 		);
 
 		/* 
@@ -76,13 +76,13 @@ class SpotSeclibToOpenSsl {
 		 */		 
 		$encodedKeys = pack('Ca*a*a*',
 					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
-					$rsa->_encodeLength(strlen($components['modulus']) + strlen($components['publicExponent'])),
+					$this->_encodeLength(strlen($components['modulus']) + strlen($components['publicExponent'])),
 					$components['modulus'], 
 					$components['publicExponent']
         );
 		$encodedKeys = pack('Ca*Ca*',
 					0x03, 		# 0x03 means BIT STRING
-					$rsa->_encodeLength(strlen($encodedKeys) + 1), # add 1 voor de 0 unused bits
+					$this->_encodeLength(strlen($encodedKeys) + 1), # add 1 voor de 0 unused bits
 					0,
 					$encodedKeys
 		);
@@ -93,7 +93,7 @@ class SpotSeclibToOpenSsl {
 		$rsaIdentifier = $this->_encodeObjectId(array(1,2,840,113549,1,1,1)); 	/* Magic value of RSA */
 		$encryptionType = pack('Ca*',
 				0x06,		# ASN.1 OBJECT IDENTIFIER
-				$rsa->_encodeLength(count($rsaIdentifier))
+				$this->_encodeLength(count($rsaIdentifier))
 		);
 		for($i = 0; $i < count($rsaIdentifier); $i++) {	
 			$encryptionType .= chr($rsaIdentifier[$i]);
@@ -108,19 +108,42 @@ class SpotSeclibToOpenSsl {
 		# en de encryptiontype pakken we in in een sequence
 		$encryptionType = pack('Ca*a*',
 					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
-					$rsa->_encodeLength(strlen($encryptionType)),
+					$this->_encodeLength(strlen($encryptionType)),
 					$encryptionType
 		);
 		
 		# en ook dit alles pakken we in een sequence in
 		$endResult = pack('Ca*a*',
 					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
-					$rsa->_encodeLength(strlen($encryptionType . $encodedKeys)),
+					$this->_encodeLength(strlen($encryptionType . $encodedKeys)),
 					$encryptionType . $encodedKeys
 		);
 		return "-----BEGIN PUBLIC KEY-----\n" . 
 				chunk_split(base64_encode($endResult), 64) .
 				"-----END PUBLIC KEY-----\n";
 	} # seclibToOpenSsl
+
+    /**
+	 *
+	 * From phpSeclib library
+	 *
+     * DER-encode the length
+     *
+     * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
+     * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 § 8.1.3} for more information.
+     *
+     * @access private
+     * @param Integer $length
+     * @return String
+     */
+    function _encodeLength($length)
+    {
+        if ($length <= 0x7F) {
+            return chr($length);
+        }
+
+        $temp = ltrim(pack('N', $length), chr(0));
+        return pack('Ca*', 0x80 | strlen($temp), $temp);
+    }
 	
 } # SpotSeclibToOpenSsl
