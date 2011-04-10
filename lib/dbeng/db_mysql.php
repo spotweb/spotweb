@@ -88,10 +88,6 @@ class db_mysql extends db_abs {
 			throw new Exception("Unable to select MySQL db: " . mysql_error($this->_conn));
 			return false;
 		} # if
-		
-		# Create the database structure
-		$dbStruct = new SpotStruct_mysql($this);
-		$dbStruct->createDatabase();
     } # connect()
 		
 	function safe($s) {

@@ -37,10 +37,6 @@ class db_pdo_mysql extends db_pdo {
 			}
 
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		
-			# Create the database structure
-			$dbStruct = new SpotStruct_mysql($this);
-			$dbStruct->createDatabase();
 		} # if
 	} # connect()
 

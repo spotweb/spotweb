@@ -17,13 +17,12 @@ try {
 	# Instantieeer een struct object
 	$db = new SpotDb($settings['db']);
 	$db->connect();
-	
+
 	switch($settings['db']['engine']) {	
 		case 'mysql'			:
-		case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($db->getDbHandle()); break;
+		case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($db); break;
 		
-		case 'sqlite3'			:
-		case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($db->getDbHandle()); break;
+		case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($db); break;
 		
 		default					: throw new Exception("Onbekende database engine");
 	} # switch

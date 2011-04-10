@@ -15,10 +15,6 @@ class db_pdo_sqlite extends db_pdo {
 		if (!$this->_conn instanceof PDO) {
 			$this->_conn = new PDO('sqlite:' . $this->_db_path);
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		
-			# Create the database structure
-			$dbStruct = new SpotStruct_sqlite($this);
-			$dbStruct->createDatabase();
         } # if		
 	} # connect()
 	

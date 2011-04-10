@@ -22,9 +22,6 @@ class SpotDb
 	 */
 	function connect() {
 		switch ($this->_dbsettings['engine']) {
-			case 'sqlite3'	: throw new Exception("Standaard sqlite is niet meer ondersteund. Gebruik 'pdo_sqlite', maar gooi eerst je database file weg voor je dit doet!");
-							  break;
-							 
 			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
@@ -52,6 +49,23 @@ class SpotDb
 		return $this->_conn;
 	} # getDbHandle
 
+	/* 
+	 * Haalt alle settings op uit de database
+	 */
+	function getAllSettings() {
+		return $this->_conn->arrayQuery('SELECT name,value FROM settings');
+	} # getAllSettings
+	
+	/*
+	 * Update setting
+	 */
+	function updateSetting($name, $value) {
+		$res = $this->_conn->exec("UPDATE settings SET value = '%s' WHERE name = '%s'", Array($value, $name));
+		if ($this->_conn->rows() == 0) {	
+			$this->_conn->exec("INSERT INTO settings(name,value) VALUES('%s', '%s')", Array($name, $value));
+		} # if
+	} # updateSetting
+	 
 	/*
 	 * Haalt een user op uit de database 
 	 */
@@ -574,8 +588,7 @@ class SpotDb
 	 */
 	function deleteSpot($msgId) {
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite' : 
-			case 'sqlite3'	: { 
+			case 'pdo_sqlite' : {
 				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
@@ -583,7 +596,7 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
-			} # sqlite3
+			} # pdo_sqlite
 			default			: {
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
@@ -610,8 +623,7 @@ class SpotDb
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 		
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': 
-			case 'sqlite3'	: {
+ 			case 'pdo_sqlite': {
 				$this->_conn->exec("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
 				$this->_conn->exec("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
 									(SELECT messageid FROM spots)") ;
@@ -625,7 +637,7 @@ class SpotDb
 				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
-			} # sqlite3 en pdo_sqlite
+			} # pdo_sqlite
 			default		: {
 				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
