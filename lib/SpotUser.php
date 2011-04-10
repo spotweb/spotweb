@@ -16,7 +16,7 @@ class SpotUser {
 	 */
 	function auth($user, $password) {
 		# Salt het password met het unieke salt in settings.php
-		#$password = sha1(substr($this->_settings['pass_salt'], 1, 3) . $password . $this->_settings['pass_salt']);
+		$password = sha1(substr($this->_settings['pass_salt'], 1, 3) . $password . $this->_settings['pass_salt']);
 
 		# authenticeer de user?
 		$userId = $this->_db->authUser($user, $password);
