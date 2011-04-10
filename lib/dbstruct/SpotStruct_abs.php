@@ -92,8 +92,10 @@ abstract class SpotStruct_abs {
 		
 		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
 		# past geen RSA key in dus dan droppen we de tabel
-		if ($this->_spotdb->getSchemaVer() == '0.01') {
-			$this->dropTable('settings');
+		if ($this->tableExists('settings')) {
+			if ($this->_spotdb->getSchemaVer() == '0.01') {
+				$this->dropTable('settings');
+			} # if
 		} # if
 		
 		# settings tabel aanmaken als hij nog niet bestaat
