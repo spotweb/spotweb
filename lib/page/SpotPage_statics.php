@@ -11,8 +11,8 @@ class SpotPage_statics extends SpotPage_Abs {
 	private $_params;
 	private $_currentCssFile;
 
-	function __construct($db, $settings, $prefs, $params) {
-		parent::__construct($db, $settings, $prefs);
+	function __construct($db, $settings, $currentUser, $params) {
+		parent::__construct($db, $settings, $currentUser);
 		
 		$this->_params = $params;
 	} # ctor

@@ -1,12 +1,30 @@
 <?php
 
 class SpotUser {
+	private $_db;
+	private $_settings;
+	
+	function __construct($db, $settings) {
+		$this->_db = $db;
+		$this->_settings = $settings;
+	} # ctor
 
 	/*
-	 * Probeert de user aan te loggen met de gegeven credentials 
+	 * Probeert de user aan te loggen met de gegeven credentials,
+	 * geeft user record terug of false als de user niet geauth kan
+	 * worden
 	 */
 	function auth($user, $password) {
-		return true;
+		# Salt het password met het unieke salt in settings.php
+		#$password = sha1(substr($this->_settings['pass_salt'], 1, 3) . $password . $this->_settings['pass_salt']);
+
+		# authenticeer de user?
+		$userId = $this->_db->authUser($user, $password);
+		if ($userId !== false) {
+			return $this->getUser($userId);
+		} else {
+			return false;
+		} # else
 	} # auth()
 	
 	/*
@@ -25,18 +43,33 @@ class SpotUser {
 	 * Voegt een gebruiker toe aan de database 
 	 */
 	function addUser($name, $password, $mail) {
+		if (!$this->validUsername($username)) {
+			throw new Exception("Invalid username");
+		} # if
+		
+		$this->_db->addUser(array());
 	} # addUser()
 	
 	/*
 	 * Geeft een user record terug
 	 */
-	function getUser($name) {
+	function getUser($userid) {
+		return $this->_db->getUser($userid);
 	} # getUser()
+	
+	/*
+	 * Update een user record
+	 */
+	function setUser($user) {
+	} # setUser()
 	
 	/*
 	 * Verwijdert een user record
 	 */
-	function removeUser($name) {
+	function removeUser($userid) {
+		$user = $this->getUser($userid);
+		$user['disabled'] = true;
+		$this->setUser($user);
 	} # removeUser()
 	
 } # class SpotUser

@@ -4,8 +4,8 @@ require_once "lib/page/SpotPage_Abs.php";
 class SpotPage_selecttemplate extends SpotPage_Abs {
 	private $_req;
 
-	function __construct($db, $settings, $prefs, $req) {
-		parent::__construct($db, $settings, $prefs);
+	function __construct($db, $settings, $currentUser, $req) {
+		parent::__construct($db, $settings, $currentUser);
 		$this->_req = $req;
 	} # ctor
 	

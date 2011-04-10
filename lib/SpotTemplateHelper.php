@@ -7,13 +7,13 @@ require_once 'lib/ubb/taghandler.inc.php';
 # door custom templates extended worden
 class SpotTemplateHelper {	
 	protected $_settings;
-	protected $_prefs;
 	protected $_db;
+	protected $_currentUser;
 	protected $_params;
 	
-	function __construct($settings, $prefs, $db, $params) {
+	function __construct($settings, $currentUser, $db, $params) {
 		$this->_settings = $settings;
-		$this->_prefs = $prefs;
+		$this->_currentUser = $currentUser;
 		$this->_db = $db;
 		$this->_params = $params;
 	} # ctor
@@ -82,7 +82,7 @@ class SpotTemplateHelper {
 	} # getCommentCount
 	
 	/*
-	 * Geeft een aantal spots terug
+	 * Geeft een aantal comments terug
 	 */
 	function getSpotComments($msgId, $start, $length) {
 		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
@@ -90,6 +90,16 @@ class SpotTemplateHelper {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
 	} # getSpotComments
+
+	/*
+	 * Geeft een full spot terug
+	 */
+	function getFullSpot($msgId) {
+		$spotnntp = new SpotNntp($this->_settings['nntp_hdr'], $this->_settings['use_openssl']);
+		
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		return $spotsOverview->getFullSpot($msgId, $this->_currentUser['userid'], $spotnntp);
+	} # getFullSpot
 
 	
 	/*

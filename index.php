@@ -11,6 +11,7 @@ require_once "lib/SpotsOverview.php";
 require_once "lib/SpotCategories.php";
 require_once "lib/SpotNntp.php";
 require_once "lib/SpotCookie.php";
+require_once "lib/SpotUser.php";
 require_once "lib/page/SpotPage_index.php";
 require_once "lib/page/SpotPage_getnzb.php";
 require_once "lib/page/SpotPage_getnzbmobile.php";
@@ -32,6 +33,10 @@ try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
 
+	# Haal het userobject op dat 'ingelogged' is
+	$spotUser = new SpotUser($db, $settings);
+	$currentUser = $spotUser->auth('anonymous', '');
+	
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
@@ -39,7 +44,7 @@ try {
 		
 	switch($page) {
 		case 'render' : {
-				$page = new SpotPage_render($db, $settings, $settings['prefs'], $req->getDef('tplname', ''),
+				$page = new SpotPage_render($db, $settings, $currentUser, $req->getDef('tplname', ''),
 							Array('search' => $req->getDef('search', $settings['index_filter']),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -51,13 +56,13 @@ try {
 		} # render
 		
 		case 'getspot' : {
-				$page = new SpotPage_getspot($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page = new SpotPage_getspot($db, $settings, $currentUser, $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getspot
 
 		case 'getnzb' : {
-				$page = new SpotPage_getnzb($db, $settings, $settings['prefs'], 
+				$page = new SpotPage_getnzb($db, $settings, $currentUser, 
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
@@ -65,13 +70,13 @@ try {
 		}
 		
 		case 'getspotmobile' : {
-				$page = new SpotPage_getspotmobile($db, $settings, $settings['prefs'], $req->getDef('messageid', ''));
+				$page = new SpotPage_getspotmobile($db, $settings, $currentUser, $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getspotmobile
 
 		case 'getnzbmobile' : {
-				$page = new SpotPage_getnzbmobile($db, $settings, $settings['prefs'], 
+				$page = new SpotPage_getnzbmobile($db, $settings, $currentUser,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
@@ -79,25 +84,25 @@ try {
 		} # getnzbmobile		
 
 		case 'erasedls' : {
-				$page = new SpotPage_erasedls($db, $settings, $settings['prefs']);
+				$page = new SpotPage_erasedls($db, $settings, $currentUser);
 				$page->render();
 				break;
 		} # erasedls
 		
 		case 'catsjson' : {
-				$page = new SpotPage_catsjson($db, $settings, $settings['prefs']);
+				$page = new SpotPage_catsjson($db, $settings, $currentUser);
 				$page->render();
 				break;
 		} # getspot
 		
 		case 'markallasread' : {
-				$page = new SpotPage_markallasread($db, $settings, $settings['prefs']);
+				$page = new SpotPage_markallasread($db, $settings, $currentUser);
 				$page->render();
 				break;
 		} # markallasread
 
 		case 'getimage' : {
-			$page = new SpotPage_getimage($db, $settings, $settings['prefs'], 
+			$page = new SpotPage_getimage($db, $settings, $currentUser,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'image' => $req->getDef('image', Array())));
 			$page->render();
@@ -105,13 +110,13 @@ try {
 		}
 
 		case 'selecttemplate' : {
-				$page = new SpotPage_selecttemplate($db, $settings, $settings['prefs'], $req);
+				$page = new SpotPage_selecttemplate($db, $settings, $currentUser, $req);
 				$page->render();
 				break;
 		} # selecttemplate
 
 		case 'atom' : {
-			$page = new SpotPage_atom($db, $settings, $settings['prefs'],
+			$page = new SpotPage_atom($db, $settings, $currentUser,
 					Array('search' => $req->getDef('search', $settings['index_filter']),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
@@ -122,14 +127,14 @@ try {
 		} # atom
 		
 		case 'statics' : {
-				$page = new SpotPage_statics($db, $settings, $settings['prefs'], 
+				$page = new SpotPage_statics($db, $settings, $currentUser,
 							Array('type' => $req->getDef('type', '')));
 				$page->render();
 				break;
 		} # statics
 
 		default : {
-				$page = new SpotPage_index($db, $settings, $settings['prefs'],
+				$page = new SpotPage_index($db, $settings, $currentUser,
 							Array('search' => $req->getDef('search', $settings['index_filter']),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
