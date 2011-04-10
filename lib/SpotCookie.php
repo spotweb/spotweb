@@ -2,10 +2,8 @@
 require_once "settings.php";
 require_once "lib/SpotDb.php";
 
-return;
-
 try {
-	$db = new SpotDb($settings->get('db'));
+	$db = new SpotDb($settings['db']);
 	$db->connect();
 } 
 catch(Exception $x) {
@@ -21,4 +19,4 @@ if(empty($_SESSION['last_visit'])) {
 } # if 
 	
 // set cookie
-setcookie('last_visit', $db->getMaxMessageTime(), time()+(86400*$settings->get('cookie_expires')), '/', $settings->get('cookie_host'));
+setcookie('last_visit', $db->getMaxMessageTime(), time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);

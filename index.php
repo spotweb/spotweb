@@ -10,7 +10,6 @@ require_once "lib/SpotParser.php";
 require_once "lib/SpotsOverview.php";
 require_once "lib/SpotCategories.php";
 require_once "lib/SpotNntp.php";
-require_once "lib/SpotCookie.php";
 require_once "lib/SpotSettings.php";
 require_once "lib/SpotUserSystem.php";
 require_once "lib/page/SpotPage_index.php";
