@@ -41,7 +41,7 @@
 		if ($settings['keep_watchlist']) { $colSpan++; }
 		if ($settings['nzbhandling']['action'] != 'disable') { $colSpan++; }
 		
-		echo "\t\t\t\t\t\t\t<tr><td class='noresults' colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
+		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
 	} # if
 	
 	foreach($spots as $spot) {
@@ -138,10 +138,10 @@
 <?php if ($prevPage >= 0) { ?> 
                         <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>">&lt;&lt;</a></td>
 <?php }?> 
-						<td class="button">
+						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>">
 <?php if ($settings['show_multinzb']) { ?> 
                             <input id='multisubmit' type='submit' value='' title='Download Multi NZB' />
-                        </form>
+                        
 <?php } ?>
 						</td>
 <?php if ($nextPage > 0) { ?> 
@@ -150,6 +150,8 @@
 					</tr>
                 </tbody>
             </table>
+            <?php if ($settings['show_multinzb']) {echo "</form>";} ?>
+            <input type="hidden" id="perPage" value="<?php echo $settings['prefs']['perpage'] ?>" />
 			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
 			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />
 <?php } ?>
