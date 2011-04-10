@@ -6,35 +6,43 @@ require_once "Crypt/RSA.php";
 class SpotSigning {
 
 	public function __construct($useOpenSsl) {
-		if (($useOpenSsl) && (!defined('CRYPT_RSA_MODE'))) {
-			define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
-		} # if
+		if (!defined('CRYPT_RSA_MODE')) {
+			if (($useOpenSsl)
+				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
+			} else {
+				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL);
+ 			} # else
+		} # if not defined
 	} # ctor
 
 
 	private function checkRsaSignature($toCheck, $signature, $rsaKey) {
 		# de signature is base64 encoded, eerst decoden
 		$signature = base64_decode($signature);
-		
-		# Initialize the public key to verify with
-		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
-		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
-		
-		# and verify the signature
-		$rsa = new Crypt_RSA();
-		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
 
 		# Controleer of we de native OpenSSL libraries moeten
 		# gebruiken om RSA signatures te controleren
 		if (CRYPT_RSA_MODE != CRYPT_RSA_MODE_OPENSSL) {
+			# Initialize the public key to verify with
+			$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
+			$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
+					
+			# and verify the signature
+			$rsa = new Crypt_RSA();
+			$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
+			$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+
 			# Supress notice if the signature was invalid
 			$saveErrorReporting = error_reporting(E_ERROR);
 			$tmpSave = $rsa->verify($toCheck, $signature);
 			error_reporting($saveErrorReporting);
 		} else {
+			# Initialize the public key to verify with
+			$pubKey['n'] = base64_decode($rsaKey['modulo']);
+			$pubKey['e'] = base64_decode($rsaKey['exponent']);
+
 			$nativeVerify = new SpotSeclibToOpenSsl();
-			$tmpSave = $nativeVerify->verify($rsa, $toCheck, $signature);
+			$tmpSave = $nativeVerify->verify($pubKey, $toCheck, $signature);
 		} # else
 
 		return $tmpSave;
