@@ -93,7 +93,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# settings
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY,
 									  name VARCHAR(128) NOT NULL,
-									  value VARCHAR(128))");
+									  value TEXT)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
 		} # if
 	} # createDatabase
@@ -152,11 +152,17 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return !empty($q);
 	} # tableExists
 
-	/* ceeert een lege tabel met enkel een ID veld */
+	/* creeert een lege tabel met enkel een ID veld */
 	function createTable($tablename) {
 		if (!$this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
 		} # if
 	} # createTable
 	
+	/* drop een table */
+	function dropTable($tablename) {
+		if ($this->tableExists($tablename)) {
+			$this->_dbcon->rawExec("DROP TABLE " . $tablename);
+		} # if
+	} # dropTable
 } # class

@@ -573,11 +573,18 @@ class SpotDb
 		} # if
 	} # addDownload
 
+	/*
+	 * Geeft huidig database schema versie nummer terug
+	 */
+	function getSchemaVer() {
+		return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
+	} # getSchemaVer
+
 	/* 
 	 * Is onze database versie nog wel geldig?
 	 */
 	function schemaValid() {
-		$schemaVer = $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
+		$schemaVer = $this->getSchemaVer();
 		
 		# SPOTDB_SCHEMA_VERSION is gedefinieerd in SpotStruct_Abs
 		return ($schemaVer == SPOTDB_SCHEMA_VERSION);

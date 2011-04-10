@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.01');
+define('SPOTDB_SCHEMA_VERSION', '0.02');
 
 abstract class SpotStruct_abs {
 	protected $_spotdb;
@@ -35,6 +35,9 @@ abstract class SpotStruct_abs {
 
 	/* ceeert een lege tabel met enkel een ID veld */
 	abstract function createTable($tablename);
+
+	/* drop een table */
+	abstract function dropTable($tablename);
 	
 	function updateSchema() {
 		# Fulltext indexes
@@ -87,12 +90,18 @@ abstract class SpotStruct_abs {
 			$this->addColumn("ouruserid", "downloadlist", "INTEGER DEFAULT 0");
 		} # if
 		
+		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
+		# past geen RSA key in dus dan droppen we de tabel
+		if ($this->_spotdb->getSchemaVer() == '0.01') {
+			$this->dropTable('settings');
+		} # if
+		
 		# settings tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('settings')) {
 			$this->createTable('settings');
 			
 			$this->addColumn('name', 'settings', 'VARCHAR(128)');
-			$this->addColumn('value', 'settings', 'VARCHAR(128)');
+			$this->addColumn('value', 'settings', 'text');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
 		} # if
 		
