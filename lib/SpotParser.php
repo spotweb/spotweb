@@ -249,7 +249,6 @@ class SpotParser {
 							$spot['wassigned'] = true;
 
 							# KeyID 7 betekent dat alleen een hashcash vereist is
-
 							if ($spot['keyid'] == 7) {
 								$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
 								$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');

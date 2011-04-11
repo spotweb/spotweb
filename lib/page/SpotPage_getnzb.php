@@ -18,7 +18,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nzb');
+		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
 		if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
 			$nzb_spotnntp = $hdr_spotnntp;
 		} else {
