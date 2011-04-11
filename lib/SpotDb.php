@@ -365,7 +365,7 @@ class SpotDb
 		} # if
 
 		# en voer de query uit
- 		$tmpResult = $this->_conn->arrayQuery("SELECT *, d.stamp as downloadstamp, w.dateadded as w_dateadded FROM 
+ 		$tmpResult = $this->_conn->arrayQuery("SELECT s.*, d.stamp as downloadstamp, w.dateadded as w_dateadded FROM 
 									(SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
