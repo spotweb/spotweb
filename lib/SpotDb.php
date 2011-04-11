@@ -255,7 +255,6 @@ class SpotDb
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter; 
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
-		
 		if ($cnt == null) {
 			return 0;
 		} else {
@@ -341,13 +340,8 @@ class SpotDb
 		$offset = (int) $pageNr * (int) $limit;
 
 		if (!empty($sqlFilter)) {
-			$sqlFilter .= ' AND ';
+			$sqlFilter = ' WHERE ' . $sqlFilter;
 		} # if 
-		
-		# Voeg nu onze userid filter toe omdat we enkel de watchlist en downloadlist
-		# van onze eigen user willen zien
-		$sqlFilter .= '	((d.ouruserid = ' . $this->safe($ourUserId) . ') OR (d.ouruserid IS NULL)) ' .
-					  ' AND ((w.ouruserid = ' . $this->safe($ourUserId) . ') OR (w.ouruserid IS NULL)) ';
 		
 		# de optie getFull geeft aan of we de volledige fieldlist moeten 
 		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
@@ -371,7 +365,8 @@ class SpotDb
 		} # if
 
 		# en voer de query uit
- 		return $this->_conn->arrayQuery("SELECT s.id AS id,
+ 		$tmpResult = $this->_conn->arrayQuery("SELECT *, d.stamp as downloadstamp, w.dateadded as w_dateadded FROM 
+									(SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
@@ -387,17 +382,18 @@ class SpotDb
 												s.stamp AS stamp,
 												s.moderated AS moderated,
 												s.filesize AS filesize,
-												d.stamp AS downloadstamp,
 												f.userid AS userid,
-												f.verified AS verified,
-												w.dateadded as w_dateadded
+												f.verified AS verified
 												" . $extendedFieldList . "
-										 FROM spots AS s 
-										 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-										 LEFT JOIN downloadlist AS d on s.messageid = d.messageid
-										 LEFT JOIN watchlist AS w on s.messageid = w.messageid
-										 WHERE " . $sqlFilter . " 
-										 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+									 FROM spots AS s 
+									 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+									 " . $sqlFilter . " 
+									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
+								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset .
+								   ") AS s 
+									   LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe($ourUserId) . ")) 
+									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))");
+		return $tmpResult;
 	} # getSpots()
 
 	/*
