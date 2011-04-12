@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.02');
+define('SPOTDB_SCHEMA_VERSION', '0.03');
 
 abstract class SpotStruct_abs {
 	protected $_spotdb;
@@ -105,6 +105,118 @@ abstract class SpotStruct_abs {
 			$this->addColumn('name', 'settings', 'VARCHAR(128)');
 			$this->addColumn('value', 'settings', 'text');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
+		} # if
+		
+		# Collation en dergelijke zijn alleen van toepassing op MySQL, we 
+		# zetten alle collation exact hetzelfde zodat de indexes beter
+		# gebruikt kunnen worden.
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.03)) {
+			echo "Huge upgrade of database, this might take up to 60 minutes or more!" . PHP_EOL;
+			echo "Converting default charset to UTF8 (1/10)" . PHP_EOL;
+
+			# We veranderen eerst de standaard collation settings zodat we in de toekomst
+			# hier niet al te veel meer op moeten letten
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
+		
+
+			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
+	
+			# en vervolgens alteren we elk tekst veld
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY fromhdr VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY userid VARCHAR(32) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY hashcash VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY body TEXT CHARACTER SET utf8");
+
+			echo "Converting commentsxover fields to UTF8 (3/10)" . PHP_EOL;
+
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+
+			$this->_dbcon->rawExec("ALTER TABLE nntp MODIFY server VARCHAR(128) CHARACTER SET utf8");
+
+			$this->_dbcon->rawExec("ALTER TABLE settings MODIFY name VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE settings MODIFY value TEXT CHARACTER SET utf8");
+
+			echo "Converting spots fields to UTF8 (3/10)" . PHP_EOL;
+
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY poster VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY groupname VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcata VARCHAR(64) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatb VARCHAR(64) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatc VARCHAR(64) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatd VARCHAR(64) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY title VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY tag VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatz VARCHAR(64) CHARACTER SET utf8");
+
+			echo "Converting spotsfull fields to UTF8 (4/10)" . PHP_EOL;
+
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userid VARCHAR(32) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY xmlsignature VARCHAR(128) CHARACTER SET utf8");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
+
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
+
+			echo "Dropping indexes (5/10)" . PHP_EOL;
+
+			# Nu droppen we alle indexes en bouwen die opnieuw op, we doen dit 
+			# omdat legacy databases soms nog indexes hebben die niet meer kloppen 
+			# doordat upgrades niet altijd goed zijn gegaan
+			if ($this->indexExists('spots', 'idx_spots_1'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_1");
+			if ($this->indexExists('spots', 'idx_spots_2'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_2");
+			if ($this->indexExists('spots', 'idx_spots_3'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_3");
+			if ($this->indexExists('spots', 'idx_spots_4'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_4");
+			if ($this->indexExists('spots', 'idx_spots_5'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_5");
+			if ($this->indexExists('spots', 'idx_spots_6'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_6");
+
+			if ($this->indexExists('spotsfull', 'idx_spotsfull_1'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_1");
+			if ($this->indexExists('spotsfull', 'idx_spotsfull_2'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_2");
+			if ($this->indexExists('spotsfull', 'idx_spotsfull_3'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_3");
+			if ($this->indexExists('spotsfull', 'idx_watchlist_1'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_watchlist_1");
+			if ($this->indexExists('spotsfull', 'idx_spotsfull_fts_3'))
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_fts_3");
+			
+			# en maak nieuwe indexen aan
+			echo "Creating index on spots (6/10)" . PHP_EOL;
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
+			echo "Creating index on spots (7/10)" . PHP_EOL;
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
+			echo "Creating index on spots (8/10)" . PHP_EOL;
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
+			echo "Creating index on spots (9/10)" . PHP_EOL;
+			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(category, subcata, subcatb, subcatc, subcatd, subcatz DESC);");
+
+			echo "Creating index on spotsfull (10/10)" . PHP_EOL;
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
+
+			echo "Upgrade done." . PHP_EOL;
 		} # if
 		
 		# voeg het database schema versie nummer toe

@@ -428,10 +428,17 @@ class SpotsOverview {
 		} # if
 
 		# Spots in Downloadlist or Watchlist
+		$listFilter = array();
 		if (isset($search['filterValues']['Downloaded'])) {
+<<<<<<< HEAD
 			$textSearch[] = "(d.stamp IS NOT NULL)";
 		} elseif (isset($search['filterValues']['Watch'])) {
 			$textSearch[] = "(w.dateadded IS NOT NULL)";
+=======
+			$listFilter[] = ' (d.stamp IS NOT NULL)';
+		} elseif (isset($search['filterValues']['Watch'])) {
+			$listFilter[] = ' (w.dateadded IS NOT NULL)';
+>>>>>>> upstream/master
 		} # if
 
 		$endFilter = array();
@@ -440,6 +447,9 @@ class SpotsOverview {
 		} # if
 		if (!empty($textSearch)) {
 			$endFilter[] = join(' AND ', $textSearch);
+		} # if
+		if (!empty($listFilter)) {
+			$endFilter[] = join(' AND ', $listFilter);
 		} # if
 		if (!empty($notSearch)) {
 			$endFilter[] = $notSearch;

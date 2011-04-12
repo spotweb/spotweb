@@ -38,6 +38,9 @@ class db_pdo_mysql extends db_pdo {
 
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} # if
+
+		# Set that we will be talking in utf8
+		$this->rawExec("SET NAMES utf8;");
 	} # connect()
 
 	function safe($s) {
