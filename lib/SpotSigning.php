@@ -5,9 +5,9 @@ require_once "Crypt/RSA.php";
 
 class SpotSigning {
 
-	public function __construct($useOpenSsl) {
+	public function __construct() {
 		if (!defined('CRYPT_RSA_MODE')) {
-			if ($useOpenSsl) {
+			if (extension_loaded("openssl")) {
 				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
 			} else {
 				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL);

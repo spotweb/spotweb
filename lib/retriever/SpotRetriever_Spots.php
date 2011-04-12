@@ -109,10 +109,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['From'], 
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
-													$this->_rsakeys,
-													$this->_settings->get('use_openssl'));
+													$this->_rsakeys);
 
-											
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
