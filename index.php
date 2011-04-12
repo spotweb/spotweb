@@ -44,7 +44,7 @@ try {
 	# Haal het userobject op dat 'ingelogged' is
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$currentUser = $spotUserSystem->auth('anonymous', '');
-	
+
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
