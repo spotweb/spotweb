@@ -252,7 +252,7 @@ class SpotDb
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
-						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter; 
+						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
 		if ($cnt == null) {
@@ -332,16 +332,18 @@ class SpotDb
 		
 
 	/*
-	 * Geef alle spots terug in de database die aan $sqlFilter voldoen.
+	 * Geef alle spots terug in de database die aan $criteriaFilter voldoen.
 	 * 
 	 */
-	function getSpots($ourUserId, $pageNr, $limit, $sqlFilter, $sort, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull) {
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
-		if (!empty($sqlFilter)) {
-			$sqlFilter = ' WHERE ' . $sqlFilter;
+		# je hebt de zoek criteria (category, titel, etc)
+		if (!empty($criteriaFilter)) {
+			$criteriaFilter = ' AND ' . $criteriaFilter;
 		} # if 
+		
 		
 		# de optie getFull geeft aan of we de volledige fieldlist moeten 
 		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
@@ -363,14 +365,15 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
-
+								   
 		# en voer de query uit
- 		$tmpResult = $this->_conn->arrayQuery("SELECT s.*, d.stamp as downloadstamp, w.dateadded as w_dateadded FROM 
-									(SELECT s.id AS id,
+ 		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
 												s.poster AS poster,
+												d.stamp as downloadstamp, 
+												w.dateadded as w_dateadded,
 												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
@@ -386,13 +389,15 @@ class SpotDb
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-									 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-									 " . $sqlFilter . " 
+								     LEFT JOIN downloadlist AS d on (s.messageid = d.messageid) 
+								     LEFT JOIN watchlist AS w on (s.messageid = w.messageid)
+									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid)
+								     WHERE 
+									 ((w.ouruserid = " . $this->safe($ourUserId) . ") OR (w.ouruserid IS NULL)) AND
+									 ((d.ouruserid = " . $this->safe($ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
+									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
-								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset .
-								   ") AS s 
-									   LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe($ourUserId) . ")) 
-									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))");
+								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
 		return $tmpResult;
 	} # getSpots()
 
