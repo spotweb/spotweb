@@ -364,6 +364,12 @@ class SpotDb
 			$sort['direction'] = 'ASC';
 		} # if
 
+		$specialFilter = "";
+		if (stristr($sqlFilter, "d.stamp IS NOT NULL") || stristr($sqlFilter, "w.dateadded IS NOT NULL")) {
+			$specialFilter = $sqlFilter;
+			$sqlFilter = "";
+		} # if
+
 		# en voer de query uit
  		$tmpResult = $this->_conn->arrayQuery("SELECT s.*, d.stamp as downloadstamp, w.dateadded as watchlistadded FROM 
 									(SELECT s.id AS id,
@@ -387,12 +393,13 @@ class SpotDb
 												" . $extendedFieldList . "
 									 FROM spots AS s 
 									 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+									 " . $sqlFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
 								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset .
 								   ") AS s 
 									   LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe($ourUserId) . ")) 
 									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))"
-									   . $sqlFilter);
+									   . $specialFilter);
 		return $tmpResult;
 	} # getSpots()
 
