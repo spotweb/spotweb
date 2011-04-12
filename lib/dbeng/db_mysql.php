@@ -88,6 +88,9 @@ class db_mysql extends db_abs {
 			throw new Exception("Unable to select MySQL db: " . mysql_error($this->_conn));
 			return false;
 		} # if
+		
+		# Set that we will be talking in utf8
+		$this->rawExec("SET NAMES utf8;");
     } # connect()
 		
 	function safe($s) {
