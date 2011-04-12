@@ -146,7 +146,7 @@ $settings['prefs']['date_formatting'] = "human";
 
 # Is OpenSSL juist geconfigureerd en geladen als module? Zet dit dan op true, dan gaat het signen en verifieeren
 # van spots en comments sneller
-$settings['use_openssl'] = true; 
+$settings['use_openssl'] = (extension_loaded("openssl")) ? true : false;
 
 # settings 
 $settings['hdr_group'] = 'free.pt';
