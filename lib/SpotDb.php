@@ -365,7 +365,7 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
-
+								   
 		# en voer de query uit
  		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
@@ -397,15 +397,7 @@ class SpotDb
 									 ((d.ouruserid = " . $this->safe($ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
 									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
-<<<<<<< HEAD
-								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset .
-								   ") AS s 
-									   LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe($ourUserId) . ")) 
-									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))"
-									   . $specialFilter);
-=======
 								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
->>>>>>> upstream/master
 		return $tmpResult;
 	} # getSpots()
 
@@ -468,7 +460,7 @@ class SpotDb
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
 												f.filesize AS filesize,
-												w.dateadded as watchlistadded
+												w.dateadded as w_dateadded
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 												LEFT JOIN watchlist AS w on s.messageid = w.messageid
