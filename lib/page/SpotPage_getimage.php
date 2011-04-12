@@ -13,7 +13,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 	
 	function render() {
-		$spotnntp_hdr = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
+		$spotnntp_hdr = new SpotNntp($this->_settings->get('nntp_hdr'));
 
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
@@ -21,7 +21,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		
 		# sluit de connectie voor de header, en open een nieuwe connectie voor de nzb
 		$spotnntp_hdr->quit();
-		$spotnntp_img = new SpotNntp($this->_settings->get('nntp_nzb'), $this->_settings->get('use_openssl'));
+		$spotnntp_img = new SpotNntp($this->_settings->get('nntp_nzb'));
 		
 		#
 		# is het een array met een segment nummer naar de image, of is het 

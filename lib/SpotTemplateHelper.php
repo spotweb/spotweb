@@ -86,7 +86,7 @@ class SpotTemplateHelper {
 	 * Geeft een aantal comments terug
 	 */
 	function getSpotComments($msgId, $start, $length) {
-		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
+		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
@@ -96,7 +96,7 @@ class SpotTemplateHelper {
 	 * Geeft een full spot terug
 	 */
 	function getFullSpot($msgId) {
-		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'), $this->_settings->get('use_openssl'));
+		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		return $spotsOverview->getFullSpot($msgId, $this->_currentUser['userid'], $spotnntp);
