@@ -365,7 +365,7 @@ class SpotDb
 		} # if
 
 		# en voer de query uit
- 		$tmpResult = $this->_conn->arrayQuery("SELECT s.*, d.stamp as downloadstamp, w.dateadded as w_dateadded FROM 
+ 		$tmpResult = $this->_conn->arrayQuery("SELECT s.*, d.stamp as downloadstamp, w.dateadded as watchlistadded FROM 
 									(SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -387,12 +387,12 @@ class SpotDb
 												" . $extendedFieldList . "
 									 FROM spots AS s 
 									 LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-									 " . $sqlFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
 								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset .
 								   ") AS s 
 									   LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe($ourUserId) . ")) 
-									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))");
+									   LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe($ourUserId) . "))"
+									   . $sqlFilter);
 		return $tmpResult;
 	} # getSpots()
 
@@ -455,7 +455,7 @@ class SpotDb
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
 												f.filesize AS filesize,
-												w.dateadded as w_dateadded
+												w.dateadded as watchlistadded
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
 												LEFT JOIN watchlist AS w on s.messageid = w.messageid
