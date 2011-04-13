@@ -246,7 +246,7 @@ class SpotTemplateHelper {
 			return false;
 		} # if
 		
-		return ($spot['watchlistadded'] != NULL);
+		return ($spot['w_dateadded'] != NULL);
 	} # isBeingWatched
 
 	function getQueryParams($dontInclude = array()) {
