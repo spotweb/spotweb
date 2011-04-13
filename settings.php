@@ -38,15 +38,15 @@ $settings['deny_robots'] = true;
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
-    Array("Beeld", "images/icons/film.png", "cat0_a,~cat0_z2,~cat0_z3", "", 
+    Array("Beeld", "images/icons/film.png", "cat0_a,~cat0_z1,~cat0_z2,~cat0_z3", "", 
         Array(
-            Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_z2,~cat0_z3", ""),
-            Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_z2,~cat0_z3", ""),
-            Array("MPEG", "images/icons/mpg.png", "cat0_a2,~cat0_z2,~cat0_z3", ""),
-            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,~cat0_z2,~cat0_z3", ""),
-            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z2,~cat0_z3", ""),
-            Array("Series", "images/icons/tv.png", "cat0_z2", ""),
-            Array("Boeken", "images/icons/book.png", "cat0_a5,~cat0_z2,~cat0_z3", ""),
+            Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3", ""),
+            Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3", ""),
+            Array("MPEG", "images/icons/mpg.png", "cat0_a2,~cat0_z1,~cat0_z2,~cat0_z3", ""),
+            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3", ""),
+            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3", ""),
+            Array("Series", "images/icons/tv.png", "cat0_z1", ""),
+            Array("Boeken", "images/icons/book.png", "~cat0_z2", ""),
             Array("Erotiek", "images/icons/female.png", "cat0_z3", "")
         )
     ),    
