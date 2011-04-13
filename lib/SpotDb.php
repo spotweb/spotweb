@@ -206,10 +206,19 @@ class SpotDb
 			throw new Exception("Our highest spot is not in the database!?");
 		} # if
 		
-		# en wis nu alles wat 'jonger' is dan deze spot, geen join delete omdat
-		# sqlite dat niet kan
-		$this->_conn->exec("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-		$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+		# en wis nu alles wat 'jonger' is dan deze spot
+		switch ($this->_dbsettings['engine']) {
+			# geen join delete omdat sqlite dat niet kan
+			case 'pdo_sqlite' : {
+				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
+				$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+			} # case
+			
+			default			  : {
+				$this->_conn->exec("DELETE FROM spots, spotsfull USING spots 
+									INNER JOIN spotsfull on spots.messageid = spotsfull.messageid WHERE spots.id > %d", array($spot['id']));
+			} # default
+		} # switch
 	} # removeExtraSpots
 
 	/*
