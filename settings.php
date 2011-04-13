@@ -38,7 +38,7 @@ $settings['deny_robots'] = true;
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
-    Array("Beeld", "images/icons/film.png", "cat0_a,~cat0_z1,~cat0_z2,~cat0_z3", "",
+    Array("Beeld", "images/icons/film.png", "cat0_z0", "",
         Array(
             Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3", ""),
             Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3", ""),
