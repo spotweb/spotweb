@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.04');
+define('SPOTDB_SCHEMA_VERSION', '0.05');
 
 abstract class SpotStruct_abs {
 	protected $_spotdb;
@@ -221,7 +221,7 @@ abstract class SpotStruct_abs {
 
 		# Nu we subcatz hebben, update dan alle spots zodat dit ook ingevuld is om de database
 		# helemaal consistent te houden, zie https://github.com/spotweb/spotweb/commit/d4351f7dc8665699c83c8571c850b08b72fe05d0
-		if ($this->_spotdb->getSchemaVer() < 0.04) {
+		if ($this->_spotdb->getSchemaVer() < 0.05) {
 			# Films
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z0|'
 										WHERE (Category = 0) ");
