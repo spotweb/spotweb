@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.03');
+define('SPOTDB_SCHEMA_VERSION', '0.04');
 
 abstract class SpotStruct_abs {
 	protected $_spotdb;
@@ -217,6 +217,47 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
 
 			echo "Upgrade done." . PHP_EOL;
+		} # if
+
+		# Nu we subcatz hebben, update dan alle spots zodat dit ook ingevuld is om de database
+		# helemaal consistent te houden, zie https://github.com/spotweb/spotweb/commit/d4351f7dc8665699c83c8571c850b08b72fe05d0
+		if ($this->_spotdb->getSchemaVer() < 0.04) {
+			# Films
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z0|'
+										WHERE (Category = 0) ");
+
+			# Erotiek
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z3|'
+										WHERE (Category = 0) 
+											AND 
+										( (subcatd like '%d23|%') OR (subcatd like '%d24|%') OR (subcatd like '%d25|%') 
+										   OR (subcatd like '%d72|%')  OR (subcatd like '%d73|%') OR (subcatd like '%d74|%')
+										   OR (subcatd like '%d75|%')  OR (subcatd like '%d76|%') OR (subcatd like '%d77|%')
+										   OR (subcatd like '%d78|%')  OR (subcatd like '%d79|%') OR (subcatd like '%d80|%')
+										   OR (subcatd like '%d81|%')  OR (subcatd like '%d82|%') OR (subcatd like '%d83|%')
+										   OR (subcatd like '%d84|%')  OR (subcatd like '%d85|%') OR (subcatd like '%d86|%')
+										   OR (subcatd like '%d87|%')  OR (subcatd like '%d88|%') OR (subcatd like '%d89|%')
+										)");
+
+			# Series
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z1|'
+										WHERE (Category = 0) 
+											AND 
+										( (subcatd like '%b4|%') OR (subcatd like '%d11|%') )");
+
+			# Boeken
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z2|'
+										WHERE (Category = 0) 
+											AND 
+										(subcata = 'a5|')");
+
+			# Muziek
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z0|'
+										WHERE (Category = 1) ");
+
+			# de rest
+			$this->_dbcon->rawExec("UPDATE spots SET subcatz = ''
+										WHERE subcatz IS NULL");
 		} # if
 		
 		# voeg het database schema versie nummer toe
