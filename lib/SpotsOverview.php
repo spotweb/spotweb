@@ -154,8 +154,7 @@ class SpotsOverview {
 		$spotList = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
 		$spotCnt = count($spotList);
 
-		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
-		# we dat er nog een volgende pagina is
+		# Als we het opgevraagde aantal terugkrijgen nemen we maar aan dat er meer zijn. Lelijke workaround die niet altijd klopt
 		$hasMore = ($spotCnt == $limit);
 			
 		for ($i = 0; $i < $spotCnt; $i++) {
