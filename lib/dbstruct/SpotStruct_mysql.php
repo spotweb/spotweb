@@ -64,7 +64,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   messageid VARCHAR(128) NOT NULL,
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
 
 			# watchlist
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
