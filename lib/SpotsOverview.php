@@ -151,16 +151,12 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spotrs op
-		$spotList = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
+		$spotList = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
 		$spotCnt = count($spotList);
 
 		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
 		# we dat er nog een volgende pagina is
-		$hasMore = ($spotCnt > $limit);
-		
-		# nu dropen we het laatste item uit de array om het gevraagde aantal weer te geven
-		$dump = array_pop($spotList);
-		$spotCnt = count($spotList);
+		$hasMore = ($spotCnt == $limit);
 			
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
