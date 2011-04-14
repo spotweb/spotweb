@@ -312,10 +312,7 @@ if (($settings['templates']['autodetect']) &&
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
 
-# Controleer dat er wel een password salt ingevuld is
-if ($settings['pass_salt'] == 'unieke string') {
-	die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
-} # if
+
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
