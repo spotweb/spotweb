@@ -40,12 +40,12 @@ try {
 	if (!$db->schemaValid()) {
 		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
-	
+
 	# Controleer dat er wel een password salt ingevuld is
-	if ($settings['pass_salt'] == 'unieke string') {
+	if ($settings->get('pass_salt') == 'unieke string') {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
 	} # if
-	
+
 	# Haal het userobject op dat 'ingelogged' is
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$currentUser = $spotUserSystem->auth('anonymous', '');
