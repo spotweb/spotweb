@@ -30,7 +30,7 @@ div.filter h4 {
 }
 
 /* NOTIFICATIONS */
-div.notifications {background:url(img/sprite_x.png) repeat-x 0 -60px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:0 0 5px 0; overflow:hidden; display:none;}
+div.notifications {background:url(img/sprite_x.png) repeat-x 0 -60px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:0 0 5px 0; overflow:hidden; display:none; height:20px;}
 div.notifications p.multinzb {margin:0 0 0 5px; line-height:20px;}
 div.notifications p.multinzb a.clear {float:left; display:block; width:20px; height:20px; background:none; cursor:pointer; font-size:12px;}
 div.notifications p.multinzb a.button {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; cursor:pointer; float:right;}
