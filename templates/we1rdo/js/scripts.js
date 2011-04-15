@@ -26,6 +26,10 @@ function openSpot(id,url) {
 			closeDetails(scrollLocation);
 		}
 		
+		if($("div.details").height() >= $(window).height()) {
+			$("div.details").addClass("scroll");
+		}
+		
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
@@ -188,10 +192,12 @@ function toggleScrolling(state) {
 		$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
 		$("#filter").css('position', 'fixed');
 		$("#overlay").css('left', '235px');
+		$("#overlay").removeClass('full');
 	} else {
 		$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
 		$("#filter").css('position', 'relative');
 		$("#overlay").css('left', '0');
+		$("#overlay").addClass('full');
 	}
 }
 
