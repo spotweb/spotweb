@@ -1,3 +1,7 @@
+$(function(){
+	$("a.spotlink").click(function(e) { e.preventDefault(); });
+});
+
 // openSpot in overlay
 function openSpot(id,url) {
 	if($("#overlay").is(":visible")) {
@@ -57,8 +61,7 @@ $(function(){
 				$("#overlay").show().addClass('loading');
 				$("div#overlay").load(url, function() {				
 					if($("div#overlay tbody#spots").children().size() - 1 < $('#perPage').val()) {
-						$("td.next").remove();
-						$("td.button").addClass("last");
+						$("table.footer").remove();
 						$("div.spots").addClass("full");
 					}
 					$("#overlay").hide().removeClass('loading'); 
