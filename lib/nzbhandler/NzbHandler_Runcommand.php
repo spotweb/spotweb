@@ -1,8 +1,6 @@
 <?php
-require_once('lib/nzbhandler/NzbHandler.php');
-require_once('lib/nzbhandler/SaveNzbHandler.php');
 
-class RuncommandNzbHandler extends SaveNzbHandler
+class NzbHandler_Runcommand extends NzbHandler_Save
 {
 	private $_localDir = null;
 	private $_cmdToRun = null;
@@ -53,4 +51,3 @@ class RuncommandNzbHandler extends SaveNzbHandler
 
 	} # processNzb
 }
-?>

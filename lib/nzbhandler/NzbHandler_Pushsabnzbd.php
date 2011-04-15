@@ -1,9 +1,7 @@
 <?php
-require_once('lib/nzbhandler/NzbHandler.php');
-
 define("SABNZBD_TIMEOUT",15);
 
-class PushsabnzbdNzbHandler extends NzbHandler
+class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 {
 	private $_name = "SabNZBd";
 	private $_nameShort = "SAB";
@@ -76,4 +74,3 @@ class PushsabnzbdNzbHandler extends NzbHandler
 	} # processNzb
 	
 }
-?>

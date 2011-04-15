@@ -1,6 +1,5 @@
 <?php
 require_once "lib/exceptions/InvalidLocalDirException.php";
-require_once "lib/nzbhandler/NzbHandlerFactory.php";
 
 # NZB Utility functies
 class SpotNzb {
@@ -99,7 +98,7 @@ class SpotNzb {
 		} # switch
 
 		# send nzb to NzbHandler plugin
-		$nzbHandlerFactory = new NzbHandlerFactory();
+		$nzbHandlerFactory = new NzbHandler_Factory();
 		$nzbHandler = $nzbHandlerFactory->build($this->_settings);
 
 		$category = $nzbHandler->convertCatToSabnzbdCat($fullSpot, $this->_settings);
