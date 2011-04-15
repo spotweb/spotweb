@@ -275,6 +275,54 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_downloadlist_1", "downloadlist");
 			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid");
 		} # if
+
+		# users tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('users')) {
+			$this->createTable('users');
+			
+			$this->addColumn('username', 'users', 'VARCHAR(128)');
+			$this->addColumn('firstname', 'users', 'VARCHAR(128)');
+			$this->addColumn('passhash', 'users', 'VARCHAR(40)');
+			$this->addColumn('lastname', 'users', 'VARCHAR(128)');
+			$this->addColumn('mail', 'users', 'VARCHAR(128)');
+			$this->addColumn('lastlogin', 'users', 'INTEGER');
+			$this->addColumn('lastvisit', 'users', 'INTEGER');
+			$this->addColumn('deleted', 'users', 'BOOLEAN');
+			
+			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
+			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
+			$this->addIndex("idx_users_3", "", "users", "mail,deleted");
+			
+			# Create the dummy 'anonymous' user
+			$anonymous_user = array(
+				# 'userid'		=> 0,		<= Moet 0 zijn voor de anonymous user
+				'username'		=> 'anonymous',
+				'firstname'		=> 'Jane',
+				'passhash'		=> '',
+				'lastname'		=> 'Doe',
+				'mail'			=> 'john@example.com',
+				'lastlogin'		=> 0,
+				'lastvisit'		=> 0,
+				'deleted'		=> false);
+			$this->_spotdb->addUser($anonymous_user);
+			
+			# update handmatig het userid
+			$this->_dbcon->exec("UPDATE users SET id = 0 WHERE username = 'anonymous'");
+		} # if
+		
+		# users tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('sessions')) {
+			$this->createTable('sessions');
+			
+			$this->addColumn('sessionid', 'sessions', 'VARCHAR(128)');
+			$this->addColumn('userid', 'sessions', 'INTEGER');
+			$this->addColumn('hitcount', 'sessions', 'INTEGER');
+			$this->addColumn('lasthit', 'sessions', 'INTEGER');
+
+			$this->addIndex("idx_sessions_1", "UNIQUE", "sessions", "sessionid");
+			$this->addIndex("idx_sessions_2", "", "sessions", "lasthit");
+			$this->addIndex("idx_sessions_3", "", "sessions", "sessionid,userid");
+		} # if
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
