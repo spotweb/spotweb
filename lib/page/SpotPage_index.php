@@ -18,6 +18,7 @@ class SpotPage_index extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
+		SpotTiming::start(__FUNCTION__);
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$filter = $spotsOverview->filterToQuery($this->_params['search']);
 		
@@ -77,6 +78,7 @@ class SpotPage_index extends SpotPage_Abs {
 								'sortby' => $this->_params['sortby'],
 								'sortdir' => $this->_params['sortdir']));
 		$this->template('footer');
+		SpotTiming::stop(__FUNCTION__);
 	} # render()
 	
 } # class SpotPage_index

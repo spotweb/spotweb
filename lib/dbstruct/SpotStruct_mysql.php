@@ -7,7 +7,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$q = $this->_dbcon->arrayQuery("SHOW TABLES");
 		if (empty($q)) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) NOT NULL,
+										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										category INTEGER, 
 										subcat INTEGER,
 										poster VARCHAR(128) NOT NULL,
@@ -34,7 +34,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 			# spotsfull
 			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) NOT NULL,
+										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										userid varchar(32),
 										verified BOOLEAN,
 										usersignature VARCHAR(128),
@@ -53,22 +53,22 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 			# commentsxover
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128) NOT NULL,
-										   nntpref VARCHAR(128),
+										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+										   nntpref VARCHAR(128) CHARACTER SET ascii,
 										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
 			
 			# downloadlist
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128) NOT NULL,
+										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
 
 			# watchlist
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-												   messageid VARCHAR(128) NOT NULL,
+												   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 												   dateadded INTEGER,
 												   comment TEXT,
 												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
@@ -76,7 +76,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			
 			# commentsfull
 			$this->_dbcon->rawExec("CREATE TABLE commentsfull (id INTEGER PRIMARY KEY AUTO_INCREMENT,
-									  messageid VARCHAR(128) NOT NULL,
+									  messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 									  fromhdr VARCHAR(128),
 									  stamp INTEGER(10) UNSIGNED,
 									  usersignature VARCHAR(128),
@@ -118,7 +118,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
 		if ($this->indexExists($tablename, $idxname)) {
-			$this->_dbcon->rawExec("DROP INDEX " . $idxname);
+			$this->_dbcon->rawExec("DROP INDEX " . $idxname . " ON " . $tablename);
 		} # if
 	} # dropIndex
 	
