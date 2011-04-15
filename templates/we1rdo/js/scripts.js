@@ -192,12 +192,12 @@ function toggleScrolling(state) {
 		$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
 		$("#filter").css('position', 'fixed');
 		$("#overlay").css('left', '235px');
-		$("#overlay").removeClass('full');
+		$("#overlay").addClass('small');
 	} else {
 		$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
 		$("#filter").css('position', 'relative');
 		$("#overlay").css('left', '0');
-		$("#overlay").addClass('full');
+		$("#overlay").removeClass('small');
 	}
 }
 
