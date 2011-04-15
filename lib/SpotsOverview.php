@@ -386,7 +386,8 @@ class SpotsOverview {
 				
 					# en valideer dan de zoekvelden
 					$filterFieldMapping = array('filesize' => 's.filesize',
-										  'date' => 's.stamp');
+										  'date' => 's.stamp',
+										  'moderated' => 's.moderated');
 					if (!isset($filterFieldMapping[$searchType])) {
 						break;
 					} # if
