@@ -26,7 +26,7 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 			}
 
 			try {
-				$this->_conn = new PDO('mysql:' . $this->_db_conn . ';dbname=' . $this->_db_db, $this->_db_user, $this->_db_pass);
+				$this->_conn = new PDO('mysql:' . $this->_db_conn . ';dbname=' . $this->_db_db, $this->_db_user, $this->_db_pass, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 			} catch (PDOException $e) {
 				print "Error!: " . $e->getMessage() . "<br/>";
 				die();
@@ -34,9 +34,6 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} # if
-
-		# Set that we will be talking in utf8
-		$this->rawExec("SET NAMES utf8;");
 	} # connect()
 
 	function safe($s) {
