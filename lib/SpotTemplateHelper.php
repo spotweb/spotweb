@@ -491,5 +491,12 @@ class SpotTemplateHelper {
 		
 		return $fileTime;
 	} # getStaticFiles
+
+	function remove_extensive_dots($s) {
+		if (substr_count($s,  '.') > 3) {
+			$s = str_replace('.', ' ', $s);
+		} # if
+		return $s;
+	} # remove_extensive_dots
 	
 } # class SpotTemplateHelper

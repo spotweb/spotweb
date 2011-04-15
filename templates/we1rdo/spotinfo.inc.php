@@ -31,7 +31,7 @@ echo "</th>";
             	<tr>
                 	<td class="img">
                         <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage" target="_blank">
-                            <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
+                            <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $tplHelper->remove_extensive_dots($spot['title']);?>">
                         </a>
 					</td>
 					<td class="info">
