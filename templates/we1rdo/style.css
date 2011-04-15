@@ -4,7 +4,6 @@ body {margin:0;}
 
 div.container {position:relative; font:11px Arial, Helvetica, sans-serif;}
 div.container.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden;}
-div.container.visible {}
 
 div.clear {clear:both;}
 
@@ -29,6 +28,11 @@ div.filter h4 {
 	position:relative;
 	overflow:hidden;
 }
+
+/* NOTIFICATIONS */
+div.notifications {background:url(img/sprite_x.png) repeat-x 0 -60px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:0 0 5px 0; overflow:hidden; display:none;}
+div.notifications p.multinzb {margin:0 0 0 5px; line-height:20px;}
+div.notifications p.multinzb a {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; cursor:pointer; float:right;}
 
 /* ZOEKEN */
 div.filter h4 span.viewState {position:absolute; top:3px; right:4px; display:block; height:14px; background-color:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
@@ -266,8 +270,6 @@ table.footer tr td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-ra
 table.footer tr td:first-child:last-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 table.footer tr td.button {background:url(img/sprite_x.png) repeat-x 0 -60px; padding:0 3px 0 0; height:20px;}
-table.footer tr td.button input#multisubmit {background:url(img/sprite.png) no-repeat -82px -80px; display:block; width:20px; height:20px; color:#fff; text-align:center; font:11px Arial, Helvetica, sans-serif; font-weight:bold; border:0; cursor:pointer; float:right; padding:0;}
-table.footer tr td.button.last input#multisubmit {padding:0 49px 0 0;}
 
 /* SPOT DETAILS */
 div.details {font:11px Arial, Helvetica, sans-serif; padding:0 0 5px 0; min-width:680px;}

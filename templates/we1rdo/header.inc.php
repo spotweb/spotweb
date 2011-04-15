@@ -150,35 +150,19 @@
 			return false;
 		} // matchTree()
 		
-		// Check for checkboxes at submit
-		 $(function() {
-            $('input[id$=multisubmit]').click(function(e) {
-                var checked = $(':checkbox:checked').length;
-                if (checked == 0) {
-                    alert('Je moet minstens 1 spot selecteren!');
-                    e.preventDefault();
-                }
-            });
-        });
-		
 		// Select or Deselect All checkboxes
 		var checked=false;
 		var frmname='';
-		function checkedAll(frmname)
-		{
+		function checkedAll(frmname) {
 			var valus= document.getElementById(frmname);
-			if (checked==false)
-			{
+			if (checked==false) { 
 				checked=true;
-			}
-			else
-			{
-				checked = false;
-			}
-			for (var i =0; i < valus.elements.length; i++) 
-			{
+			} else { 
+				checked = false; }
+			for (var i =0; i < valus.elements.length; i++) {
 				valus.elements[i].checked=checked;
 			}
+			multinzb()
 		} // Select or Deselect All checkboxes
 		</script>
 	</head>
