@@ -129,9 +129,7 @@ abstract class SpotRetriever_Abs {
 			# we are done updating, make sure that if the newsserver deleted 
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
-			echo '??';
 				$this->updateLastRetrieved($highestMessageId);
-			echo '!!';
 			} # if
 	
 			$this->displayStatus("totalprocessed", $processed);

@@ -17,7 +17,7 @@ class SpotsOverview {
 	 */
 	function getFullSpot($msgId, $ourUserId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
-		
+
 		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
@@ -151,28 +151,23 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spots op
-		$spotList = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
-		$spotCnt = count($spotList);
-
-		# Als we het opgevraagde aantal terugkrijgen nemen we maar aan dat er meer zijn. Lelijke workaround die niet altijd klopt
-		$hasMore = ($spotCnt == $limit);
-			
+		$spotList = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
+		$spotCnt = count($spotsResult['list']);
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
 			# string terug ipv een category nummer
-			$spotList[$i]['category'] = (int) $spotList[$i]['category'];
+			$spotResults['list'][$i]['category'] = (int) $spotResults[$i]['category'];
 			
 			# We trekken de lijst van subcategorieen uitelkaar 
-			$spotList[$i]['subcatlist'] = explode("|", 
-							$spotList[$i]['subcata'] . 
-							$spotList[$i]['subcatb'] . 
-							$spotList[$i]['subcatc'] . 
-							$spotList[$i]['subcatd'] . 
-							$spotList[$i]['subcatz']);
+			$spotResults['list'][$i]['subcatlist'] = explode("|", 
+							$spotResults['list'][$i]['subcata'] . 
+							$spotResults['list'][$i]['subcatb'] . 
+							$spotResults['list'][$i]['subcatc'] . 
+							$spotResults['list'][$i]['subcatd'] . 
+							$spotResults['list'][$i]['subcatz']);
 		} # foreach
 
-		return array('list' => $spotList, 
-					 'hasmore' => $hasMore);
+		return $spotResults;
 	} # loadSpots()
 
 	
@@ -383,7 +378,7 @@ class SpotsOverview {
 					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
 						break;
 					} # if
-				
+
 					# en valideer dan de zoekvelden
 					$filterFieldMapping = array('filesize' => 's.filesize',
 										  'date' => 's.stamp',
