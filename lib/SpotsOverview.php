@@ -151,12 +151,13 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spots op
-		$spotList = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
-		$spotCnt = count($spotsResult['list']);
+		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
+		$spotCnt = count($spotResults['list']);
+
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
 			# string terug ipv een category nummer
-			$spotResults['list'][$i]['category'] = (int) $spotResults[$i]['category'];
+			$spotResults['list'][$i]['category'] = (int) $spotResults['list'][$i]['category'];
 			
 			# We trekken de lijst van subcategorieen uitelkaar 
 			$spotResults['list'][$i]['subcatlist'] = explode("|", 
