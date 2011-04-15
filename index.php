@@ -36,7 +36,8 @@ try {
 	# Haal het userobject op dat 'ingelogged' is
 	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
-	$currentUser = $spotUserSystem->auth('anonymous', '');
+	$userSession = $spotUserSystem->useOrStartSession();
+	$currentUser = $userSession['user'];
 	SpotTiming::stop('auth');
 
 	# helper functions for passed variables
