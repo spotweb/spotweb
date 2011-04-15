@@ -64,7 +64,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $spot['subcatfilter'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
 
 		if ($settings->get('keep_watchlist')) {
 			echo "<td class='watch'>";
