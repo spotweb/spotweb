@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.07');
+define('SPOTDB_SCHEMA_VERSION', '0.08');
 
 class SpotDb
 {
@@ -63,36 +63,138 @@ class SpotDb
 			$this->_conn->exec("INSERT INTO settings(name,value) VALUES('%s', '%s')", Array($name, $value));
 		} # if
 	} # updateSetting
-	 
+	
+	/*
+	 * Haalt een session op uit de database
+	 */
+	function getSession($sessionid, $userid) {
+		$tmp = $this->_conn->arrayQuery(
+						"SELECT s.sessionid as sessionid,
+								s.userid as userid,
+								s.hitcount as hitcount,
+								s.lasthit as lasthit
+						FROM sessions AS s
+						WHERE (sessionid = '%s') AND (userid = %d)",
+				 Array($sessionid,
+				       (int) $userid));
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} # if
+		
+		return false;
+	} # getSession
+
+	/*
+	 * Creert een sessie
+	 */
+	function addSession($session) {
+		$this->_conn->exec(
+				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit) 
+					VALUES('%s', %d, %d, %d)",
+				Array($session['sessionid'],
+					  (int) $session['userid'],
+					  (int) $session['hitcount'],
+					  (int) $session['lasthit']));
+	} # addSession
+
+	/*
+	 * Haalt een session op uit de database
+	 */
+	function deleteSession($sessionid) {
+		$this->_conn->exec(
+					"DELETE FROM sessions WHERE sessionid = '%s'",
+					Array($sessionid));
+	} # deleteSession
+
+	/*
+	 * Haalt een session op uit de database
+	 */
+	function deleteExpiredSessions($maxLifeTime) {
+		$this->_conn->exec(
+					"DELETE FROM sessions WHERE lasthit < %d",
+					Array(time() - $maxLifeTime));
+	} # deleteExpiredSessions
+
+	/*
+	 * Update de last hit van een session
+	 */
+	function hitSession($sessionid) {
+		$res = $this->_conn->exec("UPDATE sessions
+									SET hitcount = hitcount + 1,
+									    lasthit = %d
+									WHERE sessionid = '%s'", 
+								Array(time(), $sessionid));
+	} # hitSession
+	
 	/*
 	 * Haalt een user op uit de database 
 	 */
 	function getUser($userid) {
-		$tpl_user = array(
-				'userid'		=> 0,
-				'username'		=> 'anonymous',
-				'firstname'		=> 'John',
-				'lastname'		=> 'Doe',
-				'mail'			=> 'john@example.com',
-				'lastlogin'		=> time(),
-				'lastvisit'		=> time() - 3600,
-				'banned'		=> false);
-				
-		return $tpl_user;
+		$tmp = $this->_conn->arrayQuery(
+						"SELECT u.id AS userid,
+								u.username AS username,
+								u.firstname AS firstname,
+								u.lastname AS lastname,
+								u.mail AS mail,
+								u.lastlogin AS lastlogin,
+								u.lastvisit AS lastvisit
+						 FROM users AS u
+						 WHERE id = %d AND NOT DELETED",
+				 Array( (int) $userid ));
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} # if
+		
+		return false;
 	} # getUser
 
 	/*
-	 * Update de informatie over een user
+	 * Disable/delete een user. Echt wissen willen we niet 
+	 * omdat eventuele comments dan niet meer te traceren
+	 * zouden zijn waardoor anti-spam maatregelen erg lastig
+	 * worden
+	 */
+	function deleteUser($user) {
+		$res = $this->_conn->exec("UPDATE users 
+									SET deleted = true
+									WHERE userid = '%s'", 
+								Array($user['userid']));
+	} # deleteUser
+	
+	/*
+	 * Update de informatie over een user behalve het password
 	 */
 	function setUser($user) {
-		throw new Exception("Niet geimplementeerd");
+		$res = $this->_conn->exec("UPDATE users 
+									SET firstname = '%s',
+									    lastname = '%s',
+										mail = '%s',
+										lastlogin = %d,
+										lastvisit = %d,
+										deleted = '%s'
+									WHERE userid = '%s'", 
+					Array($user['firstname'],
+						  $user['lastname'],
+						  $user['mail'],
+						  (int) $user['lastlogin'],
+						  (int) $user['lastvisit'],
+						  $user['deleted'],
+						  (int) $user['userid']));
 	} # setUser
 	
 	/* 
 	 * Voeg een user toe
 	 */
 	function addUser($user) {
-		throw new Exception("Niet geimplementeerd");
+		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, deleted) 
+										VALUES('%s', '%s', '%s', '%s', '%s', %d, %d, false)",
+								Array($user['username'], 
+									  $user['firstname'],
+									  $user['lastname'],
+									  $user['passhash'],
+									  $user['mail'],
+									  (int) $user['lastlogin'],
+									  (int) $user['lastvisit']));
 	} # addUser
 
 	/*
@@ -100,9 +202,15 @@ class SpotDb
 	 *
 	 * Een userid als de user gevonden kan worden, of false voor failure
 	 */
-	function authUser($username, $password) {
-		return 0;
-	} # verifyUser
+	function authUser($username, $passhash) {
+		$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED",
+						Array($username, $passhash));
+		if (!empty($tmp)) {
+			return $tmp[0]['id'];
+		} # if
+
+		return false;
+	} # authUser
 	
 	/* 
 	 * Update of insert the maximum article id in de database.

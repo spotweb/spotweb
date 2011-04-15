@@ -118,7 +118,7 @@ if ($settings->get('keep_watchlist')) { ?>
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . $spot['subcata'].$spot['subcatb'].$spot['subcatc'].$spot['subcatd']."'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . utf8_encode($spot['title']) . "' class='spotlink'>" . utf8_encode($spot['title']) . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . utf8_encode($tplHelper->remove_extensive_dots($spot['title'])) . "' class='spotlink'>" . utf8_encode($tplHelper->remove_extensive_dots($spot['title'])) . "</a></td>";
         
         if($settings->get('retrieve_comments')) echo "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
         
