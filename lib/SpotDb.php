@@ -209,6 +209,7 @@ class SpotDb
 			case 'pdo_sqlite' : {
 				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
 				$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+				break;
 			} # case
 			
 			default			  : {
