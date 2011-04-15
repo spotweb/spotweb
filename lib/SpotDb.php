@@ -376,7 +376,9 @@ class SpotDb
 			$sort['direction'] = 'ASC';
 		} # if
 								   
-		# en voer de query uit
+		# en voer de query uit. 
+		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag
+		# kunnen zetten.
  		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -407,9 +409,18 @@ class SpotDb
 									 ((d.ouruserid = " . $this->safe($ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
 									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
-								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
+								   
+		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
+		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
+		$hasMore = (count($tmpResult) > $limit);
+		if ($hasMore) {
+			# verwijder het laatste, niet gevraagde, element
+			array_pop($tmpResult);
+		} # if
+		
 		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull));
-		return $tmpResult;
+		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 
 	/*

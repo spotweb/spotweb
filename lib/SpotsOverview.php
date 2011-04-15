@@ -151,29 +151,24 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spotrs op
-		$spotList = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
-		$spotCnt = count($spotList);
+		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit + 1, $sqlFilter, $sort, false);
+		$spotCnt = count($spotResults['list']);
 
-		# we vragen altijd 1 spot meer dan gevraagd, als die dan mee komt weten 
-		# we dat er nog een volgende pagina is
-		$hasMore = ($spotCnt > $limit);
-			
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
 			# string terug ipv een category nummer
-			$spotList[$i]['category'] = (int) $spotList[$i]['category'];
+			$spotResults['list'][$i]['category'] = (int) $spotResults[$i]['category'];
 			
 			# We trekken de lijst van subcategorieen uitelkaar 
-			$spotList[$i]['subcatlist'] = explode("|", 
-							$spotList[$i]['subcata'] . 
-							$spotList[$i]['subcatb'] . 
-							$spotList[$i]['subcatc'] . 
-							$spotList[$i]['subcatd'] . 
-							$spotList[$i]['subcatz']);
+			$spotResults['list'][$i]['subcatlist'] = explode("|", 
+							$spotResults['list'][$i]['subcata'] . 
+							$spotResults['list'][$i]['subcatb'] . 
+							$spotResults['list'][$i]['subcatc'] . 
+							$spotResults['list'][$i]['subcatd'] . 
+							$spotResults['list'][$i]['subcatz']);
 		} # foreach
 
-		return array('list' => $spotList, 
-					 'hasmore' => $hasMore);
+		return $spotResults;
 	} # loadSpots()
 
 	
