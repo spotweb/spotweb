@@ -65,7 +65,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 										   messageid VARCHAR(128),
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
 			
 			# watchlist table
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 

@@ -44,14 +44,14 @@ abstract class SpotStruct_abs {
 		$this->addIndex("idx_spots_fts_1", "FULLTEXT", "spots", "title");
 		$this->addIndex("idx_spots_fts_2", "FULLTEXT", "spots", "poster");
 		$this->addIndex("idx_spots_fts_3", "FULLTEXT", "spots", "tag");
-		$this->addIndex("idx_spotsfull_fts_3", "FULLTEXT", "spotsfull", "userid");
+		$this->addIndex("idx_spotsfull_fts_1", "FULLTEXT", "spotsfull", "userid");
 		
 		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren 
 		if (!$this->columnExists('spots', 'reversestamp')) {
 			$this->addColumn("reversestamp", "spots", "INTEGER DEFAULT 0");
 			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
 		} # if
-		$this->addIndex("idx_spots_6", "", "spots", "reversestamp");
+		$this->addIndex("idx_spots_3", "", "spots", "reversestamp");
 
 		# voeg de subcatz kolom toe zodat we hier in een type spot kunnen kenmerken
 		if (!$this->columnExists('spots', 'subcatz')) {
@@ -116,14 +116,14 @@ abstract class SpotStruct_abs {
 
 			# We veranderen eerst de standaard collation settings zodat we in de toekomst
 			# hier niet al te veel meer op moeten letten
-			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_general_ci");
 		
 
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
