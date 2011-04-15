@@ -1,6 +1,4 @@
 <?php
-require_once "lib/dbstruct/SpotStruct_abs.php";
-
 class SpotStruct_sqlite extends SpotStruct_abs {
 	
 	function createDatabase() {

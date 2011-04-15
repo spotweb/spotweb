@@ -1,6 +1,5 @@
 <?php
 require_once "Math/BigInteger.php";
-require_once "lib/SpotSeclibToOpenSsl.php";
 require_once "Crypt/RSA.php";
 
 class SpotSigning {

@@ -1,6 +1,4 @@
 <?php
-require_once "lib/page/SpotPage_Abs.php";
-
 class SpotPage_selecttemplate extends SpotPage_Abs {
 	private $_req;
 

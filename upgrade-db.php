@@ -1,7 +1,6 @@
 <?php
 require_once "settings.php";
-require_once "lib/SpotTiming.php";
-require_once "lib/SpotDb.php";
+require_once "lib/SpotClassAutoload.php";
 
 # Verzeker onszelf ervan dat we niet vanuit de webserver uitgevoerd worden
 if (isset($_SERVER['SERVER_PROTOCOL'])) {

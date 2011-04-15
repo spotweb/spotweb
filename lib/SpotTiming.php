@@ -1,24 +1,24 @@
 <?php
 
 class SpotTiming {
-	static private $_enabled = true;
+	static private $_disabled = false;
 	static private $_timings = array();
 	static private $_inflight = array();
 	static private $_curlevel = 0;
 	
 	static function disable() {
-		self::$_enabled = false;
+		self::$_disabled = true;
 	} # enable
 	
 	static function start($name) {
-		if (!self::$_enabled) return;
+		if (self::$_disabled) return;
 		
 		self::$_curlevel++;
 		self::$_inflight[$name] = array('start' => microtime(true));
 	} # start
 	
 	static function stop($name, $extra = '') {
-		if (!self::$_enabled) return;
+		if (self::$_disabled) return;
 
 		self::$_inflight[$name]['stop'] = microtime(true);
 		self::$_inflight[$name]['extra'] = $extra;
@@ -30,7 +30,7 @@ class SpotTiming {
 	} # stop
 	
 	static function display() {
-		if (!self::$_enabled) return;
+		if (self::$_disabled) return;
 		
 		echo '<table style="border: 1px solid black; border-collapse: collapse;" border=1><tr><th>Name</th><th>Time</th><th>Extra</th></tr>';
 		

@@ -1,9 +1,5 @@
 <?php
-# a mess
-require_once "lib/dbeng/db_pdo.php";
-require_once "lib/dbstruct/SpotStruct_sqlite.php";
-
-class db_pdo_sqlite extends db_pdo {
+class dbeng_pdo_sqlite extends dbeng_pdo {
 	private $_db_path;
 	protected $_conn;
 	
