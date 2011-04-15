@@ -1,7 +1,7 @@
 				<div id="filter" class="filter">
                     <div class="notifications">
 						<?php if ($settings->get('show_multinzb')) { ?>
-                        <p class="multinzb"><span class="count"></span><a onclick="downloadMultiNZB()"> </a></p>
+                        <p class="multinzb"><span class="count"></span><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"> </a></p>
                         <?php } ?>
                     </div>
                     <h4><span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span><span class="viewState"><a id="filterform_link" onclick="toggleFilterBlock('#filterform_link', '.hide', 'viewSearch')"> </a></span> Zoeken </h4>
