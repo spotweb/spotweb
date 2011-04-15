@@ -1,7 +1,6 @@
 <?php
+/* Externe library */
 require_once "Net/NNTP/Client.php";
-require_once "lib/SpotSigning.php";
-require_once "lib/SpotParser.php";
 
 class SpotNntp {
 		private $_server;

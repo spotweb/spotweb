@@ -1,6 +1,6 @@
 <?php
 
-abstract class db_abs {
+abstract class dbeng_abs {
 	private $_error	= '';
 	
 	/*

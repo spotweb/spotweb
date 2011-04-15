@@ -1,7 +1,4 @@
 <?php
-require_once "lib/page/SpotPage_Abs.php";
-require_once "lib/SpotCategories.php";
-
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 

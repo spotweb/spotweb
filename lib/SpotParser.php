@@ -1,9 +1,4 @@
 <?php
-require_once "settings.php";
-require_once "lib/exceptions/ParseSpotXmlException.php";
-require_once "lib/SpotSigning.php";
-require_once "lib/SpotCategories.php";
-
 class SpotParser {
 	function parseFull($xmlStr) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
