@@ -5,3 +5,6 @@ server-settings.php
 retrieve.sh
 .htaccess
 .htpasswd
+.buildpath
+.project
+.settings/
