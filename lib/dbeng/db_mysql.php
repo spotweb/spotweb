@@ -98,29 +98,30 @@ class db_mysql extends db_abs {
 	} # safe
 
 	function rawExec($s) {
+		SpotTiming::start(__FUNCTION__);
 		$tmpRes = @mysql_unbuffered_query($s, $this->_conn);
 		if ($tmpRes === false) {
 			throw new Exception("Error executing query: " . mysql_error($this->_conn));
 		} # if
+		SpotTiming::stop(__FUNCTION__, array($s));
 		
 		return $tmpRes;
 	} # rawExec
 
 	function singleQuery($s, $p = array()) {
-		$startT = microtime(true);
+		SpotTiming::start(__FUNCTION__);
 		
 		$res = $this->exec($s, $p);
 		$row = mysql_fetch_array($res);
 		mysql_free_result($res);
 		
-		#$endT = microtime(true);
-		#echo "QUERY: " . $s . " ==> " . ($endT - $startT) . "<br>";
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
 		
 		return $row[0];
 	} # singleQuery
 
 	function arrayQuery($s, $p = array()) {
-		#$startT = microtime(true);
+		SpotTiming::start(__FUNCTION__);
 		$rows = array();
 
 		$res = $this->exec($s, $p); 
@@ -130,8 +131,8 @@ class db_mysql extends db_abs {
 		array_pop($rows); 
 		
 		mysql_free_result($res);
-		#$endT = microtime(true);
-		#echo "QUERY: " . $s . " ==> " . ($endT - $startT) . "<br>";
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		
 		return $rows;
 	} # arrayQuery
 
@@ -185,6 +186,8 @@ class db_mysql extends db_abs {
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $searchValue) {
+		SpotTiming::start(__FUNCTION__);
+
 		$searchMode = "match-natural";
 		$searchValue = trim($searchValue);
 		$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
@@ -240,6 +243,8 @@ class db_mysql extends db_abs {
 			case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
 			case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
 		} # else
+
+		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
 		
 		return $queryPart;
 	} # createTextQuery()

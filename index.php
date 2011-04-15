@@ -51,14 +51,17 @@ try {
 	} # if
 	
 	# Haal het userobject op dat 'ingelogged' is
+	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$currentUser = $spotUserSystem->auth('anonymous', '');
+	SpotTiming::stop('auth');
 
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
 	$page = $req->getDef('page', 'index');
 		
+	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
 				$page = new SpotPage_render($db, $settings, $currentUser, $req->getDef('tplname', ''),
@@ -163,12 +166,13 @@ try {
 				break;
 		} # default
 	} # switch
+	SpotTiming::stop('renderpage');
 
 	# timing
 	SpotTiming::stop('total');
 
 	# enable of disable de timer
-	if ($settings->get('enable_timing')) {
+	if (($settings->get('enable_timing')) && (SpotReq::getDef('page') != 'catsjson')) {
 		SpotTiming::display();
 	} # if
 	

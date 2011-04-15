@@ -183,6 +183,7 @@ class SpotsOverview {
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
 	function filterToQuery(&$search) {
+		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
 		$strongNotList = array();
 		$dyn2search = array();
@@ -452,6 +453,7 @@ class SpotsOverview {
 			$endFilter[] = $newSpotsSearch;
 		} # if
 		
+		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return join(" AND ", $endFilter);
 	} # filterToQuery
 	

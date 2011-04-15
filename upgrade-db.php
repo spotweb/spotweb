@@ -1,5 +1,6 @@
 <?php
 require_once "settings.php";
+require_once "lib/SpotTiming.php";
 require_once "lib/SpotDb.php";
 
 # Verzeker onszelf ervan dat we niet vanuit de webserver uitgevoerd worden
@@ -27,14 +28,14 @@ try {
 		default					: throw new Exception("Onbekende database engine");
 	} # switch
 	
-	echo "Updating schema..\r\n";
+	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	$dbStruct->createDatabase();
 	$dbStruct->updateSchema();
-	echo "Schema update done\r\n";
+	echo "Schema update done" . PHP_EOL;
 
 } catch(Exception $x) {
-	echo "Database schema upgrade mislukt: \r\n";
-	echo "   " . $x->getMessage() . "\r\n";
+	echo "Database schema upgrade mislukt:" . PHP_EOL;
+	echo "   " . $x->getMessage() . PHP_EOL;
 	die(1);
 } # catch
 

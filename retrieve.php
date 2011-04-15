@@ -6,6 +6,7 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 } # if
 
 require_once "settings.php";
+require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/SpotDb.php";
 require_once "lib/SpotReq.php";

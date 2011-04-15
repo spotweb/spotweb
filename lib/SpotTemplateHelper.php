@@ -11,6 +11,8 @@ class SpotTemplateHelper {
 	protected $_currentUser;
 	protected $_params;
 	
+	static private $_commentCount = null;	
+	
 	function __construct($settings, $currentUser, $db, $params) {
 		$this->_settings = $settings;
 		$this->_currentUser = $currentUser;
@@ -79,7 +81,17 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug 
 	 */
 	function getCommentCount($spot) {
-		return $this->_db->getCommentCount($spot['messageid']);
+		# Lazily load commnet count
+		if ((self::$_commentCount == null) && ($this->_settings->get('count_comments'))) {
+			self::$_commentCount = $this->_db->getCommentCount($this->getParam('spots'));
+		} # if
+
+		# zitten er al comments in de database?
+		if (!isset(self::$_commentCount[$spot['messageid']])) {
+			return 0;
+		} # if
+		
+		return self::$_commentCount[$spot['messageid']];
 	} # getCommentCount
 	
 	/*
