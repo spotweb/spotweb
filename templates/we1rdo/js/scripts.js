@@ -26,10 +26,6 @@ function openSpot(id,url) {
 			closeDetails(scrollLocation);
 		}
 		
-		if($("div.details").height() >= $(window).height()) {
-			$("div.details").addClass("scroll");
-		}
-		
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
@@ -71,6 +67,7 @@ $(function(){
 					$("#overlay").hide().removeClass('loading'); 
 					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
 					$("div#overlay").empty();
+					$("a.spotlink").click(function(e) { e.preventDefault(); });
 					
 					pagenr++;
 					$("td.next > a").attr("href", url);
@@ -93,6 +90,7 @@ function loadComments(messageid,perpage,pagenr) {
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		if($("div#details").height() <= $(window).height() && count == 0) {$("div#details").addClass("noscroll")}
 		
 		pagenr++;
 		if (count > 0) { 
@@ -147,6 +145,7 @@ $(function(){
 	$(document).bind('keydown', 't', function(){openNewWindow()});
 	$(document).bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
 	$(document).bind('keydown', 'm', downloadMultiNZB);
+	$(document).bind('keydown', 'c', checkMultiNZB);
 });
 
 // Keyboard navigation functions
@@ -279,6 +278,16 @@ function multinzb() {
 function uncheckMultiNZB() {
 	$("table.spots input[type=checkbox]").attr("checked", false);
 	$('div.notifications').slideUp();
+}
+
+function checkMultiNZB() {
+	if($("tr.active input[type=checkbox]").is(":checked")) {
+		$("tr.active input[type=checkbox]").attr('checked', false);
+		multinzb()
+	} else {
+		$("tr.active input[type=checkbox]").attr('checked', true);
+		multinzb()
+	}
 }
 
 function downloadMultiNZB() {

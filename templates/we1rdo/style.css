@@ -287,9 +287,10 @@ div.details table.spotdetails td.img a.loading:before {content: "Loading Image";
 div.details table.spotdetails td.info {width:100%;}
 
 div.details div.warning {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:2px 5px 3px 5px; *margin:3px 2px 3px 2px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
-div#overlay.small table.spotheader {left:235px;}
-div.details.scroll table.spotheader {right:16px;}
-div.details table.spotheader {position:fixed; left:0; right:5px; top:0; z-index:4; border-collapse:separate; border-spacing:5px 0; padding:5px 0; background:#fff; *border-left:3px solid #fff;}
+div#overlay.small table.spotheader {margin-left:235px;}
+div.details.external table.spotheader,
+div.details.noscroll table.spotheader {margin:0 5px 0 0;}
+div.details table.spotheader {position:fixed; left:0; right:0; top:0; z-index:4; margin:0 16px 0 0; border-collapse:separate; border-spacing:5px 0; padding:5px 0; background:#fff; *border-left:3px solid #fff;}
 div.details table.spotheader th {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; text-align:left;}
 div.details table.spotheader th.category {width:50px; min-width:50px; padding:0; text-align:center; vertical-align:top;}
 div.details table.spotheader th.category span {display:block; color:#fff; line-height:20px;}
