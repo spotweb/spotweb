@@ -87,10 +87,11 @@ echo "</th>";
         <input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
         <script>
 			$(document).ready(function(){
+				$("#details").addClass("external");
+				
 				$("a.closeDetails").click(function(){ 
 					window.close();
 				});
-				$("#details").addClass("external");
 				
 				var messageid = $('#messageid').val();
 				loadSpotImage();
