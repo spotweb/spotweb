@@ -1,7 +1,6 @@
 <?php
-require_once('lib/nzbhandler/NzbHandler.php');
 
-class NzbgetNzbHandler extends NzbHandler
+class NzbHandler_Nzbget extends NzbHandler_abs
 {
 	private $_host = null;
 	private $_port = null;
@@ -107,4 +106,3 @@ class NzbgetNzbHandler extends NzbHandler
 	} # sendRequest
 
 }
-?>

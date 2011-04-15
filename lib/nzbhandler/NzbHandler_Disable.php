@@ -1,7 +1,5 @@
 <?php
-require_once('lib/nzbhandler/NzbHandler.php');
-
-class DisableNzbHandler extends NzbHandler
+class NzbHandler_Disabble extends NzbHandler_abs
 {
 	function __construct($settings)
 	{
@@ -15,4 +13,3 @@ class DisableNzbHandler extends NzbHandler
 		# do nothing
 	} # processNzb
 }
-?>
