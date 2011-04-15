@@ -255,9 +255,9 @@ function toggleWatchSpot(spot,action,spot_id) {
 function multinzb() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count == 0) {
-		$('div.notifications').slideUp("slow");
+		$('div.notifications').slideUp();
 	} else {
-		$('div.notifications').slideDown("slow");
+		$('div.notifications').slideDown();
 		if(count == 1) {
 			$('span.count').html('Download '+count+' spot');
 		} else {
