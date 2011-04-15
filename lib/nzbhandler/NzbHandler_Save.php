@@ -1,8 +1,7 @@
 <?php
-require_once('lib/nzbhandler/NzbHandler.php');
 require_once('lib/exceptions/InvalidLocalDirException.php');
 
-class SaveNzbHandler extends NzbHandler
+class NzbHandler_Save extends NzbHandler_abs
 {
 	private $_localDir = null;
 	
@@ -36,4 +35,3 @@ class SaveNzbHandler extends NzbHandler
 	} # processNzb
 	
 }
-?>

@@ -1,6 +1,5 @@
 <?php
-
-abstract class NzbHandler
+abstract class NzbHandler_abs
 {
 	private $_name = "Abstract";
 	private $_nameShort = "Abstract";
@@ -112,4 +111,3 @@ abstract class NzbHandler
 	} # convertCatToSabnzbdCat	
 }
 
-?>
