@@ -64,7 +64,7 @@ $(function(){
 				var scrollLocation = $("div.container").scrollTop();
 				$("#overlay").show().addClass('loading');
 				$("div#overlay").load(url, function() {				
-					if($("div#overlay tbody#spots").children().size() - 1 < $('#perPage').val()) {
+					if($("div#overlay tbody#spots").children().size() < $('#perPage').val()) {
 						$("table.footer").remove();
 						$("div.spots").addClass("full");
 					}
