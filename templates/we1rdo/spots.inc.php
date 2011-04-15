@@ -96,8 +96,8 @@
 			
 			if ($settings->get('show_multinzb')) {
 				$multispotid = htmlspecialchars($spot['messageid']);
-				echo "<td>";
-				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+				echo "<td class='multinzb'>";
+				echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
 				echo "</td>";
 			} # if
 
@@ -137,19 +137,14 @@
 <?php if ($prevPage >= 0) { ?> 
                         <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
 <?php }?> 
-						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>">
-<?php if ($settings->get('show_multinzb')) { ?> 
-                            <input id='multisubmit' type='submit' value='' title='Download Multi NZB' />
-                        
-<?php } ?>
-						</td>
+						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
 <?php if ($nextPage > 0) { ?> 
                         <td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
 <?php } ?>
 					</tr>
                 </tbody>
             </table>
-            <?php if ($settings->get('show_multinzb')) {echo "</form>";} ?>
+            <?php if ($settings->get('show_multinzb')) { echo "</form>"; } ?>
             <input type="hidden" id="perPage" value="<?php echo $currentUser['prefs']['perpage'] ?>" />
 			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
 			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />

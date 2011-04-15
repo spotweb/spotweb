@@ -139,6 +139,7 @@ $(function(){
 	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
 	$(document).bind('keydown', 't', function(){openNewWindow()});
 	$(document).bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
+	$(document).bind('keydown', 'm', downloadMultiNZB);
 });
 
 // Keyboard navigation functions
@@ -248,4 +249,33 @@ function toggleWatchSpot(spot,action,spot_id) {
 	// Switch buttons
 	$('.watchremove_'+spot_id).toggle();
 	$('.watchadd_'+spot_id).toggle();
+}
+
+// MultiNZB download knop alleen weergeven als er spots zijn geselecteerd
+function multinzb() {
+	var count = $('td.multinzb input[type="checkbox"]:checked').length;
+	if(count == 0) {
+		$('div.notifications').slideUp("slow");
+	} else {
+		$('div.notifications').slideDown("slow");
+		if(count == 1) {
+			$('span.count').html('Download '+count+' spot');
+		} else {
+			$('span.count').html('Download '+count+' spots');
+		}
+		
+	}
+}
+
+function downloadMultiNZB() {
+	var count = $('td.multinzb input[type="checkbox"]:checked').length;
+	if(count > 0) {
+		var url = '?page=getnzb';
+		$('td.multinzb input[type=checkbox]:checked').each(function() {
+			url += '&messageid%5B%5D='+$(this).val();
+		});
+		window.location = url;
+		$("td.multinzb input[type=checkbox]").attr("checked", false);
+		multinzb();
+	}
 }
