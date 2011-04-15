@@ -187,6 +187,9 @@ $settings['show_multinzb'] = true;
 # toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_newspots'] = true;
 
+# toon het aantal comments op een spot in het overzicht? Kan vertragend werken, uitzetten op trage systemen!
+$settings['count_comments'] = true;
+
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
 
@@ -198,6 +201,10 @@ $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
 if (isset($_SERVER['HTTP_HOST'])) {
 	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
 } # if
+
+# We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
+# dat ook daadwerkelijk te doen
+$settings['enable_timing'] = false;
 
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(

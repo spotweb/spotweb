@@ -32,6 +32,7 @@ abstract class SpotPage_Abs {
 	 * Display de template
 	 */
 	function template($tpl, $params = array()) {
+		SpotTiming::start(__FUNCTION__ . ':' . $tpl);
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
@@ -42,6 +43,7 @@ abstract class SpotPage_Abs {
 
 		# en we spelen de template af
 		require_once($settings->get('tpl_path') . $tpl . '.inc.php');
+		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
 	} # template
 	
 	/*
