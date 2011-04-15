@@ -199,6 +199,10 @@ if (isset($_SERVER['HTTP_HOST'])) {
 	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
 } # if
 
+# We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
+# dat ook daadwerkelijk te doen
+$settings['enable_timing'] = false;
+
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
 		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
