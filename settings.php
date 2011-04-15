@@ -99,10 +99,11 @@ $settings['spot_moderation'] = 'act';
 # Er zijn een aantal verschillende acties mogelijk:
 #	* disable			- Geen acties, toon enkel de 'download nzb' knop
 #	* display			- Stuurt de NZB file naar de server, intern gebruik
-#	* save				- Save de file op disk
+#	* save				- Save de file op disk gebruik makend van de sabnzbd category mapping
 #	* runcommand		- Save de file op disk en roep een commando aan
 #	* push-sabnzbd		- Roep sabnzbd+ aan via HTTP door SpotWeb, schrijft de NZB lokaal weg
 #	* client-sabnzbd	- Roep sabnzbd+ aan via de users' browser (oude default)
+#	* nzbget			- Roep NZBGet aan via HTTP door SpotWeb
 #
 # Settings:
 #   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
@@ -111,6 +112,11 @@ $settings['spot_moderation'] = 'act';
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
 #						- url		 - 
+#   nzbget				- host		 - Pas deze aan naar de nzbget host (zonder de port)
+#						- port		 - Pas deze aan naar de nzbget port
+#						- timeout
+#						- username	 - Gereserveerd voor de toekomst (Username is hardcoded in nzbget v0.70)
+#						- password	 - Server password van nzbget (zie config file van nzbget)
 #
 $settings['nzbhandling']['action'] = 'push-sabnzbd';
 $settings['nzbhandling']['local_dir'] = '';
@@ -120,7 +126,12 @@ $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
 $settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
 $settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
-	
+$settings['nzbhandling']['nzbget'] = array();
+$settings['nzbhandling']['nzbget']['host'] = '127.0.0.1';
+$settings['nzbhandling']['nzbget']['port'] = '6789';
+$settings['nzbhandling']['nzbget']['timeout'] = '30';
+$settings['nzbhandling']['nzbget']['username'] = 'nzbget';
+$settings['nzbhandling']['nzbget']['password'] = 'tegbzn6789';	
 #
 # Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
 # het ophalen van headers veel, veel trager. Het staat je dan echter wel toe om te filteren op userid.

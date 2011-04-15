@@ -1,5 +1,6 @@
 <?php
 require_once "lib/exceptions/InvalidLocalDirException.php";
+require_once "lib/nzbhandler/NzbHandlerFactory.php";
 
 # NZB Utility functies
 class SpotNzb {
@@ -10,83 +11,6 @@ class SpotNzb {
 		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor
-
-
-	/*
-	 * Sla de NZB file op het lokale filesysteem op
-	 */
-	function saveNzbFile($fullSpot, $nzb) {
-		$fname = $this->makeNzbLocalPath($fullSpot);
-		if (file_put_contents($fname, $nzb) === false) {
-			throw new InvalidLocalDirException("Unable to write NZB file to: " . $fname);
-		} # if
-	} # saveNzbFile
-
-	/*
-	 * Voer een commando uit, geeft een exception als commando mislukt
-	 */	 
-	 function runCommand($fullSpot) {
-		$cmdToRun = $this->_settings->get('nzbhandler');
-		$cmdToRun = $cmdToRun['command'];
-		$cmdToRun = str_replace('$SPOTTITLE', $this->cleanForFileSystem($fullSpot['title']), $cmdToRun);
-		$cmdToRun = str_replace('$NZBPATH', $this->makeNzbLocalPath($fullSpot['title']), $cmdToRun);
-		
-		# als het commando leeg is, gooi een exception anders geeft php een warning
-		if (empty($cmdToRun)) {
-			throw new Exception("command in handler is leeg maar 'runcommand' gekozen!");
-		} # if
-		
-		# en voer het commando ut
-		exec($cmdToRun, $saveOutput, $status);
-				
-		if ($status != 0) {
-			throw new Exception("Unable to execute program: " . $cmdToRun);
-		} # if
-	} # runCommand
-	
-	/*
-	 * Roept sabnzbd aan en parseert de output
-	 */
-	function runHttp($fullSpot, $file, $action) {
-		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
-		# equivalent to <input type="file" name="nzbfile"/>
-		@define('FORM_FIELD', 'nzbfile'); 
-
-		# URL to run
-		$url = $this->generateSabnzbdUrl($fullSpot, $action);
-		
-		# dit is gecopieerd van:
-		#	http://stackoverflow.com/questions/4003989/upload-a-file-using-file-get-contents
-
-		# creeer de header
-		$header = 'Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY;
-
-		# bouw nu de content
-		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
-		$content .= 
-            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $file['name'] . "\"\r\n" .
-			"Content-Type: " . $file['mimetype'] . "\r\n\r\n" . 
-			$file['content'] ."\r\n";
-			
-		# signal end of request (note the trailing "--")
-		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
-
-		# create an stream context to be able to pass certain parameters
-		$ctx = stream_context_create(array('http' => 
-					array('timeout' => 15,
-						  'method' => 'POST',
-						  'header' => $header,
-						  'content' => $content)));
-
-		$output = @file_get_contents($url, 0, $ctx);
-		if ($output	=== false) {
-			throw new Exception("Unable to open sabnzbd url: " . $url);
-		} # if
-		
-		if (strtolower(trim($output)) != 'ok') {
-			throw new Exception("sabnzbd returned: " . $output);
-		} # if
-	} # runHttp
 
 	/*
 	 * Voeg een lijst van NZB XML files samen tot 1 XML file
@@ -174,34 +98,12 @@ class SpotNzb {
 			} # merge
 		} # switch
 
-		# handel dit alles af naar gelang de actie die gekozen is
-		switch ($action) { 
-			case 'disable'			: break;
-			
-			# gewoon nzb file output geven
-			case 'display'			: {
-				Header("Content-Type: " . $mimeType);
-				Header("Content-Disposition: attachment; filename=\"" . $fileName . "\"");
-				echo $nzb;
-				break;
-			} # display
-			
-			# Voor deze acties moeten we de NZB file op het FS wegschrijven, dus dan doen we dat
-			case 'save'				: $this->saveNzbFile($fullSpot, $nzb); break;
-			case 'runcommand'		: {
-				$this->saveNzbFile($fullSpot, $nzb); 
-				$this->runCommand($fullSpot); 
-				break;
-			} # runcommand
-			
-			case 'push-sabnzbd'		: {
-				$fileParams = array('content' => $nzb, 'name' => $fileName, 'mimetype' => $mimeType);
-				$this->runHttp($fullSpot, $fileParams, $action);
-				break;
-			} # push-sabnzbd
-			
-			default					: throw new Exception("Invalid action: " . $action);
-		} # switch
+		# send nzb to NzbHandler plugin
+		$nzbHandlerFactory = new NzbHandlerFactory();
+		$nzbHandler = $nzbHandlerFactory->build($this->_settings);
+
+		$category = $nzbHandler->convertCatToSabnzbdCat($fullSpot, $this->_settings);
+		$nzbHandler->processNzb($fullSpot, $fileName, $category, $nzb, $mimeType);
 		
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings->get('keep_downloadlist')) {

@@ -23,7 +23,7 @@ class SpotTemplateHelper {
 		# We initialiseren hier een SpotNzb object omdat we die
 		# voor het maken van de sabnzbd categorieen nodig hebben.
 		# Door die hier aan te maken verplaatsen we een boel allocaties
-		$this->_spotnzb = new SpotNzb($settings, $db);
+		$this->_spotnzb = new SpotNzb($db, $settings);
 	} # ctor
 
 	/*
@@ -317,7 +317,7 @@ class SpotTemplateHelper {
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['title'] = htmlentities(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
 		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
 		
 		// we zetten de short description van de category bij
@@ -390,7 +390,7 @@ class SpotTemplateHelper {
 		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
+		$spot['title'] = htmlentities(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
@@ -491,5 +491,12 @@ class SpotTemplateHelper {
 		
 		return $fileTime;
 	} # getStaticFiles
+
+	function remove_extensive_dots($s) {
+		if (substr_count($s,  '.') > 3) {
+			$s = str_replace('.', ' ', $s);
+		} # if
+		return $s;
+	} # remove_extensive_dots
 	
 } # class SpotTemplateHelper

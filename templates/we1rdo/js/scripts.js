@@ -147,6 +147,7 @@ $(function(){
 	$(document).bind('keydown', 't', function(){openNewWindow()});
 	$(document).bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
 	$(document).bind('keydown', 'm', downloadMultiNZB);
+	$(document).bind('keydown', 'c', checkMultiNZB);
 });
 
 // Keyboard navigation functions
@@ -279,6 +280,16 @@ function multinzb() {
 function uncheckMultiNZB() {
 	$("table.spots input[type=checkbox]").attr("checked", false);
 	$('div.notifications').slideUp();
+}
+
+function checkMultiNZB() {
+	if($("tr.active input[type=checkbox]").is(":checked")) {
+		$("tr.active input[type=checkbox]").attr('checked', false);
+		multinzb()
+	} else {
+		$("tr.active input[type=checkbox]").attr('checked', true);
+		multinzb()
+	}
 }
 
 function downloadMultiNZB() {
