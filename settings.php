@@ -112,6 +112,11 @@ $settings['spot_moderation'] = 'act';
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
 #						- apikey	 - sabnzbd API key	
 #						- url		 - 
+#   nzbget				- host		 - Pas deze aan naar de nzbget host (zonder de port)
+#						- port		 - Pas deze aan naar de nzbget port
+#						- timeout
+#						- username	 - Gereserveerd voor de toekomst (Username is hardcoded in nzbget v0.70)
+#						- password	 - Server password van nzbget (zie config file van nzbget)
 #
 $settings['nzbhandling']['action'] = 'push-sabnzbd';
 $settings['nzbhandling']['local_dir'] = '';
