@@ -38,7 +38,7 @@ $settings['deny_robots'] = true;
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Default set gemaakt door 'Nakebod'
 $settings['filters'] = array(    
-    Array("Beeld", "images/icons/film.png", "cat0_a,~cat0_z1,~cat0_z2,~cat0_z3", "",
+    Array("Beeld", "images/icons/film.png", "cat0_z0", "",
         Array(
             Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3", ""),
             Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3", ""),
@@ -318,11 +318,6 @@ if (($settings['templates']['autodetect']) &&
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
-
-# Controleer dat er wel een password salt ingevuld is
-if ($settings['pass_salt'] == 'unieke string') {
-	die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
-} # if
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
