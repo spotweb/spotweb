@@ -87,9 +87,13 @@
 					return NULL;
 			} // if denied tag
 
-			return call_user_func(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
-						$params,
-						$contents);
+			if (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'])) {
+				return call_user_func(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
+							$params,
+							$contents);
+			} else {
+				// ??
+			} # if
 		} // process_tag
 
 		/* Returns an empty append/prepend, used for deprecated tags */
