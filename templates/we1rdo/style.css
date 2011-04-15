@@ -352,6 +352,13 @@ div.details div.comments ul {padding:0; margin:0;}
 div.details div.comments li {margin:5px 0 0 0; padding:6px 10px; list-style:none; line-height:16px;}
 div.details div.comments li.nocomments {text-align:center;}
 
+div.details div.comments li.poster span.user {padding:2px 4px; margin:0 2px; color:#fff; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; text-shadow:1px 1px #000000;}
+div.details div.comments li.poster span.user:after {content:' (afzender)'; font-size:10px;}
+div.details.blue div.comments li.poster span.user {background-color:#008edf;}
+div.details.orange div.comments li.poster span.user {background-color:#e9a213;}
+div.details.green div.comments li.poster span.user {background-color:#00de00;}
+div.details.red div.comments li.poster span.user {background-color:#de2500;}
+
 div.details div.comments a.userid {color:#000;}
 
 div.details.blue div.comments li.even {background-color:#e6f2ff;}
