@@ -22,7 +22,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										stamp INTEGER(10) UNSIGNED,
 										reversestamp INTEGER DEFAULT 0,
 										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0,
-										moderated BOOLEAN) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										moderated BOOLEAN) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
@@ -41,7 +41,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey VARCHAR(200),
 										xmlsignature VARCHAR(128),
 										fullxml TEXT,
-										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
 			
@@ -49,13 +49,13 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
-										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 
 			# commentsxover
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   nntpref VARCHAR(128) CHARACTER SET ascii,
-										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
 			
@@ -63,7 +63,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   stamp INTEGER,
-										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
 
 			# watchlist
@@ -71,7 +71,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 												   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 												   dateadded INTEGER,
 												   comment TEXT,
-												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid);");
 			
 			# commentsfull
@@ -84,13 +84,13 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  userid VARCHAR(32),
 									  hashcash VARCHAR(128),
 									  body TEXT,
-									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid);");
 
 			# settings
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTO_INCREMENT,
 									  name VARCHAR(128) NOT NULL,
-									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name);");
 		} # if
 	} # createDatabase
