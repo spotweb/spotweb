@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.05');
+define('SPOTDB_SCHEMA_VERSION', '0.07');
 
 abstract class SpotStruct_abs {
 	protected $_spotdb;
@@ -129,7 +129,7 @@ abstract class SpotStruct_abs {
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
 	
 			# en vervolgens alteren we elk tekst veld
-			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY fromhdr VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
@@ -139,10 +139,10 @@ abstract class SpotStruct_abs {
 
 			echo "Converting commentsxover fields to UTF8 (3/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii NOT NULL");
 
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
 
 			$this->_dbcon->rawExec("ALTER TABLE nntp MODIFY server VARCHAR(128) CHARACTER SET utf8");
 
@@ -151,7 +151,7 @@ abstract class SpotStruct_abs {
 
 			echo "Converting spots fields to UTF8 (3/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY poster VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY groupname VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcata VARCHAR(64) CHARACTER SET utf8");
@@ -164,14 +164,14 @@ abstract class SpotStruct_abs {
 
 			echo "Converting spotsfull fields to UTF8 (4/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userid VARCHAR(32) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY xmlsignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
 
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
@@ -258,6 +258,24 @@ abstract class SpotStruct_abs {
 			# de rest
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = ''
 										WHERE subcatz IS NULL");
+		} # if
+		
+		# Collation en dergelijke zijn alleen van toepassing op MySQL, we 
+		# zetten alle collation exact hetzelfde zodat de indexes beter
+		# gebruikt kunnen worden.
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.06)) {
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+		} # if
+		
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
+			$this->dropIndex("idx_downloadlist_1", "downloadlist");
+			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid");
 		} # if
 		
 		# voeg het database schema versie nummer toe

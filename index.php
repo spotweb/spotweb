@@ -2,6 +2,9 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 session_start();
 
+require_once "lib/SpotTiming.php";
+SpotTiming::start('total');
+SpotTiming::start('includes');
 require_once "settings.php";
 require_once "lib/SpotCookie.php";
 require_once "lib/SpotDb.php";
@@ -26,6 +29,7 @@ require_once "lib/page/SpotPage_selecttemplate.php";
 require_once "lib/page/SpotPage_atom.php";
 require_once "lib/page/SpotPage_statics.php";
 require_once "lib/page/SpotPage_render.php";
+SpotTiming::stop('includes');
 
 #- main() -#
 try {
@@ -35,6 +39,11 @@ try {
 
 	# Creer het settings object
 	$settings = SpotSettings::singleton($db, $settings);
+
+	# enable of disable de timer
+	if (!$settings->get('enable_timing')) {
+		SpotTiming::disable();
+	} # if
 	
 	# Controleer eerst of het schema nog wel geldig is
 	if (!$db->schemaValid()) {
@@ -47,14 +56,17 @@ try {
 	} # if
 
 	# Haal het userobject op dat 'ingelogged' is
+	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$currentUser = $spotUserSystem->auth('anonymous', '');
+	SpotTiming::stop('auth');
 
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize();
 	$page = $req->getDef('page', 'index');
 		
+	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
 				$page = new SpotPage_render($db, $settings, $currentUser, $req->getDef('tplname', ''),
@@ -159,6 +171,16 @@ try {
 				break;
 		} # default
 	} # switch
+	SpotTiming::stop('renderpage');
+
+	# timing
+	SpotTiming::stop('total');
+
+	# enable of disable de timer
+	if (($settings->get('enable_timing')) && (SpotReq::getDef('page') != 'catsjson')) {
+		SpotTiming::display();
+	} # if
+	
 }
 catch(Exception $x) {
 	die($x->getMessage());

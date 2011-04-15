@@ -22,6 +22,8 @@ class SpotDb
 	 * settings gehaald die mee worden gegeven in de ctor.
 	 */
 	function connect() {
+		SpotTiming::start(__FUNCTION__);
+		
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
@@ -41,6 +43,7 @@ class SpotDb
 		} # switch
 		
 		$this->_conn->connect();
+		SpotTiming::stop(__FUNCTION__);
     } # ctor
 
 	/*
@@ -257,6 +260,7 @@ class SpotDb
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
 	function getSpotCount($sqlFilter) {
+		SpotTiming::start(__FUNCTION__);
 		if (empty($sqlFilter)) {
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
@@ -264,6 +268,7 @@ class SpotDb
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
+		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
 		if ($cnt == null) {
 			return 0;
 		} else {
@@ -345,6 +350,7 @@ class SpotDb
 	 * 
 	 */
 	function getSpots($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull) {
+		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
@@ -407,6 +413,7 @@ class SpotDb
 									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
 								   " LIMIT " . (int) $limit ." OFFSET " . (int) $offset);
+		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull));
 		return $tmpResult;
 	} # getSpots()
 
@@ -414,6 +421,7 @@ class SpotDb
 	 * Geeft enkel de header van de spot terug
 	 */
 	function getSpotHeader($msgId) {
+		SpotTiming::start(__FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -434,6 +442,7 @@ class SpotDb
 		if (empty($tmpArray)) {
 			return ;
 		} # if
+		SpotTiming::stop(__FUNCTION__);
 		return $tmpArray[0];
 	} # getSpotHeader 
 	
@@ -443,6 +452,7 @@ class SpotDb
 	 * geeft dit NULL terug
 	 */
 	function getFullSpot($messageId, $ourUserId) {
+		SpotTiming::start(__FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -488,6 +498,7 @@ class SpotDb
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 		
+		SpotTiming::stop(__FUNCTION__, array($messageId, $ourUserId));
 		return $tmpArray;		
 	} # getFullSpot()
 
@@ -529,6 +540,8 @@ class SpotDb
 			return array();
 		} # if
 		
+		SpotTiming::start(__FUNCTION__);
+		
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($commentMsgIds as $msgId) {
@@ -543,6 +556,7 @@ class SpotDb
 			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 		} # foreach
 		
+		SpotTiming::stop(__FUNCTION__, array($commentMsgIds));
 		return $commentList;
 	} # getCommentsFull
 	
@@ -569,8 +583,30 @@ class SpotDb
 	/*
 	 * Geef het aantal reacties voor een specifieke spot terug
 	 */
-	function getCommentCount($nntpref) {
-		return $this->_conn->singleQuery("SELECT COUNT(1) FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
+	function getCommentCount($msgIds) {
+		SpotTiming::start(__FUNCTION__);
+		
+		# geen comments gevraagd ? dan is het antwoord simpel
+		if (empty($msgIds)) {
+			return array();
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($msgIds as $msgId) {
+			$msgIdList .= "'" . $this->_conn->safe($msgId['messageid']) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		# Vraag het aantal comments op van elke spot die we tonen
+		$tmpResult = $this->_conn->arrayQuery("SELECT nntpref, COUNT(1) as cnt FROM commentsxover WHERE nntpref IN (" . $msgIdList . ") GROUP BY nntpref");
+		$tmpCount = array();
+		foreach($tmpResult as $value) {
+			$tmpCount[$value['nntpref']] = $value['cnt'];
+		} # foreach
+		
+		SpotTiming::stop(__FUNCTION__, array($msgIds));
+		return $tmpCount;
 	} # getCommentCount
 
 	/*
@@ -604,7 +640,9 @@ class SpotDb
 	 * Is een messageid al gedownload?
 	 */
 	function hasBeenDownload($messageid, $ourUserId) {
+		SpotTiming::start(__FUNCTION__);
 		$artId = $this->_conn->singleQuery("SELECT stamp FROM downloadlist WHERE messageid = '%s' AND ouruserid = %d", Array($messageid, $ourUserId));
+		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
 		return (!empty($artId));
 	} # hasBeenDownload
 
