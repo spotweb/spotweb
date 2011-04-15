@@ -23,7 +23,7 @@ class SpotTemplateHelper {
 		# We initialiseren hier een SpotNzb object omdat we die
 		# voor het maken van de sabnzbd categorieen nodig hebben.
 		# Door die hier aan te maken verplaatsen we een boel allocaties
-		$this->_spotnzb = new SpotNzb($settings, $db);
+		$this->_spotnzb = new SpotNzb($db, $settings);
 	} # ctor
 
 	/*
