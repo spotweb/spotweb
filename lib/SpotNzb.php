@@ -259,7 +259,7 @@ class SpotNzb {
 		$nzbHandling = $this->_settings->get('nzbhandling');
 		$sabnzbd = $nzbHandling['sabnzbd'];
 		$tmp = $sabnzbd['url'];
-		
+
 		# vervang een aantal variables		
 		$tmp = str_replace('$SABNZBDHOST', $sabnzbd['host'], $tmp);
 		$tmp = str_replace('$SPOTTITLE', urlencode($this->cleanForFileSystem($spot['title'])), $tmp);
@@ -293,8 +293,8 @@ class SpotNzb {
 		$category = $sabnzbd['categories'][$spot['category']]['default'];
 
 		foreach($spot['subcatlist'] as $cat) {
-			if (isset($sabnzbd['categories'][$spot['category'][$cat]])) {
-				$category = $sabnzbd['categories'][$spot['category'][$cat]];
+			if (isset($sabnzbd['categories'][$spot['category']][$cat])) {
+				$category = $sabnzbd['categories'][$spot['category']][$cat];
 			} # if
 		} # foreach
 		
