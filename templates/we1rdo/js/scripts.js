@@ -26,10 +26,6 @@ function openSpot(id,url) {
 			closeDetails(scrollLocation);
 		}
 		
-		if($("div.details").height() >= $(window).height()) {
-			$("div.details").addClass("scroll");
-		}
-		
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
@@ -71,6 +67,7 @@ $(function(){
 					$("#overlay").hide().removeClass('loading'); 
 					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
 					$("div#overlay").empty();
+					$("a.spotlink").click(function(e) { e.preventDefault(); });
 					
 					pagenr++;
 					$("td.next > a").attr("href", url);
@@ -93,6 +90,7 @@ function loadComments(messageid,perpage,pagenr) {
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		if($("div#details").height() <= $(window).height() && count == 0) {$("div#details").addClass("noscroll")}
 		
 		pagenr++;
 		if (count > 0) { 
