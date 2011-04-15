@@ -1,6 +1,4 @@
 <?php
-require_once "lib/page/SpotPage_Abs.php";
-
 # Deze klasse proxied feitelijk requests voor meerdere resources, dit is voornamelijk handig
 # als er meerdere JS files e.d. geinclude moeten worden. 
 # 

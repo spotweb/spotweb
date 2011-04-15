@@ -6,16 +6,9 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 } # if
 
 require_once "settings.php";
+require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
-require_once "lib/SpotDb.php";
-require_once "lib/SpotReq.php";
-require_once "lib/SpotParser.php";
-require_once "lib/SpotNntp.php";
-require_once "lib/SpotSettings.php";
-require_once "lib/retriever/SpotRetriever_Spots.php";
-require_once "lib/retriever/SpotRetriever_Comments.php";
-require_once "lib/imexport/Spot_SpotMapping.php";
 
 # in safe mode, max execution time cannot be set, warn the user
 if (ini_get('safe_mode') ) {

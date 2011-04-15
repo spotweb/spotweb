@@ -2,33 +2,11 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 session_start();
 
-require_once "lib/SpotTiming.php";
 SpotTiming::start('total');
 SpotTiming::start('includes');
-require_once "settings.php";
+require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotCookie.php";
-require_once "lib/SpotDb.php";
-require_once "lib/SpotReq.php";
-require_once "lib/SpotParser.php";
-require_once "lib/SpotsOverview.php";
-require_once "lib/SpotCategories.php";
-require_once "lib/SpotNntp.php";
-require_once "lib/SpotSettings.php";
-require_once "lib/SpotUserSystem.php";
-require_once "lib/page/SpotPage_index.php";
-require_once "lib/page/SpotPage_getnzb.php";
-require_once "lib/page/SpotPage_getnzbmobile.php";
-require_once "lib/page/SpotPage_getspot.php";
-require_once "lib/page/SpotPage_catsjson.php";
-require_once "lib/page/SpotPage_erasedls.php";
-require_once "lib/page/SpotPage_getimage.php";
-require_once "lib/page/SpotPage_getspotmobile.php";
-require_once "lib/page/SpotPage_markallasread.php";
-require_once "lib/page/SpotPage_getimage.php";
-require_once "lib/page/SpotPage_selecttemplate.php";
-require_once "lib/page/SpotPage_atom.php";
-require_once "lib/page/SpotPage_statics.php";
-require_once "lib/page/SpotPage_render.php";
+require_once "settings.php";
 SpotTiming::stop('includes');
 
 #- main() -#
@@ -172,7 +150,7 @@ try {
 	SpotTiming::stop('total');
 
 	# enable of disable de timer
-	if (($settings->get('enable_timing')) && (SpotReq::getDef('page') != 'catsjson')) {
+	if (($settings->get('enable_timing')) && (SpotReq::getDef('page', '') != 'catsjson')) {
 		SpotTiming::display();
 	} # if
 	

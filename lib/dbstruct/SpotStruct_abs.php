@@ -1,6 +1,4 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.07');
-
 abstract class SpotStruct_abs {
 	protected $_spotdb;
 	protected $_dbcon;

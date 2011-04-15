@@ -48,7 +48,7 @@
 	foreach($spots as $spot) {
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
-		
+
 		if ($tplHelper->newSinceLastVisit($spot)) {
 			$newSpotClass = 'new';
 		} else {

@@ -1,7 +1,5 @@
 <?php
-require_once "lib/dbeng/db_abs.php";
-
-abstract class db_pdo extends db_abs {
+abstract class dbeng_pdo extends dbeng_abs {
 	
 	/**
      * Om niet alle queries te hoeven herschrijven heb ik hier een kleine parser

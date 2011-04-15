@@ -1,9 +1,7 @@
 <?php
 # a mess
-require_once "lib/dbeng/db_abs.php";
-require_once "lib/dbstruct/SpotStruct_mysql.php";
 
-class db_mysql extends db_abs {
+class dbeng_mysql extends dbeng_abs {
 	private $_db_host;
 	private $_db_user;
 	private $_db_pass;
