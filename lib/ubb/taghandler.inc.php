@@ -88,9 +88,8 @@
 			} // if denied tag
 
 			if (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'])) {
-				return call_user_func(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
-							$params,
-							$contents);
+				return call_user_func_array(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
+							array($params, $contents));
 			} else {
 				// ??
 			} # if

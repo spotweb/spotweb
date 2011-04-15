@@ -17,7 +17,7 @@ class SpotsOverview {
 	 */
 	function getFullSpot($msgId, $ourUserId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
-		
+
 		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
@@ -157,7 +157,7 @@ class SpotsOverview {
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
 			# string terug ipv een category nummer
-			$spotResults['list'][$i]['category'] = (int) $spotResults[$i]['category'];
+			$spotResults['list'][$i]['category'] = (int) $spotResults['list'][$i]['category'];
 			
 			# We trekken de lijst van subcategorieen uitelkaar 
 			$spotResults['list'][$i]['subcatlist'] = explode("|", 
