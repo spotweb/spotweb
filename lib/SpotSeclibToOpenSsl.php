@@ -1,4 +1,5 @@
 <?php
+/* Externe library */
 require_once "Math/BigInteger.php";
 require_once "Crypt/RSA.php";
 

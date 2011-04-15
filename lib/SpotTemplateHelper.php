@@ -1,5 +1,5 @@
 <?php
-require_once "lib/SpotNzb.php";
+/* Externe library */
 require_once "lib/ubb/ubbparse.php";
 require_once 'lib/ubb/taghandler.inc.php';
 
@@ -8,6 +8,7 @@ require_once 'lib/ubb/taghandler.inc.php';
 class SpotTemplateHelper {	
 	protected $_settings;
 	protected $_db;
+	protected $_spotnzb;
 	protected $_currentUser;
 	protected $_params;
 	
@@ -18,6 +19,11 @@ class SpotTemplateHelper {
 		$this->_currentUser = $currentUser;
 		$this->_db = $db;
 		$this->_params = $params;
+		
+		# We initialiseren hier een SpotNzb object omdat we die
+		# voor het maken van de sabnzbd categorieen nodig hebben.
+		# Door die hier aan te maken verplaatsen we een boel allocaties
+		$this->_spotnzb = new SpotNzb($settings, $db);
 	} # ctor
 
 	/*
@@ -150,8 +156,7 @@ class SpotTemplateHelper {
 		# als de gebruiker gevraagd heeft om niet clientside handling, geef ons zelf dan terug 
 		# met de gekozen actie
 		if ($action == 'client-sabnzbd') {
-			$spotNzb = new SpotNzb($this->_db, $this->_settings);
-			return $spotNzb->generateSabnzbdUrl($spot, $action);
+			return $this->_spotnzb->generateSabnzbdUrl($spot, $action);
 		} else {
 			return $this->makeBaseUrl() . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
 		} # else
@@ -305,13 +310,30 @@ class SpotTemplateHelper {
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
-		# fix the sabnzbdurl en searchurl
+		# fix the sabnzbdurl, searchurl, sporturl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
+		$spot['spoturl'] = $this->makeSpotUrl($spot);
+		$spot['posterurl'] = $this->makePosterUrl($spot);
 		
 		// title escapen
 		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
+		
+		// we zetten de short description van de category bij
+		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
+		$spot['catdesc'] = SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
+		$spot['subcatfilter'] = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
+
+		
+		// hoeveel comments zitten er bij deze spot ongeveer?
+		$spot['commentcount'] = $this->getCommentCount($spot);
+		
+		// is deze spot al eens gedownload?
+		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
+		
+		// zit deze spot in de watchlist?
+		$spot['isbeingwatched'] = $this->isBeingWatched($spot);
 
 		return $spot;
 	} # formatSpotHeader

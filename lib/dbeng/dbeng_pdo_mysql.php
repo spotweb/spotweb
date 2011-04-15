@@ -1,9 +1,5 @@
 <?php
-# a mess
-require_once "lib/dbeng/db_pdo.php";
-require_once "lib/dbstruct/SpotStruct_mysql.php";
-
-class db_pdo_mysql extends db_pdo {
+class dbeng_pdo_mysql extends dbeng_pdo {
 	private $_db_host;
 	private $_db_user;
 	private $_db_pass;

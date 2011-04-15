@@ -1,6 +1,4 @@
 <?php
-require_once "lib/page/SpotPage_Abs.php";
-
 class SpotPage_erasedls extends SpotPage_Abs {
 	
 	function render() {

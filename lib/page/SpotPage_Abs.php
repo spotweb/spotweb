@@ -1,7 +1,4 @@
 <?php
-require_once "lib/SpotTemplateHelper.php";
-require_once "lib/SpotsOverview.php";
-
 abstract class SpotPage_Abs {
 	protected $_db;
 	protected $_settings;

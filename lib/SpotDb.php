@@ -1,11 +1,5 @@
 <?php
-/*
- * A mess
- */
-require_once "lib/dbeng/db_mysql.php";
-require_once "lib/dbeng/db_pdo_sqlite.php";
-require_once "lib/dbeng/db_pdo_mysql.php";
-require_once "lib/dbstruct/SpotStruct_abs.php";
+define('SPOTDB_SCHEMA_VERSION', '0.07');
 
 class SpotDb
 {
@@ -25,18 +19,18 @@ class SpotDb
 		SpotTiming::start(__FUNCTION__);
 		
 		switch ($this->_dbsettings['engine']) {
-			case 'mysql'	: $this->_conn = new db_mysql($this->_dbsettings['host'],
+			case 'mysql'	: $this->_conn = new dbeng_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']); 
 							  break;
 							  
-			case 'pdo_mysql': $this->_conn = new db_pdo_mysql($this->_dbsettings['host'],
+			case 'pdo_mysql': $this->_conn = new dbeng_pdo_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']);
 							  break;
-			case 'pdo_sqlite': $this->_conn = new db_pdo_sqlite($this->_dbsettings['path']);
+			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 				
 			default			: throw new Exception('Unknown DB engine specified, please choose pdo_sqlite, mysql or pdo_mysql');

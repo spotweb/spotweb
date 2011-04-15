@@ -1,6 +1,4 @@
 <?php
-require_once "lib/page/SpotPage_Abs.php";
-
 class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
