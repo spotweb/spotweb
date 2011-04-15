@@ -64,7 +64,7 @@ $(function(){
 				var scrollLocation = $("div.container").scrollTop();
 				$("#overlay").show().addClass('loading');
 				$("div#overlay").load(url, function() {				
-					if($("div#overlay tbody#spots").children().size() - 1 < $('#perPage').val()) {
+					if($("div#overlay tbody#spots").children().size() < $('#perPage').val()) {
 						$("table.footer").remove();
 						$("div.spots").addClass("full");
 					}
@@ -276,6 +276,11 @@ function multinzb() {
 	}
 }
 
+function uncheckMultiNZB() {
+	$("table.spots input[type=checkbox]").attr("checked", false);
+	$('div.notifications').slideUp();
+}
+
 function downloadMultiNZB() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count > 0) {
@@ -284,7 +289,7 @@ function downloadMultiNZB() {
 			url += '&messageid%5B%5D='+$(this).val();
 		});
 		window.location = url;
-		$("td.multinzb input[type=checkbox]").attr("checked", false);
+		$("table.spots input[type=checkbox]").attr("checked", false);
 		multinzb();
 	}
 }
