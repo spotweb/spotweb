@@ -310,13 +310,30 @@ class SpotTemplateHelper {
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
-		# fix the sabnzbdurl en searchurl
+		# fix the sabnzbdurl, searchurl, sporturl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
+		$spot['spoturl'] = $this->makeSpotUrl($spot);
+		$spot['posterurl'] = $this->makePosterUrl($spot);
 		
 		// title escapen
 		$spot['title'] = htmlentities(strip_tags($spot['title']), ENT_QUOTES);
 		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
+		
+		// we zetten de short description van de category bij
+		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
+		$spot['catdesc'] = SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
+		$spot['subcatfilter'] = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
+
+		
+		// hoeveel comments zitten er bij deze spot ongeveer?
+		$spot['commentcount'] = $this->getCommentCount($spot);
+		
+		// is deze spot al eens gedownload?
+		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
+		
+		// zit deze spot in de watchlist?
+		$spot['isbeingwatched'] = $this->isBeingWatched($spot);
 
 		return $spot;
 	} # formatSpotHeader

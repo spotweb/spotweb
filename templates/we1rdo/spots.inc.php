@@ -61,26 +61,24 @@
 			$markSpot = '';
 		}
 	
-		$subcatFilter = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
-
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
-			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$tplHelper->makeSpotUrl($spot)."\")' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='category'><a href='?search[tree]=" . $spot['subcatfilter'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
+			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' title='" . $spot['title'] . "' class='spotlink'>" . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($settings->get('keep_watchlist')) {
 			echo "<td class='watch'>";
-			echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist (w)'> </a>";
-			echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == true) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist (w)'> </a>";
+			echo "<a class='remove' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " id='watchremove_".$spot['id']."' title='Verwijder uit watchlist (w)'> </a>";
+			echo "<a class='add' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " id='watchadd_".$spot['id']."' title='Plaats in watchlist (w)'> </a>";
 			echo "</td>";
 		}
 
 		if ($settings->get('retrieve_comments')) {
-			echo "<td class='comments'><a href='" . $tplHelper->makeSpotUrl($spot) . "#comments' title='" . $tplHelper->getCommentCount($spot) . " comments bij \"" . $spot['title'] . "\"'>" . $tplHelper->getCommentCount($spot) . "</a></td>";
+			echo "<td class='comments'><a href='" . $spot['spoturl'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td>" . SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]) . "</td>" .
-			 "<td><a href='" . $tplHelper->makePosterUrl($spot) . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
+		echo "<td>" . $spot['catdesc'] . "</td>" .
+			 "<td><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
 
@@ -89,7 +87,7 @@
 			if ($settings->get('show_nzbbutton')) {
 				echo "<td><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB (n)' class='nzb'>NZB";
 				
-				if ($tplHelper->hasBeenDownloaded($spot)) {
+				if ($spot['hasbeendownloaded']) {
 					echo '*';
 				} # if
 				
@@ -105,7 +103,7 @@
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				if ($tplHelper->hasBeenDownloaded($spot)) {
+				if ($spot['hasbeendownloaded']) {
 					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot) (s)'> </a></td>";
 				} else {
 					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue (s)'> </a></td>";	
