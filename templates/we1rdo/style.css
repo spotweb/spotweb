@@ -135,7 +135,7 @@ div.filter > ul > li.red a {background-color:#fedede;}
 div.filter a span.newspots {color:#333; margin:0px 3px 0px 5px; padding:0 3px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
 div.filter li a.selected span.newspots {background-color:#222; color:#fff;}
 
-div.filter li span.toggle {display:block; float:right; width:15px; height:14px; margin:2px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background:url(img/sprite.png) no-repeat -18px -80px;}
+div.filter li span.toggle {display:block; float:right; width:15px; height:14px; margin:2px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background:url(img/sprite.png) no-repeat -90px -98px;}
 div.filter li.blue span.toggle {background-color:#62aefd; border:1px solid #006cab; color:#006cab;}
 div.filter li.orange span.toggle {background-color:#f2d87c; border:1px solid #cd9f00; color:#cd9f00;}
 div.filter li.green span.toggle {background-color:#84f484; border:1px solid #00ab00; color:#00ab00;}
