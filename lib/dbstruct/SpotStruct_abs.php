@@ -279,7 +279,7 @@ abstract class SpotStruct_abs {
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('users')) {
 			$this->createTable('users');
-			
+
 			$this->addColumn('username', 'users', 'VARCHAR(128)');
 			$this->addColumn('firstname', 'users', 'VARCHAR(128)');
 			$this->addColumn('passhash', 'users', 'VARCHAR(40)');
