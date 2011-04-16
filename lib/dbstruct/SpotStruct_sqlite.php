@@ -151,7 +151,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	} # tableExists
 
 	/* creeert een lege tabel met enkel een ID veld */
-	function createTable($tablename) {
+	function createTable($tablename, $collations = '') {
 		if (!$this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
 		} # if
