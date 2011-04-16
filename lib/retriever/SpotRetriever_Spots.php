@@ -82,23 +82,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$skipCount = 0;
 			$lastProcessedId = '';
 			
-			
-#!!!!!!!!!!!!!!!!
-	$x = $this->_spotnntp->getArticle('<efa1cc99a1114b6ab0c203179ede7c6213@free.pt>');
-	foreach($x['header'] as $l) {
-		if (substr($l, 0, strlen("Subject: ")) == "Subject: ") {
-			$y = substr($l, strlen("Subject: "));
-			echo PHP_EOL;
-			echo ord($y[0]) . ' = ' . $y[0] . PHP_EOL;
-			echo ord($y[1]) . ' = ' . $y[1] . PHP_EOL;
-			echo ord($y[2]) . ' = ' . $y[2] . PHP_EOL;
-			echo ord($y[3]) . ' = ' . $y[3] . PHP_EOL;
-			echo PHP_EOL;
-			var_dump($l);
-		} # if
-	} # foreach
-	die();
-#!!!!!!!!!!!!!!!!			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
 #var_dump($hdrList);
