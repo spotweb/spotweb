@@ -259,7 +259,7 @@ function toggleWatchSpot(spot,action,spot_id) {
 	$('.watchadd_'+spot_id).toggle();
 }
 
-// MultiNZB download knop alleen weergeven als er spots zijn geselecteerd
+// MultiNZB download knop
 function multinzb() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count == 0) {
@@ -301,4 +301,39 @@ function downloadMultiNZB() {
 		$("table.spots input[type=checkbox]").attr("checked", false);
 		multinzb();
 	}
+}
+
+// Toggle filter visibility
+$(function(){
+	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
+	$.each(data, function(i, value) {
+		$("ul.filters").children().eq(value.count).children("ul").css("display", value.state);
+		if(value.state == "block") {
+			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
+			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+		}
+	});
+});
+
+function toggleFilter(id) {
+	$(id).parent().click(function(){ return false; });
+	
+	var ul = $(id).parent().next();
+	if($(ul).is(":visible")) {
+		ul.hide(); var state = "none";
+		ul.prev().children("span.toggle").css("background-position", "-90px -98px");
+		ul.prev().children("span.toggle").attr("title", "Filter uitklappen");
+	} else {
+		ul.show(); var state = "block";
+		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
+		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
+	}
+	
+	var data = new Array();
+	$("ul.filters > li > ul").each(function(index) {
+		var state = $(this).css("display");
+		data.push({"count": index, "state": state});
+	});
+	
+	$.cookie("filterVisiblity", JSON.stringify(data), { path: '/', expires: 7 });
 }
