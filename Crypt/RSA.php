@@ -421,7 +421,7 @@ class Crypt_RSA {
     function createKey($bits = 1024, $timeout = false, $partial = array())
     {
         if ( CRYPT_RSA_MODE == CRYPT_RSA_MODE_OPENSSL ) {
-            $rsa = openssl_pkey_new(array('private_key_bits' => $bits));
+			$rsa = openssl_pkey_new(array('digest_alg' => 'sha1', 'private_key_type' => OPENSSL_KEYTYPE_RSA, 'private_key_bits' => $bits));
             openssl_pkey_export($rsa, $privatekey);
             $publickey = openssl_pkey_get_details($rsa);
             $publickey = $publickey['key'];
