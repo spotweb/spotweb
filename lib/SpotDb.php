@@ -560,8 +560,8 @@ class SpotDb
 								     LEFT JOIN watchlist AS w on (s.messageid = w.messageid)
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid)
 								     WHERE 
-									 ((w.ouruserid = " . $this->safe($ourUserId) . ") OR (w.ouruserid IS NULL)) AND
-									 ((d.ouruserid = " . $this->safe($ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
+									 ((w.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (w.ouruserid IS NULL)) AND
+									 ((d.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
 									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
