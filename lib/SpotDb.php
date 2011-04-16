@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.10');
+define('SPOTDB_SCHEMA_VERSION', '0.11');
 
 class SpotDb
 {
@@ -127,6 +127,24 @@ class SpotDb
 	} # hitSession
 	
 	/*
+	 * Checkt of een username al bestaat
+	 */
+	function usernameExists($username) {
+		$tmpResult = $this->_conn->singleQuery("SELECT username FROM users WHERE username = '%s'", Array($username));
+		
+		return (!empty($tmpResult));
+	} # usernameExists
+
+	/*
+	 * Checkt of een emailaddress al bestaat
+	 */
+	function userEmailExists($mail) {
+		$tmpResult = $this->_conn->singleQuery("SELECT username FROM users WHERE mail = '%s'", Array($mail));
+		
+		return (!empty($tmpResult));
+	} # userEmailExists
+	
+	/*
 	 * Haalt een user op uit de database 
 	 */
 	function getUser($userid) {
@@ -203,7 +221,7 @@ class SpotDb
 	 */
 	function setUserRsaKeys($userId, $publicKey, $privateKey) {
 		# eerst updaten we de users informatie
-		$res = $this->_conn->exec("UPDATE userssettings
+		$res = $this->_conn->exec("UPDATE usersettings
 									SET publickey = '%s',
 									    privatekey = '%s'
 									WHERE userid = '%s'",
@@ -223,14 +241,12 @@ class SpotDb
 	 */
 	function addUser($user) {
 		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', %d, %d, 'false')",
+										VALUES('%s', '%s', '%s', '%s', '%s', 0, 0, 'false')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
 									  $user['passhash'],
-									  $user['mail'],
-									  (int) $user['lastlogin'],
-									  (int) $user['lastvisit']));
+									  $user['mail']));
 									  
 		# We vragen nu het userrecord terug op om het userid te krijgen,
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 

@@ -170,6 +170,13 @@ class SpotTemplateHelper {
 	} # makeSpotUrl
 
 	/*
+	 * Creeert een linkje naar een specifieke spot
+	 */
+	function makeCreateUserAction() {
+		return $this->makeBaseUrl() . "?page=createuser";
+	} # makeCreateUserAction
+	
+	/*
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
@@ -498,5 +505,12 @@ class SpotTemplateHelper {
 		} # if
 		return $s;
 	} # remove_extensive_dots
+	
+	/*
+	 * Creeer een anti-XSRF cookie
+	 */
+	function generateXsrfCookie($action) {
+		return SpotReq::generateXsrfCookie($action);
+	} # generateXsrfCookie
 	
 } # class SpotTemplateHelper
