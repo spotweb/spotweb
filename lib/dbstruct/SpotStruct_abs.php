@@ -90,7 +90,9 @@ abstract class SpotStruct_abs {
 		
 		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
 		# past geen RSA key in dus dan droppen we de tabel
+		$saveVersion = null;
 		if ($this->tableExists('settings')) {
+			$saveVersion = $this->_spotdb->getSchemaVer();
 			if ($this->_spotdb->getSchemaVer() < '0.10') {
 				$this->dropTable('settings');
 			} # if
@@ -104,6 +106,10 @@ abstract class SpotStruct_abs {
 			$this->addColumn('value', 'settings', 'text');
 			$this->addColumn('serialized', 'settings', 'boolean');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
+			
+			if ($saveVersion != null) {
+				$this->_spotdb->updateSetting('schemaversion', $saveVersion, false);
+			} # if
 		} # if
 		
 		# Collation en dergelijke zijn alleen van toepassing op MySQL, we 

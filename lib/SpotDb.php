@@ -235,7 +235,7 @@ class SpotDb
 		# We vragen nu het userrecord terug op om het userid te krijgen,
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
 		# lastInsertId() exposed in de db klasse
-		$user['userid'] = $this->_conn->singleQuery("SELECT userid FROM users WHERE username = '%s'", Array($user['username']));
+		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
 		
 		# en voeg een usersettings record in
 		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs') 
