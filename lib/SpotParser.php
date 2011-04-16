@@ -125,11 +125,10 @@ class SpotParser {
 			$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 
 			// extract de posters name
-			$spot['poster'] = utf8_encode(substr($from, 0, $fromInfoPos -1));
+			$spot['poster'] = substr($from, 0, $fromInfoPos -1);
 
 			// key id
 			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
-
 
 			// groupname
 			$spot['groupname'] = 'free.pt';
@@ -204,10 +203,10 @@ class SpotParser {
 
 				if ($recentKey) {
 					$tmp = explode('|', $subj);
-					
-					$spot['title'] = utf8_encode(trim($tmp[0]));
+
+					$spot['title'] = trim($tmp[0]);
 					if (count($tmp) > 1) {
-						$spot['tag'] = utf8_encode(trim($tmp[1]));
+						$spot['tag'] = trim($tmp[1]);
 					} else {
 						$spot['tag'] = '';
 					} # else
@@ -223,7 +222,7 @@ class SpotParser {
 					array_pop($tmp);
 					array_pop($tmp);
 
-					$spot['title'] = utf8_encode(trim(implode('|', $tmp)));
+					$spot['title'] = trim(implode('|', $tmp));
 
 					if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
 						$spot['title'] = trim($this->oldEncodingParse($spot['title']));
@@ -261,8 +260,16 @@ class SpotParser {
 					} # if doesnt need to be signed, pretend that it is
 				} # if
 			} # if
-
 		} # if 
+		
+		# Nu zetten we de titel en dergelijke om naar utf8, we kunnen
+		# dat niet eerder doen omdat anders de RSA signature niet meer
+		# klopt.
+		if (($spot !== false) && ($spot['verified'])) {
+			$spot['title'] = utf8_encode($spot['title']);
+			$spot['poster'] = utf8_encode($spot['poster']);
+			$spot['tag'] = utf8_encode($spot['tag']);
+		} # f
 
 		return $spot;
 	} # parseXover
