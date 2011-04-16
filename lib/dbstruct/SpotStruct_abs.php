@@ -284,6 +284,18 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# users tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('usersettings')) {
+			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
+
+			$this->addColumn('userid', 'usersettings', 'INTEGER NOT NULL');
+			$this->addColumn('privatekey', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('publickey', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('otherprefs', 'usersettings', 'TEXT NOT NULL');
+
+			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
+		} # if usersettings
+		
+		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('users')) {
 			$this->createTable('users', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
@@ -314,7 +326,9 @@ abstract class SpotStruct_abs {
 			$this->_spotdb->addUser($anonymous_user);
 			
 			# update handmatig het userid
+			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE users SET id = 0 WHERE username = 'anonymous'");
+			$this->_dbcon->exec("UPDATE usersettings SET userid = 0 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
 		
 		# users tabel aanmaken als hij nog niet bestaat
