@@ -243,7 +243,11 @@ table.spots tr:hover.orange td.category a {background-position:-52px -20px; colo
 table.spots tr:hover.green td.category a {background-position:-52px -40px; color:#00de00;}
 table.spots tr:hover.red td.category a {background-position:-52px -60px; color:#de2500;}
 
-table.spots tr.active td.title a.spotlink:before {content:"> "; font-weight:bold;}
+table.spots tr.active td.title a.spotlink:before {content:"> "; display:block; float:left; font-weight:bold; line-height:14px; margin:2px 4px 0 -2px; padding:0 4px 0 4px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+table.spots tr.blue.active td.title a.spotlink:before {background:#62aefd; border:1px solid #006cab; color:#006cab;}
+table.spots tr.orange.active td.title a.spotlink:before {background:#f2d87c; border:1px solid #cd9f00; color:#cd9f00;}
+table.spots tr.green.active td.title a.spotlink:before {background:#84f484; border:1px solid #00ab00; color:#00ab00;}
+table.spots tr.red.active td.title a.spotlink:before {background:#f99797; border:1px solid #ab1c00; color:#ab1c00;}
 
 table.spots tr td.comments {text-align:center; padding:0; background-image:url(img/sprite_y.png); background-repeat:repeat-y;}
 table.spots tr td.comments a {font-weight:bold; color:#fff;}
