@@ -3,8 +3,8 @@ class SpotPage_render extends SpotPage_Abs {
 	private $_tplname;
 	private $_params;
 	
-	function __construct($db, $settings, $currentUser, $tplName, $params) {
-		parent::__construct($db, $settings, $currentUser);
+	function __construct($db, $settings, $currentSession, $tplName, $params) {
+		parent::__construct($db, $settings, $currentSession);
 		$this->_tplname = $tplName;
 		$this->_params = $params;
 	} # ctor

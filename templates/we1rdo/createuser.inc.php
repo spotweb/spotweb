@@ -1,16 +1,4 @@
-<?php
-	echo "<ul class='formerrors'>";
-	foreach($formmessages['errors'] as $formError) {
-		echo "<li>" . $formError . "</li>";
-	} # foreach
-	echo "</ul>";
-
-	echo "<ul class='forminformation'>";
-	foreach($formmessages['info'] as $formInfo) {
-		echo "<li>" . $formInfo . "</li>";
-	} # foreach
-	echo "</ul>";
-?>
+<?php include "includes/form-messages.inc.php"; ?>
 
 <form name="createuserform" action="<?php echo $tplHelper->makeCreateUserAction(); ?>" method="post">
 <input type="hidden" name="createuserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('createuserform'); ?>">
