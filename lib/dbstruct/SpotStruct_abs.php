@@ -377,8 +377,13 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
+
+		# Wis alle users, en maak een nieuwe anonymous user aan
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.12)) {
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
+		} # if
 		
-			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
