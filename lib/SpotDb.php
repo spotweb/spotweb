@@ -210,6 +210,14 @@ class SpotDb
 					Array($publicKey, $privateKey, $userId));
 	} # setUserRsaKeys 
 	
+	/*
+	 * Vraagt de users' private key op
+	 */
+	function getUserPrivateRsaKey($userId) {
+		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = '%s'", 
+					Array($userId));
+	} # getUserPrivateRsaKey
+	
 	/* 
 	 * Voeg een user toe
 	 */
@@ -227,12 +235,13 @@ class SpotDb
 		# We vragen nu het userrecord terug op om het userid te krijgen,
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
 		# lastInsertId() exposed in de db klasse
-		$userId = $this->_conn->singleQuery("SELECT userid FROM users WHERE username = '%s'", Array($user['username']));
+		$user['userid'] = $this->_conn->singleQuery("SELECT userid FROM users WHERE username = '%s'", Array($user['username']));
 		
 		# en voeg een usersettings record in
 		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs') 
 										VALUES('%s', '', '', 'a:0:{}')",
-								Array($userId));
+								Array($user['userid']));
+		return $user;
 	} # addUser
 
 	/*

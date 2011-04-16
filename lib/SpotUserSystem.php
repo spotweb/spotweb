@@ -133,12 +133,13 @@ class SpotUserSystem {
 	/*
 	 * Voegt een gebruiker toe aan de database 
 	 */
-	function addUser($name, $password, $mail) {
-		if (!$this->validUsername($username)) {
+	function addUser($user) {
+		if (!$this->validUsername($user['username'])) {
 			throw new Exception("Invalid username");
 		} # if
 		
-		$this->_db->addUser(array());
+		$tmpUser = $this->_db->addUser($user);
+		$this->_db->setUserRsaKeys($user['userid'], $user['publickey'], $user['privatekey']);
 	} # addUser()
 	
 	/*
