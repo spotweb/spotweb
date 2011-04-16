@@ -14,11 +14,11 @@ class SpotParser {
 		$xml = $xml->Posting;
 		$tpl_spot['category'] = (string) $xml->Category;
 		$tpl_spot['website'] = (string) $xml->Website;
-		$tpl_spot['description'] = (string) $xml->Description;
+		$tpl_spot['description'] = (string) utf8_encode($xml->Description);
 		$tpl_spot['filesize'] = (string) $xml->Size;
-		$tpl_spot['poster'] = (string) $xml->Poster;
-		$tpl_spot['tag'] = (string) $xml->Tag;
-		$tpl_spot['title'] = (string) $xml->Title;
+		$tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
+		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
+		$tpl_spot['title'] = (string) utf8_encode($xml->Title);
 
 		# FTD spots bevatten de filename
 		if (!empty($xml->Filename)) {
@@ -125,7 +125,7 @@ class SpotParser {
 			$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
 
 			// extract de posters name
-			$spot['poster'] = substr($from, 0, $fromInfoPos -1);
+			$spot['poster'] = utf8_encode(substr($from, 0, $fromInfoPos -1));
 
 			// key id
 			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
@@ -203,13 +203,12 @@ class SpotParser {
 				} # if
 
 				if ($recentKey) {
-					if (strpos($subj, '|') !== false) {
-						$tmp = explode('|', $subj);
-
-						$spot['title'] = trim($tmp[0]);
-						$spot['tag'] = trim($tmp[1]);
+					$tmp = explode('|', $subj);
+					
+					$spot['title'] = utf8_encode(trim($tmp[0]));
+					if (count($tmp) > 1) {
+						$spot['tag'] = utf8_encode(trim($tmp[1]));
 					} else {
-						$spot['title'] = trim($subj);
 						$spot['tag'] = '';
 					} # else
 				} else {
@@ -224,7 +223,7 @@ class SpotParser {
 					array_pop($tmp);
 					array_pop($tmp);
 
-					$spot['title'] = trim(implode('|', $tmp));
+					$spot['title'] = utf8_encode(trim(implode('|', $tmp)));
 
 					if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
 						$spot['title'] = trim($this->oldEncodingParse($spot['title']));

@@ -187,7 +187,7 @@ class SpotDb
 	 */
 	function addUser($user) {
 		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', %d, %d, false)",
+										VALUES('%s', '%s', '%s', '%s', '%s', %d, %d, 'false')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
