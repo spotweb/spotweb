@@ -238,9 +238,9 @@ class SpotDb
 		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
 		
 		# en voeg een usersettings record in
-		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs') 
+		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
 										VALUES('%s', '', '', 'a:0:{}')",
-								Array($user['userid']));
+								Array((int)$user['userid']));
 		return $user;
 	} # addUser
 

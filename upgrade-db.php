@@ -27,7 +27,7 @@ try {
 	echo "Database schema of settings upgrade mislukt:" . PHP_EOL;
 	echo "   " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
-	print_debug_backtrace();
+	echo $x->getTraceAsString();
 	die(1);
 } # catch
 
