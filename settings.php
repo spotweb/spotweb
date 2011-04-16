@@ -24,6 +24,10 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
 
+# Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
+# extensie geinstalleerd hebt
+$settings['openssl_cnf_path'] = "/etc/ssl/openssl.cnf";
+
 # Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
 # robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
 $settings['deny_robots'] = true;
@@ -315,6 +319,12 @@ if (($settings['templates']['autodetect']) &&
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
 } # if 
+
+# Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
+# leesbare configuratie file wijzen
+if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
+	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file");
+} # if
 
 # Voeg een sluitende slash toe als die er nog niet is
 if (substr($settings['spotweburl'], -1) != '/') {
