@@ -141,9 +141,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	} # tableExists
 
 	/* ceeert een lege tabel met enkel een ID veld */
-	function createTable($tablename) {
+	function createTable($tablename, $collations) {
 		if (!$this->tableExists($tablename)) {
-			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT)");
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT) " . $collations);
 		} # if
 	} # createTable
 	
