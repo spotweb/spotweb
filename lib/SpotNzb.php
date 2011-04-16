@@ -77,7 +77,7 @@ class SpotNzb {
 								   'nzb' => $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp));
 			} # if
 		} # foreach
-		
+
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
 		$nzbHandling = $this->_settings->get('nzbhandling');
@@ -99,11 +99,11 @@ class SpotNzb {
 
 		# send nzb to NzbHandler plugin
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$nzbHandler = $nzbHandlerFactory->build($this->_settings);
+		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action);
 
 		$category = $nzbHandler->convertCatToSabnzbdCat($fullSpot, $this->_settings);
 		$nzbHandler->processNzb($fullSpot, $fileName, $category, $nzb, $mimeType);
-		
+
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings->get('keep_downloadlist')) {
 			foreach($messageids as $thisMsgId) {

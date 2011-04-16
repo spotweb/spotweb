@@ -1,13 +1,8 @@
 <?php
 class NzbHandler_Factory
 {
-	public static function build($settings)
+	public static function build($settings, $action)
 	{
-		# automatically determine classname based on configured action
-		$nzbhandling = $settings->get('nzbhandling');
-		
-		$action = strtolower($nzbhandling['action']);
-
 		# for backward compatibility we introduce a mapping
 		# Nieuwe handlers voegen we alsnog expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
