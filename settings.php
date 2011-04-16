@@ -323,7 +323,7 @@ if (empty($settings['nntp_hdr']['host'])) {
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen
 if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
-	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file");
+	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file" . PHP_EOL);
 } # if
 
 # Voeg een sluitende slash toe als die er nog niet is
