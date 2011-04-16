@@ -316,7 +316,7 @@ $(function(){
 });
 
 function toggleFilter(id) {
-	$("ul.filters a").click(function(){ return false; });
+	$(id).parent().click(function(){ return false; });
 	
 	var ul = $(id).parent().next();
 	if($(ul).is(":visible")) {
