@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.09');
+define('SPOTDB_SCHEMA_VERSION', '0.10');
 
 class SpotDb
 {
@@ -51,16 +51,16 @@ class SpotDb
 	 * Haalt alle settings op uit de database
 	 */
 	function getAllSettings() {
-		return $this->_conn->arrayQuery('SELECT name,value FROM settings');
+		return $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
 	} # getAllSettings
 	
 	/*
 	 * Update setting
 	 */
-	function updateSetting($name, $value) {
-		$res = $this->_conn->exec("UPDATE settings SET value = '%s' WHERE name = '%s'", Array($value, $name));
+	function updateSetting($name, $value, $serialized) {
+		$res = $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $serialized, $name));
 		if ($this->_conn->rows() == 0) {	
-			$this->_conn->exec("INSERT INTO settings(name,value) VALUES('%s', '%s')", Array($name, $value));
+			$this->_conn->exec("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
 		} # if
 	} # updateSetting
 	
@@ -137,11 +137,17 @@ class SpotDb
 								u.lastname AS lastname,
 								u.mail AS mail,
 								u.lastlogin AS lastlogin,
-								u.lastvisit AS lastvisit
+								u.lastvisit AS lastvisit,
+								s.publickey AS publickey,
+								s.otherprefs AS prefs
 						 FROM users AS u
-						 WHERE id = %d AND NOT DELETED",
+						 JOIN usersettings s ON (u.id = s.userid)
+						 WHERE u.id = %d AND NOT DELETED",
 				 Array( (int) $userid ));
 		if (!empty($tmp)) {
+			# Other preferences worden serialized opgeslagen in de database
+			$tmp[0]['prefs'] = unserialize($tmp[0]['prefs']);
+			
 			return $tmp[0];
 		} # if
 		
@@ -165,6 +171,7 @@ class SpotDb
 	 * Update de informatie over een user behalve het password
 	 */
 	function setUser($user) {
+		# eerst updaten we de users informatie
 		$res = $this->_conn->exec("UPDATE users 
 									SET firstname = '%s',
 									    lastname = '%s',
@@ -180,7 +187,28 @@ class SpotDb
 						  (int) $user['lastvisit'],
 						  $user['deleted'],
 						  (int) $user['userid']));
+
+		# daarna updaten we zijn preferences
+		$res = $this->_conn->exec("UPDATE usersettings
+									SET otherprefs = '%s'
+									WHERE userid = '%s'", 
+					Array(serialize($user['prefs']),
+						  (int) $user['userid']));
 	} # setUser
+	
+	/*
+	 * Vul de public en private key van een user in, alle andere
+	 * user methodes kunnen dit niet updaten omdat het altijd
+	 * een paar moet zijn
+	 */
+	function setUserRsaKeys($userId, $publicKey, $privateKey) {
+		# eerst updaten we de users informatie
+		$res = $this->_conn->exec("UPDATE userssettings
+									SET publickey = '%s',
+									    privatekey = '%s'
+									WHERE userid = '%s'",
+					Array($publicKey, $privateKey, $userId));
+	} # setUserRsaKeys 
 	
 	/* 
 	 * Voeg een user toe
@@ -195,6 +223,16 @@ class SpotDb
 									  $user['mail'],
 									  (int) $user['lastlogin'],
 									  (int) $user['lastvisit']));
+									  
+		# We vragen nu het userrecord terug op om het userid te krijgen,
+		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
+		# lastInsertId() exposed in de db klasse
+		$userId = $this->_conn->singleQuery("SELECT userid FROM users WHERE username = '%s'", Array($user['username']));
+		
+		# en voeg een usersettings record in
+		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs') 
+										VALUES('%s', '', '', 'a:0:{}')",
+								Array($userId));
 	} # addUser
 
 	/*
