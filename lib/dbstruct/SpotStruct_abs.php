@@ -91,7 +91,7 @@ abstract class SpotStruct_abs {
 		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
 		# past geen RSA key in dus dan droppen we de tabel
 		if ($this->tableExists('settings')) {
-			if ($this->_spotdb->getSchemaVer() == '0.01') {
+			if ($this->_spotdb->getSchemaVer() < '0.10') {
 				$this->dropTable('settings');
 			} # if
 		} # if
@@ -100,8 +100,9 @@ abstract class SpotStruct_abs {
 		if (!$this->tableExists('settings')) {
 			$this->createTable('settings');
 			
-			$this->addColumn('name', 'settings', 'VARCHAR(128)');
+			$this->addColumn('name', 'settings', 'VARCHAR(128) NOT NULL');
 			$this->addColumn('value', 'settings', 'text');
+			$this->addColumn('serialized', 'settings', 'boolean');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
 		} # if
 		
@@ -337,9 +338,25 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE users MODIFY passhash VARCHAR(40) CHARACTER SET utf8 NOT NULL");
 		} # if
-		
+
+		# users tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('usersettings')) {
+			$this->createTable('usersettings');
+
+			$this->addColumn('userid', 'usersettings', 'INTEGER NOT NULL');
+			$this->addColumn('privatekey', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('publickey', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('otherprefs', 'usersettings', 'TEXT NOT NULL');
+
+			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
+			
+			# insert handmatig de user preferences voor de anonymous user
+			$this->_dbcon->exec("INSERT INTO usersettings(userid,privatekey,publickey,otherprefs) 
+									VALUES(0, '', '', 'a:0:{}')");
+		} # if usersettings
+			
 		# voeg het database schema versie nummer toe
-		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
+		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
 	
 } # class
