@@ -16,9 +16,6 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
-# Password salt -- dit is een unieke string die verplicht ingevuld en veranderd moet worden
-$settings['pass_salt'] = 'unieke string';
-
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -74,9 +71,6 @@ $settings['filters'] = array(
         )
     )
 );
-
-// version
-define('VERSION', '0.6a');
 
 #
 # SpotNet ondersteund moderatie van de gepostte spots en reacties, dit gebeurt
@@ -154,11 +148,6 @@ $settings['retrieve_newer_than'] = 0;
 # een human-readable verhaal
 # $settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
 $settings['prefs']['date_formatting'] = "human";
-
-# settings 
-$settings['hdr_group'] = 'free.pt';
-$settings['nzb_group'] = 'alt.binaries.ftd';
-$settings['comment_group'] = 'free.usenet';
 
 # db
 $settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
@@ -256,18 +245,6 @@ $settings['index_filter'] = array();
 # $settings['index_filter'] = array('tree' => '~cat0_z3');
 
 #
-# RSA keys
-# Worden gebruikt om te valideren of spots geldig zijn, hoef je normaal niet aan te komen
-#
-$settings['rsa_keys'] = array();
-$settings['rsa_keys'][2] = array('modulo' => 'ys8WSlqonQMWT8ubG0tAA2Q07P36E+CJmb875wSR1XH7IFhEi0CCwlUzNqBFhC+P',
-								 'exponent' => 'AQAB');
-$settings['rsa_keys'][3] = array('modulo' => 'uiyChPV23eguLAJNttC/o0nAsxXgdjtvUvidV2JL+hjNzc4Tc/PPo2JdYvsqUsat',
-								 'exponent' => 'AQAB');
-$settings['rsa_keys'][4] = array('modulo' => '1k6RNDVD6yBYWR6kHmwzmSud7JkNV4SMigBrs+jFgOK5Ldzwl17mKXJhl+su/GR9',
-								 'exponent' => 'AQAB');
-
-#
 # Hoeveel verschillende headers (van danwel spots danwel comments) moeten er per keer opgehaald worden? 
 # Als je regelmatig timeouts krijgt van retrieve.php, vrelaag dan dit aantal
 #
@@ -329,6 +306,7 @@ if (($settings['templates']['autodetect']) &&
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
+
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
