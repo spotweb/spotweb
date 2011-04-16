@@ -2,8 +2,8 @@
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
-	function __construct($db, $settings, $currentUser, $params) {
-		parent::__construct($db, $settings, $currentUser);
+	function __construct($db, $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
 
@@ -40,8 +40,8 @@ class SpotPage_index extends SpotPage_Abs {
 		}
 		
 		# laad de spots
-		$spotsTmp = $spotsOverview->loadSpots($this->_currentUser['userid'],
-							$pageNr, $this->_currentUser['prefs']['perpage'],
+		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
+							$pageNr, $this->_currentSession['user']['prefs']['perpage'],
 							$filter,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));

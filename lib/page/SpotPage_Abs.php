@@ -3,12 +3,12 @@ abstract class SpotPage_Abs {
 	protected $_db;
 	protected $_settings;
 	protected $_pageTitle;
-	protected $_currentUser;
+	protected $_currentSession;
 	
-	function __construct($db, $settings, $currentUser) {
+	function __construct($db, $settings, $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		$this->_currentUser = $currentUser;
+		$this->_currentSession = $currentSession;
 	} # ctor
 	
 	# Geef the tpl helper terug
@@ -16,9 +16,9 @@ abstract class SpotPage_Abs {
 		if (file_exists($this->_settings->get('tpl_path') . '/CustomTplHelper.php')) {
 			require_once $this->_settings->get('tpl_path') . '/CustomTplHelper.php';
 			
-			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentUser, $this->_db, $params);
+			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentSession, $this->_db, $params);
 		} else {
-			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentUser, $this->_db, $params);
+			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_db, $params);
 		} # else
 		
 		return $tplHelper;
@@ -36,7 +36,7 @@ abstract class SpotPage_Abs {
 		
 		# We maken een aantal variabelen / objecten standaard beschikbaar in de template.
 		$tplHelper = $this->getTplHelper($params);
-		$currentUser = $this->_currentUser;
+		$currentSession = $this->_currentSession;
 
 		# en we spelen de template af
 		require_once($settings->get('tpl_path') . $tpl . '.inc.php');

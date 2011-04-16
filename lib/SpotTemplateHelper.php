@@ -9,14 +9,14 @@ class SpotTemplateHelper {
 	protected $_settings;
 	protected $_db;
 	protected $_spotnzb;
-	protected $_currentUser;
+	protected $_currentSession;
 	protected $_params;
 	
 	static private $_commentCount = null;	
 	
-	function __construct($settings, $currentUser, $db, $params) {
+	function __construct($settings, $currentSession, $db, $params) {
 		$this->_settings = $settings;
-		$this->_currentUser = $currentUser;
+		$this->_currentSession = $currentSession;
 		$this->_db = $db;
 		$this->_params = $params;
 		
@@ -117,7 +117,7 @@ class SpotTemplateHelper {
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		return $spotsOverview->getFullSpot($msgId, $this->_currentUser['userid'], $spotnntp);
+		return $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
 	} # getFullSpot
 
 	
@@ -170,12 +170,19 @@ class SpotTemplateHelper {
 	} # makeSpotUrl
 
 	/*
-	 * Creeert een linkje naar een specifieke spot
+	 * Creeert de action url voor het aanmaken van de user
 	 */
 	function makeCreateUserAction() {
 		return $this->makeBaseUrl() . "?page=createuser";
 	} # makeCreateUserAction
-	
+
+	/*
+	 * Creeert de action url voor het inloggen van een user
+	 */
+	function makeLoginAction() {
+		return $this->makeBaseUrl() . "?page=login";
+	} # makeLoginAction
+
 	/*
 	 * Creeert een linkje naar een specifieke nzb
 	 */
@@ -450,14 +457,14 @@ class SpotTemplateHelper {
 
 
 	function formatDate($stamp, $type) {
-		if ($this->_currentUser['prefs']['date_formatting'] == 'human') {
+		if ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
 			return $this->time_ago($stamp);
 		} else {
 			switch($type) {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
-				default 			: return strftime($this->_currentUser['prefs']['date_formatting'], $stamp);
+				default 			: return strftime($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else
 	} # formatDate

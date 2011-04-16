@@ -3,8 +3,8 @@ class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
 	
-	function __construct($db, $settings, $currentUser, $params) {
-		parent::__construct($db, $settings, $currentUser);
+	function __construct($db, $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];
 	} # ctor
@@ -15,7 +15,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $this->_currentUser['userid'], $spotnntp_hdr);
+		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $this->_currentSession['user']['userid'], $spotnntp_hdr);
 		
 		# sluit de connectie voor de header, en open een nieuwe connectie voor de nzb
 		$spotnntp_hdr->quit();

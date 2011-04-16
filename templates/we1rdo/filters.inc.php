@@ -43,6 +43,19 @@
 
 						<div id="tree" class="hide"></div>
 					</form>
+
+<?php
+	# Toon geen welkom terug boodschap voor de anonymous user
+	if ($currentSession['user']['userid'] != 1) {
+?>	
+                    <h4>User information </h4>
+					<ul class="filterlist logininfobox">
+						<li class="info"> Welkom terug <em><?php echo $currentSession['user']['firstname']; ?></em> </li>
+					</ul>
+<?php
+    }
+?>
+
 					
                     <h4><span class="viewState"><a id="quicklinks_link" onclick="toggleFilterBlock('#quicklinks_link', 'ul.quicklinks', 'viewQuickLinks')"> </a></span> Quick Links </h4>
 					<ul class="filterlist quicklinks">
