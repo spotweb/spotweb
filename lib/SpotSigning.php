@@ -50,14 +50,32 @@ class SpotSigning {
 	/*
 	 * Creeert een private en public key paar
 	 */
-	public function createPrivateKey() {
+	public function createPrivateKey($sslCnfPath) {
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		
-		# We krijgen de keys base encoded terug		
-		$keyPair = $rsa->createKey();
-		return array('public' => $keyPair['publickey'],
-					 'private' => $keyPair['privatekey']);
+			
+		# We hebben deze code geconfigureerd uit Crypt/RSA.php omdat
+		# we anders de configuratie parameter niet mee kunnen geven aan
+		# openssl_pkey_new()
+		if (CRYPT_RSA_MODE != CRYPT_RSA_MODE_OPENSSL) {
+			# We krijgen de keys base encoded terug		
+			$keyPair = $rsa->createKey();
+			return array('public' => $keyPair['publickey'],
+						 'private' => $keyPair['privatekey']);
+		} else {
+            $opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => $sslCnfPath));
+            openssl_pkey_export($opensslPrivKey, $privatekey);
+            $publickey = openssl_pkey_get_details($opensslPrivKey);
+            $publickey = $publickey['key'];
+			openssl_free_key($opensslPrivKey);
+			
+			# converteer de key naar een voor ons bruikbaar formaat
+			$privateKey = call_user_func_array(array($rsa, '_convertPrivateKey'), array_values($rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1)));
+			$publicKey = call_user_func_array(array($rsa, '_convertPublicKey'), array_values($rsa->_parseKey($publickey, CRYPT_RSA_PUBLIC_FORMAT_PKCS1)));
+			
+			return array('public' => $publicKey,
+						 'private' => $privateKey);
+		} # else
 	} # createPrivateKey 
 	
 	/*
