@@ -170,7 +170,7 @@ class SpotNzb {
 		# afhankelijk van de keuze van opslaan, moeten we een andere NZB url meegeven
 		if ($action == 'client-sabnzbd') {
 			# Client roept sabnzbd aan
-			$tmp = htmlentities($tmp);
+			$tmp = htmlspecialchars($tmp);
 			$tmp = str_replace('$SABNZBDMODE', 'addurl', $tmp);
 			$tmp = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $tmp);
 		} elseif ($action == 'push-sabnzbd') {
