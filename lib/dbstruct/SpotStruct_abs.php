@@ -58,7 +58,7 @@ abstract class SpotStruct_abs {
 
 		# commentsfull tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('commentsfull')) {
-			$this->createTable('commentsfull', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->createTable('commentsfull', "CHARSET=utf8 COLLATE=utf8_general_ci");
 			
 			$this->addColumn('messageid', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('fromhdr', 'commentsfull', 'VARCHAR(128)');
@@ -100,7 +100,7 @@ abstract class SpotStruct_abs {
 		
 		# settings tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('settings')) {
-			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_general_ci");
 			
 			$this->addColumn('name', 'settings', 'VARCHAR(128) NOT NULL');
 			$this->addColumn('value', 'settings', 'text');
