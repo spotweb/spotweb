@@ -3,8 +3,8 @@ class SpotPage_getnzb extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;
 	
-	function __construct($db, $settings, $currentUser, $params) {
-		parent::__construct($db, $settings, $currentUser);
+	function __construct($db, $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_action = $params['action'];
 	} # ctor
@@ -24,7 +24,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
-			$spotNzb->handleNzbAction($this->_messageid, $this->_currentUser['userid'], 
+			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession['user']['userid'], 
 										$this->_action, $hdr_spotnntp, $nzb_spotnntp);
 			
 			if ($this->_action != 'display') {

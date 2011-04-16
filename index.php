@@ -36,10 +36,9 @@ try {
 	# Haal het userobject op dat 'ingelogged' is
 	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
-	$userSession = $spotUserSystem->useOrStartSession();
-	$currentUser = $userSession['user'];
+	$currentSession = $spotUserSystem->useOrStartSession();
 	SpotTiming::stop('auth');
-
+	
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
@@ -48,7 +47,7 @@ try {
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
-				$page = new SpotPage_render($db, $settings, $currentUser, $req->getDef('tplname', ''),
+				$page = new SpotPage_render($db, $settings, $currentSession, $req->getDef('tplname', ''),
 							Array('search' => $req->getDef('search', $settings->get('index_filter')),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -60,13 +59,13 @@ try {
 		} # render
 		
 		case 'getspot' : {
-				$page = new SpotPage_getspot($db, $settings, $currentUser, $req->getDef('messageid', ''));
+				$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getspot
 
 		case 'getnzb' : {
-				$page = new SpotPage_getnzb($db, $settings, $currentUser, 
+				$page = new SpotPage_getnzb($db, $settings, $currentSession, 
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
@@ -74,13 +73,13 @@ try {
 		}
 		
 		case 'getspotmobile' : {
-				$page = new SpotPage_getspotmobile($db, $settings, $currentUser, $req->getDef('messageid', ''));
+				$page = new SpotPage_getspotmobile($db, $settings, $currentSession, $req->getDef('messageid', ''));
 				$page->render();
 				break;
 		} # getspotmobile
 
 		case 'getnzbmobile' : {
-				$page = new SpotPage_getnzbmobile($db, $settings, $currentUser,
+				$page = new SpotPage_getnzbmobile($db, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
@@ -88,25 +87,25 @@ try {
 		} # getnzbmobile		
 
 		case 'erasedls' : {
-				$page = new SpotPage_erasedls($db, $settings, $currentUser);
+				$page = new SpotPage_erasedls($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # erasedls
 		
 		case 'catsjson' : {
-				$page = new SpotPage_catsjson($db, $settings, $currentUser);
+				$page = new SpotPage_catsjson($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # getspot
 		
 		case 'markallasread' : {
-				$page = new SpotPage_markallasread($db, $settings, $currentUser);
+				$page = new SpotPage_markallasread($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # markallasread
 
 		case 'getimage' : {
-			$page = new SpotPage_getimage($db, $settings, $currentUser,
+			$page = new SpotPage_getimage($db, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'image' => $req->getDef('image', Array())));
 			$page->render();
@@ -114,13 +113,13 @@ try {
 		}
 
 		case 'selecttemplate' : {
-				$page = new SpotPage_selecttemplate($db, $settings, $currentUser, $req);
+				$page = new SpotPage_selecttemplate($db, $settings, $currentSession, $req);
 				$page->render();
 				break;
 		} # selecttemplate
 
 		case 'atom' : {
-			$page = new SpotPage_atom($db, $settings, $currentUser,
+			$page = new SpotPage_atom($db, $settings, $currentSession,
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
@@ -131,21 +130,34 @@ try {
 		} # atom
 		
 		case 'statics' : {
-				$page = new SpotPage_statics($db, $settings, $currentUser,
+				$page = new SpotPage_statics($db, $settings, $currentSession,
 							Array('type' => $req->getDef('type', '')));
 				$page->render();
 				break;
 		} # statics
 
 		case 'createuser' : {
-				$page = new SpotPage_createuser($db, $settings, $currentUser,
-							Array('spotform' => $req->getForm('createuserform', array())));
+				$page = new SpotPage_createuser($db, $settings, $currentSession,
+							Array('createuserform' => $req->getForm('createuserform', array())));
 				$page->render();
 				break;
-		} # statics
+		} # createuser
 
+		case 'login' : {
+				$page = new SpotPage_login($db, $settings, $currentSession,
+							Array('loginform' => $req->getForm('loginform', array())));
+				$page->render();
+				break;
+		} # login
+		
+		case 'logout' : {
+				$page = new SpotPage_logout($db, $settings, $currentSession);
+				$page->render();
+				break;
+		} # logout
+		
 		default : {
-				$page = new SpotPage_index($db, $settings, $currentUser,
+				$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $settings->get('index_filter')),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
