@@ -2,8 +2,8 @@
 class SpotPage_atom extends SpotPage_Abs {
 	private $_params;
 
-	function __construct($db, $settings, $currentUser, $params) {
-		parent::__construct($db, $settings, $currentUser);
+	function __construct($db, $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
 		
 		$this->_params = $params;
 	}
@@ -14,9 +14,9 @@ class SpotPage_atom extends SpotPage_Abs {
 		$pageNr = $this->_params['page'];
 
 		# laad de spots
-		$spotsTmp = $spotsOverview->loadSpots($this->_currentUser['userid'],
+		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 							$pageNr, 
-							$this->_currentUser['prefs']['perpage'],
+							$this->_currentSession['user']['prefs']['perpage'],
 							$filter,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
@@ -26,7 +26,7 @@ class SpotPage_atom extends SpotPage_Abs {
 
 		foreach($spotsTmp['list'] as $spot) {
 			try {
-				$fullSpots[] = $spotsOverview->getFullSpot($spot['messageid'], $this->_currentUser['userid'], $spotnntp); 					
+				$fullSpots[] = $spotsOverview->getFullSpot($spot['messageid'], $this->_currentSession['user']['userid'], $spotnntp); 					
 			}catch(Exception $x) {
 				// Article not found. ignore.
 			}

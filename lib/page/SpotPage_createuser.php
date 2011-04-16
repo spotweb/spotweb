@@ -1,10 +1,10 @@
 <?php
 class SpotPage_createuser extends SpotPage_Abs {
-	private $_spotForm;
+	private $_createUserForm;
 	
-	function __construct($db, $settings, $currentUser, $params) {
-		parent::__construct($db, $settings, $currentUser);
-		$this->_spotForm = $params['spotform'];
+	function __construct($db, $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
+		$this->_createUserForm = $params['createuserform'];
 	} # ctor
 
 	function render() {
@@ -25,12 +25,12 @@ class SpotPage_createuser extends SpotPage_Abs {
 		$this->_pageTitle = "spot: create user";
 		
 		# Is dit een submit van een form, of nog maar de aanroep?
-		if (isset($this->_spotForm['submit'])) {
+		if (isset($this->_createUserForm['submit'])) {
 			# submit unsetten we altijd
-			unset($this->_spotForm['submit']);
+			unset($this->_createUserForm['submit']);
 			
 			# valideer de user
-			$spotUser = $this->_spotForm;
+			$spotUser = $this->_createUserForm;
 			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
 			
 			if (empty($formMessages['errors'])) {
@@ -47,7 +47,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 				$spotUserSystem->addUser($spotUser);
 				
 				$formMessages['info'] = array("Added user '" . htmlspecialchars($spotUser['username']) . "' with password: '" . $spotUser['password'] . "'");
-			} # else
+			} # if
 			
 		} # if
 		

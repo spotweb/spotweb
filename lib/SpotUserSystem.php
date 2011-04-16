@@ -53,6 +53,13 @@ class SpotUserSystem {
 	} # updateCookie
 	
 	/*
+	 * Verwijdert een sessie
+	 */
+	function removeSession($sessionId) {
+		$this->_db->deleteSession($sessionId);
+	} # removeSession
+	
+	/*
 	 * Kijk of de user een sessie heeft, als hij die heeft gebruik die dan,
 	 * anders creeeren we een sessie voor de anonieme user
 	 */
@@ -97,7 +104,10 @@ class SpotUserSystem {
 		$userId = $this->_db->authUser($user, $password);
 		if ($userId !== false) {
 			# Als de user ingelogged is, creeer een sessie
-			return $this->createNewSession($userId);
+			$userSession = $this->createNewSession($userId);
+			$this->updateCookie($userSession);
+			
+			return $userSession;
 		} else {
 			return false;
 		} # else
