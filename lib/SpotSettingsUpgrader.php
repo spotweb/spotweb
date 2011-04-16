@@ -12,6 +12,7 @@ class SpotSettingsUpgrader {
 		$this->setupNewsgroups();
 		$this->updateSettingsVersion();
 		$this->createRsaKeys();
+		$this->createXsrfSecret();
 	} # update()
 	
 	/*
@@ -61,12 +62,22 @@ class SpotSettingsUpgrader {
 		
 		$this->setIfNot('rsa_keys', $rsaKeys);
 	} # createRsaKeys
+	
+	/*
+	 * Create an xsrf secret
+	 */
+	function createXsrfSecret() {
+		$userSystem = new SpotUserSystem(null, null);
+		$secret = substr($userSystem->generateUniqueId(), 0, 8);
+		
+		$this->setIfNot('xsrfsecret', $secret);
+	} # createXsrfSecret
 	/*
 	 * Creer de servers' password salt
 	 */
 	function createPasswordSalt() {
 		$userSystem = new SpotUserSystem(null, null);
-		$salt = $userSystem->generateSessionId() . $userSystem->generateSessionId();
+		$salt = $userSystem->generateUniqueId() . $userSystem->generateUniqueId();
 		
 		$this->setIfNot('pass_salt', $salt);
 	} # createPasswordSalt

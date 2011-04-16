@@ -311,24 +311,6 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
 			$this->addIndex("idx_users_3", "", "users", "mail,deleted");
-			
-			# Create the dummy 'anonymous' user
-			$anonymous_user = array(
-				# 'userid'		=> 0,		<= Moet 0 zijn voor de anonymous user
-				'username'		=> 'anonymous',
-				'firstname'		=> 'Jane',
-				'passhash'		=> '',
-				'lastname'		=> 'Doe',
-				'mail'			=> 'john@example.com',
-				'lastlogin'		=> 0,
-				'lastvisit'		=> 0,
-				'deleted'		=> false);
-			$this->_spotdb->addUser($anonymous_user);
-			
-			# update handmatig het userid
-			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE users SET id = 0 WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE usersettings SET userid = 0 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
 		
 		# users tabel aanmaken als hij nog niet bestaat
@@ -369,11 +351,33 @@ abstract class SpotStruct_abs {
 			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
-			
-			# insert handmatig de user preferences voor de anonymous user
-			$this->_dbcon->exec("INSERT INTO usersettings(userid,privatekey,publickey,otherprefs) 
-									VALUES(0, '', '', 'a:0:{}')");
 		} # if usersettings
+		
+		# Wis alle users, en maak een nieuwe anonymous user aan
+		if ($this->_spotdb->getSchemaVer() < 0.11) {
+			# wis oude users
+			$this->_dbcon->exec("DELETE FROM users");
+			$this->_dbcon->exec("DELETE FROM usersettings");
+			
+			# Create the dummy 'anonymous' user
+			$anonymous_user = array(
+				# 'userid'		=> 1,		<= Moet 1 zijn voor de anonymous user
+				'username'		=> 'anonymous',
+				'firstname'		=> 'Jane',
+				'passhash'		=> '',
+				'lastname'		=> 'Doe',
+				'mail'			=> 'john@example.com',
+				'lastlogin'		=> 0,
+				'lastvisit'		=> 0,
+				'deleted'		=> false);
+			$this->_spotdb->addUser($anonymous_user);
+			
+			# update handmatig het userid
+			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
+			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
+			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+		} # if
+		
 			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
