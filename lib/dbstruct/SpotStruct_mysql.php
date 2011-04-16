@@ -19,7 +19,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										tag VARCHAR(128),
 										stamp INTEGER(10) UNSIGNED,
 										reversestamp INTEGER DEFAULT 0,
-										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0,
+										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
 										moderated BOOLEAN) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
@@ -39,7 +39,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey VARCHAR(200),
 										xmlsignature VARCHAR(128),
 										fullxml TEXT,
-										filesize INT(12) UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
 			
