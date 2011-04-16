@@ -64,7 +64,7 @@ class SpotSigning {
 						 'private' => $keyPair['privatekey']);
 		} else {
             $opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => $sslCnfPath));
-            openssl_pkey_export($opensslPrivKey, $privatekey, null, array('config' => $sslCnfPath);
+            openssl_pkey_export($opensslPrivKey, $privatekey, null, array('config' => $sslCnfPath));
             $publickey = openssl_pkey_get_details($opensslPrivKey);
             $publickey = $publickey['key'];
 			openssl_free_key($opensslPrivKey);
