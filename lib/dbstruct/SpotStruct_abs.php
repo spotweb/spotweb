@@ -102,7 +102,7 @@ abstract class SpotStruct_abs {
 		if (!$this->tableExists('settings')) {
 			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			
-			$this->addColumn('name', 'settings', 'VARCHAR(128) NOT NULL');
+			$this->addColumn('name', 'settings', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('value', 'settings', 'text');
 			$this->addColumn('serialized', 'settings', 'boolean');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
@@ -134,7 +134,7 @@ abstract class SpotStruct_abs {
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
 	
 			# en vervolgens alteren we elk tekst veld
-			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY fromhdr VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
@@ -144,10 +144,10 @@ abstract class SpotStruct_abs {
 
 			echo "Converting commentsxover fields to UTF8 (3/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 
 			$this->_dbcon->rawExec("ALTER TABLE nntp MODIFY server VARCHAR(128) CHARACTER SET utf8");
 
@@ -156,7 +156,7 @@ abstract class SpotStruct_abs {
 
 			echo "Converting spots fields to UTF8 (3/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY poster VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY groupname VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcata VARCHAR(64) CHARACTER SET utf8");
@@ -169,15 +169,15 @@ abstract class SpotStruct_abs {
 
 			echo "Converting spotsfull fields to UTF8 (4/10)" . PHP_EOL;
 
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userid VARCHAR(32) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY usersignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY xmlsignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
 
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT DEFAULT '' CHARACTER SET utf8 NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
@@ -269,13 +269,13 @@ abstract class SpotStruct_abs {
 		# zetten alle collation exact hetzelfde zodat de indexes beter
 		# gebruikt kunnen worden.
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.06)) {
-			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) DEFAULT '' CHARACTER SET ascii NOT NULL");
 		} # if
 		
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
@@ -287,10 +287,10 @@ abstract class SpotStruct_abs {
 		if (!$this->tableExists('usersettings')) {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
-			$this->addColumn('userid', 'usersettings', 'INTEGER NOT NULL');
-			$this->addColumn('privatekey', 'usersettings', 'TEXT NOT NULL');
-			$this->addColumn('publickey', 'usersettings', 'TEXT NOT NULL');
-			$this->addColumn('otherprefs', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('userid', 'usersettings', 'INTEGER DEFAULT 0 NOT NULL');
+			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
@@ -299,14 +299,14 @@ abstract class SpotStruct_abs {
 		if (!$this->tableExists('users')) {
 			$this->createTable('users', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
-			$this->addColumn('username', 'users', 'VARCHAR(128) NOT NULL');
-			$this->addColumn('firstname', 'users', 'VARCHAR(128) NOT NULL');
-			$this->addColumn('passhash', 'users', 'VARCHAR(40) NOT NULL');
-			$this->addColumn('lastname', 'users', 'VARCHAR(128) NOT NULL');
-			$this->addColumn('mail', 'users', 'VARCHAR(128) NOT NULL');
-			$this->addColumn('lastlogin', 'users', 'INTEGER NOT NULl');
-			$this->addColumn('lastvisit', 'users', 'INTEGER NOT NULL');
-			$this->addColumn('deleted', 'users', 'BOOLEAN NOT NULL');
+			$this->addColumn('username', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('firstname', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('passhash', 'users', "VARCHAR(40) DEFAULT '' NOT NULL");
+			$this->addColumn('lastname', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('mail', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
+			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 'FALSE' NOT NULL");
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
@@ -352,21 +352,21 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE users CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			
 			# en vervolgens passen we de kolommen aan
-			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE users MODIFY firstname VARCHAR(128) CHARACTER SET utf8 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE users MODIFY lastname VARCHAR(128) CHARACTER SET utf8 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE users MODIFY passhash VARCHAR(40) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) DEFAULT '' CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY firstname VARCHAR(128) DEFAULT '' CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY lastname VARCHAR(128) DEFAULT '' CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) DEFAULT '' CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY passhash VARCHAR(40) DEFAULT '' CHARACTER SET utf8 NOT NULL");
 		} # if
 
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usersettings')) {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
-			$this->addColumn('userid', 'usersettings', 'INTEGER NOT NULL');
-			$this->addColumn('privatekey', 'usersettings', 'TEXT NOT NULL');
-			$this->addColumn('publickey', 'usersettings', 'TEXT NOT NULL');
-			$this->addColumn('otherprefs', 'usersettings', 'TEXT NOT NULL');
+			$this->addColumn('userid', 'usersettings', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 			
