@@ -323,7 +323,7 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_sessions_2", "", "sessions", "lasthit");
 			$this->addIndex("idx_sessions_3", "", "sessions", "sessionid,userid");
 		} # if
-		
+
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema

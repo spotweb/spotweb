@@ -220,7 +220,7 @@ class SpotTemplateHelper {
 	 * Geeft het linkje terug naar ons zelf
 	 */
 	function makeSelfUrl() {
-		return $this->makeBaseUrl() . '?' . htmlentities((isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ""));
+		return $this->makeBaseUrl() . '?' . htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ""));
 	} # makeSelfUrl
 	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
@@ -317,8 +317,8 @@ class SpotTemplateHelper {
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 		
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
+		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
+		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
 		
 		// we zetten de short description van de category bij
 		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
@@ -381,16 +381,16 @@ class SpotTemplateHelper {
 		
 		// properly escape sevreal urls
 		if (!is_array($spot['image'])) {
-			$spot['image'] = htmlentities($spot['image']);
+			$spot['image'] = htmlspecialchars($spot['image']);
 		} else {
 			$spot['image'] = '';
 		} # else
-		$spot['website'] = htmlentities($spot['website']);
-		$spot['poster'] = htmlentities(strip_tags($spot['poster']), ENT_QUOTES);
-		$spot['tag'] = htmlentities(strip_tags($spot['tag']));
+		$spot['website'] = htmlspecialchars($spot['website']);
+		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
+		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']));
 
 		// title escapen
-		$spot['title'] = htmlentities(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
+		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
