@@ -162,5 +162,6 @@ try {
 	
 }
 catch(Exception $x) {
+	var_dump($x);
 	die($x->getMessage());
 } # catch
