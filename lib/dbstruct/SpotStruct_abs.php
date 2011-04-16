@@ -32,7 +32,7 @@ abstract class SpotStruct_abs {
 	abstract function tableExists($tablename);
 
 	/* ceeert een lege tabel met enkel een ID veld */
-	abstract function createTable($tablename);
+	abstract function createTable($tablename, $collations);
 
 	/* drop een table */
 	abstract function dropTable($tablename);
@@ -280,14 +280,14 @@ abstract class SpotStruct_abs {
 		if (!$this->tableExists('users')) {
 			$this->createTable('users');
 
-			$this->addColumn('username', 'users', 'VARCHAR(128)');
-			$this->addColumn('firstname', 'users', 'VARCHAR(128)');
-			$this->addColumn('passhash', 'users', 'VARCHAR(40)');
-			$this->addColumn('lastname', 'users', 'VARCHAR(128)');
-			$this->addColumn('mail', 'users', 'VARCHAR(128)');
-			$this->addColumn('lastlogin', 'users', 'INTEGER');
-			$this->addColumn('lastvisit', 'users', 'INTEGER');
-			$this->addColumn('deleted', 'users', 'BOOLEAN');
+			$this->addColumn('username', 'users', 'VARCHAR(128) NOT NULL');
+			$this->addColumn('firstname', 'users', 'VARCHAR(128) NOT NULL');
+			$this->addColumn('passhash', 'users', 'VARCHAR(40) NOT NULL');
+			$this->addColumn('lastname', 'users', 'VARCHAR(128) NOT NULL');
+			$this->addColumn('mail', 'users', 'VARCHAR(128) NOT NULL');
+			$this->addColumn('lastlogin', 'users', 'INTEGER NOT NULl');
+			$this->addColumn('lastvisit', 'users', 'INTEGER NOT NULL');
+			$this->addColumn('deleted', 'users', 'BOOLEAN NOT NULL');
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
@@ -312,7 +312,7 @@ abstract class SpotStruct_abs {
 		
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('sessions')) {
-			$this->createTable('sessions');
+			$this->createTable('sessions', "CHARSET=ascii");
 			
 			$this->addColumn('sessionid', 'sessions', 'VARCHAR(128)');
 			$this->addColumn('userid', 'sessions', 'INTEGER');
@@ -324,6 +324,20 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_sessions_3", "", "sessions", "sessionid,userid");
 		} # if
 
+		# Upgrade de users tabel naar utf8
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.09)) {
+			# We veranderen eerst de standaard collation settings zodat we in de toekomst
+			# hier niet al te veel meer op moeten letten
+			$this->_dbcon->rawExec("ALTER TABLE users CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			
+			# en vervolgens passen we de kolommen aan
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY firstname VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY lastname VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE users MODIFY passhash VARCHAR(40) CHARACTER SET utf8 NOT NULL");
+		} # if
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
