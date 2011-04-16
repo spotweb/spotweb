@@ -42,7 +42,7 @@ try {
 
 	# helper functions for passed variables
 	$req = new SpotReq();
-	$req->initialize();
+	$req->initialize($settings);
 	$page = $req->getDef('page', 'index');
 		
 	SpotTiming::start('renderpage');
@@ -133,6 +133,13 @@ try {
 		case 'statics' : {
 				$page = new SpotPage_statics($db, $settings, $currentUser,
 							Array('type' => $req->getDef('type', '')));
+				$page->render();
+				break;
+		} # statics
+
+		case 'createuser' : {
+				$page = new SpotPage_createuser($db, $settings, $currentUser,
+							Array('spotform' => $req->getForm('createuserform', array())));
 				$page->render();
 				break;
 		} # statics
