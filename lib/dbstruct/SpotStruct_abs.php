@@ -177,7 +177,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
 
 			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT DEFAULT '' CHARACTER SET utf8 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 DEFAULT '' NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
