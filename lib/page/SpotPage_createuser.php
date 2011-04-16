@@ -36,7 +36,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 			if (empty($formMessages['errors'])) {
 				# Creer een private en public key paar voor deze user
 				$spotSigning = new SpotSigning();
-				$userKey = $spotSigning->createPrivateKey();
+				$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
 				$spotUser['publickey'] = $userKey['public'];
 				$spotUser['privatekey'] = $userKey['private'];
 				
