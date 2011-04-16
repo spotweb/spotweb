@@ -29,7 +29,7 @@ try {
 	} # if
 	
 	# Controleer dat er wel een password salt ingevuld is
-	if ($settings['pass_salt'] == 'unieke string') {
+	if ($settings->get('pass_salt') == 'unieke string') {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
 	} # if
 	
