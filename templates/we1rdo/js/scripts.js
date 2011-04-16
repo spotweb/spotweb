@@ -309,23 +309,23 @@ $(function(){
 	$.each(data, function(i, value) {
 		$("ul.filters").children().eq(value.count).children("ul").css("display", value.state);
 		if(value.state == "block") {
-			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-1px -80px");
+			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
 			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
 		}
 	});
 });
 
 function toggleFilter(id) {
-	$("ul.filters a").click(function(){ return false; });
+	$(id).parent().click(function(){ return false; });
 	
 	var ul = $(id).parent().next();
 	if($(ul).is(":visible")) {
 		ul.hide(); var state = "none";
-		ul.prev().children("span.toggle").css("background-position", "-18px -80px");
+		ul.prev().children("span.toggle").css("background-position", "-90px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter uitklappen");
 	} else {
 		ul.show(); var state = "block";
-		ul.prev().children("span.toggle").css("background-position", "-1px -80px");
+		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
 	}
 	
