@@ -470,16 +470,13 @@ class SpotCategories {
 				# 'Erotiek'
 				if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89|', ($subCatVal . '|')) !== false) {
 					$subcatz = 'z3|';
-					break;
 				} elseif (stripos('b4|d11|', ($subCatVal . '|')) !== false) {
 					# Series
 					$subcatz = 'z1|';
-					break;
 				} elseif (stripos('a5|', ($subCatVal . '|')) !== false) {
 					# Boeken
 					$subcatz = 'z2|';
-					break;
-				} else {
+				} elseif (empty($subcatz)) {
 					# default, film
 					$subcatz = 'z0|';
 				} # else
