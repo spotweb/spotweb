@@ -14,8 +14,8 @@ class SpotSettings {
 	 * Instantieert een nieuwe settings klasse
 	 */
 	public static function singleton($db, $settings) {
-		if (SpotSettings::$_instance === null) {
-			SpotSettings::$_instance = new SpotSettings($db);
+		if (self::$_instance === null) {
+			self::$_instance = new SpotSettings($db);
 			
 			# haal alle settings op, en prepareer die 
 			$dbSettings = $db->getAllSettings();
@@ -29,17 +29,17 @@ class SpotSettings {
 			} # foreach
 
 			# en merge de settings met degene die we door krijgen 
-			SpotSettings::$_instance->_settings = array_merge($settings, $tmpSettings);
+			self::$_settings = array_merge($settings, $tmpSettings);
 		} # if
 		
-		return SpotSettings::$_instance;
+		return self::$_instance;
 	} # singleton
 
 	/*
 	 * Geeft de waarde van de setting terug
 	 */
 	function get($name) {
-		return $this->_settings[$name];
+		return self::$_settings[$name];
 	} # get
 
 	/*
@@ -48,7 +48,7 @@ class SpotSettings {
 	 */
 	function set($name, $value) {
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
-		$this->_settings[$name] = $value;
+		self::$_settings[$name] = $value;
 		
 		# maar zet het eventueel serialized in de database als dat nodig is
 		if ((is_array($value) || is_object($value))) {
@@ -65,7 +65,7 @@ class SpotSettings {
 	 * Bestaat de opgegeven setting ?
 	 */
 	function exists($name) {
-		return isset($this->_settings[$name]);
+		return isset(self::$_settings[$name]);
 	} # isSet
 	
 	/*
