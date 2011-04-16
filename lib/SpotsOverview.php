@@ -150,7 +150,7 @@ class SpotsOverview {
 			} # if
 		} # else
 
-		# en haal de daadwerkelijke spotrs op
+		# en haal de daadwerkelijke spots op
 		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
 		$spotCnt = count($spotResults['list']);
 
