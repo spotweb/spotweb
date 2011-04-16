@@ -15,13 +15,6 @@ if (ini_get('safe_mode') ) {
 	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 } # if
 
-$req = new SpotReq();
-$req->initialize();
-
-if ($req->getDef('output', '') == 'xml') {
-	echo "<xml>";
-} # if
-
 try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
@@ -37,6 +30,13 @@ if (!$db->schemaValid()) {
 
 # Creer het settings object
 $settings = SpotSettings::singleton($db, $settings);
+
+$req = new SpotReq();
+$req->initialize($settings);
+
+if ($req->getDef('output', '') == 'xml') {
+	echo "<xml>";
+} # if
 
 # We vragen de nntp_hdr settings alvast op
 $settings_nntp_hdr = $settings->get('nntp_hdr');

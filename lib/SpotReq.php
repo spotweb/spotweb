@@ -2,81 +2,115 @@
 
 class SpotReq {
     static private $_merged = array(); 
+	static private $_xsrfsecret = '';
     
-    function initialize() {
-		SpotReq::$_merged = array_merge($_POST, $_GET);
+    function initialize($settings) {
+		self::$_merged = array_merge($_POST, $_GET);
+		self::$_xsrfsecret = $settings->get('xsrfsecret');
     }
     
     function get($varName, $escapeType = 'none') {
 		if( is_array($varName) ) {
-			return SpotReq::escape(SpotReq::$_merged[$varName[0]][$varName[1]], $escapeType);
+			return self::escape(self::$_merged[$varName[0]][$varName[1]], $escapeType);
 		} else {
-			return SpotReq::escape(SpotReq::$_merged[$varName], $escapeType);
+			return self::escape(self::$_merged[$varName], $escapeType);
 		}
     }    
+	
+	function getForm($formName) {
+		if (isset($_POST[$formName])) {
+			$form = $_POST[$formName]; 
+		} else {
+			return array();
+		} # else
+		
+		$form = $this->cleanup($form);
+		
+		if (isset($form['submit'])) {
+			if ($form['submit']) {
+				if (!$this->isXsrfValid($formName)) {
+					unset($form['submit']);
+				} # if
+			} # if
+		} # if
+
+		return $form;
+	} # getForm
     
-	function isXsrfValid($action, $secret) {
-		if (!isset($_POST['xsrfid'])) {
+	function cleanup($var) {
+		if (is_array($var)) {
+			foreach($var as &$value) {
+				$value = $this->cleanup($value);
+			} # foreach
+		} else {
+			$var = trim($var);
+		} # else
+		
+		return $var;
+	} # cleanup }
+	
+	static function isXsrfValid($form) {
+		if (!isset($_POST[$form]['xsrfid'])) {
 			return false;
 		} # if
 		
 		# Explode the different values, if we don't agree
 		# on the amount of values, exit immediately
-		$xsrfVals = explode(":", $_POST['xsrfid']);
+		$xsrfVals = explode(":", $_POST[$form]['xsrfid']);
+		
 		if (count($xsrfVals) != 3) {
 			return false;
 		} # if
 		
-		# start validating, a cookie is only valid for 30 minutes
-		if ($xsrfCookie[0] < (time() - 1800)) {
+		# start validating, an XSRF cookie is only valid for 30 minutes
+		if ( (time() - 1800) > $xsrfVals[0]) {
 			return false;
 		} # if
 		
 		# if action isn't the action we requested
-		if ($xsrfCookie[1] != $action) {
+		if ($xsrfVals[1] != $form) {
 			return false;
 		} # if
 		
 		# and check the hash
-		if (sha1($xsrfCookie[0] . ':' . $xsrfCookie[1] . $secret) != $xsrfCookie[3]) {
+		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . self::$_xsrfsecret) != $xsrfVals[2]) {
 			return false;
 		} # if
 		
 		return true;
 	} # isXsrfValid
 	
-	function generateXsrfCookie($action, $secret) {
+	static function generateXsrfCookie($action) {
 		# XSRF cookie contains 3 fields:
 		#   1 - Current timestamp in unixtime
 		#	2 - action (for example, 'login' or 'postcomment')
 		#	3 - sha1 of the preceding 2 strings including ':', but the secret key appended as salt
 		$xsrfCookie = time() . ':' . $action;
-		$xsrfCookie .= ':' . sha1($xsrfCookie . $secret);
-		
-		return array('field' => 'xsrfid',
-					 'value' => $xsrfCookie);
+		$xsrfCookie .= ':' . sha1($xsrfCookie . self::$_xsrfsecret);
+
+		return $xsrfCookie;
 	} # generateXsrfCookie
    
     function doesExist($varName) {
 		if( is_array($varName) ) {
-			return isset(SpotReq::$_merged[$varName[0]][$varName[1]]);
+			return isset(self::$_merged[$varName[0]][$varName[1]]);
 		}
 		else {
-			return isset(SpotReq::$_merged[$varName]);
+			return isset(self::$_merged[$varName]);
 		}
     } 
  
     function getDef($varName, $defValue, $escapeType = 'none') {
-		if( !isset(SpotReq::$_merged[$varName]) ) {
+		if( !isset(self::$_merged[$varName]) ) {
 			return $defValue;
 		} else {
-			return SpotReq::get($varName, $escapeType);
+			return self::get($varName, $escapeType);
 		}
     }
 
     function getSrvVar($varName, $defValue = '', $escapeType = 'none') {
 		if( isset($_SERVER[$varName]) ) {
-			return SpotReq::escape($_SERVER[$varName], $escapeType);
+			return self::escape($_SERVER[$varName], $escapeType);
 		} else {
 			return $defValue;
 		}
@@ -85,7 +119,7 @@ class SpotReq {
     function escape($var, $escapeType) {
 		if( is_array($var) ) {
 			foreach($var as $key => $value) {
-				$var[$key] = SpotReq::escape($value, $escapeType);
+				$var[$key] = self::escape($value, $escapeType);
 			}
     
 			return $var;
