@@ -175,7 +175,7 @@ try {
 	SpotTiming::stop('total');
 
 	# enable of disable de timer
-	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'getnzb')))) {
+	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'getnzb', 'markallasread')))) {
 		SpotTiming::display();
 	} # if
 	

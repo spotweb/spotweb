@@ -60,7 +60,10 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		static $skipNewCount = $this->_settings->get('count_newspots');
+		static $skipNewCount = null;
+		if ($skipNewCount == null) {
+			$this->_settings->get('count_newspots');
+		}# if
 		
 		if ($skipNewCount) {
 			return '';
@@ -460,6 +463,7 @@ class SpotTemplateHelper {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
+				case 'lastvisit'	:
 				default 			: return strftime($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else

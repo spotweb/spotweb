@@ -1,5 +1,8 @@
 <?php include "includes/form-messages.inc.php"; ?>
 
+<?php
+if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+?>
 <form name="loginform" action="<?php echo $tplHelper->makeLoginAction(); ?>" method="post">
 <input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
 	<fieldset>
@@ -14,3 +17,6 @@
 		</dl>
 	</fieldset>
 </form>
+<?php
+	}
+?>
