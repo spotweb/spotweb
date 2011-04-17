@@ -384,11 +384,6 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
 		} # if
 		
-		# Voeg een lastvisit toe welke we gebruiken voor high/unlighting
-		#if ($this->_spotdb->getSchemaVer() < 0.13) {
-		#	$this->addColumn('lastvisit', 'sessions', "INTEGER DEFAULT 0 NOT NULL");
-		#} # if
-		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
