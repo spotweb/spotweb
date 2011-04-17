@@ -354,10 +354,17 @@ abstract class SpotStruct_abs {
 		} # if usersettings
 		
 		# Wis alle users, en maak een nieuwe anonymous user aan
-		if ($this->_spotdb->getSchemaVer() < 0.11) {
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.12)) {
+			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
+		} # if
+
+		# Wis alle users, en maak een nieuwe anonymous user aan
+		if ($this->_spotdb->getSchemaVer() < 0.14) {
 			# wis oude users
 			$this->_dbcon->exec("DELETE FROM users");
 			$this->_dbcon->exec("DELETE FROM usersettings");
+			$this->_dbcon->exec("DELETE FROM sessions");
 			
 			# Create the dummy 'anonymous' user
 			$anonymous_user = array(
@@ -376,18 +383,12 @@ abstract class SpotStruct_abs {
 			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+			
+			# fix de downloadlist en watchlist
+			$this->_dbcon->exec("UPDATE watchlist SET ouruserid = 1");
+			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
 
-		# Wis alle users, en maak een nieuwe anonymous user aan
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.12)) {
-			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
-		} # if
-		
-		# Voeg een lastvisit toe welke we gebruiken voor high/unlighting
-		#if ($this->_spotdb->getSchemaVer() < 0.13) {
-		#	$this->addColumn('lastvisit', 'sessions', "INTEGER DEFAULT 0 NOT NULL");
-		#} # if
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);

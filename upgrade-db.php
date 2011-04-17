@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
+
 require_once "settings.php";
 require_once "lib/SpotClassAutoload.php";
 

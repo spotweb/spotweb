@@ -65,10 +65,10 @@ abstract class NzbHandler_abs
 	 */
 	protected function makeNzbLocalPath($fullspot, $category, $path)
 	{
+		# add category to path als dat gevraagd is
+		$path = str_replace('$SANZBDCAT', $this->cleanForFileSystem($category), $path);
+
 		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
-		$path = $this->addTrailingSlash($path);
-		# add category to path
-		$path .= $this->cleanForFileSystem($category);
 		$path = $this->addTrailingSlash($path);
 		
 		$title = $this->cleanForFileSystem($fullspot['title']);
@@ -99,7 +99,12 @@ abstract class NzbHandler_abs
 		
 		# vind een geschikte category
 		$sabnzbd = $settings->get('sabnzbd');
-		$category = $sabnzbd['categories'][$spot['category']]['default'];
+		
+		if (isset($sabnzbd['categories'][$spot['category']]['default'])) {
+			$category = $sabnzbd['categories'][$spot['category']]['default'];
+		} else {
+			$category = '';
+		} # else
 
 		foreach($spot['subcatlist'] as $cat) {
 			if (isset($sabnzbd['categories'][$spot['category']][$cat])) {

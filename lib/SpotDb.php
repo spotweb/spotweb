@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.12');
+define('SPOTDB_SCHEMA_VERSION', '0.14');
 
 class SpotDb
 {
@@ -523,7 +523,7 @@ class SpotDb
 
 		# je hebt de zoek criteria (category, titel, etc)
 		if (!empty($criteriaFilter)) {
-			$criteriaFilter = ' AND ' . $criteriaFilter;
+			$criteriaFilter = ' WHERE ' . $criteriaFilter;
 		} # if 
 		
 		
@@ -547,7 +547,7 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
-								   
+
 		# en voer de query uit. 
 		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag
 		# kunnen zetten.
@@ -573,12 +573,9 @@ class SpotDb
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-								     LEFT JOIN downloadlist AS d on (s.messageid = d.messageid) 
-								     LEFT JOIN watchlist AS w on (s.messageid = w.messageid)
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid)
-								     WHERE 
-									 ((w.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (w.ouruserid IS NULL)) AND
-									 ((d.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (d.ouruserid IS NULL)) " . 
+								     LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
+								     LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
@@ -659,12 +656,10 @@ class SpotDb
 												f.filesize AS filesize,
 												w.dateadded as w_dateadded
 												FROM spots AS s 
-												LEFT JOIN downloadlist AS d on s.messageid = d.messageid
-												LEFT JOIN watchlist AS w on s.messageid = w.messageid
+												LEFT JOIN downloadlist AS d ON ((s.messageid = d.messageid) AND (d.ouruserid = %d))
+												LEFT JOIN watchlist AS w ON ((s.messageid = w.messageid) AND (w.ouruserid = %d))
 												JOIN spotsfull AS f ON f.messageid = s.messageid 
-										  WHERE s.messageid = '%s'
-											AND ((w.ouruserid = %d) OR (w.ouruserid IS NULL)) 
-											AND ((d.ouruserid = %d) OR (d.ouruserid IS NULL))", Array($messageId, $ourUserId, $ourUserId));
+										  WHERE s.messageid = '%s'", Array($ourUserId, $ourUserId, $messageId));
 		if (empty($tmpArray)) {
 			return ;
 		} # if
@@ -949,14 +944,14 @@ class SpotDb
 					  $fullSpot['filesize']));
 	} # addFullSpot
 
-	function addToWatchlist($messageId, $comment) {
-		$this->_conn->exec("INSERT INTO watchlist(messageid, dateadded, comment) VALUES ('%s', %d, '%s')",
-				Array($messageId, time(), $comment)); 
+	function addToWatchlist($messageId, $ourUserId, $comment) {
+		$this->_conn->exec("INSERT INTO watchlist(messageid, dateadded, comment, ouruserid) VALUES ('%s', %d, '%s', %d)",
+				Array($messageId, time(), $comment, (int) $ourUserId)); 
 	} # addToWatchList
 
-	function removeFromWatchlist($messageid) {
-		$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", 
-				Array($messageid));
+	function removeFromWatchlist($messageid, $ourUserId) {
+		$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s' AND ouruserid = %d", 
+				Array($messageid, (int) $ourUserId));
 	} # removeFromWatchlist
 
 	function beginTransaction() {
