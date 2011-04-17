@@ -82,14 +82,14 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  userid VARCHAR(32),
 									  hashcash VARCHAR(128),
 									  body TEXT,
-									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
+									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid);");
 
 			# settings
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTO_INCREMENT,
 									  name VARCHAR(128) NOT NULL,
-									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
+									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name);");
 		} # if
 	} # createDatabase
 
