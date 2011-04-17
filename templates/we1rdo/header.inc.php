@@ -201,25 +201,21 @@
 		$filterColCount++;
 	} # if
 ?>
-                    <table class="filters" summary="Filters">
-                        <tbody>
-                            <tr>
-                                <td colspan='<?php echo $filterColCount;?>'><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><span class="filtersubmit"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></span></td>
-                            </tr>
-                            <tr class="hide<?php if ($filterColCount == 3) {echo " short";} ?>"> 
-                                <td> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label> </td>
-                                <td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label> </td>
-                                <td> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label> </td>
-<?php if ($settings->get('retrieve_full')) { ?>
-                                <td> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label> </td>
-<?php } ?>									
-                            </tr>
-                            <tr class="unfiltered hide">
-                                <td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label> </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
-                    <div id="tree" class="hide"></div>
+                    <div class="advanced">
+                        <ul class="searchmode<?php if ($filterColCount == 3) {echo " short";} ?>">
+                            <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
+                            <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
+                            <li> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
+<?php if ($settings->get('retrieve_full')) { ?>
+                            <li> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
+<?php } ?>
+                        </ul>
+    
+                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
+    
+                        <div id="tree" class="hide"></div>
+                    </div>
                 </form>
             </div>
