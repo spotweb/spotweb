@@ -11,9 +11,9 @@ class SpotPage_login extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
-		# creeer een default spotuser zodat het form altijd
+		# creeer een default credentials zodat het form altijd
 		# de waardes van het form kan renderen
-		$spotUser = array('username' => '',
+		$credentials = array('username' => '',
 						  'password' => '');
 		
 		# Instantieer het Spot user system
@@ -28,17 +28,24 @@ class SpotPage_login extends SpotPage_Abs {
 			unset($this->_loginForm['submit']);
 			
 			# valideer de user
-			$credentials = $this->_loginForm;
+			$credentials = array_merge($credentials, $this->_loginForm);
 			
-			if (!$spotUserSystem->login($credentials['username'], $credentials['password'])) {
+			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
+			if (!$tryLogin) {
 				$formMessages['errors'] = array('Logon failed');
 			} else {
 				$formMessages['info'] = array('Logon succesful');
+				$this->_currentSession = $tryLogin;
 			} # else
-		} # if
+		} else {
+			# Als de user al een sessie heeft, voeg een waarschuwing toe
+			if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
+				$formMessages['errors'][] = 'User is al ingelogged';
+			} # if
+		} # else
 		
 		#- display stuff -#
-		$this->template('login', array('loginform' => $this->_loginForm,
+		$this->template('login', array('loginform' => $credentials,
 									   'formmessages' => $formMessages));
 	} # render
 	
