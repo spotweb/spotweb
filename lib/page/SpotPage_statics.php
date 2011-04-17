@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 # Deze klasse proxied feitelijk requests voor meerdere resources, dit is voornamelijk handig
 # als er meerdere JS files e.d. geinclude moeten worden. 
 # 
@@ -23,14 +23,14 @@ class SpotPage_statics extends SpotPage_Abs {
 		$tmp = '';
 		
 		foreach($files as $file) {
-			$fc = file_get_contents($file) . "\r\n";
+			$fc = file_get_contents($file);
 
 			# ik ben geen fan van regexpen maar in dit scheelt het 
 			# het volledig parsen van de content van de CSS file dus
 			# is het het overwegen waard.
 			$this->_currentCssFile = $file;
 			$fc = preg_replace_callback('/url\((.+)\)/i', array($this, 'cbFixCssUrl'), $fc);
-			$tmp .= $fc;
+			$tmp .= $fc . PHP_EOL . PHP_EOL;
 		} # foreach
 		
 		
@@ -53,7 +53,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: Header('Content-Type: text/css'); break;
-			case 'js'		: Header('Content-Type: text/javascript'); break;
+			case 'js'		: Header('Content-Type: application/javascript'); break;
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
 		
