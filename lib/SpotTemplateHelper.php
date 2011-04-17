@@ -60,9 +60,9 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		static $skipNewCount = false;
+		static $skipNewCount = $this->_settings->get('count_newspots');
 		
-		if ((!$this->_settings->get('count_newspots')) || ($skipNewCount)) {
+		if ($skipNewCount) {
 			return '';
 		} # if
 		
@@ -265,10 +265,6 @@ class SpotTemplateHelper {
 	} # formatContent
 	
 	function hasbeenDownloaded($spot) {
-		if (!$this->_settings->get('keep_downloadlist')) {
-			return false;
-		} # if
-
 		return ($spot['downloadstamp'] != NULL);
 	} # hasbeenDownloaded
 
