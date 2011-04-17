@@ -274,7 +274,7 @@ class SpotsOverview {
 					
 					# en voeg hem toe aan een strong NOT list (~cat0_d12)
 					$strongNotTmp = explode("_", $dynaList[$i]);
-					$strongNotList[(int) substr($strongNotTmp[0], 3)][] = $strongNotTmp[1];
+					$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
 				} else {
 					$newTreeQuery .= "," . $dynaList[$i];
 				} # else
