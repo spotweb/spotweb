@@ -312,7 +312,6 @@ if (($settings['templates']['autodetect']) &&
 } # else
 
 
-
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
 #
