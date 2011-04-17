@@ -58,7 +58,7 @@ abstract class SpotStruct_abs {
 
 		# commentsfull tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('commentsfull')) {
-			$this->createTable('commentsfull', "CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->createTable('commentsfull', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			
 			$this->addColumn('messageid', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('fromhdr', 'commentsfull', 'VARCHAR(128)');
@@ -100,7 +100,7 @@ abstract class SpotStruct_abs {
 		
 		# settings tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('settings')) {
-			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			
 			$this->addColumn('name', 'settings', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('value', 'settings', 'text');
@@ -121,14 +121,14 @@ abstract class SpotStruct_abs {
 
 			# We veranderen eerst de standaard collation settings zodat we in de toekomst
 			# hier niet al te veel meer op moeten letten
-			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_general_ci");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
 		
 
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
@@ -285,7 +285,7 @@ abstract class SpotStruct_abs {
 
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usersettings')) {
-			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', 'INTEGER DEFAULT 0 NOT NULL');
 			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
@@ -297,7 +297,7 @@ abstract class SpotStruct_abs {
 		
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('users')) {
-			$this->createTable('users', "CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->createTable('users', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('username', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('firstname', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
@@ -331,7 +331,7 @@ abstract class SpotStruct_abs {
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.09)) {
 			# We veranderen eerst de standaard collation settings zodat we in de toekomst
 			# hier niet al te veel meer op moeten letten
-			$this->_dbcon->rawExec("ALTER TABLE users CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->_dbcon->rawExec("ALTER TABLE users CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			
 			# en vervolgens passen we de kolommen aan
 			$this->_dbcon->rawExec("ALTER TABLE users MODIFY username VARCHAR(128) CHARACTER SET utf8 DEFAULT '' NOT NULL");
@@ -343,7 +343,7 @@ abstract class SpotStruct_abs {
 
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usersettings')) {
-			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
