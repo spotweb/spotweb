@@ -232,12 +232,20 @@ function toggleSidebarItem(id) {
 	getSidebarState()
 }
 
-// Geavanceerd zoeken pas zichtbaar maken zodra gebruiker in searcbar typt
+// Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
 $(function(){
 	$("input.searchbox").focus(function(){
-		$("form#filterform .hide").fadeIn("slow");
+		toggleAdvancedSearch()
 	});
 });
+
+function toggleAdvancedSearch() {
+	if($("form#filterform .advanced").is(":visible")) {
+		$("form#filterform .advanced").fadeOut("slow");
+	} else {
+		$("form#filterform .advanced").fadeIn("slow");
+	}
+}
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
 function downloadSabnzbd(id,url) {
