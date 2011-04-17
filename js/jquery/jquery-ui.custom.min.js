@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * jQuery UI 1.8.7
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
