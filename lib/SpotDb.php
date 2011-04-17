@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.13');
+define('SPOTDB_SCHEMA_VERSION', '0.14');
 
 class SpotDb
 {
@@ -547,7 +547,7 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
-								   
+
 		# en voer de query uit. 
 		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag
 		# kunnen zetten.

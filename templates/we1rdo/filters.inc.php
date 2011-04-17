@@ -46,7 +46,7 @@
 
 <?php
 	# Toon geen welkom terug boodschap voor de anonymous user
-	if ($currentSession['user']['userid'] != 1) {
+	if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
 ?>	
                     <h4>User information </h4>
 					<ul class="filterlist logininfobox">
