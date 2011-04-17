@@ -140,7 +140,7 @@ class SpotTemplateHelper {
 	/*
 	 * Geef het volledige URL of path naar Spotweb terug
 	 */
-	function makeBaseUrl($type="full") {
+	function makeBaseUrl($type) {
 		if ($type == "path") {
 			return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH);
 		} else {
@@ -165,7 +165,7 @@ class SpotTemplateHelper {
 		if ($action == 'client-sabnzbd') {
 			return $this->_spotnzb->generateSabnzbdUrl($spot, $action);
 		} else {
-			return $this->makeBaseUrl() . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
+			return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
 		} # else
 	} # makeSabnzbdUrl
 
@@ -194,7 +194,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
-		return $this->makeBaseUrl() . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']);
+		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']);
 	} # makeNzbUrl
 
 	/*
@@ -240,8 +240,8 @@ class SpotTemplateHelper {
 	/*
 	 * Geeft het linkje terug naar ons zelf
 	 */
-	function makeSelfUrl() {
-		return $this->makeBaseUrl("path") . '?' . htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ""));
+	function makeSelfUrl($type) {
+		return $this->makeBaseUrl($type) . htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ""));
 	} # makeSelfUrl
 	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333

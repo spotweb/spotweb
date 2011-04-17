@@ -62,7 +62,7 @@
 <?php
     foreach($quicklinks as $quicklink) {
 ?>
-							<li> <a class="filter <?php echo " " . $quicklink[3]; if ($tplHelper->makeSelfUrl() == $tplHelper->makeBaseUrl() . $quicklink[2]) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
+							<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 							<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if (stripos($quicklink[2], 'New:0') && $tplHelper->getNewCountForFilter($quicklink[2])) { echo "<span class='newspots'>".$tplHelper->getNewCountForFilter($quicklink[2])."</span>"; } ?></a>
 <?php
     }
@@ -78,7 +78,7 @@
 		$newCount = $tplHelper->getNewCountForFilter($strFilter);
 ?>
 						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>>
-						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
 						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter[0]."&quot; zien'>$newCount</span>"; } ?><span class='toggle' title='Filter uitklappen' onclick='toggleFilter(this)'>&nbsp;</span></a>
 <?php
 		if (!empty($filter[4])) {
@@ -87,7 +87,7 @@
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
 				$newSubCount = $tplHelper->getNewCountForFilter($strFilter);
 ?>
-							<li> <a class="filter<?php echo " " . $subFilter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+							<li> <a class="filter<?php echo " " . $subFilter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
 							<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; if ($newSubCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$subFilter[0]."&quot; zien'>$newSubCount</span>"; } ?></a>
 <?php
 				if (!empty($subFilter[4])) {
@@ -96,7 +96,7 @@
 						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
 						$newSub2Count = $tplHelper->getNewCountForFilter($strFilter);
 		?>
-							<li> <a class="filter<?php echo " " . $sub2Filter[3]; if ($tplHelper->makeSelfUrl() == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
+							<li> <a class="filter<?php echo " " . $sub2Filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
 							<img src='<?php echo $sub2Filter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $sub2Filter[0]; if ($newSub2Count) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$sub2Filter[0]."&quot; zien'>$newSub2Count</span>"; } ?></a>
 		<?php
 					} # foreach 

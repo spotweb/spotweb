@@ -4,7 +4,7 @@
     	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 		<title><?php echo $pagetitle?></title>
 <?php if ($settings->get('deny_robots')) { echo "\t\t<meta name=\"robots\" content=\"noindex, nofollow\">\r\n"; } ?>
-		<base href='<?php echo $tplHelper->makeBaseUrl(); ?>'>
+		<base href='<?php echo $tplHelper->makeBaseUrl("full"); ?>'>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
