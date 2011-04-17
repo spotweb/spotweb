@@ -204,6 +204,7 @@
                     <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
                     <div class="advanced">
+                    	<h4><a class="toggle" onclick="toggleAdvancedSearch()" title='Sluit "Advanced Search"'>[x]</a>Advanced search</h4>
                         <ul class="searchmode<?php if ($filterColCount == 3) {echo " short";} ?>">
                             <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
                             <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
