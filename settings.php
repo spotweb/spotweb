@@ -26,7 +26,7 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 
 # Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
 # extensie geinstalleerd hebt
-$settings['openssl_cnf_path'] = "/etc/ssl/openssl.cnf";
+$settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
 
 # Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
 # robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
@@ -104,7 +104,7 @@ $settings['spot_moderation'] = 'act';
 #	* nzbget			- Roep NZBGet aan via HTTP door SpotWeb
 #
 # Settings:
-#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
+#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand), mogelijke parameters: $SABNZBDCAT
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
 #	prepare_action		- Wat moet er gebeuren met NZB's? Mogelijke params: 'merge' en 'zip'
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port

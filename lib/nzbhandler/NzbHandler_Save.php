@@ -23,9 +23,8 @@ class NzbHandler_Save extends NzbHandler_abs
 	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
 	{
 		# $filename, $mimetype not used
-		
 		$filename = $this->makeNzbLocalPath($fullspot, $category, $this->_localDir);
-		
+	
 		# Sla de NZB file op het lokale filesysteem op
 		if (file_put_contents($filename, $nzb) === false)
 		{

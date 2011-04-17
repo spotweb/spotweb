@@ -50,7 +50,7 @@
 ?>	
                     <h4>User information </h4>
 					<ul class="filterlist logininfobox">
-						<li class="info"> Welkom terug <em><?php echo $currentSession['user']['firstname']; ?></em> </li>
+						<li class="info"> Welkom terug <em><?php echo $currentSession['user']['firstname']; ?></em>, je laatste bezoek was <em><?php echo $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit'); ?></em> geleden</li>
 					</ul>
 <?php
     }
