@@ -189,51 +189,55 @@ $().ready(function() {
 function toggleScrolling(state) {
 	if (state == true || state == 'true') {
 		$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
-		$("#filter").css('position', 'fixed');
-		$("#overlay").css('left', '235px');
-		$("#overlay").addClass('small');
+		$('body').addClass('fixed');
 	} else {
 		$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
-		$("#filter").css('position', 'relative');
-		$("#overlay").css('left', '0');
-		$("#overlay").removeClass('small');
+		$('body').removeClass('fixed');
 	}
 }
 
-// Regel het uit/inklappen van sidebar items
-function toggleFilterBlock(linkName,block,cookieName) {
-	$(block).toggle();
-	if ($.cookie(cookieName) == 'none') { var view = 'block'; } else { var view = 'none'; }
-	toggleFilterImage(linkName, view);
-	$.cookie(cookieName, view, { path: '/', expires: 7 });
+// Sidebar items in/uitklapbaar maken
+function getSidebarState() {
+	var data = new Array();
+	$("div#filter > h4").each(function(index) {
+		var state = $(this).next().css("display");
+		data.push({"count": index, "state": state});
+	});	
+	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '/', expires: 7 });
 }
 
-// Cookies uitlezen en aan de hand hiervan sidebar items verbergen / laten zien
 $(function(){
-	var items = {'viewSearch': ['.hide', '#filterform_link'],
-				'viewQuickLinks': ['ul.quicklinks', '#quicklinks_link'],
-				'viewFilters': ['ul.filters', '#filters_link'],
-				'viewMaintenance': ['ul.maintenancebox', '#maintenance_link']
-	};
-	
-	// array doorlopen en actie ondernemen
-	$.each(items, function(key, value) {
-		var theState = $.cookie(key);
-		$(value[0]).css('display', theState);
-		toggleFilterImage(value[1], theState);
+	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
+	if(data == null) {getSidebarState()}
+	$.each(data, function(i, value) {
+		$("div#filter > h4").eq(value.count).next().css("display", value.state);
+		if(value.state != "none") {
+			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("down").addClass("up");
+		} else {
+			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("up").addClass("down");
+		}
 	});
 });
 
-// Wissel background in/uitklap button
-function toggleFilterImage(linkName, state) {
-	if (state == 'none') {
-		$(linkName).removeClass("up");
-		$(linkName).addClass("down");
+function toggleSidebarItem(id) {
+	var hide = $(id).parent().parent().next();
+	
+	if($(hide).is(":visible")) {
+		$(hide).hide();
+		$(id).removeClass("up").addClass("down");
 	} else {
-		$(linkName).removeClass("down");
-		$(linkName).addClass("up");
+		$(hide).show();
+		$(id).removeClass("down").addClass("up");
 	}
+	getSidebarState()
 }
+
+// Geavanceerd zoeken pas zichtbaar maken zodra gebruiker in searcbar typt
+$(function(){
+	$("input.searchbox").focus(function(){
+		$("form#filterform .hide").fadeIn("slow");
+	});
+});
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
 function downloadSabnzbd(id,url) {
@@ -263,9 +267,9 @@ function toggleWatchSpot(spot,action,spot_id) {
 function multinzb() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count == 0) {
-		$('div.notifications').slideUp();
+		$('div.notifications').fadeOut();
 	} else {
-		$('div.notifications').slideDown();
+		$('div.notifications').fadeIn();
 		if(count == 1) {
 			$('span.count').html('Download '+count+' spot');
 		} else {
@@ -277,7 +281,7 @@ function multinzb() {
 
 function uncheckMultiNZB() {
 	$("table.spots input[type=checkbox]").attr("checked", false);
-	$('div.notifications').slideUp();
+	$('div.notifications').fadeOut();
 }
 
 function checkMultiNZB() {
@@ -320,11 +324,11 @@ function toggleFilter(id) {
 	
 	var ul = $(id).parent().next();
 	if($(ul).is(":visible")) {
-		ul.hide(); var state = "none";
+		ul.hide();
 		ul.prev().children("span.toggle").css("background-position", "-90px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter uitklappen");
 	} else {
-		ul.show(); var state = "block";
+		ul.show();
 		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
 	}
