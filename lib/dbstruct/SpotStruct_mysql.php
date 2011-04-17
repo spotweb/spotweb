@@ -111,7 +111,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		if (!$this->indexExists($tablename, $idxname)) {
 			if ($idxType == "UNIQUE") {
 				$this->_dbcon->rawExec("ALTER IGNORE TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . $colList . ");");
-			} else  {
+			} else {
 				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . $colList . ");");
 			}
 		} # if
