@@ -235,7 +235,9 @@ function toggleSidebarItem(id) {
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
 $(function(){
 	$("input.searchbox").focus(function(){
-		toggleAdvancedSearch()
+		if($("form#filterform .advanced").is(":hidden")) {
+			toggleAdvancedSearch()
+		}
 	});
 });
 
