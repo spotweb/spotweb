@@ -2,8 +2,8 @@
 class SpotStruct_mysql extends SpotStruct_abs {
 
 	function createDatabase() {
-		$q = $this->_dbcon->arrayQuery("SHOW TABLES");
-		if (empty($q)) {
+		# spots
+		if (!$this->tableExists('spots')) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										category INTEGER, 
@@ -29,8 +29,10 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_3 ON spots(tag);");
+		} # if
 
-			# spotsfull
+		# spotsfull
+		if (!$this->tableExists('spotsfull')) {
 			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										userid varchar(32),
@@ -42,37 +44,47 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
-			
-			# NNTP table
+		} # if
+		
+		# NNTP table
+		if (!$this->tableExists('nntp')) {
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
 										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+		} # if 
 
-			# commentsxover
+		# commentsxover
+		if (!$this->tableExists('commentsxover')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   nntpref VARCHAR(128) CHARACTER SET ascii,
 										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
+		} # if
 			
-			# downloadlist
+		# downloadlist
+		if (!$this->tableExists('downloadlist')) {
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
+		} # if
 
-			# watchlist
+		# watchlist
+		if (!$this->tableExists('watchlist')) {
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
 												   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 												   dateadded INTEGER,
 												   comment TEXT,
 												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid);");
+		} # if
 			
-			# commentsfull
+		# commentsfull
+		if (!$this->tableExists('commentsfull')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsfull (id INTEGER PRIMARY KEY AUTO_INCREMENT,
 									  messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 									  fromhdr VARCHAR(128),
@@ -84,8 +96,10 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  body TEXT,
 									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid);");
+		} # if
 
-			# settings
+		# settings
+		if (!$this->tableExists('settings')) {
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTO_INCREMENT,
 									  name VARCHAR(128) NOT NULL,
 									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
