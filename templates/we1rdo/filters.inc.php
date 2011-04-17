@@ -1,63 +1,5 @@
-				<div id="filter" class="filter">
-                    <div class="notifications">
-						<?php if ($settings->get('show_multinzb')) { ?>
-                        <p class="multinzb"><span class="count"></span><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"> </a></p>
-                        <?php } ?>
-                    </div>
-                    <h4><span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span><span class="viewState"><a id="filterform_link" onclick="toggleFilterBlock('#filterform_link', '.hide', 'viewSearch')"> </a></span> Zoeken </h4>
-
-					<form id="filterform" action="">
-<?php
-	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
-	if (empty($search['type'])) {
-		$search['type'] = 'Titel';
-	} # if
-?>
-						<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></div>
-<?php
-	$filterColCount = 3;
-	if ($settings->get('retrieve_full')) {
-		$filterColCount++;
-	} # if
-?>
-                        <table class="filters" summary="Filters">
-							<tbody>
-								<tr<?php if ($filterColCount == 3) {echo " class='short'";} ?>> 
-									<td> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label> </td>
-									<td> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label> </td>
-									<td> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label> </td>
-<?php if ($settings->get('retrieve_full')) { ?>
-									<td> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label> </td>
-<?php } ?>									
-								</tr>
-								
-								<tr>
-									<td colspan='<?php echo $filterColCount;?>'><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><span class="filtersubmit"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></span></td>
-								</tr>
-
-								<tr class="unfiltered hide" style="display:none;">
-									<td colspan='<?php echo $filterColCount;?>'> <input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label> </td>
-								</tr>
-							</tbody>
-						</table>
-
-						<div id="tree" class="hide"></div>
-					</form>
-
-<?php
-	# Toon geen welkom terug boodschap voor de anonymous user
-	if ($currentSession['user']['userid'] != 1) {
-?>	
-                    <h4>User information </h4>
-					<ul class="filterlist logininfobox">
-						<li class="info"> Welkom terug <em><?php echo $currentSession['user']['firstname']; ?></em>, je laatste bezoek was <em><?php echo $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit'); ?></em> geleden</li>
-					</ul>
-<?php
-    }
-?>
-
-					
-                    <h4><span class="viewState"><a id="quicklinks_link" onclick="toggleFilterBlock('#quicklinks_link', 'ul.quicklinks', 'viewQuickLinks')"> </a></span> Quick Links </h4>
+				<div id="filter" class="filter">					
+                    <h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Quick Links </h4>
 					<ul class="filterlist quicklinks">
 <?php
     foreach($quicklinks as $quicklink) {
@@ -69,7 +11,7 @@
 ?>
 					</ul>
 					
-                    <h4><span class="viewState"><a id="filters_link" onclick="toggleFilterBlock('#filters_link', 'ul.filters', 'viewFilters')"> </a></span> Filters </h4>
+                    <h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Filters </h4>
                     <ul class="filterlist filters">
 
 <?php
@@ -110,24 +52,16 @@
 ?>
                     </ul>
 
-					<h4><span class="viewState"><a id="maintenance_link" onclick="toggleFilterBlock('#maintenance_link', 'ul.maintenancebox', 'viewMaintenance')"> </a></span> Onderhoud </h4>
+					<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Onderhoud </h4>
 
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
-<?php
-	if ($settings->get('show_updatebutton')) {
-?>
-						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
-<?php
-	}
-?>
-<?php
-	if ($settings->get('keep_downloadlist')) {
-?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
-<?php
-	}
-?>
-						<li> <a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
+<?php if ($settings->get('show_updatebutton')) { ?>
+						<li><a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
+<?php } ?>
+<?php if ($settings->get('keep_downloadlist')) { ?>
+						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
+<?php } ?>
+						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
 					</ul>
 				</div>
