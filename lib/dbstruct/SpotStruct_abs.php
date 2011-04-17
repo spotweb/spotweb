@@ -280,7 +280,7 @@ abstract class SpotStruct_abs {
 		
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
 			$this->dropIndex("idx_downloadlist_1", "downloadlist");
-			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid");
+			$this->addIndex("idx_downloadlist_1", "IGNORE UNIQUE", "downloadlist", "messageid");
 		} # if
 
 		# users tabel aanmaken als hij nog niet bestaat
@@ -292,7 +292,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 
-			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
+			$this->addIndex("idx_usersettings_1", "IGNORE UNIQUE", "usersettings", "userid");
 		} # if usersettings
 		
 		# users tabel aanmaken als hij nog niet bestaat
@@ -308,8 +308,8 @@ abstract class SpotStruct_abs {
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
 			
-			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
-			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
+			$this->addIndex("idx_users_1", "IGNORE UNIQUE", "users", "username");
+			$this->addIndex("idx_users_2", "IGNORE UNIQUE", "users", "mail");
 			$this->addIndex("idx_users_3", "", "users", "mail,deleted");
 		} # if
 		
@@ -322,7 +322,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('hitcount', 'sessions', 'INTEGER');
 			$this->addColumn('lasthit', 'sessions', 'INTEGER');
 
-			$this->addIndex("idx_sessions_1", "UNIQUE", "sessions", "sessionid");
+			$this->addIndex("idx_sessions_1", "IGNORE UNIQUE", "sessions", "sessionid");
 			$this->addIndex("idx_sessions_2", "", "sessions", "lasthit");
 			$this->addIndex("idx_sessions_3", "", "sessions", "sessionid,userid");
 		} # if
@@ -350,7 +350,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
 
-			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
+			$this->addIndex("idx_usersettings_1", "IGNORE UNIQUE", "usersettings", "userid");
 		} # if usersettings
 		
 		# Wis alle users, en maak een nieuwe anonymous user aan
