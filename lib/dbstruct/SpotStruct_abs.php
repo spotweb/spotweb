@@ -360,7 +360,7 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# Wis alle users, en maak een nieuwe anonymous user aan
-		if ($this->_spotdb->getSchemaVer() < 0.13) {
+		if ($this->_spotdb->getSchemaVer() < 0.14) {
 			# wis oude users
 			$this->_dbcon->exec("DELETE FROM users");
 			$this->_dbcon->exec("DELETE FROM usersettings");
@@ -383,6 +383,10 @@ abstract class SpotStruct_abs {
 			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+			
+			# fix de downloadlist en watchlist
+			$this->_dbcon->exec("UPDATE watchlist SET ouruserid = 1");
+			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
 
 		
