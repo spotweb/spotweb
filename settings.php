@@ -26,7 +26,7 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 
 # Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
 # extensie geinstalleerd hebt
-$settings['openssl_cnf_path'] = "/etc/ssl/openssl.cnf";
+$settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
 
 # Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
 # robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
