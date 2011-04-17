@@ -2,9 +2,8 @@
 class SpotStruct_sqlite extends SpotStruct_abs {
 	
 	function createDatabase() {
-		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(spots)");
-		if (empty($q)) {
-			# spots
+		# spots
+		if (!$this->tableExists('spots')) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
 											messageid VARCHAR(128),
 											category INTEGER, 
@@ -28,8 +27,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_5 ON spots(poster);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_6 ON spots(reversestamp);");
+		} # if
 
-			# spotsfull table
+		# spotsfull table
+		if (!$this->tableExists('spotsfull')) {
 			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY, 
 										messageid varchar(128),
 										userid varchar(32),
@@ -43,37 +44,47 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# create indices
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
+		} # if
 
-			# NNTP table
+		# NNTP table
+		if (!$this->tableExists('nntp')) {
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
 										maxarticleid INTEGER UNIQUE,
 										nowrunning INTEGER DEFAULT 0,
 										lastrun INTEGER DEFAULT 0);");
+		} # if
 
-			# commentsxover table
+		# commentsxover table
+		if (!$this->tableExists('commentsxover')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
 										   messageid VARCHAR(128),
 										   nntpref VARCHAR(128),
 										   spotrating INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
+		} # if
 			
-			# downloadlist table
+		# downloadlist table
+		if (!$this->tableExists('downloadlist')) {
 			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
 										   messageid VARCHAR(128),
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid)");
+		} # if
 			
-			# watchlist table
+		# watchlist table
+		if (!$this->tableExists('watchlist')) {
 			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 
 												   messageid VARCHAR(128),
 												   dateadded INTEGER,
 												   comment TEXT,
 												   ouruserid INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid)");
+		} # if
 
-			# commentsfull
+		# commentsfull
+		if (!$this->tableExists('commentsfull')) {
 			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
 									  `id` integer PRIMARY KEY,
 									  `messageid` varchar(128) DEFAULT NULL,
@@ -87,8 +98,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 									  `verified` tinyint(1) DEFAULT NULL)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_2 ON commentsfull(messageid,stamp)");
+		} # if
 
-			# settings
+		# settings
+		if (!$this->tableExists('settings')) {
 			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY,
 									  name VARCHAR(128) NOT NULL,
 									  value TEXT)");
