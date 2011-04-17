@@ -130,27 +130,7 @@ class SpotNzb {
 		return $newTitle;
 	} # cleanForFileSystem
 	
-	/* 
-	 * Genereert het volledige path naar de NZB locatie waar files opgeslagen moeten worden
-	 */
-	function makeNzbLocalPath($spot) {
-		$nzbHandling = $this->_settings->get('nzbhandling');
-		if (empty($nzbHandling['local_dir'])) {
-			throw new InvalidLocalDirException("Unable to save NZB file, local dir is empty");
-		} # if
-		
-		$path = $nzbHandling['local_dir'];
-		$fname = $this->cleanForFileSystem($spot['title']);
-		
-		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
-		if (strpos('\/', $path[strlen($path) - 1]) === false) {
-			$path .= '/';
-		} # if
-		
-		return $path . $fname . '.nzb';
-	} # makeNzbLocalPath
-	
-	
+
 	/* 
 	 * Genereert de URL voor sabnzbd om de spot te adden - dit is niet
 	 * de functie die direct voor een template geschikt is

@@ -104,7 +104,7 @@ $settings['spot_moderation'] = 'act';
 #	* nzbget			- Roep NZBGet aan via HTTP door SpotWeb
 #
 # Settings:
-#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand)
+#   local_dir			- Waar moet de NZB file opgeslagen worden (voor save en runcommand), mogelijke parameters: $SABNZBDCAT
 #	command				- Programma dat uitgevoerd moet worden (bij savecommand), Mogelijke parameters: $SPOTTITLE en $NZBPATH
 #	prepare_action		- Wat moet er gebeuren met NZB's? Mogelijke params: 'merge' en 'zip'
 #	sabnzbd				- host		 - Pas deze aan naar de sabnzbd host plus port
@@ -310,7 +310,6 @@ if (($settings['templates']['autodetect']) &&
 } else {
 	$settings['tpl_path'] = $settings['templates']['default'];
 } # else
-
 
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
