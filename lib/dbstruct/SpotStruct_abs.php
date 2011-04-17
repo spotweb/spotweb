@@ -280,7 +280,7 @@ abstract class SpotStruct_abs {
 		
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
 			$this->dropIndex("idx_downloadlist_1", "downloadlist");
-			$this->addIndex("idx_downloadlist_1", "IGNORE UNIQUE", "downloadlist", "messageid");
+			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid");
 		} # if
 
 		# users tabel aanmaken als hij nog niet bestaat

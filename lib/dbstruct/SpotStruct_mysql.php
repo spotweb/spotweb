@@ -109,6 +109,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($tablename, $idxname)) {
+			if ($idxType == "UNIQUE") { $idxType = "IGNORE UNIQUE"; }
 			$this->_dbcon->rawExec("CREATE " . $idxType . " INDEX " . $idxname . " ON " . $tablename . "(" . $colList . ");");
 		} # if
 	} # addIndex
