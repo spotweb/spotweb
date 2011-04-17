@@ -138,10 +138,14 @@ class SpotTemplateHelper {
 	} # makeSearchUrl
 	
 	/*
-	 * Geef het volledige path naar Spotweb terug
+	 * Geef het volledige URL of path naar Spotweb terug
 	 */
-	function makeBaseUrl() {
-		return $this->_settings->get('spotweburl');
+	function makeBaseUrl($type="full") {
+		if ($type == "path") {
+			return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH);
+		} else {
+			return $this->_settings->get('spotweburl');
+		}
 	} # makeBaseurl
 
 	/*
@@ -169,21 +173,21 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke spot
 	 */
 	function makeSpotUrl($spot) {
-		return $this->makeBaseUrl() . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
+		return $this->makeBaseUrl("path") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
 	} # makeSpotUrl
 
 	/*
 	 * Creeert de action url voor het aanmaken van de user
 	 */
 	function makeCreateUserAction() {
-		return $this->makeBaseUrl() . "?page=createuser";
+		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
 
 	/*
 	 * Creeert de action url voor het inloggen van een user
 	 */
 	function makeLoginAction() {
-		return $this->makeBaseUrl() . "?page=login";
+		return $this->makeBaseUrl("path") . "?page=login";
 	} # makeLoginAction
 
 	/*
@@ -197,35 +201,35 @@ class SpotTemplateHelper {
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
-		return $this->makeBaseUrl() . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width;
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width;
 	} # makeImageUrl
 
 	/*
 	 * Creert een sorteer url
 	 */
 	function makeSortUrl($page, $sortby, $sortdir) {
-		return $this->makeBaseUrl() . '?page=' . $page . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+		return $this->makeBaseUrl("path") . '?page=' . $page . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
 	} # makeSortUrl
 
 	/*
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeSelfUrl() . '&amp;search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
+		return $this->makeSelfUrl("path") . '&amp;search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
 	} # makePosterUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl() . '?search[tree]=&amp;search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
 	} # makeNzbUrl
 	
 	/*
 	 * Creert een basis navigatie pagina
 	 */
 	function getPageUrl($page, $includeParams = false) {
-		$url = $this->makeBaseUrl() . '?page=' . $page;
+		$url = $this->makeBaseUrl("path") . '?page=' . $page;
 		if ($includeParams) {
 			$url .= $this->getQueryParams();
 		} # if
@@ -237,7 +241,7 @@ class SpotTemplateHelper {
 	 * Geeft het linkje terug naar ons zelf
 	 */
 	function makeSelfUrl() {
-		return $this->makeBaseUrl() . '?' . htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ""));
+		return $this->makeBaseUrl("path") . '?' . htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ""));
 	} # makeSelfUrl
 	
 	# Function from http://www.php.net/manual/en/function.filesize.php#99333
