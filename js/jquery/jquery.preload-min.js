@@ -1,4 +1,4 @@
-/**
+﻿/**
  * jQuery.Preload - Multifunctional preloader
  * Copyright (c) 2008 Ariel Flesler - aflesler(at)gmail(dot)com
  * Dual licensed under MIT and GPL.

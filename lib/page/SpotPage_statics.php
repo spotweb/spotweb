@@ -23,7 +23,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		$tmp = '';
 		
 		foreach($files as $file) {
-			$fc = file_get_contents($file) . "\r\n";
+			$fc = file_get_contents($file) . PHP_EOL;
 
 			# ik ben geen fan van regexpen maar in dit scheelt het 
 			# het volledig parsen van de content van de CSS file dus
@@ -53,7 +53,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: Header('Content-Type: text/css'); break;
-			case 'js'		: Header('Content-Type: text/javascript'); break;
+			case 'js'		: Header('Content-Type: application/javascript; charset=utf-8'); break;
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
 		
