@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.12');
+define('SPOTDB_SCHEMA_VERSION', '0.13');
 
 class SpotDb
 {
@@ -154,6 +154,7 @@ class SpotDb
 								u.firstname AS firstname,
 								u.lastname AS lastname,
 								u.mail AS mail,
+								u.deleted AS deleted,
 								u.lastlogin AS lastlogin,
 								u.lastvisit AS lastvisit,
 								s.publickey AS publickey,
@@ -197,7 +198,7 @@ class SpotDb
 										lastlogin = %d,
 										lastvisit = %d,
 										deleted = '%s'
-									WHERE userid = '%s'", 
+									WHERE id = '%s'", 
 					Array($user['firstname'],
 						  $user['lastname'],
 						  $user['mail'],

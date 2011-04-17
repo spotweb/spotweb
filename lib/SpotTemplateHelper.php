@@ -60,9 +60,12 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		static $skipNewCount = false;
+		static $skipNewCount = null;
+		if ($skipNewCount == null) {
+			$this->_settings->get('count_newspots');
+		}# if
 		
-		if ((!$this->_settings->get('count_newspots')) || ($skipNewCount)) {
+		if ($skipNewCount) {
 			return '';
 		} # if
 		
@@ -265,10 +268,6 @@ class SpotTemplateHelper {
 	} # formatContent
 	
 	function hasbeenDownloaded($spot) {
-		if (!$this->_settings->get('keep_downloadlist')) {
-			return false;
-		} # if
-
 		return ($spot['downloadstamp'] != NULL);
 	} # hasbeenDownloaded
 
@@ -464,6 +463,7 @@ class SpotTemplateHelper {
 				case 'comment'		:
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
+				case 'lastvisit'	:
 				default 			: return strftime($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else

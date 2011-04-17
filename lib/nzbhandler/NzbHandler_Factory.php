@@ -9,7 +9,7 @@ class NzbHandler_Factory
 		switch ($action)
 		{
 			case 'disable'			: $handler = new NzbHandler_Disable($settings); break;
-			case 'save	'	  		: $handler = new NzbHandler_Save($settings); break;
+			case 'save'	  			: $handler = new NzbHandler_Save($settings); break;
 			case 'runcommand'		: $handler = new NzbHandler_Runcommand($settings); break;
 			case 'push-sabnzbd' 	: $handler = new NzbHandler_Pushsabnzbd($settings); break;
 			case 'client-sabnzbd' 	: $handler = new NzbHandler_Pushsabnzbd($settings); break;

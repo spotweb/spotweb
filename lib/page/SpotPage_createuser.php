@@ -30,7 +30,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 			unset($this->_createUserForm['submit']);
 			
 			# valideer de user
-			$spotUser = $this->_createUserForm;
+			$spotUser = array_merge($spotUser, $this->_createUserForm);
 			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
 			
 			if (empty($formMessages['errors'])) {

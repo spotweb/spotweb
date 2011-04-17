@@ -1,4 +1,5 @@
 <?php
+define('SPOTWEB_ANONYMOUS_USERID', 1);
 
 class SpotUserSystem {
 	private $_db;
@@ -26,15 +27,24 @@ class SpotUserSystem {
 	 * Creeer een nieuwe session
 	 */
 	function createNewSession($userid) {
+		# Als de user ingelogged is, creeer een sessie
+		$tmpUser = $this->getUser($userid);
+		
+		# Als dit een anonieme user is, of als de user nog nooit
+		# ingelogt heeft dan is het laatste bezoek altijd het 
+		# moment van sessie creatie
+		if (($userid == SPOTWEB_ANONYMOUS_USERID) || ($tmpUser['lastlogin'] == 0)) {
+			$tmpUser['lastvisit'] = time();
+		} else {
+			$tmpUser['lastvisit'] = $tmpUser['lastlogin'];
+		} # if
+
 		# Creer een session record
 		$session = array('sessionid' => $this->generateUniqueId(),
 						 'userid' => $userid,
 						 'hitcount' => 0,
-						 'lasthit' => 0);
+						 'lasthit' => time());
 		$this->_db->addSession($session);
-
-		# Als de user ingelogged is, creeer een sessie
-		$tmpUser = $this->getUser($userid);
 
 		return array('user' => $tmpUser,
 					 'session' => $session);
@@ -74,7 +84,7 @@ class SpotUserSystem {
 			# als er nu nog geen sessie bestaat, creeer dan een nieuwe
 			# anonieme sessie
 			# userid 1 is altijd onze anonymous user
-			$userSession = $this->createNewSession(1);
+			$userSession = $this->createNewSession(SPOTWEB_ANONYMOUS_USERID);
 		} # if
 		
 		# update de sessie cookie zodat die niet spontaan gaat
@@ -103,9 +113,16 @@ class SpotUserSystem {
 		# authenticeer de user?
 		$userId = $this->_db->authUser($user, $password);
 		if ($userId !== false) {
-			# Als de user ingelogged is, creeer een sessie
+			# Als de user ingelogged is, creeer een sessie,
+			# volgorde is hier belangrijk omdat in de newsession
+			# de lastvisit tijd op lastlogon gezet wordt moeten
+			# we eerst de sessie creeeren.
 			$userSession = $this->createNewSession($userId);
 			$this->updateCookie($userSession);
+		
+			# nu gebruiken we het user record om de lastlogin te fixen
+			$userSession['user']['lastlogin'] = time();
+			$this->_db->setUser($userSession['user']);
 			
 			return $userSession;
 		} else {
@@ -113,6 +130,16 @@ class SpotUserSystem {
 		} # else
 	} # login()
 
+	/*
+	 * Reset the lastvisit timestamp
+	 */
+	function resetLastVisit($user) {
+		$user['lastvisit'] = time();
+		$this->_db->setUser($user);
+		
+		return $user;
+	} # resetLastVisit
+	
 	/*
 	 * Controleert een session cookie, en als de sessie geldig
 	 * is, geeft een user record terug
@@ -137,6 +164,18 @@ class SpotUserSystem {
 		# sessie
 		if ($userRecord === false) {
 			return false;
+		} # if
+		
+		#
+		# Controleer nu of we de lastvisit timestamp moeten updaten?
+		# 
+		# Als de lasthit (wordt geupdate bij elke hit) langer dan 15 minuten
+		# geleden is, dan updaten we de lastvisit timestamp naar de lasthit time,
+		# en resetten we daarmee effectief de lastvisit time.
+		#
+		if ($sessionValid['lasthit'] < (time() - 900)) {
+			$userRecord['lastvisit'] = $sessionValid['lasthit'];
+			$this->_db->setUser($userRecord);
 		} # if
 		
 		return array('user' => $userRecord,
