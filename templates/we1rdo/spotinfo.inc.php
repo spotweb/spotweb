@@ -8,7 +8,7 @@
                     	<th class="back"> <a class="closeDetails" title="Ga terug naar het overzicht (esc / u)">&lt;&lt;</a> </th>
                         <th class="category"><span><?php echo $spot['formatname'];?></span></th>
                         <th class="title"><?php echo $spot['title'];?></th>
-                        <th class="nzb"><a target="_blank" class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
+                        <th class="nzb"><a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>
                             <a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} else { echo '&nbsp;';} ?></a>
 <?php } ?></th>
@@ -30,7 +30,7 @@ echo "</th>";
             <table class="spotdetails">
             	<tr>
                 	<td class="img">
-                        <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage" target="_blank">
+                        <a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage">
                             <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
                         </a>
 					</td>
@@ -57,13 +57,13 @@ echo "</th>";
 	} # if
 ?>
                                 <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
-                                <tr><td class="break" colspan="2">&nbsp;   </td> </tr>
-                                <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank"><?php echo $spot['website'];?></a> </td> </tr>
-                                <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
-                                <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
+                                <tr><td class="break" colspan="2">&nbsp;</td> </tr>
+                                <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
+                                <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
+                                <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target="_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
                                 <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
-                                <tr> <td class="break" colspan="2">&nbsp;   </td> </tr>
-                                <tr> <th> Zoekmachine </th> <td> <a target="_blank" href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+                                <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
+                                <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
 <?php if (!empty($spot['nzb'])) { ?>		
                         		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
