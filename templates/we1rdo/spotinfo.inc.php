@@ -86,6 +86,8 @@ echo "</th>";
         <input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
         <script type="text/javascript">
 			$(document).ready(function(){
+				$("a[href^='http']").attr('target','_blank');
+				
 				$("#details").addClass("external");
 				
 				$("a.closeDetails").click(function(){ 
