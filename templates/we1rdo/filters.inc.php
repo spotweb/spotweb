@@ -45,7 +45,7 @@
     
                         <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
     
-                        <div id="tree" class="hide"></div>
+                        <div id="tree"></div>
                     </div>
                 </form>
             </div>
