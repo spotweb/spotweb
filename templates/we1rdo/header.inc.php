@@ -15,7 +15,7 @@
 		$(function(){
 			// Attach the dynatree widget to an existing <div id="tree"> element
 			// and pass the tree options as an argument to the dynatree() function:
-			$("#tree").dynatree({
+			$("div#tree").dynatree({
 				initAjax: { url: "?page=catsjson" },
 			    checkbox: true, // Show checkboxes.
 				persist: false, // Persist expand-status to a cookie
