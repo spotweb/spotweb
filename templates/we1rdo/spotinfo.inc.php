@@ -60,7 +60,7 @@ echo "</th>";
                                 <tr><td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
-                                <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a target="_parent" href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
+                                <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
                                 <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
@@ -79,13 +79,12 @@ echo "</th>";
             </div>
             <div class="comments" id="comments">
             	<h4>Comments <span class="commentcount"># 0</span></h4>
-				<ul id="commentslist">
-				</ul>
+				<ul id="commentslist"></ul>
             </div>
 		</div>
         
         <input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
-        <script>
+        <script type="text/javascript">
 			$(document).ready(function(){
 				$("#details").addClass("external");
 				
