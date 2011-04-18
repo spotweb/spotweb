@@ -92,6 +92,8 @@ echo "</th>";
 					window.close();
 				});
 				
+				$("a[href^='http']").attr('target','_blank');
+				
 				var messageid = $('#messageid').val();
 				loadSpotImage();
 				loadComments(messageid,'5','0');
