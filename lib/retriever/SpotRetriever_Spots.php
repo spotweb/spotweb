@@ -145,6 +145,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# Hier kijken we alleen of de spotheader niet bestaat
 							if (!$header_isInDb) {
 								$this->_db->addSpot($spot);
+
+								# definieer de header als al ontvangen, we moeten ook de 
+								# msgid lijst updaten omdat soms een messageid meerdere 
+								# keren per xover mee komt ...
+								$dbIdList['spot'][$msgId] = 1;
 								$header_isInDb = true;
 								$lastProcessedId = $msgId;
 
