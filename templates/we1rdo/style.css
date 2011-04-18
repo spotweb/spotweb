@@ -54,6 +54,7 @@ body.fixed div#filter {position:fixed; top:25px;}
 
 div.filter h4 {background:url(img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0 0 5px 0; position:relative; overflow:hidden; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; text-shadow:1px 1px #000;}
 div.filter h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0;}
+body.spotinfo div.filter h4:first-child {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
 
 /* NOTIFICATIONS */
 div.notifications {float:right; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:0 0 5px 0; overflow:hidden; display:none; height:25px;}

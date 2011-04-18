@@ -20,6 +20,7 @@ function openSpot(id,url) {
 	$("#overlay").load(url+' #details', function() {
 		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading notrans');
+		$("body").addClass("spotinfo");
 		
 		if($("#overlay").children().size() == 0) {
 			alert("Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht...");
@@ -46,6 +47,7 @@ function openNewWindow() {
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
 	$("div.container").removeClass("hidden").addClass("visible");
+	$("body").removeClass("spotinfo");
 	$("#overlay").hide();
 	$("#details").remove();
 	$(document).scrollTop(scrollLocation);
