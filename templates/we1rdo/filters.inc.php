@@ -52,13 +52,15 @@
                 <div class="sidebarPanel userPanel">
                     <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
                     <ul class="userInfo">
-						<li><?php echo "Gebruiker: " . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname']; ?></li>
-						<li><?php echo "Laatst ingelogd: " . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden"; ?></li>
+						<li><?php echo "Gebruiker: <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
+						<li><?php echo "Laatst gezien: <strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"; ?></li>
 <?php if ($currentSession['user']['userid'] != 1) { ?>
-                        <li><a onclick="userLogout()" class="greyButton">Uitloggen</a></li>
-                  	</ul>
+                    </ul>
+                    <h4>Uitloggen</h4>
+                    <a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
 					</ul>
+                    <h4>Inloggen</h4>
                     <div class="login"></div>
 <?php } ?>
 				</div>
