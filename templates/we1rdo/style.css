@@ -144,7 +144,6 @@ div.spots {margin:0 0 0 235px; padding:0 0 5px 0; min-width:750px; *padding:2px 
 body.fixed div.spots {padding-top:23px;}
 
 table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; *border-collapse:collapse; margin:-2px 0 0 0;}
-table.spots tr.head {position:absolute; top:0; left:0;}
 body.fixed table.spots tr.head {position:fixed; top:23px; left:235px; right:0;}
 
 table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px; cursor:pointer;}
