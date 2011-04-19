@@ -104,11 +104,11 @@
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php if ($settings->get('show_updatebutton')) { ?>
-						<li><a href="retrieve.php?output=xml" id="updatespotsbtn" class="maintenancebtn">Update Spots</a></li>
+						<li><a href="retrieve.php?output=xml" onclick="retrieveSpots()" class="maintenancebtn retrievespots">Update Spots</a></li>
 <?php } ?>
 <?php if ($settings->get('keep_downloadlist')) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" id="removedllistbtn" class="maintenancebtn">Verwijder downloadgeschiedenis</a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="maintenancebtn erasedownloads">Verwijder downloadgeschiedenis</a></li>
 <?php } ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" id="markallasreadbtn" class="maintenancebtn">Markeer alles als gelezen</a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="maintenancebtn markasread">Markeer alles als gelezen</a></li>
 					</ul>
 				</div>

@@ -362,3 +362,40 @@ function toggleFilter(id) {
 	
 	$.cookie("filterVisiblity", JSON.stringify(data), { path: '/', expires: 7 });
 }
+
+// Maintenance buttons
+$(function(){
+	$("ul.maintenancebox a.retrievespots").click(function(){return false});
+	$("ul.maintenancebox a.erasedownloads").click(function(){return false});
+	$("ul.maintenancebox a.markasread").click(function(){return false});
+});
+
+function retrieveSpots() {
+	var url = $("ul.maintenancebox a.retrievespots").attr("href");
+	
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Nieuwe spots binnengehaald") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+function eraseDownloads() {
+	var url = $("ul.maintenancebox a.erasedownloads").attr("href");
+	
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Download geschiedenis verwijderd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+function markAsRead() {
+	var url = $("ul.maintenancebox a.markasread").attr("href");
+	
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Alles als gelezen gemarkeerd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
