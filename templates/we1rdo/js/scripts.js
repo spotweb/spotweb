@@ -308,13 +308,15 @@ function downloadMultiNZB() {
 // Toggle filter visibility
 $(function(){
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
-	$.each(data, function(i, value) {
-		$("ul.filters").children().eq(value.count).children("ul").css("display", value.state);
-		if(value.state == "block") {
-			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
-			$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
-		}
-	});
+	if(data != null) {
+		$.each(data, function(i, value) {
+			$("ul.filters").children().eq(value.count).children("ul").css("display", value.state);
+			if(value.state == "block") {
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+			}
+		});
+	}
 });
 
 function toggleFilter(id) {
