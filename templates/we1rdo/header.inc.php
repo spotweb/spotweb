@@ -59,7 +59,7 @@
 						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						var x = setTimeout( function() { $("li.info").html("History removed") }, 1000);
+						var x = setTimeout( function() { $("li.info").html("Download geschiedenis verwijderd") }, 1000);
 						setTimeout( function() { location.reload() }, 1500);
 					}, // # complete
 					dataType: "xml"
@@ -91,7 +91,7 @@
 						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						var x = $("li.info").html("Updated spots");
+						var x = $("li.info").html("Spots geupdate");
 					}, // # complete
 					dataType: "xml"
 				});
@@ -113,7 +113,7 @@
 						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 					}, // # beforeSend
 					complete: function(jqXHR, textStatus) {
-						var x = setTimeout( function() { $("li.info").html("All marked as read.") }, 1000);
+						var x = setTimeout( function() { $("li.info").html("Alles gemarkeerd als gelezen") }, 1000);
 						setTimeout( function() { location.reload() }, 1500);
 					}, // # complete
 					dataType: "xml"
