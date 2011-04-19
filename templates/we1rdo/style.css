@@ -362,7 +362,7 @@ div#auth {}
 ul.formerrors {margin:0;}
 ul.forminformation {margin:0;}
 
-form.loginform fieldset {padding:0; margin:0;}
-form.loginform dl {}
+form.loginform fieldset {padding:0; margin:0; border:0;}
+form.loginform dl {margin:0;}
 form.loginform dt {}
-form.loginform dd {}
+form.loginform dd {margin:0;}
