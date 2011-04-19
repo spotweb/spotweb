@@ -251,6 +251,12 @@ function toggleSidebarPanel(id) {
 	} else {
 		$(id).fadeIn("slow");
 	}
+	
+	if(id == ".userPanel") {
+		$("div.login").load('?page=login', function() {
+			
+		});
+	}
 }
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)

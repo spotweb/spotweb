@@ -1,4 +1,3 @@
-<div id="auth">
 <?php include "includes/form-messages.inc.php"; ?>
 
 <?php
@@ -21,4 +20,3 @@ if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 <?php
 	}
 ?>
-</div>

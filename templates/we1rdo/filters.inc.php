@@ -57,7 +57,10 @@
 <?php if ($currentSession['user']['userid'] != 1) { ?>
                         <li><a onclick="userLogout()" class="greyButton">Uitloggen</a></li>
                   	</ul>
-<?php } else { echo "</ul>"; include "login.inc.php"; } ?>
+<?php } else { ?>
+					</ul>
+                    <div class="login"></div>
+<?php } ?>
 				</div>
             </div>
 
