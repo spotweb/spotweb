@@ -247,15 +247,13 @@ $(function(){
 
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
-		$(id).fadeOut("slow");
+		$(id).fadeOut();
 	} else {
-		$(id).fadeIn("slow");
+		$(id).fadeIn();
 	}
 	
 	if(id == ".userPanel") {
-		$("div.login").load('?page=login', function() {
-			
-		});
+		$("div.login").load('?page=login');
 	}
 }
 
@@ -295,7 +293,6 @@ function multinzb() {
 		} else {
 			$('span.count').html('Download '+count+' spots');
 		}
-		
 	}
 }
 
@@ -410,8 +407,10 @@ function markAsRead() {
 function userLogout() {
 	var url = '?page=logout';
 	
+	$("div.userPanel > a.greyButton").hide();
+	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("Succesvol uitgelogd") }, 1000);
+		setTimeout( function() { $("span.info").html("Succesvol uitgelogd") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
