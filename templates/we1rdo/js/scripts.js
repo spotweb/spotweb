@@ -253,7 +253,35 @@ function toggleSidebarPanel(id) {
 	}
 	
 	if(id == ".userPanel") {
-		$("div.login").load('?page=login');
+		$("div.login").load('?page=login', function() {
+			$('form.loginform').submit(function(){ 
+				var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
+				var username = $("form.loginform input[name='loginform[username]']").val();
+				var password = $("form.loginform input[name='loginform[password]']").val();
+			
+				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
+				
+				$.ajax({
+					type: "POST",
+					url: "/spotwebdev/?page=login",
+					data: dataString,
+					success: function(data) {
+						html = $(data+" > ul.formerrors").children("li").html();
+						
+						$("div.userPanel span.info").remove();
+						$("div.userPanel > div.login").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
+						if(html == "Logon failed") {
+							setTimeout( function() { $("span.info").html("Inloggen mislukt") }, 1000);
+						} else {
+							setTimeout( function() { $("span.info").html("Succesvol ingelogd") }, 1000);
+							setTimeout( function() { location.reload() }, 2000);
+						}
+					}
+				});
+				
+				return false;
+			});	
+		});
 	}
 }
 
