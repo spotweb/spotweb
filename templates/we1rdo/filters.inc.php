@@ -7,9 +7,9 @@
 
 <?php
 	# Toon geen welkom terug boodschap voor de anonymous user
-	if ($currentSession['user']['userid'] != 1) {
+	if ($currentSession['user']['userid'] != 0) { # DEBUG CODE! Anonymous userid = 1 != 0
 ?>	
-                <div class="logininfo"><p><span class="user" title="Laatst gezien: <?php echo $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit'); ?> geleden"><?php echo $currentSession['user']['firstname']; ?></span></p></div>
+                <div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'><?php echo $currentSession['user']['firstname']; ?></a></p></div>
 <?php
     }
 ?>
@@ -32,8 +32,8 @@
 ?>
                     <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
-                    <div class="advanced">
-                    	<h4><a class="toggle" onclick="toggleAdvancedSearch()" title='Sluit "Advanced Search"'>[x]</a>Advanced search</h4>
+                    <div class="sidebarPanel advancedSearch">
+                    	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Advanced search</h4>
                         <ul class="searchmode<?php if ($filterColCount == 3) {echo " short";} ?>">
                             <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
                             <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
@@ -48,6 +48,17 @@
                         <div id="tree"></div>
                     </div>
                 </form>
+                
+                <div class="sidebarPanel userPanel">
+                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
+                    <ul class="userInfo">
+						<li><?php echo "Gebruiker: " . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname']; ?></li>
+						<li><?php echo "Laatst ingelogd: " . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden"; ?></li>
+<?php if ($currentSession['user']['userid'] != 1) { ?>
+                        <li><a onclick="userLogout()" class="greyButton">Uitloggen</a></li>
+                  	</ul>
+<?php } else { echo "</ul>"; include "login.inc.php"; } ?>
+				</div>
             </div>
 
             <div id="filter" class="filter">					
@@ -104,11 +115,11 @@
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
 <?php if ($settings->get('show_updatebutton')) { ?>
-						<li><a href="retrieve.php?output=xml" onclick="retrieveSpots()" class="maintenancebtn retrievespots">Update Spots</a></li>
+						<li><a href="retrieve.php?output=xml" onclick="retrieveSpots()" class="greyButton retrievespots">Update Spots</a></li>
 <?php } ?>
 <?php if ($settings->get('keep_downloadlist')) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="maintenancebtn erasedownloads">Verwijder downloadgeschiedenis</a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads">Verwijder downloadgeschiedenis</a></li>
 <?php } ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="maintenancebtn markasread">Markeer alles als gelezen</a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread">Markeer alles als gelezen</a></li>
 					</ul>
 				</div>

@@ -239,17 +239,17 @@ function toggleSidebarItem(id) {
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
 $(function(){
 	$("input.searchbox").focus(function(){
-		if($("form#filterform .advanced").is(":hidden")) {
-			toggleAdvancedSearch()
+		if($("form#filterform .advancedSearch").is(":hidden")) {
+			toggleSidebarPanel('.advancedSearch')
 		}
 	});
 });
 
-function toggleAdvancedSearch() {
-	if($("form#filterform .advanced").is(":visible")) {
-		$("form#filterform .advanced").fadeOut("slow");
+function toggleSidebarPanel(id) {
+	if($(id).is(":visible")) {
+		$(id).fadeOut("slow");
 	} else {
-		$("form#filterform .advanced").fadeIn("slow");
+		$(id).fadeIn("slow");
 	}
 }
 
@@ -396,6 +396,16 @@ function markAsRead() {
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("Alles als gelezen gemarkeerd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+// User systeem
+function userLogout() {
+	var url = '?page=logout';
+	
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Succesvol uitgelogd") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
