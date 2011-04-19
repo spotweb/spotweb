@@ -9,8 +9,6 @@
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
-
-		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function(){
 			// Attach the dynatree widget to an existing <div id="tree"> element
