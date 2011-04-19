@@ -3,7 +3,7 @@
 ?>
             <div class="spots">
 				<table class="spots" summary="Spots">
-					<thead>
+                    <tbody id="spots">
                         <tr class="head">
                             <th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
                             <th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
@@ -13,11 +13,11 @@
                             if ($settings->get('retrieve_comments')) {
                                 echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
                             } # if ?>
-                            <th class='genre'> Genre </th> 
-                            <th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
-                            <th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
+                        	<th class='genre'> Genre </th> 
+                        	<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
+                        	<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
 <?php if ($settings->get('show_nzbbutton')) { ?>
-							<th class='nzb'> NZB </th>
+                        	<th class='nzb'> NZB </th>
 <?php } ?>
 <?php if ($settings->get('show_multinzb') && !count($spots) == 0) { ?>
                             <th class='multinzb'> 
@@ -27,11 +27,9 @@
                             </th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
-							<th class='sabnzbd'> SAB </th>
+                        	<th class='sabnzbd'> SAB </th>
 <?php } ?>						
-						</tr>
-					</thead>
-                    <tbody id="spots">
+                    	</tr>
 <?php
 	if (count($spots) == 0) {
 		$colSpan = 5;
