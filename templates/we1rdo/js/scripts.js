@@ -457,11 +457,12 @@ function toggleCreateUser() {
 		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
 		$("div.createUser").hide();
 	} else {
-		if($("div.createUser")) {$("div.createUser").show().html()}
-		$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
-		$("div.userPanel h4.dropDown").css("margin", "0");
-		
+		if($("div.createUser")) {$("div.createUser").html()}		
 		$("div.createUser").load(url, function() {
+			$("div.createUser").show();
+			$("div.userPanel h4.dropDown").css("margin", "0");
+			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+			
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
 				var username = $("form.createuserform input[name='createuserform[username]']").val();
@@ -469,7 +470,7 @@ function toggleCreateUser() {
 				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
 				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
 				
-				var url = $("form.loginform").attr("action");
+				var url = $("form.createuserform").attr("action");
 				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
 				
 				$.ajax({
