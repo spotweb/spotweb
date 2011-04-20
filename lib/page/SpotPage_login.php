@@ -15,6 +15,9 @@ class SpotPage_login extends SpotPage_Abs {
 		# de waardes van het form kan renderen
 		$credentials = array('username' => '',
 						  'password' => '');
+
+		# login verzoek was standaard niet geprobeerd
+		$loginResult = '';
 		
 		# Instantieer het Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
@@ -32,21 +35,22 @@ class SpotPage_login extends SpotPage_Abs {
 			
 			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
 			if (!$tryLogin) {
-				$formMessages['errors'] = array('Logon failed');
+				$loginResult = 'failure';
 			} else {
-				$formMessages['info'] = array('Logon succesful');
+				$loginResult = 'success';
 				$this->_currentSession = $tryLogin;
 			} # else
 		} else {
 			# Als de user al een sessie heeft, voeg een waarschuwing toe
 			if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
-				$formMessages['errors'][] = 'User is al ingelogged';
+				$loginResult = 'alreadyloggedin';
 			} # if
 		} # else
 		
 		#- display stuff -#
 		$this->template('login', array('loginform' => $credentials,
-									   'formmessages' => $formMessages));
+									   'formmessages' => $formMessages,
+									   'loginresult' => $loginResult));
 	} # render
 	
 } # class SpotPage_login
