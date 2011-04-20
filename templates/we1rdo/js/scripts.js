@@ -212,7 +212,10 @@ function getSidebarState() {
 
 $(function(){
 	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
-	if(data == null) {getSidebarState()}
+	if(data == null) {
+		getSidebarState();
+		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
+	}
 	$.each(data, function(i, value) {
 		$("div#filter > h4").eq(value.count).next().css("display", value.state);
 		if(value.state != "none") {
