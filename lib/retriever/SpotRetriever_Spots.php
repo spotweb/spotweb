@@ -81,13 +81,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$modCount = 0;
 			$skipCount = 0;
 			$lastProcessedId = '';
-			
+
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
 #var_dump($hdrList);
 
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
+			
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);
@@ -111,6 +112,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 
+													
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
@@ -206,7 +208,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} # if retrievefull
 				} # if fullspot is not in db yet
 			} # foreach
-
 
 			if (count($hdrList) > 0) {
 				$this->displayStatus("hdrparsed", $hdrsRetrieved);
