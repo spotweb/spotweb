@@ -276,8 +276,8 @@ function toggleSidebarPanel(id) {
 						$("div.userPanel span.info").remove();
 						$("div.userPanel > div.login").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 						if(result == "failure") {
-							setTimeout( function() { $("span.info").html("Inloggen mislukt") }, 1000);
-							setTimeout( function() { $("span.info").slideUp() }, 4000);
+							setTimeout( function() { $("span.info").html("Inloggen mislukt").css("color", "#ff0000") }, 1000);
+							setTimeout( function() { $("span.info").fadeOut() }, 4000);
 						} else {
 							setTimeout( function() { $("span.info").html("Succesvol ingelogd") }, 1000);
 							setTimeout( function() { location.reload() }, 2000);
@@ -447,4 +447,53 @@ function userLogout() {
 		setTimeout( function() { $("span.info").html("Succesvol uitgelogd") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
+}
+
+function toggleCreateUser() {
+	var url = '?page=createuser';
+	
+	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
+		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.createUser").hide();
+	} else {
+		if($("div.createUser")) {$("div.createUser").show().html()}
+		$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+		$("div.userPanel h4.dropDown").css("margin", "0");
+		
+		$("div.createUser").load(url, function() {
+			$('form.createuserform').submit(function(){ 
+				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
+				var username = $("form.createuserform input[name='createuserform[username]']").val();
+				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
+				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
+				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
+				
+				var url = $("form.loginform").attr("action");
+				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
+				
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "xml",
+					data: dataString,
+					success: function(xml) {
+						result = $(xml).find('result').text();
+	
+						$("div.userPanel span.createUserInfo").remove();
+						$("div.userPanel > form.createuserform").before("<span class='createUserInfo info'><img src='templates/we1rdo/img/loading.gif' /></span>");
+						if(result == "failure") {
+							setTimeout( function() { $("span.createUserInfo").html("Gebruiker toevoegen mislukt").css("color", "#ff0000") }, 1000);
+							setTimeout( function() { $("span.createUserInfo").fadeOut() }, 4000);
+						} else {
+							setTimeout( function() { $("span.createUserInfo").html("Gebruiker &quot;"+username+"&quot; succesvol toegevoegd") }, 1000);
+							setTimeout( function() { location.reload() }, 2000);
+						}
+					}
+				});
+				
+				return false;
+			});	
+		});
+	}
 }
