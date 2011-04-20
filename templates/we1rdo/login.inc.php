@@ -1,7 +1,11 @@
-<?php include "includes/form-messages.inc.php"; ?>
-
 <?php
-if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+if (!empty($loginresult)) {
+	echo '<xml><result>' . $loginresult . '</result></xml>';
+} # if
+
+if (($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) && (empty($loginresult))) {
+	include "includes/form-messages.inc.php"; 
+
 ?>
     <form class="loginform" name="loginform" action="<?php echo $tplHelper->makeLoginAction(); ?>" method="post">
     	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
