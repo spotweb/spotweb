@@ -273,6 +273,7 @@ function toggleSidebarPanel(id) {
 						$("div.userPanel > div.login").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 						if(html == "Logon failed") {
 							setTimeout( function() { $("span.info").html("Inloggen mislukt") }, 1000);
+							setTimeout( function() { $("span.info").slideUp() }, 4000);
 						} else {
 							setTimeout( function() { $("span.info").html("Succesvol ingelogd") }, 1000);
 							setTimeout( function() { location.reload() }, 2000);
