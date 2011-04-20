@@ -258,12 +258,13 @@ function toggleSidebarPanel(id) {
 				var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
 				var username = $("form.loginform input[name='loginform[username]']").val();
 				var password = $("form.loginform input[name='loginform[password]']").val();
-			
+				
+				var url = $("form.loginform").attr("action");
 				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
 				
 				$.ajax({
 					type: "POST",
-					url: "/spotwebdev/?page=login",
+					url: url,
 					data: dataString,
 					success: function(data) {
 						html = $(data+" > ul.formerrors").children("li").html();
