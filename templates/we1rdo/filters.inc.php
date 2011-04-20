@@ -54,12 +54,15 @@
                     <ul class="userInfo">
 						<li><?php echo "Gebruiker: <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
 						<li><?php echo "Laatst gezien: <strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"; ?></li>
-<?php if ($currentSession['user']['userid'] != 1) { ?>
                     </ul>
+                    
+                    <h4 class="dropDown"><span class="viewState"><a class="down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
+                    <div class="createUser"></div>
+                    
+<?php if ($currentSession['user']['userid'] != 1) { ?>
                     <h4>Uitloggen</h4>
                     <a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
-					</ul>
                     <h4>Inloggen</h4>
                     <div class="login"></div>
 <?php } ?>
