@@ -10,6 +10,7 @@ div.container.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overf
 .greyButton:focus,
 .greyButton:hover {background-position:0 -20px;}
 
+input {outline:none;}
 div.clear {clear:both;}
 
 /* TOOLBAR */
