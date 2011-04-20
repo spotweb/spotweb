@@ -316,7 +316,8 @@ class SpotDb
 		} # if
 		
 		$tempMsgIdList = array();
-		for($i = 0; $i < count($msgIds); $i++) {
+		$msgIdCount = count($msgIds);
+		for($i = 0; $i < $msgIdCount; $i++) {
 			$tempMsgIdList['<' . $msgIds[$i]['messageid'] . '>'] = 1;
 		} # for
 		return $tempMsgIdList;
@@ -724,7 +725,8 @@ class SpotDb
 		
 		# en vraag de comments daadwerkelijk op
 		$commentList = $this->_conn->arrayQuery("SELECT messageid, fromhdr, stamp, usersignature, userkey as \"user-key\", userid, body, verified FROM commentsfull WHERE messageid IN (" . $msgIdList . ")", array());
-		for($i = 0; $i < count($commentList); $i++) {
+		$commentListCount = count($commentList);
+		for($i = 0; $i < $commentListCount; $i++) {
 			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
 			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 		} # foreach
