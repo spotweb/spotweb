@@ -24,8 +24,8 @@ span.scroll input#filterscroll:checked + label {background:url(img/sprite.png) n
 
 form#filterform {margin:0 0 0 30px; padding:2px 0; width:205px;}
 form#filterform div.search {background:url(img/sprite_x.png) repeat-x 0 -105px; border:1px solid #b5b5b5; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; width:203px; float:left;}
-form#filterform div.search input.searchbox {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; padding:2px 0 2px 4px; width:178px; height:14px; text-shadow:1px 1px #000;}
-form#filterform div.search input.filtersubmit {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; font-weight:bold; padding:1px 3px 1px 0; margin:0; cursor:pointer; float:right; width:20px;}
+form#filterform div.search input.searchbox {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; padding:2px 0 2px 4px; width:176px; height:14px; text-shadow:1px 1px #000;}
+form#filterform div.search input.filtersubmit {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; font-weight:bold; padding:0 3px 0 0; margin:0; cursor:pointer; float:right; min-width:20px; height:18px; display:block;}
 
 div.sidebarPanel {display:none; position:absolute; left:0; top:25px; bottom:0; width:235px; background:#fff; z-index:1;}
 body.fixed div.sidebarPanel {position:fixed;}
