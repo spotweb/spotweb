@@ -70,8 +70,8 @@ div.notifications p.multinzb a.clear {float:left; display:block; width:20px; hei
 div.notifications p.multinzb a.button {cursor:pointer; margin:0 7px 0 0; color:#fff; text-decoration:underline;}
 
 /* ZOEKEN */
-h4 span.viewState {position:absolute; top:3px; right:4px; display:block; height:14px; background-color:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; overflow:hidden;}
-h4 span.viewState a {display:block; width:17px; height:14px; line-height:normal; cursor:pointer; background:#333;}
+h4 span.viewState {position:absolute; top:3px; right:4px; display:block; height:14px;}
+h4 span.viewState a {display:block; width:17px; height:14px; line-height:normal; cursor:pointer; background:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 h4 span.viewState a.up {background:#333 url(img/sprite.png) no-repeat 0 -80px;}
 h4 span.viewState a.down {background:#333 url(img/sprite.png) no-repeat -17px -80px;}
 
