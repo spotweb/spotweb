@@ -361,7 +361,7 @@ ul.userInfo {margin:0; padding:0 0 10px 0;}
 ul.userInfo li {line-height:20px; list-style:none; padding:0 5px;}
 div.userPanel a.greyButton {margin:10px 12px 0 12px;}
 
-div.userPanel span.info {display:block; text-align:center; margin:12px 0 0 0;}
+div.userPanel span.info {display:block; text-align:center; margin:12px 0 0 0; line-height:16px;}
 div.userPanel span.info img {display:block; margin:0 auto;}
 
 ul.formerrors,
