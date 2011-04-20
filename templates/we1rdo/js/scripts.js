@@ -265,13 +265,14 @@ function toggleSidebarPanel(id) {
 				$.ajax({
 					type: "POST",
 					url: url,
+					dataType: "xml",
 					data: dataString,
-					success: function(data) {
-						html = $(data+" > ul.formerrors").children("li").html();
-						
+					success: function(xml) {
+						result = $(xml).find('result').text();
+
 						$("div.userPanel span.info").remove();
 						$("div.userPanel > div.login").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
-						if(html == "Logon failed") {
+						if(result == "failure") {
 							setTimeout( function() { $("span.info").html("Inloggen mislukt") }, 1000);
 							setTimeout( function() { $("span.info").slideUp() }, 4000);
 						} else {
