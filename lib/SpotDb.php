@@ -514,15 +514,16 @@ class SpotDb
 		
 
 	/*
-	 * Geef alle spots terug in de database die aan $criteriaFilter voldoen.
+	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
 	 * 
 	 */
-	function getSpots($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch, $sort, $getFull) {
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
 		# je hebt de zoek criteria (category, titel, etc)
+		$criteriaFilter = $parsedSearch['filter'];
 		if (!empty($criteriaFilter)) {
 			$criteriaFilter = ' WHERE ' . $criteriaFilter;
 		} # if 

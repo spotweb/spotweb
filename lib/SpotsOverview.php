@@ -134,10 +134,11 @@ class SpotsOverview {
 	/*
 	 * Laad de spots van af positie $stat, maximaal $limit spots.
 	 *
-	 * $sqlfilter is een kant en klaar SQL statement waarmee de spotweb
-	 * filter ingesteld wordt;
+	 * $parsedSearch is een array met velden, filters en sorteringen die 
+	 * alles bevat waarmee SpotWeb kan filteren. De hierin sorteringen worden
+	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
-	function loadSpots($ourUserId, $start, $limit, $sqlFilter, $sort) {
+	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
 		if (array_search($sort['field'], $sortFields) === false) {
@@ -151,7 +152,7 @@ class SpotsOverview {
 		} # else
 
 		# en haal de daadwerkelijke spots op
-		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $sqlFilter, $sort, false);
+		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, $sort, false);
 		$spotCnt = count($spotResults['list']);
 
 		for ($i = 0; $i < $spotCnt; $i++) {
@@ -177,11 +178,13 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery(&$search) {
+	function filterToQuery($search) {
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
 		$strongNotList = array();
 		$dyn2search = array();
+		$additionalFields = array();
+		$sortFields = array();
 
 		# dont filter anything
 		if (empty($search)) {
@@ -361,7 +364,13 @@ class SpotsOverview {
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
-					$textSearch[] = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
+					$textQueryStr = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
+					$textSearch[] = $textQueryStr;
+					
+					# We voegen deze extended textqueryies toe aan de filterlist als
+					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
+					# wat het net wat interessanter maakt
+					## FIXME ##
 				} # if
 			} else {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
@@ -450,7 +459,10 @@ class SpotsOverview {
 		} # if
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
-		return join(" AND ", $endFilter);
+		return array('filter' => join(" AND ", $endFilter),
+					 'search' => $search,
+					 'additionalFields' => $additionalFields,
+					 'sortFields' => $sortFields);
 	} # filterToQuery
 	
 	
