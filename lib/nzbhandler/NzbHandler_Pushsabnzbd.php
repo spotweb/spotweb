@@ -31,6 +31,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		# yes, using a local variable instead of the member variable is intentional		
 		$url = str_replace('$SPOTTITLE', $title, $this->_url);
 		$url = str_replace('$SANZBDCAT', $category, $url);
+		$url = str_replace('$SABNZBDCAT', $category, $url);
 
 		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
 		# equivalent to <input type="file" name="nzbfile"/>

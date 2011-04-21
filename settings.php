@@ -123,7 +123,7 @@ $settings['nzbhandling']['command'] = '';
 $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
 $settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
-$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
+$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SABNZBDCAT&apikey=$APIKEY&output=text';
 $settings['nzbhandling']['nzbget'] = array();
 $settings['nzbhandling']['nzbget']['host'] = '127.0.0.1';
 $settings['nzbhandling']['nzbget']['port'] = '6789';
