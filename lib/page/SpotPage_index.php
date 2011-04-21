@@ -17,7 +17,11 @@ class SpotPage_index extends SpotPage_Abs {
 	function render() {
 		SpotTiming::start(__FUNCTION__);
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$filter = $spotsOverview->filterToQuery($this->_params['search']);
+		
+		# Zet the query parameters om naar een lijst met filters, velden,
+		# en sorteringen etc
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search']);
+		$this->_params['search'] = $parsedSearch['search'];
 		
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
@@ -42,7 +46,7 @@ class SpotPage_index extends SpotPage_Abs {
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 							$pageNr, $this->_currentSession['user']['prefs']['perpage'],
-							$filter,
+							$parsedSearch,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 
