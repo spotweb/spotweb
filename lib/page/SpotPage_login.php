@@ -17,7 +17,7 @@ class SpotPage_login extends SpotPage_Abs {
 						  'password' => '');
 
 		# login verzoek was standaard niet geprobeerd
-		$loginResult = '';
+		$loginResult = array();
 		
 		# Instantieer het Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
@@ -35,15 +35,15 @@ class SpotPage_login extends SpotPage_Abs {
 			
 			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
 			if (!$tryLogin) {
-				$loginResult = 'failure';
+				$loginResult = array('result' => 'failure');
 			} else {
-				$loginResult = 'success';
+				$loginResult = array('result '=> 'success');
 				$this->_currentSession = $tryLogin;
 			} # else
 		} else {
 			# Als de user al een sessie heeft, voeg een waarschuwing toe
 			if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
-				$loginResult = 'alreadyloggedin';
+				$loginResult = array('result' => 'alreadyloggedin');
 			} # if
 		} # else
 		
