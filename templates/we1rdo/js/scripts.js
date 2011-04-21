@@ -272,19 +272,16 @@ function toggleSidebarPanel(id) {
 					data: dataString,
 					success: function(xml) {
 						result = $(xml).find('result').text();
-
-						$("div.userPanel span.info").remove();
-						$("div.userPanel > div.login").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
+						
+						$("div.login ul.formerrors > li").empty()
 						if(result == "failure") {
-							setTimeout( function() { $("span.info").html("Inloggen mislukt").css("color", "#ff0000") }, 1000);
-							setTimeout( function() { $("span.info").fadeOut() }, 4000);
+							$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
 						} else {
-							setTimeout( function() { $("span.info").html("Succesvol ingelogd") }, 1000);
+							$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
 							setTimeout( function() { location.reload() }, 2000);
 						}
 					}
 				});
-				
 				return false;
 			});	
 		});
@@ -474,20 +471,21 @@ function toggleCreateUser() {
 					dataType: "xml",
 					data: dataString,
 					success: function(xml) {
-						result = $(xml).find('result').text();
-	
-						$("div.userPanel span.createUserInfo").remove();
-						$("div.userPanel > form.createuserform").before("<span class='createUserInfo info'><img src='templates/we1rdo/img/loading.gif' /></span>");
-						if(result == "failure") {
-							setTimeout( function() { $("span.createUserInfo").html("Gebruiker toevoegen mislukt").css("color", "#ff0000") }, 1000);
-							setTimeout( function() { $("span.createUserInfo").fadeOut() }, 4000);
+						var result = $(xml).find('result').text();
+						
+						$("div.createUser > ul.formerrors").empty();
+						if(result == "success") {
+							var user = $(xml).find('user').text();
+							var pass = $(xml).find('password').text();
+							$("div.createUser > ul.forminformation").append("<li>Gebruiker <strong>&quot;"+user+"&quot;</strong> succesvol toegevoegd</li>");
+							$("div.createUser > ul.forminformation").append("<li>Wachtwoord: <strong>&quot;"+pass+"&quot;</strong></li>");
 						} else {
-							setTimeout( function() { $("span.createUserInfo").html("Gebruiker &quot;"+username+"&quot; succesvol toegevoegd") }, 1000);
-							setTimeout( function() { location.reload() }, 2000);
+							$('errors', xml).each(function() {
+								$("div.createUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
+							});
 						}
 					}
 				});
-				
 				return false;
 			});	
 		});

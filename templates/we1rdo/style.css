@@ -368,7 +368,11 @@ div.userPanel span.info {display:block; text-align:center; margin:12px 0 0 0; li
 div.userPanel span.info img {display:block; margin:0 auto;}
 
 ul.formerrors,
-ul.forminformation {margin:0;}
+ul.forminformation {margin:0; padding:0; list-style:none;}
+ul.formerrors li {padding:0 5px; line-height:20px; color:#ff0000;}
+ul.forminformation li {padding:0 5px; line-height:20px; color:#00AB00;}
+ul.formerrors li:first-child,
+ul.forminformation li:first-child {padding-top:2px;}
 
 div.userPanel form fieldset {padding:0 5px 0 5px; margin:0; border:0;}
 div.userPanel form dl {margin:0;}
