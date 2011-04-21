@@ -1,7 +1,10 @@
 <?php
 /* Externe library */
-require_once "lib/ubb/ubbparse.php";
+require_once 'lib/ubb/ubbparse.php';
 require_once 'lib/ubb/taghandler.inc.php';
+
+/* nog een externe library */
+require_once 'lib/linkify/linkify.php';
 
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
@@ -51,9 +54,9 @@ class SpotTemplateHelper {
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$sqlFilter = $spotsOverview->filterToQuery($query_params['search']);
+		$parsedSearch = $spotsOverview->filterToQuery($query_params['search']);
 		
-		return $this->getSpotCount($sqlFilter);
+		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
 
 	/*
@@ -256,6 +259,9 @@ class SpotTemplateHelper {
 
 	
 	function formatContent($tmp) {
+		# Converteer urls naar links
+		$tmp = linkify($tmp);
+		
 		# initialize ubb parser
 		$parser = new UbbParse($tmp);
 		TagHandler::setDeniedTags( Array() );

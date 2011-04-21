@@ -87,13 +87,13 @@ echo "</th>";
         <script type="text/javascript">
 			$(document).ready(function(){
 				$("#details").addClass("external");
-				
+
+				$("a[href^='http']").attr('target','_blank');
+
 				$("a.closeDetails").click(function(){ 
 					window.close();
 				});
-				
-				$("a[href^='http']").attr('target','_blank');
-				
+
 				var messageid = $('#messageid').val();
 				loadSpotImage();
 				loadComments(messageid,'5','0');

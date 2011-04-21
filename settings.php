@@ -19,7 +19,7 @@ $settings['nntp_hdr']['port'] = 119;
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
-	$settings['spotweburl'] = (strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https') === FALSE ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' ? dirname($_SERVER['PHP_SELF']). '/' : '/');
+    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
 } else {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
@@ -123,7 +123,7 @@ $settings['nzbhandling']['command'] = '';
 $settings['nzbhandling']['sabnzbd'] = array();
 $settings['nzbhandling']['sabnzbd']['host'] = '192.168.10.122:8081';
 $settings['nzbhandling']['sabnzbd']['apikey'] = 'xxx';
-$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SANZBDCAT&apikey=$APIKEY&output=text';
+$settings['nzbhandling']['sabnzbd']['url'] = 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SABNZBDCAT&apikey=$APIKEY&output=text';
 $settings['nzbhandling']['nzbget'] = array();
 $settings['nzbhandling']['nzbget']['host'] = '127.0.0.1';
 $settings['nzbhandling']['nzbget']['port'] = '6789';

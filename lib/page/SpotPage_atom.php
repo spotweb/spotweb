@@ -10,14 +10,18 @@ class SpotPage_atom extends SpotPage_Abs {
 
 	function render() {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$filter = $spotsOverview->filterToQuery($this->_params['search']);
-		$pageNr = $this->_params['page'];
 
+		# Zet the query parameters om naar een lijst met filters, velden,
+		# en sorteringen etc
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search']);
+		$this->_params['search'] = $parsedSearch['search'];
+		
 		# laad de spots
+		$pageNr = $this->_params['page'];
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 							$pageNr, 
 							$this->_currentSession['user']['prefs']['perpage'],
-							$filter,
+							$parsedSearch,
 							array('field' => $this->_params['sortby'], 
 								  'direction' => $this->_params['sortdir']));
 		

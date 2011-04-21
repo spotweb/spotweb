@@ -67,6 +67,7 @@ abstract class NzbHandler_abs
 	{
 		# add category to path als dat gevraagd is
 		$path = str_replace('$SANZBDCAT', $this->cleanForFileSystem($category), $path);
+		$path = str_replace('$SABNZBDCAT', $this->cleanForFileSystem($category), $path);
 
 		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
 		$path = $this->addTrailingSlash($path);
