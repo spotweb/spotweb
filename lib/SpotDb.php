@@ -521,7 +521,7 @@ class SpotDb
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
-
+		
 		# je hebt de zoek criteria (category, titel, etc)
 		$criteriaFilter = $parsedSearch['filter'];
 		if (!empty($criteriaFilter)) {
@@ -542,6 +542,12 @@ class SpotDb
 			$extendedFieldList = '';
 		} # else
 		
+		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
+		# als dat zo is, voeg die dan ook toe
+		foreach($parsedSearch['additionalFields'] as $additionalField) {
+			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
+		} # foreach
+		
 		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
@@ -549,6 +555,19 @@ class SpotDb
 			$sort['field'] = 'reversestamp';
 			$sort['direction'] = 'ASC';
 		} # if
+
+		# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
+		$sort['field'] = 's.' . $sort['field'];
+		
+		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
+		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
+		# 
+		$sortFields = array_merge($parsedSearch['sortFields'], array($sort));
+		$sortList = array();
+		foreach($sortFields as $sortValue) {
+			$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+		} # foreach
+		$sortList = implode(',', $sortList);
 
 		# en voer de query uit. 
 		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag
@@ -579,7 +598,7 @@ class SpotDb
 								     LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
-									 ORDER BY s." . $this->safe($sort['field']) . " " . $this->safe($sort['direction']) . 
+									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 								   
 		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan

@@ -364,13 +364,21 @@ class SpotsOverview {
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
-					$textQueryStr = ' (' . $this->_db->createTextQuery($field, $searchValue) . ') ';
-					$textSearch[] = $textQueryStr;
+					$parsedTextQueryResult = $this->_db->createTextQuery($field, $searchValue);
+					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
 					
 					# We voegen deze extended textqueryies toe aan de filterlist als
 					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
 					# wat het net wat interessanter maakt
-					## FIXME ##
+					if ($parsedTextQueryResult['sortable']) {
+						# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
+						# sorteren we ze in de volgorde waarop ze binnenkwamen 
+						$tmpSortCounter = count($additionalFields);
+						
+						$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
+						$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
+											  'direction' => 'ASC');
+					} # if
 				} # if
 			} else {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
