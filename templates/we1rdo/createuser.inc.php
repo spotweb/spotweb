@@ -1,5 +1,15 @@
-<?php include "includes/form-messages.inc.php"; ?>
+<?php 
 
+if ((!empty($createresult)) || (!empty($formmessages))) {
+	include 'includes/form-xmlresult.inc.php';
+	
+	echo formResult2Xml($createresult, $formmessages);
+} # if
+
+if (empty($createresult)) {
+	include "includes/form-messages.inc.php";
+
+?>
 <form name="createuserform" action="<?php echo $tplHelper->makeCreateUserAction(); ?>" method="post">
 <input type="hidden" name="createuserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('createuserform'); ?>">
 	<fieldset>
@@ -20,3 +30,6 @@
 		</dl>
 	</fieldset>
 </form>
+<?php
+	}
+?>
