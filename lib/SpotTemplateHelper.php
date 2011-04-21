@@ -1,7 +1,10 @@
 <?php
 /* Externe library */
-require_once "lib/ubb/ubbparse.php";
+require_once 'lib/ubb/ubbparse.php';
 require_once 'lib/ubb/taghandler.inc.php';
+
+/* nog een externe library */
+require_once 'lib/linkify/linkify.php';
 
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
@@ -256,6 +259,9 @@ class SpotTemplateHelper {
 
 	
 	function formatContent($tmp) {
+		# Converteer urls naar links
+		$tmp = linkify($tmp);
+		
 		# initialize ubb parser
 		$parser = new UbbParse($tmp);
 		TagHandler::setDeniedTags( Array() );

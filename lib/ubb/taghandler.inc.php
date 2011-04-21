@@ -43,7 +43,13 @@
 					Array('u' =>
 						Array('closetags' => Array('u'),
 							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_underline') )
+							  'handler' => Array('TagHandler', 'handle_underline')),
+
+						  'url' =>
+							Array('closetags' => Array('url'),
+								  'allowedchildren' => Array(''),
+								  'handler' => Array('TagHandler', 'handle_url') )
+							  
 					)
                 );
 
@@ -143,6 +149,14 @@
 							 'append' => '">');
 		} // handle_img
 
+		/* handle the img tag */
+		static function handle_url($params, $contents) {
+				# are only specific images allowed?
+				return Array('prepend' => '<a href="' . $params['originalparams'] . '">',
+							 'content' => $contents,
+							 'append' => '</a>');
+		} // handle_url
+		
 		/* handle the noubb tag */
 		static function handle_noubb($params, $contents) {
 			return Array('prepend' => '',
