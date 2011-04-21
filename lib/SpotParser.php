@@ -261,7 +261,7 @@ class SpotParser {
 				} # if
 			} # if
 		} # if 
-		
+
 		# Nu zetten we de titel en dergelijke om naar utf8, we kunnen
 		# dat niet eerder doen omdat anders de RSA signature niet meer
 		# klopt.

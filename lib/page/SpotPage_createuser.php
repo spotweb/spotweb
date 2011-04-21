@@ -18,6 +18,9 @@ class SpotPage_createuser extends SpotPage_Abs {
 						  'lastname' => '',
 						  'mail' => '');
 		
+		# createuser resultaat is standaard niet geprobeerd
+		$createResult = array();
+		
 		# Instantieer het Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
@@ -46,14 +49,20 @@ class SpotPage_createuser extends SpotPage_Abs {
 				# voeg de user toe
 				$spotUserSystem->addUser($spotUser);
 				
-				$formMessages['info'] = array("Added user '" . htmlspecialchars($spotUser['username']) . "' with password: '" . $spotUser['password'] . "'");
-			} # if
+				# als het toevoegen van de user gelukt is, laat het weten
+				$createResult = array('result' => 'success',
+									  'user' => $spotUser['username'],
+									  'password' => $spotUser['password']);
+			} else {
+				$createResult = array('result' => 'failure');
+			} # else
 			
 		} # if
 		
 		#- display stuff -#
 		$this->template('createuser', array('createuserform' => $spotUser,
-										    'formmessages' => $formMessages));
+										    'formmessages' => $formMessages,
+											'createresult' => $createResult));
 	} # render
 	
 } # class SpotPage_createuser

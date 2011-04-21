@@ -330,11 +330,6 @@ function multinzb() {
 	}
 }
 
-// http sites laden in _blank
-$(document).ready(function(){
-	$("a[href^='http']").attr('target','_blank');
-});
-
 function uncheckMultiNZB() {
 	$("table.spots input[type=checkbox]").attr("checked", false);
 	$('div.notifications').fadeOut();
