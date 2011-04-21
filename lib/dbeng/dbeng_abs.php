@@ -88,7 +88,8 @@ abstract class dbeng_abs {
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
 	function createTextQuery($field, $value) {
-		return " " . $field . " LIKE '%" . $this->safe($value) . "%'";
+		return array('filter' => " " . $field . " LIKE '%" . $this->safe($value) . "%'",
+					 'sortable' => false);
 	} # createTextQuery
 
 }
