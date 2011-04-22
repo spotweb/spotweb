@@ -86,7 +86,8 @@ $(function(){
 
 // Haal de comments op en zet ze per batch op het scherm
 function loadComments(messageid,perpage,pagenr) {
-	$.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
+	var xhr = null;
+	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) { 
 			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
@@ -99,16 +100,18 @@ function loadComments(messageid,perpage,pagenr) {
 		if($("div#details").height() <= $(window).height() && count == 0) {$("div#details").addClass("noscroll")}
 		
 		pagenr++;
-		if (count > 0) { 
+		if (count >= 1) { 
 			loadComments(messageid,'5',pagenr);
 		}
 	});
+	$("a.closeDetails").click(function() { xhr.abort() });
 }
 
 // Laadt de spotImage wanneer spotinfo wordt geopend
 function loadSpotImage() {
 	$('img.spotinfoimage').hide();
 	$('a.postimage').addClass('loading');
+	
 	$('img.spotinfoimage').load(function() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
