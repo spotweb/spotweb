@@ -1,5 +1,7 @@
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
+	
+	$("a[href^='http']").attr('target','_blank');
 });
 
 // openSpot in overlay
