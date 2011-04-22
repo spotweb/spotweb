@@ -4,7 +4,7 @@
                     <p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a></p>
                     <?php } ?>
                 </div>
-
+                
 				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
 <?php if ($currentSession['user']['userid'] == 1) { ?>	
                 	Inloggen
@@ -12,6 +12,8 @@
 					<?php echo $currentSession['user']['firstname']; ?>
 <?php } ?>
 				</a></p></div>
+                
+                <div class="sabnzbdInfo"><p><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'></a></p></div>
 
                 <span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
@@ -70,6 +72,13 @@
                     <div class="login"></div>
 <?php } ?>
 				</div>
+                
+                <div class="sidebarPanel sabnzbdPanel">
+                	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
+                    <ul class="info">
+                    	<li>Work in progress</li>
+                    </ul>
+                </div>
             </div>
 
             <div id="filter" class="filter">					
