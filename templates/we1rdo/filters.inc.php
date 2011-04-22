@@ -5,14 +5,13 @@
                     <?php } ?>
                 </div>
 
-<?php
-	# Toon geen welkom terug boodschap voor de anonymous user
-	if ($currentSession['user']['userid'] != 0) { # DEBUG CODE! Anonymous userid = 1 != 0
-?>	
-                <div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'><?php echo $currentSession['user']['firstname']; ?></a></p></div>
-<?php
-    }
-?>
+				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
+<?php if ($currentSession['user']['userid'] == 1) { ?>	
+                	Inloggen
+<?php } else { ?>
+					<?php echo $currentSession['user']['firstname']; ?>
+<?php } ?>
+				</a></p></div>
 
                 <span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
@@ -50,10 +49,14 @@
                 </form>
                 
                 <div class="sidebarPanel userPanel">
-                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
+                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gegevens</h4>
                     <ul class="userInfo">
+<?php if ($currentSession['user']['userid'] == 1) { ?>
+						<li>U bent niet ingelogd</li>
+<?php } else { ?>
 						<li><?php echo "Gebruiker: <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
 						<li><?php echo "Laatst gezien: <strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"; ?></li>
+<?php } ?>
                     </ul>
                     
                     <h4 class="dropDown"><span class="viewState"><a class="down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
