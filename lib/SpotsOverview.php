@@ -188,7 +188,10 @@ class SpotsOverview {
 
 		# dont filter anything
 		if (empty($search)) {
-			return '';
+			return array('filter' => '',
+					 'search' => array(),
+					 'additionalFields' => array(),
+					 'sortFields' => array());
 		} # if
 
 		# We hebben twee soorten filters:
