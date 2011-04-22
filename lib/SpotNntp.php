@@ -176,7 +176,7 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
-		function postComment($user, $server, $rating, $newsgroup, $inReplyTo, $title, $content) {
+		function postComment($user, $hashCash, $serverPrivKey, $rating, $newsgroup, $inReplyTo, $title, $content) {
 			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
 		
 			# We genereren een uniek messageid dat ook nog eens als eerste vier bytes 0000 geeft
@@ -192,7 +192,7 @@ class SpotNntp {
 			$user_signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
 			
 			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($server['privatekey'], $newMessageId);
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $newMessageId);
 			
 			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: Re: ' . $title . "\r\n";

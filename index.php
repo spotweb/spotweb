@@ -149,6 +149,13 @@ try {
 				$page->render();
 				break;
 		} # login
+
+		case 'postcomment' : {
+				$page = new SpotPage_login($db, $settings, $currentSession,
+							Array('commentform' => $req->getForm('commentform', array())));
+				$page->render();
+				break;
+		} # postcomment
 		
 		case 'logout' : {
 				$page = new SpotPage_logout($db, $settings, $currentSession);
