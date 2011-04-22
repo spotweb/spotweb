@@ -49,7 +49,7 @@
                 </form>
                 
                 <div class="sidebarPanel userPanel">
-                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gegevens</h4>
+                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
                     <ul class="userInfo">
 <?php if ($currentSession['user']['userid'] == 1) { ?>
 						<li>U bent niet ingelogd</li>
