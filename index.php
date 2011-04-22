@@ -151,7 +151,7 @@ try {
 		} # login
 
 		case 'postcomment' : {
-				$page = new SpotPage_login($db, $settings, $currentSession,
+				$page = new SpotPage_postcomment($db, $settings, $currentSession,
 							Array('commentform' => $req->getForm('commentform', array())));
 				$page->render();
 				break;
