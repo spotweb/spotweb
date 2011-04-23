@@ -250,7 +250,7 @@ class SpotUserSystem {
 		} # if
 		
 		# controleer het mailaddress
-		if (eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3,4})$", $user['mail'])) {
+		if (!preg_match("/^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,3,4})$/i", $user['mail'])) {
 			$errorList[] = 'Invalid mailaddress';
 		} # if
 
