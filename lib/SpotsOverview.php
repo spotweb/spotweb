@@ -444,7 +444,7 @@ class SpotsOverview {
 			if (isset($_SESSION['last_visit'])) {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
 			} # if
-			$newSpotsSearchTmp[] = '(c.stamp IS NOT NULL)';
+			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
