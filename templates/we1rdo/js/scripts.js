@@ -256,6 +256,9 @@ $(function(){
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
 		$(id).fadeOut();
+	} else if($(".sidebarPanel").is(":visible")) {
+		$(".sidebarPanel").fadeOut();
+		$(id).fadeIn();
 	} else {
 		$(id).fadeIn();
 	}

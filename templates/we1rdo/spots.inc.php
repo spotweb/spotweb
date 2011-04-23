@@ -27,7 +27,7 @@
                             </th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
-							<th class='sabnzbd'> SAB </th>
+							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Open "SabNZBd paneel"'></a></th>
 <?php } ?>						
 						</tr>
 					</thead>

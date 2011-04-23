@@ -12,8 +12,6 @@
 					<?php echo $currentSession['user']['firstname']; ?>
 <?php } ?>
 				</a></p></div>
-                
-                <div class="sabnzbdInfo"><p><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'></a></p></div>
 
                 <span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
@@ -35,7 +33,7 @@
 
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Advanced search</h4>
-                        <ul class="searchmode<?php if ($filterColCount == 3) {echo " short";} ?>">
+                        <ul class="searchmode<?php if ($filterColCount == 3) {echo " small";} ?>">
                             <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
                             <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
                             <li> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
@@ -75,7 +73,7 @@
                 
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
-                    <ul class="info">
+                    <ul class="userInfo">
                     	<li>Work in progress</li>
                     </ul>
                 </div>
