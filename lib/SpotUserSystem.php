@@ -250,7 +250,7 @@ class SpotUserSystem {
 		} # if
 		
 		# controleer het mailaddress
-		if (!preg_match("/^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,3,4})$/i", $user['mail'])) {
+		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
 			$errorList[] = 'Invalid mailaddress';
 		} # if
 
