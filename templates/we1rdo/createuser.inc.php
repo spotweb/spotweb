@@ -1,6 +1,6 @@
 <?php 
 
-if ((!empty($createresult)) || (!empty($formmessages))) {
+if (!empty($createresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
 	echo formResult2Xml($createresult, $formmessages);
