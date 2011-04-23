@@ -191,6 +191,10 @@ $settings['show_multinzb'] = true;
 # toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_newspots'] = true;
 
+# moeten we bijhouden welke individuele spots er zijn bekeken?
+# Doet niets als count_newspots op false staat
+$settings['keep_seenlist'] = true;
+
 # toon het aantal comments op een spot in het overzicht? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_comments'] = true;
 

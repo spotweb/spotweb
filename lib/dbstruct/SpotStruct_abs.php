@@ -389,7 +389,6 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
 
-		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema

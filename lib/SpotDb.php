@@ -127,7 +127,7 @@ class SpotDb
 	} # hitSession
 
 	function addToSeenList($msgId, $ourUserId) {
-		$res = $this->_conn->exec("INSERT INTO seen(messageid, ouruserid, stamp)
+		$res = $this->_conn->exec("INSERT INTO seenlist(messageid, ouruserid, stamp)
 									VALUES('%s', %d, UNIX_TIMESTAMP())",
 									Array($msgId, $ourUserId));
 	}
@@ -222,7 +222,7 @@ class SpotDb
 	} # setUser
 
 	function clearSeenList($user) {
-		$res = $this->_conn->exec("DELETE FROM seen
+		$res = $this->_conn->exec("DELETE FROM seenlist
 									WHERE ouruserid = '%s'",
 									Array($user['userid']));
 	} # clearSeenList
@@ -446,7 +446,7 @@ class SpotDb
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-						LEFT JOIN seen AS c ON s.messageid = c.messageid
+						LEFT JOIN seenlist AS c ON s.messageid = c.messageid
 						WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
@@ -611,7 +611,7 @@ class SpotDb
 									 FROM spots AS s 
 								     LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 								     LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe( (int) $ourUserId) . "))
-									 LEFT JOIN seen AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+									 LEFT JOIN seenlist AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
@@ -695,7 +695,7 @@ class SpotDb
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d ON ((s.messageid = d.messageid) AND (d.ouruserid = %d))
 												LEFT JOIN watchlist AS w ON ((s.messageid = w.messageid) AND (w.ouruserid = %d))
-												LEFT JOIN seen AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = %d))
+												LEFT JOIN seenlist AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = %d))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($ourUserId, $ourUserId, $ourUserId, $messageId));
 		if (empty($tmpArray)) {
