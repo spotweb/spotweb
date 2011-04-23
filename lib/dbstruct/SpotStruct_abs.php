@@ -388,14 +388,8 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("UPDATE watchlist SET ouruserid = 1");
 			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
-		
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.15)) {
-			$this->_dbcon->exec("ALTER TABLE spots CHANGE category category ENUM('0','1','2','3');");
-			$this->_dbcon->exec("ALTER TABLE spots CHANGE subcat subcat ENUM('0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20');");
-			$this->_dbcon->exec("ALTER TABLE spots CHANGE subcata subcata ENUM('a0|','a1|','a2|','a3|','a4|','a5|','a6|','a7|','a8|','a9|','a10|','a11|','a12|','a13|','a14|','a15|','a16|','a17|','a18|','a19|','a20|');");
-			$this->_dbcon->exec("ALTER TABLE spots CHANGE subcatz subcatz ENUM('','z0|','z1|','z2|','z3|','z|4','z|5','z|6','z|7','z|8','z|9');");
-		} # if
 
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
