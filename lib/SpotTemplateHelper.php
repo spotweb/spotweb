@@ -194,6 +194,13 @@ class SpotTemplateHelper {
 	} # makeLoginAction
 
 	/*
+	 * Creeert de action url voor het inloggen van een user
+	 */
+	function makePostCommentAction() {
+		return $this->makeBaseUrl("path") . "?page=postcomment";
+	} # makePostCommentAction
+	
+	/*
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
