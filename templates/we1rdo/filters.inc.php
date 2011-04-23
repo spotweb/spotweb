@@ -1,4 +1,12 @@
-				<div id="filter" class="filter">
+<?php
+if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
+	echo "<div id=\"preview\">";
+	echo "<p>Er zijn " . $tplHelper->getNewCountForFilter($quicklinks[1][2]) . " nieuwe spots.</p>";
+	echo "<p>Laatste update:<br>" . $tplHelper->formatDate($lastupdate, 'lastupdate') . "</p>";
+	echo "</div>";
+	exit();
+}
+?>				<div id="filter" class="filter">
                     <div class="notifications">
 						<?php if ($settings->get('show_multinzb')) { ?>
                         <p class="multinzb"><span class="count"></span><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"> </a></p>
