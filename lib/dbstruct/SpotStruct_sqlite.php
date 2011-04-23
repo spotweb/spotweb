@@ -112,7 +112,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		if (!$this->tableExists('seen')) {
 			$this->_dbcon->rawExec("CREATE TABLE seen(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   ouruserid INTEGER DEFAULT 0,
-										   stamp INTEGER) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										   stamp INTEGER);");
 			$this->_dbcon->rawExec("ALTER TABLE seen ADD INDEX idx_seen_1 (messageid);");
 			$this->_dbcon->rawExec("ALTER TABLE seen ADD INDEX idx_seen_2 (ouruserid);");
 		} # if
