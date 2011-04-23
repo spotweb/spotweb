@@ -136,10 +136,17 @@ class SpotUserSystem {
 	function resetLastVisit($user) {
 		$user['lastvisit'] = time();
 		$this->_db->setUser($user);
-		
+
 		return $user;
 	} # resetLastVisit
-	
+
+	/*
+	 * Clear the seen list
+	 */
+	function clearSeenList($user) {
+		$this->_db->clearSeenList($user);
+	} # clearSeenList
+
 	/*
 	 * Controleert een session cookie, en als de sessie geldig
 	 * is, geeft een user record terug
@@ -243,9 +250,7 @@ class SpotUserSystem {
 		} # if
 		
 		# controleer het mailaddress
-		if ((strlen($user['mail']) < 8) ||
-		    (strpos($user['mail'], '@') === false) ||
-			(strpos($user['mail'], '.') === false)) {
+		if (eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3,4})$", $user['mail'])) {
 			$errorList[] = 'Invalid mailaddress';
 		} # if
 

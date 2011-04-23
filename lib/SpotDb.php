@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.14');
+define('SPOTDB_SCHEMA_VERSION', '0.15');
 
 class SpotDb
 {
@@ -125,7 +125,13 @@ class SpotDb
 									WHERE sessionid = '%s'", 
 								Array(time(), $sessionid));
 	} # hitSession
-	
+
+	function addToSeenList($msgId, $ourUserId) {
+		$res = $this->_conn->exec("INSERT INTO seen(messageid, ouruserid, stamp)
+									VALUES('%s', %d, UNIX_TIMESTAMP())",
+									Array($msgId, $ourUserId));
+	}
+
 	/*
 	 * Checkt of een username al bestaat
 	 */
@@ -214,6 +220,12 @@ class SpotDb
 					Array(serialize($user['prefs']),
 						  (int) $user['userid']));
 	} # setUser
+
+	function clearSeenList($user) {
+		$res = $this->_conn->exec("DELETE FROM seen
+									WHERE ouruserid = '%s'",
+									Array($user['userid']));
+	} # clearSeenList
 	
 	/*
 	 * Vul de public en private key van een user in, alle andere
@@ -433,7 +445,9 @@ class SpotDb
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
-						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid WHERE " . $sqlFilter;
+						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+						LEFT JOIN seen AS c ON s.messageid = c.messageid
+						WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
 		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
@@ -579,6 +593,7 @@ class SpotDb
 												s.poster AS poster,
 												d.stamp as downloadstamp, 
 												w.dateadded as w_dateadded,
+												c.stamp AS seenstamp,
 												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
@@ -596,6 +611,7 @@ class SpotDb
 									 FROM spots AS s 
 								     LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 								     LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+									 LEFT JOIN seen AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
@@ -667,7 +683,7 @@ class SpotDb
 												s.id AS spotdbid,
 												f.id AS fullspotdbid,
 												d.stamp AS downloadstamp,
-												f.messageid AS messageid,
+												c.stamp AS seenstamp,
 												f.userid AS userid,
 												f.verified AS verified,
 												f.usersignature AS \"user-signature\",
@@ -679,8 +695,9 @@ class SpotDb
 												FROM spots AS s 
 												LEFT JOIN downloadlist AS d ON ((s.messageid = d.messageid) AND (d.ouruserid = %d))
 												LEFT JOIN watchlist AS w ON ((s.messageid = w.messageid) AND (w.ouruserid = %d))
-												JOIN spotsfull AS f ON f.messageid = s.messageid 
-										  WHERE s.messageid = '%s'", Array($ourUserId, $ourUserId, $messageId));
+												LEFT JOIN seen AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = %d))
+												JOIN spotsfull AS f ON f.messageid = s.messageid
+										  WHERE s.messageid = '%s'", Array($ourUserId, $ourUserId, $ourUserId, $messageId));
 		if (empty($tmpArray)) {
 			return ;
 		} # if
@@ -827,7 +844,7 @@ class SpotDb
 	function schemaValid() {
 		$schemaVer = $this->getSchemaVer();
 		
-		# SPOTDB_SCHEMA_VERSION is gedefinieerd in SpotStruct_Abs
+		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
 		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
 	
