@@ -16,7 +16,7 @@ if (($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) && (empty($l
 			<dt><label for="loginform[username]">Username</label></dt>
 			<dd><input type="text" name="loginform[username]" value="<?php echo htmlspecialchars($loginform['username']); ?>"></dd>
 
-			<dt><label for="loginform[firstname]">Password</label></dt>
+			<dt><label for="loginform[password]">Password</label></dt>
 			<dd><input type="password" name="loginform[password]" value=""></dd>
 
 			<dd><input type="submit" name="loginform[submit]" value="Login"></dd>
