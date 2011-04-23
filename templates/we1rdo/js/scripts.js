@@ -4,6 +4,11 @@ $(function(){
 	$("a[href^='http']").attr('target','_blank');
 });
 
+// Detecteer aanwezigheid scrollbar binnen spotinfo pagina
+function detectScrollbar() {
+	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height()) && count == 0) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
+}
+
 // openSpot in overlay
 function openSpot(id,url) {
 	if($("#overlay").is(":visible")) {
@@ -34,6 +39,7 @@ function openSpot(id,url) {
 		});
 		
 		$("a[href^='http']").attr('target','_blank');
+		$(window).bind("resize", detectScrollbar);
 		
 		loadComments(messageid,'5','0');
 		loadSpotImage();
@@ -97,7 +103,7 @@ function loadComments(messageid,perpage,pagenr) {
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
-		if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height()) && count == 0) {$("div#details").addClass("noscroll")}
+		detectScrollbar();
 		
 		pagenr++;
 		if (count >= 1) { 
@@ -120,6 +126,7 @@ function loadSpotImage() {
 			'height': $("img.spotinfoimage").height()
 		})
 		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
+		detectScrollbar();
 	});
 }
 
