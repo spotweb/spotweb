@@ -251,6 +251,14 @@ $(function(){
 			toggleSidebarPanel('.advancedSearch')
 		}
 	});
+	
+	$("input.filtersubmit").click(function() {
+		if($("ul.dynatree-container li > span").hasClass("dynatree-partsel")) {
+			$("input[name='search[unfiltered]']").attr('checked', false);
+		} else {
+			$("input[name='search[unfiltered]']").attr('checked', true);
+		}
+	});
 });
 
 function toggleSidebarPanel(id) {
@@ -262,7 +270,7 @@ function toggleSidebarPanel(id) {
 	} else {
 		$(id).fadeIn();
 	}
-	
+
 	if(id == ".userPanel") {
 		$("div.login").load('?page=login', function() {
 			$('form.loginform').submit(function(){ 
