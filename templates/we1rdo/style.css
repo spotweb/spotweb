@@ -169,7 +169,7 @@ table.spots th.multinzb input {margin:0 0 0 4px; padding:0; display:block;}
 table.spots td.sabnzbd,
 table.spots th.sabnzbd {min-width:22px; width:22px; padding:0 0 0 3px;}
 table.spots th.sabnzbd a {background:url(img/sprite.png) no-repeat -70px -111px; display:block; width:16px; height:16px; margin:2px 0 2px 3px;}
-table.spots th:last-child {padding:0 5px;}
+table.spots th:last-child {padding-right:5px;}
 table.spots th.sabnzbd {padding:0 5px 0 3px;}
 
 table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#333; margin:3px 3px 3px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
