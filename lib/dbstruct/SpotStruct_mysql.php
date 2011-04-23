@@ -107,12 +107,12 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 
 		# seen
-		if (!$this->tableExists('seen')) {
-			$this->_dbcon->rawExec("CREATE TABLE seen(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+		if (!$this->tableExists('seenlist')) {
+			$this->_dbcon->rawExec("CREATE TABLE seenlist(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   ouruserid INTEGER DEFAULT 0,
 										   stamp INTEGER) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("ALTER TABLE seen ADD INDEX idx_seen_1 (messageid);");
-			$this->_dbcon->rawExec("ALTER TABLE seen ADD INDEX idx_seen_2 (ouruserid);");
+			$this->_dbcon->rawExec("ALTER TABLE seenlist ADD INDEX idx_seenlist_1 (messageid);");
+			$this->_dbcon->rawExec("ALTER TABLE seenlist ADD INDEX idx_seenlist_2 (ouruserid);");
 		} # if
 	} # createDatabase
 
