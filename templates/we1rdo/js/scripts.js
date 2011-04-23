@@ -97,7 +97,7 @@ function loadComments(messageid,perpage,pagenr) {
 		
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
-		if($("div#details").height() <= $(window).height() && count == 0) {$("div#details").addClass("noscroll")}
+		if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height()) && count == 0) {$("div#details").addClass("noscroll")}
 		
 		pagenr++;
 		if (count >= 1) { 
