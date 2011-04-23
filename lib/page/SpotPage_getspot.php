@@ -18,6 +18,11 @@ class SpotPage_getspot extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];
 		
+		# seen list
+		if ($this->_settings->get('count_newspots') && $this->_settings->get('keep_seenlist') && $fullSpot['stamp'] > $_SESSION['last_visit'] && $fullSpot['seenstamp'] == NULL) {
+			$spotsOverview->addToSeenList($this->_messageid, $this->_currentSession['user']['userid']);
+		} # if
+		
 		#- display stuff -#
 		$this->template('header');
 		$this->template('spotinfo', array('spot' => $fullSpot));

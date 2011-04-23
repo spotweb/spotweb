@@ -34,6 +34,9 @@ class SpotsOverview {
 		return $fullSpot;
 	} # getFullSpot
 
+	function addToSeenList($msgId, $ourUserId) {
+		$this->_db->addToSeenList($msgId, $ourUserId);
+	}
 
 	/*
 	 * Callback functie om enkel verified 'iets' terug te geven
@@ -439,8 +442,9 @@ class SpotsOverview {
 		# New spots
 		if (isset($search['filterValues']['New'])) {
 			if (isset($_SESSION['last_visit'])) {
-				$newSpotsSearchTmp[] = ' (s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
+				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
 			} # if
+			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
