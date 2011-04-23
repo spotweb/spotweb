@@ -1,6 +1,6 @@
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-	
+
 	$("a[href^='http']").attr('target','_blank');
 });
 
@@ -14,33 +14,33 @@ function openSpot(id,url) {
 	if($("#overlay").is(":visible")) {
 		$("#overlay").addClass('notrans');
 	}
-	
+
 	$("table.spots tr.active").removeClass("active");
 	$(id).parent().parent().addClass('active');
-	
+
 	var messageid = url.split("=")[2];
-	
+
 	$("#overlay").addClass('loading');
 	$("#overlay").empty().show();
-	
+
 	var scrollLocation = $(document).scrollTop();
 	$("#overlay").load(url+' #details', function() {
 		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading notrans');
 		$("body").addClass("spotinfo");
-		
+
 		if($("#overlay").children().size() == 0) {
 			alert("Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht...");
 			closeDetails(scrollLocation);
 		}
-		
+
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
-		
+
 		$("a[href^='http']").attr('target','_blank');
 		$(window).bind("resize", detectScrollbar);
-		
+
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
@@ -100,11 +100,11 @@ function loadComments(messageid,perpage,pagenr) {
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().size());
 		}
-		
+
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
 		detectScrollbar();
-		
+
 		pagenr++;
 		if (count >= 1) { 
 			loadComments(messageid,'5',pagenr);
@@ -117,7 +117,7 @@ function loadComments(messageid,perpage,pagenr) {
 function loadSpotImage() {
 	$('img.spotinfoimage').hide();
 	$('a.postimage').addClass('loading');
-	
+
 	$('img.spotinfoimage').load(function() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
@@ -169,7 +169,7 @@ function spotNav(direction) {
 	var current = $('table.spots tbody tr.active');
 	var prev = current.prevUntil('tr.header').first();
 	var next = current.next().first();
-	
+
 	if (direction == 'prev' && prev.size() == 1) {
 		current.removeClass('active');
 		prev.addClass('active');
@@ -240,7 +240,7 @@ $(function(){
 
 function toggleSidebarItem(id) {
 	var hide = $(id).parent().parent().next();
-	
+
 	if($(hide).is(":visible")) {
 		$(hide).hide();
 		$(id).removeClass("up").addClass("down");
@@ -258,7 +258,7 @@ $(function(){
 			toggleSidebarPanel('.advancedSearch')
 		}
 	});
-	
+
 	$("input.filtersubmit").click(function() {
 		if($("ul.dynatree-container li > span").hasClass("dynatree-partsel")) {
 			$("input[name='search[unfiltered]']").attr('checked', false);
@@ -287,7 +287,7 @@ function toggleSidebarPanel(id) {
 				
 				var url = $("form.loginform").attr("action");
 				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
-				
+
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -295,7 +295,7 @@ function toggleSidebarPanel(id) {
 					data: dataString,
 					success: function(xml) {
 						result = $(xml).find('result').text();
-						
+
 						$("div.login ul.formerrors > li").empty()
 						if(result == "failure") {
 							$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
@@ -394,7 +394,7 @@ $(function(){
 
 function toggleFilter(id) {
 	$(id).parent().click(function(){ return false; });
-	
+
 	var ul = $(id).parent().next();
 	if($(ul).is(":visible")) {
 		ul.hide();
@@ -405,13 +405,13 @@ function toggleFilter(id) {
 		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
 	}
-	
+
 	var data = new Array();
 	$("ul.filters > li > ul").each(function(index) {
 		var state = $(this).css("display");
 		data.push({"count": index, "state": state});
 	});
-	
+
 	$.cookie("filterVisiblity", JSON.stringify(data), { path: '/', expires: 7 });
 }
 
@@ -424,7 +424,7 @@ $(function(){
 
 function retrieveSpots() {
 	var url = $("ul.maintenancebox a.retrievespots").attr("href");
-	
+
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("Nieuwe spots binnengehaald") }, 1000);
@@ -434,7 +434,7 @@ function retrieveSpots() {
 
 function eraseDownloads() {
 	var url = $("ul.maintenancebox a.erasedownloads").attr("href");
-	
+
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("Download geschiedenis verwijderd") }, 1000);
@@ -444,7 +444,7 @@ function eraseDownloads() {
 
 function markAsRead() {
 	var url = $("ul.maintenancebox a.markasread").attr("href");
-	
+
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("Alles als gelezen gemarkeerd") }, 1000);
@@ -455,7 +455,7 @@ function markAsRead() {
 // User systeem
 function userLogout() {
 	var url = '?page=logout';
-	
+
 	$("div.userPanel > a.greyButton").hide();
 	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 	$.get(url, function(data) {
@@ -466,7 +466,7 @@ function userLogout() {
 
 function toggleCreateUser() {
 	var url = '?page=createuser';
-	
+
 	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
 		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
 		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
@@ -477,14 +477,14 @@ function toggleCreateUser() {
 			$("div.createUser").show();
 			$("div.userPanel h4.dropDown").css("margin", "0");
 			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
-			
+
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
 				var username = $("form.createuserform input[name='createuserform[username]']").val();
 				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
 				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
 				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
-				
+
 				var url = $("form.createuserform").attr("action");
 				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
 				
