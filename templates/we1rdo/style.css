@@ -137,17 +137,16 @@ div.filter a img {
 ul.maintenancebox li.info {text-align:center; margin:5px 0; height:16px; line-height:16px;}
 
 /* SPOTS */
-div.spots {margin:0 0 0 235px; padding:0 5px 5px 0; min-width:750px;}
-body.fixed div.spots {padding-top:23px;}
+div.spots {margin:0 0 0 235px; padding:23px 5px 5px 0; min-width:750px;}
 
 table.spots {border-collapse:separate; border-spacing:0 2px; width:100%; margin:-2px 0 0 0;}
-body.fixed table.spots tr.head {position:fixed; top:0; left:235px; right:0; margin:25px 0 0 0; border-spacing:0; z-index:1;}
+table.spots tr.head {position:absolute; top:0; left:235px; right:0; margin:25px 0 0 0; border-spacing:0; z-index:1;}
+body.fixed table.spots tr.head {position:fixed;}
 
 table.spots a {color:#000; text-decoration:none; display:block; width:100%; line-height:20px; cursor:pointer;}
 table.spots img {border:0;}
 
-table.spots th {text-align:left; color:#fff; background:url(img/sprite_x.png) repeat-x 0 -40px; line-height:20px; height:20px; padding:0 0 0 5px; border-bottom:3px solid #fff; text-shadow:1px 1px #000;}
-body.fixed table.spots th {border:0;}
+table.spots th {text-align:left; color:#fff; background:url(img/sprite_x.png) repeat-x 0 -40px; line-height:20px; height:20px; padding:0 0 0 5px; text-shadow:1px 1px #000;}
 table.spots th a {color:#fff; display:inline;}
 table.spots th.category {text-align:center; min-width:55px; width:55px; padding:0 2px 0 0;}
 table.spots th.title {width:100%;}
@@ -170,8 +169,8 @@ table.spots th.multinzb input {margin:0 0 0 4px; padding:0; display:block;}
 table.spots td.sabnzbd,
 table.spots th.sabnzbd {min-width:22px; width:22px; padding:0 0 0 3px;}
 table.spots th.sabnzbd a {background:url(img/sprite.png) no-repeat -70px -111px; display:block; width:16px; height:16px; margin:2px 0 2px 3px;}
-body.fixed table.spots th:last-child {padding:0 5px;}
-body.fixed table.spots th.sabnzbd {padding:0 5px 0 3px;}
+table.spots th:last-child {padding:0 5px;}
+table.spots th.sabnzbd {padding:0 5px 0 3px;}
 
 table.spots th span.sortby {float:right; display:block; line-height:14px; height:14px; background-color:#333; margin:3px 3px 3px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 table.spots th span.sortby a {width:17px; height:14px; display:block; float:left;}
@@ -180,7 +179,7 @@ table.spots th span.sortby a.down {background:url(img/sprite.png) no-repeat -17p
 
 table.spots td {padding:0 0 0 5px;}
 table.spots td:nth-child(2) {-moz-border-radius:4px 0 0 4px; -webkit-border-radius:4px 0 0 4px; border-radius:4px 0 0 4px;}
-body.fixed table.spots td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
+table.spots td:last-child {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 
 table.spots tr.noresults td {text-align:center; padding:5px 0;}
 
