@@ -423,7 +423,7 @@ class SpotTemplateHelper {
 	
 	
 	function newSinceLastVisit($spot) {
-		return ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp']); 
+		return ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
 	} # newSinceLastVisit
 	
 	#

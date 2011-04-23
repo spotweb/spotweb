@@ -105,6 +105,14 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  value TEXT) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name);");
 		} # if
+
+		# seen
+		if (!$this->tableExists('seen')) {
+			$this->_dbcon->rawExec("CREATE TABLE seen(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+										   ouruserid INTEGER DEFAULT 0,
+										   stamp INTEGER) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("ALTER TABLE seen ADD UNIQUE idx_seen_1 (messageid, ouruserid);");
+		} # if
 	} # createDatabase
 
 	/* controleert of een index bestaat */
