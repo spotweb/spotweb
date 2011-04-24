@@ -231,32 +231,32 @@ class SpotUserSystem {
 		
 		# Controleer de username
 		if (!$this->validUsername($user['username'])) {
-			$errorList[] = 'Invalid username';
+			$errorList[] = 'invalidusername';
 		} # if
 		
 		# Is er geen andere uset met dezelfde username?
 		if ($this->_db->usernameExists($user['username'])) {
-			$errorList[] = 'Username already exists';
+			$errorList[] = 'invalidusername';
 		} # if
 
 		# controleer de firstname
 		if (strlen($user['firstname']) < 3) {
-			$errorList[] = 'Invalid firstname';
+			$errorList[] = 'invalidfirstname';
 		} # if
 		
 		# controleer de lastname
 		if (strlen($user['lastname']) < 3) {
-			$errorList[] = 'Invalid lastname';
+			$errorList[] = 'invalidlastname';
 		} # if
 		
 		# controleer het mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = 'Invalid mailaddress';
+			$errorList[] = 'invalidmail';
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
 		if ($this->_db->userEmailExists($user['mail'])) {
-			$errorList[] = 'Mailaddress already exists';
+			$errorList[] = 'mailalreadyexist';
 		} # if
 		
 		return $errorList;
