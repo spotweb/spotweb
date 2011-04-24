@@ -565,13 +565,13 @@ class SpotDb
 		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
-		if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
-			$sort['field'] = 'reversestamp';
-			$sort['direction'] = 'ASC';
-		} # if
-
-		# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
 		if (!empty($sort)) {
+			if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
+				$sort['field'] = 'reversestamp';
+				$sort['direction'] = 'ASC';
+			} # if
+
+			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
 			$sort['field'] = 's.' . $sort['field'];
 		} # if
 		
