@@ -2,7 +2,7 @@
 if (!empty($loginresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
-	echo formResult2Xml($loginresult, $formmessages);
+	echo formResult2Xml($loginresult, $formmessages, $tplHelper);
 } # if
 
 if (($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) && (empty($loginresult))) {
