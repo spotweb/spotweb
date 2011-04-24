@@ -29,17 +29,20 @@ form#filterform div.search input.filtersubmit {font:11px Arial, Helvetica, sans-
 
 div.sidebarPanel {display:none; position:absolute; left:0; top:25px; bottom:0; width:235px; background:#fff; z-index:1;}
 body.fixed div.sidebarPanel {position:fixed;}
-div.sidebarPanel h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0;}
-div.sidebarPanel h4 {background:url(img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; position:relative;}
+div.sidebarPanel h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0; margin-top:0;}
+div.sidebarPanel h4 {background:url(img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:10px 0 0 0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; position:relative;}
 div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer;}
 
-form#filterform ul.searchmode {margin:0; padding:0;}
-form#filterform ul.searchmode li {width:25%; float:left; list-style:none; overflow:hidden; position:relative;}
-form#filterform ul.searchmode.small li {width:33%;}
-form#filterform ul.searchmode:not(.foo) li:last-child input[type=radio]+label {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
-form#filterform ul.searchmode:not(.foo) li input[type=radio] {opacity:0; position:absolute; margin:0; width:100%; height:20px; float:left; cursor:pointer;}
-form#filterform ul.searchmode:not(.foo) li input[type=radio]+label {background:url(img/sprite_x.png) repeat-x 0 0; width:100%; color:#000; line-height:20px; display:block; text-align:center;}
-form#filterform ul.searchmode:not(.foo) li input[type=radio]:checked + label {background:url(img/sprite_x.png) repeat-x 0 -20px; color:#fff;}
+form#filterform ul.search {margin:0; padding:0; clear:both; overflow:hidden;}
+form#filterform ul.search li {width:25%; float:left; list-style:none; overflow:hidden; position:relative;}
+form#filterform ul.search.small li {width:33%;}
+form#filterform ul.search:not(.foo) li:last-child input[type=radio]+label {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+form#filterform ul.search:not(.foo) li input[type=radio] {opacity:0; position:absolute; margin:0; width:100%; height:20px; float:left; cursor:pointer;}
+form#filterform ul.search:not(.foo) li input[type=radio]+label {background:url(img/sprite_x.png) repeat-x 0 0; width:100%; color:#000; line-height:20px; display:block; text-align:center;}
+form#filterform ul.search:not(.foo) li input[type=radio]:checked + label {background:url(img/sprite_x.png) repeat-x 0 -20px; color:#fff;}
+
+form#filterform ul.search.sorting {margin:5px 0 0 0;}
+form#filterform ul.search.sorting:not(.foo) li:last-child input[type=radio]+label {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 
 form#filterform div.unfiltered {position:relative; overflow:hidden; display:block; float:left; width:100%; margin:5px 0;}
 form#filterform div.unfiltered:not(.foo) input[type=checkbox] {opacity:0; position:absolute; margin:0; width:100%; height:20px; float:left; cursor:pointer;}
