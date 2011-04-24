@@ -142,18 +142,27 @@ class SpotsOverview {
 	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
 	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
+		# als er geen sorteer veld opgegeven is, dan sorteren we niet
+		if ($sort['field'] == '') {
+			$sort = array();
+		} # if
+		
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
 		if (array_search($sort['field'], $sortFields) === false) {
-			$sort = array();
-			$sort['field'] = 'stamp';
-			$sort['direction'] = 'DESC';
+			# We sorteren standaard op stamp, maar alleen als er vanuit de query
+			# geen expliciete sorteermethode is meegegeven
+			if (empty($parsedSearch['sortFields'])) {
+				$sort = array();
+				$sort['field'] = 'stamp';
+				$sort['direction'] = 'DESC';
+			} # if
 		} else {
 			if ($sort['direction'] != 'DESC') {
 				$sort['direction'] = 'ASC';
 			} # if
 		} # else
-
+		
 		# en haal de daadwerkelijke spots op
 		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, $sort, false);
 		$spotCnt = count($spotResults['list']);

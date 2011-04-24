@@ -571,15 +571,19 @@ class SpotDb
 		} # if
 
 		# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
-		$sort['field'] = 's.' . $sort['field'];
+		if (!empty($sort)) {
+			$sort['field'] = 's.' . $sort['field'];
+		} # if
 		
 		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
 		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
 		# 
-		$sortFields = array_merge($parsedSearch['sortFields'], array($sort));
+		$sortFields = array_merge(array($sort), $parsedSearch['sortFields']);
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
-			$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+			if (!empty($sortValue)) {
+				$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+			} # if
 		} # foreach
 		$sortList = implode(',', $sortList);
 
