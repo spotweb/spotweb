@@ -113,8 +113,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE seenlist(messageid VARCHAR(128) NOT NULL,
 										   ouruserid INTEGER DEFAULT 0,
 										   stamp INTEGER);");
-			$this->_dbcon->rawExec("ALTER TABLE seenlist ADD INDEX idx_seenlist_1 (messageid);");
-			$this->_dbcon->rawExec("ALTER TABLE seenlist ADD INDEX idx_seenlist_2 (ouruserid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
 		} # if
 	} # createDatabase
 	
