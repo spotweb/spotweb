@@ -398,6 +398,13 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_watchlist_1", "UNIQUE", "watchlist", "messageid,ouruserid");
 		} # if
 		
+		# Hetzelfde als hierboven kan ook toegepast worden op seenlist
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.17)) {
+			$this->dropIndex("idx_seenlist_1", "seenlist");
+			$this->dropIndex("idx_seenlist_2", "seenlist");
+			$this->addIndex("idx_seenlist_1", "UNIQUE", "seenlist", "messageid,ouruserid");
+		}
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
