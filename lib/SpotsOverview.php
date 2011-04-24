@@ -181,7 +181,7 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search) {
+	function filterToQuery($search, $currentSession) {
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
 		$strongNotList = array();
@@ -441,9 +441,7 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['filterValues']['New'])) {
-			if (isset($_SESSION['last_visit'])) {
-				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
-			} # if
+			$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastvisit']) . ')';
 			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
