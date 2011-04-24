@@ -69,7 +69,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('hashcash', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('body', 'commentsfull', 'TEXT');
 			$this->addColumn('verified', 'commentsfull', 'BOOLEAN');
-			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid");
+			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid,ouruserid");
 			$this->addIndex("idx_commentsfull_2", "", "commentsfull", "messageid,stamp");
 		} # if
 
@@ -280,7 +280,7 @@ abstract class SpotStruct_abs {
 		
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
 			$this->dropIndex("idx_downloadlist_1", "downloadlist");
-			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid");
+			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid,ouruserid");
 		} # if
 
 		# users tabel aanmaken als hij nog niet bestaat
@@ -389,6 +389,15 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
 
+		# Indexen moeten uniek zijn op de combinatie messageid+ouruserid, niet enkel op messageid
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.16)) {
+			$this->dropIndex("idx_downloadlist_1", "downloadlist");
+			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid,ouruserid");
+
+			$this->dropIndex("idx_watchlist_1", "watchlist");
+			$this->addIndex("idx_watchlist_1", "UNIQUE", "watchlist", "messageid,ouruserid");
+		} # if
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
