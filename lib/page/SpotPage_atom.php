@@ -13,7 +13,7 @@ class SpotPage_atom extends SpotPage_Abs {
 
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search']);
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
 		$this->_params['search'] = $parsedSearch['search'];
 		
 		# laad de spots
