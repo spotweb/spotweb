@@ -149,7 +149,7 @@ class SpotsOverview {
 		
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
-		if (array_search($sort['field'], $sortFields) === false) {
+		if ((!isset($sort['field'])) || (array_search($sort['field'], $sortFields) === false)) {
 			# We sorteren standaard op stamp, maar alleen als er vanuit de query
 			# geen expliciete sorteermethode is meegegeven
 			if (empty($parsedSearch['sortFields'])) {
