@@ -27,7 +27,7 @@
                             </th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
-							<th class='sabnzbd'> SAB </th>
+							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Open "SabNZBd paneel"'></a></th>
 <?php } ?>						
 						</tr>
 					</thead>
@@ -77,15 +77,15 @@
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td>" . $spot['catdesc'] . "</td>" .
-			 "<td><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
-			 "<td>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
+		echo "<td class='genre'>" . $spot['catdesc'] . "</td>" .
+			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
+			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($settings->get('show_nzbbutton')) {
-				echo "<td><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB (n)' class='nzb'>NZB";
+				echo "<td class='nzb'><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB (n)' class='nzb'>NZB";
 				
 				if ($spot['hasbeendownloaded']) {
 					echo '*';
@@ -104,9 +104,9 @@
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($spot['hasbeendownloaded']) {
-					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot) (s)'> </a></td>";
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='Add NZB to SabNZBd queue (you already downloaded this spot) (s)'> </a></td>";
 				} else {
-					echo "<td><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue (s)'> </a></td>";	
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='Add NZB to SabNZBd queue (s)'> </a></td>";	
 				} # else
 			} # if
 		} else {

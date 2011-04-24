@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.15');
+define('SPOTDB_SCHEMA_VERSION', '0.16');
 
 class SpotDb
 {
@@ -565,21 +565,25 @@ class SpotDb
 		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
-		if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
-			$sort['field'] = 'reversestamp';
-			$sort['direction'] = 'ASC';
-		} # if
+		if (!empty($sort)) {
+			if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
+				$sort['field'] = 'reversestamp';
+				$sort['direction'] = 'ASC';
+			} # if
 
-		# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
-		$sort['field'] = 's.' . $sort['field'];
+			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
+			$sort['field'] = 's.' . $sort['field'];
+		} # if
 		
 		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
 		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
 		# 
-		$sortFields = array_merge($parsedSearch['sortFields'], array($sort));
+		$sortFields = array_merge(array($sort), $parsedSearch['sortFields']);
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
-			$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+			if (!empty($sortValue)) {
+				$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+			} # if
 		} # foreach
 		$sortList = implode(',', $sortList);
 

@@ -4,10 +4,9 @@ session_start();
 
 require_once "lib/SpotClassAutoload.php";
 SpotTiming::start('total');
-SpotTiming::start('includes');
-require_once "lib/SpotCookie.php";
+SpotTiming::start('settings');
 require_once "settings.php";
-SpotTiming::stop('includes');
+SpotTiming::stop('settings');
 
 #- main() -#
 try {

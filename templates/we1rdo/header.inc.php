@@ -8,15 +8,12 @@
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
-		<meta http-equiv='preview-refresh' content='3600'>
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
-
-		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>
 		$(function(){
 			// Attach the dynatree widget to an existing <div id="tree"> element
 			// and pass the tree options as an argument to the dynatree() function:
-			$("#tree").dynatree({
+			$("div#tree").dynatree({
 				initAjax: { url: "?page=catsjson" },
 			    checkbox: true, // Show checkboxes.
 				persist: false, // Persist expand-status to a cookie
@@ -43,83 +40,6 @@
 
 				return true;
 			});
-
-			$("#removedllistbtn").click(function(e) {
-				e.preventDefault();
-
-				var surl = this.href.split("?");
-			
-				$.ajax({
-					url: surl[0],
-					data: surl[1],
-					context: $(this),
-					error: function(jqXHR, textStatus, errorThrown) {
-						alert('Error removing downloadlist');
-					},
-					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
-					}, // # beforeSend
-					complete: function(jqXHR, textStatus) {
-						var x = setTimeout( function() { $("li.info").html("History removed") }, 1000);
-						setTimeout( function() { location.reload() }, 1500);
-					}, // # complete
-					dataType: "xml"
-				});
-			}); // erasedlsbtn
-			
-			$("#updatespotsbtn").click(function(e) {
-				e.preventDefault();
-
-				var surl = this.href.split("?");
-			
-				$.ajax({
-					url: surl[0],
-					data: surl[1],
-					context: $(this),
-					error: function(jqXHR, textStatus, errorThrown) {
-						alert('Error fetching updates');
-					},
-					success: function(data, textStatus, jqXHR) {
-						// We kunnen de returncode niet checken want cross-site
-						// scripting is niet toegestaan, dus krijgen we de inhoud 
-						// niet te zien
-						var totproc = $(data).find("totalprocessed")[0];
-						if (totproc.textContent != "0") {
-							location.reload();
-						} // if 
-					},
-					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
-					}, // # beforeSend
-					complete: function(jqXHR, textStatus) {
-						var x = $("li.info").html("Updated spots");
-					}, // # complete
-					dataType: "xml"
-				});
-			}); // updatebutton
-			
-			$("#markallasreadbtn").click(function(e) {
-				e.preventDefault();
-
-				var surl = this.href.split("?");
-			
-				$.ajax({
-					url: surl[0],
-					data: surl[1],
-					context: $(this),
-					error: function(jqXHR, textStatus, errorThrown) {
-						alert('Error marking all as read');
-					},
-					beforeSend: function(jqXHR, settings) {
-						var x = $("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
-					}, // # beforeSend
-					complete: function(jqXHR, textStatus) {
-						var x = setTimeout( function() { $("li.info").html("All marked as read.") }, 1000);
-						setTimeout( function() { location.reload() }, 1500);
-					}, // # complete
-					dataType: "xml"
-				});
-			}); // markallasreadbtn
 		});
 
 		function clearTree() {

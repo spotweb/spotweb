@@ -142,18 +142,27 @@ class SpotsOverview {
 	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
 	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
+		# als er geen sorteer veld opgegeven is, dan sorteren we niet
+		if ($sort['field'] == '') {
+			$sort = array();
+		} # if
+		
 		# welke manier willen we sorteren?
 		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata');
-		if (array_search($sort['field'], $sortFields) === false) {
-			$sort = array();
-			$sort['field'] = 'stamp';
-			$sort['direction'] = 'DESC';
+		if ((!isset($sort['field'])) || (array_search($sort['field'], $sortFields) === false)) {
+			# We sorteren standaard op stamp, maar alleen als er vanuit de query
+			# geen expliciete sorteermethode is meegegeven
+			if (empty($parsedSearch['sortFields'])) {
+				$sort = array();
+				$sort['field'] = 'stamp';
+				$sort['direction'] = 'DESC';
+			} # if
 		} else {
 			if ($sort['direction'] != 'DESC') {
 				$sort['direction'] = 'ASC';
 			} # if
 		} # else
-
+		
 		# en haal de daadwerkelijke spots op
 		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, $sort, false);
 		$spotCnt = count($spotResults['list']);
@@ -181,7 +190,7 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search) {
+	function filterToQuery($search, $currentSession) {
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
 		$strongNotList = array();
@@ -441,9 +450,7 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['filterValues']['New'])) {
-			if (isset($_SESSION['last_visit'])) {
-				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($_SESSION['last_visit']) . ')';
-			} # if
+			$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastvisit']) . ')';
 			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if

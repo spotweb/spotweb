@@ -64,7 +64,7 @@ echo "</th>";
                                 <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-<?php if (!empty($spot['nzb'])) { ?>		
+<?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		
                         		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
 						

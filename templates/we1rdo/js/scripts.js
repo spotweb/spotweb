@@ -1,37 +1,46 @@
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
+
+	$("a[href^='http']").attr('target','_blank');
 });
+
+// Detecteer aanwezigheid scrollbar binnen spotinfo pagina
+function detectScrollbar() {
+	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height()) && count == 0) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
+}
 
 // openSpot in overlay
 function openSpot(id,url) {
 	if($("#overlay").is(":visible")) {
 		$("#overlay").addClass('notrans');
 	}
-	
+
 	$("table.spots tr.active").removeClass("active");
 	$(id).parent().parent().addClass('active');
-	
+
 	var messageid = url.split("=")[2];
-	
+
 	$("#overlay").addClass('loading');
 	$("#overlay").empty().show();
-	
+
 	var scrollLocation = $(document).scrollTop();
 	$("#overlay").load(url+' #details', function() {
 		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading notrans');
-		
+		$("body").addClass("spotinfo");
+
 		if($("#overlay").children().size() == 0) {
 			alert("Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht...");
 			closeDetails(scrollLocation);
 		}
-		
+
 		$("a.closeDetails").click(function(){ 
 			closeDetails(scrollLocation); 
 		});
-		
+
 		$("a[href^='http']").attr('target','_blank');
-		
+		$(window).bind("resize", detectScrollbar);
+
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
@@ -46,6 +55,7 @@ function openNewWindow() {
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
 	$("div.container").removeClass("hidden").addClass("visible");
+	$("body").removeClass("spotinfo");
 	$("#overlay").hide();
 	$("#details").remove();
 	$(document).scrollTop(scrollLocation);
@@ -82,29 +92,32 @@ $(function(){
 
 // Haal de comments op en zet ze per batch op het scherm
 function loadComments(messageid,perpage,pagenr) {
-	$.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
+	var xhr = null;
+	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) { 
 			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().size());
 		}
-		
+
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
-		if($("div#details").height() <= $(window).height() && count == 0) {$("div#details").addClass("noscroll")}
-		
+		detectScrollbar();
+
 		pagenr++;
-		if (count > 0) { 
+		if (count >= 1) { 
 			loadComments(messageid,'5',pagenr);
 		}
 	});
+	$("a.closeDetails").click(function() { xhr.abort() });
 }
 
 // Laadt de spotImage wanneer spotinfo wordt geopend
 function loadSpotImage() {
 	$('img.spotinfoimage').hide();
 	$('a.postimage').addClass('loading');
+
 	$('img.spotinfoimage').load(function() {
 		$('a.postimage').removeClass('loading');
 		$(this).show();
@@ -113,6 +126,7 @@ function loadSpotImage() {
 			'height': $("img.spotinfoimage").height()
 		})
 		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
+		detectScrollbar();
 	});
 }
 
@@ -155,13 +169,13 @@ function spotNav(direction) {
 	var current = $('table.spots tbody tr.active');
 	var prev = current.prevUntil('tr.header').first();
 	var next = current.next().first();
-	
+
 	if (direction == 'prev' && prev.size() == 1) {
 		current.removeClass('active');
 		prev.addClass('active');
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
-			$(document).scrollTop($('table.spots tr.active').offset().top - 2);
+			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
 			$('table.spots tbody tr.active a.spotlink').click();
 		}
 	} else if (direction == 'next' && next.size() == 1) {
@@ -169,11 +183,11 @@ function spotNav(direction) {
 		next.addClass('active');
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
-			$(document).scrollTop($('table.spots tr.active').offset().top - 2);
+			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
 			$("table.spots tbody tr.active a.spotlink").click();
 		}
 	}
-	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 2)}
+	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
 }
 
 // Regel positie en gedrag van sidebar (fixed / relative)
@@ -191,49 +205,109 @@ $().ready(function() {
 function toggleScrolling(state) {
 	if (state == true || state == 'true') {
 		$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
-		$("#filter").css('position', 'fixed');
-		$("#overlay").css('left', '235px');
-		$("#overlay").addClass('small');
+		$('body').addClass('fixed');
 	} else {
 		$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
-		$("#filter").css('position', 'relative');
-		$("#overlay").css('left', '0');
-		$("#overlay").removeClass('small');
+		$('body').removeClass('fixed');
 	}
 }
 
-// Regel het uit/inklappen van sidebar items
-function toggleFilterBlock(linkName,block,cookieName) {
-	$(block).toggle();
-	if ($.cookie(cookieName) == 'none') { var view = 'block'; } else { var view = 'none'; }
-	toggleFilterImage(linkName, view);
-	$.cookie(cookieName, view, { path: '/', expires: 7 });
+// Sidebar items in/uitklapbaar maken
+function getSidebarState() {
+	var data = new Array();
+	$("div#filter > h4").each(function(index) {
+		var state = $(this).next().css("display");
+		data.push({"count": index, "state": state});
+	});	
+	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '/', expires: 7 });
 }
 
-// Cookies uitlezen en aan de hand hiervan sidebar items verbergen / laten zien
 $(function(){
-	var items = {'viewSearch': ['.hide', '#filterform_link'],
-				'viewQuickLinks': ['ul.quicklinks', '#quicklinks_link'],
-				'viewFilters': ['ul.filters', '#filters_link'],
-				'viewMaintenance': ['ul.maintenancebox', '#maintenance_link']
-	};
-	
-	// array doorlopen en actie ondernemen
-	$.each(items, function(key, value) {
-		var theState = $.cookie(key);
-		$(value[0]).css('display', theState);
-		toggleFilterImage(value[1], theState);
+	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
+	if(data == null) {
+		getSidebarState();
+		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
+	}
+	$.each(data, function(i, value) {
+		$("div#filter > h4").eq(value.count).next().css("display", value.state);
+		if(value.state != "none") {
+			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("down").addClass("up");
+		} else {
+			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("up").addClass("down");
+		}
 	});
 });
 
-// Wissel background in/uitklap button
-function toggleFilterImage(linkName, state) {
-	if (state == 'none') {
-		$(linkName).removeClass("up");
-		$(linkName).addClass("down");
+function toggleSidebarItem(id) {
+	var hide = $(id).parent().parent().next();
+
+	if($(hide).is(":visible")) {
+		$(hide).hide();
+		$(id).removeClass("up").addClass("down");
 	} else {
-		$(linkName).removeClass("down");
-		$(linkName).addClass("up");
+		$(hide).show();
+		$(id).removeClass("down").addClass("up");
+	}
+	getSidebarState()
+}
+
+// Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
+$(function(){
+	$("input.searchbox").focus(function(){
+		if($("form#filterform .advancedSearch").is(":hidden")) {
+			toggleSidebarPanel('.advancedSearch')
+		}
+	});
+
+	$("input.filtersubmit").click(function() {
+		if($("ul.dynatree-container li > span").hasClass("dynatree-partsel")) {
+			$("input[name='search[unfiltered]']").attr('checked', false);
+		} else {
+			$("input[name='search[unfiltered]']").attr('checked', true);
+		}
+	});
+});
+
+function toggleSidebarPanel(id) {
+	if($(id).is(":visible")) {
+		$(id).fadeOut();
+	} else if($(".sidebarPanel").is(":visible")) {
+		$(".sidebarPanel").fadeOut();
+		$(id).fadeIn();
+	} else {
+		$(id).fadeIn();
+	}
+
+	if(id == ".userPanel") {
+		$("div.login").load('?page=login', function() {
+			$('form.loginform').submit(function(){ 
+				var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
+				var username = $("form.loginform input[name='loginform[username]']").val();
+				var password = $("form.loginform input[name='loginform[password]']").val();
+				
+				var url = $("form.loginform").attr("action");
+				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "xml",
+					data: dataString,
+					success: function(xml) {
+						result = $(xml).find('result').text();
+
+						$("div.login ul.formerrors > li").empty()
+						if(result == "failure") {
+							$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
+						} else {
+							$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
+							setTimeout( function() { location.reload() }, 2000);
+						}
+					}
+				});
+				return false;
+			});	
+		});
 	}
 }
 
@@ -265,21 +339,20 @@ function toggleWatchSpot(spot,action,spot_id) {
 function multinzb() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count == 0) {
-		$('div.notifications').slideUp();
+		$('div.notifications').fadeOut();
 	} else {
-		$('div.notifications').slideDown();
+		$('div.notifications').fadeIn();
 		if(count == 1) {
 			$('span.count').html('Download '+count+' spot');
 		} else {
 			$('span.count').html('Download '+count+' spots');
 		}
-		
 	}
 }
 
 function uncheckMultiNZB() {
 	$("table.spots input[type=checkbox]").attr("checked", false);
-	$('div.notifications').slideUp();
+	$('div.notifications').fadeOut();
 }
 
 function checkMultiNZB() {
@@ -321,23 +394,123 @@ $(function(){
 
 function toggleFilter(id) {
 	$(id).parent().click(function(){ return false; });
-	
+
 	var ul = $(id).parent().next();
 	if($(ul).is(":visible")) {
-		ul.hide(); var state = "none";
+		ul.hide();
 		ul.prev().children("span.toggle").css("background-position", "-90px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter uitklappen");
 	} else {
-		ul.show(); var state = "block";
+		ul.show();
 		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
 		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
 	}
-	
+
 	var data = new Array();
 	$("ul.filters > li > ul").each(function(index) {
 		var state = $(this).css("display");
 		data.push({"count": index, "state": state});
 	});
-	
+
 	$.cookie("filterVisiblity", JSON.stringify(data), { path: '/', expires: 7 });
+}
+
+// Maintenance buttons
+$(function(){
+	$("ul.maintenancebox a.retrievespots").click(function(){return false});
+	$("ul.maintenancebox a.erasedownloads").click(function(){return false});
+	$("ul.maintenancebox a.markasread").click(function(){return false});
+});
+
+function retrieveSpots() {
+	var url = $("ul.maintenancebox a.retrievespots").attr("href");
+
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Nieuwe spots binnengehaald") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+function eraseDownloads() {
+	var url = $("ul.maintenancebox a.erasedownloads").attr("href");
+
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Download geschiedenis verwijderd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+function markAsRead() {
+	var url = $("ul.maintenancebox a.markasread").attr("href");
+
+	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$.get(url, function(data) {
+		setTimeout( function() { $("li.info").html("Alles als gelezen gemarkeerd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+// User systeem
+function userLogout() {
+	var url = '?page=logout';
+
+	$("div.userPanel > a.greyButton").hide();
+	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
+	$.get(url, function(data) {
+		setTimeout( function() { $("span.info").html("Succesvol uitgelogd") }, 1000);
+		setTimeout( function() { location.reload() }, 2000);
+	});
+}
+
+function toggleCreateUser() {
+	var url = '?page=createuser';
+
+	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
+		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.createUser").hide();
+	} else {
+		if($("div.createUser")) {$("div.createUser").html()}		
+		$("div.createUser").load(url, function() {
+			$("div.createUser").show();
+			$("div.userPanel h4.dropDown").css("margin", "0");
+			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+
+			$('form.createuserform').submit(function(){ 
+				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
+				var username = $("form.createuserform input[name='createuserform[username]']").val();
+				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
+				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
+				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
+
+				var url = $("form.createuserform").attr("action");
+				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
+				
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "xml",
+					data: dataString,
+					success: function(xml) {
+						var result = $(xml).find('result').text();
+						
+						$("div.createUser > ul.formerrors").empty();
+						if(result == "success") {
+							var user = $(xml).find('user').text();
+							var pass = $(xml).find('password').text();
+							$("div.createUser > ul.forminformation").append("<li>Gebruiker <strong>&quot;"+user+"&quot;</strong> succesvol toegevoegd</li>");
+							$("div.createUser > ul.forminformation").append("<li>Wachtwoord: <strong>&quot;"+pass+"&quot;</strong></li>");
+						} else {
+							$('errors', xml).each(function() {
+								$("div.createUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
+							});
+						}
+					}
+				});
+				return false;
+			});	
+		});
+	}
 }

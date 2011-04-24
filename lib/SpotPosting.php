@@ -21,8 +21,6 @@ class SpotPosting {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($inReplyTo, $user['userid'], $this->_nntp_post);
 
-var_dump($fullSpot);
-		
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1($newMessageId), 0, 4) != '0000') {
 			return array('errors' => array('invalidhashcash'));
