@@ -59,8 +59,10 @@
 <?php } ?>
                     </ul>
                     
+<?php if ($currentSession['user']['userid'] == 1) { ?>
                     <h4 class="dropDown"><span class="viewState"><a class="down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
                     <div class="createUser"></div>
+<?php } ?>
                     
 <?php if ($currentSession['user']['userid'] != 1) { ?>
                     <h4>Uitloggen</h4>
