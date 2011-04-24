@@ -5,7 +5,7 @@
 		# output each field to the XML as seperate field, eg $createresult['username']
 		# wil become <username>blah
 		foreach($result as $key => $value) {
-			$output .= '<' . $key . '>' . htmlspecialchars($tplHelper->formMessageToString($value)) . '</' . $key . '>';
+			$output .= '<' . $key . '>' . htmlspecialchars($value) . '</' . $key . '>';
 		} # foreach
 		
 		# now output each formmessage 
