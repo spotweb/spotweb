@@ -54,7 +54,7 @@ class SpotTemplateHelper {
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($query_params['search']);
+		$parsedSearch = $spotsOverview->filterToQuery($query_params['search'], $this->_currentSession);
 		
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
@@ -430,7 +430,7 @@ class SpotTemplateHelper {
 	
 	
 	function newSinceLastVisit($spot) {
-		return ($_SESSION['last_visit'] != false && $_SESSION['last_visit'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
+		return ($this->_currentSession['user']['lastvisit'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
 	} # newSinceLastVisit
 	
 	#
@@ -536,5 +536,20 @@ class SpotTemplateHelper {
 	function generateXsrfCookie($action) {
 		return SpotReq::generateXsrfCookie($action);
 	} # generateXsrfCookie
+	
+	/*
+	 * Converteert een message string uit Spotweb naar een toonbare tekst
+	 */
+	function formMessageToString($message) {
+		$strings = array();
+		$strings['validateuser_mailalreadyexist'] = 'Mailadres is al in gebruik';
+		$strings['validateuser_invalidmail'] = 'Geen geldig mailadres';
+		$strings['validateuser_invalidfirstname'] = 'Geen geldige voornaam';
+		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
+		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
+		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
+		
+		return vsprintf($strings[$message[0]], $message[1]);
+	} # formMessageToString
 	
 } # class SpotTemplateHelper

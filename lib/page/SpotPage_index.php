@@ -20,7 +20,7 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search']);
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
 		$this->_params['search'] = $parsedSearch['search'];
 		
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht

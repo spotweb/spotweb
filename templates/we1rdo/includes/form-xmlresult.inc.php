@@ -1,5 +1,5 @@
 <?php
-	function formResult2Xml($result, $formmessages) {
+	function formResult2Xml($result, $formmessages, $tplHelper) {
 		$output = '<xml>';
 		
 		# output each field to the XML as seperate field, eg $createresult['username']
@@ -11,7 +11,7 @@
 		# now output each formmessage 
 		foreach($formmessages as $formMsgType => $formMsgValues) {
 			foreach($formMsgValues as $value) {
-				$output .= '<' . $formMsgType . '>' . htmlspecialchars($value) . '</' . $formMsgType . '>';
+				$output .= '<' . $formMsgType . '>' . htmlspecialchars($tplHelper->formMessageToString($value)) . '</' . $formMsgType . '>';
 			} # foreach
 		} # foreach
 		

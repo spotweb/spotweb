@@ -70,7 +70,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   stamp INTEGER,
 										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid,ouruserid);");
 		} # if
 
 		# watchlist
@@ -80,7 +80,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 												   dateadded INTEGER,
 												   comment TEXT,
 												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid,ouruserid);");
 		} # if
 			
 		# commentsfull

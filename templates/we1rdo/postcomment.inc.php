@@ -4,7 +4,7 @@ require_once "templates/we1rdo/header.inc.php";
 if (!empty($postresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
-	echo formResult2Xml($postresult, $formmessages);
+	echo formResult2Xml($postresult, $formmessages, $tplHelper);
 } # if
 
 if (empty($postresult)) {
