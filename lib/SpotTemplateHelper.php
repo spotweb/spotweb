@@ -540,7 +540,7 @@ class SpotTemplateHelper {
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */
-	function formMessageToString($messageList) {
+	function formMessageToString($message) {
 		$strings = array();
 		$strings['validateuser_mailalreadyexist'] = 'Mailadres is al in gebruik';
 		$strings['validateuser_invalidmail'] = 'Geen geldig mailadres';
@@ -549,7 +549,7 @@ class SpotTemplateHelper {
 		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
 		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
 		
-		return vsprintf($message[0], $message[1]);
+		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 	
 } # class SpotTemplateHelper
