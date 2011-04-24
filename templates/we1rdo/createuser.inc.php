@@ -3,7 +3,7 @@
 if (!empty($createresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
-	echo formResult2Xml($createresult, $formmessages);
+	echo formResult2Xml($createresult, $formmessages, $tplHelper);
 } # if
 
 if (empty($createresult)) {

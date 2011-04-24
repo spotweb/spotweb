@@ -537,4 +537,19 @@ class SpotTemplateHelper {
 		return SpotReq::generateXsrfCookie($action);
 	} # generateXsrfCookie
 	
+	/*
+	 * Converteert een message string uit Spotweb naar een toonbare tekst
+	 */
+	function formMessageToString($messageList) {
+		$strings = array();
+		$strings['validateuser_mailalreadyexist'] = 'Mailadres is al in gebruik';
+		$strings['validateuser_invalidmail'] = 'Geen geldig mailadres';
+		$strings['validateuser_invalidfirstname'] = 'Geen geldige voornaam';
+		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
+		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
+		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
+		
+		return vsprintf($message[0], $message[1]);
+	} # formMessageToString
+	
 } # class SpotTemplateHelper
