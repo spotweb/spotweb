@@ -17,7 +17,7 @@
 
                 <form id="filterform" action="">
 <?php
-	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search);
+	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => '', 'sortdir' => ''), $search);
 	if (empty($search['type'])) {
 		$search['type'] = 'Titel';
 	} # if
@@ -32,8 +32,8 @@
                     <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
                     <div class="sidebarPanel advancedSearch">
-                    	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Advanced search</h4>
-                        <ul class="searchmode<?php if ($filterColCount == 3) {echo " small";} ?>">
+                    	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
+                        <ul class="search<?php if ($filterColCount == 3) {echo " small";} ?>">
                             <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
                             <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
                             <li> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
@@ -41,8 +41,18 @@
                             <li> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
 <?php } ?>
                         </ul>
-    
-                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true"  <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
+
+						<h4>Sorteren op:</h4>
+                        <div><input type="hidden" name="sortdir" value="ASC"></div>
+                        <ul class="search sorting">
+                            <li> <input type="radio" name="sortby" value="" <?php echo $search['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
+                        	<li> <input type="radio" name="sortby" value="title" <?php echo $search['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
+                            <li> <input type="radio" name="sortby" value="poster" <?php echo $search['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
+                        	<li> <input type="radio" name="sortby" value="stamp" <?php echo $search['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+                        </ul>
+
+						<h4>Filtering</h4>
+                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true" <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
     
                         <div id="tree"></div>
                     </div>
