@@ -62,8 +62,13 @@ body.fixed div#filter {position:fixed; top:25px;}
 
 div.filter h4 {background:url(img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0 0 5px 0; position:relative; overflow:hidden; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; text-shadow:1px 1px #000;}
 div.filter h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0;}
-body.spotinfo div.userPanel h4:first-child,
+body.spotinfo div.sidebarPanel:not(.advancedSearch) h4:first-child,
 body.spotinfo div.filter h4:first-child {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+
+div.limit {padding:5px 5px 5px 5px; text-align:center;}
+div.limit a {padding:1px 4px; margin:0 1px 0 0; border:0; cursor:pointer; background:url(img/sprite_x.png) repeat-x 0 -20px; color:#fff; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
+div.limit input[name=speedLimit] {font:11px Arial, Helvetica, sans-serif; width:50px; margin:0 5px 0 0;}
+div.limit input[name=setLimit] {font:11px Arial, Helvetica, sans-serif; padding:0 1px; margin:0 0 0 5px; border:0; cursor:pointer; background:url(img/sprite_x.png) repeat-x 0 -20px; color:#fff; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
 
 table.sabInfo td {padding:2px 10px 2px 5px;}
 table.sabInfo td a {cursor:pointer; text-decoration:underline;}
