@@ -61,7 +61,15 @@ class SpotNntp {
 
 		function post($article) {
 			$this->connect();
-			return $this->_nntp->post($article);
+
+			// We kunnen niet rechtstreeks post() aanroepen omdat die
+			// de autoloader triggered
+			$tmpError = $this->_nntp->cmdPost();
+			if ($tmpError) {
+				return $this->_nntp->cmdPost2($article);
+			} else {
+				return $tmpError;
+			} # else
 		} # post()
 		
 		function getHeader($msgid) {
@@ -184,7 +192,7 @@ class SpotNntp {
 			$spotParser = new SpotParser();
 
 			# sign het messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], $comment['newmessageid']);
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
 			
 			# ook door de php server 
 			$server_signature = $spotSigning->signMessage($serverPrivKey, $comment['newmessageid']);
@@ -192,7 +200,7 @@ class SpotNntp {
 			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: Re: ' . $title . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
-			$header .= 'Message-ID: ' . $comment['newmessageid'] . "\r\n";
+			$header .= 'Message-ID: <' . $comment['newmessageid'] . ">\r\n";
 			$header .= 'References: <' . $comment['inreplyto']. ">\r\n";
 			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
