@@ -17,6 +17,7 @@ function openSpot(id,url) {
 
 	$("table.spots tr.active").removeClass("active");
 	$(id).parent().parent().addClass('active');
+	$("table.spots tr.active td.title").removeClass("new");
 
 	var messageid = url.split("=")[2];
 
