@@ -148,7 +148,7 @@ class SpotNntp {
 						$keys = explode(':', $hdr);
 						
 						switch($keys[0]) {
-							case 'From'				: $tmpAr['fromhdr'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+							case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
 							case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
 							case 'X-User-Signature'	: $tmpAr['usersignature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
 							case 'X-User-Key'		: {
