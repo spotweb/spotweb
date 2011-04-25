@@ -56,10 +56,9 @@ class SpotUserSystem {
 	function updateCookie($userSession) {
 		SetCookie("spotsession",
 				  $userSession['session']['sessionid'] . '.' . $userSession['user']['userid'],
-				  time()+60*60*24*30); /*,
-				  '',		# Path
-				  ''.		# Domain
-				  1);		# HTTP only, no javascript */
+				  time()+60*60*24*30,
+				  '', # path: The default value is the current directory that the cookie is being set in.
+				  $this->_settings->get('cookie_host'));
 	} # updateCookie
 	
 	/*
