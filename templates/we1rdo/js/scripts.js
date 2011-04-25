@@ -194,7 +194,8 @@ function spotNav(direction) {
 $().ready(function() {
 	$('#filterscroll').bind('change', function() {
 		var scrolling = $(this).is(':checked');
-		$.cookie('scrolling', scrolling, { path: '/', expires: 7 });
+		$.cookie('scrolling', scrolling, { path: '', expires: 7, domain: '$COOKIE_HOST' });
+
 		toggleScrolling(scrolling);
 	});
 
@@ -219,7 +220,7 @@ function getSidebarState() {
 		var state = $(this).next().css("display");
 		data.push({"count": index, "state": state});
 	});	
-	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '/', expires: 7 });
+	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '', expires: 7, domain: '$COOKIE_HOST' });
 }
 
 $(function(){
@@ -412,7 +413,7 @@ function toggleFilter(id) {
 		data.push({"count": index, "state": state});
 	});
 
-	$.cookie("filterVisiblity", JSON.stringify(data), { path: '/', expires: 7 });
+	$.cookie("filterVisiblity", JSON.stringify(data), { path: '', expires: 7, domain: '$COOKIE_HOST' });
 }
 
 // Maintenance buttons
