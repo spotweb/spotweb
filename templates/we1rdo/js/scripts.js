@@ -514,3 +514,14 @@ function toggleCreateUser() {
 		});
 	}
 }
+
+// Pas sorteervolgorde aan voor datum
+$(function(){
+	$("ul.sorting input").click(function() {
+		if($(this).val() == 'stamp') {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
+		} else {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
+		}
+	});
+});
