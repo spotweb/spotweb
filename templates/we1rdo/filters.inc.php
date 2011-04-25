@@ -94,7 +94,7 @@
 	
 	echo "<table class='sabInfo'>";
 	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
-	if($xml->status == 'Paused') {$class = " class='pause'";}
+	if($xml->status == 'Paused') {$class = " class='pause'";} else {$class = "";}
     echo "<tr><td>Status:</td><td><strong".$class.">".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\", \"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
     echo "<tr><td>Snelheid:</td><td><strong>".round((float) $xml->kbpersec, 2)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
