@@ -541,3 +541,7 @@ function sabActions(action,host,apikey) {
 		});
 	}
 }
+
+function updateSabPanel() {
+	
+}
