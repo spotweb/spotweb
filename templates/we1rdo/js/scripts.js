@@ -525,3 +525,18 @@ $(function(){
 		}
 	});
 });
+
+// SabNZBd actions
+function sabActions(action,host,apikey) {
+	if(action == 'pause') {
+		var url = 'http://'+host+'/api?mode=pause&apikey='+apikey;
+		$.get(url, function() {
+			alert('paused');
+		});
+	} else if(action == 'resume') {
+		var url = 'http://'+host+'/api?mode=resume&apikey='+apikey;
+		$.get(url, function() {
+			alert('resumed');
+		});
+	}
+}
