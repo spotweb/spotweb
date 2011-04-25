@@ -63,6 +63,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
+		static $skipNewCount = null;
 		if ($skipNewCount) {
 			return '';
 		} # if
@@ -74,7 +75,7 @@ class SpotTemplateHelper {
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
 		# zijn, SpotWeb niet ontzettend traag wordt. 
 		if ($newCount > 5000) {
-			static $skipNewCount = true;
+			$skipNewCount = true;
 			return '';
 		} elseif ($newCount > 0) {
 			return $newCount;
