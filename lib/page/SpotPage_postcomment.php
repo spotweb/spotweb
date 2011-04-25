@@ -48,13 +48,15 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			# vraag de users' privatekey op
 			$this->_currentSession['user']['privatekey'] = 
 				$this->_db->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
+				
+			# het messageid krijgen we met <>'s, maar we werken 
+			# in spotweb altijd zonder, dus die strippen we
+			$comment['newmessageid'] = substr($comment['newmessageid'], 1, -1);
 			
+			# valideer of we deze comment kunnen posten, en zo ja, doe dat dan
 			$spotPosting = new SpotPosting($this->_db, $this->_settings);
 			var_dump($spotPosting->postComment($this->_currentSession['user'],
-									  $comment['body'],
-									  $comment['rating'],
-									  $comment['inreplyto'],
-									  $comment['newmessageid']));
+									  $comment));
 			
 			$tryPost = false;
 			if (!$tryPost) {

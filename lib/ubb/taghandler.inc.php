@@ -152,7 +152,7 @@
 		/* handle the img tag */
 		static function handle_url($params, $contents) {
 				# are only specific images allowed?
-				return Array('prepend' => '<a href="' . $params['originalparams'] . '">',
+				return Array('prepend' => '<a href="' . substr($params['originalparams'], 1) . '">',
 							 'content' => $contents,
 							 'append' => '</a>');
 		} // handle_url

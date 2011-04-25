@@ -11,7 +11,7 @@ class SpotPage_selecttemplate extends SpotPage_Abs {
 		$chosenTemplate = $this->_req->getDef('template', '');
 		
 		if (array_search($chosenTemplate, $this->_settings->get('available_templates')) !== false) {
-			setcookie('template', $chosenTemplate, time()+(86400*$this->_settings->get('cookie_expires')), '/', $this->_settings->get('cookie_host'));
+			setcookie('template', $chosenTemplate, time()+(86400*$this->_settings->get('cookie_expires')), '', $this->_settings->get('cookie_host'));
 			echo "<xml><return>ok</return></xml>";
 		} else {
 			echo "<xml><return>error</return></xml>";

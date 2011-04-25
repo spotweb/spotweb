@@ -61,7 +61,15 @@ class SpotNntp {
 
 		function post($article) {
 			$this->connect();
-			return $this->_nntp->post($article);
+
+			// We kunnen niet rechtstreeks post() aanroepen omdat die
+			// de autoloader triggered
+			$tmpError = $this->_nntp->cmdPost();
+			if ($tmpError) {
+				return $this->_nntp->cmdPost2($article);
+			} else {
+				return $tmpError;
+			} # else
 		} # post()
 		
 		function getHeader($msgid) {
@@ -140,7 +148,7 @@ class SpotNntp {
 						$keys = explode(':', $hdr);
 						
 						switch($keys[0]) {
-							case 'From'				: $tmpAr['fromhdr'] = trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))); break;
+							case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
 							case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
 							case 'X-User-Signature'	: $tmpAr['usersignature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
 							case 'X-User-Key'		: {
@@ -176,34 +184,29 @@ class SpotNntp {
 			return $comments;
 		} # getComments
 
-		function postComment($user, $hashCash, $serverPrivKey, $rating, $newsgroup, $inReplyTo, $title, $content) {
+		function postComment($user, $serverPrivKey, $newsgroup, $title, $comment) {
 			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
-		
-			# We genereren een uniek messageid dat ook nog eens als eerste vier bytes 0000 geeft
-			# van een SHA1 hash. 
-			
-			# Rating is 1 t/m 10, en bevat een rating van de spot waar dit commentaar over gaat
-			# Spotweb zou in het overzicht bij elke spot de gemiddelde beoordeling kunnen tonen.
-			$newMessageId = $spotSigning->makeExpensiveHash("<" . $inReplyTo . "." . $rating . "." . 
-								$spotParser->specialString(base64_encode($spotSigning->makeRandomStr(4))), 
-								"@spot.net>");
-			
-			# en sign het messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], $newMessageId);
+
+			# instantieer de benodigde objecten
+			$spotSigning = new SpotSigning();
+			$spotParser = new SpotParser();
+
+			# sign het messageid
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
 			
 			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, $newMessageId);
-			
-			$header = 'From: ' . $user['name'] . " <" . trim($user['name']) . '@spot.net>' . "\r\n";
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $comment['newmessageid']);
+
+			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: Re: ' . $title . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
-			$header .= 'Message-ID: ' . $newMessageId . "\r\n";
-			$header .= 'References: <' . $inReplyTo. ">\r\n";
+			$header .= 'Message-ID: <' . $comment['newmessageid'] . ">\r\n";
+			$header .= 'References: <' . $comment['inreplyto']. ">\r\n";
 			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
-			$header .= 'X-User-Rating: ' . $rating . "\r\n";
+			$header .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
 			
 			# $header .= 'X-User-Avatar: ' 
 			# Message-ID van een avatar
@@ -214,8 +217,7 @@ class SpotNntp {
 			$header .= "X-Newsreader: SpotWeb 0.9\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 			
-			return $this->post(array($header, $content));
-
+			return $this->post(array($header, $comment['body']));
 		} # postComment
 		
 		function getImage($segment) {
