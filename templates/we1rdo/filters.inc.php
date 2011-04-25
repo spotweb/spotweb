@@ -42,7 +42,7 @@
 <?php } ?>
                         </ul>
 
-						<h4>Sorteren op:</h4>
+						<h4 class="sorting">Sorteren op:</h4>
                         <div><input type="hidden" name="sortdir" value="ASC"></div>
                         <ul class="search sorting">
                             <li> <input type="radio" name="sortby" value="" <?php echo $search['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
@@ -93,7 +93,7 @@
 	echo "<table class='sabInfo'>";
 	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
     echo "<tr><td>Status:</td><td><strong>".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
-    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s</td></tr>";
+    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s (max. ".$xml->speedlimit." KB/s)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
     echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
 	echo "</table>";
