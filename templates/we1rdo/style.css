@@ -75,8 +75,11 @@ table.sabInfo td a {cursor:pointer; text-decoration:underline;}
 
 table.sabQueue {margin:0 5px; width:225px;}
 table.sabQueue td {padding:1px 0 1px 0;}
-table.sabQueue td.title {padding-top:5px;}
-table.sabQueue td.progressBar {padding:0; background-color:#dbdbdb;}
+table.sabQueue tr.title td {padding-top:5px;}
+table.sabQueue tr.title td span {float:left; display:table; padding:0 4px 0 0;}
+table.sabQueue tr.title td a.up {background:url(img/sprite.png) no-repeat -81px -103px; width:7px; height:5px; display:block; cursor:pointer;}
+table.sabQueue tr.title td a.down {background:url(img/sprite.png) no-repeat -94px -102px; width:7px; height:5px; display:block; cursor:pointer;}
+table.sabQueue tr.progressBar td {padding:0; background-color:#dbdbdb;}
 table.sabQueue div.progressBar {background-color:#009d12; height:4px;}
 
 /* NOTIFICATIONS */

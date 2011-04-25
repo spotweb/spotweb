@@ -311,6 +311,14 @@ function toggleSidebarPanel(id) {
 			});	
 		});
 	}
+	
+	if(id == ".sabnzbdPanel") {
+		$("table.sabQueue tr.title td span").each(function() {
+			if($(this).children("a:visible").size() == 1) {
+				$(this).css('padding', '2px 4px 3px 0');
+			}
+		});
+	}
 }
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
@@ -529,13 +537,20 @@ $(function(){
 });
 
 // SabNZBd actions
-function sabActions(action,host,apikey) {
+$(function(){
+	$("table.sabQueue tr:first-child td span > a.up").hide();
+	$("table.sabQueue tr:last-child").prev().children("td").children("span").children("a.down").hide();	
+});
+
+function sabActions(action,host,apikey,slot,value) {
 	if(action == 'pause') {
 		var url = 'http://'+host+'/api?mode=pause&apikey='+apikey;
 		$.get(url);
+		updateSabPanel();
 	} else if(action == 'resume') {
 		var url = 'http://'+host+'/api?mode=resume&apikey='+apikey;
 		$.get(url);
+		updateSabPanel();
 	} else if(action == 'speedlimit') {
 		if($("div.limit").is(":visible")) {
 			$("div.limit").fadeOut();
@@ -547,11 +562,22 @@ function sabActions(action,host,apikey) {
 				$.get(url);
 				
 				$("div.limit").fadeOut();
+				updateSabPanel();
 			});
 		}
+	} else if(action == 'up') {
+		var newIndex = value-1;
+		var url = 'http://'+host+'/api?mode=switch&value='+slot+'&value2='+newIndex+'&apikey='+apikey;
+		$.get(url);
+		updateSabPanel();
+	} else if(action == 'down') {
+		var newIndex = value+1;
+		var url = 'http://'+host+'/api?mode=switch&value='+slot+'&value2='+newIndex+'&apikey='+apikey;
+		$.get(url);
+		updateSabPanel();
 	}
 }
 
 function updateSabPanel() {
-	
+	alert('refresh');
 }
