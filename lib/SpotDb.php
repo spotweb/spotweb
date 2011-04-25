@@ -764,7 +764,7 @@ class SpotDb
 			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
 					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],
-						  $comment['fromhdr'],
+						  utf8_encode($comment['fromhdr']),
 						  $comment['stamp'],
 						  $comment['usersignature'],
 						  serialize($comment['user-key']),
@@ -798,6 +798,7 @@ class SpotDb
 		for($i = 0; $i < $commentListCount; $i++) {
 			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
 			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+			$commentList[$i]['fromhdr'] = htmlentities($commentList[$i]['fromhdr'], ENT_NOQUOTES, "UTF-8");
 		} # foreach
 		
 		SpotTiming::stop(__FUNCTION__, array($commentMsgIds));
