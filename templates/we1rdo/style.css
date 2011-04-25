@@ -208,7 +208,7 @@ table.spots tr td.watch a.remove {background-position:-56px -80px;}
 div.details table.spotheader th.sabnzbd a.sabnzbd-button,
 table.spots tr td a.sabnzbd-button {display:block; width:20px; height:17px; cursor:pointer; margin:0 2px 1px 0; background:url(img/sprite.png) no-repeat 0 -94px;}
 div.details table.spotheader th.sabnzbd a.sabnzbd-button.loading,
-table.spots tr td a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center center; margin:0 0 0 1px;}
+table.spots tr td a.sabnzbd-button.loading {background:url(img/loading.gif) no-repeat center center; margin:0;}
 div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes,
 table.spots tr td a.sabnzbd-button.succes {background-position:-20px -94px;}
 
