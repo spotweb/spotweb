@@ -93,9 +93,10 @@
 	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
 	echo "<table class='sabInfo'>";
 	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
-    echo "<tr><td>Status:</td><td><strong>".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
-    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
+    echo "<tr><td>Status:</td><td><strong>".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\", \"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
+    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
+	echo "<tr><td>ETA:</td><td><strong>".$xml->eta."</strong></td></tr>";
     echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
 	echo "</table>";
 	
@@ -105,8 +106,8 @@
 		echo "<tr><td class='info'>Geen items in de queue</td></tr>";
 	} else {
 		foreach($xml->slots->slot as $slot) {
-			echo "<tr><td class='title'><strong>".$slot->index."</strong>. ".$slot->filename."</td></tr>";
-			echo "<tr><td class='progressBar'><div class='progressBar' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
+			echo "<tr class='title'><td><span><a class='up' title='Omhoog' onclick='sabActions(\"up\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a><a class='down' title='Omlaag' onclick='sabActions(\"down\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a></span><strong>".$slot->index.".</strong> ".$slot->filename."</td></tr>";
+			echo "<tr class='progressBar'><td><div class='progressBar' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
 		}
 	}
 	echo "</table>";
