@@ -154,15 +154,15 @@ $settings['retrieve_newer_than'] = 0;
 $settings['prefs']['date_formatting'] = "human";
 
 # db
-$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
-$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
+$settings['db']['engine'] = 'mysql';
+$settings['db']['host'] = 'localhost';
+$settings['db']['dbname'] = 'spotweb';
+$settings['db']['user'] = 'spotweb';
+$settings['db']['pass'] = 'spotweb';
 
-# Als je MySQL wilt gebruiken, vul dan onderstaande in
-#$settings['db']['engine'] = 'mysql';
-#$settings['db']['host'] = 'localhost';
-#$settings['db']['dbname'] = 'spotweb';
-#$settings['db']['user'] = 'spotweb';
-#$settings['db']['pass'] = 'spotweb';
+# Als je sqlite wilt gebruiken, vul dan onderstaande in
+#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
+#$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # waar moeten we de templates vinden?
 # zet eerst de standaard waarden...
