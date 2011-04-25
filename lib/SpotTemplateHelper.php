@@ -64,25 +64,20 @@ class SpotTemplateHelper {
 	 */
 	function getNewCountForFilter($filterStr) {
 		static $skipNewCount = null;
-		if ($skipNewCount == null) {
-			$this->_settings->get('count_newspots');
-		}# if
-		
 		if ($skipNewCount) {
 			return '';
 		} # if
-		
+
 		$filterStr .= "&search[value][]=New:0";
 		$newCount = $this->getFilteredSpotCount($filterStr);
 
-		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots 
+		# en geef het aantal terug dat we willen hebben. Inclusief extragratis
+		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
 		# zijn, SpotWeb niet ontzettend traag wordt. 
 		if ($newCount > 5000) {
 			$skipNewCount = true;
-		} # if
-		
-		# en geef het aantal terug dat we willen hebben
-		if ($newCount > 0) {
+			return '';
+		} elseif ($newCount > 0) {
 			return $newCount;
 		} else {
 			return '';
@@ -376,6 +371,7 @@ class SpotTemplateHelper {
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
 			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
+			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, "UTF-8");
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
 			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe

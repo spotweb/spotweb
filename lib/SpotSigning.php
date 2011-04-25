@@ -114,7 +114,7 @@ class SpotSigning {
 	 * formaat gebruikt door de SpotNet native client
 	 */
 	public function pubkeyToXml($pubkey) {
-		return "<RSAKeyValue><Modulus>" . $pubkey['n'] . '</Modulus><Exponent>' . $pubkey['e'] . '</Exponent></RSAKeyValue>';
+		return "<RSAKeyValue><Modulus>" . $pubkey['modulo'] . '</Modulus><Exponent>' . $pubkey['exponent'] . '</Exponent></RSAKeyValue>';
 	} # pubkeyToXml 
 		
 	
@@ -150,7 +150,7 @@ class SpotSigning {
 	 */
 	public function verifyComment($comment) {
 		$verified = false;
-		
+
 		if ((!empty($comment['usersignature'])) && (!empty($comment['user-key']))) {
 			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key']);
 			if (!$verified) {

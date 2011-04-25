@@ -3,7 +3,7 @@
 	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 0);
 	$comments = $tplHelper->formatComments($comments);
 
-	$setpath = $tplHelper->makeBaseUrl();
+	$setpath = $tplHelper->makeBaseUrl("path");
 	
 	// fix the sabnzbdurl en searchurl
 	$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);

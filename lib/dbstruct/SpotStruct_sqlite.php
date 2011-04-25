@@ -115,6 +115,19 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 										   stamp INTEGER);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
 		} # if
+
+		# commentsposted
+		if (!$this->tableExists('commentsposted')) {
+			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY,
+									  ouruserid INTEGER DEFAULT 0 NOT NULL,
+									  messageid VARCHAR(128) NOT NULL,
+									  inreplyto VARCHAR(128) NOT NULL,
+									  randompart VARCHAR(32) NOT NULL,
+									  rating INTEGER DEFAULT 0 NOT NULL,
+									  body TEXT,
+									  stamp INTEGER DEFAULT 0 NOT NULL)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(inreplyto,randompart);");
+		} # if
 	} # createDatabase
 	
 	/* controleert of een index bestaat */

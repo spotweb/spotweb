@@ -1,6 +1,6 @@
 <?php 
 $getUrl = $tplHelper->getQueryParams();
-$setpath = $tplHelper->makeBaseUrl();
+$setpath = $tplHelper->makeBaseUrl("path");
 ?>
 
 <div data-role="page" id="spots"> 
