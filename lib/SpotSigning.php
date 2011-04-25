@@ -150,7 +150,7 @@ class SpotSigning {
 	 */
 	public function verifyComment($comment) {
 		$verified = false;
-		
+
 		if ((!empty($comment['usersignature'])) && (!empty($comment['user-key']))) {
 			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key']);
 			if (!$verified) {
