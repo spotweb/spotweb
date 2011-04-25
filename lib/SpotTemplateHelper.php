@@ -65,7 +65,7 @@ class SpotTemplateHelper {
 	function getNewCountForFilter($filterStr) {
 		if ($skipNewCount) {
 			return '';
-		}
+		} # if
 
 		$filterStr .= "&search[value][]=New:0";
 		$newCount = $this->getFilteredSpotCount($filterStr);
@@ -76,7 +76,7 @@ class SpotTemplateHelper {
 		if ($newCount > 5000) {
 			static $skipNewCount = true;
 			return '';
-		elseif ($newCount > 0) {
+		} elseif ($newCount > 0) {
 			return $newCount;
 		} else {
 			return '';
