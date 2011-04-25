@@ -376,6 +376,7 @@ class SpotTemplateHelper {
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
 			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
+			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, "UTF-8");
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
 			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
