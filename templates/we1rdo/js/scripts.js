@@ -579,5 +579,5 @@ function sabActions(action,host,apikey,slot,value) {
 }
 
 function updateSabPanel() {
-	alert('refresh');
+	
 }
