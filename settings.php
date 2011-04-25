@@ -307,7 +307,7 @@ if (($settings['templates']['autodetect']) &&
 				$settings['tpl_path'] = 'templates/' . $settings['available_templates'][$chosenTemplate] . '/';
 				
 				// verleng cookie
-				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '/', $settings['cookie_host']);
+				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '', $settings['cookie_host']);
 			} else {
 				$settings['tpl_path'] = $settings['templates']['default']; 
 			} # else
