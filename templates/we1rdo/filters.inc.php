@@ -85,9 +85,31 @@
                 
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
-                    <ul class="userInfo">
-                    	<li>Work in progress</li>
-                    </ul>
+<?php
+	$nzbHandling = $this->_settings->get('nzbhandling'); 
+	$sabnzbd = $nzbHandling['sabnzbd'];
+    $xml = simplexml_load_file("http://".$sabnzbd['host']."/api?mode=queue&output=xml&apikey=".$sabnzbd['apikey']."");
+	
+	echo "<table class='sabInfo'>";
+	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
+    echo "<tr><td>Status:</td><td><strong>".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
+    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s</td></tr>";
+    echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
+    echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
+	echo "</table>";
+	
+	echo "<h4>Wachtrij <span class='info' title='".$xml->noofslots." items in wachtrij'>".$xml->noofslots."</span></h4>";
+	echo "<table class='sabQueue'>";
+	if($xml->noofslots == 0) {
+		echo "<tr><td class='info'>Geen items in de queue</td></tr>";
+	} else {
+		foreach($xml->slots->slot as $slot) {
+			echo "<tr><td class='title'><strong>".$slot->index."</strong>. ".$slot->filename."</td></tr>";
+			echo "<tr><td class='progressBar'><div class='progressBar' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
+		}
+	}
+	echo "</table>";
+?>
                 </div>
             </div>
 
