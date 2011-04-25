@@ -114,7 +114,7 @@ class SpotSigning {
 	 * formaat gebruikt door de SpotNet native client
 	 */
 	public function pubkeyToXml($pubkey) {
-		return "<RSAKeyValue><Modulus>" . $pubkey['n'] . '</Modulus><Exponent>' . $pubkey['e'] . '</Exponent></RSAKeyValue>';
+		return "<RSAKeyValue><Modulus>" . $pubkey['modulo'] . '</Modulus><Exponent>' . $pubkey['exponent'] . '</Exponent></RSAKeyValue>';
 	} # pubkeyToXml 
 		
 	

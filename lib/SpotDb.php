@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.17');
+define('SPOTDB_SCHEMA_VERSION', '0.18');
 
 class SpotDb
 {
@@ -53,6 +53,34 @@ class SpotDb
 	function getAllSettings() {
 		return $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
 	} # getAllSettings
+
+	/* 
+	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
+	 * te posten
+	 */
+	function isCommentMessageIdUnique($messageid) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'",
+						Array($messageid));
+		
+		return (empty($tmpResult));
+	} # isCommentMessageIdUnique
+	
+	/*
+	 * Sla het gepostte comment op van deze user
+	 */
+	function addPostedComment($userId, $comment) {
+		$this->_conn->exec(
+				"INSERT INTO commentsposted(ouruserid, messageid, inreplyto, randompart, rating, body, stamp)
+					VALUES('%d', '%s', '%s', '%s', '%d', '%s', %d)", 
+				Array((int) $userId,
+					  $comment['newmessageid'],
+					  $comment['inreplyto'],
+					  $comment['randomstr'],
+					  (int) $comment['rating'],
+					  $comment['body'],
+					  (int) time()));
+	} # addPostedComment
+		
 	
 	/*
 	 * Update setting

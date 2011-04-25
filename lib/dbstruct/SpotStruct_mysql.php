@@ -113,6 +113,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   stamp INTEGER) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
 		} # if
+
+		# commentsposted
+		if (!$this->tableExists('commentsposted')) {
+			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY AUTO_INCREMENT,
+									  ouruserid INTEGER DEFAULT 0 NOT NULL,
+									  messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+									  inreplyto VARCHAR(128) CHARACTER SET ascii NOT NULL,
+									  randompart VARCHAR(32) CHARACTER SET ascii NOT NULL,
+									  rating INTEGER DEFAULT 0 NOT NULL,
+									  body TEXT,
+									  stamp INTEGER DEFAULT 0 NOT NULL) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(inreplyto,randompart);");
+		} # if
 	} # createDatabase
 
 	/* controleert of een index bestaat */
