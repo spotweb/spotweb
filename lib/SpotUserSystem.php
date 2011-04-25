@@ -58,7 +58,9 @@ class SpotUserSystem {
 				  $userSession['session']['sessionid'] . '.' . $userSession['user']['userid'],
 				  time()+60*60*24*30,
 				  '', # path: The default value is the current directory that the cookie is being set in.
-				  $this->_settings->get('cookie_host'));
+				  $this->_settings->get('cookie_host'),
+				  false,	# https only
+				  true);	# Only available to the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript.
 	} # updateCookie
 	
 	/*
