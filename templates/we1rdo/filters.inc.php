@@ -90,10 +90,11 @@
 	$sabnzbd = $nzbHandling['sabnzbd'];
     $xml = simplexml_load_file("http://".$sabnzbd['host']."/api?mode=queue&output=xml&apikey=".$sabnzbd['apikey']."");
 	
+	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
 	echo "<table class='sabInfo'>";
 	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
     echo "<tr><td>Status:</td><td><strong>".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
-    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s (max. ".$xml->speedlimit." KB/s)</td></tr>";
+    echo "<tr><td>Snelheid:</td><td><strong>".intval($xml->kbpersec)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
     echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
 	echo "</table>";

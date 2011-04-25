@@ -532,18 +532,23 @@ $(function(){
 function sabActions(action,host,apikey) {
 	if(action == 'pause') {
 		var url = 'http://'+host+'/api?mode=pause&apikey='+apikey;
-		$.get(url, function(data) {
-			alert('paused');
-			
-			alert(data);
-		});
+		$.get(url);
 	} else if(action == 'resume') {
 		var url = 'http://'+host+'/api?mode=resume&apikey='+apikey;
-		$.get(url, function(data) {
-			alert('resumed');
-			
-			alert(data);
-		});
+		$.get(url);
+	} else if(action == 'speedlimit') {
+		if($("div.limit").is(":visible")) {
+			$("div.limit").fadeOut();
+		} else {
+			$("div.limit").fadeIn();
+			$("div.limit input[name=setLimit]").click(function() {
+				var limit = $("div.limit input[name=speedLimit]").val();
+				var url = 'http://'+host+'/api?mode=config&name=speedlimit&value='+limit+'&apikey='+apikey;
+				$.get(url);
+				
+				$("div.limit").fadeOut();
+			});
+		}
 	}
 }
 
