@@ -182,11 +182,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;
-							$fullSpot = $this->_spotnntp->getFullSpot(substr($msgheader['Message-ID'], 1, -1));
+							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
 					
 							# en voeg hem aan de database toe
 							$this->_db->addFullSpot($fullSpot);
 							$fullspot_isInDb = true;
+							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
+							# keren per xover mee komt ...
+							$dbIdList['fullspot'][$msgId] = 1;
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
