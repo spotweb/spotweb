@@ -764,7 +764,7 @@ class SpotDb
 			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
 					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],
-						  utf8_encode($comment['fromhdr']),
+						  $comment['fromhdr'],
 						  $comment['stamp'],
 						  $comment['usersignature'],
 						  serialize($comment['user-key']),
