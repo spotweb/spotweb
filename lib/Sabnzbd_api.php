@@ -21,7 +21,7 @@ class Sabnzbd_api {
 		} # else
 
 		$request = str_replace("page=sabapi&", "", $_SERVER['QUERY_STRING']);
-		$url = "http://" . $this->_settings['sabnzbd']['host'] . "/sabnzbd/api?" . $_SERVER['QUERY_STRING'];
+		$url = "http://" . $this->_settings['sabnzbd']['host'] . "/sabnzbd/api?" . $request;
 		$output = @file_get_contents($url, 0);
 		echo $output;
 
