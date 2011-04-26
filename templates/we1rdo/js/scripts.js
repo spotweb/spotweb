@@ -560,7 +560,6 @@ function sabActions(action,host,apikey,slot,value) {
 				var limit = $("div.limit input[name=speedLimit]").val();
 				var url = 'http://'+host+'/api?mode=config&name=speedlimit&value='+limit+'&apikey='+apikey;
 				$.get(url);
-				
 				$("div.limit").fadeOut();
 				updateSabPanel();
 			});
