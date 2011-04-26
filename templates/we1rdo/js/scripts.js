@@ -313,11 +313,7 @@ function toggleSidebarPanel(id) {
 	}
 	
 	if(id == ".sabnzbdPanel") {
-		$("table.sabQueue tr.title td span").each(function() {
-			if($(this).children("a:visible").size() == 1) {
-				$(this).css('padding', '2px 4px 3px 0');
-			}
-		});
+		updateSabPanel();
 	}
 }
 
@@ -542,54 +538,82 @@ $(function(){
 	$("table.sabQueue tr:last-child").prev().children("td").children("span").children("a.down").hide();	
 });
 
-function sabActions(action,slot,value) {
+function sabBaseURL() {
 	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi';
+	return baseURL;
+}
+
+function sabActions(action,slot,value) {
+	var baseURL = sabBaseURL();
 	
 	if(action == 'pause') {
 		var url = baseURL+'&mode=pause';
-		$.get(url, function(data){
-			alert(data);
+		$.get(url, function(){
+			updateSabPanel();
 		});
-		updateSabPanel();
 	} else if(action == 'resume') {
 		var url = baseURL+'&mode=resume';
-		$.get(url, function(data){
-			alert(data);
+		$.get(url, function(){
+			updateSabPanel();
 		});
-		updateSabPanel();
 	} else if(action == 'speedlimit') {
-		if($("div.limit").is(":visible")) {
-			$("div.limit").fadeOut();
-		} else {
-			$("div.limit").fadeIn();
-			$("div.limit input[name=setLimit]").click(function() {
-				var limit = $("div.limit input[name=speedLimit]").val();
-				var url = baseURL+'&mode=config&name=speedlimit&value='+limit;
-				$.get(url, function(data){
-					alert(data);
-				});
-
-				$("div.limit").fadeOut();
-				updateSabPanel();
-			});
-		}
+		var limit = $("td.speedlimit input[name=speedLimit]").val();
+		var url = baseURL+'&mode=config&name=speedlimit&value='+limit;
+		$.get(url, function(){
+			updateSabPanel();
+		});
 	} else if(action == 'up') {
 		var newIndex = value-1;
 		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
-		$.get(url, function(data){
-			alert(data);
+		$.get(url, function(){
+			updateSabPanel();
 		});
-		updateSabPanel();
 	} else if(action == 'down') {
 		var newIndex = value+1;
 		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
-		$.get(url, function(data){
-			alert(data);
+		$.get(url, function(){
+			updateSabPanel();
 		});
-		updateSabPanel();
 	}
 }
 
-function updateSabPanel() {
+function updateSabPanel() {	
+	var baseURL = sabBaseURL();
+	var url = baseURL+'&mode=queue&output=json';
 	
+	$.getJSON(url, function(json){		
+		var queue = json.queue;
+		
+		if(queue.paused) {var state = "resume"} else {var state = "pause"}
+		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
+		$("table.sabInfo td.state a.state").click(function(){sabActions(state)});
+		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label><input type='submit' name='setLimit' value='>>' title='Instellen'>");
+		$("td.speedlimit input[name=setLimit]").click(function(){sabActions('speedlimit')});
+		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
+		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
+		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
+		
+		$("table.sabQueue").empty();
+		if(queue.noofslots == 0) {
+			$("table.sabQueue").html("<tr><td class='info'>Geen items in de queue</td></tr>");
+		} else {
+			$.each(queue.slots, function(){
+				var slot = this;
+				if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
+				
+				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.percentage+"%' style='width:"+slot.percentage+"%'></div></td></tr>");
+				
+				$("table.sabQueue tr."+slot.index+" a.up").click(function(){sabActions('up', slot.nzo_id, slot.index)});
+				$("table.sabQueue tr."+slot.index+" a.down").click(function(){sabActions('down', slot.nzo_id, slot.index)});
+			});
+		}
+		
+		if($("table.sabQueue tr.title td span").size() == 1) {
+			$("table.sabQueue tr.title td span").hide();
+		} else {
+			$("table.sabQueue tr.title td span").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			$("table.sabQueue tr.title td span").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		}
+	});
 }
