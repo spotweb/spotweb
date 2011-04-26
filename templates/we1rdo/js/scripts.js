@@ -542,14 +542,20 @@ $(function(){
 	$("table.sabQueue tr:last-child").prev().children("td").children("span").children("a.down").hide();	
 });
 
-function sabActions(action,host,apikey,slot,value) {
+function sabActions(action,slot,value) {
+	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi';
+	
 	if(action == 'pause') {
-		var url = 'http://'+host+'/api?mode=pause&apikey='+apikey;
-		$.get(url);
+		var url = baseURL+'&mode=pause';
+		$.get(url, function(data){
+			alert(data);
+		});
 		updateSabPanel();
 	} else if(action == 'resume') {
-		var url = 'http://'+host+'/api?mode=resume&apikey='+apikey;
-		$.get(url);
+		var url = baseURL+'&mode=resume';
+		$.get(url, function(data){
+			alert(data);
+		});
 		updateSabPanel();
 	} else if(action == 'speedlimit') {
 		if($("div.limit").is(":visible")) {
@@ -558,21 +564,28 @@ function sabActions(action,host,apikey,slot,value) {
 			$("div.limit").fadeIn();
 			$("div.limit input[name=setLimit]").click(function() {
 				var limit = $("div.limit input[name=speedLimit]").val();
-				var url = 'http://'+host+'/api?mode=config&name=speedlimit&value='+limit+'&apikey='+apikey;
-				$.get(url);
+				var url = baseURL+'&mode=config&name=speedlimit&value='+limit;
+				$.get(url, function(data){
+					alert(data);
+				});
+
 				$("div.limit").fadeOut();
 				updateSabPanel();
 			});
 		}
 	} else if(action == 'up') {
 		var newIndex = value-1;
-		var url = 'http://'+host+'/api?mode=switch&value='+slot+'&value2='+newIndex+'&apikey='+apikey;
-		$.get(url);
+		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
+		$.get(url, function(data){
+			alert(data);
+		});
 		updateSabPanel();
 	} else if(action == 'down') {
 		var newIndex = value+1;
-		var url = 'http://'+host+'/api?mode=switch&value='+slot+'&value2='+newIndex+'&apikey='+apikey;
-		$.get(url);
+		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
+		$.get(url, function(data){
+			alert(data);
+		});
 		updateSabPanel();
 	}
 }
