@@ -1,5 +1,5 @@
 <?php
-class Sabnzbd_api {
+class SpotPage_sabapi extends SpotPage_Abs {
 
 	function __construct($db, $settings) {
 		$this->_dbsettings = $db;
@@ -27,4 +27,4 @@ class Sabnzbd_api {
 
 	} # render
 
-} # class Sabnzbd_api
+} # class SpotPage_sabapi
