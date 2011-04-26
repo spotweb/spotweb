@@ -85,36 +85,16 @@
                 
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
-<?php
-	$nzbHandling = $this->_settings->get('nzbhandling'); 
-	$sabnzbd = $nzbHandling['sabnzbd'];
-    $xml = simplexml_load_file("http://".$sabnzbd['host']."/api?mode=queue&output=xml&apikey=".$sabnzbd['apikey']."");
-	
-	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
-	
-	echo "<table class='sabInfo'>";
-	if($xml->paused == 'True') {$action = "resume";} else {$action = "pause";}
-	if($xml->paused == 'True') {$class = " class='pause'";} else {$class = "";}
-    echo "<tr><td>Status:</td><td><strong".$class.">".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\")'>".$action."</a>)</td></tr>";
-    echo "<tr><td>Snelheid:</td><td><strong>".round((float) $xml->kbpersec, 2)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
-    echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
-	echo "<tr><td>ETA:</td><td><strong>".$xml->eta."</strong></td></tr>";
-    echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
-	echo "</table>";
-	
-	echo "<h4>Wachtrij <span class='info' title='".$xml->noofslots." items in wachtrij'>".$xml->noofslots."</span></h4>";
-	echo "<table class='sabQueue'>";
-	if($xml->noofslots == 0) {
-		echo "<tr><td class='info'>Geen items in de queue</td></tr>";
-	} else {
-		foreach($xml->slots->slot as $slot) {
-			echo "<tr class='title'><td><span><a class='up' title='Omhoog' onclick='sabActions(\"up\", \"".$slot->nzo_id."\", ".$slot->index.")'></a><a class='down' title='Omlaag' onclick='sabActions(\"down\", \"".$slot->nzo_id."\", ".$slot->index.")'></a></span><strong>".$slot->index.".</strong> ".$slot->filename."</td></tr>";
-			if($slot->percentage == 0) {$percentage = " empty";} else {$percentage = "";}
-			echo "<tr class='progressBar'><td><div class='progressBar".$percentage."' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
-		}
-	}
-	echo "</table>";
-?>
+					<table class="sabInfo">
+                    	<tr><td>Status:</td><td class="state"></td></tr>
+                        <tr><td>Snelheid:</td><td class="speed"></td></tr>
+                        <tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
+                        <tr><td>Te gaan:</td><td class="timeleft"></td></tr>
+                        <tr><td>ETA:</td><td class="eta"></td></tr>
+                        <tr><td>Wachtrij:</td><td class="mb"></td></tr>
+                    </table>
+					<h4>Wachtrij</h4>
+					<table class="sabQueue"><tbody><tr><td></td></tr></tbody></table>
                 </div>
             </div>
 
