@@ -9,15 +9,15 @@ class SpotPage_sabapi extends SpotPage_Abs {
 	function render() {
 		$SpotUserSystem = new SpotUserSystem($this->_dbsettings, $this->_settings);
 
-		parse_str($_SERVER['QUERY_STRING'], $request);
-		$nzbhandling = $this->_settings->get('nzbhandling');
-		$sabnzbd = $nzbhandling['sabnzbd'];
+		parse_str($_SERVER['QUERY_STRING'], $this->_request);
+		$this->_nzbhandling = $this->_settings->get('nzbhandling');
+		$this->_sabnzbd = $this->_nzbhandling['sabnzbd'];
 
-		if ($nzbhandling['action'] != 'push-sabnzbd') {
+		if ($this->_nzbhandling['action'] != 'push-sabnzbd') {
 			die ('SABzndb is not configured on this node.');
-		} elseif (!isset($request['apikey'])) {
+		} elseif (!isset($this->_request['apikey'])) {
 			die ('API Key Required');
-		} elseif ($SpotUserSystem->passToHash($sabnzbd['apikey']) != $request['apikey']) {
+		} elseif ($SpotUserSystem->passToHash($this->_sabnzbd['apikey']) != $this->_request['apikey']) {
 			die ('API Key Incorrect');
 		} # else
 
@@ -30,19 +30,17 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			header('Content-type: application/json');
 		} # else
 
-		$apicall = str_replace('page=sabapi&', '', $_SERVER['QUERY_STRING']);
-		$apicall = array();
-		foreach($request as $key => $value) {
+		$this->_apicall = array();
+		foreach($this->_request as $key => $value) {
 			if ($key != 'page' && $key != 'apikey')
-			$apicall[] = $key . '=' . $value;
+			$this->_apicall[] = $key . '=' . $value;
 		}
-		$request = implode('&', $apicall);
+		$this->_request = implode('&amp;', $this->_apicall);
 		
-		$this->_url = parse_url($sabnzbd['url']);
-		$this->_url = str_replace('$SABNZBDHOST', $sabnzbd['host'], $this->_url);
+		$this->_url = parse_url($this->_sabnzbd['url']);
+		$this->_url['host'] = str_replace('$SABNZBDHOST', $this->_sabnzbd['host'], $this->_url['host']);
 
-		$url = $this->_url['scheme'] . '://' . $this->_url['host'] . $this->_url['path'] . '?' . $request . '&apikey=' . $sabnzbd['apikey'];
-		$output = @file_get_contents($url, 0);
+		$output = @file_get_contents($this->_url['scheme'] . '://' . $this->_url['host'] . $this->_url['path'] . '?' . $this->_request . '&apikey=' . $this->_sabnzbd['apikey']);
 		echo $output;
 	} # render
 
