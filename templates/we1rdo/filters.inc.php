@@ -109,7 +109,7 @@
 	} else {
 		foreach($xml->slots->slot as $slot) {
 			echo "<tr class='title'><td><span><a class='up' title='Omhoog' onclick='sabActions(\"up\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a><a class='down' title='Omlaag' onclick='sabActions(\"down\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a></span><strong>".$slot->index.".</strong> ".$slot->filename."</td></tr>";
-			if($slot->percentage == 0) {$percentage = " empty";}
+			if($slot->percentage == 0) {$percentage = " empty";} else {$percentage = "";}
 			echo "<tr class='progressBar'><td><div class='progressBar".$percentage."' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
 		}
 	}
