@@ -93,8 +93,8 @@
 	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
 	
 	echo "<table class='sabInfo'>";
-	if($xml->status == 'Downloading') {$action = "pause";} else {$action = "resume";}
-	if($xml->status == 'Paused') {$class = " class='pause'";} else {$class = "";}
+	if($xml->paused == 'True') {$action = "resume";} else {$action = "pause";}
+	if($xml->paused == 'True') {$class = " class='pause'";} else {$class = "";}
     echo "<tr><td>Status:</td><td><strong".$class.">".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\", \"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
     echo "<tr><td>Snelheid:</td><td><strong>".round((float) $xml->kbpersec, 2)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
