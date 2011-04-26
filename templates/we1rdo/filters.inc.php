@@ -90,13 +90,13 @@
 	$sabnzbd = $nzbHandling['sabnzbd'];
     $xml = simplexml_load_file("http://".$sabnzbd['host']."/api?mode=queue&output=xml&apikey=".$sabnzbd['apikey']."");
 	
-	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\", \"". $sabnzbd['host'] . "\",\"".$sabnzbd['apikey']."\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
+	echo "<div class='limit' style='display:none;'><a title='Verbergen' onclick='sabActions(\"speedlimit\")'>x</a> <input type='text' name='speedLimit' value=''><label>KB/s</label> <input type='submit' name='setLimit' value='>>' title='Instellen'></div>";
 	
 	echo "<table class='sabInfo'>";
 	if($xml->paused == 'True') {$action = "resume";} else {$action = "pause";}
 	if($xml->paused == 'True') {$class = " class='pause'";} else {$class = "";}
-    echo "<tr><td>Status:</td><td><strong".$class.">".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\", \"". $sabnzbd['host'] . "\", \"".$sabnzbd['apikey']."\")'>".$action."</a>)</td></tr>";
-    echo "<tr><td>Snelheid:</td><td><strong>".round((float) $xml->kbpersec, 2)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
+    echo "<tr><td>Status:</td><td><strong".$class.">".$xml->status."</strong> (<a onclick='sabActions(\"".$action."\")'>".$action."</a>)</td></tr>";
+    echo "<tr><td>Snelheid:</td><td><strong>".round((float) $xml->kbpersec, 2)."</strong> KB/s (<a title='Stel maximale snelheid in' onclick='sabActions(\"speedlimit\")'>max. ".$xml->speedlimit." KB/s</a>)</td></tr>";
     echo "<tr><td>Te gaan:</td><td><strong>".$xml->timeleft."</strong></td></tr>";
 	echo "<tr><td>ETA:</td><td><strong>".$xml->eta."</strong></td></tr>";
     echo "<tr><td>Wachtrij:</td><td><strong>".round((float) $xml->mbleft, 2)."</strong> / <strong>".round((float) $xml->mb, 2)."</strong> MB</td></tr>";
@@ -108,7 +108,7 @@
 		echo "<tr><td class='info'>Geen items in de queue</td></tr>";
 	} else {
 		foreach($xml->slots->slot as $slot) {
-			echo "<tr class='title'><td><span><a class='up' title='Omhoog' onclick='sabActions(\"up\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a><a class='down' title='Omlaag' onclick='sabActions(\"down\", \"".$sabnzbd['host']."\", \"".$sabnzbd['apikey']."\", \"".$slot->nzo_id."\", ".$slot->index.")'></a></span><strong>".$slot->index.".</strong> ".$slot->filename."</td></tr>";
+			echo "<tr class='title'><td><span><a class='up' title='Omhoog' onclick='sabActions(\"up\", \"".$slot->nzo_id."\", ".$slot->index.")'></a><a class='down' title='Omlaag' onclick='sabActions(\"down\", \"".$slot->nzo_id."\", ".$slot->index.")'></a></span><strong>".$slot->index.".</strong> ".$slot->filename."</td></tr>";
 			if($slot->percentage == 0) {$percentage = " empty";} else {$percentage = "";}
 			echo "<tr class='progressBar'><td><div class='progressBar".$percentage."' title='".$slot->percentage."%' style='width:".$slot->percentage."%'></div></td></tr>";
 		}
