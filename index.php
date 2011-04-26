@@ -164,7 +164,7 @@ try {
 		} # logout
 		
 		case 'sabapi' : {
-			$page = new Sabnzbd_api($db, $settings->get('nzbhandling'));
+			$page = new SpotPage_sabapi($db, $settings->get('nzbhandling'));
 			$page->render();
 			break;
 		} # sabapi
