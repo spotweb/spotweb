@@ -42,7 +42,7 @@ class SpotUserSystem {
 		# Creer een session record
 		$session = array('sessionid' => $this->generateUniqueId(),
 						 'userid' => $userid,
-						 'hitcount' => 0,
+						 'hitcount' => 1,
 						 'lasthit' => time());
 		$this->_db->addSession($session);
 
