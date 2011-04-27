@@ -105,14 +105,8 @@ if ($settings->get('keep_watchlist')) { ?>
 	foreach($spots as $spot) {
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
-		if ($tplHelper->newSinceLastVisit($spot)) {
-			$newSpotClass = 'new';
-		} else {
-			$newSpotClass = '';
-		} # else
-
+		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
 		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
-		
 		$count++;
 
 		echo "\t\t\t\t\t\t\t";
