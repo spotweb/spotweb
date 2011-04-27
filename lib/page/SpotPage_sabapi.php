@@ -2,7 +2,7 @@
 class SpotPage_sabapi extends SpotPage_Abs {
 
 	function render() {
-		$spotUserSystem = $this->getTplHelper(array());
+		$tplHelper = $this->getTplHelper(array());
 
 		parse_str($_SERVER['QUERY_STRING'], $request);
 		$nzbhandling = $this->_settings->get('nzbhandling');
@@ -12,7 +12,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			die ('SABzndb is not configured on this node.');
 		} elseif (!isset($request['apikey'])) {
 			die ('API Key Required');
-		} elseif ($spotUserSystem->passToHash($sabnzbd['apikey']) != $request['apikey']) {
+		} elseif ($tplHelper->apiToHash($sabnzbd['apikey']) != $request['apikey']) {
 			die ('API Key Incorrect');
 		} # else
 
