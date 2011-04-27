@@ -19,7 +19,10 @@ class SpotPage_getspot extends SpotPage_Abs {
 		$this->_pageTitle = "spot: " . $fullSpot['title'];
 		
 		# seen list
-		if ($this->_settings->get('count_newspots') && $this->_settings->get('keep_seenlist') && $this->_currentSession['user']['lastvisit'] < $fullSpot['stamp'] && $fullSpot['seenstamp'] == NULL) {
+		if ($this->_settings->get('count_newspots') && $this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL && (
+		  $this->_settings->get('auto_markasread') && max($this->_currentSession['user']['lastvisit'],$this->_currentSession['user']['lastseen']) < $fullSpot['stamp'] ||
+		  $this->_currentSession['user']['lastseen'] < $fullSpot['stamp'])
+		  ) {
 			$spotsOverview->addToSeenList($this->_messageid, $this->_currentSession['user']['userid']);
 		} # if
 		
