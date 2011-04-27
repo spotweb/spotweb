@@ -460,7 +460,7 @@ class SpotsOverview {
 			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
-//echo "<font size=1>" . $newSpotsSearch . "</font>";
+
 		# Spots in Downloadlist or Watchlist
 		$listFilter = array();
 		if (isset($search['filterValues']['Downloaded'])) {
