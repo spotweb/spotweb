@@ -164,7 +164,7 @@ try {
 		} # logout
 		
 		case 'sabapi' : {
-			$page = new SpotPage_sabapi($db, $settings);
+			$page = new SpotPage_sabapi($db, $settings, $currentSession);
 			$page->render();
 			break;
 		} # sabapi
