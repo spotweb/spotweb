@@ -6,7 +6,7 @@ class SpotNzb {
 	private $_settings;
 	private $_db;
 	
-	function __construct($db, $settings) {
+	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor

@@ -17,7 +17,7 @@ class SpotTemplateHelper {
 	
 	static private $_commentCount = null;	
 	
-	function __construct($settings, $currentSession, $db, $params) {
+	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_db = $db;
@@ -467,12 +467,6 @@ class SpotTemplateHelper {
 		return substr($retval, 0, -2);
 	} # time_ago()
 
-	/*
-	 * API to hash
-	 */
-	function apiToHash($api) {
-		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
-	} # apiToHash
 
 	function formatDate($stamp, $type) {
 		if ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
@@ -539,6 +533,13 @@ class SpotTemplateHelper {
 		return SpotReq::generateXsrfCookie($action);
 	} # generateXsrfCookie
 
+	/*
+	 * API to hash
+	 */
+	function apiToHash($api) {
+		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
+	} # apiToHash 
+	
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */

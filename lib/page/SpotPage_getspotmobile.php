@@ -2,7 +2,7 @@
 class SpotPage_getspotmobile extends SpotPage_Abs {
 	private $_messageid;
 	
-	function __construct($db, $settings, $currentSession, $messageid) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $messageid) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $messageid;
 	} # ctor
