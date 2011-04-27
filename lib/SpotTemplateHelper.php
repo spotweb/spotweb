@@ -532,6 +532,13 @@ class SpotTemplateHelper {
 	function generateXsrfCookie($action) {
 		return SpotReq::generateXsrfCookie($action);
 	} # generateXsrfCookie
+
+	/*
+	 * API to hash
+	 */
+	function apiToHash($api) {
+		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
+	} # apiToHash 
 	
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
