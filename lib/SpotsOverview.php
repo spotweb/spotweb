@@ -450,13 +450,11 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['filterValues']['New'])) {
-			if ($this->_settings->get('auto_markasread') == true && $currentSession['user']['lastseen'] < $currentSession['user']['lastvisit']) {
-				$newerThan = $currentSession['user']['lastvisit'];
+			if ($this->_settings->get('auto_markasread') == true) {
+				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastseen']) ) . ')';
 			} else {
-				$newerThan = $currentSession['user']['lastseen'];
+				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastseen']) . ')';
 			} # else
-
-			$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($newerThan) . ')';
 			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
