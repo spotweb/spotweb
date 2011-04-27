@@ -18,6 +18,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		} elseif (!isset($this->_request['apikey'])) {
 			die ('API Key Required');
 		} elseif ($SpotUserSystem->passToHash($this->_sabnzbd['apikey']) != $this->_request['apikey']) {
+			echo $SpotUserSystem->passToHash($this->_sabnzbd['apikey']);
 			die ('API Key Incorrect');
 		} # else
 

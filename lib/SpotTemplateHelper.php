@@ -548,4 +548,10 @@ class SpotTemplateHelper {
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 	
+	function passToHash($value) {
+		$SpotUserSystem = new SpotUserSystem($this->_dbsettings, $this->_settings);
+		$apikey = $SpotUserSystem->passToHash($value);
+		return $apikey;
+	} # pashToHash
+	
 } # class SpotTemplateHelper

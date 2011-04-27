@@ -85,7 +85,13 @@
                 
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
-					<table class="sabInfo">
+<?php 
+	$nzbHandling = $this->_settings->get('nzbhandling'); 
+	$sabnzbd = $nzbHandling['sabnzbd']; 
+	$apikey = $tplHelper->passToHash($sabnzbd['apikey']);
+	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
+?>
+                    <table class="sabInfo">
                     	<tr><td>Status:</td><td class="state"></td></tr>
                         <tr><td>Snelheid:</td><td class="speed"></td></tr>
                         <tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
