@@ -406,7 +406,7 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_seenlist_1", "UNIQUE", "seenlist", "messageid,ouruserid");
 		}
 		
-		if ($this->_spotdb->getSchemaVer() < 0.18) {
+		if ($this->_spotdb->getSchemaVer() < 0.19) {
 			$this->addColumn('lastseen', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		}
 		
