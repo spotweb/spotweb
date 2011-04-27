@@ -1,14 +1,13 @@
 <?php
 class SpotPage_sabapi extends SpotPage_Abs {
 
-	function __construct($db, $settings, $currentSession) {
+	function __construct($db, $settings) {
 		$this->_dbsettings = $db;
 		$this->_settings = $settings;
-		$this->_currentSession = $currentSession;
 	} # __ctor
 
 	function render() {
-		$SpotTemplateHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_dbsettings, '');
+		$SpotUserSystem = new SpotUserSystem($this->_dbsettings, $this->_settings);
 
 		parse_str($_SERVER['QUERY_STRING'], $this->_request);
 		$this->_nzbhandling = $this->_settings->get('nzbhandling');
@@ -18,7 +17,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			die ('SABzndb is not configured on this node.');
 		} elseif (!isset($this->_request['apikey'])) {
 			die ('API Key Required');
-		} elseif ($SpotTemplateHelper->apiToHash($this->_sabnzbd['apikey']) != $this->_request['apikey']) {
+		} elseif ($SpotUserSystem->passToHash($this->_sabnzbd['apikey']) != $this->_request['apikey']) {
 			die ('API Key Incorrect');
 		} # else
 
