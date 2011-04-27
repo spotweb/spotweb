@@ -450,12 +450,17 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['filterValues']['New'])) {
-			$newerThan = ($this->_settings->get('auto_markasread')) ? $currentSession['user']['lastvisit'] : $currentSession['user']['lastseen'];
+			if ($this->_settings->get('auto_markasread') == true && $currentSession['user']['lastseen'] < $currentSession['user']['lastvisit']) {
+				$newerThan = $currentSession['user']['lastvisit'];
+			} else {
+				$newerThan = $currentSession['user']['lastseen'];
+			} # else
+
 			$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($newerThan) . ')';
 			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
-
+//echo "<font size=1>" . $newSpotsSearch . "</font>";
 		# Spots in Downloadlist or Watchlist
 		$listFilter = array();
 		if (isset($search['filterValues']['Downloaded'])) {
