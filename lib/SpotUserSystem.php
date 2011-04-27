@@ -142,6 +142,16 @@ class SpotUserSystem {
 	} # resetLastVisit
 
 	/*
+	 * Reset the seenstamp timestamp
+	 */
+	function resetSeenStamp($user) {
+		$user['lastseen'] = $this->_db->getMaxMessageTime();
+		$this->_db->setUser($user);
+
+		return $user;
+	} # resetSeenStamp
+
+	/*
 	 * Clear the seen list
 	 */
 	function clearSeenList($user) {

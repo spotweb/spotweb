@@ -195,6 +195,9 @@ $settings['count_newspots'] = true;
 # Doet niets als count_newspots op false staat
 $settings['keep_seenlist'] = true;
 
+# Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
+$settings['auto_markasread'] = true;
+
 # toon het aantal comments op een spot in het overzicht? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_comments'] = true;
 
