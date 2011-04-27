@@ -467,6 +467,12 @@ class SpotTemplateHelper {
 		return substr($retval, 0, -2);
 	} # time_ago()
 
+	/*
+	 * API to hash
+	 */
+	function apiToHash($api) {
+		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
+	} # apiToHash
 
 	function formatDate($stamp, $type) {
 		if ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
@@ -532,7 +538,7 @@ class SpotTemplateHelper {
 	function generateXsrfCookie($action) {
 		return SpotReq::generateXsrfCookie($action);
 	} # generateXsrfCookie
-	
+
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */
@@ -547,11 +553,5 @@ class SpotTemplateHelper {
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
-	
-	function passToHash($value) {
-		$SpotUserSystem = new SpotUserSystem($this->_dbsettings, $this->_settings);
-		$apikey = $SpotUserSystem->passToHash($value);
-		return $apikey;
-	} # pashToHash
 	
 } # class SpotTemplateHelper

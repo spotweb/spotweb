@@ -82,13 +82,13 @@
                     <div class="login"></div>
 <?php } ?>
 				</div>
-                
+
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
 <?php 
 	$nzbHandling = $this->_settings->get('nzbhandling'); 
 	$sabnzbd = $nzbHandling['sabnzbd']; 
-	$apikey = $tplHelper->passToHash($sabnzbd['apikey']);
+	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
 	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
 ?>
                     <table class="sabInfo">
