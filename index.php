@@ -162,13 +162,13 @@ try {
 				$page->render();
 				break;
 		} # logout
-
+		
 		case 'sabapi' : {
-			$page = new Sabnzbd_api($db, $settings->get('nzbhandling'));
+			$page = new SpotPage_sabapi($db, $settings);
 			$page->render();
 			break;
 		} # sabapi
-
+		
 		default : {
 				$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $settings->get('index_filter')),
