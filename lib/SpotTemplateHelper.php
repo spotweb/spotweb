@@ -17,7 +17,7 @@ class SpotTemplateHelper {
 	
 	static private $_commentCount = null;	
 	
-	function __construct($settings, $currentSession, $db, $params) {
+	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_db = $db;

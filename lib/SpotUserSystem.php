@@ -5,7 +5,7 @@ class SpotUserSystem {
 	private $_db;
 	private $_settings;
 	
-	function __construct($db, $settings) {
+	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor

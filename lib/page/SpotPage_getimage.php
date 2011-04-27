@@ -3,7 +3,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
 	
-	function __construct($db, $settings, $currentSession, $params) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];

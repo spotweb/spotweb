@@ -5,7 +5,7 @@ abstract class SpotPage_Abs {
 	protected $_pageTitle;
 	protected $_currentSession;
 	
-	function __construct($db, $settings, $currentSession) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;

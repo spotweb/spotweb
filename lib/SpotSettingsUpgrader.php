@@ -2,7 +2,7 @@
 class SpotSettingsUpgrader {
 	private $_settings;
 
-	function __construct($settings) {
+	function __construct(SpotSettings $settings) {
 		$this->_settings = $settings;
 	} # ctor
 	

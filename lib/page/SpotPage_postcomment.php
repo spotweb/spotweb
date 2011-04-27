@@ -3,7 +3,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_commentForm;
 	
-	function __construct($db, $settings, $currentSession, $params) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_commentForm = $params['commentform'];
 		$this->_inReplyTo = $params['inreplyto'];
