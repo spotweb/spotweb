@@ -5,7 +5,7 @@ class SpotPosting {
 	private $_settings;
 	private $_nntp_post;
 
-	function __construct($db, $settings) {
+	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		

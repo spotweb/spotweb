@@ -18,7 +18,7 @@ class SpotUpgrader {
 		
 		# Creer het settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
-		$spotSettingsUpgrader = new SpotSettingsUpgrader($settings);
+		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
 		$spotSettingsUpgrader->update();
 	} # settings
 	

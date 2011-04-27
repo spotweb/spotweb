@@ -9,7 +9,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, $db, $settings, $outputType) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType) {
 			parent::__construct($server, $db, $settings);			
 			
 			$this->_outputType = $outputType;

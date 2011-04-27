@@ -273,47 +273,49 @@ $(function(){
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
 		$(id).fadeOut();
-	} else if($(".sidebarPanel").is(":visible")) {
-		$(".sidebarPanel").fadeOut();
-		$(id).fadeIn();
 	} else {
-		$(id).fadeIn();
-	}
+		if($(".sidebarPanel").is(":visible")) {
+			$(".sidebarPanel").fadeOut();
+			$(id).fadeIn();
+		} else {
+			$(id).fadeIn();
+		}
 
-	if(id == ".userPanel") {
-		$("div.login").load('?page=login', function() {
-			$('form.loginform').submit(function(){ 
-				var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
-				var username = $("form.loginform input[name='loginform[username]']").val();
-				var password = $("form.loginform input[name='loginform[password]']").val();
-				
-				var url = $("form.loginform").attr("action");
-				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
-
-				$.ajax({
-					type: "POST",
-					url: url,
-					dataType: "xml",
-					data: dataString,
-					success: function(xml) {
-						result = $(xml).find('result').text();
-
-						$("div.login ul.formerrors > li").empty()
-						if(result == "failure") {
-							$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
-						} else {
-							$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
-							setTimeout( function() { location.reload() }, 2000);
-						}
-					}
-				});
-				return false;
-			});	
-		});
-	}
+		if(id == ".userPanel") {
+			$("div.login").load('?page=login', function() {
+				$('form.loginform').submit(function(){ 
+					var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
+					var username = $("form.loginform input[name='loginform[username]']").val();
+					var password = $("form.loginform input[name='loginform[password]']").val();
+					
+					var url = $("form.loginform").attr("action");
+					var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
 	
-	if(id == ".sabnzbdPanel") {
-		updateSabPanel();
+					$.ajax({
+						type: "POST",
+						url: url,
+						dataType: "xml",
+						data: dataString,
+						success: function(xml) {
+							result = $(xml).find('result').text();
+	
+							$("div.login ul.formerrors > li").empty()
+							if(result == "failure") {
+								$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
+							} else {
+								$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
+								setTimeout( function() { location.reload() }, 2000);
+							}
+						}
+					});
+					return false;
+				});	
+			});
+		}
+		
+		if(id == ".sabnzbdPanel") {
+			updateSabPanel();
+		}
 	}
 }
 
@@ -586,6 +588,7 @@ function updateSabPanel() {
 		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
 		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label><input type='submit' name='setLimit' value='>>' title='Instellen'>");
 		$("td.speedlimit input[name=setLimit]").click(function(){sabActions('speedlimit')});
+		$("td.speedlimit input[name=speedLimit]").blur(function(){updateSabPanel()});
 		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
 		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
 		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
@@ -611,5 +614,11 @@ function updateSabPanel() {
 			$("table.sabQueue tr.title td span").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
 			$("table.sabQueue tr.title td span").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
 		}
+		
+		setTimeout(function(){
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").is(":focus"))) {
+				updateSabPanel();
+			}
+		}, 2500);
 	});
 }
