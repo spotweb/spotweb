@@ -8,17 +8,17 @@ class SpotPage_sabapi extends SpotPage_Abs {
 	} # __ctor
 
 	function render() {
-		$SpotTemplateHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_dbsettings, '');
+		$tplHelper = $this->getTplHelper('');
 
-		parse_str($_SERVER['QUERY_STRING'], $this->_request);
-		$this->_nzbhandling = $this->_settings->get('nzbhandling');
-		$this->_sabnzbd = $this->_nzbhandling['sabnzbd'];
+		parse_str($_SERVER['QUERY_STRING'], $request);
+		$nzbhandling = $this->_settings->get('nzbhandling');
+		$sabnzbd = $nzbhandling['sabnzbd'];
 
-		if ($this->_nzbhandling['action'] != 'push-sabnzbd') {
+		if ($nzbhandling['action'] != 'push-sabnzbd') {
 			die ('SABzndb is not configured on this node.');
-		} elseif (!isset($this->_request['apikey'])) {
+		} elseif (!isset($request['apikey'])) {
 			die ('API Key Required');
-		} elseif ($SpotTemplateHelper->apiToHash($this->_sabnzbd['apikey']) != $this->_request['apikey']) {
+		} elseif ($tplHelper->apiToHash($sabnzbd['apikey']) != $request['apikey']) {
 			die ('API Key Incorrect');
 		} # else
 
@@ -31,17 +31,17 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			header('Content-type: application/json');
 		} # else
 
-		$this->_apicall = array();
-		foreach($this->_request as $key => $value) {
+		$apicall = array();
+		foreach($request as $key => $value) {
 			if ($key != 'page' && $key != 'apikey')
-			$this->_apicall[] = $key . '=' . $value;
+			$apicall[] = $key . '=' . $value;
 		}
-		$this->_request = implode('&amp;', $this->_apicall);
+		$request = implode('&amp;', $apicall);
 		
-		$this->_url = parse_url($this->_sabnzbd['url']);
-		$this->_url['host'] = str_replace('$SABNZBDHOST', $this->_sabnzbd['host'], $this->_url['host']);
+		$url = parse_url($sabnzbd['url']);
+		$url['host'] = str_replace('$SABNZBDHOST', $sabnzbd['host'], $url['host']);
 
-		$output = @file_get_contents($this->_url['scheme'] . '://' . $this->_url['host'] . $this->_url['path'] . '?' . $this->_request . '&apikey=' . $this->_sabnzbd['apikey']);
+		$output = @file_get_contents($url['scheme'] . '://' . $url['host'] . $url['path'] . '?' . $request . '&apikey=' . $sabnzbd['apikey']);
 		echo $output;
 	} # render
 
