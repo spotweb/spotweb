@@ -1,8 +1,10 @@
 <?php
 class SpotSettingsUpgrader {
+	private $_db;
 	private $_settings;
 
-	function __construct(SpotSettings $settings) {
+	function __construct(SpotDb $db, SpotSettings $settings) {
+		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor
 	
@@ -67,7 +69,7 @@ class SpotSettingsUpgrader {
 	 * Create an xsrf secret
 	 */
 	function createXsrfSecret() {
-		$userSystem = new SpotUserSystem(null, null);
+		$userSystem = new SpotUserSystem($this->_db, $this->_settings);
 		$secret = substr($userSystem->generateUniqueId(), 0, 8);
 		
 		$this->setIfNot('xsrfsecret', $secret);
@@ -76,7 +78,7 @@ class SpotSettingsUpgrader {
 	 * Creer de servers' password salt
 	 */
 	function createPasswordSalt() {
-		$userSystem = new SpotUserSystem(null, null);
+		$userSystem = new SpotUserSystem($this->_db, $this->_settings);
 		$salt = $userSystem->generateUniqueId() . $userSystem->generateUniqueId();
 		
 		$this->setIfNot('pass_salt', $salt);
