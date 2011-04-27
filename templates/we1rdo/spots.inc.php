@@ -48,19 +48,14 @@
 	foreach($spots as $spot) {
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
+		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
 
-		if ($tplHelper->newSinceLastVisit($spot)) {
-			$newSpotClass = 'new';
-		} else {
-			$newSpotClass = '';
-		} # else
-		
 		if($tplHelper->isModerated($spot)) { 
 			$markSpot = '<span class="markSpot">!</span>';
 		} else {
 			$markSpot = '';
 		}
-	
+
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $spot['subcatfilter'] . ",~cat0_z3' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .

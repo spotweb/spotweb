@@ -424,7 +424,7 @@ class SpotTemplateHelper {
 		return $spot;
 	} # formatSpot
 
-	function newSinceLastVisit($spot) {
+	function isSpotNew($spot) {
 		if ($this->_settings->get('auto_markasread')) {
 			return ( max($this->_currentSession['user']['lastvisit'],$this->_currentSession['user']['lastseen']) < $spot['stamp'] && $spot['seenstamp'] == NULL);
 		} else {
