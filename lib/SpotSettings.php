@@ -13,7 +13,7 @@ class SpotSettings {
 	/* 
 	 * Instantieert een nieuwe settings klasse
 	 */
-	public static function singleton($db, $settings) {
+	public static function singleton(SpotDb $db, array $settings) {
 		if (self::$_instance === null) {
 			self::$_instance = new SpotSettings($db);
 			

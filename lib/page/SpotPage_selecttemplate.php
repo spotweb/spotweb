@@ -2,7 +2,7 @@
 class SpotPage_selecttemplate extends SpotPage_Abs {
 	private $_req;
 
-	function __construct($db, $settings, $currentSession, $req) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $req) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_req = $req;
 	} # ctor

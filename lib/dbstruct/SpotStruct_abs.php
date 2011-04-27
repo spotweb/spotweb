@@ -3,7 +3,7 @@ abstract class SpotStruct_abs {
 	protected $_spotdb;
 	protected $_dbcon;
 	
-	public function __construct($spotdb) {
+	public function __construct(SpotDb $spotdb) {
 		$this->_spotdb = $spotdb;
 		$this->_dbcon = $spotdb->getDbHandle();
 	} # __construct
