@@ -533,13 +533,9 @@ $(function(){
 });
 
 // SabNZBd actions
-$(function(){
-	$("table.sabQueue tr:first-child td span > a.up").hide();
-	$("table.sabQueue tr:last-child").prev().children("td").children("span").children("a.down").hide();	
-});
-
 function sabBaseURL() {
-	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi';
+	var apikey = $("div.sabnzbdPanel input.apikey").val();
+	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi&apikey='+apikey;
 	return baseURL;
 }
 
@@ -581,7 +577,7 @@ function updateSabPanel() {
 	var baseURL = sabBaseURL();
 	var url = baseURL+'&mode=queue&output=json';
 	
-	$.getJSON(url, function(json){		
+	$.getJSON(url, function(json){
 		var queue = json.queue;
 		
 		if(queue.paused) {var state = "resume"} else {var state = "pause"}
