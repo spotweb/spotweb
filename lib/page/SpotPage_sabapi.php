@@ -27,8 +27,9 @@ class SpotPage_sabapi extends SpotPage_Abs {
 
 		$apicall = array();
 		foreach($request as $key => $value) {
-			if ($key != 'page' && $key != 'apikey')
-			$apicall[] = $key . '=' . $value;
+			if ($key != 'page' && $key != 'apikey') {
+				$apicall[] = $key . '=' . $value;
+			}
 		}
 		$request = implode('&amp;', $apicall);
 		
