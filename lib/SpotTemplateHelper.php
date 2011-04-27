@@ -423,10 +423,13 @@ class SpotTemplateHelper {
 				
 		return $spot;
 	} # formatSpot
-	
-	
+
 	function newSinceLastVisit($spot) {
-		return ($this->_currentSession['user']['lastvisit'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
+		if ($this->_currentSession['user']['lastseen'] < $this->_currentSession['user']['lastvisit']) {
+			return ($this->_currentSession['user']['lastvisit'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
+		} else {
+			return ($this->_currentSession['user']['lastseen'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
+		} # else
 	} # newSinceLastVisit
 	
 	#
