@@ -467,6 +467,12 @@ class SpotTemplateHelper {
 		return substr($retval, 0, -2);
 	} # time_ago()
 
+	/*
+	* API to hash
+	*/
+	function apiToHash($api) {
+		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
+	} # apiToHash
 
 	function formatDate($stamp, $type) {
 		if ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
