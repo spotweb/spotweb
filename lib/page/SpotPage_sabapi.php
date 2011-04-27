@@ -1,14 +1,8 @@
 <?php
 class SpotPage_sabapi extends SpotPage_Abs {
 
-	function __construct($db, $settings, $currentSession) {
-		$this->_dbsettings = $db;
-		$this->_settings = $settings;
-		$this->_currentSession = $currentSession;
-	} # __ctor
-
 	function render() {
-		$tplHelper = $this->getTplHelper('');
+		$tplHelper = $this->getTplHelper(array());
 
 		parse_str($_SERVER['QUERY_STRING'], $request);
 		$nzbhandling = $this->_settings->get('nzbhandling');
@@ -33,9 +27,10 @@ class SpotPage_sabapi extends SpotPage_Abs {
 
 		$apicall = array();
 		foreach($request as $key => $value) {
-			if ($key != 'page' && $key != 'apikey')
-			$apicall[] = $key . '=' . $value;
-		}
+			if ($key != 'page' && $key != 'apikey') {
+				$apicall[] = $key . '=' . $value;
+			} # if
+		} # foreach
 		$request = implode('&amp;', $apicall);
 		
 		$url = parse_url($sabnzbd['url']);

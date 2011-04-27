@@ -2,7 +2,7 @@
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
-	function __construct($db, $settings, $currentSession, $params) {
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
