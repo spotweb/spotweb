@@ -191,6 +191,7 @@ class SpotDb
 								u.deleted AS deleted,
 								u.lastlogin AS lastlogin,
 								u.lastvisit AS lastvisit,
+								u.lastseen AS lastseen,
 								s.publickey AS publickey,
 								s.otherprefs AS prefs
 						 FROM users AS u
@@ -231,6 +232,7 @@ class SpotDb
 										mail = '%s',
 										lastlogin = %d,
 										lastvisit = %d,
+										lastseen = %d,
 										deleted = '%s'
 									WHERE id = '%s'", 
 					Array($user['firstname'],
@@ -238,6 +240,7 @@ class SpotDb
 						  $user['mail'],
 						  (int) $user['lastlogin'],
 						  (int) $user['lastvisit'],
+						  (int) $user['lastseen'],
 						  $user['deleted'],
 						  (int) $user['userid']));
 
@@ -281,8 +284,8 @@ class SpotDb
 	 * Voeg een user toe
 	 */
 	function addUser($user) {
-		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', 0, 0, 'false')",
+		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, lastseen, deleted) 
+										VALUES('%s', '%s', '%s', '%s', '%s', 0, 0, 0, 'false')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
