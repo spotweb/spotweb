@@ -313,7 +313,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('mail', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
-			$this->addColumn('lastseen', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
@@ -414,7 +414,7 @@ abstract class SpotStruct_abs {
 		}
 		
 		if ($this->_spotdb->getSchemaVer() < 0.19) {
-			$this->addColumn('lastseen', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		}
 		
 		# voeg het database schema versie nummer toe
