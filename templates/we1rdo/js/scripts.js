@@ -104,12 +104,13 @@ function loadComments(messageid,perpage,pagenr) {
 
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
-		loadPostCommentsForm();
-		detectScrollbar();
 
 		pagenr++;
 		if (count >= 1) { 
 			loadComments(messageid,'5',pagenr);
+		} else {
+			loadPostCommentsForm();
+			detectScrollbar();
 		}
 	});
 	$("a.closeDetails").click(function() { xhr.abort() });
