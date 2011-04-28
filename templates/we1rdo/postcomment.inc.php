@@ -11,7 +11,7 @@ if (empty($postresult)) {
 	} # if
 ?>
 
-<form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post" onsubmit="new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); return false;">
+<form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post">
     <input type="hidden" name="postcommentform[submit]" value="Post">
     <input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
     <input type="hidden" name="postcommentform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">

@@ -367,6 +367,8 @@ div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -web
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
 
+div.details div.comments form.postcommentform fieldset {padding:0; margin:0; border:0;}
+
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
