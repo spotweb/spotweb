@@ -1,6 +1,7 @@
 <?php
 class SpotStruct_mysql extends SpotStruct_abs {
 
+
 	function createDatabase() {
 		# spots
 		if (!$this->tableExists('spots')) {
@@ -128,6 +129,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # createDatabase
 
+	/* 
+	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
+	 * deze functie wijzigt geen data!
+  	 */
+	function analyze() { 
+		$this->_dbcon->rawExec("ANALYZE TABLE seenlist");
+		$this->_dbcon->rawExec("ANALYZE TABLE downloadlist");
+		$this->_dbcon->rawExec("ANALYZE TABLE watchlist");
+		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
+		$this->_dbcon->rawExec("ANALYZE TABLE users");
+		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
+	} # analyze
+	
 	/* controleert of een index bestaat */
 	function indexExists($tablename, $idxname) {
 		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));

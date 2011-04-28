@@ -129,6 +129,19 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(inreplyto,randompart);");
 		} # if
 	} # createDatabase
+
+	/* 
+	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
+	 * deze functie wijzigt geen data!
+  	 */
+	function analyze() { 
+		$this->_dbcon->rawExec("ANALYZE seenlist");
+		$this->_dbcon->rawExec("ANALYZE downloadlist");
+		$this->_dbcon->rawExec("ANALYZE watchlist");
+		$this->_dbcon->rawExec("ANALYZE sessions");
+		$this->_dbcon->rawExec("ANALYZE users");
+		$this->_dbcon->rawExec("ANALYZE commentsfull");
+	} # analyze
 	
 	/* controleert of een index bestaat */
 	function indexExists($tablename, $idxname) {
