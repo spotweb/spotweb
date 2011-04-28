@@ -5,8 +5,10 @@ if (!empty($postresult)) {
 	echo formResult2Xml($postresult, $formmessages, $tplHelper);
 } 
 
-if (empty($postresult) && isset($formmessages)) {
-	include "includes/form-messages.inc.php"; 
+if (empty($postresult)) {
+	if (isset($formmessages)) {
+		include "includes/form-messages.inc.php"; 
+	} # if
 ?>
 
 <form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post" onsubmit="new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); return false;">
