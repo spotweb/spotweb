@@ -586,9 +586,16 @@ function updateSabPanel() {
 		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
 		$("table.sabInfo td.state a.state").click(function(){sabActions(state)});
 		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
-		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label><input type='submit' name='setLimit' value='>>' title='Instellen'>");
-		$("td.speedlimit input[name=setLimit]").click(function(){sabActions('speedlimit')});
-		$("td.speedlimit input[name=speedLimit]").blur(function(){updateSabPanel()});
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label>");
+		$("td.speedlimit input[name=speedLimit]").focus(function(){
+			$(this).addClass("hasFocus");
+		});
+		$("td.speedlimit input[name=speedLimit]").keyup(function(e) {
+			if(e.keyCode == 13) {sabActions('speedlimit')}
+		});
+		$("td.speedlimit input[name=speedLimit]").blur(function(){
+			sabActions('speedlimit');
+		});
 		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
 		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
 		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
@@ -616,9 +623,9 @@ function updateSabPanel() {
 		}
 		
 		setTimeout(function(){
-			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").is(":focus"))) {
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
 				updateSabPanel();
 			}
-		}, 2500);
+		}, 5000);
 	});
 }
