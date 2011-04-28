@@ -10,6 +10,12 @@ abstract class SpotStruct_abs {
 	
 	abstract function createDatabase();
 
+	/* 
+	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
+	 * deze functie wijzigt geen data!
+  	 */
+	abstract function analyze();
+	
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	abstract function addIndex($idxname, $idxType, $tablename, $colList);
 	
@@ -36,6 +42,7 @@ abstract class SpotStruct_abs {
 
 	/* drop een table */
 	abstract function dropTable($tablename);
+	
 	
 	function updateSchema() {
 		# Fulltext indexes

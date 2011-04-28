@@ -17,6 +17,7 @@ function openSpot(id,url) {
 
 	$("table.spots tr.active").removeClass("active");
 	$(id).parent().parent().addClass('active');
+	$("table.spots tr.active td.title").removeClass("new");
 
 	var messageid = url.split("=")[2];
 
@@ -272,43 +273,49 @@ $(function(){
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
 		$(id).fadeOut();
-	} else if($(".sidebarPanel").is(":visible")) {
-		$(".sidebarPanel").fadeOut();
-		$(id).fadeIn();
 	} else {
-		$(id).fadeIn();
-	}
+		if($(".sidebarPanel").is(":visible")) {
+			$(".sidebarPanel").fadeOut();
+			$(id).fadeIn();
+		} else {
+			$(id).fadeIn();
+		}
 
-	if(id == ".userPanel") {
-		$("div.login").load('?page=login', function() {
-			$('form.loginform').submit(function(){ 
-				var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
-				var username = $("form.loginform input[name='loginform[username]']").val();
-				var password = $("form.loginform input[name='loginform[password]']").val();
-				
-				var url = $("form.loginform").attr("action");
-				var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
-
-				$.ajax({
-					type: "POST",
-					url: url,
-					dataType: "xml",
-					data: dataString,
-					success: function(xml) {
-						result = $(xml).find('result').text();
-
-						$("div.login ul.formerrors > li").empty()
-						if(result == "failure") {
-							$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
-						} else {
-							$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
-							setTimeout( function() { location.reload() }, 2000);
+		if(id == ".userPanel") {
+			$("div.login").load('?page=login', function() {
+				$('form.loginform').submit(function(){ 
+					var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
+					var username = $("form.loginform input[name='loginform[username]']").val();
+					var password = $("form.loginform input[name='loginform[password]']").val();
+					
+					var url = $("form.loginform").attr("action");
+					var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
+	
+					$.ajax({
+						type: "POST",
+						url: url,
+						dataType: "xml",
+						data: dataString,
+						success: function(xml) {
+							result = $(xml).find('result').text();
+	
+							$("div.login ul.formerrors > li").empty()
+							if(result == "failure") {
+								$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
+							} else {
+								$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
+								setTimeout( function() { location.reload() }, 2000);
+							}
 						}
-					}
-				});
-				return false;
-			});	
-		});
+					});
+					return false;
+				});	
+			});
+		}
+		
+		if(id == ".sabnzbdPanel") {
+			updateSabPanel();
+		}
 	}
 }
 
@@ -526,3 +533,92 @@ $(function(){
 		}
 	});
 });
+
+// SabNZBd actions
+function sabBaseURL() {
+	var apikey = $("div.sabnzbdPanel input.apikey").val();
+	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi&apikey='+apikey;
+	return baseURL;
+}
+
+function sabActions(action,slot,value) {
+	var baseURL = sabBaseURL();
+	
+	if(action == 'pause') {
+		var url = baseURL+'&mode=pause';
+		$.get(url, function(){
+			updateSabPanel();
+		});
+	} else if(action == 'resume') {
+		var url = baseURL+'&mode=resume';
+		$.get(url, function(){
+			updateSabPanel();
+		});
+	} else if(action == 'speedlimit') {
+		var limit = $("td.speedlimit input[name=speedLimit]").val();
+		var url = baseURL+'&mode=config&name=speedlimit&value='+limit;
+		$.get(url, function(){
+			updateSabPanel();
+		});
+	} else if(action == 'up') {
+		var newIndex = value-1;
+		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
+		$.get(url, function(){
+			updateSabPanel();
+		});
+	} else if(action == 'down') {
+		var newIndex = value+1;
+		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
+		$.get(url, function(){
+			updateSabPanel();
+		});
+	}
+}
+
+function updateSabPanel() {	
+	var baseURL = sabBaseURL();
+	var url = baseURL+'&mode=queue&output=json';
+	
+	$.getJSON(url, function(json){
+		var queue = json.queue;
+		
+		if(queue.paused) {var state = "resume"} else {var state = "pause"}
+		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
+		$("table.sabInfo td.state a.state").click(function(){sabActions(state)});
+		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label><input type='submit' name='setLimit' value='>>' title='Instellen'>");
+		$("td.speedlimit input[name=setLimit]").click(function(){sabActions('speedlimit')});
+		$("td.speedlimit input[name=speedLimit]").blur(function(){updateSabPanel()});
+		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
+		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
+		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
+		
+		$("table.sabQueue").empty();
+		if(queue.noofslots == 0) {
+			$("table.sabQueue").html("<tr><td class='info'>Geen items in de queue</td></tr>");
+		} else {
+			$.each(queue.slots, function(){
+				var slot = this;
+				if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
+				
+				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.percentage+"%' style='width:"+slot.percentage+"%'></div></td></tr>");
+				
+				$("table.sabQueue tr."+slot.index+" a.up").click(function(){sabActions('up', slot.nzo_id, slot.index)});
+				$("table.sabQueue tr."+slot.index+" a.down").click(function(){sabActions('down', slot.nzo_id, slot.index)});
+			});
+		}
+		
+		if($("table.sabQueue tr.title td span").size() == 1) {
+			$("table.sabQueue tr.title td span").hide();
+		} else {
+			$("table.sabQueue tr.title td span").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			$("table.sabQueue tr.title td span").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		}
+		
+		setTimeout(function(){
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").is(":focus"))) {
+				updateSabPanel();
+			}
+		}, 2500);
+	});
+}

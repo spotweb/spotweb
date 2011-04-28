@@ -140,9 +140,9 @@
                 </tbody>
             </table>
             <?php if ($settings->get('show_multinzb')) { echo "</form>"; } ?>
-            <input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>" />
-			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>" />
-			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>" />
+            <input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
+			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
+			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
 <?php } ?>
 			
 		</div>
