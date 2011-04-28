@@ -314,7 +314,7 @@ function toggleSidebarPanel(id) {
 		}
 		
 		if(id == ".sabnzbdPanel") {
-			updateSabPanel();
+			updateSabPanel(0,5);
 		}
 	}
 }
@@ -541,84 +541,146 @@ function sabBaseURL() {
 	return baseURL;
 }
 
-function sabActions(action,slot,value) {
+function sabActions(start,limit,action,slot,value) {
 	var baseURL = sabBaseURL();
 	
 	if(action == 'pause') {
 		var url = baseURL+'&mode=pause';
 		$.get(url, function(){
-			updateSabPanel();
+			updateSabPanel(start,limit);
 		});
 	} else if(action == 'resume') {
 		var url = baseURL+'&mode=resume';
 		$.get(url, function(){
-			updateSabPanel();
+			updateSabPanel(start,limit);
 		});
 	} else if(action == 'speedlimit') {
 		var limit = $("td.speedlimit input[name=speedLimit]").val();
 		var url = baseURL+'&mode=config&name=speedlimit&value='+limit;
 		$.get(url, function(){
-			updateSabPanel();
+			updateSabPanel(start,limit);
 		});
 	} else if(action == 'up') {
 		var newIndex = value-1;
 		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
 		$.get(url, function(){
-			updateSabPanel();
+			updateSabPanel(start,limit);
 		});
 	} else if(action == 'down') {
 		var newIndex = value+1;
 		var url = baseURL+'&mode=switch&value='+slot+'&value2='+newIndex;
 		$.get(url, function(){
-			updateSabPanel();
+			updateSabPanel(start,limit);
+		});
+	} else if(action == 'delete') {
+		var url = baseURL+'&mode=queue&name=delete&value='+slot;
+		$.get(url, function(){
+			updateSabPanel(start,limit);
 		});
 	}
 }
 
-function updateSabPanel() {	
+function updateSabPanel(start,limit) {
 	var baseURL = sabBaseURL();
-	var url = baseURL+'&mode=queue&output=json';
+	var url = baseURL+'&mode=queue&start='+start+'&limit='+limit+'&output=json';
 	
 	$.getJSON(url, function(json){
 		var queue = json.queue;
 		
 		if(queue.paused) {var state = "resume"} else {var state = "pause"}
 		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
-		$("table.sabInfo td.state a.state").click(function(){sabActions(state)});
+		$("table.sabInfo td.state a.state").click(function(){
+			if(timeOut) {clearTimeout(timeOut)}; 
+			sabActions(start,limit,state);
+		});
 		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
-		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label><input type='submit' name='setLimit' value='>>' title='Instellen'>");
-		$("td.speedlimit input[name=setLimit]").click(function(){sabActions('speedlimit')});
-		$("td.speedlimit input[name=speedLimit]").blur(function(){updateSabPanel()});
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label>");
+		$("td.speedlimit input[name=speedLimit]").focus(function(){
+			$(this).addClass("hasFocus");
+		});
+		$("td.speedlimit input[name=speedLimit]").keyup(function(e) {
+			if(e.keyCode == 13) {
+				if(timeOut) {clearTimeout(timeOut)}; 
+				sabActions(start,limit,'speedlimit');
+			}
+		});
+		$("td.speedlimit input[name=speedLimit]").blur(function(){
+			if(timeOut) {clearTimeout(timeOut)}; 
+			sabActions(start,limit,'speedlimit');
+		});
 		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
 		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
 		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
 		
 		$("table.sabQueue").empty();
 		if(queue.noofslots == 0) {
-			$("table.sabQueue").html("<tr><td class='info'>Geen items in de queue</td></tr>");
+			$("table.sabQueue").html("<tr><td class='info'>Geen items in de wachtrij</td></tr>");
 		} else {
 			$.each(queue.slots, function(){
 				var slot = this;
 				if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
 				
-				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.percentage+"%' style='width:"+slot.percentage+"%'></div></td></tr>");
+				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbleft+" / "+slot.mb+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
 				
-				$("table.sabQueue tr."+slot.index+" a.up").click(function(){sabActions('up', slot.nzo_id, slot.index)});
-				$("table.sabQueue tr."+slot.index+" a.down").click(function(){sabActions('down', slot.nzo_id, slot.index)});
+				$("table.sabQueue tr."+slot.index+" a.up").click(function(){
+					if(timeOut) {clearTimeout(timeOut)}; 
+					sabActions(start,limit,'up', slot.nzo_id, slot.index);
+				});
+				$("table.sabQueue tr."+slot.index+" a.down").click(function(){
+					if(timeOut) {clearTimeout(timeOut)}; 
+					sabActions(start,limit,'down', slot.nzo_id, slot.index);
+				});
+				$("table.sabQueue tr."+slot.index+" span.delete a").click(function(){
+					if(timeOut) {clearTimeout(timeOut)}; 
+					if(start+1 > queue.noofslots-1) {
+						sabActions(start-(limit-start),limit-(limit-start),'delete', slot.nzo_id);
+					} else {
+						sabActions(start,limit,'delete', slot.nzo_id);
+					}
+				});
 			});
 		}
 		
-		if($("table.sabQueue tr.title td span").size() == 1) {
-			$("table.sabQueue tr.title td span").hide();
-		} else {
-			$("table.sabQueue tr.title td span").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
-			$("table.sabQueue tr.title td span").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		if(queue.noofslots != 0 && queue.noofslots > limit) {
+			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.noofslots+" resultaten</td></tr>");
+		} else if(queue.noofslots != 0 && limit > queue.noofslots) {
+			if(queue.noofslots == 1) {
+				$("table.sabQueue").append("<tr class='nav'><td>Toon "+queue.noofslots+" resultaat</td></tr>");
+			} else {
+				$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+queue.noofslots+" van "+queue.noofslots+" resultaten</td></tr>");
+			}
+		} else if(queue.noofslots != 0 && limit == queue.noofslots) {
+			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.noofslots+" resultaten</td></tr>");
 		}
 		
-		setTimeout(function(){
-			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").is(":focus"))) {
-				updateSabPanel();
+		if(start > 1) {
+			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='Vorige'>&lt;&lt;</a> ");
+		}
+		if(queue.noofslots > limit) {
+			$("table.sabQueue tr.nav td").append(" <a class='next' title='Volgende'>&gt;&gt;</a>");
+		}
+		
+		$("table.sabQueue tr.nav a").click(function(){
+			if(timeOut) {clearTimeout(timeOut)}
+			if($(this).hasClass("prev")) {
+				updateSabPanel(start-(limit-start),limit-(limit-start));
+			} else if($(this).hasClass("next")) {
+				updateSabPanel(start+limit,limit+limit);
 			}
-		}, 2500);
+		});
+		
+		if($("table.sabQueue tr.title td span.move").size() == 1) {
+			$("table.sabQueue tr.title td span.move").hide();
+		} else {
+			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		}
+		
+		var interval = 5000;
+		var timeOut = setTimeout(function(){
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
+				updateSabPanel(start,limit);
+			}
+		}, interval);
 	});
 }
