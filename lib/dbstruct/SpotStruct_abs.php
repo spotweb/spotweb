@@ -418,6 +418,11 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", "messageid");
 		} # if
 		
+		# Rating van spots werd verkeerd berekend
+		if ($this->_spotdb->getSchemaVer() < 0.20) {
+			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
+		} # if
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
