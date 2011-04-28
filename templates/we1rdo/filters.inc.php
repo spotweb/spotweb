@@ -42,7 +42,7 @@
 <?php } ?>
                         </ul>
 
-						<h4>Sorteren op:</h4>
+						<h4 class="sorting">Sorteren op:</h4>
                         <div><input type="hidden" name="sortdir" value="ASC"></div>
                         <ul class="search sorting">
                             <li> <input type="radio" name="sortby" value="" <?php echo $search['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
@@ -82,12 +82,25 @@
                     <div class="login"></div>
 <?php } ?>
 				</div>
-                
+
                 <div class="sidebarPanel sabnzbdPanel">
                 	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
-                    <ul class="userInfo">
-                    	<li>Work in progress</li>
-                    </ul>
+<?php 
+	$nzbHandling = $this->_settings->get('nzbhandling'); 
+	$sabnzbd = $nzbHandling['sabnzbd']; 
+	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
+	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
+?>
+                    <table class="sabInfo">
+                    	<tr><td>Status:</td><td class="state"></td></tr>
+                        <tr><td>Snelheid:</td><td class="speed"></td></tr>
+                        <tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
+                        <tr><td>Te gaan:</td><td class="timeleft"></td></tr>
+                        <tr><td>ETA:</td><td class="eta"></td></tr>
+                        <tr><td>Wachtrij:</td><td class="mb"></td></tr>
+                    </table>
+					<h4>Wachtrij</h4>
+					<table class="sabQueue"><tbody><tr><td></td></tr></tbody></table>
                 </div>
             </div>
 
