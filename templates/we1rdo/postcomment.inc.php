@@ -1,5 +1,5 @@
 <?php
-return ;
+// return ;
 
 if (!empty($postresult)) {
 	include 'includes/form-xmlresult.inc.php';
@@ -11,12 +11,12 @@ if (empty($postresult)) {
 	include "includes/form-messages.inc.php"; 
 ?>
 
-<form name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post" onsubmit="new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); return false;">
-<input type="hidden" name="postcommentform[submit]" value="Post">
-<input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
-<input type="hidden" name="postcommentform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
-<input type="hidden" name="postcommentform[newmessageid]" value="">
-<input type="hidden" name="postcommentform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
+<form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post" onsubmit="new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); return false;">
+    <input type="hidden" name="postcommentform[submit]" value="Post">
+    <input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
+    <input type="hidden" name="postcommentform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
+    <input type="hidden" name="postcommentform[newmessageid]" value="">
+    <input type="hidden" name="postcommentform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
 	<fieldset>
 		<dl>
 			<dt><label for="postcommentform[rating]">Rating</label></dt>
