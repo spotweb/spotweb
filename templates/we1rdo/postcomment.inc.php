@@ -1,13 +1,11 @@
 <?php
-return ;
-
 if (!empty($postresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
 	echo formResult2Xml($postresult, $formmessages, $tplHelper);
 } 
 
-if (empty($postresult)) {
+if (empty($postresult) && isset($formmessages)) {
 	include "includes/form-messages.inc.php"; 
 ?>
 
