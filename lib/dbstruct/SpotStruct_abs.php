@@ -383,7 +383,7 @@ abstract class SpotStruct_abs {
 				'mail'			=> 'john@example.com',
 				'lastlogin'		=> 0,
 				'lastvisit'		=> 0,
-				'deleted'		=> false);
+				'deleted'		=> 0);
 			$this->_spotdb->addUser($anonymous_user);
 			
 			# update handmatig het userid
