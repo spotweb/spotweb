@@ -24,6 +24,8 @@ try {
 	echo "Updating settings" . PHP_EOL;
 	$spotUpgrader->settings($settings);
 	echo "Settings update done" . PHP_EOL;
+	$spotUpgrader->analyze($settings);
+	echo "Basic database optimalisation done" . PHP_EOL;
 
 } catch(Exception $x) {
 	echo "Database schema of settings upgrade mislukt:" . PHP_EOL;
