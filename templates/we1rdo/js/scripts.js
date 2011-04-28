@@ -6,7 +6,7 @@ $(function(){
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
 function detectScrollbar() {
-	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height()) && count == 0) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
+	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
 }
 
 // openSpot in overlay
@@ -120,6 +120,7 @@ function loadComments(messageid,perpage,pagenr) {
 function loadPostCommentsForm() {
 	var url = 'http://'+window.location.hostname+window.location.pathname+'templates/we1rdo/postcomment.inc.php';
 	$.get(url, function(data) {
+		alert('succes; get ('+url+')');
 		$("div#comments").append(data);
 		$("form.postcommentform").submit(function(){ 
 			var xsrfid = $("form.postcommentform input[name='postcommentform[xsrfid]']").val();
