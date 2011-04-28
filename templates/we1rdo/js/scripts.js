@@ -139,7 +139,7 @@ function loadPostCommentsForm() {
 				dataType: "xml",
 				data: dataString,
 				success: function(xml) {
-					alert('succes'); // ipv van deze alert moet hier de uitkomst van de commentPost worden verwerkt
+					console.log("ajax request succesfully performed; "+url); // hier moet de uitkomst van de commentPost worden verwerkt
 				}
 			});
 			return false;
