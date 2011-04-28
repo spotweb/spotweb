@@ -581,7 +581,6 @@ function sabActions(start,limit,action,slot,value) {
 }
 
 function updateSabPanel(start,limit) {
-	console.log('updateSabPanel; start: '+start+'. limit: '+limit);
 	var baseURL = sabBaseURL();
 	var url = baseURL+'&mode=queue&start='+start+'&limit='+limit+'&output=json';
 	
@@ -677,10 +676,11 @@ function updateSabPanel(start,limit) {
 			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
 		}
 		
+		var interval = 5000;
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
 				updateSabPanel(start,limit);
 			}
-		}, 5000);
+		}, interval);
 	});
 }
