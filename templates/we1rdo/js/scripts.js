@@ -104,6 +104,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		loadPostCommentsForm();
 		detectScrollbar();
 
 		pagenr++;
@@ -112,6 +113,36 @@ function loadComments(messageid,perpage,pagenr) {
 		}
 	});
 	$("a.closeDetails").click(function() { xhr.abort() });
+}
+
+// Load post comment form
+function loadPostCommentsForm() {
+	var url = 'http://'+window.location.hostname+window.location.pathname+'templates/we1rdo/postcomment.inc.php';
+	$.get(url, function(data) {
+		$("div#comments").append(data);
+		$("form.postcommentform").submit(function(){ 
+			var xsrfid = $("form.postcommentform input[name='postcommentform[xsrfid]']").val();
+			var inreplyto = $("form.postcommentform input[name='postcommentform[inreplyto]']").val();
+			var newmessageid = $("form.postcommentform input[name='postcommentform[newmessageid]']").val();
+			var randomstr = $("form.postcommentform input[name='postcommentform[randomstr]']").val();
+			var rating = $("form.postcommentform input[name='postcommentform[rating]']").val();
+			var commentbody = $("form.postcommentform input[name='postcommentform[body]']").val();
+	
+			var url = $("form.postcommentform").attr("action");
+			var dataString = 'postcommentform[xsrfid]=' + xsrfid + '&postcommentform[inreplyto]=' + inreplyto + '&postcommentform[newmessageid]='+newmessageid+'&postcommentform[randomstr]='+randomstr+'&postcommentform[rating]='+rating+'&postcommentform[body]='+commentbody+'&postcommentform[submit]=true';
+			
+			$.ajax({
+				type: "POST",
+				url: url,
+				dataType: "xml",
+				data: dataString,
+				success: function(xml) {
+					alert('succes'); // ipv van deze alert moet hier de uitkomst van de commentPost worden verwerkt
+				}
+			});
+			return false;
+		});	
+	});
 }
 
 // Laadt de spotImage wanneer spotinfo wordt geopend
