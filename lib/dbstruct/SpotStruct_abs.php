@@ -184,7 +184,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
 
 			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 DEFAULT '' NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
@@ -416,6 +416,11 @@ abstract class SpotStruct_abs {
 		if ($this->_spotdb->getSchemaVer() < 0.19) {
 			$this->dropIndex("idx_commentsposted_1", "commentsposted");
 			$this->addIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", "messageid");
+		} # if
+		
+		# Rating van spots werd verkeerd berekend
+		if ($this->_spotdb->getSchemaVer() < 0.20) {
+			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
 		} # if
 		
 		# voeg het database schema versie nummer toe
