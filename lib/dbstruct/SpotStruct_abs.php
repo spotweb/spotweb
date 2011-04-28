@@ -410,7 +410,13 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_seenlist_1", "seenlist");
 			$this->dropIndex("idx_seenlist_2", "seenlist");
 			$this->addIndex("idx_seenlist_1", "UNIQUE", "seenlist", "messageid,ouruserid");
-		}
+		} # if
+		 
+		# Indexen moeten uniek zijn op de messageid
+		if ($this->_spotdb->getSchemaVer() < 0.19) {
+			$this->dropIndex("idx_commentsposted_1", "commentsposted");
+			$this->addIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", "messageid");
+		} # if
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
