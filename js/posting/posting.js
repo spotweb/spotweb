@@ -1,15 +1,37 @@
 function spotPosting() {
 	this.commentForm = null;
-	
+	this.uiStart = null;
+	this.uiDone = null;
+
 	this.cbHashcashCalculated = function (self, hash) {
 	    self.commentForm['postcommentform[newmessageid]'].value = hash;
 	    self.commentForm['postcommentform[submit]'].value = 'Post';
-	    self.commentForm['postcommentform[submit]'].selected = true;
-		self.commentForm.submit();
+		self.uiDone();
+
+		// convert the processed form to post values
+		var dataString = $(self.commentForm).serialize()
+		
+		// and actually process the call
+		$.ajax({  
+		  type: "POST",  
+		  url: "?page=postcomment",  
+		  dataType: "xml",
+		  data: dataString,  
+		  success: function(xml) {  
+			result = $(xml).find('result').text();
+			/* hack */ var string = (new XMLSerializer()).serializeToString(xml);
+			alert(string);
+		  }
+		});
 	} // callback
 
-	this.postComment = function(commentForm) {
+	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
+		this.uiStart = uiStart;
+		this.uiDone = uiDone;
+		
+		// update the UI 
+		this.uiStart();
 		
 		// First retrieve some values from the form we are submitting
 		var randomstr = commentForm['postcommentform[randomstr]'].value;

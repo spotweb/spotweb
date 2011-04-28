@@ -552,7 +552,21 @@ class SpotTemplateHelper {
 		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
 		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
 		
+		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
+		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
+		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
+		$strings['postcomment_replayattack'] = 'Replay attack';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
+	
+	/*
+	 * Genereert een random string
+	 */
+	function getCleanRandomString($len) {
+		$spotParser = new SpotParser();
+		$spotSigning = new SpotSigning();
+		return substr($spotParser->specialString(base64_encode($spotSigning->makeRandomStr($len))), 0, $len);
+	} # getRandomStr
 	
 } # class SpotTemplateHelper

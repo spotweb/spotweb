@@ -25,7 +25,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 						 'rating' => 0,
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
-						 'randomstr' => substr($spotParser->specialString(base64_encode($spotSigning->makeRandomStr(4))), 0, 4));
+						 'randomstr' => '');
 		
 		# postcomment verzoek was standaard niet geprobeerd
 		$postResult = array();
@@ -55,14 +55,12 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			
 			# valideer of we deze comment kunnen posten, en zo ja, doe dat dan
 			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			var_dump($spotPosting->postComment($this->_currentSession['user'],
-									  $comment));
+			$formMessages['errors'] = $spotPosting->postComment($this->_currentSession['user'], $comment);
 			
-			$tryPost = false;
-			if (!$tryPost) {
-				$postResult = array('result' => 'failure');
-			} else {
+			if (empty($formMessages['errors'])) {
 				$postResult = array('result '=> 'success');
+			} else {
+				$postResult = array('result' => 'failure');
 			} # else
 		} # if
 		
