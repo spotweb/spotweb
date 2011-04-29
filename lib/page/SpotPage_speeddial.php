@@ -44,6 +44,8 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		imagettftext($img, $fontSize, 0, 128-($width/2), 135+$fontSize, $this->colorHex($img, $text_color), $ttfFont, $text);
 
 		// Headers
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Mon, 15 Apr 2006 12:26:00 GMT');
 		header('Content-Type: image/png');
 		header('refresh:60'); 
 		
