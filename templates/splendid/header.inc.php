@@ -22,8 +22,8 @@
 		</style>
 
 		<!-- favicon & Speed Dial -->
-		<?php if (extension_loaded('gd') && function_exists('gd_info') && @$_SERVER['HTTP_X_PURPOSE'] == 'preview') { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
-		<link rel='icon' href='images/favicon.ico'>
+		<?php if (extension_loaded('gd') && function_exists('gd_info')) { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
+		<link rel='shortcut icon' href='images/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
