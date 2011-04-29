@@ -30,7 +30,9 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
 		imagettftext($img, $fontSize, 0, 128-($width/2), 25, $this->colorHex($img, $text_color), $ttfFont, $text);
 
-		$text = "Aantal nieuwe spots: " . $tplHelper->getNewCountForFilter('');
+		$count = $tplHelper->getNewCountForFilter('');
+		if (!$count) { $count = 0; }
+		$text = "Aantal nieuwe spots: " . $count;
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
 		imagettftext($img, $fontSize, 0, 128-($width/2), 45, $this->colorHex($img, $text_color), $ttfFont, $text);
 		
@@ -40,6 +42,7 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		
 		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
 		$text = $tplHelper->formatDate($this->_db->getLastUpdate($nntp_hdr_settings['host']), 'lastupdate');
+		if (!$text) { $text = "onbekend"; }
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
 		imagettftext($img, $fontSize, 0, 128-($width/2), 135+$fontSize, $this->colorHex($img, $text_color), $ttfFont, $text);
 
