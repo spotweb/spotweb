@@ -7,8 +7,8 @@
 		<base href='<?php echo $tplHelper->makeBaseUrl("full"); ?>'>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
-		<link rel='icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
-		<?php if (extension_loaded('gd') && function_exists('gd_info') && @$_SERVER['HTTP_X_PURPOSE'] == 'preview') { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
+		<?php if (extension_loaded('gd') && function_exists('gd_info')) { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
+		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 		<script type='text/javascript'>
 		$(function(){
