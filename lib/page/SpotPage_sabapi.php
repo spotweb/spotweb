@@ -8,7 +8,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		$nzbhandling = $this->_settings->get('nzbhandling');
 		$sabnzbd = $nzbhandling['sabnzbd'];
 
-		if ($nzbhandling['action'] != 'push-sabnzbd') {
+		if ($nzbhandling['action'] != 'push-sabnzbd' && $nzbhandling['action'] != 'client-sabnzbd') {
 			die ('SABzndb is not configured on this node.');
 		} elseif (!isset($request['apikey'])) {
 			die ('API Key Required');
