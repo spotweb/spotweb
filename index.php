@@ -162,7 +162,13 @@ try {
 				$page->render();
 				break;
 		} # logout
-		
+
+		case 'speeddial' : {
+			$page = new SpotPage_speeddial($db, $settings, $currentSession);
+			$page->render();
+			break;
+		} # speeddial
+
 		case 'sabapi' : {
 			$page = new SpotPage_sabapi($db, $settings, $currentSession);
 			$page->render();

@@ -82,7 +82,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 			} # case css
 							 
 			case 'ico'	: {
-				return array('templates/we1rdo/img/favicon.ico');
+				return array('images/favicon.ico');
 				break;
 			} # case 'ico'
 		} # switch
