@@ -82,7 +82,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					
 					# als dit een nieuw soort comment is met rating vul die dan ook op
-					if (count($msgIdParts) >= 5) {
+					if (count($msgIdParts) = 5) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
 					} else {
 						$msgheader['rating'] = 0;
