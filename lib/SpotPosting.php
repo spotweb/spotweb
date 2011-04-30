@@ -17,41 +17,54 @@ class SpotPosting {
 	 * een 'true' terug, anders een foutmelding
 	 */
 	public function postComment($user, $comment) {
+		$errorList = array();
+
 		# haal de spot op waar dit een reply op is
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($comment['inreplyto'], $user['userid'], $this->_nntp_post);
 
-		var_dump($comment);
-		
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
-			return array('errors' => array('postcomment_invalidhashcash'));
+			$errorList[] = array('postcomment_invalidhashcash', array());
 		} # if
 
+		# Body mag niet leeg zijn of heel kort
+		$comment['body'] = trim($comment['body']);
+		if (strlen($comment['body']) < 2) {
+			$errorList[] = array('postcomment_bodytooshort', array());
+		} # if
+		
+		# Rating mag niet uit de range vallen
+		if (($comment['rating'] > 9) || ($comment['rating'] < 0)) {
+			$errorList[] = array('postcomment_ratinginvalid', array());
+		} # if
+		
 		# controleer dat de messageid waarop we replyen overeenkomt
 		# met het newMessageid om replay-attacks te voorkomen.
 		$replyToPart = substr($comment['inreplyto'], 0, strpos($comment['inreplyto'], '@'));
 
 		if (substr($comment['newmessageid'], 0, strlen($replyToPart)) != $replyToPart) { 
-			return array('errors' => array('postcomment_replayattack'));
+			$errorList[] = array('postcomment_replayattack', array());
 		} # if
 		
 		# controleer dat het random getal niet recentelijk ook al gebruikt
 		# is voor deze messageid (hiermee voorkomen we dat de hashcash niet
 		# steeds herberekend wordt voor het volspammen van 1 spot).
 		if (!$this->_db->isCommentMessageIdUnique($comment['newmessageid'])) {
-			return array('errors' => array('postcomment_replayattack'));
+			$errorList[] = array('postcomment_replayattack', array());
 		} # if
 
 		# en post daadwerkelijk de comment
-		$this->_nntp_post->postComment($user,
-									   $this->_settings->get('privatekey'),  # Server private key
-									   $this->_settings->get('comment_group'),
-									   $fullSpot['title'], 
-									   $comment);
-		$this->_db->addPostedComment($user['userid'], $comment);
+		if (empty($errorList)) {
+			$this->_nntp_post->postComment($user,
+										   $this->_settings->get('privatekey'),  # Server private key
+										   $this->_settings->get('comment_group'),
+										   $fullSpot['title'], 
+										   $comment);
+			$this->_db->addPostedComment($user['userid'], $comment);
+		} # if
 		
-		return array();
+		return $errorList;
 	} # postComment
 	
 } # SpotPosting

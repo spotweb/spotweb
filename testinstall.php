@@ -2,6 +2,11 @@
 	<head>
 		<title>Install ...</title>
 		<style type='text/css'>
+			body {margin:0;}
+			body.fixed {padding:25px 0 0 0;}
+
+			div.container {position:relative; font:11px Arial, Helvetica, sans-serif;}
+			
 		</style>
 	</head>
 
@@ -27,16 +32,29 @@
 
 		return $val;
 	} # return_bytes()
+	
+	function showResult($b, $hint = "") {
+		if ($b) {
+			echo "OK";
+		} else {
+			echo "NOT OK";
+			
+			if (!empty($hint)) {
+				echo '(' . $hint . ')';
+			} 
+		} # else
+	} # showResult
+				
 ?>
 
 	<table>
 		<tr> <th> PHP settings </th> <th> OK ? </th> </tr>
-		<tr> <td> PHP version </td> <td> <?php echo ($phpVersion[0] >= '5' && $phpVersion[1] >= 3) ? "OK" : "PHP 5.3 or later is recommended" ?>  </td> </tr>
-		<tr> <td> timezone settings </td> <td> <?php echo (ini_get("date.timezone")) ? "OK" : "Please specify date.timezone in your PHP.ini"; ?> </td> </tr>
-		<tr> <td> Open base dir </td> <td> <?php echo (!ini_get("open_basedir")) ? "OK" : "Not empty, might be a problem"; ?>  </td> </tr>
-		<tr> <td> Allow furl open </td> <td> <?php echo (ini_get("allow_url_fopen") == 1) ? "OK" : "allow_url_fopen not on -- will cause problems to retrieve external data"; ?> </td> </tr>
-		<tr> <td> PHP safe mode </td> <td> <?php echo ini_get('safe_mode') ? "Safe mode set -- will cause problems for retrieve.php" : "OK"; ?> </td> </tr>
-		<tr> <td> Memory limit </td> <td> <?php echo return_bytes(ini_get('memory_limit')) < (32*1024*1024) ? "memory_limit below 32M" : "OK"; ?> </td> </tr>
+		<tr> <td> PHP version </td> <td> <?php showResult(($phpVersion[0] >= '5' && $phpVersion[1] >= 3), "PHP 5.3 or later is recommended"); ?>  </td> </tr>
+		<tr> <td> timezone settings </td> <td> <?php showResult(ini_get("date.timezone"), "Please specify date.timezone in your PHP.ini"); ?> </td> </tr>
+		<tr> <td> Open base dir </td> <td> <?php showResult(!ini_get("open_basedir"), "Not empty, might be a problem"); ?>  </td> </tr>
+		<tr> <td> Allow furl open </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
+		<tr> <td> PHP safe mode </td> <td> <?php showResult(!ini_get('safe_mode'), "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
+		<tr> <td> Memory limit </td> <td> <?php showResult(return_bytes(ini_get('memory_limit')) >= (32*1024*1024), "memory_limit below 32M"); ?> </td> </tr>
 	</table>
 	
 	<br>
@@ -44,14 +62,13 @@
 	<table>
 		<tr> <th> PHP extension </th> <th> OK ? </th> </tr>
 
-		<tr> <td> SQLite </td> <td> <?php echo (array_search('SQLite', $extList) === false) ? "Not installed (geen probleem als MySQL geinstalleerd is)" : "OK" ?>  </td> </tr>
-		<tr> <td> MySQL </td> <td> <?php echo (array_search('mysql', $extList) === false) ? "Not installed (geen probleem als sqlite3 geinstalleerd is)" : "OK" ?>  </td> </tr>
-		<tr> <td> OpenSSL </td> <td> <?php echo (array_search('openssl', $extList) === false) ? "Not installed (geen probleem, maar het is wel aangeraden deze te installeren)" : "OK" ?>  </td> </tr>
-		<tr> <td> bcmath </td> <td> <?php echo (array_search('bcmath', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
-		<tr> <td> ctype </td> <td> <?php echo (array_search('ctype', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
-		<tr> <td> xml </td> <td> <?php echo (array_search('xml', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
-		<tr> <td> zlib </td> <td> <?php echo (array_search('zlib', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
-		<tr> <td> GD </td> <td> <?php echo (array_search('gd', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
+		<tr> <td> MySQL </td> <td> <?php showResult(array_search('mysql', $extList) !== false, "(geen probleem als sqlite3 geinstalleerd is)"); ?>  </td> </tr>
+		<tr> <td> OpenSSL </td> <td> <?php showResult(array_search('openssl', $extList) !== false); ?>  </td> </tr>
+		<tr> <td> gmp </td> <td> <?php showResult(array_search('gmp', $extList) !== false); ?> </td> </tr>
+		<tr> <td> ctype </td> <td> <?php showResult(array_search('ctype', $extList) !== false); ?> </td> </tr>
+		<tr> <td> xml </td> <td> <?php showResult(array_search('xml', $extList) !== false); ?> </td> </tr>
+		<tr> <td> zlib </td> <td> <?php showResult(array_search('zlib', $extList) !== false); ?> </td> </tr>
+		<tr> <td> GD </td> <td> <?php showResult(array_search('gd', $extlist) !== false); ?> </td> </tr>
 	</table>
 
 	<br>
@@ -75,14 +92,22 @@
 
 	<table>
 		<tr> <th> Include files  </th> <th> OK ? </th> </tr>
-		<tr> <td> Settings file </td> <td> <?php echo testInclude("settings.php") ? "OK" : "settings.php cannot be read" ?>  </td> </tr>
-		<tr> <td> PEAR </td> <td> <?php echo testInclude("System.php") ? "OK" : "PEAR cannot be found" ?> </td> </tr>
-		<tr> <td> PEAR Net/NNTP </td> <td> <?php echo testInclude("Net/NNTP/Client.php") ? "OK" : "PEAR Net/NNTP package cannot be found" ?> </td> </tr>
-		<tr> <td> NNTP server </td> <td> <?php echo (!empty($settings['nntp_nzb']['host']) === false) ? "No server entered" : "OK" ?>  </td> </tr>
+		<tr> <td> Settings file </td> <td> <?php showResult(testInclude("settings.php"), "settings.php kan niet worden gelezen"); ?>  </td> </tr>
+		<tr> <td> PEAR </td> <td> <?php showResult(testInclude("System.php"), "PEAR kan niet gevonden worden"); ?> </td> </tr>
+		<tr> <td> PEAR Net/NNTP </td> <td> <?php showResult(testInclude("Net/NNTP/Client.php"), "PEAR Net/NNTP package cannot be found"); ?> </td> </tr>
+		<tr> <td> NNTP server </td> <td> <?php showResult(empty($settings['nntp_nzb']['host']) === false, "No server entered"); ?>  </td> </tr>
+	</table>
+
+	<br> <br>
+
+	<table>
+		<tr> <th> OpenSSL config  </th> <th> OK ? </th> </tr>
+		<tr> <td> OpenSSL PHP extension</td> <td> <?php showResult(array_search('openssl', $extList) !== false); ?>  </td> </tr>
+		<tr> <td> Can create private key? </td> <td> <?php require_once "lib/SpotSigning.php"; $spotSigning = new SpotSigning(); $privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']); showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?></th> </tr>
 	</table>
 	
 	<br> <br>
-	
+
 	<table>
 		<tr> <th> Path </th> <th> PEAR found? </th> <th> Net/NNTP found? </th> <tr>
 		
@@ -109,13 +134,14 @@
 			echo "<tr><td>Directory access: </td><td>";
 			$TestFileName = $settings['nzbhandling']['local_dir'] ."testFile.txt";
 			$TestFileHandle = fopen($TestFileName, 'w') or die("Cannot create file</td></tr>");
-			echo "OK</td></tr>";
+			showResult(true);
+			echo "</td></tr>";
 			fclose($TestFileHandle);
 			unlink($TestFileName);
 			break;
 	}
 ?>
 </table>
-	
+
 	</body>
 </html>

@@ -69,7 +69,8 @@ class CustomTplHelper extends SpotTemplateHelper {
 								'js/sha1/jquery.sha1.js',
 								'js/posting/posting.js',
 								'js/dynatree/jquery.dynatree.min.js',
-								'templates/we1rdo/js/scripts.js'
+								'templates/we1rdo/js/scripts.js',
+								'templates/we1rdo/js/we1rdopost.js'
 								);
 				break;
 			} # case js
