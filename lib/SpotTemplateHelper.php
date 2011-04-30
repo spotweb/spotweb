@@ -563,9 +563,6 @@ class SpotTemplateHelper {
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 	
-<<<<<<< HEAD
-} # class SpotTemplateHelper
-=======
 	/*
 	 * Genereert een random string
 	 */
@@ -576,4 +573,3 @@ class SpotTemplateHelper {
 	} # getRandomStr
 	
 } # class SpotTemplateHelper
->>>>>>> upstream/master
