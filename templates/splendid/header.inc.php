@@ -22,7 +22,7 @@
 		</style>
 
 		<!-- favicon & Speed Dial -->
-		<?php if (extension_loaded('gd') && function_exists('gd_info')) { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
+		<link rel='icon' type='image/png' href='?page=speeddial'>
 		<link rel='shortcut icon' href='images/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->

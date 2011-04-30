@@ -51,6 +51,7 @@
 		<tr> <td> ctype </td> <td> <?php echo (array_search('ctype', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 		<tr> <td> xml </td> <td> <?php echo (array_search('xml', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 		<tr> <td> zlib </td> <td> <?php echo (array_search('zlib', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
+		<tr> <td> GD </td> <td> <?php echo (array_search('gd', $extList) === false) ? "Not installed" : "OK" ?> </td> </tr>
 	</table>
 
 	<br>
