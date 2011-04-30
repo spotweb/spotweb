@@ -10,7 +10,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" /> 
 		<title><?php echo $pagetitle?></title>
 		<link rel='stylesheet' type='text/css' href='js/jquery.mobile-1.0a3/jquery.mobile-1.0a3.min.css'>
-		<?php if (extension_loaded('gd') && function_exists('gd_info')) { echo "<link rel='icon' type='image/png' href='?page=speeddial'>" . PHP_EOL; } ?>
+		<link rel='icon' type='image/png' href='?page=speeddial'>
 		<link rel='shortcut icon' href='images/favicon.ico'>
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
 		<script src='js/jquery.mobile-1.0a3/jquery.mobile-1.0a3.min.js' type='text/javascript'></script>
