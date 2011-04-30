@@ -184,7 +184,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
 
 			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 DEFAULT '' NOT NULL");
+			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
@@ -295,9 +295,9 @@ abstract class SpotStruct_abs {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', 'INTEGER DEFAULT 0 NOT NULL');
-			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
-			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
-			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('privatekey', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('publickey', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT NOT NULL");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
@@ -354,9 +354,9 @@ abstract class SpotStruct_abs {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', "INTEGER DEFAULT 0 NOT NULL");
-			$this->addColumn('privatekey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
-			$this->addColumn('publickey', 'usersettings', "TEXT DEFAULT '' NOT NULL");
-			$this->addColumn('otherprefs', 'usersettings', "TEXT DEFAULT '' NOT NULL");
+			$this->addColumn('privatekey', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('publickey', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT NOT NULL");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
@@ -384,7 +384,7 @@ abstract class SpotStruct_abs {
 				'mail'			=> 'john@example.com',
 				'lastlogin'		=> 0,
 				'lastvisit'		=> 0,
-				'deleted'		=> false);
+				'deleted'		=> 0);
 			$this->_spotdb->addUser($anonymous_user);
 			
 			# update handmatig het userid
@@ -411,7 +411,18 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_seenlist_1", "seenlist");
 			$this->dropIndex("idx_seenlist_2", "seenlist");
 			$this->addIndex("idx_seenlist_1", "UNIQUE", "seenlist", "messageid,ouruserid");
-		}
+		} # if
+		 
+		# Indexen moeten uniek zijn op de messageid
+		if ($this->_spotdb->getSchemaVer() < 0.19) {
+			$this->dropIndex("idx_commentsposted_1", "commentsposted");
+			$this->addIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", "messageid");
+		} # if
+		
+		# Rating van spots werd verkeerd berekend
+		if ($this->_spotdb->getSchemaVer() < 0.20) {
+			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
+		} # if
 		
 		if ($this->_spotdb->getSchemaVer() < 0.19) {
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");

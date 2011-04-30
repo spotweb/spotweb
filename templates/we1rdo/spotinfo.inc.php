@@ -77,9 +77,11 @@ echo "</th>";
             	<h4>Post Description</h4>
                 <pre><?php echo $spot['description']; ?></pre>
             </div>
+
             <div class="comments" id="comments">
             	<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist"></ul>
+                <?php if ($currentSession['user']['userid'] != 1) { include "postcomment.inc.php"; } ?>
             </div>
 		</div>
         
