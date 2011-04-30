@@ -313,6 +313,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('mail', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
@@ -421,6 +422,10 @@ abstract class SpotStruct_abs {
 		# Rating van spots werd verkeerd berekend
 		if ($this->_spotdb->getSchemaVer() < 0.20) {
 			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
+		} # if
+
+		if ($this->_spotdb->getSchemaVer() < 0.21) {
+			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		} # if
 		
 		# voeg het database schema versie nummer toe
