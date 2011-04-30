@@ -64,7 +64,7 @@
 
 		<tr> <td> MySQL </td> <td> <?php showResult(array_search('mysql', $extList) !== false, "(geen probleem als sqlite3 geinstalleerd is)"); ?>  </td> </tr>
 		<tr> <td> OpenSSL </td> <td> <?php showResult(array_search('openssl', $extList) !== false); ?>  </td> </tr>
-		<tr> <td> bcmath </td> <td> <?php showResult(array_search('bcmath', $extList) !== false); ?> </td> </tr>
+		<tr> <td> gmp </td> <td> <?php showResult(array_search('gmp', $extList) !== false); ?> </td> </tr>
 		<tr> <td> ctype </td> <td> <?php showResult(array_search('ctype', $extList) !== false); ?> </td> </tr>
 		<tr> <td> xml </td> <td> <?php showResult(array_search('xml', $extList) !== false); ?> </td> </tr>
 		<tr> <td> zlib </td> <td> <?php showResult(array_search('zlib', $extList) !== false); ?> </td> </tr>
