@@ -424,7 +424,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
 		} # if
 		
-		if ($this->_spotdb->getSchemaVer() < 0.19) {
+		if ($this->_spotdb->getSchemaVer() < 0.21) {
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		}
 		
