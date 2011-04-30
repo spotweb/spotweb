@@ -295,9 +295,9 @@ abstract class SpotStruct_abs {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', 'INTEGER DEFAULT 0 NOT NULL');
-			$this->addColumn('privatekey', 'usersettings', "TEXT NOT NULL");
-			$this->addColumn('publickey', 'usersettings', "TEXT NOT NULL");
-			$this->addColumn('otherprefs', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('privatekey', 'usersettings', "TEXT");
+			$this->addColumn('publickey', 'usersettings', "TEXT");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
@@ -313,7 +313,6 @@ abstract class SpotStruct_abs {
 			$this->addColumn('mail', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
-			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
@@ -354,9 +353,9 @@ abstract class SpotStruct_abs {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
 			$this->addColumn('userid', 'usersettings', "INTEGER DEFAULT 0 NOT NULL");
-			$this->addColumn('privatekey', 'usersettings', "TEXT NOT NULL");
-			$this->addColumn('publickey', 'usersettings', "TEXT NOT NULL");
-			$this->addColumn('otherprefs', 'usersettings', "TEXT NOT NULL");
+			$this->addColumn('privatekey', 'usersettings', "TEXT");
+			$this->addColumn('publickey', 'usersettings', "TEXT");
+			$this->addColumn('otherprefs', 'usersettings', "TEXT");
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
@@ -423,10 +422,6 @@ abstract class SpotStruct_abs {
 		if ($this->_spotdb->getSchemaVer() < 0.20) {
 			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
 		} # if
-		
-		if ($this->_spotdb->getSchemaVer() < 0.21) {
-			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
-		}
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
