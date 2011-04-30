@@ -2,7 +2,7 @@
 Script is getest met onderstaande configuratie, als het op andere systemen werkt laat het even weten:
 * Script is enkel getest op een unix-achtige
 * Apache webserver
-* PHP v5.3 (modules vereist: SQLite of MySQL, gmp, ctype, xml, zlib)
+* PHP v5.3 (modules vereist: SQLite of MySQL, gmp, ctype, xml, zlib, gd)
 * PEAR's Net/NNTP module
 * Moet kunnen lezen en schrijven in de directory waar de SQLite database staat, of moet een MySQL database hebben
 
@@ -55,6 +55,7 @@ Omdat settings.php gewoon een "echte" PHP file is, moet deze foutloos zijn ander
 * php5-ctype
 * php5-xml
 * php5-zlib
+* php5-gd
 * pear
 
 Vervolgens installeer je dmv 'pear install Net_NNTP' de pear package 'Net/NNTP'.
