@@ -68,7 +68,7 @@
 		<tr> <td> ctype </td> <td> <?php showResult(array_search('ctype', $extList) !== false); ?> </td> </tr>
 		<tr> <td> xml </td> <td> <?php showResult(array_search('xml', $extList) !== false); ?> </td> </tr>
 		<tr> <td> zlib </td> <td> <?php showResult(array_search('zlib', $extList) !== false); ?> </td> </tr>
-		<tr> <td> GD </td> <td> <?php showResult(array_search('gd', $extlist) !== false); ?> </td> </tr>
+		<tr> <td> GD </td> <td> <?php showResult(array_search('gd', $extList) !== false); ?> </td> </tr>
 	</table>
 
 	<br>
