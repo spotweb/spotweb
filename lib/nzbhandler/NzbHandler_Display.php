@@ -5,17 +5,18 @@ class NzbHandler_Display extends NzbHandler_abs
 	{
 		$this->setName("Display");
 		$this->setNameShort("Show");
+		$this->setSettings($settings);
 		
 	} # __construct
 
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
-		# $fullspot, $category not used
+		$nzb = $this->prepareNzb($fullspot, $nzblist);
 		
-		Header("Content-Type: " . $mimetype);
-		Header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-		echo $nzb;
-		
+		Header("Content-Type: " . $nzb['mimetype']);
+		Header("Content-Disposition: attachment; filename=\"" . $nzb['filename'] . "\"");
+		echo $nzb['nzb'];
+
 	} # processNzb
 	
 }

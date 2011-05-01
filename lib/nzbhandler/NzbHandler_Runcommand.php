@@ -1,16 +1,15 @@
 <?php
 
-class NzbHandler_Runcommand extends NzbHandler_Save
+class NzbHandler_Runcommand extends NzbHandler_abs
 {
 	private $_localDir = null;
 	private $_cmdToRun = null;
 	
 	function __construct($settings)
 	{
-		parent::__construct($settings);
-
-		$this->setName("Run");
+		$this->setName("Runcommand");
 		$this->setNameShort("Run");
+		$this->setSettings($settings);
 
 		# als het commando leeg is, gooi een exception anders geeft php een warning
 		$nzbhandling = $settings->get('nzbhandling');
@@ -28,15 +27,18 @@ class NzbHandler_Runcommand extends NzbHandler_Save
 		
 	} # __construct
 
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
-		# $filename, $mimetype not used
-
-		# save the nzb
-		parent::processNzb($fullspot, $filename, $category, $nzb, $mimetype);
+		$nzb = $this->prepareNzb($fullspot, $nzblist);
 		
-		# where was the nzb stored
-		$filename = $this->makeNzbLocalPath($fullspot, $category, $this->_localDir);
+		$path = $this->makeNzbLocalPath($fullspot, $this->_localDir);
+		$filename = $path . $nzb['filename'];
+		
+		# Sla de NZB file op het lokale filesysteem op
+		if (file_put_contents($filename, $nzb['nzb']) === false)
+		{
+			throw new InvalidLocalDirException("Unable to write NZB file to: " . $filename);
+		} # if
 		
 		$cmdToRun = str_replace('$SPOTTITLE', $fullspot['title'], $this->_cmdToRun);
 		$cmdToRun = str_replace('$NZBPATH', $filename, $cmdToRun);

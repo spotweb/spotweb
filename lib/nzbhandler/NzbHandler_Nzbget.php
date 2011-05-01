@@ -3,106 +3,76 @@
 class NzbHandler_Nzbget extends NzbHandler_abs
 {
 	private $_host = null;
-	private $_port = null;
 	private $_timeout = null;
-	private $_username = null;
-	private $_password = null;
+	private $_url = null;
+	private $_credentials = null;
 
 	function __construct($settings)
 	{
 		$this->setName("NZBGet");
 		$this->setNameShort("D/L");
-		
+		$this->setSettings($settings);
+				
 		$nzbhandling = $settings->get('nzbhandling');
 		$nzbget = $nzbhandling['nzbget'];
 		$this->_host = $nzbget['host'];
-		$this->_port = $nzbget['port'];
-		$this->_timeout = $nzbget['timeout'];;
-		$this->_username = $nzbget['username'];
-		$this->_password = $nzbget['password'];
+		$this->_timeout = $nzbget['timeout'];
+		$this->_url = "http://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
+		$this->_credentials = base64_encode($nzbget['username'] . ":" . $nzbget['password']);
 	} # __construct
 
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
-		# mimetype parameter are not used by NZBGet
-		
-		$args = array($filename, $category, false, base64_encode($nzb));
-		return $this->sendRequest('append', $args);
+		$filename = $this->cleanForFileSystem($fullspot['title']) . '.nzb';
+		# nzbget does not support zip files, must merge
+		$nzb = $this->mergeNzbList($nzblist); 
+		$category = $this->convertCatToSabnzbdCat($fullspot, $this->getSettings());
+
+		return $this->uploadNzb($filename, $category, false, $nzb);
 	} # processNzb
 
-	private function sendRequest($method, $params)
+	private function sendRequest($apiCall, $content)
 	{
-		# create the message body first since we need to provide the body length
-		# in the message header
-		$body = json_encode(array(
-			'version' => '1.1', 
-			'method' => $method, 
-			'params' => $params));
+		# creeer de header
+		$header = "Host: ". $this->_host . "\r\n".
+			"Authorization: Basic " . $this->_credentials . "\r\n".
+			"Content-type: application/json\r\n".
+			"Content-Length: ".strlen($content) . "\r\n" .
+			"\r\n";		
+		
+		$output = $this->sendHttpRequest('POST', $this->_url, $header, $content, $this->_timeout);
 
-		$header = "POST /jsonrpc HTTP/1.0\r\n" .
-			"User-Agent: SpotWeb\r\n" .
-			"Host: " . $this->_host . "\r\n" .
-			"Authorization: Basic " . base64_encode($this->_username . ":" . $this->_password) . "\r\n" .
-			"Content-Length: " . strlen($body) . "\r\n" .
-			"\r\n";
-
-		# create the full message from the header and body
-		$message = $header . $body;
-
-		# open connection to NZBGet
-		$connection = @fsockopen(
-			$this->_host,
-			$this->_port,
-			$errNo,
-			$errMsg,
-			$this->_timeout);
-
-		if (!$connection)
+		if ($output === false)
 		{
-			error_log("ERROR: NZBGet connect error: $errMsg ($errNo)");
-			throw new Exception("ERROR: NZBGet connect error: $errMsg ($errNo)");
+			error_log("ERROR: Could not decode json-data for NZBGet method '" . $apiCall ."'");
+			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $apiCall ."'");
 		}
 
-		if (!fputs($connection, $message, strlen($message)))
-		{
-			error_log("ERROR: Cannot write to NZBGet socket");
-			throw new Exception("ERROR: Cannot write to NZBGet socket");
-		}
-
-		$result = "";
-		while($data = fread($connection, 32768))
-		{
-			$result .= $data;
-		}
-		fclose($connection);
-
-		if (!$result)
-		{
-			error_log("ERROR: NZBGet closed the connection");
-			throw new Exception("ERROR: NZBGet closed the connection");
-		}
-
-		$index = strpos($result, "\r\n\r\n");
-		if ($index)
-		{
-			$result = substr($result, $index + 4);
-		}
-
-		$response = json_decode($result, true);
+		$response = json_decode($output, true);
 		if (is_array($response) && isset($response['error']) && isset($response['error']['code']))
 		{
-			error_log("NZBGet RPC: Method '" . $method . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
-			throw new Exception("NZBGet RPC: Method '" . $method . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
+			error_log("NZBGet RPC: Method '" . $apiCall . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
+			throw new Exception("NZBGet RPC: Method '" . $apiCall . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
 		}
 		else if (is_array($response) && isset($response['result']))
 		{
-			return $response['result'];
+			$response = $response['result'];
 		}
-		else
-		{
-			error_log("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
-			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
-		}
+		
+		return $response;
 	} # sendRequest
 
+	/*
+	 * NZBGet API method: Append
+	 * Purpose: Add an NZB file to download queue 
+	 */
+	public function uploadNzb($filename, $category, $addToTop, $nzb)
+	{
+		$args = array($filename, $category, $addToTop, base64_encode($nzb));
+		$reqarr = array('version' => '1.1', 'method' => 'append', 'params' => $args);
+		$content = json_encode($reqarr);
+
+		return $this->sendrequest('append', $content);
+	} # nzbgetApi_append
+	
 }
