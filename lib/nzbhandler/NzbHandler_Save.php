@@ -9,6 +9,7 @@ class NzbHandler_Save extends NzbHandler_abs
 	{
 		$this->setName("Save");
 		$this->setNameShort("Save");
+		$this->setSettings($settings);
 		
 		$nzbhandling = $settings->get('nzbhandling');
 		$this->_localDir = $nzbhandling['local_dir'];
@@ -20,13 +21,15 @@ class NzbHandler_Save extends NzbHandler_abs
 	} # __construct
 	
 	
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
-		# $filename, $mimetype not used
-		$filename = $this->makeNzbLocalPath($fullspot, $category, $this->_localDir);
-	
+		$nzb = $this->prepareNzb($fullspot, $nzblist);
+		
+		$path = $this->makeNzbLocalPath($fullspot, $this->_localDir);
+		$filename = $path . $nzb['filename'];
+		
 		# Sla de NZB file op het lokale filesysteem op
-		if (file_put_contents($filename, $nzb) === false)
+		if (file_put_contents($filename, $nzb['nzb']) === false)
 		{
 			throw new InvalidLocalDirException("Unable to write NZB file to: " . $filename);
 		} # if
