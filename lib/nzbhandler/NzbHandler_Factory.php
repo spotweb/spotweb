@@ -3,8 +3,7 @@ class NzbHandler_Factory
 {
 	public static function build($settings, $action)
 	{
-		# for backward compatibility we introduce a mapping
-		# Nieuwe handlers voegen we alsnog expliciet toe omdat we anders
+		# Nieuwe handlers voegen we expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
 		switch ($action)
 		{
@@ -12,7 +11,7 @@ class NzbHandler_Factory
 			case 'save'	  			: $handler = new NzbHandler_Save($settings); break;
 			case 'runcommand'		: $handler = new NzbHandler_Runcommand($settings); break;
 			case 'push-sabnzbd' 	: $handler = new NzbHandler_Pushsabnzbd($settings); break;
-			case 'client-sabnzbd' 	: $handler = new NzbHandler_Pushsabnzbd($settings); break;
+			case 'client-sabnzbd' 	: $handler = new NzbHandler_Clientsabnzbd($settings); break;
 			case 'nzbget'			: $handler = new NzbHandler_Nzbget($settings); break;
 			default					: $handler = new NzbHandler_Display($settings); break;
 		} # switch

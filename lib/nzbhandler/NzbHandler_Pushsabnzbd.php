@@ -3,13 +3,14 @@ define("SABNZBD_TIMEOUT",15);
 
 class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 {
-	private $_name = "SabNZBd";
-	private $_nameShort = "SAB";
-
 	private $_url = null;
 
 	function __construct($settings)
 	{
+		$this->setName("SabNZBd");
+		$this->setNameShort("SAB");
+		$this->setSettings($settings);
+		
 		$nzbhandling = $settings->get('nzbhandling');
 		$sabnzbd = $nzbhandling['sabnzbd'];
 		
@@ -23,11 +24,12 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 
 	} # __construct
 	
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
+		$nzb = $this->prepareNzb($fullspot, $nzblist);
 		$title = urlencode($this->cleanForFileSystem($fullspot['title']));
-		$category = urlencode($category);
-		
+		$category = urlencode($this->convertCatToSabnzbdCat($fullspot, $this->getSettings()));
+
 		# yes, using a local variable instead of the member variable is intentional		
 		$url = str_replace('$SPOTTITLE', $title, $this->_url);
 		$url = str_replace('$SANZBDCAT', $category, $url);
@@ -46,21 +48,15 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		# bouw nu de content
 		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
 		$content .= 
-            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $filename . "\"\r\n" .
-			"Content-Type: " . $mimetype . "\r\n\r\n" . 
-			$nzb ."\r\n";
+            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $nzb['filename'] . "\"\r\n" .
+			"Content-Type: " . $nzb['mimetype'] . "\r\n\r\n" . 
+			$nzb['nzb'] ."\r\n";
 			
 		# signal end of request (note the trailing "--")
 		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
 
-		# create an stream context to be able to pass certain parameters
-		$ctx = stream_context_create(array('http' => 
-					array('timeout' => SABNZBD_TIMEOUT,
-						  'method' => 'POST',
-						  'header' => $header,
-						  'content' => $content)));
-
-		$output = @file_get_contents($url, 0, $ctx);
+		$output = $this->sendHttpRequest('POST', $url, $header, $content, SABNZBD_TIMEOUT);
+		
 		if ($output	=== false)
 		{
 			error_log("Unable to open sabnzbd url: " . $url);
