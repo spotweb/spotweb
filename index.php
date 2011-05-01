@@ -189,6 +189,7 @@ try {
 								  'action' => $req->getDef('action', ''))
 					);
 				}
+				$page = new SpotPage_speeddial($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # default
