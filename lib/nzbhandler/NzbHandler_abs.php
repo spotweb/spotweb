@@ -96,9 +96,7 @@ abstract class NzbHandler_abs
 		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
 		$path = $this->addTrailingSlash($path);
 		
-//		$title = $this->cleanForFileSystem($fullspot['title']);
-		
-		return $path; // . $title . '.nzb';
+		return $path;
 	} # makeNzbLocalPath
 	
 	
@@ -147,7 +145,7 @@ abstract class NzbHandler_abs
 			default 		: {
 				$result['nzb'] = $this->mergeNzbList($nzblist); 
 				$result['mimetype'] = 'application/x-nzb';
-				$result['filename'] = $fullspot['title'] . '.nzb';
+				$result['filename'] = $this->cleanForFileSystem($fullspot['title']) . '.nzb';
 				break;
 			} # merge
 		} # switch
