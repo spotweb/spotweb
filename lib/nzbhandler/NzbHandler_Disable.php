@@ -8,8 +8,13 @@ class NzbHandler_Disabble extends NzbHandler_abs
 		
 	} # __construct
 	
-	public function processNzb($fullspot, $filename, $category, $nzb, $mimetype)
+	public function processNzb($fullspot, $nzblist)
 	{
 		# do nothing
 	} # processNzb
+	
+	public function generateNzbHandlerUrl($spot)
+	{
+		return '';
+	}
 }
