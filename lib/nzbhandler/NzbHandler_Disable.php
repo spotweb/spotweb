@@ -1,5 +1,5 @@
 <?php
-class NzbHandler_Disabble extends NzbHandler_abs
+class NzbHandler_Disable extends NzbHandler_abs
 {
 	function __construct($settings)
 	{
