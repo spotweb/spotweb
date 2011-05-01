@@ -870,7 +870,7 @@ class SpotDb
 	 * Geeft de gemiddelde spot rating terug
 	 */
 	function getSpotRating($msgId) {
-		return $this->_conn->singleQuery("SELECT AVG(spotrating) AS rating FROM commentsxover WHERE nntpref = '%s' AND spotrating BETWEEN 1 AND 10 GROUP BY nntpref", Array($nntpref));
+		return $this->_conn->singleQuery("SELECT AVG(spotrating) AS rating FROM commentsxover WHERE nntpref = '%s' AND spotrating BETWEEN 1 AND 10 GROUP BY nntpref", Array($msgId));
 	} # getSpotRating
 	
 	/*
