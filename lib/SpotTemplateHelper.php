@@ -100,6 +100,13 @@ class SpotTemplateHelper {
 		
 		return self::$_commentCount[$spot['messageid']];
 	} # getCommentCount
+
+	/*
+	 * Geeft de gemiddelde rating van deze spot terug
+	 */
+	function getSpotRating($spot) {
+		return $this->_db->getSpotRating($spot['messageid']);
+	} # getSpotRating
 	
 	/*
 	 * Geeft een aantal comments terug
@@ -360,6 +367,9 @@ class SpotTemplateHelper {
 		
 		// hoeveel comments zitten er bij deze spot ongeveer?
 		$spot['commentcount'] = $this->getCommentCount($spot);
+		
+		// en wat is de gemiddelde rating van deze spot?
+		$spot['rating'] = $this->getSpotRating($spot);
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
