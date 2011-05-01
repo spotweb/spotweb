@@ -156,8 +156,8 @@ class SpotDb
 
 	function addToSeenList($msgId, $ourUserId) {
 		$res = $this->_conn->exec("INSERT INTO seenlist(messageid, ouruserid, stamp)
-									VALUES('%s', %d, UNIX_TIMESTAMP())",
-									Array($msgId, $ourUserId));
+									VALUES('%s', %d, %d)",
+									Array($msgId, $ourUserId, time()));
 	}
 
 	/*
@@ -173,9 +173,13 @@ class SpotDb
 	 * Checkt of een emailaddress al bestaat
 	 */
 	function userEmailExists($mail) {
-		$tmpResult = $this->_conn->singleQuery("SELECT username FROM users WHERE mail = '%s'", Array($mail));
+		$tmpResult = $this->_conn->singleQuery("SELECT id FROM users WHERE mail = '%s'", Array($mail));
 		
-		return (!empty($tmpResult));
+		if (!empty($tmpResult)) {
+			return $tmpResult;
+		} # if
+
+		return false;
 	} # userEmailExists
 	
 	/*
@@ -208,6 +212,47 @@ class SpotDb
 		return false;
 	} # getUser
 
+	/*
+	 * Haalt een user op uit de database 
+	 */
+	function listUsers($username, $pageNr, $limit) {
+		SpotTiming::start(__FUNCTION__);
+		$offset = (int) $pageNr * (int) $limit;
+		
+		$tmpResult = $this->_conn->arrayQuery(
+						"SELECT u.id AS userid,
+								u.username AS username,
+								u.firstname AS firstname,
+								u.lastname AS lastname,
+								u.mail AS mail,
+								u.lastlogin AS lastlogin,
+								u.lastvisit AS lastvisit,
+								s.otherprefs AS prefs
+						 FROM users AS u
+						 JOIN usersettings s ON (u.id = s.userid)
+						 WHERE (username LIKE '%" . $this->_db->safe($username) . "%') AND (NOT DELETED)
+					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
+		if (!empty($tmpResult)) {
+			# Other preferences worden serialized opgeslagen in de database
+			for($i = 0; $i < count($tmpResult); $i++) {
+				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
+			} # for
+			
+			return $tmpResult[0];
+		} # if
+	
+		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
+		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
+		$hasMore = (count($tmpResult) > $limit);
+		if ($hasMore) {
+			# verwijder het laatste, niet gevraagde, element
+			array_pop($tmpResult);
+		} # if
+		
+		SpotTiming::stop(__FUNCTION__, array($username, $pageNr, $limit));
+		return array('list' => $tmpResult, 'hasmore' => $hasMore);
+	} # listUsers
+	
 	/*
 	 * Disable/delete een user. Echt wissen willen we niet 
 	 * omdat eventuele comments dan niet meer te traceren
@@ -252,6 +297,18 @@ class SpotDb
 						  (int) $user['userid']));
 	} # setUser
 
+	/*
+	 * Stel users' password in
+	 */
+	function setUserPassword($user) {
+		# eerst updaten we de users informatie
+		$res = $this->_conn->exec("UPDATE users 
+									SET passhash = '%s'
+									WHERE id = '%s'", 
+					Array($user['passhash'],
+						  (int) $user['userid']));
+	} # setUserPassword
+	
 	function clearSeenList($user) {
 		$res = $this->_conn->exec("DELETE FROM seenlist
 									WHERE ouruserid = '%s'",
@@ -319,6 +376,7 @@ class SpotDb
 
 		return false;
 	} # authUser
+
 	
 	/* 
 	 * Update of insert the maximum article id in de database.

@@ -1,6 +1,5 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
-session_start();
 
 require_once "lib/SpotClassAutoload.php";
 SpotTiming::start('total');
@@ -142,6 +141,14 @@ try {
 				break;
 		} # createuser
 
+		case 'edituser' : {
+				$page = new SpotPage_edituser($db, $settings, $currentSession,
+							Array('edituserform' => $req->getForm('edituserform', array()),
+								  'userid' => $req->getDef('userid', '')));
+				$page->render();
+				break;
+		} # edituser
+		
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform', array())));
