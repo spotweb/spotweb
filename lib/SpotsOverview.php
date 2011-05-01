@@ -28,9 +28,19 @@ class SpotsOverview {
 			# niet xover informatie in 1 hebben
 			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		} # if
-		
+
 		$spotParser = new SpotParser();
 		$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+		
+		/*
+		 * Als je een fullspot ophaalt, maar er is nog gen 'spot' entry, dan blijf je een
+		 * lege spot terugkrijgen omdat de join misgaat. Omdat dit verwarring op kan leveren
+		 * gooien we dan een exception
+		 */
+		if (empty($fullSpot)) {
+			throw new Exception("Spot is not in our Spotweb database");
+		} # if
+		
 		return $fullSpot;
 	} # getFullSpot
 
