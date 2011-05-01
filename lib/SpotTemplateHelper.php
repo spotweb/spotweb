@@ -109,6 +109,13 @@ class SpotTemplateHelper {
 		
 		return self::$_commentCount[$spot['messageid']];
 	} # getCommentCount
+
+	/*
+	 * Geeft de gemiddelde rating van deze spot terug
+	 */
+	function getSpotRating($spot) {
+		return $this->_db->getSpotRating($spot['messageid']);
+	} # getSpotRating
 	
 	/*
 	 * Geeft een aantal comments terug
@@ -176,6 +183,13 @@ class SpotTemplateHelper {
 	function makeCreateUserAction() {
 		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
+
+	/*
+	 * Creeert de action url voor het aanmaken van de user
+	 */
+	function makeEditUserAction() {
+		return $this->makeBaseUrl("path") . "?page=edituser";
+	} # makeEditUserAction
 
 	/*
 	 * Creeert de action url voor het inloggen van een user
@@ -349,6 +363,9 @@ class SpotTemplateHelper {
 		
 		// hoeveel comments zitten er bij deze spot ongeveer?
 		$spot['commentcount'] = $this->getCommentCount($spot);
+		
+		// en wat is de gemiddelde rating van deze spot?
+		$spot['rating'] = $this->getSpotRating($spot);
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
@@ -550,7 +567,12 @@ class SpotTemplateHelper {
 		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
 		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
 		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
+		$strings['validateuser_passwordtooshort'] = 'Opgegeven wachtwoord is te kort';
+		$strings['validateuser_passworddontmatch'] = 'Wachtwoord velden komen niet overeen';
 		
+		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
+		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
+
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
 		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';

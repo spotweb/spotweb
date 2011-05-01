@@ -226,12 +226,22 @@ class SpotUserSystem {
 		} # if
 		
 		# converteer het password naar een pass hash
-		$user['passhash'] = $this->passToHash($user['password']);
+		$user['passhash'] = $this->passToHash($user['newpassword1']);
 		
 		# en voeg het record daadwerkelijk toe
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 	} # addUser()
+	
+	/*
+	 * Update een gebruikers' password
+	 */
+	function setUserPassword($user) {
+		# converteer het password naar een pass hash
+		$user['passhash'] = $this->passToHash($user['newpassword1']);
+		
+		$this->_db->setUserPassword($user);
+	} # setUserPassword
 	
 	/*
 	 * Valideer het user record, kan gebruikt worden voor het toegevoegd word of
@@ -245,11 +255,6 @@ class SpotUserSystem {
 			$errorList[] = array('validateuser_invalidusername', array());
 		} # if
 		
-		# Is er geen andere uset met dezelfde username?
-		if ($this->_db->usernameExists($user['username'])) {
-			$errorList[] = array('validateuser_usernameexists', array($user['username']));
-		} # if
-
 		# controleer de firstname
 		if (strlen($user['firstname']) < 3) {
 			$errorList[] = array('validateuser_invalidfirstname', array());
@@ -259,6 +264,23 @@ class SpotUserSystem {
 		if (strlen($user['lastname']) < 3) {
 			$errorList[] = array('validateuser_invalidlastname', array());
 		} # if
+
+		# controleer het password, als er een opgegeven is
+		if (strlen($user['newpassword1'] > 0)) {
+			if (strlen($user['newpassword1']) < 5){
+				$errorList[] = array('validateuser_passwordtooshort', array());
+			} # if 
+		} # if
+
+		# password1 en password2 moeten hetzelfde zijn (password en bevestig password)
+		if ($user['newpassword1'] != $user['newpassword2']) {
+			$errorList[] = array('validateuser_passworddontmatch', array());
+		} # if
+
+		# anonymous user editten mag niet
+		if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+			$errorList[] = array('edituser_cannoteditanonymous', array());
+		} # if
 		
 		# controleer het mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
@@ -266,7 +288,7 @@ class SpotUserSystem {
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
-		if ($this->_db->userEmailExists($user['mail'])) {
+		if ($this->_db->userEmailExists($user['mail']) !== $user['userid']) {
 			$errorList[] = array('validateuser_mailalreadyexist', array());
 		} # if
 		

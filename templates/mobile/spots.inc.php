@@ -9,9 +9,9 @@ $setpath = $tplHelper->makeBaseUrl("path");
 	<a href='<?php echo $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
 	<div data-role="navbar">
 		<ul>
-			<li><a href="<?php echo $setpath;?>#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
-			<li><a href="<?php echo $setpath;?>#search"  data-icon="search">Zoek</a></li>
-			<li><a href="<?php echo $setpath;?>#filters" data-icon="star">Filters</a></li>
+			<li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
+			<li><a href="#search"  data-icon="search">Zoek</a></li>
+			<li><a href="#filters" data-icon="star">Filters</a></li>
 
 		</ul>
 	</div><!-- /navbar -->
@@ -36,12 +36,12 @@ $count = 0;
 
 <fieldset class="ui-grid-a">
 	<?php if ($prevPage >= 0) { ?> 
-	<div class="ui-block-a"><a href="<?php echo $setpath;?>index.php?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
+	<div class="ui-block-a"><a href="<?php echo $setpath;?>index.php?direction=prev&amp;pagenr=<?php echo $prevPage;?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
 			<?php }else{ ?>
 	<div class="ui-block-a"><a href="<?php echo $setpath;?>#" disabled data-theme="c" rel=external data-role="button" data-icon="minus">&nbsp;</a></div>
 			<?php } ?> 
 			<?php if ($nextPage > 0) { ?>
-	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?pagenr=spots&amp;direction=next&amp;page=<?php echo $nextPage . $getUrl;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
+	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?pagenr=spots&amp;direction=next&amp;page=<?php echo $nextPage;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
 	<?php } ?>   
 </fieldset>
 
