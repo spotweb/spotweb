@@ -50,11 +50,11 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
 		header('Expires: Mon, 15 Apr 2006 12:26:00 GMT');
 		header('Pragma: no-cache');
-		header('Content-Type: image/png');
+		header('Content-Type: image/jpeg');
 		header('refresh:60'); 
 		
 		// Image output
-		imagepng($img);
+		imagejpeg($img);
 		imagedestroy($img);
 	} # render
 
