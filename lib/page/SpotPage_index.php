@@ -16,6 +16,14 @@ class SpotPage_index extends SpotPage_Abs {
 
 	function render() {
 		SpotTiming::start(__FUNCTION__);
+
+		# Speed Dial forceren wanneer gevraagd
+		if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
+			header('Location: ?page=speeddial');
+			/* Make sure that code below does not get executed when we redirect. */
+			exit;
+		} # if
+		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
