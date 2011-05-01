@@ -156,8 +156,8 @@ class SpotDb
 
 	function addToSeenList($msgId, $ourUserId) {
 		$res = $this->_conn->exec("INSERT INTO seenlist(messageid, ouruserid, stamp)
-									VALUES('%s', %d, UNIX_TIMESTAMP())",
-									Array($msgId, $ourUserId));
+									VALUES('%s', %d, %d)",
+									Array($msgId, $ourUserId, time()));
 	}
 
 	/*
