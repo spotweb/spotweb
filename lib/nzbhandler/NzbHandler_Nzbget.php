@@ -23,7 +23,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 	public function processNzb($fullspot, $nzblist)
 	{
-		$filename = $fullspot['title'] . '.nzb';
+		$filename = $this->cleanForFileSystem($fullspot['title']) . '.nzb';
 		# nzbget does not support zip files, must merge
 		$nzb = $this->mergeNzbList($nzblist); 
 		$category = $this->convertCatToSabnzbdCat($fullspot, $this->getSettings());
