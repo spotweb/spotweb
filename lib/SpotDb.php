@@ -173,9 +173,13 @@ class SpotDb
 	 * Checkt of een emailaddress al bestaat
 	 */
 	function userEmailExists($mail) {
-		$tmpResult = $this->_conn->singleQuery("SELECT username FROM users WHERE mail = '%s'", Array($mail));
+		$tmpResult = $this->_conn->singleQuery("SELECT id FROM users WHERE mail = '%s'", Array($mail));
 		
-		return (!empty($tmpResult));
+		if (!empty($tmpResult)) {
+			return $tmpResult;
+		} # if
+
+		return false;
 	} # userEmailExists
 	
 	/*
@@ -252,6 +256,18 @@ class SpotDb
 						  (int) $user['userid']));
 	} # setUser
 
+	/*
+	 * Stel users' password in
+	 */
+	function setUserPassword($user) {
+		# eerst updaten we de users informatie
+		$res = $this->_conn->exec("UPDATE users 
+									SET passhash = '%s'
+									WHERE id = '%s'", 
+					Array($user['passhash'],
+						  (int) $user['userid']));
+	} # setUserPassword
+	
 	function clearSeenList($user) {
 		$res = $this->_conn->exec("DELETE FROM seenlist
 									WHERE ouruserid = '%s'",
@@ -319,6 +335,7 @@ class SpotDb
 
 		return false;
 	} # authUser
+
 	
 	/* 
 	 * Update of insert the maximum article id in de database.

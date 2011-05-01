@@ -182,6 +182,13 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 
 	/*
+	 * Creeert de action url voor het aanmaken van de user
+	 */
+	function makeEditUserAction() {
+		return $this->makeBaseUrl("path") . "?page=edituser";
+	} # makeEditUserAction
+
+	/*
 	 * Creeert de action url voor het inloggen van een user
 	 */
 	function makeLoginAction() {
@@ -554,7 +561,12 @@ class SpotTemplateHelper {
 		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
 		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
 		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
+		$strings['validateuser_passwordtooshort'] = 'Opgegeven wachtwoord is te kort';
+		$strings['validateuser_passworddontmatch'] = 'Wachtwoord velden komen niet overeen';
 		
+		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
+		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
+
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
 		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';

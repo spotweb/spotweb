@@ -141,6 +141,14 @@ try {
 				break;
 		} # createuser
 
+		case 'edituser' : {
+				$page = new SpotPage_edituser($db, $settings, $currentSession,
+							Array('edituserform' => $req->getForm('edituserform', array()),
+								  'userid' => $req->getDef('userid', '')));
+				$page->render();
+				break;
+		} # edituser
+		
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform', array())));

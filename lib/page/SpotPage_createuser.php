@@ -32,9 +32,24 @@ class SpotPage_createuser extends SpotPage_Abs {
 			# submit unsetten we altijd
 			unset($this->_createUserForm['submit']);
 			
+			# userid zetten we altijd op false voor het maken van een
+			# nieuwe user, omdat validateUserRecord() anders denkt
+			# dat we een bestaande user aan het bewerken zijn en we bv.
+			# het mailaddress niet controleren op dubbelen behalve 'zichzelf'
+			$this->_createUserForm['useird'] = false;
+			
+			# creeer een random password voor deze user
+			$spotUser['newpassword1'] = substr($spotUserSystem->generateUniqueId(), 1, 9);
+			$spotUser['newpassword2'] = $spotUser['newpassword1'];
+				
 			# valideer de user
 			$spotUser = array_merge($spotUser, $this->_createUserForm);
 			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
+
+			# Is er geen andere user met dezelfde username?
+			if ($this->_db->usernameExists($spotUser['username'])) {
+				$formMessages['errors'][] = array('validateuser_usernameexists', array($spotUser['username']));
+			} # if
 			
 			if (empty($formMessages['errors'])) {
 				# Creer een private en public key paar voor deze user
@@ -43,16 +58,13 @@ class SpotPage_createuser extends SpotPage_Abs {
 				$spotUser['publickey'] = $userKey['public'];
 				$spotUser['privatekey'] = $userKey['private'];
 				
-				# creeer een random password voor deze user
-				$spotUser['password'] = substr($spotUserSystem->generateUniqueId(), 1, 9);
-				
 				# voeg de user toe
 				$spotUserSystem->addUser($spotUser);
 				
 				# als het toevoegen van de user gelukt is, laat het weten
 				$createResult = array('result' => 'success',
 									  'user' => $spotUser['username'],
-									  'password' => $spotUser['password']);
+									  'password' => $spotUser['newpassword1']);
 			} else {
 				$createResult = array('result' => 'failure');
 			} # else
