@@ -213,6 +213,47 @@ class SpotDb
 	} # getUser
 
 	/*
+	 * Haalt een user op uit de database 
+	 */
+	function listUsers($username, $pageNr, $limit) {
+		SpotTiming::start(__FUNCTION__);
+		$offset = (int) $pageNr * (int) $limit;
+		
+		$tmpResult = $this->_conn->arrayQuery(
+						"SELECT u.id AS userid,
+								u.username AS username,
+								u.firstname AS firstname,
+								u.lastname AS lastname,
+								u.mail AS mail,
+								u.lastlogin AS lastlogin,
+								u.lastvisit AS lastvisit,
+								s.otherprefs AS prefs
+						 FROM users AS u
+						 JOIN usersettings s ON (u.id = s.userid)
+						 WHERE (username LIKE '%" . $this->_db->safe($username) . "%') AND (NOT DELETED)
+					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
+		if (!empty($tmpResult)) {
+			# Other preferences worden serialized opgeslagen in de database
+			for($i = 0; $i < count($tmpResult); $i++) {
+				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
+			} # for
+			
+			return $tmpResult[0];
+		} # if
+	
+		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
+		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
+		$hasMore = (count($tmpResult) > $limit);
+		if ($hasMore) {
+			# verwijder het laatste, niet gevraagde, element
+			array_pop($tmpResult);
+		} # if
+		
+		SpotTiming::stop(__FUNCTION__, array($username, $pageNr, $limit));
+		return array('list' => $tmpResult, 'hasmore' => $hasMore);
+	} # listUsers
+	
+	/*
 	 * Disable/delete een user. Echt wissen willen we niet 
 	 * omdat eventuele comments dan niet meer te traceren
 	 * zouden zijn waardoor anti-spam maatregelen erg lastig
