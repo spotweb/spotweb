@@ -14,6 +14,7 @@ class SpotTemplateHelper {
 	protected $_spotnzb;
 	protected $_currentSession;
 	protected $_params;
+	protected $_nzbhandler;
 	
 	static private $_commentCount = null;	
 	
@@ -27,6 +28,14 @@ class SpotTemplateHelper {
 		# voor het maken van de sabnzbd categorieen nodig hebben.
 		# Door die hier aan te maken verplaatsen we een boel allocaties
 		$this->_spotnzb = new SpotNzb($db, $settings);
+
+		# We initialiseren hier een NzbHandler object om te voorkomen
+		# dat we voor iedere spot een nieuw object initialiseren
+		$nzbhandling = $settings->get('nzbhandling');
+		$action =  $nzbhandling['action'];
+		$nzbHandlerFactory = new NzbHandler_Factory();
+		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action);
+		
 	} # ctor
 
 	/*
@@ -88,7 +97,7 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug 
 	 */
 	function getCommentCount($spot) {
-		# Lazily load commnet count
+		# Lazily load comment count
 		if ((self::$_commentCount == null) && ($this->_settings->get('count_comments'))) {
 			self::$_commentCount = $this->_db->getCommentCount($this->getParam('spots'));
 		} # if
@@ -100,6 +109,13 @@ class SpotTemplateHelper {
 		
 		return self::$_commentCount[$spot['messageid']];
 	} # getCommentCount
+
+	/*
+	 * Geeft de gemiddelde rating van deze spot terug
+	 */
+	function getSpotRating($spot) {
+		return $this->_db->getSpotRating($spot['messageid']);
+	} # getSpotRating
 	
 	/*
 	 * Geeft een aantal comments terug
@@ -151,20 +167,7 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
-		$nzbHandling = $this->_settings->get('nzbhandling');
-		$action = $nzbHandling['action'];
-		# geef geen url terug als we disabled zijn
-		if ($action == 'disable') {
-			return '';
-		} # if
-		
-		# als de gebruiker gevraagd heeft om niet clientside handling, geef ons zelf dan terug 
-		# met de gekozen actie
-		if ($action == 'client-sabnzbd') {
-			return $this->_spotnzb->generateSabnzbdUrl($spot, $action);
-		} else {
-			return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
-		} # else
+		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
 	} # makeSabnzbdUrl
 
 	/*
@@ -360,6 +363,9 @@ class SpotTemplateHelper {
 		
 		// hoeveel comments zitten er bij deze spot ongeveer?
 		$spot['commentcount'] = $this->getCommentCount($spot);
+		
+		// en wat is de gemiddelde rating van deze spot?
+		$spot['rating'] = $this->getSpotRating($spot);
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
