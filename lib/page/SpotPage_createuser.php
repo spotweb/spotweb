@@ -36,7 +36,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 			# nieuwe user, omdat validateUserRecord() anders denkt
 			# dat we een bestaande user aan het bewerken zijn en we bv.
 			# het mailaddress niet controleren op dubbelen behalve 'zichzelf'
-			$this->_createUserForm['useird'] = false;
+			$this->_createUserForm['userid'] = false;
 			
 			# creeer een random password voor deze user
 			$spotUser['newpassword1'] = substr($spotUserSystem->generateUniqueId(), 1, 9);

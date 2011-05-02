@@ -84,6 +84,13 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					# als dit een nieuw soort comment is met rating vul die dan ook op
 					if (count($msgIdParts) == 5) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
+						
+						# Sommige oudere comments bevatten een niet-numreieke
+						# string op deze positie, dus we controleren nog even
+						# of het puur een getal is wat er staat.
+						if ($msgheader['rating'] !== $msgIdParts[1]) {
+							$msgheader['rating'] = 0;
+						} # if
 					} else {
 						$msgheader['rating'] = 0;
 					} # if
