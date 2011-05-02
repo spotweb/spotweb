@@ -192,7 +192,6 @@ $settings['show_multinzb'] = true;
 $settings['count_newspots'] = true;
 
 # moeten we bijhouden welke individuele spots er zijn bekeken?
-# Doet niets als count_newspots op false staat
 $settings['keep_seenlist'] = true;
 
 # Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
@@ -283,6 +282,9 @@ if (!isset($settings['quicklinks'])) {
 	}
 	if ($settings['keep_downloadlist']) {
 		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
+	}
+	if ($settings['keep_seenlist']) {
+		$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "");
 	}
 	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external");
 } # if isset

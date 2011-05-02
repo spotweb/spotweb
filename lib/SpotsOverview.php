@@ -475,6 +475,8 @@ class SpotsOverview {
 			$listFilter[] = ' (d.stamp IS NOT NULL)';
 		} elseif (isset($search['filterValues']['Watch'])) {
 			$listFilter[] = ' (w.dateadded IS NOT NULL)';
+		} elseif (isset($search['filterValues']['Seen'])) {
+			$listFilter[] = ' (c.stamp IS NOT NULL)';
 		} # if
 
 		$endFilter = array();
