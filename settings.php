@@ -191,7 +191,8 @@ $settings['show_multinzb'] = true;
 # toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_newspots'] = true;
 
-# moeten we bijhouden welke individuele spots er zijn bekeken?
+# Moeten we bijhouden welke individuele spots er zijn bekeken?
+# Deze lijst wordt automatisch geleegd wanneer je "Markeer alles als gelezen" aanklikt!
 $settings['keep_seenlist'] = true;
 
 # Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
