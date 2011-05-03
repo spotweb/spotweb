@@ -211,14 +211,26 @@ $settings['keep_watchlist'] = true;
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
 
 # Cookie host
-if (isset($_SERVER['HTTP_HOST']) && !filter_var($_SERVER['HTTP_HOST'], FILTER_VALIDATE_IP)) {
-	$domain = '.'. preg_replace('`^www\.`', '', $_SERVER['HTTP_HOST']);
-	$domain = preg_replace('`:\d+$`', '', $domain); # Strip port number if exists
+if (isset($_SERVER['HTTP_HOST'])) {
+	// Strip leading periods
+	$cookie_domain = ltrim($_SERVER['HTTP_HOST'], '.');
+
+	// Strip www.
+	if (strpos($cookie_domain, 'www.') === 0) {
+		$cookie_domain = substr($cookie_domain, 4);
+	}
+
+	//Strip port numbers
+	$cookie_domain = explode(':', $cookie_domain);
+		$cookie_domain = '.' . $cookie_domain[0];
+	}
 } # if
 
-if (isset($domain) && count(explode('.', $domain)) > 2) {
-	$settings['cookie_host'] = $domain;
-	unset($domain);
+// Per RFC 2109, cookie domains must contain at least one dot other than the
+// first. For hosts such as 'localhost' or IP Addresses we don't set a cookie domain.
+if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_var($cookie_domain, FILTER_VALIDATE_IP)) {
+	$settings['cookie_host'] = $cookie_domain;
+	unset($cookie_domain);
 } else {
 	$settings['cookie_host'] = '';
 } # else
