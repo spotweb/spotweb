@@ -210,7 +210,11 @@ $settings['keep_watchlist'] = true;
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
 if (isset($_SERVER['HTTP_HOST'])) {
-	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+	if (!filter_var($_SERVER['HTTP_HOST'], FILTER_VALIDATE_IP)) {
+		$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+	} else {
+		$settings['cookie_host'] = '';
+	} # else
 } # if
 
 # We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
