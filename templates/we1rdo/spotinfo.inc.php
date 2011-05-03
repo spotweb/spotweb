@@ -67,7 +67,7 @@ echo "</th>";
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		
                         		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
-						
+                                <tr> <th> Rating </th> <td class="rating"><?php echo $tplHelper->getSpotRating($spot); ?></td> </tr>
                             </tbody>
                         </table>
 					</td>
@@ -97,6 +97,8 @@ echo "</th>";
 				});
 
 				var messageid = $('#messageid').val();
+                spotRating();
+                postCommentsForm();
 				loadSpotImage();
 				loadComments(messageid,'5','0');
 			});

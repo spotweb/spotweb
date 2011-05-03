@@ -42,6 +42,7 @@ function openSpot(id,url) {
 		$("a[href^='http']").attr('target','_blank');
 		$(window).bind("resize", detectScrollbar);
 
+		spotRating();
 		postCommentsForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
@@ -693,4 +694,14 @@ function updateSabPanel(start,limit) {
 			}
 		}, interval);
 	});
+}
+
+// spotRating verwerken
+function spotRating() {
+	var rating = $("table.spotinfo td.rating").text();
+	if($("table.spotinfo td.rating").is(":empty")) {
+		$("table.spotinfo td.rating").html('N/A');
+	} else {
+		$("table.spotinfo td.rating").html(rating);
+	}
 }
