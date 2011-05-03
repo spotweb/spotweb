@@ -24,6 +24,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		
 		foreach($files as $file) {
 			$fc = file_get_contents($file) . PHP_EOL;
+			$fc = str_replace('$COOKIE_EXPIRES', $this->_settings->get('cookie_expires'), $fc);
 			$fc = str_replace('$COOKIE_HOST', $this->_settings->get('cookie_host'), $fc);
 
 			# ik ben geen fan van regexpen maar in dit scheelt het 
