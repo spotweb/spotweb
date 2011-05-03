@@ -1,6 +1,7 @@
 <?php
 /* Externe library */
 require_once "Net/NNTP/Client.php";
+require_once "lib/exceptions/NntpException.php";
 
 class SpotNntp {
 		private $_server;
@@ -88,11 +89,15 @@ class SpotNntp {
 				return ;
 			} # if
 			$this->_connected = true;
-			
-			$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
-			if (!empty($this->_user)) {
-				$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
-			} # if
+
+			try{
+				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
+				if (!empty($this->_user)) {
+					$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
+				} # if
+			}catch(Exception $x){
+				throw new NntpException($x->getMessage(), $x->getCode());
+			}
 		} # connect()
 		
 		function getArticle($msgId) {
