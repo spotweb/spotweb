@@ -222,8 +222,7 @@ if (isset($_SERVER['HTTP_HOST'])) {
 
 	//Strip port numbers
 	$cookie_domain = explode(':', $cookie_domain);
-		$cookie_domain = '.' . $cookie_domain[0];
-	}
+	$cookie_domain = '.' . $cookie_domain[0];
 } # if
 
 // Per RFC 2109, cookie domains must contain at least one dot other than the
