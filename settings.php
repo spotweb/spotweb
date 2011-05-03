@@ -209,13 +209,19 @@ $settings['keep_watchlist'] = true;
 
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
-if (isset($_SERVER['HTTP_HOST'])) {
-	if (!filter_var($_SERVER['HTTP_HOST'], FILTER_VALIDATE_IP)) {
-		$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
-	} else {
-		$settings['cookie_host'] = '';
-	} # else
+
+# Cookie host
+if (isset($_SERVER['HTTP_HOST']) && !filter_var($_SERVER['HTTP_HOST'], FILTER_VALIDATE_IP)) {
+	$domain = '.'. preg_replace('`^www\.`', '', $_SERVER['HTTP_HOST']);
+	$domain = preg_replace('`:\d+$`', '', $domain); # Strip port number if exists
 } # if
+
+if (isset($domain) && count(explode('.', $domain)) > 2) {
+	$settings['cookie_host'] = $domain;
+	unset($domain);
+} else {
+	$settings['cookie_host'] = '';
+} # else
 
 # We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
 # dat ook daadwerkelijk te doen
