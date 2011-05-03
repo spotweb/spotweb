@@ -7,11 +7,9 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	private $_url = null;
 	private $_credentials = null;
 
-	function __construct($settings)
+	function __construct(SpotSettings $settings)
 	{
-		$this->setName("NZBGet");
-		$this->setNameShort("D/L");
-		$this->setSettings($settings);
+		parent::__construct($settings, 'NZBGet', 'D/L');
 				
 		$nzbhandling = $settings->get('nzbhandling');
 		$nzbget = $nzbhandling['nzbget'];
@@ -26,7 +24,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		$filename = $this->cleanForFileSystem($fullspot['title']) . '.nzb';
 		# nzbget does not support zip files, must merge
 		$nzb = $this->mergeNzbList($nzblist); 
-		$category = $this->convertCatToSabnzbdCat($fullspot, $this->getSettings());
+		$category = $this->convertCatToSabnzbdCat($fullspot);
 
 		return $this->uploadNzb($filename, $category, false, $nzb);
 	} # processNzb
@@ -74,5 +72,5 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		return $this->sendrequest('append', $content);
 	} # nzbgetApi_append
-	
-}
+
+} # class NzbHandler_Nzbget

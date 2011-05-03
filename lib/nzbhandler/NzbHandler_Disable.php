@@ -1,10 +1,9 @@
 <?php
-class NzbHandler_Disabble extends NzbHandler_abs
+class NzbHandler_Disable extends NzbHandler_abs
 {
-	function __construct($settings)
+	function __construct(SpotSettings $settings)
 	{
-		$this->setName("Disable");
-		$this->setNameShort("Disable");
+		parent::__construct($settings, 'Disable', 'Disable');
 		
 	} # __construct
 	
@@ -16,5 +15,6 @@ class NzbHandler_Disabble extends NzbHandler_abs
 	public function generateNzbHandlerUrl($spot)
 	{
 		return '';
-	}
-}
+	} # generateNzbHandlerUrl
+
+} # class NzbHandler_Disable
