@@ -129,11 +129,14 @@ function postCommentsForm() {
 			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
 		}
 	});
-	
-	var rating = 2;
+
 	var i = 1;
 	for (i = 1; i <= 10; i++) {
-		$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
+		if(i == 1) {
+			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" ster'></span>");
+		} else {
+			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
+		}
 	}
 	$("li.addComment dd.rating span").click(function() {
 		var rating = $(this).index();
@@ -750,10 +753,23 @@ function updateSabPanel(start,limit) {
 
 // spotRating verwerken
 function spotRating() {
-	var rating = $("table.spotinfo td.rating").text();
+	var rating = Math.round($("table.spotinfo td.rating").text());
 	if($("table.spotinfo td.rating").is(":empty")) {
 		$("table.spotinfo td.rating").html('N/A');
 	} else {
-		$("table.spotinfo td.rating").html(rating);
+		$("table.spotinfo td.rating").empty();
+		var i = 1;
+		for (i = 1; i <= 10; i++) {
+			if(rating == 1) {
+				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" ster'></span>");
+			} else {
+				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" sterren'></span>");
+			}
+		}
+		$("table.spotinfo td.rating span").each(function(){
+			if($(this).index()+1 <= rating) {
+				$(this).addClass("active");
+			}
+		});
 	}
 }
