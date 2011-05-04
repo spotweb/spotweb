@@ -80,8 +80,14 @@ echo "</th>";
 
             <div class="comments" id="comments">
             	<h4>Comments <span class="commentcount"># 0</span></h4>
-				<ul id="commentslist"></ul>
-                <?php if ($currentSession['user']['userid'] != 1) { include "postcomment.inc.php"; } ?>
+				<ul id="commentslist">
+<?php if ($currentSession['user']['userid'] != 1) { 
+    echo "<li class='addComment'>";
+    echo "<a class='togglePostComment'>Reactie toevoegen <span></span></a><div>";
+    include "postcomment.inc.php"; 
+    echo "</div></li>";
+} ?>
+                </ul>
             </div>
 		</div>
         
@@ -99,7 +105,7 @@ echo "</th>";
 				var messageid = $('#messageid').val();
                 spotRating();
                 postCommentsForm();
-				loadSpotImage();
-				loadComments(messageid,'5','0');
+                loadSpotImage();
+                loadComments(messageid,'5','0');
 			});
 		</script>
