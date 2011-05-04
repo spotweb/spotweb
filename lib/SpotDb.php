@@ -855,7 +855,18 @@ class SpotDb
 		$msgIdList = substr($msgIdList, 0, -2);
 		
 		# en vraag de comments daadwerkelijk op
-		$commentList = $this->_conn->arrayQuery("SELECT messageid, fromhdr, stamp, usersignature, userkey as \"user-key\", userid, body, verified FROM commentsfull WHERE messageid IN (" . $msgIdList . ") ORDER BY stamp DESC", array());
+		$commentList = $this->_conn->arrayQuery("SELECT f.messageid AS messageid, 
+														f.fromhdr AS fromhdr, 
+														f.stamp AS stamp, 
+														f.usersignature AS usersignature, 
+														f.userkey AS \"user-key\", 
+														f.userid AS userid, 
+														f.body AS body, 
+														f.verified AS verified,
+														c.spotrating AS spotrating 
+													FROM commentsfull f 
+													JOIN commentsxover c on (c.messageid = f.messageid)
+													WHERE f.messageid IN (" . $msgIdList . ") ORDER BY stamp DESC", array());
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
