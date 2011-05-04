@@ -5,11 +5,9 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 {
 	private $_url = null;
 
-	function __construct($settings)
+	function __construct(SpotSettings $settings)
 	{
-		$this->setName("SabNZBd");
-		$this->setNameShort("SAB");
-		$this->setSettings($settings);
+		parent::__construct($settings, 'SABnzbd', 'SAB');
 		
 		$nzbhandling = $settings->get('nzbhandling');
 		$sabnzbd = $nzbhandling['sabnzbd'];
@@ -28,7 +26,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	{
 		$nzb = $this->prepareNzb($fullspot, $nzblist);
 		$title = urlencode($this->cleanForFileSystem($fullspot['title']));
-		$category = urlencode($this->convertCatToSabnzbdCat($fullspot, $this->getSettings()));
+		$category = urlencode($this->convertCatToSabnzbdCat($fullspot));
 
 		# yes, using a local variable instead of the member variable is intentional		
 		$url = str_replace('$SPOTTITLE', $title, $this->_url);
@@ -69,5 +67,5 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 			throw new Exception("sabnzbd returned: " . $output);
 		} # if
 	} # processNzb
-	
-}
+
+} # class NzbHandler_Pushsabnzbd
