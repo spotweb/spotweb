@@ -9,7 +9,7 @@ class SpotPosting {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		
-		$this->_nntp_post = new SpotNntp($settings->get('nntp_nzb'));
+		$this->_nntp_post = new SpotNntp($settings->get('nntp_post'));
 	} # ctor
 
 	/*
