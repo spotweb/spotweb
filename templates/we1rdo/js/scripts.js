@@ -548,6 +548,27 @@ function toggleCreateUser() {
 	}
 }
 
+function toggleEditUser() {
+	var url = '?page=edituser';
+
+	if($("div.editUser").html() && $("div.createUser").is(":visible")) {
+		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.editUser").hide();
+	} else {
+		if($("div.editUser")) {$("div.editUser").html()}		
+		$("div.editUser").load(url, function() {
+			$("div.editUser").show();
+			$("div.userPanel h4.dropDown").css("margin", "0");
+			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+
+			$('form.edituserform').submit(function(){ 
+			
+			});
+		});
+	}
+}
+
 // Pas sorteervolgorde aan voor datum
 $(function(){
 	$("ul.sorting input").click(function() {
