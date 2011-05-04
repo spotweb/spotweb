@@ -334,6 +334,8 @@ div.details table.spotinfo td {-moz-border-radius:4px; -webkit-border-radius:4px
 div.details table.spotinfo th {text-align:right; width:165px;}
 div.details table.spotinfo td {background-color:#ececec;}
 div.details table.spotinfo td.break {background-color:#fff;}
+div.details table.spotinfo td.rating {padding:1px 0 0 2px; line-height:12px;}
+div.details table.spotinfo td.rating span {cursor:default !important;}
 
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
 
@@ -377,10 +379,12 @@ div.details div.comments li.addComment a.togglePostComment span.up {background-p
 div.details div.comments li.addComment div {display:none; background-color:#fff; margin:1px 3px 1px 3px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details form.postcommentform fieldset {padding:0; margin:0; border:0;}
 div.details form.postcommentform fieldset dd {margin:0;}
-div.details form.postcommentform fieldset textarea {width:210px; font:11px Arial, Helvetica, sans-serif;}
+div.details form.postcommentform fieldset textarea {width:208px; font:11px Arial, Helvetica, sans-serif;}
 div.details form.postcommentform input.greyButton {display:inline; margin: 2px 0 5px 0;}
 div.details form.postcommentform dd.rating {margin:5px 0; height:16px;}
+div.details table.spotinfo td.rating span,
 div.details form.postcommentform dd.rating span {display:inline-block; width:16px; height:16px; background:url(img/sprite.png) no-repeat -40px -80px; margin:0 1px 0 1px; cursor:pointer;}
+div.details table.spotinfo td.rating span.active,
 div.details form.postcommentform dd.rating span.active {background-position:-56px -80px;}
 
 /* WATCHLIST */
