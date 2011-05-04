@@ -83,7 +83,7 @@ echo "</th>";
 				<ul id="commentslist">
 <?php if ($currentSession['user']['userid'] != 1) { 
     echo "<li class='addComment'>";
-    echo "<a class='togglePostComment'>Reactie toevoegen <span></span></a><div>";
+    echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div>";
     include "postcomment.inc.php"; 
     echo "</div></li>";
 } ?>

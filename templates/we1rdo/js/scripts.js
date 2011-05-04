@@ -101,11 +101,12 @@ function loadComments(messageid,perpage,pagenr) {
 		if (count == 0 && pagenr == 0) { 
 			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
 		} else {
-			$("span.commentcount").html('# '+$("#commentslist").children().size());
+			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		$("#commentslist > li.addComment").next().addClass('firstComment');
 
 		pagenr++;
 		if (count >= 1) { 
@@ -120,7 +121,13 @@ function loadComments(messageid,perpage,pagenr) {
 // Load post comment form
 function postCommentsForm() {
 	$("li.addComment a.togglePostComment").click(function(){
-		$("li.addComment div").show();
+		if($("li.addComment div").is(":hidden")) {
+			$("li.addComment div").slideDown();
+			$("li.addComment a.togglePostComment span").addClass("up").parent().attr("title", "Reactie toevoegen (verbergen)");
+		} else {
+			$("li.addComment div").slideUp();
+			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
+		}
 	});
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
