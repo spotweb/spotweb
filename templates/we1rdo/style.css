@@ -334,8 +334,8 @@ div.details table.spotinfo td {-moz-border-radius:4px; -webkit-border-radius:4px
 div.details table.spotinfo th {text-align:right; width:165px;}
 div.details table.spotinfo td {background-color:#ececec;}
 div.details table.spotinfo td.break {background-color:#fff;}
-div.details table.spotinfo td.rating {padding:1px 0 0 2px; line-height:12px;}
-div.details table.spotinfo td.rating span {cursor:default !important;}
+div.details table.spotinfo td.rating.stars {padding:1px 0 0 2px; line-height:12px;}
+div.details table.spotinfo td.rating.stars span {cursor:default !important;}
 
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
 

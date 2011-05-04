@@ -99,9 +99,9 @@ function loadComments(messageid,perpage,pagenr) {
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) { 
-			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
 		} else {
-			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
+			$("span.commentcount").append('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
 		$("#commentslist").append($(html).fadeIn('slow'));
@@ -757,7 +757,7 @@ function spotRating() {
 	if($("table.spotinfo td.rating").is(":empty")) {
 		$("table.spotinfo td.rating").html('N/A');
 	} else {
-		$("table.spotinfo td.rating").empty();
+		$("table.spotinfo td.rating").empty().addClass("stars");
 		var i = 1;
 		for (i = 1; i <= 10; i++) {
 			if(rating == 1) {
