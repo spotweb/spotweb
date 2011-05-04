@@ -1,10 +1,17 @@
 <?php
 abstract class NzbHandler_abs
 {
-	private $_name = "Abstract";
-	private $_nameShort = "Abstract";
+	protected $_name = "Abstract";
+	protected $_nameShort = "Abstract";
 	
-	private $_settings = null;
+	protected $_settings = null;
+	
+	function __construct($settings, $name, $nameShort)
+	{
+		$this->_settings = $settings;
+		$this->_name = $name;
+		$this->_nameShort = $nameShort;
+	} # __construct
 	
 	/**
 	 * Get the name of the application handling the nzb, e.g. "SabNZBd".
@@ -40,16 +47,6 @@ abstract class NzbHandler_abs
 	{
 		$this->_nameShort = $name;
 	} # setNameShort
-
-	protected function getSettings()
-	{
-		return $this->_settings;
-	}
-	
-	protected function setSettings($settings)
-	{
-		$this->_settings = $settings;
-	}
 	
 	abstract public function processNzb($fullspot, $nzblist);
 
@@ -61,7 +58,7 @@ abstract class NzbHandler_abs
 		$url = $spotwebUrl . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
 		
 		return $url;
-	}
+	} # generateNzbHandlerUrl
 	
 	/*
 	 * Genereert een schone filename voor nzb files
@@ -87,7 +84,7 @@ abstract class NzbHandler_abs
 	 */
 	protected function makeNzbLocalPath($fullspot, $path)
 	{
-		$category = $this->convertCatToSabnzbdCat($fullspot, $this->_settings);
+		$category = $this->convertCatToSabnzbdCat($fullspot);
 		
 		# add category to path als dat gevraagd is
 		$path = str_replace('$SANZBDCAT', $this->cleanForFileSystem($category), $path);
@@ -111,7 +108,7 @@ abstract class NzbHandler_abs
 		} # if
 		
 		return $path;
-	}
+	} # addTrailingSlash
 	
 	protected function sendHttpRequest($method, $url, $header, $content, $timeout = 15, $userAgent = 'Spotweb')
 	{
@@ -125,7 +122,7 @@ abstract class NzbHandler_abs
 		$ctx = stream_context_create($stream_options);
 
 		return @file_get_contents($url, false, $ctx);
-	}
+	} # sendHttpRequest
 	
 	protected function prepareNzb($fullspot, $nzblist)
 	{
@@ -151,17 +148,17 @@ abstract class NzbHandler_abs
 		} # switch
 
 		return $result;
-	}
+	} # prepareNzb
 	
 	/* 
 	 * Zet een Spot category om naar een sabnzbd category
 	 */
-	public function convertCatToSabnzbdCat($spot, $settings) {
+	protected function convertCatToSabnzbdCat($spot) {
 		# fix de category
 		$spot['category'] = (int) $spot['category'];
 		
 		# vind een geschikte category
-		$sabnzbd = $settings->get('sabnzbd');
+		$sabnzbd = $this->_settings->get('sabnzbd');
 		
 		if (isset($sabnzbd['categories'][$spot['category']]['default'])) {
 			$category = $sabnzbd['categories'][$spot['category']]['default'];
@@ -181,7 +178,7 @@ abstract class NzbHandler_abs
 	/*
 	 * Voeg een lijst van NZB XML files samen tot 1 XML file
 	 */
-	public function mergeNzbList($nzbList) {
+	protected function mergeNzbList($nzbList) {
 		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
 											<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
 											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
@@ -202,7 +199,7 @@ abstract class NzbHandler_abs
 	/*
 	 * Stop de lijst van NZB XML files in 1 zip file
 	 */
-	public function zipNzbList($nzbList) {
+	protected function zipNzbList($nzbList) {
 		$tmpZip = tempnam(sys_get_temp_dir(), 'SpotWebZip');
 		$zip = new ZipArchive;
 		$res = $zip->open($tmpZip, ZipArchive::CREATE);
@@ -223,5 +220,6 @@ abstract class NzbHandler_abs
 		
 		return $zipFile;
 	} # zipNzbList	
-}
+
+} # class NzbHandler_abs
 

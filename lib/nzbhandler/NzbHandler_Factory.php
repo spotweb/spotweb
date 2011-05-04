@@ -1,7 +1,7 @@
 <?php
 class NzbHandler_Factory
 {
-	public static function build($settings, $action)
+	public static function build(SpotSettings $settings, $action)
 	{
 		# Nieuwe handlers voegen we expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
@@ -18,4 +18,5 @@ class NzbHandler_Factory
 
 		return $handler;
 	} # build()
+
 } # class NzbHandler_Factory
