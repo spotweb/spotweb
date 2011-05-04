@@ -363,15 +363,21 @@ div.details.orange div.comments li.even {background-color:#fffce4;}
 div.details.green div.comments li.even {background-color:#eaffea;}
 div.details.red div.comments li.even {background-color:#ffeaea;}
 
+div.details div.comments li.firstComment:last-child,
 div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+div.details div.comments li.firstComment,
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
 
-div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0;}
-div.details div.comments li.addComment a.togglePostComment {display:block; cursor:pointer;}
-div.details div.comments li.addComment a.togglePostComment span {display:block; float:right; width: 15px; height: 14px; background: url(img/sprite.png) no-repeat -90px -98px; margin:2px 3px 0 0;}
-div.details div.comments li.addComment div {display:none;}
+div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec;}
+div.details div.comments li.addComment a.togglePostComment {position:relative; display:block; cursor:pointer; font-weight:bold; line-height: 18px;}
+div.details div.comments li.addComment a.togglePostComment span {display:block; position: absolute; top: 0; right: 0; width: 15px; height: 14px; background: url(img/sprite.png) no-repeat -90px -98px; margin:3px 3px 0 0;}
+div.details div.comments li.addComment a.togglePostComment span.up {background-position: -77px -98px; margin:2px 3px 0 0;}
+div.details div.comments li.addComment div {display:none; background-color:#fff; margin:1px 3px 1px 3px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 div.details div.comments form.postcommentform fieldset {padding:0; margin:0; border:0;}
+div.details div.comments form.postcommentform fieldset dt {line-height: 18px; padding:2px 0 0 0; font-weight: bold;}
+div.details div.comments form.postcommentform fieldset dd {margin:0;}
+div.details div.comments form.postcommentform input.greyButton {display:inline; margin: 2px 0 5px 0;}
 
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}

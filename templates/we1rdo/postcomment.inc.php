@@ -25,7 +25,7 @@ if (empty($postresult)) {
 			<dt><label for="postcommentform[body]">Text</label></dt>
 			<dd><textarea name="postcommentform[body]"></textarea></dd>
 
-			<dd><input type="submit" name="dummysubmit" value="Post"></dd>
+			<dd><input class="greyButton" type="submit" name="dummysubmit" value="Post"></dd>
 		</dl>
 	</fieldset>
 </form>
