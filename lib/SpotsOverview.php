@@ -75,7 +75,7 @@ class SpotsOverview {
 		foreach($fullComments as $fullComment) {
 			unset($commentList[array_search($fullComment['messageid'], $commentList)]);
 		} # foreach
-		
+
 		# en haal de overgebleven comments op van de NNTP server
 		if (!empty($commentList)) {
 			# Als we de comments maar in delen moeten ophalen, gaan we loopen tot we
