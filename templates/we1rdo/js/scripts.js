@@ -129,6 +129,23 @@ function postCommentsForm() {
 			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
 		}
 	});
+	
+	var rating = 2;
+	var i = 1;
+	for (i = 1; i <= 10; i++) {
+		$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
+	}
+	$("li.addComment dd.rating span").click(function() {
+		var rating = $(this).index();
+		$("li.addComment dd.rating span").removeClass("active");
+		$("li.addComment dd.rating span").each(function(){
+			if($(this).index() <= rating) {
+				$(this).addClass("active");
+			}
+		});
+		$("li.addComment input[name='postcommentform[rating]']").val(rating);
+	})
+	
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
 		return false;
@@ -563,7 +580,7 @@ function toggleEditUser() {
 			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
 
 			$('form.edituserform').submit(function(){ 
-			
+				// process edituserform submit here
 			});
 		});
 	}
