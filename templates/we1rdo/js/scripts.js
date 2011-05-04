@@ -119,6 +119,9 @@ function loadComments(messageid,perpage,pagenr) {
 
 // Load post comment form
 function postCommentsForm() {
+	$("li.addComment a.togglePostComment").click(function(){
+		$("li.addComment div").show();
+	});
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
 		return false;
@@ -406,6 +409,10 @@ $(function(){
 			if(value.state == "block") {
 				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
 				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+			} else {
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-90px -98px");
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter uitklappen");
+
 			}
 		});
 	}
