@@ -33,25 +33,36 @@ class SpotPage_edituser extends SpotPage_Abs {
 		if (isset($this->_editUserForm['submit']) && (empty($formMessages['errors']))) {
 			# submit unsetten we altijd
 			unset($this->_editUserForm['submit']);
-			
-			# valideer de user
-			$spotUser = array_merge($spotUser, $this->_editUserForm);
-			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
-			
-			if (empty($formMessages['errors'])) {
-				# voeg de user toe
-				$spotUserSystem->setUser($spotUser);
+					
+			switch($this->_editUserForm['action']) {
+				case 'delete' : {
+					$spotUserSystem->removeUser($spotUser['userid']);
+					$editResult = array('result' => 'success');
+						
+					break;
+				} # case delete
 				
-				# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
-				# het wachtwoord ook
-				$spotUserSystem->setUserPassword($spotUser);
-				
-				# als het toevoegen van de user gelukt is, laat het weten
-				$editResult = array('result' => 'success');
-			} else {
-				$editResult = array('result' => 'failure');
-			} # else
-			
+				case 'edit'	: {
+					# valideer de user
+					$spotUser = array_merge($spotUser, $this->_editUserForm);
+					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
+					
+					if (empty($formMessages['errors'])) {
+						# voeg de user toe
+						$spotUserSystem->setUser($spotUser);
+						
+						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
+						# het wachtwoord ook
+						$spotUserSystem->setUserPassword($spotUser);
+						
+						# als het toevoegen van de user gelukt is, laat het weten
+						$editResult = array('result' => 'success');
+					} else {
+						$editResult = array('result' => 'failure');
+					} # else
+					break;
+				} # case 'edit' 
+			} # switch
 		} # if
 		
 		#- display stuff -#
