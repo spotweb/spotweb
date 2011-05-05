@@ -5,11 +5,9 @@ class NzbHandler_Runcommand extends NzbHandler_abs
 	private $_localDir = null;
 	private $_cmdToRun = null;
 	
-	function __construct($settings)
+	function __construct(SpotSettings $settings)
 	{
-		$this->setName("Runcommand");
-		$this->setNameShort("Run");
-		$this->setSettings($settings);
+		parent::__construct($settings, 'Runcommand', 'Run');
 
 		# als het commando leeg is, gooi een exception anders geeft php een warning
 		$nzbhandling = $settings->get('nzbhandling');
@@ -52,4 +50,5 @@ class NzbHandler_Runcommand extends NzbHandler_abs
 		} # if
 
 	} # processNzb
-}
+
+} # class NzbHandler_Runcommand

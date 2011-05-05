@@ -191,8 +191,8 @@ $settings['show_multinzb'] = true;
 # toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
 $settings['count_newspots'] = true;
 
-# moeten we bijhouden welke individuele spots er zijn bekeken?
-# Doet niets als count_newspots op false staat
+# Moeten we bijhouden welke individuele spots er zijn bekeken?
+# Deze lijst wordt automatisch geleegd wanneer je "Markeer alles als gelezen" aanklikt!
 $settings['keep_seenlist'] = true;
 
 # Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
@@ -209,9 +209,30 @@ $settings['keep_watchlist'] = true;
 
 # highlight nieuwe items - cookies
 $settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
+
+# Cookie host
 if (isset($_SERVER['HTTP_HOST'])) {
-	$settings['cookie_host'] = $_SERVER['HTTP_HOST']; // cookie host
+	// Strip leading periods
+	$cookie_domain = ltrim($_SERVER['HTTP_HOST'], '.');
+
+	// Strip www.
+	if (strpos($cookie_domain, 'www.') === 0) {
+		$cookie_domain = substr($cookie_domain, 4);
+	}
+
+	//Strip port numbers
+	$cookie_domain = explode(':', $cookie_domain);
+	$cookie_domain = '.' . $cookie_domain[0];
 } # if
+
+// Per RFC 2109, cookie domains must contain at least one dot other than the
+// first. For hosts such as 'localhost' or IP Addresses we don't set a cookie domain.
+if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_var($cookie_domain, FILTER_VALIDATE_IP)) {
+	$settings['cookie_host'] = $cookie_domain;
+	unset($cookie_domain);
+} else {
+	$settings['cookie_host'] = '';
+} # else
 
 # We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
 # dat ook daadwerkelijk te doen
@@ -283,6 +304,9 @@ if (!isset($settings['quicklinks'])) {
 	}
 	if ($settings['keep_downloadlist']) {
 		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
+	}
+	if ($settings['keep_seenlist']) {
+		$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "");
 	}
 	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external");
 } # if isset

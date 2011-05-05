@@ -19,6 +19,7 @@ require_once "settings.php";
 require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
+require_once "lib/exceptions/NntpException.php";
 
 # in safe mode, max execution time cannot be set, warn the user
 if (ini_get('safe_mode') ) {
@@ -81,6 +82,18 @@ catch(RetrieverRunningException $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
 }
+catch(NntpException $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
+	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+
+	if (isset($retriever)){
+		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
+		$retriever->quit();
+	}
+	die();
+}
 catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving messages:" . PHP_EOL;
@@ -112,7 +125,20 @@ try {
 catch(RetrieverRunningException $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
-} catch(Exception $x) {
+}
+catch(NntpException $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
+	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+
+	if (isset($retriever)){
+		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
+		$retriever->quit();
+	}
+	die();
+}
+catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving messages:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
