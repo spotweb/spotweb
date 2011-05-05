@@ -2,8 +2,8 @@
 '?>
 <feed xmlns="http://www.w3.org/2005/Atom">	
 <?php 
-$baseUrl = htmlspecialchars($tplHelper->baseUrl());
-$selfUrl = htmlspecialchars($tplHelper->selfUrl());
+$baseUrl = htmlspecialchars($tplHelper->baseUrl("full"));
+$selfUrl = htmlspecialchars($tplHelper->selfUrl("full"));
 $indexUrl = htmlspecialchars($tplHelper->changePage('index'));
 ?>
         <title>SpotWeb Spot overzicht</title>
