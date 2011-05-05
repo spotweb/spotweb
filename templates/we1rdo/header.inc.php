@@ -7,7 +7,6 @@
 		<base href='<?php echo $tplHelper->makeBaseUrl("full"); ?>'>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='alternate' type='application/atom+xml' href='<?php echo $tplHelper->getPageUrl('atom', true) ?>'>
-		<link rel='icon' type='image/png' href='?page=speeddial'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 		<script type='text/javascript'>

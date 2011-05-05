@@ -170,12 +170,6 @@ try {
 				break;
 		} # logout
 
-		case 'speeddial' : {
-			$page = new SpotPage_speeddial($db, $settings, $currentSession);
-			$page->render();
-			break;
-		} # speeddial
-
 		case 'sabapi' : {
 			$page = new SpotPage_sabapi($db, $settings, $currentSession);
 			$page->render();
@@ -183,7 +177,10 @@ try {
 		} # sabapi
 		
 		default : {
-				$page = new SpotPage_index($db, $settings, $currentSession,
+				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
+					$page = new SpotPage_speeddial($db, $settings, $currentSession);
+				} else {
+					$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $settings->get('index_filter')),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
@@ -191,6 +188,7 @@ try {
 								  'messageid' => $req->getDef('messageid', ''),
 								  'action' => $req->getDef('action', ''))
 					);
+				}
 				$page->render();
 				break;
 		} # default

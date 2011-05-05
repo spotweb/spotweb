@@ -5,11 +5,9 @@ class NzbHandler_Save extends NzbHandler_abs
 {
 	private $_localDir = null;
 	
-	function __construct($settings)
+	function __construct(SpotSettings $settings)
 	{
-		$this->setName("Save");
-		$this->setNameShort("Save");
-		$this->setSettings($settings);
+		parent::__construct($settings, 'Save', 'Save');
 		
 		$nzbhandling = $settings->get('nzbhandling');
 		$this->_localDir = $nzbhandling['local_dir'];
@@ -35,5 +33,5 @@ class NzbHandler_Save extends NzbHandler_abs
 		} # if
 		
 	} # processNzb
-	
-}
+
+} # class NzbHandler_Save

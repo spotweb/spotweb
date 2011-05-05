@@ -21,8 +21,7 @@
 		  @import url('js/fancybox/jquery.fancybox-1.3.4.css');
 		</style>
 
-		<!-- favicon & Speed Dial -->
-		<link rel='icon' type='image/png' href='?page=speeddial'>
+		<!-- favicon -->
 		<link rel='shortcut icon' href='images/favicon.ico'>
 
 		<!-- Jquery, necessary for dynatree -->
