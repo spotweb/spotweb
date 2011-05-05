@@ -57,7 +57,13 @@ try {
 		} # render
 		
 		case 'getspot' : {
-				$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
+				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
+					$page = new SpotPage_getnzb($db, $settings, $currentSession, 
+						Array('messageid' => $req->getDef('messageid', ''),
+							'action' => $req->getDef('action', 'display')));
+				} else {
+					$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
+				} # else
 				$page->render();
 				break;
 		} # getspot
