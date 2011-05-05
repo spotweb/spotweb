@@ -101,7 +101,7 @@ function loadComments(messageid,perpage,pagenr) {
 		if (count == 0 && pagenr == 0) { 
 			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
 		} else {
-			$("span.commentcount").append('# '+$("#commentslist").children().not(".addComment").size());
+			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
 		$("#commentslist").append($(html).fadeIn('slow'));
