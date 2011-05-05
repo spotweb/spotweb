@@ -16,6 +16,13 @@ $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
 
+# =-=-=-=-=-=-=-=- Als je een aparte 'upload' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
+$settings['nntp_post']['host'] = '';
+$settings['nntp_post']['user'] = '';
+$settings['nntp_post']['pass'] = '';
+$settings['nntp_post']['enc'] = false;
+$settings['nntp_post']['port'] = 119;
+
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -349,7 +356,12 @@ if (($settings['templates']['autodetect']) &&
 #
 if (empty($settings['nntp_hdr']['host'])) {
 	$settings['nntp_hdr'] = $settings['nntp_nzb'];
-} # if 
+} # if
+
+# Hetzelfde voor de NNTP upload server
+if (empty($settings['nntp_post']['host'])) {
+	$settings['nntp_post'] = $settings['nntp_nzb'];
+} # if
 
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen

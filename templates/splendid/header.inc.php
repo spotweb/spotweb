@@ -36,7 +36,7 @@
 		<script src='js/dynatree/jquery.dynatree.min.js' type='text/javascript'></script>
 
 		<!-- fancybox -->
-		<script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		<script type='text/javascript' src='js/fancybox/jquery.fancybox-1.3.4.pack.js'></script>
 
 		<!-- Add code to initialize the tree when the document is loaded: -->
 		<script type='text/javascript'>

@@ -57,7 +57,13 @@ try {
 		} # render
 		
 		case 'getspot' : {
-				$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
+				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
+					$page = new SpotPage_getnzb($db, $settings, $currentSession, 
+						Array('messageid' => $req->getDef('messageid', ''),
+							'action' => $req->getDef('action', 'display')));
+				} else {
+					$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
+				} # else
 				$page->render();
 				break;
 		} # getspot
@@ -116,8 +122,20 @@ try {
 				break;
 		} # selecttemplate
 
+		case 'rss' : {
+			$page = new SpotPage_rss($db, $settings, $currentSession,
+					Array('search' => $req->getDef('search', $settings->get('index_filter')),
+						  'page' => $req->getDef('page', 0),
+						  'sortby' => $req->getDef('sortby', ''),
+						  'sortdir' => $req->getDef('sortdir', ''))
+			);
+			$page->render();
+			break;
+		} # rss		
+
 		case 'atom' : {
-			$page = new SpotPage_atom($db, $settings, $currentSession,
+			// hier wordt een RSS gegenereerd. atom is nog geldig ivm backwards compatibility
+			$page = new SpotPage_rss($db, $settings, $currentSession,
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
