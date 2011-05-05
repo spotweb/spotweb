@@ -67,7 +67,7 @@ class SpotPage_rss extends SpotPage_Abs {
 
 			echo "\t<item>" . PHP_EOL;
 			echo "\t\t<title>" . $title . "</title>" . PHP_EOL;
-			echo "\t\t<link>" . $tplHelper->makeNzbUrl($spot) . "</link>" . PHP_EOL;
+			echo "\t\t<link>" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</link>" . PHP_EOL;
 			echo "\t\t<description><![CDATA[<p>" . $tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $spot['poster'] . " (" . $spot['userid'] . ")</font></p>]]></description>" . PHP_EOL;
 			echo "\t\t<author>" . $spot['messageid'] . " (" . $spot['poster'] . " (" . $spot['userid'] . "))</author>" . PHP_EOL;
 			echo "\t\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
