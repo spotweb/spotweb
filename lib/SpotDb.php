@@ -919,7 +919,7 @@ class SpotDb
 														c.spotrating AS spotrating 
 													FROM commentsfull f 
 													JOIN commentsxover c on (f.messageid = c.messageid)
-													WHERE f.messageid IN (" . $msgIdList . ") ORDER BY stamp DESC", array());
+													WHERE f.messageid IN (" . $msgIdList . ")", array());
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
