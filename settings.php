@@ -234,7 +234,7 @@ if (isset($_SERVER['HTTP_HOST'])) {
 
 // Per RFC 2109, cookie domains must contain at least one dot other than the
 // first. For hosts such as 'localhost' or IP Addresses we don't set a cookie domain.
-if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_var($cookie_domain, FILTER_VALIDATE_IP)) {
+if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_var(ltrim($cookie_domain, '.'), FILTER_VALIDATE_IP)) {
 	$settings['cookie_host'] = $cookie_domain;
 	unset($cookie_domain);
 } else {
