@@ -16,8 +16,6 @@ class SpotTemplateHelper {
 	protected $_params;
 	protected $_nzbhandler;
 	
-	static private $_commentCount = null;	
-	
 	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
@@ -93,30 +91,6 @@ class SpotTemplateHelper {
 		} # else
 	} # getNewCountForFilter
 
-	/*
-	 * Geef het aantal spots terug 
-	 */
-	function getCommentCount($spot) {
-		# Lazily load comment count
-		if ((self::$_commentCount == null) && ($this->_settings->get('count_comments'))) {
-			self::$_commentCount = $this->_db->getCommentCount($this->getParam('spots'));
-		} # if
-
-		# zitten er al comments in de database?
-		if (!isset(self::$_commentCount[$spot['messageid']])) {
-			return 0;
-		} # if
-		
-		return self::$_commentCount[$spot['messageid']];
-	} # getCommentCount
-
-	/*
-	 * Geeft de gemiddelde rating van deze spot terug
-	 */
-	function getSpotRating($spot) {
-		return $this->_db->getSpotRating($spot['messageid']);
-	} # getSpotRating
-	
 	/*
 	 * Geeft een aantal comments terug
 	 */
@@ -359,13 +333,10 @@ class SpotTemplateHelper {
 		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 		$spot['catdesc'] = SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['subcatfilter'] = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
-
 		
-		// hoeveel comments zitten er bij deze spot ongeveer?
-		$spot['commentcount'] = $this->getCommentCount($spot);
-		
-		// en wat is de gemiddelde rating van deze spot?
-		$spot['rating'] = $this->getSpotRating($spot);
+		// commentcount en rating altijd teruggeven
+		$spot['commentcount'] = (int) $spot['commentcount'];
+		$spot['rating'] = (int) $spot['rating'];
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);

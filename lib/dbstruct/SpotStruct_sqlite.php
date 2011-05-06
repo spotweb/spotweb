@@ -20,7 +20,9 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 											stamp INTEGER,
 											reversestamp INTEGER DEFAULT 0,
 											filesize BIGINT DEFAULT 0,
-											moderated BOOLEAN DEFAULT FALSE);");
+											moderated BOOLEAN DEFAULT FALSE,
+											commentcount INTEGER DEFAULT 0,
+											spotrating INTEGER DEFAULT 0);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
