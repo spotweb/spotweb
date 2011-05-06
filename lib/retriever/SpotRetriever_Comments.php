@@ -67,6 +67,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
 			
+			# we houden een aparte lijst met spot messageids bij zodat we dat extracten
+			# niet meer in de db laag moeten doen
+			$spotMsgIdList = array();
+			
 			# en loop door elke header heen
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
@@ -80,6 +84,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+					$spotMsgIdList[] = $msgheader['References'];
+
 					
 					# als dit een nieuw soort comment is met rating vul die dan ook op
 					if (count($msgIdParts) == 5) {
@@ -107,6 +113,12 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
+			# herbereken de gemiddelde spotrating, en update het 
+			# aantal niet geverifieerde comments
+			$this->_db->updateSpotRating($spotMsgIdList);
+			$this->_db->updateSpotCommentCount($spotMsgIdList);
+			
+			# update the last retrieved article			
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
 			
