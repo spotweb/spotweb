@@ -1,12 +1,12 @@
 <?php 
 
-if (!empty($createresult)) {
+if (!empty($editresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
 	echo formResult2Xml($createresult, $formmessages, $tplHelper);
 } # if
 
-if (empty($createresult)) {
+if (empty($editresult)) {
 	include "includes/form-messages.inc.php";
 
 ?>
