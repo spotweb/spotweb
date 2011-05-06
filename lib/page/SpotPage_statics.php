@@ -45,12 +45,20 @@ class SpotPage_statics extends SpotPage_Abs {
 		
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type'])); 
-		
+
+		ob_start();
+		echo $mergedInfo['body'];
+		$content_length = ob_get_length();
+		$content = ob_get_contents();
+		ob_end_clean();
+
 		# stuur een expires header zodat dit een jaar of 10 geldig is
 		Header("Cache-Control: public");
 		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
+		Header("Content-Length: " . $content_length);
 		Header("Pragma: ");
-		
+		echo $content;
+
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: Header('Content-Type: text/css'); break;
@@ -58,7 +66,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
 		
-		echo $mergedInfo['body'];
+		
 	} # render
 	
 } # class SpotPage_statics
