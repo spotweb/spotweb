@@ -21,7 +21,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										stamp INTEGER(10) UNSIGNED,
 										reversestamp INTEGER DEFAULT 0,
 										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
-										moderated BOOLEAN) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										moderated BOOLEAN,
+										commentcount INTEGER DEFAULT 0,
+										spotrating INTEGER DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
