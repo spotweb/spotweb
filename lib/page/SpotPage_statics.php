@@ -18,50 +18,52 @@ class SpotPage_statics extends SpotPage_Abs {
 	function cbFixCssUrl($needle) {
 		return 'URL(' . dirname($this->_currentCssFile) . '/' . trim($needle[1], '"\'') . ')';
 	} # cbFixCssUrl
-	
+
 	function mergeFiles($files) {
 		$tmp = '';
-		
+
 		foreach($files as $file) {
 			$fc = file_get_contents($file) . PHP_EOL;
 			$fc = str_replace('$COOKIE_EXPIRES', $this->_settings->get('cookie_expires'), $fc);
 			$fc = str_replace('$COOKIE_HOST', $this->_settings->get('cookie_host'), $fc);
 
-			# ik ben geen fan van regexpen maar in dit scheelt het 
+			# ik ben geen fan van regexpen maar in dit scheelt het
 			# het volledig parsen van de content van de CSS file dus
 			# is het het overwegen waard.
 			$this->_currentCssFile = $file;
 			$fc = preg_replace_callback('/url\((.+)\)/i', array($this, 'cbFixCssUrl'), $fc);
 			$tmp .= $fc;
 		} # foreach
-		
-		
+
 		# en geef de body terug
 		return array('body' => $tmp);
 	} # mergeFiles
-	
+
 	function render() {
 		$tplHelper = $this->getTplHelper(array());
-		
-		# vraag de content op
-		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type'])); 
 
-		ob_start(); //Turn on output buffering
+		# vraag de content op
+		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type']));
+
+		ob_start(); # http://nl.php.net/manual/en/function.ob-get-length.php#59294
+		if (!ob_start("ob_gzhandler")) ob_start();
+
 		echo $mergedInfo['body'];
-		
+		ob_end_flush();
+
 		Header("Cache-Control: public");
 		Header("Expires: " . gmdate("D, d M Y H:i:s T", (time() + (86400 * 3653)))); # stuur een expires header zodat dit een jaar of 10 geldig is
 		Header("Content-Length: " . ob_get_length());
 		Header("Pragma: public");
-		
+
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: Header('Content-Type: text/css'); break;
 			case 'js'		: Header('Content-Type: application/javascript; charset=utf-8'); break;
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
-		
+
 		ob_end_flush();
 	} # render
-	
+
 } # class SpotPage_statics
