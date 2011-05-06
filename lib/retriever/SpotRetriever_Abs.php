@@ -124,6 +124,10 @@ abstract class SpotRetriever_Abs {
 				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg);
 				$processed += $processOutput['count'];
 				$highestMessageId = $processOutput['lastmsgid'];
+				
+				# reset the start time to prevent a another retriever from starting
+				# during the intial retrieve which can take many hours 
+				$this->_db->setRetrieverRunning($this->_server['host'], true);
 			} # while
 			
 			# we are done updating, make sure that if the newsserver deleted 
