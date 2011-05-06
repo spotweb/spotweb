@@ -46,13 +46,13 @@ class SpotPage_statics extends SpotPage_Abs {
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type'])); 
 
-		if (ob_start("ob_gzhandler")) ob_start(); //Turn on output buffering
+		ob_start(); //Turn on output buffering
 		echo $mergedInfo['body'];
 		
 		Header("Cache-Control: public");
-		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT"); # stuur een expires header zodat dit een jaar of 10 geldig is
+		Header("Expires: " . gmdate("D, d M Y H:i:s T", (time() + (86400 * 3653)))); # stuur een expires header zodat dit een jaar of 10 geldig is
 		Header("Content-Length: " . ob_get_length());
-		Header("Pragma: ");
+		Header("Pragma: public");
 		
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
