@@ -49,7 +49,7 @@
 		<tr> <td> Own settings file </td> <td> <?php echo showResult(testInclude("ownsettings.php"), testInclude("ownsettings.php"), "optioneel"); ?>  </td> </tr>
 		<tr> <td> PEAR </td> <td> <?php echo showResult(testInclude("System.php"), testInclude("System.php")); ?>  </td> </tr>
 		<?php if (PHP_OS == "WIN32" || PHP_OS == "WINNT") { ?>
-			<tr> <td> PEAR Net/NNTP </td> <td> <?php echo showResult(testInclude("Net\NNTP\Client.php"), testInclude("Net\NNTP\Client.php")); ?>  </td> </tr>
+			<tr> <td> PEAR Net/NNTP </td> <td> <?php echo showResult(testInclude("Net\\NNTP\\Client.php"), testInclude("Net\\NNTP\\Client.php")); ?>  </td> </tr>
 		<?php } else { ?>
 			<tr> <td> PEAR Net/NNTP </td> <td> <?php echo showResult(testInclude("Net/NNTP/Client.php"), testInclude("Net/NNTP/Client.php")); ?>  </td> </tr>
 		<?php } ?>
