@@ -75,7 +75,7 @@
 <?php } ?>
                     
 <?php if ($currentSession['user']['userid'] != 1) { ?>
-					<h4 class="dropdown"><span class="viewState"><a class="down" onclick="toggleEditUser()"></a></span>Gebruiker wijzigen</h4>
+					<h4 class="dropdown"><span class="viewState"><a class="down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
 					<div class="editUser"></div>
 					
                     <h4>Uitloggen</h4>
