@@ -152,6 +152,7 @@ class SpotsOverview {
 	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
 	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
+		SpotTiming::start(__FUNCTION__, array($ourUserId, $start, $limit, $parsedSearch, $sort));
 		# als er geen sorteer veld opgegeven is, dan sorteren we niet
 		if ($sort['field'] == '') {
 			$sort = array();
@@ -191,6 +192,7 @@ class SpotsOverview {
 							$spotResults['list'][$i]['subcatz']);
 		} # foreach
 
+		SpotTiming::stop(__FUNCTION__, array($spotResults));
 		return $spotResults;
 	} # loadSpots()
 

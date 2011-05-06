@@ -428,6 +428,36 @@ abstract class SpotStruct_abs {
 		if (!$this->columnExists('users', 'lastread')) {
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		} # if
+
+		# commentcount toevoegen
+		if (!$this->columnExists('spots', 'spotrating')) {
+			$this->addColumn('commentcount', 'spots', "INTEGER DEFAULT 0");
+		} # if
+		
+		# spotrating toevoegen
+		if (!$this->columnExists('spots', 'spotrating')) {
+			$this->addColumn('spotrating', 'spots', "INTEGER DEFAULT 0");
+		} # if
+
+		# Update de commentcount en de spotrating
+		if ($this->_spotdb->getSchemaVer() < 0.22) {
+			$this->_dbcon->rawExec("UPDATE spots 
+									SET spotrating = 
+										(SELECT AVG(spotrating) as spotrating 
+										 FROM commentsxover 
+										 WHERE 
+											spots.messageid = commentsxover.nntpref 
+											AND spotrating BETWEEN 1 AND 10
+										 GROUP BY nntpref)");
+			$this->_dbcon->rawExec("UPDATE spots 
+									SET commentcount = 
+										(SELECT COUNT(1) as commentcount 
+										 FROM commentsxover 
+										 WHERE 
+											spots.messageid = commentsxover.nntpref 
+										 GROUP BY nntpref)");
+
+		} # if
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
