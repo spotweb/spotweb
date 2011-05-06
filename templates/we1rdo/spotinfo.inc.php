@@ -67,7 +67,7 @@ echo "</th>";
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		
                         		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
-						
+                                <tr> <th> Rating </th> <td class="rating"><?php echo $spot['rating']; ?></td> </tr>
                             </tbody>
                         </table>
 					</td>
@@ -80,8 +80,14 @@ echo "</th>";
 
             <div class="comments" id="comments">
             	<h4>Comments <span class="commentcount"># 0</span></h4>
-				<ul id="commentslist"></ul>
-                <?php if ($currentSession['user']['userid'] != 1) { include "postcomment.inc.php"; } ?>
+				<ul id="commentslist">
+<?php if ($currentSession['user']['userid'] != 1) { 
+    echo "<li class='addComment'>";
+    echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div><div></div>";
+    include "postcomment.inc.php"; 
+    echo "</div></li>";
+} ?>
+                </ul>
             </div>
 		</div>
         
@@ -97,7 +103,9 @@ echo "</th>";
 				});
 
 				var messageid = $('#messageid').val();
-				loadSpotImage();
-				loadComments(messageid,'5','0');
+                spotRating();
+                postCommentsForm();
+                loadSpotImage();
+                loadComments(messageid,'5','0');
 			});
 		</script>
