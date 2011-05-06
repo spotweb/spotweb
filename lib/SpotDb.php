@@ -865,7 +865,7 @@ class SpotDb
 														f.verified AS verified,
 														c.spotrating AS spotrating 
 													FROM commentsfull f 
-													JOIN commentsxover c on (c.messageid = f.messageid)
+													JOIN commentsxover c on (f.messageid = c.messageid)
 													WHERE f.messageid IN (" . $msgIdList . ") ORDER BY stamp DESC", array());
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
