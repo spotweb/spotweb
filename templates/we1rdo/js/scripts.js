@@ -6,6 +6,7 @@ $(function(){
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
 function detectScrollbar() {
+	console.log('detectScrollbar');
 	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
 }
 
@@ -128,6 +129,7 @@ function postCommentsForm() {
 			$("li.addComment div").slideUp();
 			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
 		}
+		detectScrollbar();
 	});
 
 	var i = 1;
@@ -568,10 +570,10 @@ function toggleCreateUser() {
 	}
 }
 
-function toggleEditUser() {
-	var url = '?page=edituser';
+function toggleEditUser(userid) {
+	var url = '?page=edituser&userid='+userid;
 
-	if($("div.editUser").html() && $("div.createUser").is(":visible")) {
+	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
 		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
 		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
 		$("div.editUser").hide();
@@ -583,7 +585,37 @@ function toggleEditUser() {
 			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
 
 			$('form.edituserform').submit(function(){ 
-				// process edituserform submit here
+				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
+				var action = $("form.edituserform input[name='edituserform[action]']").val();
+				var newpassword1 = $("form.edituserform input[name='edituserform[newpassword1]']").val();
+				var newpassword2 = $("form.edituserform input[name='edituserform[newpassword2]']").val();
+				var firstname = $("form.edituserform input[name='edituserform[firstname]']").val();
+				var lastname = $("form.edituserform input[name='edituserform[lastname]']").val();
+				var mail = $("form.edituserform input[name='edituserform[mail]']").val();
+
+				var url = $("form.edituserform").attr("action");
+				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&edituserform[action]=' + action + '&userid=' + userid + '&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail + '&edituserform[submit]=true';
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					// dataType: "xml",
+					data: dataString,
+					success: function(xml) {
+						alert(xml); // dit geeft nu nog HTML terug...
+						//var result = $(xml).find('result').text();
+
+						//$("div.editUser > ul.formerrors").empty();
+						//if(result == "success") {
+						//	$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
+						//} else {
+						//	$('errors', xml).each(function() {
+						//		$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
+						//	});
+						//}
+					}
+				});
+				return false;
 			});
 		});
 	}

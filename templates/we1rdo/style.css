@@ -380,7 +380,7 @@ div.details div.comments li.addComment div {display:none; background-color:#fff;
 div.details div.comments li.addComment div div.loading {background:#fff url(img/loading.gif) no-repeat 50% 50%; opacity:0.75; position:absolute; margin:0;}
 div.details form.postcommentform fieldset {padding:0; margin:0; border:0;}
 div.details form.postcommentform fieldset dd {margin:0;}
-div.details form.postcommentform fieldset textarea {width:208px; font:11px Arial, Helvetica, sans-serif;}
+div.details form.postcommentform fieldset textarea {width:204px; font:11px Arial, Helvetica, sans-serif;}
 div.details form.postcommentform input.greyButton {display:inline; margin: 2px 0 5px 0;}
 div.details form.postcommentform dd.rating {margin:5px 0; height:16px;}
 div.details table.spotinfo td.rating span,
