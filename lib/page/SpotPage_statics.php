@@ -45,11 +45,18 @@ class SpotPage_statics extends SpotPage_Abs {
 		
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type'])); 
-		
+
 		# stuur een expires header zodat dit een jaar of 10 geldig is
 		Header("Cache-Control: public");
 		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
 		Header("Pragma: ");
+		
+		# Er is een bug met mod_deflate en mod_fastcgi welke ervoor zorgt dat de content-length
+		# header niet juist geupdate wordt. Als we dus mod_fastcgi detecteren, dan sturen we 
+		# content-length header niet mee
+		if (isset($_SERVER['REDIRECT_HANDLER']) && ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
+			Header("Content-Length: " . strlen($mergedInfo['body']));
+		} # if
 		
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
