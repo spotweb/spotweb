@@ -52,7 +52,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		ob_end_flush();
 
 		Header("Cache-Control: public");
-		Header("Expires: " . gmdate("D, d M Y H:i:s T", (time() + (86400 * 3653)))); # stuur een expires header zodat dit een jaar of 10 geldig is
+		Header("Expires: " . gmdate("D, d M Y H:i:s T", strtotime('+10 years'))); # stuur een expires header zodat dit 10 jaar geldig is
 		Header("Content-Length: " . ob_get_length());
 		Header("Pragma: public");
 
