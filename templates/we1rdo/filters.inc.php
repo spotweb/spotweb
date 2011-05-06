@@ -94,7 +94,7 @@
 	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
 	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
 ?>
-                    <table class="sabInfo">
+                    <table class="sabInfo" summary="SABnzbd infomatie">
                     	<tr><td>Status:</td><td class="state"></td></tr>
                         <tr><td>Snelheid:</td><td class="speed"></td></tr>
                         <tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
@@ -103,7 +103,7 @@
                         <tr><td>Wachtrij:</td><td class="mb"></td></tr>
                     </table>
 					<h4>Wachtrij</h4>
-					<table class="sabQueue"><tbody><tr><td></td></tr></tbody></table>
+					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
                 </div>
             </div>
 

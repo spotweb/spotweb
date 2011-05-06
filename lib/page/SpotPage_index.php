@@ -64,7 +64,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->_pageTitle = "overzicht";
 		
 		#- display stuff -#
-		$this->template('header');
+		$this->template('header', array('activefilter' => $this->_params['search']));
 
 		$this->template('filters', array('search' => $this->_params['search'],
 								  'lastupdate' => $lastUpdateTime,
