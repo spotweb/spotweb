@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.21');
+define('SPOTDB_SCHEMA_VERSION', '0.22');
 
 class SpotDb
 {
@@ -699,6 +699,8 @@ class SpotDb
 												s.stamp AS stamp,
 												s.moderated AS moderated,
 												s.filesize AS filesize,
+												s.spotrating AS rating,
+												s.commentcount AS commentcount,
 												f.userid AS userid,
 												f.verified AS verified
 												" . $extendedFieldList . "
@@ -742,6 +744,8 @@ class SpotDb
 												s.title AS title,
 												s.tag AS tag,
 												s.stamp AS stamp,
+												s.spotrating AS rating,
+												s.commentcount AS commentcount,
 												s.moderated AS moderated
 											  FROM spots AS s
 											  WHERE messageid = '%s'", Array($msgId));
@@ -774,6 +778,8 @@ class SpotDb
 												s.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
+												s.spotrating AS rating,
+												s.commentcount AS commentcount,
 												s.id AS spotdbid,
 												f.id AS fullspotdbid,
 												d.stamp AS downloadstamp,
@@ -837,6 +843,53 @@ class SpotDb
 	} # addCommentFull
 
 	/*
+	 * Update een lijst van messageid's met de gemiddelde spotrating
+	 */
+	function updateSpotRating($spotMsgIdList) {
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		# en update de spotrating
+		$this->_conn->exec("UPDATE spots 
+								SET spotrating = 
+									(SELECT AVG(spotrating) as spotrating 
+									 FROM commentsxover 
+									 WHERE 
+										spots.messageid = commentsxover.nntpref 
+										AND spotrating BETWEEN 1 AND 10
+									 GROUP BY nntpref)
+							WHERE spots.messageid IN (" . $msgIdList . ")
+						");
+	} # updateSpotRating
+
+	/*
+	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
+	 */
+	function updateSpotCommentCount($spotMsgIdList) {
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+		
+		# en update de spotrating
+		$this->_conn->exec("UPDATE spots 
+								SET commentcount = 
+									(SELECT COUNT(1) as commentcount 
+									 FROM commentsxover 
+									 WHERE 
+										spots.messageid = commentsxover.nntpref 
+									 GROUP BY nntpref)
+							WHERE spots.messageid IN (" . $msgIdList . ")
+						");
+	} # updateSpotCommentCount
+
+	/*
 	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
 	 */
 	function getCommentsFull($commentMsgIds) {
@@ -878,13 +931,6 @@ class SpotDb
 	} # getCommentsFull
 	
 	/*
-	 * Geeft de gemiddelde spot rating terug
-	 */
-	function getSpotRating($msgId) {
-		return $this->_conn->singleQuery("SELECT AVG(spotrating) AS rating FROM commentsxover WHERE nntpref = '%s' AND spotrating BETWEEN 1 AND 10 GROUP BY nntpref", Array($msgId));
-	} # getSpotRating
-	
-	/*
 	 * Geef al het commentaar references voor een specifieke spot terug
 	 */
 	function getCommentRef($nntpref) {
@@ -896,35 +942,6 @@ class SpotDb
 		
 		return $msgIdList;
 	} # getCommentRef
-
-	/*
-	 * Geef het aantal reacties voor een specifieke spot terug
-	 */
-	function getCommentCount($msgIds) {
-		SpotTiming::start(__FUNCTION__);
-		
-		# geen comments gevraagd ? dan is het antwoord simpel
-		if (empty($msgIds)) {
-			return array();
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($msgIds as $msgId) {
-			$msgIdList .= "'" . $this->_conn->safe($msgId['messageid']) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# Vraag het aantal comments op van elke spot die we tonen
-		$tmpResult = $this->_conn->arrayQuery("SELECT nntpref, COUNT(1) as cnt FROM commentsxover WHERE nntpref IN (" . $msgIdList . ") GROUP BY nntpref");
-		$tmpCount = array();
-		foreach($tmpResult as $value) {
-			$tmpCount[$value['nntpref']] = $value['cnt'];
-		} # foreach
-		
-		SpotTiming::stop(__FUNCTION__, array($msgIds));
-		return $tmpCount;
-	} # getCommentCount
 
 	/*
 	 * Voeg een spot toe aan de lijst van gedownloade files
