@@ -94,7 +94,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						# Sommige oudere comments bevatten een niet-numreieke
 						# string op deze positie, dus we controleren nog even
 						# of het puur een getal is wat er staat.
-						if ($msgheader['rating'] !== $msgIdParts[1]) {
+						if ($msgheader['rating'] != $msgIdParts[1]) {
 							$msgheader['rating'] = 0;
 						} # if
 					} else {
