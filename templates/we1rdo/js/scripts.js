@@ -5,9 +5,12 @@ $(function(){
 });
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
-function detectScrollbar() {
-	console.log('detectScrollbar');
-	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
+function detectScrollbar() {	
+	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {
+		$("div#details").addClass("noscroll");
+	} else {
+		$("div#details").removeClass("noscroll");
+	}
 }
 
 // openSpot in overlay
@@ -123,13 +126,16 @@ function loadComments(messageid,perpage,pagenr) {
 function postCommentsForm() {
 	$("li.addComment a.togglePostComment").click(function(){
 		if($("li.addComment div").is(":hidden")) {
-			$("li.addComment div").slideDown();
+			$("li.addComment div").slideDown(function(){
+				detectScrollbar();
+			});
 			$("li.addComment a.togglePostComment span").addClass("up").parent().attr("title", "Reactie toevoegen (verbergen)");
 		} else {
-			$("li.addComment div").slideUp();
+			$("li.addComment div").slideUp(function(){
+				detectScrollbar();
+			});
 			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
 		}
-		detectScrollbar();
 	});
 
 	var i = 1;
@@ -602,17 +608,16 @@ function toggleEditUser(userid) {
 					// dataType: "xml",
 					data: dataString,
 					success: function(xml) {
-						alert(xml); // dit geeft nu nog HTML terug...
-						//var result = $(xml).find('result').text();
+						var result = $(xml).find('result').text();
 
-						//$("div.editUser > ul.formerrors").empty();
-						//if(result == "success") {
-						//	$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
-						//} else {
-						//	$('errors', xml).each(function() {
-						//		$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
-						//	});
-						//}
+						$("div.editUser > ul.formerrors").empty();
+						if(result == "success") {
+							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
+						} else {
+							$('errors', xml).each(function() {
+								$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
+							});
+						}
 					}
 				});
 				return false;

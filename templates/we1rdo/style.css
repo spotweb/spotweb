@@ -379,6 +379,7 @@ div.details div.comments li.addComment a.togglePostComment span.up {background-p
 div.details div.comments li.addComment div {display:none; background-color:#fff; margin:1px 3px 1px 3px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; position:relative;}
 div.details div.comments li.addComment div div.loading {background:#fff url(img/loading.gif) no-repeat 50% 50%; opacity:0.75; position:absolute; margin:0;}
 div.details form.postcommentform fieldset {padding:0; margin:0; border:0;}
+div.details form.postcommentform fieldset dl {margin:0;}
 div.details form.postcommentform fieldset dd {margin:0;}
 div.details form.postcommentform fieldset textarea {width:204px; font:11px Arial, Helvetica, sans-serif;}
 div.details form.postcommentform input.greyButton {display:inline; margin: 2px 0 5px 0;}
