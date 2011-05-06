@@ -5,8 +5,12 @@ $(function(){
 });
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
-function detectScrollbar() {
-	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {$("div#details").addClass("noscroll")} else {$("div#details").removeClass("noscroll")}
+function detectScrollbar() {	
+	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {
+		$("div#details").addClass("noscroll");
+	} else {
+		$("div#details").removeClass("noscroll");
+	}
 }
 
 // openSpot in overlay
@@ -42,6 +46,7 @@ function openSpot(id,url) {
 		$("a[href^='http']").attr('target','_blank');
 		$(window).bind("resize", detectScrollbar);
 
+		spotRating();
 		postCommentsForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
@@ -98,13 +103,14 @@ function loadComments(messageid,perpage,pagenr) {
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) { 
-			$("#commentslist").html("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
 		} else {
-			$("span.commentcount").html('# '+$("#commentslist").children().size());
+			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
 		$("#commentslist").append($(html).fadeIn('slow'));
 		$("#commentslist > li:nth-child(even)").addClass('even');
+		$("#commentslist > li.addComment").next().addClass('firstComment');
 
 		pagenr++;
 		if (count >= 1) { 
@@ -118,6 +124,39 @@ function loadComments(messageid,perpage,pagenr) {
 
 // Load post comment form
 function postCommentsForm() {
+	$("li.addComment a.togglePostComment").click(function(){
+		if($("li.addComment div").is(":hidden")) {
+			$("li.addComment div").slideDown(function(){
+				detectScrollbar();
+			});
+			$("li.addComment a.togglePostComment span").addClass("up").parent().attr("title", "Reactie toevoegen (verbergen)");
+		} else {
+			$("li.addComment div").slideUp(function(){
+				detectScrollbar();
+			});
+			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
+		}
+	});
+
+	var i = 1;
+	for (i = 1; i <= 10; i++) {
+		if(i == 1) {
+			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" ster'></span>");
+		} else {
+			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
+		}
+	}
+	$("li.addComment dd.rating span").click(function() {
+		var rating = $(this).index();
+		$("li.addComment dd.rating span").removeClass("active");
+		$("li.addComment dd.rating span").each(function(){
+			if($(this).index() <= rating) {
+				$(this).addClass("active");
+			}
+		});
+		$("li.addComment input[name='postcommentform[rating]']").val(rating);
+	})
+	
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
 		return false;
@@ -405,6 +444,10 @@ $(function(){
 			if(value.state == "block") {
 				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
 				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+			} else {
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-90px -98px");
+				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter uitklappen");
+
 			}
 		});
 	}
@@ -529,6 +572,56 @@ function toggleCreateUser() {
 				});
 				return false;
 			});	
+		});
+	}
+}
+
+function toggleEditUser(userid) {
+	var url = '?page=edituser&userid='+userid;
+
+	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
+		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.editUser").hide();
+	} else {
+		if($("div.editUser")) {$("div.editUser").html()}		
+		$("div.editUser").load(url, function() {
+			$("div.editUser").show();
+			$("div.userPanel h4.dropDown").css("margin", "0");
+			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+
+			$('form.edituserform').submit(function(){ 
+				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
+				var action = $("form.edituserform input[name='edituserform[action]']").val();
+				var newpassword1 = $("form.edituserform input[name='edituserform[newpassword1]']").val();
+				var newpassword2 = $("form.edituserform input[name='edituserform[newpassword2]']").val();
+				var firstname = $("form.edituserform input[name='edituserform[firstname]']").val();
+				var lastname = $("form.edituserform input[name='edituserform[lastname]']").val();
+				var mail = $("form.edituserform input[name='edituserform[mail]']").val();
+
+				var url = $("form.edituserform").attr("action");
+				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&edituserform[action]=' + action + '&userid=' + userid + '&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail + '&edituserform[submit]=true';
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					// dataType: "xml",
+					data: dataString,
+					success: function(xml) {
+						var result = $(xml).find('result').text();
+
+						$("div.editUser > ul.formerrors").empty();
+						if(result == "success") {
+							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
+						} else {
+							$('errors', xml).each(function() {
+								$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
+							});
+						}
+					}
+				});
+				return false;
+			});
 		});
 	}
 }
@@ -693,4 +786,27 @@ function updateSabPanel(start,limit) {
 			}
 		}, interval);
 	});
+}
+
+// spotRating verwerken
+function spotRating() {
+	var rating = Math.round($("table.spotinfo td.rating").text());
+	if($("table.spotinfo td.rating").is(":empty")) {
+		$("table.spotinfo td.rating").html('N/A');
+	} else {
+		$("table.spotinfo td.rating").empty().addClass("stars");
+		var i = 1;
+		for (i = 1; i <= 10; i++) {
+			if(rating == 1) {
+				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" ster'></span>");
+			} else {
+				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" sterren'></span>");
+			}
+		}
+		$("table.spotinfo td.rating span").each(function(){
+			if($(this).index()+1 <= rating) {
+				$(this).addClass("active");
+			}
+		});
+	}
 }

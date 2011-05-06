@@ -19,13 +19,9 @@ if (empty($postresult)) {
     <input type="hidden" name="postcommentform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
 	<fieldset>
 		<dl>
-			<dt><label for="postcommentform[rating]">Rating</label></dt>
-			<dd><input type="text" name="postcommentform[rating]" value="0"></dd>
-
-			<dt><label for="postcommentform[body]">Text</label></dt>
+			<dd class="rating"><input type="hidden" name="postcommentform[rating]" value="0"></dd>
 			<dd><textarea name="postcommentform[body]"></textarea></dd>
-
-			<dd><input type="submit" name="dummysubmit" value="Post"></dd>
+			<dd><input class="greyButton" type="submit" name="dummysubmit" title="Reactie toevoegen" value="Post"></dd>
 		</dl>
 	</fieldset>
 </form>

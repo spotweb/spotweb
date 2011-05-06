@@ -53,8 +53,14 @@ class SpotPage_statics extends SpotPage_Abs {
 
 		Header("Cache-Control: public");
 		Header("Expires: " . gmdate("D, d M Y H:i:s T", strtotime('+10 years'))); # stuur een expires header zodat dit 10 jaar geldig is
-		Header("Content-Length: " . ob_get_length());
 		Header("Pragma: public");
+
+		# Er is een bug met mod_deflate en mod_fastcgi welke ervoor zorgt dat de content-length
+		# header niet juist geupdate wordt. Als we dus mod_fastcgi detecteren, dan sturen we
+		# content-length header niet mee
+		if (isset($_SERVER['REDIRECT_HANDLER']) && ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
+			Header("Content-Length: " . ob_get_length());
+		} # if
 
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {

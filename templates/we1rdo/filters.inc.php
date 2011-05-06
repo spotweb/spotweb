@@ -75,6 +75,9 @@
 <?php } ?>
                     
 <?php if ($currentSession['user']['userid'] != 1) { ?>
+					<h4 class="dropdown"><span class="viewState"><a class="down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
+					<div class="editUser"></div>
+					
                     <h4>Uitloggen</h4>
                     <a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
@@ -125,7 +128,7 @@
 ?>
 						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>>
 						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter[0]."&quot; zien'>$newCount</span>"; } ?><span class='toggle' title='Filter uitklappen' onclick='toggleFilter(this)'>&nbsp;</span></a>
+						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter[0]."&quot; zien'>$newCount</span>"; } ?><span class='toggle' title='Filter inklappen' onclick='toggleFilter(this)'>&nbsp;</span></a>
 <?php
 		if (!empty($filter[4])) {
 			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";

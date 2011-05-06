@@ -8,3 +8,4 @@ retrieve.sh
 .buildpath
 .project
 .settings/
+.DS_Store
