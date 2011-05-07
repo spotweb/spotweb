@@ -552,6 +552,14 @@ class SpotTemplateHelper {
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
+
+	/*
+	 * Genereert een random string
+	 */
+	function getSessionCalculatedUserId() {
+		$spotSigning = new SpotSigning();
+		return $spotSigning->calculcateUserid($this->_currentSession['user']['publickey']);
+	} # getSessionCalculatedUserId
 	
 	/*
 	 * Genereert een random string
