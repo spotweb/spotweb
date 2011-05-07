@@ -27,6 +27,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		
 		$fullSpots = array();
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
+		$this->rss_header();
 
 		foreach($spotsTmp['list'] as $spot) {
 			try {
@@ -37,17 +38,13 @@ class SpotPage_rss extends SpotPage_Abs {
 
 		}
 
-		// Buffer & output
-		if (!ob_start("ob_gzhandler")) ob_start();
-		header('Content-Type: application/rss+xml; charset=UTF-8');
-		$this->rss_header();
 		$this->rss_data($fullSpots);
 		$this->rss_footer();
-		ob_end_flush();
 	} # render()
 	
 	function rss_header() {
 		$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_db, $this->_params);
+		header('Content-Type: application/rss+xml; charset=UTF-8');
 		
 		echo "<?xml version=\"1.0\" encoding=\"utf-8\"?" . ">" . PHP_EOL;
 		echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">" . PHP_EOL;
