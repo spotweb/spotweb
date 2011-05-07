@@ -464,18 +464,14 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_commentsxover_1", "commentsxover");
 			$this->dropIndex("idx_commentsxover_2", "commentsxover");
 
-			# remove any duplicate rows, but only on mysql as for sqlite
-			# this syntax wont work
 			if ($this instanceof SpotStruct_mysql) {
-				$this->_dbcon->rawExec("DELETE FROM commentsxover 
-										  USING commentsxover, commentsxover AS duptable
-										  WHERE (NOT commentsxover.id = dupcomments.id) 
-											AND (commentsxover.messageid = dupcomments.messageid)");
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_1 (nntpref, messageid)");
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_2 (messageid)");
+			} else {
+				$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
+				$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
 			} # if
-			
-			# add the unique indexes
-			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
-			$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
+
 		} # if
 			
 		# voeg het database schema versie nummer toe
