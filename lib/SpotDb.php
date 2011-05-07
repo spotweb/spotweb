@@ -844,12 +844,17 @@ class SpotDb
 	 * Update een lijst van messageid's met de gemiddelde spotrating
 	 */
 	function updateSpotRating($spotMsgIdList) {
+		# Geen message id's gegeven? Doe niets!
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+	
 		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
+		$msgIdList = array();
 		foreach($spotMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+			$msgIdList[] = "'" . $this->_conn->safe($spotMsgId) . "'";
 		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
+		$msgIdList = implode($msgIdList, ", ");
 
 		# en update de spotrating
 		$this->_conn->exec("UPDATE spots 
@@ -868,6 +873,10 @@ class SpotDb
 	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
 	 */
 	function updateSpotCommentCount($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
