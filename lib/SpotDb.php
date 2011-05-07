@@ -873,6 +873,10 @@ class SpotDb
 	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
 	 */
 	function updateSpotCommentCount($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
