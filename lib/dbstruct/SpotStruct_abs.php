@@ -458,7 +458,26 @@ abstract class SpotStruct_abs {
 										 GROUP BY nntpref)");
 
 		} # if
-		
+
+		# Rating van spots werd verkeerd berekend
+		if ($this->_spotdb->getSchemaVer() < 0.23) {
+			$this->dropIndex("idx_commentsxover_1", "commentsxover");
+			$this->dropIndex("idx_commentsxover_2", "commentsxover");
+
+			# remove any duplicate rows, but only on mysql as for sqlite
+			# this syntax wont work
+			if ($this instanceof SpotStruct_mysql) {
+				$this->_dbcon->rawExec("DELETE FROM commentsxover 
+										  USING commentsxover, commentsxover AS duptable
+										  WHERE (NOT commentsxover.id = dupcomments.id) 
+											AND (commentsxover.messageid = dupcomments.messageid)");
+			} # if
+			
+			# add the unique indexes
+			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
+			$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
+		} # if
+			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
