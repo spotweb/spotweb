@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.22');
+define('SPOTDB_SCHEMA_VERSION', '0.23');
 
 class SpotDb
 {
@@ -230,15 +230,13 @@ class SpotDb
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
-						 WHERE (username LIKE '%" . $this->_db->safe($username) . "%') AND (NOT DELETED)
+						 WHERE (username LIKE '%" . $this->safe($username) . "%') AND (NOT DELETED)
 					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 		if (!empty($tmpResult)) {
 			# Other preferences worden serialized opgeslagen in de database
 			for($i = 0; $i < count($tmpResult); $i++) {
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
-			
-			return $tmpResult[0];
 		} # if
 	
 		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
