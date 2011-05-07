@@ -557,6 +557,7 @@ function toggleCreateUser() {
 					success: function(xml) {
 						var result = $(xml).find('result').text();
 						
+						$("div.createUser > ul.forminformation").empty();
 						$("div.createUser > ul.formerrors").empty();
 						if(result == "success") {
 							var user = $(xml).find('user').text();
@@ -610,6 +611,7 @@ function toggleEditUser(userid) {
 					success: function(xml) {
 						var result = $(xml).find('result').text();
 
+						$("div.editUser > ul.forminformation").empty();
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
 							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
@@ -723,7 +725,7 @@ function updateSabPanel(start,limit) {
 				var slot = this;
 				if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
 				
-				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbleft+" / "+slot.mb+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
+				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+slot.index+".</strong><span class='title'>"+slot.filename+"</span></td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbleft+" / "+slot.mb+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
 				
 				$("table.sabQueue tr."+slot.index+" a.up").click(function(){
 					if(timeOut) {clearTimeout(timeOut)}; 
@@ -782,7 +784,7 @@ function updateSabPanel(start,limit) {
 		var interval = 5000;
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
-				updateSabPanel(start,limit);
+				//updateSabPanel(start,limit);
 			}
 		}, interval);
 	});

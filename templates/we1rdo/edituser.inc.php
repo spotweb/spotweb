@@ -17,7 +17,7 @@ if (empty($editresult)) {
     <fieldset>
         <dl>
             <dt><label for="edituserform[username]">Gebruikersnaam</label></dt>
-            <dd><?php echo htmlspecialchars($edituserform['username']); ?></dd>
+            <dd><input type="text" disabled="disabled" value="<?php echo htmlspecialchars($edituserform['username']); ?>"></dd>
 
             <dt><label for="edituserform[newpassword1]">Wachtwoord</label></dt>
             <dd><input type="text" name="edituserform[newpassword1]" value=""></dd>
