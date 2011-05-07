@@ -71,7 +71,9 @@ class SpotPage_index extends SpotPage_Abs {
 								  'lastupdate' => $lastUpdateTime,
 								  'quicklinks' => $this->_settings->get('quicklinks'),
 								  'filters' => $this->_settings->get('filters'),
-  								  'activefilter' => $this->_params['search']));
+  								  'activefilter' => $this->_params['search'],
+								  'sortby' => $this->_params['sortby'],
+								  'sortdir' => $this->_params['sortdir']));
 		$this->template('spots', array('spots' => $spotsTmp['list'],
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
