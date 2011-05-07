@@ -15,7 +15,7 @@ div.clear {clear:both;}
 
 /* TOOLBAR */
 div#toolbar {background:url(img/sprite_x.png) repeat-x 0 -80px; height:25px;}
-body.fixed div#toolbar {position:fixed; top:0; left:0; right:0; z-index:1;}
+body.fixed div#toolbar {position:fixed; top:0; left:0; right:0; z-index:3;}
 
 div#toolbar span.scroll {position:absolute; overflow:hidden; top:4px; left:4px;}
 span.scroll:not(.foo) input#filterscroll {opacity:0; position:absolute; left:0; margin:0; width:19px; height:15px; float:left; cursor:pointer;}
@@ -72,7 +72,10 @@ table.sabInfo td.speedlimit input[name=speedLimit] {font:11px Arial, Helvetica, 
 
 table.sabQueue {margin:0 5px; width:225px;}
 table.sabQueue td {padding:1px 0 1px 0;}
-table.sabQueue tr.title td {padding-top:5px;}
+table.sabQueue tr.title td {padding-top:5px; position:relative;}
+table.sabQueue tr.title td strong {float:left;}
+table.sabQueue tr.title td span.title {position:absolute; width:178px; padding:0 0 0 5px; overflow:hidden; -moz-text-overflow:ellipsis; text-overflow:ellipsis; white-space:nowrap; z-index:3;}
+table.sabQueue tr.title td span.title:hover {background:#fff; width:auto; padding:0 2px 0 5px; overflow:visible;}
 table.sabQueue tr.title td span.move {float:left; display:table; padding:0 4px 0 0;}
 table.sabQueue tr.title td a.up {background:url(img/sprite.png) no-repeat -81px -103px; width:7px; height:5px; display:block; cursor:pointer;}
 table.sabQueue tr.title td a.down {background:url(img/sprite.png) no-repeat -94px -102px; width:7px; height:5px; display:block; cursor:pointer;}

@@ -21,6 +21,7 @@ function spotPosting() {
 			result = $(xml).find('result').text();
 			/* hack */ var string = (new XMLSerializer()).serializeToString(xml);
 			alert(string);
+			console.log(string);
 		  }
 		});
 	} // callback
