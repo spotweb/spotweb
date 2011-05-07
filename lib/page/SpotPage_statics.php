@@ -58,6 +58,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			Header("Content-Length: " . strlen($mergedInfo['body']));
 		} # if
 		
+ 
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: Header('Content-Type: text/css'); break;
