@@ -51,7 +51,7 @@
                         </ul>
 
 						<h4 class="sorting">Sorteren op:</h4>
-                        <div><input type="hidden" name="sortdir" value="ASC"></div>
+                        <div><input type="hidden" name="sortdir" value="<?php if($search['sortby'] == "stamp") {echo "DESC";} else {echo "ASC";} ?>"></div>
                         <ul class="search sorting">
                             <li> <input type="radio" name="sortby" value="" <?php echo $search['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
                         	<li> <input type="radio" name="sortby" value="title" <?php echo $search['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
