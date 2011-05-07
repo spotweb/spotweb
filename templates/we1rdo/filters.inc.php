@@ -17,10 +17,18 @@
 
                 <form id="filterform" action="">
 <?php
-	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => '', 'sortdir' => ''), $search);
-	if (empty($search['type'])) {
-		$search['type'] = 'Titel';
-	} # if
+	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $search);
+	
+	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
+	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
+	// is zolang je maar zoekt via de UI.
+	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
+	$searchType = 'Titel';
+	if (isset($search['filterValues'])) {
+		foreach(array_keys($search['filterValues']) as $filterType) {
+			$searchType = $filterType;
+		} # foreach
+	} # if 
 ?>
                     <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></div>
 <?php
@@ -34,11 +42,11 @@
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
                         <ul class="search<?php if ($filterColCount == 3) {echo " small";} ?>">
-                            <li> <input type="radio" name="search[type]" value="Titel" <?php echo $search['type'] == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
-                            <li> <input type="radio" name="search[type]" value="Poster" <?php echo $search['type'] == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
-                            <li> <input type="radio" name="search[type]" value="Tag" <?php echo $search['type'] == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
+                            <li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
+                            <li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
+                            <li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
 <?php if ($settings->get('retrieve_full')) { ?>
-                            <li> <input type="radio" name="search[type]" value="UserID" <?php echo $search['type'] == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
+                            <li> <input type="radio" name="search[type]" value="UserID" <?php echo $searchType == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
 <?php } ?>
                         </ul>
 
