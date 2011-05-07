@@ -28,7 +28,8 @@ function spotPosting() {
 
 					var data = "<li> <strong> Gepost door <span class='user'>"+user+"</span> (<a class='userid' target='_parent' href='"+useridurl+"' title='Zoek naar spots van "+user+"'>"+userid+"</a>) @ just now </strong> <br>"+text+"</li>";
 
-					$("li.addComment").after(data);
+					$("li.addComment").after(data).next().hide().fadeIn();
+					
 				}
 			},
 			error: function(xml) {
