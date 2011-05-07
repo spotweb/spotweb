@@ -464,6 +464,7 @@ class SpotTemplateHelper {
 				case 'spotlist'		: 
 				case 'lastupdate'	: 
 				case 'lastvisit'	:
+				case 'userlist'		:
 				default 			: return strftime($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
 			} # switch
 		} # else

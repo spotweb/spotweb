@@ -458,7 +458,22 @@ abstract class SpotStruct_abs {
 										 GROUP BY nntpref)");
 
 		} # if
-		
+
+		# Rating van spots werd verkeerd berekend
+		if ($this->_spotdb->getSchemaVer() < 0.23) {
+			$this->dropIndex("idx_commentsxover_1", "commentsxover");
+			$this->dropIndex("idx_commentsxover_2", "commentsxover");
+
+			if ($this instanceof SpotStruct_mysql) {
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_1 (nntpref, messageid)");
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_2 (messageid)");
+			} else {
+				$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
+				$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
+			} # if
+
+		} # if
+			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
