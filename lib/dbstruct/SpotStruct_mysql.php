@@ -63,8 +63,8 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   nntpref VARCHAR(128) CHARACTER SET ascii,
 										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 		} # if
 			
 		# downloadlist
