@@ -115,8 +115,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 
 			# herbereken de gemiddelde spotrating, en update het 
 			# aantal niet geverifieerde comments
-			$this->_db->updateSpotRating($spotMsgIdList);
-			$this->_db->updateSpotCommentCount($spotMsgIdList);
+			if (count($spotMsgIdList) > 0) {
+				$this->_db->updateSpotRating($spotMsgIdList);
+				$this->_db->updateSpotCommentCount($spotMsgIdList);
+			}
 			
 			# update the last retrieved article			
 			$this->_db->setMaxArticleid('comments', $curMsg);
