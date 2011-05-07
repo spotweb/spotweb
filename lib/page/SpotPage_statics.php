@@ -45,21 +45,16 @@ class SpotPage_statics extends SpotPage_Abs {
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type']));
 
-		ob_start(); # http://nl.php.net/manual/en/function.ob-get-length.php#59294
-		if (!ob_start("ob_gzhandler")) ob_start();
-
-		echo $mergedInfo['body'];
-		ob_end_flush();
-
+		# stuur een expires header zodat dit een jaar of 10 geldig is
 		Header("Cache-Control: public");
-		Header("Expires: " . gmdate("D, d M Y H:i:s T", strtotime('+10 years'))); # stuur een expires header zodat dit 10 jaar geldig is
-		Header("Pragma: public");
+		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
+		Header("Pragma: ");
 
 		# Er is een bug met mod_deflate en mod_fastcgi welke ervoor zorgt dat de content-length
 		# header niet juist geupdate wordt. Als we dus mod_fastcgi detecteren, dan sturen we
 		# content-length header niet mee
 		if (isset($_SERVER['REDIRECT_HANDLER']) && ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
-			Header("Content-Length: " . ob_get_length());
+			Header("Content-Length: " . strlen($mergedInfo['body']));
 		} # if
 
 		# en stuur de versie specifieke content
@@ -69,7 +64,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
 
-		ob_end_flush();
+		echo $mergedInfo['body'];
 	} # render
 
 } # class SpotPage_statics
