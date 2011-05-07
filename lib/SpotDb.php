@@ -850,11 +850,11 @@ class SpotDb
 		} # if
 	
 		# bereid de lijst voor met de queries in de where
-		$msgIdList = array();
+		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
-			$msgIdList[] = "'" . $this->_conn->safe($spotMsgId) . "'";
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
-		$msgIdList = implode($msgIdList, ", ");
+		$msgIdList = substr($msgIdList, 0, -2);
 
 		# en update de spotrating
 		$this->_conn->exec("UPDATE spots 
