@@ -227,6 +227,11 @@ class dbeng_mysql extends dbeng_abs {
 				break;
 			} # if
 
+			if (strpos('"', substr($term, -1)) !== false) {
+				$searchMode = 'match-boolean';
+				break;
+			} # if
+
 			# als het een stop word is, dan vallen we ook terug naar de like search
 			if (in_array($strippedTerm, $this->stop_words) !== false) {
 				$searchMode = 'normal';
