@@ -58,7 +58,11 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			$formMessages['errors'] = $spotPosting->postComment($this->_currentSession['user'], $comment);
 			
 			if (empty($formMessages['errors'])) {
-				$postResult = array('result '=> 'success');
+				$postResult = array('result' => 'success',
+									'user' => $this->_currentSession['user']['username'],
+									'userid' => $this->_currentSession['user']['userid'], # dit klopt niet, dit is de verkeerde username
+									'rating' => $comment['rating'],
+									'body' => $comment['body']);
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else

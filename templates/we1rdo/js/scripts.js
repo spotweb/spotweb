@@ -156,7 +156,7 @@ function postCommentsForm() {
 		});
 		$("li.addComment input[name='postcommentform[rating]']").val(rating);
 	})
-	
+
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
 		return false;
