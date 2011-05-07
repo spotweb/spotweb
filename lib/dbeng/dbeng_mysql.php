@@ -113,6 +113,10 @@ class dbeng_mysql extends dbeng_abs {
 		SpotTiming::start(__FUNCTION__);
 		
 		$res = $this->exec($s, $p);
+		if (!is_bool($res)) {
+			mysql_free_result($res);
+		} # if
+		
 		SpotTiming::stop(__FUNCTION__, array($s,$p));
 		
 		return ((bool) $res);
