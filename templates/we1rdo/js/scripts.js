@@ -785,7 +785,7 @@ function updateSabPanel(start,limit) {
 		var interval = 5000;
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
-				//updateSabPanel(start,limit);
+				updateSabPanel(start,limit);
 			}
 		}, interval);
 	});
