@@ -844,6 +844,11 @@ class SpotDb
 	 * Update een lijst van messageid's met de gemiddelde spotrating
 	 */
 	function updateSpotRating($spotMsgIdList) {
+		# Geen message id's gegeven? Doe niets!
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+	
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = array();
 		foreach($spotMsgIdList as $spotMsgId) {
