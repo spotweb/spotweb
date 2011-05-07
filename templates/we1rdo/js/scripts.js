@@ -306,7 +306,7 @@ function toggleSidebarItem(id) {
 $(function(){
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
-			toggleSidebarPanel('.advancedSearch')
+			toggleSidebarPanel('.advancedSearch');
 		}
 	});
 
@@ -319,6 +319,18 @@ $(function(){
 	});
 });
 
+// Pas sorteervolgorde aan voor datum
+$(function(){
+	$("ul.sorting input").click(function() {
+		if($(this).val() == 'stamp') {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
+		} else {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
+		}
+	});
+});
+
+// sidebarPanel zichtbaar maken / verbergen
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
 		$(id).fadeOut();
@@ -627,17 +639,6 @@ function toggleEditUser(userid) {
 		});
 	}
 }
-
-// Pas sorteervolgorde aan voor datum
-$(function(){
-	$("ul.sorting input").click(function() {
-		if($(this).val() == 'stamp') {
-			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
-		} else {
-			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
-		}
-	});
-});
 
 // SabNZBd actions
 function sabBaseURL() {
