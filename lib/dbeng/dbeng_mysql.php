@@ -106,6 +106,18 @@ class dbeng_mysql extends dbeng_abs {
 		return $tmpRes;
 	} # rawExec
 
+	/*
+	 * INSERT, DELETE or UPDATE statement
+	 */
+	function modify($s, $p = array()) {
+		SpotTiming::start(__FUNCTION__);
+		
+		$res = $this->exec($s, $p);
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		
+		return ((bool) $res);
+	} # modify
+	
 	function singleQuery($s, $p = array()) {
 		SpotTiming::start(__FUNCTION__);
 		
