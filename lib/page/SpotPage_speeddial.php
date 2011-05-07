@@ -65,4 +65,4 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		return ImageColorAllocate($img, $R, $G, $B);
 	} # colorHex
 
-} # class SpotPage_sabapi
+} # class SpotPage_speeddial
