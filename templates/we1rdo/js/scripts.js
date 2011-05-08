@@ -794,7 +794,7 @@ function updateSabPanel(start,limit) {
 // spotRating verwerken
 function spotRating() {
 	var rating = Math.round($("table.spotinfo td.rating").text());
-	if($("table.spotinfo td.rating").is(":empty")) {
+	if($("table.spotinfo td.rating").is(":empty") || rating == 0) {
 		$("table.spotinfo td.rating").html('N/A');
 	} else {
 		$("table.spotinfo td.rating").empty().addClass("stars");
