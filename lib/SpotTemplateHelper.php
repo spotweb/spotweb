@@ -245,8 +245,13 @@ class SpotTemplateHelper {
 
 	
 	function formatContent($tmp) {
+		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
+		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
+		# in zitten welke we wel willen behouden.
+		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
+		
 		# Converteer urls naar links
-		$tmp = linkify($tmp);
+		# $tmp = linkify($tmp);
 		
 		# initialize ubb parser
 		$parser = new UbbParse($tmp);
@@ -389,18 +394,18 @@ class SpotTemplateHelper {
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
 		$spot['formatname'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 		
-		// properly escape sevreal urls
+		// properly escape several  urls
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
 		} else {
 			$spot['image'] = '';
 		} # else
 		$spot['website'] = htmlspecialchars($spot['website']);
-		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
-		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']));
+		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
+		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 
 		// title escapen
-		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
+		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
@@ -552,6 +557,14 @@ class SpotTemplateHelper {
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
+
+	/*
+	 * Genereert een random string
+	 */
+	function getSessionCalculatedUserId() {
+		$spotSigning = new SpotSigning();
+		return $spotSigning->calculcateUserid($this->_currentSession['user']['publickey']);
+	} # getSessionCalculatedUserId
 	
 	/*
 	 * Genereert een random string
