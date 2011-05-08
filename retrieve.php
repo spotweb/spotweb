@@ -142,6 +142,9 @@ catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving messages:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
 	die();
 } # catch
 

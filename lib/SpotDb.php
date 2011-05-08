@@ -69,7 +69,7 @@ class SpotDb
 	 * Sla het gepostte comment op van deze user
 	 */
 	function addPostedComment($userId, $comment) {
-		$this->_conn->exec(
+		$this->_conn->modify(
 				"INSERT INTO commentsposted(ouruserid, messageid, inreplyto, randompart, rating, body, stamp)
 					VALUES('%d', '%s', '%s', '%s', '%d', '%s', %d)", 
 				Array((int) $userId,
@@ -88,7 +88,7 @@ class SpotDb
 	function updateSetting($name, $value, $serialized) {
 		$res = $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $serialized, $name));
 		if ($this->_conn->rows() == 0) {	
-			$this->_conn->exec("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
+			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
 		} # if
 	} # updateSetting
 	
@@ -116,7 +116,7 @@ class SpotDb
 	 * Creert een sessie
 	 */
 	function addSession($session) {
-		$this->_conn->exec(
+		$this->_conn->modify(
 				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit) 
 					VALUES('%s', %d, %d, %d)",
 				Array($session['sessionid'],
@@ -129,7 +129,7 @@ class SpotDb
 	 * Haalt een session op uit de database
 	 */
 	function deleteSession($sessionid) {
-		$this->_conn->exec(
+		$this->_conn->modify(
 					"DELETE FROM sessions WHERE sessionid = '%s'",
 					Array($sessionid));
 	} # deleteSession
@@ -138,7 +138,7 @@ class SpotDb
 	 * Haalt een session op uit de database
 	 */
 	function deleteExpiredSessions($maxLifeTime) {
-		$this->_conn->exec(
+		$this->_conn->modify(
 					"DELETE FROM sessions WHERE lasthit < %d",
 					Array(time() - $maxLifeTime));
 	} # deleteExpiredSessions
@@ -147,17 +147,17 @@ class SpotDb
 	 * Update de last hit van een session
 	 */
 	function hitSession($sessionid) {
-		$res = $this->_conn->exec("UPDATE sessions
-									SET hitcount = hitcount + 1,
-									    lasthit = %d
-									WHERE sessionid = '%s'", 
-								Array(time(), $sessionid));
+		$this->_conn->modify("UPDATE sessions
+								SET hitcount = hitcount + 1,
+									lasthit = %d
+								WHERE sessionid = '%s'", 
+							Array(time(), $sessionid));
 	} # hitSession
 
 	function addToSeenList($msgId, $ourUserId) {
-		$res = $this->_conn->exec("INSERT INTO seenlist(messageid, ouruserid, stamp)
-									VALUES('%s', %d, %d)",
-									Array($msgId, $ourUserId, time()));
+		$this->_conn->modify("INSERT INTO seenlist(messageid, ouruserid, stamp)
+								VALUES('%s', %d, %d)",
+								Array($msgId, $ourUserId, time()));
 	}
 
 	/*
@@ -258,10 +258,10 @@ class SpotDb
 	 * worden
 	 */
 	function deleteUser($user) {
-		$res = $this->_conn->exec("UPDATE users 
-									SET deleted = true
-									WHERE userid = '%s'", 
-								Array($user['userid']));
+		$this->_conn->modify("UPDATE users 
+								SET deleted = true
+								WHERE userid = '%s'", 
+							Array($user['userid']));
 	} # deleteUser
 	
 	/*
@@ -269,30 +269,30 @@ class SpotDb
 	 */
 	function setUser($user) {
 		# eerst updaten we de users informatie
-		$res = $this->_conn->exec("UPDATE users 
-									SET firstname = '%s',
-									    lastname = '%s',
-										mail = '%s',
-										lastlogin = %d,
-										lastvisit = %d,
-										lastread = %d,
-										deleted = '%s'
-									WHERE id = '%s'", 
-					Array($user['firstname'],
-						  $user['lastname'],
-						  $user['mail'],
-						  (int) $user['lastlogin'],
-						  (int) $user['lastvisit'],
-						  (int) $user['lastread'],
-						  $user['deleted'],
-						  (int) $user['userid']));
+		$this->_conn->modify("UPDATE users 
+								SET firstname = '%s',
+									lastname = '%s',
+									mail = '%s',
+									lastlogin = %d,
+									lastvisit = %d,
+									lastread = %d,
+									deleted = '%s'
+								WHERE id = '%s'", 
+				Array($user['firstname'],
+					  $user['lastname'],
+					  $user['mail'],
+					  (int) $user['lastlogin'],
+					  (int) $user['lastvisit'],
+					  (int) $user['lastread'],
+					  $user['deleted'],
+					  (int) $user['userid']));
 
 		# daarna updaten we zijn preferences
-		$res = $this->_conn->exec("UPDATE usersettings
-									SET otherprefs = '%s'
-									WHERE userid = '%s'", 
-					Array(serialize($user['prefs']),
-						  (int) $user['userid']));
+		$this->_conn->modify("UPDATE usersettings
+								SET otherprefs = '%s'
+								WHERE userid = '%s'", 
+				Array(serialize($user['prefs']),
+					  (int) $user['userid']));
 	} # setUser
 
 	/*
@@ -300,17 +300,17 @@ class SpotDb
 	 */
 	function setUserPassword($user) {
 		# eerst updaten we de users informatie
-		$res = $this->_conn->exec("UPDATE users 
-									SET passhash = '%s'
-									WHERE id = '%s'", 
-					Array($user['passhash'],
-						  (int) $user['userid']));
+		$this->_conn->modify("UPDATE users 
+								SET passhash = '%s'
+								WHERE id = '%s'", 
+				Array($user['passhash'],
+					  (int) $user['userid']));
 	} # setUserPassword
 	
 	function clearSeenList($user) {
-		$res = $this->_conn->exec("DELETE FROM seenlist
-									WHERE ouruserid = '%s'",
-									Array($user['userid']));
+		$this->_conn->modify("DELETE FROM seenlist
+								WHERE ouruserid = '%s'",
+								Array($user['userid']));
 	} # clearSeenList
 	
 	/*
@@ -320,11 +320,11 @@ class SpotDb
 	 */
 	function setUserRsaKeys($userId, $publicKey, $privateKey) {
 		# eerst updaten we de users informatie
-		$res = $this->_conn->exec("UPDATE usersettings
-									SET publickey = '%s',
-									    privatekey = '%s'
-									WHERE userid = '%s'",
-					Array($publicKey, $privateKey, $userId));
+		$this->_conn->modify("UPDATE usersettings
+								SET publickey = '%s',
+									privatekey = '%s'
+								WHERE userid = '%s'",
+				Array($publicKey, $privateKey, $userId));
 	} # setUserRsaKeys 
 	
 	/*
@@ -339,7 +339,7 @@ class SpotDb
 	 * Voeg een user toe
 	 */
 	function addUser($user) {
-		$this->_conn->exec("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, lastread, deleted) 
+		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, lastread, deleted) 
 										VALUES('%s', '%s', '%s', '%s', '%s', 0, 0, '%s', 'false')",
 								Array($user['username'], 
 									  $user['firstname'],
@@ -354,7 +354,7 @@ class SpotDb
 		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
 		
 		# en voeg een usersettings record in
-		$this->_conn->exec("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
+		$this->_conn->modify("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
 										VALUES('%s', '', '', 'a:0:{}')",
 								Array((int)$user['userid']));
 		return $user;
@@ -480,13 +480,13 @@ class SpotDb
 		switch ($this->_dbsettings['engine']) {
 			# geen join delete omdat sqlite dat niet kan
 			case 'pdo_sqlite' : {
-				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-				$this->_conn->exec("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
+				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
 				break;
 			} # case
 			
 			default			  : {
-				$this->_conn->exec("DELETE FROM spots, spotsfull USING spots 
+				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots 
 									INNER JOIN spotsfull on spots.messageid = spotsfull.messageid WHERE spots.id > %d", array($spot['id']));
 			} # default
 		} # switch
@@ -506,15 +506,15 @@ class SpotDb
 		} # if
 		
 		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->exec("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
-		$this->_conn->exec("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
+		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
+		$this->_conn->modify("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
 	} # removeExtraComments
 
 	/*
 	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
 	 */
 	function setLastUpdate($server) {
-		return $this->_conn->exec("UPDATE nntp SET lastrun = '%d' WHERE server = '%s'", Array(time(), $server));
+		return $this->_conn->modify("UPDATE nntp SET lastrun = '%d' WHERE server = '%s'", Array(time(), $server));
 	} # getLastUpdate
 
 	/*
@@ -818,7 +818,7 @@ class SpotDb
 	 *   nntpref is de id van de spot
 	 */
 	function addCommentRef($messageid, $nntpref, $rating) {
-		$this->_conn->exec("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
+		$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
 								Array($messageid, $nntpref, $rating));
 	} # addCommentRef
 
@@ -827,7 +827,7 @@ class SpotDb
 	 */
 	function addCommentsFull($commentList) {
 		foreach($commentList as $comment) {
-			$this->_conn->exec("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
+			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
 					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],
 						  $comment['fromhdr'],
@@ -844,6 +844,11 @@ class SpotDb
 	 * Update een lijst van messageid's met de gemiddelde spotrating
 	 */
 	function updateSpotRating($spotMsgIdList) {
+		# Geen message id's gegeven? Doe niets!
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+	
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
@@ -852,7 +857,7 @@ class SpotDb
 		$msgIdList = substr($msgIdList, 0, -2);
 
 		# en update de spotrating
-		$this->_conn->exec("UPDATE spots 
+		$this->_conn->modify("UPDATE spots 
 								SET spotrating = 
 									(SELECT AVG(spotrating) as spotrating 
 									 FROM commentsxover 
@@ -868,6 +873,10 @@ class SpotDb
 	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
 	 */
 	function updateSpotCommentCount($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
@@ -876,7 +885,7 @@ class SpotDb
 		$msgIdList = substr($msgIdList, 0, -2);
 		
 		# en update de spotrating
-		$this->_conn->exec("UPDATE spots 
+		$this->_conn->modify("UPDATE spots 
 								SET commentcount = 
 									(SELECT COUNT(1) as commentcount 
 									 FROM commentsxover 
@@ -946,7 +955,7 @@ class SpotDb
 	 */
 	function addDownload($messageid, $ourUserId) {
 		if (!$this->hasBeenDownload($messageid, $ourUserId)) {
-			$this->_conn->exec("INSERT INTO downloadlist(messageid, stamp, ouruserid) VALUES('%s', '%d', %d)",
+			$this->_conn->modify("INSERT INTO downloadlist(messageid, stamp, ouruserid) VALUES('%s', '%d', %d)",
 									Array($messageid, time(), $ourUserId));
 		} # if
 	} # addDownload
@@ -982,7 +991,7 @@ class SpotDb
 	 * Wis de lijst met downloads
 	 */
 	function emptyDownloadList($ourUserId) {
-		return $this->_conn->exec("DELETE FROM downloadlist WHERE ouruserid = %d", array($ourUserId));
+		return $this->_conn->modify("DELETE FROM downloadlist WHERE ouruserid = %d", array($ourUserId));
 	} # emptyDownloadList()
 
 	/*
@@ -991,16 +1000,16 @@ class SpotDb
 	function deleteSpot($msgId) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_sqlite' : {
-				$this->_conn->exec("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->exec("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
-				$this->_conn->exec("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
-				$this->_conn->exec("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
+				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
@@ -1015,7 +1024,7 @@ class SpotDb
 	 * Markeer een spot in de db moderated
 	 */
 	function markSpotModerated($msgId) {
-		$this->_conn->exec("UPDATE spots SET moderated = 1 WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->modify("UPDATE spots SET moderated = 1 WHERE messageid = '%s'", Array($msgId));
 	} # markSpotModerated
 
 	/*
@@ -1026,22 +1035,22 @@ class SpotDb
 		
 		switch ($this->_dbsettings['engine']) {
  			case 'pdo_sqlite': {
-				$this->_conn->exec("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
-				$this->_conn->exec("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
+				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
+				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->exec("DELETE FROM commentsfull WHERE messageid IN 
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
 									(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots))") ;
-				$this->_conn->exec("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
+				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->exec("DELETE FROM downloadlist WHERE downloadlist.messageid not in 
+				$this->_conn->modify("DELETE FROM downloadlist WHERE downloadlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->exec("DELETE FROM watchlist WHERE watchlist.messageid not in 
+				$this->_conn->modify("DELETE FROM watchlist WHERE watchlist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->exec("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
@@ -1056,7 +1065,7 @@ class SpotDb
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->exec("INSERT INTO spots(messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, subcatz, title, tag, stamp, reversestamp, filesize) 
+		$this->_conn->modify("INSERT INTO spots(messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, subcatz, title, tag, stamp, reversestamp, filesize) 
 				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
 					   (int) $spot['category'],
@@ -1091,7 +1100,7 @@ class SpotDb
 		} # if
 	
 		# en voeg het aan de database toe
-		$this->_conn->exec("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
+		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
@@ -1104,12 +1113,12 @@ class SpotDb
 	} # addFullSpot
 
 	function addToWatchlist($messageId, $ourUserId, $comment) {
-		$this->_conn->exec("INSERT INTO watchlist(messageid, dateadded, comment, ouruserid) VALUES ('%s', %d, '%s', %d)",
+		$this->_conn->modify("INSERT INTO watchlist(messageid, dateadded, comment, ouruserid) VALUES ('%s', %d, '%s', %d)",
 				Array($messageId, time(), $comment, (int) $ourUserId)); 
 	} # addToWatchList
 
 	function removeFromWatchlist($messageid, $ourUserId) {
-		$this->_conn->exec("DELETE FROM watchlist WHERE messageid = '%s' AND ouruserid = %d", 
+		$this->_conn->modify("DELETE FROM watchlist WHERE messageid = '%s' AND ouruserid = %d", 
 				Array($messageid, (int) $ourUserId));
 	} # removeFromWatchlist
 

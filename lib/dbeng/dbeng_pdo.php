@@ -72,6 +72,19 @@ abstract class dbeng_pdo extends dbeng_abs {
     	return $stmt;
     }
 
+	/*
+	 * INSERT or UPDATE statement, geef niets terug
+	 */
+	function modify($s, $p = array()) {
+		SpotTiming::start(__FUNCTION__);
+		
+		$res = $this->exec($s, $p);
+        $res->closeCursor();
+		unset($res);
+		
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
+	} # modify
+	
 	/* 
 	 * Begins an transaction
 	 */
@@ -106,6 +119,8 @@ abstract class dbeng_pdo extends dbeng_abs {
 	function singleQuery($s, $p = array()) {
 		$stmt = $this->exec($s, $p);
         $row = $stmt->fetch();
+        $stmt->closeCursor();
+		unset($stmt);
         
 		return $row[0];
 	} # singleQuery
@@ -118,8 +133,12 @@ abstract class dbeng_pdo extends dbeng_abs {
      */
 	function arrayQuery($s, $p = array()) {
 		$stmt = $this->exec($s, $p);
+		$tmpArray = $stmt->fetchAll();
 		
-		return $stmt->fetchAll();
+        $stmt->closeCursor();
+		unset($stmt);
+
+		return $tmpArray;
 	} # arrayQuery
 
 	
