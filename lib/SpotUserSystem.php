@@ -229,7 +229,7 @@ class SpotUserSystem {
 		$user['passhash'] = $this->passToHash($user['newpassword1']);
 
 		# Creëer een API key
-		$user['apikey'] = md5(rand(10e16, 10e20));
+		$user['apikey'] = md5($this->generateUniqueId());
 
 		# en voeg het record daadwerkelijk toe
 		$tmpUser = $this->_db->addUser($user);
@@ -251,7 +251,7 @@ class SpotUserSystem {
 	 */
 	function setUserApi($user) {
 		# converteer het password naar een pass hash
-		$user['apikey'] = md5(rand(10e16, 10e20));
+		$user['apikey'] = md5($this->generateUniqueId());
 		
 		$this->_db->setUserApi($user);
 	} # setUserApi
