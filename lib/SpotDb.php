@@ -192,6 +192,7 @@ class SpotDb
 								u.firstname AS firstname,
 								u.lastname AS lastname,
 								u.mail AS mail,
+								u.apikey AS apikey,
 								u.deleted AS deleted,
 								u.lastlogin AS lastlogin,
 								u.lastvisit AS lastvisit,
