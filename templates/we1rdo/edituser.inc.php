@@ -20,10 +20,10 @@ if (empty($editresult)) {
             <dd><?php echo htmlspecialchars($edituserform['username']); ?></dd>
 
             <dt><label for="edituserform[newpassword1]">Wachtwoord</label></dt>
-            <dd><input type="text" name="edituserform[newpassword1]" value=""></dd>
+            <dd><input type="password" name="edituserform[newpassword1]" value=""></dd>
 
             <dt><label for="edituserform[newpassword2]">Wachtwoord (bevestig)</label></dt>
-            <dd><input type="text" name="edituserform[newpassword2]" value=""></dd>
+            <dd><input type="password" name="edituserform[newpassword2]" value=""></dd>
 
             <dt><label for="edituserform[firstname]">Voornaam</label></dt>
             <dd><input type="text" name="edituserform[firstname]" value="<?php echo htmlspecialchars($edituserform['firstname']); ?>"></dd>
