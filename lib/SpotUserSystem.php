@@ -253,7 +253,7 @@ class SpotUserSystem {
 		# converteer het password naar een pass hash
 		$user['apikey'] = md5($this->generateUniqueId());
 		
-		$this->_db->setUserApi($user);
+		$this->_db->setUser($user);
 	} # setUserApi
 
 	/*
