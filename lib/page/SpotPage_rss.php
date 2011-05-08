@@ -48,7 +48,8 @@ class SpotPage_rss extends SpotPage_Abs {
 		
 		echo "<?xml version=\"1.0\" encoding=\"utf-8\"?" . ">" . PHP_EOL;
 		echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">" . PHP_EOL;
-		echo "<atom:link href=\"" . $tplHelper->makeSelfUrl("full") . "\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
+		echo "<atom10:link xmlns:atom10=\"http://www.w3.org/2005/Atom\" href=\"" . $tplHelper->makeSelfUrl("full") . "\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
+		if ($this->_settings->get('deny_robots')) { echo "<xhtml:meta xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" name=\"robots\" content=\"noindex\" />" . PHP_EOL; }
 		echo "<channel>" . PHP_EOL;
 		echo "<generator>Spotweb</generator>" . PHP_EOL;
 		echo "<language>nl</language>" . PHP_EOL;
