@@ -758,7 +758,14 @@ function updateSabPanel(start,limit) {
 		} else if(queue.noofslots != 0 && limit == queue.noofslots) {
 			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.noofslots+" resultaten</td></tr>");
 		}
-		
+
+		if($("table.sabQueue tr.title td span.move").size() == 1) {
+			$("table.sabQueue tr.title td span.move").hide();
+		} else {
+			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		}
+
 		if(start > 1) {
 			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='Vorige'>&lt;&lt;</a> ");
 		}
@@ -775,16 +782,16 @@ function updateSabPanel(start,limit) {
 			}
 		});
 		
-		if($("table.sabQueue tr.title td span.move").size() == 1) {
-			$("table.sabQueue tr.title td span.move").hide();
-		} else {
-			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
-			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
-		}
+		$("tr.title td span.title").mouseenter(function(){
+			$(this).addClass("hover");
+		}).mouseleave(function(){
+			$(this).removeClass("hover");
+			updateSabPanel(start,limit);
+		})
 		
 		var interval = 5000;
 		var timeOut = setTimeout(function(){
-			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
 				updateSabPanel(start,limit);
 			}
 		}, interval);
