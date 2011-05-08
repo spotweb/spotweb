@@ -273,6 +273,7 @@ class SpotDb
 								SET firstname = '%s',
 									lastname = '%s',
 									mail = '%s',
+									apikey = '%s',
 									lastlogin = %d,
 									lastvisit = %d,
 									lastread = %d,
@@ -281,6 +282,7 @@ class SpotDb
 				Array($user['firstname'],
 					  $user['lastname'],
 					  $user['mail'],
+					  $user['apikey'],
 					  (int) $user['lastlogin'],
 					  (int) $user['lastvisit'],
 					  (int) $user['lastread'],
@@ -306,23 +308,12 @@ class SpotDb
 					  (int) $user['userid']));
 	} # setUserPassword
 
-	/*
-	 * Stel users' API key in
-	 */
-	function setUserApi($user) {
-		$this->_conn->modify("UPDATE users 
-								SET apikey = '%s'
-								WHERE id = '%s'", 
-				Array($user['apikey'],
-					  (int) $user['userid']));
-	} # setUserApi
-
 	function clearSeenList($user) {
 		$this->_conn->modify("DELETE FROM seenlist
 								WHERE ouruserid = '%s'",
 								Array($user['userid']));
 	} # clearSeenList
-	
+
 	/*
 	 * Vul de public en private key van een user in, alle andere
 	 * user methodes kunnen dit niet updaten omdat het altijd
