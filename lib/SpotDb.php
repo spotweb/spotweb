@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.23');
+define('SPOTDB_SCHEMA_VERSION', '0.24');
 
 class SpotDb
 {
@@ -299,14 +299,24 @@ class SpotDb
 	 * Stel users' password in
 	 */
 	function setUserPassword($user) {
-		# eerst updaten we de users informatie
 		$this->_conn->modify("UPDATE users 
 								SET passhash = '%s'
 								WHERE id = '%s'", 
 				Array($user['passhash'],
 					  (int) $user['userid']));
 	} # setUserPassword
-	
+
+	/*
+	 * Stel users' API key in
+	 */
+	function setUserApi($user) {
+		$this->_conn->modify("UPDATE users 
+								SET apikey = '%s'
+								WHERE id = '%s'", 
+				Array($user['apikey'],
+					  (int) $user['userid']));
+	} # setUserApi
+
 	function clearSeenList($user) {
 		$this->_conn->modify("DELETE FROM seenlist
 								WHERE ouruserid = '%s'",
@@ -339,13 +349,14 @@ class SpotDb
 	 * Voeg een user toe
 	 */
 	function addUser($user) {
-		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, lastlogin, lastvisit, lastread, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', 0, 0, '%s', 'false')",
+		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastlogin, lastvisit, lastread, deleted) 
+										VALUES('%s', '%s', '%s', '%s', '%s', '%s', 0, 0, '%s', 'false')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
 									  $user['passhash'],
 									  $user['mail'],
+									  $user['apikey'],
 									  $this->getMaxMessageTime()));
 
 		# We vragen nu het userrecord terug op om het userid te krijgen,
