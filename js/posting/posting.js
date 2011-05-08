@@ -13,15 +13,33 @@ function spotPosting() {
 		
 		// and actually process the call
 		$.ajax({  
-		  type: "POST",  
-		  url: "?page=postcomment",  
-		  dataType: "xml",
-		  data: dataString,  
-		  success: function(xml) {  
-			result = $(xml).find('result').text();
-			/* hack */ var string = (new XMLSerializer()).serializeToString(xml);
-			alert(string);
-		  }
+			type: "POST",  
+			url: "?page=postcomment",  
+			dataType: "xml",
+			data: dataString,  
+			success: function(xml) {
+				var result = $(xml).find('result').text();
+				if(result == 'success') {
+					var user = $(xml).find('user').text();
+					var userid = $(xml).find('userid').text();
+					var rating = $(xml).find('rating').text();
+					var text = $(xml).find('body').text();
+					var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
+
+					var data = "<li> <strong> Gepost door <span class='user'>"+user+"</span> (<a class='userid' target='_parent' href='"+useridurl+"' title='Zoek naar spots van "+user+"'>"+userid+"</a>) @ just now </strong> <br>"+text+"</li>";
+
+					$("li.nocomments").remove();
+					$("li.firstComment").removeClass("firstComment");
+					$("li.addComment").after(data).next().hide().addClass("firstComment").fadeIn(function(){
+						$("#commentslist > li").removeClass("even");
+						$("#commentslist > li:nth-child(even)").addClass('even');
+						$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
+					});
+				}
+			},
+			error: function(xml) {
+				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+			}
 		});
 	} // callback
 

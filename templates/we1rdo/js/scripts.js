@@ -156,7 +156,7 @@ function postCommentsForm() {
 		});
 		$("li.addComment input[name='postcommentform[rating]']").val(rating);
 	})
-	
+
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
 		return false;
@@ -306,7 +306,7 @@ function toggleSidebarItem(id) {
 $(function(){
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
-			toggleSidebarPanel('.advancedSearch')
+			toggleSidebarPanel('.advancedSearch');
 		}
 	});
 
@@ -319,6 +319,18 @@ $(function(){
 	});
 });
 
+// Pas sorteervolgorde aan voor datum
+$(function(){
+	$("ul.sorting input").click(function() {
+		if($(this).val() == 'stamp') {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
+		} else {
+			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
+		}
+	});
+});
+
+// sidebarPanel zichtbaar maken / verbergen
 function toggleSidebarPanel(id) {
 	if($(id).is(":visible")) {
 		$(id).fadeOut();
@@ -557,6 +569,7 @@ function toggleCreateUser() {
 					success: function(xml) {
 						var result = $(xml).find('result').text();
 						
+						$("div.createUser > ul.forminformation").empty();
 						$("div.createUser > ul.formerrors").empty();
 						if(result == "success") {
 							var user = $(xml).find('user').text();
@@ -610,6 +623,7 @@ function toggleEditUser(userid) {
 					success: function(xml) {
 						var result = $(xml).find('result').text();
 
+						$("div.editUser > ul.forminformation").empty();
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
 							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
@@ -625,17 +639,6 @@ function toggleEditUser(userid) {
 		});
 	}
 }
-
-// Pas sorteervolgorde aan voor datum
-$(function(){
-	$("ul.sorting input").click(function() {
-		if($(this).val() == 'stamp') {
-			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
-		} else {
-			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
-		}
-	});
-});
 
 // SabNZBd actions
 function sabBaseURL() {
@@ -723,7 +726,7 @@ function updateSabPanel(start,limit) {
 				var slot = this;
 				if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
 				
-				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+slot.index+".</strong> "+slot.filename+"</td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbleft+" / "+slot.mb+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
+				$("table.sabQueue").append("<tr class='title "+slot.index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+slot.index+".</strong><span class='title'>"+slot.filename+"</span></td></tr><tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbleft+" / "+slot.mb+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
 				
 				$("table.sabQueue tr."+slot.index+" a.up").click(function(){
 					if(timeOut) {clearTimeout(timeOut)}; 
@@ -755,7 +758,14 @@ function updateSabPanel(start,limit) {
 		} else if(queue.noofslots != 0 && limit == queue.noofslots) {
 			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.noofslots+" resultaten</td></tr>");
 		}
-		
+
+		if($("table.sabQueue tr.title td span.move").size() == 1) {
+			$("table.sabQueue tr.title td span.move").hide();
+		} else {
+			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+		}
+
 		if(start > 1) {
 			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='Vorige'>&lt;&lt;</a> ");
 		}
@@ -772,16 +782,16 @@ function updateSabPanel(start,limit) {
 			}
 		});
 		
-		if($("table.sabQueue tr.title td span.move").size() == 1) {
-			$("table.sabQueue tr.title td span.move").hide();
-		} else {
-			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
-			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
-		}
+		$("tr.title td span.title").mouseenter(function(){
+			$(this).addClass("hover");
+		}).mouseleave(function(){
+			$(this).removeClass("hover");
+			updateSabPanel(start,limit);
+		})
 		
 		var interval = 5000;
 		var timeOut = setTimeout(function(){
-			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus"))) {
+			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
 				updateSabPanel(start,limit);
 			}
 		}, interval);
@@ -791,7 +801,7 @@ function updateSabPanel(start,limit) {
 // spotRating verwerken
 function spotRating() {
 	var rating = Math.round($("table.spotinfo td.rating").text());
-	if($("table.spotinfo td.rating").is(":empty")) {
+	if($("table.spotinfo td.rating").is(":empty") || rating == 0) {
 		$("table.spotinfo td.rating").html('N/A');
 	} else {
 		$("table.spotinfo td.rating").empty().addClass("stars");
