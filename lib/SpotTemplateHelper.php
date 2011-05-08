@@ -563,7 +563,7 @@ class SpotTemplateHelper {
 	 */
 	function getSessionCalculatedUserId() {
 		$spotSigning = new SpotSigning();
-		return $spotSigning->calculcateUserid($this->_currentSession['user']['publickey']);
+		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
 	} # getSessionCalculatedUserId
 	
 	/*
