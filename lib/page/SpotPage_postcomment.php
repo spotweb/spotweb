@@ -60,7 +60,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			if (empty($formMessages['errors'])) {
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
-									'userid' => $this->_currentSession['user']['userid'], # dit klopt niet, dit is de verkeerde username
+									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
 									'rating' => $comment['rating'],
 									'body' => $comment['body']);
 			} else {

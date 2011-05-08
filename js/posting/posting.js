@@ -28,8 +28,13 @@ function spotPosting() {
 
 					var data = "<li> <strong> Gepost door <span class='user'>"+user+"</span> (<a class='userid' target='_parent' href='"+useridurl+"' title='Zoek naar spots van "+user+"'>"+userid+"</a>) @ just now </strong> <br>"+text+"</li>";
 
-					$("li.addComment").after(data).next().hide().fadeIn();
-					
+					$("li.nocomments").remove();
+					$("li.firstComment").removeClass("firstComment");
+					$("li.addComment").after(data).next().hide().addClass("firstComment").fadeIn(function(){
+						$("#commentslist > li").removeClass("even");
+						$("#commentslist > li:nth-child(even)").addClass('even');
+						$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
+					});
 				}
 			},
 			error: function(xml) {
