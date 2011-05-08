@@ -269,7 +269,7 @@ class SpotDb
 	 */
 	function setUser($user) {
 		# eerst updaten we de users informatie
-		$this->_conn->moify("UPDATE users 
+		$this->_conn->modify("UPDATE users 
 								SET firstname = '%s',
 									lastname = '%s',
 									mail = '%s',
