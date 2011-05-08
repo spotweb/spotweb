@@ -60,7 +60,9 @@ try {
 				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
 					$page = new SpotPage_getnzb($db, $settings, $currentSession, 
 						Array('messageid' => $req->getDef('messageid', ''),
-							'action' => $req->getDef('action', 'display')));
+							'action' => $req->getDef('action', 'display'),
+							'username' => $req->getDef('username', ''),
+							'apikey' => $req->getDef('apikey', '')));
 				} else {
 					$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
 				} # else
@@ -71,7 +73,9 @@ try {
 		case 'getnzb' : {
 				$page = new SpotPage_getnzb($db, $settings, $currentSession, 
 								Array('messageid' => $req->getDef('messageid', ''),
-									  'action' => $req->getDef('action', 'display')));
+									  'action' => $req->getDef('action', 'display'),
+									  'username' => $req->getDef('username', ''),
+									  'apikey' => $req->getDef('apikey', '')));
 				$page->render();
 				break;
 		}
@@ -127,7 +131,9 @@ try {
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
-						  'sortdir' => $req->getDef('sortdir', ''))
+						  'sortdir' => $req->getDef('sortdir', ''),
+						  'username' => $req->getDef('username', ''),
+						  'apikey' => $req->getDef('apikey', ''))
 			);
 			$page->render();
 			break;
