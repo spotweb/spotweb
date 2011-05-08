@@ -245,6 +245,9 @@ class SpotTemplateHelper {
 
 	
 	function formatContent($tmp) {
+		# escape alle embedded HTML
+		$tmp = htmlspecialchars($tmp);
+		
 		# Converteer urls naar links
 		$tmp = linkify($tmp);
 		
@@ -389,7 +392,7 @@ class SpotTemplateHelper {
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
 		$spot['formatname'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 		
-		// properly escape sevreal urls
+		// properly escape several  urls
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
 		} else {
