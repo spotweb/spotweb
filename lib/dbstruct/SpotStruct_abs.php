@@ -473,7 +473,11 @@ abstract class SpotStruct_abs {
 		# Gebruikers krijgen een API key toegewezen
 		if ($this->_spotdb->getSchemaVer() < 0.24) {
 			$this->addColumn('apikey', 'users', "VARCHAR(32) DEFAULT '' NOT NULL");
-			$this->_dbcon->rawExec("UPDATE users SET apikey = '" . md5(rand(10e16, 10e20)) . "' WHERE id > 1");
+
+			$userIds = $this->_dbcon->arrayQuery("SELECT id FROM users WHERE id > 1;");
+			foreach($userIds as $userid) {
+				$this->_dbcon->rawExec("UPDATE users SET apikey = '" . md5(rand(10e16, 10e20)) . "' WHERE id = " . $userid['id']);
+			}
 		}
 			
 		# voeg het database schema versie nummer toe
