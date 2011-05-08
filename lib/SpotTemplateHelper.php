@@ -249,7 +249,7 @@ class SpotTemplateHelper {
 		$tmp = htmlspecialchars($tmp);
 		
 		# Converteer urls naar links
-		$tmp = linkify($tmp);
+		# $tmp = linkify($tmp);
 		
 		# initialize ubb parser
 		$parser = new UbbParse($tmp);
