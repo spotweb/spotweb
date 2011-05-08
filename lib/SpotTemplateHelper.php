@@ -402,7 +402,7 @@ class SpotTemplateHelper {
 		} # else
 		$spot['website'] = htmlspecialchars($spot['website']);
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
-		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), 'UTF-8');
+		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 
 		// title escapen
 		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
