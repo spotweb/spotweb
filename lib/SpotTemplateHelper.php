@@ -32,7 +32,7 @@ class SpotTemplateHelper {
 		$nzbhandling = $settings->get('nzbhandling');
 		$action =  $nzbhandling['action'];
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action);
+		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action, $currentSession);
 		
 	} # ctor
 
@@ -183,7 +183,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
-		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']);
+		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']) . $this->makeApiRequestString();
 	} # makeNzbUrl
 
 	/*
@@ -212,7 +212,18 @@ class SpotTemplateHelper {
 	 */
 	function makeUserIdUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
-	} # makeNzbUrl
+	} # makeUserIdUrl
+
+	/*
+	 * Creeert een request string met username en apikey als deze zijn opgegeven
+	 */
+	function makeApiRequestString() {
+		if (empty($this->_params['username']) || empty($this->_params['apikey'])) {
+			return;
+		} else {
+			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . urlencode($this->_params['apikey']);
+		}
+	} # makeApiRequestString
 	
 	/*
 	 * Creert een basis navigatie pagina
