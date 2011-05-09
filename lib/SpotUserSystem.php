@@ -112,7 +112,7 @@ class SpotUserSystem {
 		$password = $this->passToHash($password);
 
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $password);
+		$userId = $this->_db->authUser($user, $password, false);
 		if ($userId !== false) {
 			# Als de user ingelogged is, creeer een sessie,
 			# volgorde is hier belangrijk omdat in de newsession
@@ -132,8 +132,11 @@ class SpotUserSystem {
 	} # login
 
 	function verifyApi($user, $apikey) {
+		# een bogus passhash aanmaken zodat er niet met userid 1 geauthenticeerd kan worden
+		$password = $this->passToHash($apikey);
+
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $apikey);
+		$userId = $this->_db->authUser($user, $password, $apikey);
 
 		if ($userId !== false) {
 			$userRecord = $this->getUser($userId);
