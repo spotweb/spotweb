@@ -4,7 +4,7 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 	private $_url = null;
 	private $_currentSession = null;
 
-	function __construct(SpotSettings $settings, $currentSession)
+	function __construct(SpotSettings $settings)
 	{
 		parent::__construct($settings, 'SABnzbd', 'SAB');
 
@@ -37,7 +37,8 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		$url = str_replace('$SABNZBDCAT', $category, $url);
 
 		$url = htmlspecialchars($url);
-		$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . $this->makeApiRequestString($this->_currentSession)), $url);
+		$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . $tplHelper->makeApiRequestString($this->_currentSession)), $url);
+		//$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . $this->makeApiRequestString($this->_currentSession)), $url);
 
 		return $url;
 	} # generateNzbHandlerUrl

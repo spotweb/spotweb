@@ -95,13 +95,6 @@ abstract class NzbHandler_abs
 		
 		return $path;
 	} # makeNzbLocalPath
-
-	/*
-	 * Creeert een request string met username en apikey
-	 */
-	function makeApiRequestString($session) {
-		return '&username=' . urlencode($session['user']['username']) . '&apikey=' . urlencode($session['user']['apikey']);
-	} # makeApiRequestString
 	
 	/*
 	 * Voegt, indien nodig, een trailing slash toe

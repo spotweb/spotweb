@@ -34,7 +34,7 @@ class SpotNzb {
 
 		# send nzblist to NzbHandler plugin
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action, $currentSession);
+		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action);
 
 		$nzbHandler->processNzb($fullSpot, $nzbList);
 
