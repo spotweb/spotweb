@@ -41,7 +41,7 @@ class SpotNzb {
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings->get('keep_downloadlist')) {
 			foreach($messageids as $thisMsgId) {
-				$this->_db->addDownload($thisMsgId, $ourUserId);
+				$this->_db->addToList("download", $thisMsgId, $ourUserId);
 			} # foreach
 		} # if
 	} # handleNzbAction

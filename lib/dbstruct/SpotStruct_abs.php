@@ -84,16 +84,6 @@ abstract class SpotStruct_abs {
 		if (!$this->columnExists('commentsxover', 'spotrating')) {
 			$this->addColumn("spotrating", "commentsxover", "INTEGER DEFAULT 0");
 		} # if
-
-		# voeg de ouruserid kolom toe aan de watchlist tabel
-		if (!$this->columnExists('watchlist', 'ouruserid')) {
-			$this->addColumn("ouruserid", "watchlist", "INTEGER DEFAULT 0");
-		} # if
-
-		# voeg de ouruserid kolom toe aan de downloadlist tabel
-		if (!$this->columnExists('downloadlist', 'ouruserid')) {
-			$this->addColumn("ouruserid", "downloadlist", "INTEGER DEFAULT 0");
-		} # if
 		
 		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
 		# past geen RSA key in dus dan droppen we de tabel
@@ -130,12 +120,10 @@ abstract class SpotStruct_abs {
 			# hier niet al te veel meer op moeten letten
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			$this->_dbcon->rawExec("ALTER TABLE commentsxover CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			$this->_dbcon->rawExec("ALTER TABLE nntp CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			$this->_dbcon->rawExec("ALTER TABLE settings CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			$this->_dbcon->rawExec("ALTER TABLE spots CHARSET=utf8 COLLATE=utf8_unicode_ci");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist CHARSET=utf8 COLLATE=utf8_unicode_ci");
 		
 
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
@@ -153,8 +141,6 @@ abstract class SpotStruct_abs {
 
 			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT '' NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii DEFAULT '' NOT NULL");
-
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT '' NOT NULL");
 
 			$this->_dbcon->rawExec("ALTER TABLE nntp MODIFY server VARCHAR(128) CHARACTER SET utf8");
 
@@ -182,9 +168,6 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY userkey VARCHAR(200) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY xmlsignature VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY fullxml TEXT CHARACTER SET utf8");
-
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY comment TEXT CHARACTER SET utf8 NOT NULL");
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
@@ -278,18 +261,11 @@ abstract class SpotStruct_abs {
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.06)) {
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE downloadlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsxover MODIFY nntpref VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
-			$this->_dbcon->rawExec("ALTER TABLE watchlist MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 		} # if
 		
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.07)) {
-			$this->dropIndex("idx_downloadlist_1", "downloadlist");
-			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid,ouruserid");
-		} # if
-
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usersettings')) {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
@@ -393,28 +369,8 @@ abstract class SpotStruct_abs {
 			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
-			
-			# fix de downloadlist en watchlist
-			$this->_dbcon->exec("UPDATE watchlist SET ouruserid = 1");
-			$this->_dbcon->exec("UPDATE downloadlist SET ouruserid = 1");
 		} # if
 
-		# Indexen moeten uniek zijn op de combinatie messageid+ouruserid, niet enkel op messageid
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.16)) {
-			$this->dropIndex("idx_downloadlist_1", "downloadlist");
-			$this->addIndex("idx_downloadlist_1", "UNIQUE", "downloadlist", "messageid,ouruserid");
-
-			$this->dropIndex("idx_watchlist_1", "watchlist");
-			$this->addIndex("idx_watchlist_1", "UNIQUE", "watchlist", "messageid,ouruserid");
-		} # if
-		
-		# Hetzelfde als hierboven kan ook toegepast worden op seenlist
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.17)) {
-			$this->dropIndex("idx_seenlist_1", "seenlist");
-			$this->dropIndex("idx_seenlist_2", "seenlist");
-			$this->addIndex("idx_seenlist_1", "UNIQUE", "seenlist", "messageid,ouruserid");
-		} # if
-		 
 		# Indexen moeten uniek zijn op de messageid
 		if ($this->_spotdb->getSchemaVer() < 0.19) {
 			$this->dropIndex("idx_commentsposted_1", "commentsposted");
@@ -478,6 +434,20 @@ abstract class SpotStruct_abs {
 			foreach($userIds as $userid) {
 				$this->_dbcon->rawExec("UPDATE users SET apikey = '" . md5(rand(10e16, 10e20)) . "' WHERE id = " . $userid['id']);
 			}
+		}
+
+		# Data van oude lists overzetten naar nieuwe tabel
+		if ($this->_spotdb->getSchemaVer() < 0.25) {
+			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM downloadlist;");
+			foreach($tmp as $download) { $this->_spotdb->addToList("download", $download['messageid'], $download['ouruserid'], $download['stamp']); }
+			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM watchlist;");
+			foreach($tmp as $watch) { $this->_spotdb->addToList("watch", $watch['messageid'], $watch['ouruserid'], $watch['dateadded']); }
+			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM seenlist;");
+			foreach($tmp as $seen) { $this->_spotdb->addToList("watch", $seen['messageid'], $seen['ouruserid'], $seen['stamp']); }
+
+			$this->dropTable('downloadlist');
+			$this->dropTable('watchlist');
+			$this->dropTable('seenlist');
 		}
 			
 		# voeg het database schema versie nummer toe

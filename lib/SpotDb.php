@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.24');
+define('SPOTDB_SCHEMA_VERSION', '0.25');
 
 class SpotDb
 {
@@ -154,12 +154,6 @@ class SpotDb
 							Array(time(), $sessionid));
 	} # hitSession
 
-	function addToSeenList($msgId, $ourUserId) {
-		$this->_conn->modify("INSERT INTO seenlist(messageid, ouruserid, stamp)
-								VALUES('%s', %d, %d)",
-								Array($msgId, $ourUserId, time()));
-	}
-
 	/*
 	 * Checkt of een username al bestaat
 	 */
@@ -308,12 +302,6 @@ class SpotDb
 				Array($user['passhash'],
 					  (int) $user['userid']));
 	} # setUserPassword
-
-	function clearSeenList($user) {
-		$this->_conn->modify("DELETE FROM seenlist
-								WHERE ouruserid = '%s'",
-								Array($user['userid']));
-	} # clearSeenList
 
 	/*
 	 * Vul de public en private key van een user in, alle andere
@@ -536,7 +524,7 @@ class SpotDb
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-						LEFT JOIN seenlist AS c ON s.messageid = c.messageid
+						LEFT JOIN lists AS l ON s.messageid = l.messageid
 						WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
@@ -685,9 +673,9 @@ class SpotDb
 												s.category AS category,
 												s.subcat AS subcat,
 												s.poster AS poster,
-												d.stamp as downloadstamp, 
-												w.dateadded as w_dateadded,
-												c.stamp AS seenstamp,
+												l.download as downloadstamp, 
+												l.watch as watchstamp,
+												l.seen AS seenstamp,
 												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
@@ -705,9 +693,7 @@ class SpotDb
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-								     LEFT JOIN downloadlist AS d on ((s.messageid = d.messageid) AND (d.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
-								     LEFT JOIN watchlist AS w on ((s.messageid = w.messageid) AND (w.ouruserid = " . $this->safe( (int) $ourUserId) . "))
-									 LEFT JOIN seenlist AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+									 LEFT JOIN lists AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
@@ -782,22 +768,20 @@ class SpotDb
 												s.commentcount AS commentcount,
 												s.id AS spotdbid,
 												f.id AS fullspotdbid,
-												d.stamp AS downloadstamp,
-												c.stamp AS seenstamp,
+												l.download AS downloadstamp,
+												l.watch as watchstamp,
+												l.seen AS seenstamp,
 												f.userid AS userid,
 												f.verified AS verified,
 												f.usersignature AS \"user-signature\",
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
-												f.filesize AS filesize,
-												w.dateadded as w_dateadded
-												FROM spots AS s 
-												LEFT JOIN downloadlist AS d ON ((s.messageid = d.messageid) AND (d.ouruserid = %d))
-												LEFT JOIN watchlist AS w ON ((s.messageid = w.messageid) AND (w.ouruserid = %d))
-												LEFT JOIN seenlist AS c ON ((s.messageid = c.messageid) AND (c.ouruserid = %d))
+												f.filesize AS filesize
+												FROM spots AS s
+												LEFT JOIN lists AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
-										  WHERE s.messageid = '%s'", Array($ourUserId, $ourUserId, $ourUserId, $messageId));
+										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
 			return ;
 		} # if
@@ -953,16 +937,6 @@ class SpotDb
 	} # getCommentRef
 
 	/*
-	 * Voeg een spot toe aan de lijst van gedownloade files
-	 */
-	function addDownload($messageid, $ourUserId) {
-		if (!$this->hasBeenDownload($messageid, $ourUserId)) {
-			$this->_conn->modify("INSERT INTO downloadlist(messageid, stamp, ouruserid) VALUES('%s', '%d', %d)",
-									Array($messageid, time(), $ourUserId));
-		} # if
-	} # addDownload
-
-	/*
 	 * Geeft huidig database schema versie nummer terug
 	 */
 	function getSchemaVer() {
@@ -978,23 +952,6 @@ class SpotDb
 		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
 		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
-	
-	/*
-	 * Is een messageid al gedownload?
-	 */
-	function hasBeenDownload($messageid, $ourUserId) {
-		SpotTiming::start(__FUNCTION__);
-		$artId = $this->_conn->singleQuery("SELECT stamp FROM downloadlist WHERE messageid = '%s' AND ouruserid = %d", Array($messageid, $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
-		return (!empty($artId));
-	} # hasBeenDownload
-
-	/*
-	 * Wis de lijst met downloads
-	 */
-	function emptyDownloadList($ourUserId) {
-		return $this->_conn->modify("DELETE FROM downloadlist WHERE ouruserid = %d", array($ourUserId));
-	} # emptyDownloadList()
 
 	/*
 	 * Verwijder een spot uit de db
@@ -1006,17 +963,15 @@ class SpotDb
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM downloadlist WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM watchlist WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM lists WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, watchlist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, lists USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-									LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
-									LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
+									LEFT JOIN lists ON spots.messageid=lists.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1045,19 +1000,16 @@ class SpotDb
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM downloadlist WHERE downloadlist.messageid not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM watchlist WHERE watchlist.messageid not in 
+				$this->_conn->modify("DELETE FROM lists WHERE lists.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, watchlist, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, lists, commentsfull USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-					LEFT JOIN downloadlist ON spots.messageid=downloadlist.messageid
-					LEFT JOIN watchlist ON spots.messageid=watchlist.messageid
+					LEFT JOIN lists ON spots.messageid=lists.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1084,9 +1036,9 @@ class SpotDb
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']) );
-					   
+			   
 		if (!empty($fullSpot)) {
-			$this->addFullSpot($fullSpot);
+			//$this->addFullSpot($fullSpot);
 		} # if
 	} # addSpot()
 	
@@ -1114,15 +1066,32 @@ class SpotDb
 					  $fullSpot['filesize']));
 	} # addFullSpot
 
-	function addToWatchlist($messageId, $ourUserId, $comment) {
-		$this->_conn->modify("INSERT INTO watchlist(messageid, dateadded, comment, ouruserid) VALUES ('%s', %d, '%s', %d)",
-				Array($messageId, time(), $comment, (int) $ourUserId)); 
-	} # addToWatchList
+	function addToList($list, $messageId, $ourUserId, $stamp='') {
+		if (empty($stamp)) { $stamp = time(); }
+		$this->_conn->modify("UPDATE lists SET %s = %d WHERE messageid = '%s' AND ouruserid = %d", array($list, $stamp, $messageId, $ourUserId));
+		if ($this->_conn->rows() == 0) {
+			$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, %s) VALUES ('%s', %d, %d)",
+				Array($list, $messageId, (int) $ourUserId, $stamp));
+		} # if
+	} # addToList
 
-	function removeFromWatchlist($messageid, $ourUserId) {
-		$this->_conn->modify("DELETE FROM watchlist WHERE messageid = '%s' AND ouruserid = %d", 
-				Array($messageid, (int) $ourUserId));
-	} # removeFromWatchlist
+	function isInList($list, $messageid, $ourUserId) {
+		SpotTiming::start(__FUNCTION__);
+		$artId = $this->_conn->singleQuery("SELECT %s FROM lists WHERE messageid = '%s' AND ouruserid = %d", Array($list, $messageid, $ourUserId));
+		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
+		return (!empty($artId));
+	} # isInList
+
+	function clearList($list, $ourUserId) {
+		$this->_conn->modify("UPDATE lists SET %s = NULL WHERE ouruserid = %d", array($list, $ourUserId));
+		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
+	} # clearList
+
+	function removeFromList($list, $messageid, $ourUserId) {
+		$this->_conn->modify("UPDATE lists SET %s = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
+				Array($list, $messageid, (int) $ourUserId));
+		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
+	} # removeFromList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
