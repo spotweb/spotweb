@@ -68,7 +68,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			
 		# lists table
 		if (!$this->tableExists('lists')) {
-			$this->_dbcon->rawExec("CREATE TABLE lists(ouruserid INTEGER DEFAULT 0,
+			$this->_dbcon->rawExec("CREATE TABLE lists(messageid VARCHAR(128),
 										   ouruserid INTEGER DEFAULT 0,
 										   download INTEGER,
 										   watch INTEGER,

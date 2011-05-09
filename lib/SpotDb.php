@@ -1068,28 +1068,28 @@ class SpotDb
 
 	function addToList($list, $messageId, $ourUserId, $stamp='') {
 		if (empty($stamp)) { $stamp = time(); }
-		$this->_conn->modify("UPDATE lists SET %s = %d WHERE messageid = '%s' AND ouruserid = %d", array($list, $stamp, $messageId, $ourUserId));
+		$this->_conn->modify("UPDATE lists SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
 		if ($this->_conn->rows() == 0) {
-			$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, %s) VALUES ('%s', %d, %d)",
-				Array($list, $messageId, (int) $ourUserId, $stamp));
+			$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
+				Array($messageId, (int) $ourUserId, $stamp));
 		} # if
 	} # addToList
 
 	function isInList($list, $messageid, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$artId = $this->_conn->singleQuery("SELECT %s FROM lists WHERE messageid = '%s' AND ouruserid = %d", Array($list, $messageid, $ourUserId));
+		$artId = $this->_conn->singleQuery("SELECT " . $list . " FROM lists WHERE messageid = '%s' AND ouruserid = %d", Array($messageid, $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
 		return (!empty($artId));
 	} # isInList
 
 	function clearList($list, $ourUserId) {
-		$this->_conn->modify("UPDATE lists SET %s = NULL WHERE ouruserid = %d", array($list, $ourUserId));
+		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
 		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
 	} # clearList
 
 	function removeFromList($list, $messageid, $ourUserId) {
-		$this->_conn->modify("UPDATE lists SET %s = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
-				Array($list, $messageid, (int) $ourUserId));
+		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
+				Array($messageid, (int) $ourUserId));
 		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
 	} # removeFromList
 
