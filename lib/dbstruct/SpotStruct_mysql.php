@@ -74,6 +74,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   watch INTEGER,
 										   seen INTEGER) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_lists_1 ON lists(messageid,ouruserid);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_2 ON lists(download);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_3 ON lists(watch);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_4 ON lists(seen);");
 		} # if
 
 		# commentsfull
