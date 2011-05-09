@@ -74,6 +74,9 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 										   watch INTEGER,
 										   seen INTEGER);");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_lists_1 ON lists(messageid,ouruserid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_2 ON lists(download);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_3 ON lists(watch);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_lists_4 ON lists(seen);");
 		} # if
 
 		# commentsfull
