@@ -171,7 +171,7 @@ class SpotUserSystem {
 	 * Clear the seen list
 	 */
 	function clearSeenList($user) {
-		$this->_db->clearSeenList($user);
+		$this->_db->clearList("seen", $user['userid']);
 	} # clearSeenList
 
 	/*

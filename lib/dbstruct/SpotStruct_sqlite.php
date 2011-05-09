@@ -66,23 +66,13 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 		} # if
 			
-		# downloadlist table
-		if (!$this->tableExists('downloadlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
-										   messageid VARCHAR(128),
-										   stamp INTEGER,
-										   ouruserid INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid,ouruserid)");
-		} # if
-			
-		# watchlist table
-		if (!$this->tableExists('watchlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 
-												   messageid VARCHAR(128),
-												   dateadded INTEGER,
-												   comment TEXT,
-												   ouruserid INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid,ouruserid)");
+		# lists table
+		if (!$this->tableExists('lists')) {
+			$this->_dbcon->rawExec("CREATE TABLE lists(ouruserid INTEGER DEFAULT 0
+										   download INTEGER,
+										   watch INTEGER,
+										   seen INTEGER);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_lists_1 ON lists(messageid,ouruserid)");
 		} # if
 
 		# commentsfull
@@ -110,14 +100,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
 		} # if
 
-		# seen
-		if (!$this->tableExists('seenlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE seenlist(messageid VARCHAR(128) NOT NULL,
-										   ouruserid INTEGER DEFAULT 0,
-										   stamp INTEGER);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
-		} # if
-
 		# commentsposted
 		if (!$this->tableExists('commentsposted')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY,
@@ -137,9 +119,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	 * deze functie wijzigt geen data!
   	 */
 	function analyze() { 
-		$this->_dbcon->rawExec("ANALYZE seenlist");
+		$this->_dbcon->rawExec("ANALYZE lists");
 		$this->_dbcon->rawExec("ANALYZE downloadlist");
-		$this->_dbcon->rawExec("ANALYZE watchlist");
 		$this->_dbcon->rawExec("ANALYZE sessions");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE commentsfull");
