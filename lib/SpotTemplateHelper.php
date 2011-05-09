@@ -32,7 +32,7 @@ class SpotTemplateHelper {
 		$nzbhandling = $settings->get('nzbhandling');
 		$action =  $nzbhandling['action'];
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action, $currentSession);
+		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action);
 		
 	} # ctor
 
@@ -218,10 +218,12 @@ class SpotTemplateHelper {
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
 	 */
 	function makeApiRequestString() {
-		if (empty($this->_params['username']) || empty($this->_params['apikey'])) {
-			return;
+		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
+			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
+		} elseif ($this->_currentSession['user']['userid'] > 1) {
+			return '&amp;username=' . urlencode($this->_currentSession['user']['username']) . '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
-			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . urlencode($this->_params['apikey']);
+			return;
 		}
 	} # makeApiRequestString
 	
@@ -231,7 +233,7 @@ class SpotTemplateHelper {
 	function getPageUrl($page, $includeParams = false) {
 		$url = $this->makeBaseUrl("path") . '?page=' . $page;
 		if ($includeParams) {
-			$url .= $this->getQueryParams();
+			$url .= $this->getQueryParams("filterValues");
 		} # if
 		
 		return $url;
