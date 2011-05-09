@@ -101,7 +101,7 @@ class SpotUserSystem {
 	function passToHash($password) {
 		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $password . $this->_settings->get('pass_salt'));
 	} # passToHash
-	
+
 	/*
 	 * Probeert de user aan te loggen met de gegeven credentials,
 	 * geeft user record terug of false als de user niet geauth kan
@@ -120,16 +120,29 @@ class SpotUserSystem {
 			# we eerst de sessie creeeren.
 			$userSession = $this->createNewSession($userId);
 			$this->updateCookie($userSession);
-		
+
 			# nu gebruiken we het user record om de lastlogin te fixen
 			$userSession['user']['lastlogin'] = time();
 			$this->_db->setUser($userSession['user']);
-			
+
 			return $userSession;
 		} else {
 			return false;
 		} # else
-	} # login()
+	} # login
+
+	function verifyApi($user, $apikey) {
+		# authenticeer de user?
+		$userId = $this->_db->authUser($user, $apikey);
+
+		if ($userId !== false) {
+			$userRecord = $this->getUser($userId);
+			
+			return array('user' => $userRecord);
+		} else {
+			return false;
+		} # else
+	} # verifyApi
 
 	/*
 	 * Reset the lastvisit timestamp

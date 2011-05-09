@@ -364,13 +364,13 @@ class SpotDb
 	} # addUser
 
 	/*
-	 * Kan de user inloggen met opgegeven password?
+	 * Kan de user inloggen met opgegeven password of API key?
 	 *
 	 * Een userid als de user gevonden kan worden, of false voor failure
 	 */
-	function authUser($username, $passhash) {
-		$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED",
-						Array($username, $passhash));
+	function authUser($username, $passhashOrApikey) {
+		$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND (passhash = '%s' OR apikey = '%s') AND NOT DELETED",
+						Array($username, $passhashOrApikey, $passhashOrApikey));
 		if (!empty($tmp)) {
 			return $tmp[0]['id'];
 		} # if
@@ -378,7 +378,6 @@ class SpotDb
 		return false;
 	} # authUser
 
-	
 	/* 
 	 * Update of insert the maximum article id in de database.
 	 */
