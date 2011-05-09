@@ -643,7 +643,7 @@ function toggleEditUser(userid) {
 // SabNZBd actions
 function sabBaseURL() {
 	var apikey = $("div.sabnzbdPanel input.apikey").val();
-	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi&apikey='+apikey;
+	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.pathname+'?page=sabapi&apikey='+apikey;
 	return baseURL;
 }
 
