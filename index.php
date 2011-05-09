@@ -31,17 +31,21 @@ try {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
 	} # if
 
-	# Haal het userobject op dat 'ingelogged' is
-	SpotTiming::start('auth');
-	$spotUserSystem = new SpotUserSystem($db, $settings);
-	$currentSession = $spotUserSystem->useOrStartSession();
-	SpotTiming::stop('auth');
-	
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
 	$page = $req->getDef('page', 'index');
-		
+
+	# Haal het userobject op dat 'ingelogged' is
+	SpotTiming::start('auth');
+	$spotUserSystem = new SpotUserSystem($db, $settings);
+	if ($req->doesExist('username') && $req->doesExist('apikey')) {
+		$currentSession = $spotUserSystem->verifyApi($req->getDef('username', ''), $req->getDef('apikey', ''));
+	} else {
+		$currentSession = $spotUserSystem->useOrStartSession();
+	} # if
+	SpotTiming::stop('auth');
+
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
@@ -229,7 +233,7 @@ try {
 	SpotTiming::stop('total');
 
 	# enable of disable de timer
-	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'markallasread')))) {
+	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'markallasread', 'rss')))) {
 		SpotTiming::display();
 	} # if
 	
