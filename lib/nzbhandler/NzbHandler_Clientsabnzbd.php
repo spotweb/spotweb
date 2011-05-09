@@ -35,7 +35,7 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		$url = str_replace('$SABNZBDCAT', $category, $url);
 
 		$url = htmlspecialchars($url);
-		$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . $tplHelper->makeApiRequestString()), $url);
+		$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $url);
 
 		return $url;
 	} # generateNzbHandlerUrl
