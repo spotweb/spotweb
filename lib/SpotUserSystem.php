@@ -168,13 +168,6 @@ class SpotUserSystem {
 	} # resetReadStamp
 
 	/*
-	 * Clear the seen list
-	 */
-	function clearSeenList($user) {
-		$this->_db->clearList("seen", $user['userid']);
-	} # clearSeenList
-
-	/*
 	 * Controleert een session cookie, en als de sessie geldig
 	 * is, geeft een user record terug
 	 */
