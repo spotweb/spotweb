@@ -66,11 +66,16 @@ class SpotPage_rss extends SpotPage_Abs {
 		foreach($fullSpots as $spot) {
 			$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 
+			$poster = $spot['poster'];
+			if (!empty($spot['userid'])) {
+				$poster .= " (" . $spot['userid'] . ")";
+			}
+
 			echo "\t\t<item>" . PHP_EOL;
 			echo "\t\t\t<title>" . $title . "</title>" . PHP_EOL;
 			echo "\t\t\t<link>" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . $tplHelper->makeApiRequestString() . "</link>" . PHP_EOL;
-			echo "\t\t\t<description><![CDATA[<p>" . $tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $spot['poster'] . " (" . $spot['userid'] . ")</font></p>]]></description>" . PHP_EOL;
-			echo "\t\t\t<author>" . $spot['messageid'] . " (" . $spot['poster']; if (!empty($spot['userid'])) { echo " (" . $spot['userid'] . ")"; } echo ")</author>" . PHP_EOL;
+			echo "\t\t\t<description><![CDATA[<p>" . $tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $poster . "</font></p>]]></description>" . PHP_EOL;
+			echo "\t\t\t<author>" . $spot['messageid'] . " (" . $poster . ")</author>" . PHP_EOL;
 			echo "\t\t\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
 			echo "\t\t\t<category>" . SpotCategories::HeadCat2Desc($spot['category']) . ": " . SpotCategories::Cat2ShortDesc($spot['category'],$spot['subcat']) . "</category>" . PHP_EOL;
 			echo "\t\t\t<guid isPermaLink=\"true\">" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</guid>" . PHP_EOL;
