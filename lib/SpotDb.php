@@ -1038,7 +1038,7 @@ class SpotDb
 					   $spot['filesize']) );
 			   
 		if (!empty($fullSpot)) {
-			//$this->addFullSpot($fullSpot);
+			$this->addFullSpot($fullSpot);
 		} # if
 	} # addSpot()
 	

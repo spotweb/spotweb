@@ -68,7 +68,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			
 		# lists table
 		if (!$this->tableExists('lists')) {
-			$this->_dbcon->rawExec("CREATE TABLE lists(ouruserid INTEGER DEFAULT 0
+			$this->_dbcon->rawExec("CREATE TABLE lists(ouruserid INTEGER DEFAULT 0,
+										   ouruserid INTEGER DEFAULT 0,
 										   download INTEGER,
 										   watch INTEGER,
 										   seen INTEGER);");
@@ -120,7 +121,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
   	 */
 	function analyze() { 
 		$this->_dbcon->rawExec("ANALYZE lists");
-		$this->_dbcon->rawExec("ANALYZE downloadlist");
 		$this->_dbcon->rawExec("ANALYZE sessions");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE commentsfull");
