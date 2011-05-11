@@ -4,6 +4,11 @@ $(function(){
 	$("a[href^='http']").attr('target','_blank');
 });
 
+// createBaseURL
+function createBaseURL() {
+	
+}
+
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
 function detectScrollbar() {	
 	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {
