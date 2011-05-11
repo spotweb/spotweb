@@ -6,7 +6,8 @@ $(function(){
 
 // createBaseURL
 function createBaseURL() {
-	
+	var baseURL = 'http://'+window.location.hostname+window.location.pathname;
+	return baseURL;
 }
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
@@ -648,8 +649,8 @@ function toggleEditUser(userid) {
 // SabNZBd actions
 function sabBaseURL() {
 	var apikey = $("div.sabnzbdPanel input.apikey").val();
-	var baseURL = 'http://'+window.location.hostname+window.location.pathname+'?page=sabapi&apikey='+apikey;
-	return baseURL;
+	var sabBaseURL = createBaseURL()+'?page=sabapi&apikey='+apikey;
+	return sabBaseURL;
 }
 
 function sabActions(start,limit,action,slot,value) {
@@ -694,10 +695,10 @@ function sabActions(start,limit,action,slot,value) {
 function updateSabPanel(start,limit) {
 	var baseURL = sabBaseURL();
 	var url = baseURL+'&mode=queue&start='+start+'&limit='+limit+'&output=json';
-	
+
 	$.getJSON(url, function(json){
 		var queue = json.queue;
-		
+
 		if(queue.paused) {var state = "resume"} else {var state = "pause"}
 		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
 		$("table.sabInfo td.state a.state").click(function(){
@@ -722,7 +723,7 @@ function updateSabPanel(start,limit) {
 		$("table.sabInfo td.timeleft").html("<strong>"+queue.timeleft+"</strong>");
 		$("table.sabInfo td.eta").html("<strong>"+queue.eta+"</strong>");
 		$("table.sabInfo td.mb").html("<strong>"+queue.mbleft+"</strong> / <strong>"+queue.mb+"</strong> MB");
-		
+
 		$("table.sabQueue").empty();
 		if(queue.noofslots == 0) {
 			$("table.sabQueue").html("<tr><td class='info'>Geen items in de wachtrij</td></tr>");
@@ -751,7 +752,7 @@ function updateSabPanel(start,limit) {
 				});
 			});
 		}
-		
+
 		if(queue.noofslots != 0 && queue.noofslots > limit) {
 			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.noofslots+" resultaten</td></tr>");
 		} else if(queue.noofslots != 0 && limit > queue.noofslots) {
@@ -777,7 +778,7 @@ function updateSabPanel(start,limit) {
 		if(queue.noofslots > limit) {
 			$("table.sabQueue tr.nav td").append(" <a class='next' title='Volgende'>&gt;&gt;</a>");
 		}
-		
+
 		$("table.sabQueue tr.nav a").click(function(){
 			if(timeOut) {clearTimeout(timeOut)}
 			if($(this).hasClass("prev")) {
@@ -786,14 +787,17 @@ function updateSabPanel(start,limit) {
 				updateSabPanel(start+limit,limit+limit);
 			}
 		});
-		
+
 		$("tr.title td span.title").mouseenter(function(){
 			$(this).addClass("hover");
 		}).mouseleave(function(){
-			$(this).removeClass("hover");
-			updateSabPanel(start,limit);
+			if($(this).hasClass("hover")) {
+				if(timeOut) {clearTimeout(timeOut)}
+				$(this).removeClass("hover");
+				updateSabPanel(start,limit);
+			}
 		})
-		
+
 		var interval = 5000;
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
