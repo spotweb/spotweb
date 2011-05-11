@@ -1075,13 +1075,6 @@ class SpotDb
 		} # if
 	} # addToList
 
-	function isInList($list, $messageid, $ourUserId) {
-		SpotTiming::start(__FUNCTION__);
-		$artId = $this->_conn->singleQuery("SELECT " . $list . " FROM lists WHERE messageid = '%s' AND ouruserid = %d", Array($messageid, $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
-		return (!empty($artId));
-	} # isInList
-
 	function clearList($list, $ourUserId) {
 		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
 	} # clearList
