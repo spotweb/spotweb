@@ -1069,16 +1069,17 @@ class SpotDb
 	function addToList($list, $messageId, $ourUserId, $stamp='') {
 		SpotTiming::start(__FUNCTION__);
 		if (empty($stamp)) { $stamp = time(); }
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$this->_conn->modify("UPDATE lists SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
-			if ($this->_conn->rows() == 0) {
-				$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
-					Array($messageId, (int) $ourUserId, $stamp));
-			} # if
-		} else {
-			$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
-				Array($messageId, (int) $ourUserId, $stamp, $stamp));
-		} # if
+
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite': $this->_conn->modify("UPDATE lists SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+								if ($this->_conn->rows() == 0) {
+									$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
+										Array($messageId, (int) $ourUserId, $stamp));
+								} # if
+							break;
+			default			 : $this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
+										Array($messageId, (int) $ourUserId, $stamp, $stamp));
+		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
 	} # addToList
 
@@ -1090,11 +1091,6 @@ class SpotDb
 
 	function cleanLists() {
 		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$this->_conn->rawExec("ANALYZE lists");
-		} else {
-			$this->_conn->rawExec("ANALYZE TABLE lists");
-		} # if
 	} # clearLists
 
 	function removeFromList($list, $messageid, $ourUserId) {
