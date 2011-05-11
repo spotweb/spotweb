@@ -1084,13 +1084,20 @@ class SpotDb
 
 	function clearList($list, $ourUserId) {
 		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
-		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
 	} # clearList
+
+	function cleanLists() {
+		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$this->_conn->rawExec("ANALYZE lists");
+		} else {
+			$this->_conn->rawExec("ANALYZE TABLE lists");
+		} # if
+	} # clearLists
 
 	function removeFromList($list, $messageid, $ourUserId) {
 		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
 				Array($messageid, (int) $ourUserId));
-		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
 	} # removeFromList
 
 	function beginTransaction() {

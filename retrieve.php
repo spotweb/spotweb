@@ -80,7 +80,7 @@ try {
 } 
 catch(RetrieverRunningException $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
+	die("retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL);
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
@@ -122,10 +122,6 @@ try {
 		$retriever->quit();
 	} # if
 }
-catch(RetrieverRunningException $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo "retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL;
-}
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
@@ -148,6 +144,19 @@ catch(Exception $x) {
 	die();
 } # catch
 
+## Lists cleanup
+try {
+	$db->cleanLists();
+} catch(Exception $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while cleaning up lists:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
+	die();
+} # catch
+
 ## Retention cleanup
 try {
 	if ($settings->get('retention') > 0) {
@@ -155,7 +164,7 @@ try {
 	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo "Fatal error occured retrieving messages:" . PHP_EOL;
+	echo "Fatal error occured while cleaning up messages due to retention:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
 	echo $x->getTraceAsString();
