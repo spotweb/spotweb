@@ -216,7 +216,7 @@ class SpotUserSystem {
 		
 		return $validUsername;
 	} # validUsername
-	
+
 	/*
 	 * Voegt een gebruiker toe aan de database 
 	 */
@@ -224,15 +224,18 @@ class SpotUserSystem {
 		if (!$this->validUsername($user['username'])) {
 			throw new Exception("Invalid username");
 		} # if
-		
+
 		# converteer het password naar een pass hash
 		$user['passhash'] = $this->passToHash($user['newpassword1']);
-		
+
+		# Creëer een API key
+		$user['apikey'] = md5($this->generateUniqueId());
+
 		# en voeg het record daadwerkelijk toe
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 	} # addUser()
-	
+
 	/*
 	 * Update een gebruikers' password
 	 */
@@ -242,7 +245,17 @@ class SpotUserSystem {
 		
 		$this->_db->setUserPassword($user);
 	} # setUserPassword
-	
+
+	/*
+	 * Update een gebruikers' API key
+	 */
+	function setUserApi($user) {
+		# converteer het password naar een pass hash
+		$user['apikey'] = md5($this->generateUniqueId());
+		
+		$this->_db->setUser($user);
+	} # setUserApi
+
 	/*
 	 * Valideer het user record, kan gebruikt worden voor het toegevoegd word of
 	 * geupdate wordt

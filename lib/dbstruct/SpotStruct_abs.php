@@ -311,6 +311,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('passhash', 'users', "VARCHAR(40) DEFAULT '' NOT NULL");
 			$this->addColumn('lastname', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('mail', 'users', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('apikey', 'users', "VARCHAR(32) DEFAULT '' NOT NULL");
 			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
@@ -382,6 +383,7 @@ abstract class SpotStruct_abs {
 				'passhash'		=> '',
 				'lastname'		=> 'Doe',
 				'mail'			=> 'john@example.com',
+				'apikey'		=> '',
 				'lastlogin'		=> 0,
 				'lastvisit'		=> 0,
 				'deleted'		=> 0);
@@ -459,20 +461,24 @@ abstract class SpotStruct_abs {
 
 		} # if
 
-		# Rating van spots werd verkeerd berekend
+		# Commentsxover krijgt nieuwe UNIQUE indexen
 		if ($this->_spotdb->getSchemaVer() < 0.23) {
 			$this->dropIndex("idx_commentsxover_1", "commentsxover");
 			$this->dropIndex("idx_commentsxover_2", "commentsxover");
 
-			if ($this instanceof SpotStruct_mysql) {
-				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_1 (nntpref, messageid)");
-				$this->_dbcon->rawExec("ALTER IGNORE TABLE commentsxover ADD UNIQUE idx_commentsxover_2 (messageid)");
-			} else {
-				$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
-				$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
-			} # if
-
+			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
+			$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
 		} # if
+
+		# Gebruikers krijgen een API key toegewezen
+		if ($this->_spotdb->getSchemaVer() < 0.24) {
+			$this->addColumn('apikey', 'users', "VARCHAR(32) DEFAULT '' NOT NULL");
+
+			$userIds = $this->_dbcon->arrayQuery("SELECT id FROM users WHERE id > 1;");
+			foreach($userIds as $userid) {
+				$this->_dbcon->rawExec("UPDATE users SET apikey = '" . md5(rand(10e16, 10e20)) . "' WHERE id = " . $userid['id']);
+			}
+		}
 			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
