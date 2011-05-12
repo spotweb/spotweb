@@ -291,6 +291,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('lastlogin', 'users', "INTEGER DEFAULT 0 NOT NULl");
 			$this->addColumn('lastvisit', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
@@ -436,7 +437,7 @@ abstract class SpotStruct_abs {
 			}
 		}
 
-		# Data van oude lists overzetten naar nieuwe tabel
+		# Data van oude lists overzetten naar nieuwe tabel & Nieuwe kolom tbv API
 		if ($this->_spotdb->getSchemaVer() < 0.25) {
 			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM downloadlist;");
 			foreach($tmp as $download) { $this->_spotdb->addToList("download", $download['messageid'], $download['ouruserid'], $download['stamp']); }
@@ -448,6 +449,7 @@ abstract class SpotStruct_abs {
 			$this->dropTable('downloadlist');
 			$this->dropTable('watchlist');
 			$this->dropTable('seenlist');
+			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
 		}
 			
 		# voeg het database schema versie nummer toe
