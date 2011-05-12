@@ -335,7 +335,7 @@ if (($settings['templates']['autodetect']) &&
 			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
 				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
 				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
-				$settings['tpl_path'] = $settings['available_templates'][$chosenTemplate];
+				$settings['tpl_name'] = $settings['available_templates'][$chosenTemplate];
 				
 				// verleng cookie
 				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '', $settings['cookie_host']);
