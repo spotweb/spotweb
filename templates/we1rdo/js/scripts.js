@@ -692,6 +692,42 @@ function sabActions(start,limit,action,slot,value) {
 	}
 }
 
+function drawGraph(speed,interval) {
+	var elem = $("canvas#graph");
+	elem.width = $("canvas#graph").width();
+	elem.height = $("canvas#graph").height();
+	
+	var context = elem[0].getContext("2d");
+	
+	var maxspeed = speed;
+	var speedAxis = new Array();
+	var i = 0;
+	for (i = 0; i <= 5; i++) {
+		speedAxis.push({"count": i, "posy": elem.height - elem.height * i/5, "value": Math.round(maxspeed * i/5)});
+	}
+	
+	var interval = interval / 1000;
+	var timeAxis = new Array();
+	var i = 0;
+	for (i = 0; i <= 10; i++) {
+		timeAxis.push({"count": i, "posx": elem.width * i/10, "value": interval * i/10});
+	}
+
+	console.log('speedAxis: '+JSON.stringify(speedAxis));
+	console.log('timeAxis: '+JSON.stringify(timeAxis));
+
+	if(context) {
+		context.save();
+		$.each(speedAxis, function(i, value) {
+			context.fillText(value.value, 0, value.posy);
+		});
+		$.each(timeAxis, function(i, value) {
+			context.fillText(value.value, value.posx, elem.height);
+		});
+		context.restore();
+	}
+}
+
 function updateSabPanel(start,limit) {
 	var baseURL = sabBaseURL();
 	var url = baseURL+'&mode=queue&start='+start+'&limit='+limit+'&output=json';
@@ -799,9 +835,11 @@ function updateSabPanel(start,limit) {
 		})
 
 		var interval = 5000;
+		drawGraph(queue.kbpersec, interval);
+
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
-				updateSabPanel(start,limit);
+				//updateSabPanel(start,limit); DEBUG DEBUG!!!
 			}
 		}, interval);
 	});

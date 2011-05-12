@@ -112,6 +112,7 @@
                     </table>
 					<h4>Wachtrij</h4>
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
+                    <canvas id="graph" width="180" height="100"></canvas>
                 </div>
             </div>
 

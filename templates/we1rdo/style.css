@@ -87,6 +87,8 @@ table.sabQueue div.progressBar.empty {border:0; height:6px;}
 table.sabQueue tr.nav td {padding:5px 0 0 0; text-align:center;}
 table.sabQueue tr.nav td a {font-weight:bold; cursor:pointer;}
 
+div.sabnzbdPanel canvas#graph {margin:5px 7px 0 7px;}
+
 /* NOTIFICATIONS */
 div.notifications {float:right; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; margin:2px 2px 5px 0; overflow:hidden; display:none; height:18px; background:url(img/sprite_x.png) repeat-x 0 -105px; border:1px solid #b5b5b5;}
 div.notifications p.multinzb {margin:0 0 0 3px; line-height:18px;}
@@ -214,7 +216,9 @@ table.spots tr td.category {color:#fff; font-weight:bold; text-align:center; lin
 table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
-table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:3px 3px 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:3px 0 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td span.rating {float:right; display:block; width:47px; height:18px; margin:1px 0 1px 5px; background:url(img/sprite.png) no-repeat 0 -111px;}
+table.spots tr td span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(img/sprite_x.png) repeat-x 0 -127px;}
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 table.spots tr td.watch a.remove {background-position:-56px -80px;}
 
