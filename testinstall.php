@@ -49,6 +49,12 @@
 		<tr> <td> <a href="http://pear.php.net/">PEAR</a> </td> <td> <?php echo showResult(testInclude("System.php"), testInclude("System.php")); ?>  </td> </tr>
 		<tr> <td> <a href="http://pear.php.net/package/Net_NNTP">Net_NNTP</a> </td> <td> <?php echo showResult(testInclude("Net".DIRECTORY_SEPARATOR."NNTP".DIRECTORY_SEPARATOR."Client.php"), testInclude("Net".DIRECTORY_SEPARATOR."NNTP".DIRECTORY_SEPARATOR."Client.php")); ?>  </td> </tr>
 		<tr> <td> NNTP server </td> <td> <?php showResult(empty($settings['nntp_nzb']['host']) === false, $settings['nntp_nzb']['host'], "No server entered"); ?>  </td> </tr>
+		<?php if ($settings['nntp_nzb'] != $settings['nntp_hdr']) { ?>
+		<tr> <td> NNTP server (headers) </td> <td> <?php showResult(empty($settings['nntp_hdr']['host']) === false, $settings['nntp_hdr']['host'], "No server entered"); ?>  </td> </tr>
+		<?php }
+		if ($settings['nntp_nzb'] != $settings['nntp_post']) { ?>
+		<tr> <td> NNTP server (post) </td> <td> <?php showResult(empty($settings['nntp_post']['host']) === false, $settings['nntp_post']['host'], "No server entered"); ?>  </td> </tr>
+		<?php } ?>
 	</table>
 
 	<br />
