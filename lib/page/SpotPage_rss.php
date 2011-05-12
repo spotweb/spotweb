@@ -11,11 +11,16 @@ class SpotPage_rss extends SpotPage_Abs {
 	function render() {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
+		if ($this->_currentSession === false || $this->_currentSession['user']['userid'] == 1) {
+			header('HTTP/1.1 403 Forbidden');
+			die('Error: invalid login. Please provide username & API key.');
+		}
+
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
 		$this->_params['search'] = $parsedSearch['search'];
-		
+
 		# laad de spots
 		$pageNr = $this->_params['page'];
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
