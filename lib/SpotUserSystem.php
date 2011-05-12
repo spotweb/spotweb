@@ -140,7 +140,11 @@ class SpotUserSystem {
 
 		if ($userId !== false) {
 			$userRecord = $this->getUser($userId);
-			
+
+			# nu gebruiken we het user record om lastapiusage te fixen
+			$userRecord['lastapiusage'] = time();
+			$this->_db->setUser($userRecord);
+
 			return array('user' => $userRecord);
 		} else {
 			return false;
