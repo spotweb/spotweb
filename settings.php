@@ -177,8 +177,8 @@ $settings['db']['pass'] = 'spotweb';
 # het detecteren komt pas na het laden van de ownsettings.
 
 $settings['templates']['autodetect'] = true;
-$settings['templates']['default'] = 'templates/we1rdo/';
-$settings['templates']['mobile'] = 'templates/mobile/';
+$settings['templates']['default'] = 'we1rdo';
+$settings['templates']['mobile'] = 'mobile';
 
 $settings['allow_user_template'] = true;
 $settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
@@ -326,7 +326,7 @@ if (($settings['templates']['autodetect']) &&
 		$detect = new Mobile_Detect();
 
 		if ($detect->isMobile()) {
-			$settings['tpl_path'] = $settings['templates']['mobile']; 
+			$settings['tpl_path'] = 'templates/' . $settings['templates']['mobile'] . '/'; 
 		} else { 
 			if (isset($_COOKIE['template'])) {
 				$chosenTemplate = $_COOKIE['template'];
@@ -340,13 +340,13 @@ if (($settings['templates']['autodetect']) &&
 				// verleng cookie
 				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '', $settings['cookie_host']);
 			} else {
-				$settings['tpl_path'] = $settings['templates']['default']; 
+				$settings['tpl_path'] = 'templates/' . $settings['templates']['default'] . '/'; 
 			} # else
 		} # else
 } else {
-	$settings['tpl_path'] = $settings['templates']['default'];
+	$settings['tpl_path'] = 'templates/' . $settings['templates']['default'] . '/';
 } # else
-
+$settings['tpl_path'] = str_replace('templates/templates/', 'templates/', $settings['tpl_path']);
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
