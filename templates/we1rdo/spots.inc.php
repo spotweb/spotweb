@@ -49,6 +49,12 @@
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
+		
+		if($spot['rating'] == 0) {
+			$rating = '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
+		} else {
+			$rating = '<span class="rating" title="Deze spot heeft '.$spot['rating'].' sterren"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+		}
 
 		if($tplHelper->isModerated($spot)) { 
 			$markSpot = '<span class="markSpot">!</span>';
@@ -59,7 +65,7 @@
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
 			 "<td class='category'><a href='?search[tree]=" . $spot['subcatfilter'] . ",~cat0_z3' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $rating . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
 
 		if ($settings->get('keep_watchlist')) {
 			echo "<td class='watch'>";
