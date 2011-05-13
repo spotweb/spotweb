@@ -692,39 +692,143 @@ function sabActions(start,limit,action,slot,value) {
 	}
 }
 
-function drawGraph(speed,interval) {
+function drawGraph(currentSpeed,interval) {
 	var elem = $("canvas#graph");
 	elem.width = $("canvas#graph").width();
 	elem.height = $("canvas#graph").height();
-	
+	var offset = {
+		"top": 6,
+		"right": 6,
+		"bottom": 15, 
+		"left": 28
+	};
+	var graph = {
+		"width": elem.width - offset.right - offset.left,
+		"height": elem.height - offset.bottom - offset.top
+	};
+	var axisSpacing = 6;
+	var intervalWidth = (elem.width - offset.left - offset.right) / 5;
+
 	var context = elem[0].getContext("2d");
-	
-	var maxspeed = speed;
+
+	var speed = [
+		{"count": 0, "value": 0},
+		{"count": 1, "value": 0},
+		{"count": 2, "value": 0},
+		{"count": 3, "value": currentSpeed},
+		{"count": 4, "value": 0},
+		{"count": 5, "value": 0}
+	];
+	var maxspeed = 0;
+	var i = 0;
+	for (i = 0; i <= 5; i++) {
+		if(speed[i].value >= maxspeed) {
+			var maxspeed = speed[i].value;
+		}
+	};
+
 	var speedAxis = new Array();
 	var i = 0;
 	for (i = 0; i <= 5; i++) {
-		speedAxis.push({"count": i, "posy": elem.height - elem.height * i/5, "value": Math.round(maxspeed * i/5)});
-	}
-	
+		speedAxis.push({
+			"count": i, 
+			"posx": offset.left - axisSpacing, 
+			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/5 + offset.top, 
+			"value": Math.round(maxspeed * i/5)
+		});
+	};
+
 	var interval = interval / 1000;
 	var timeAxis = new Array();
 	var i = 0;
-	for (i = 0; i <= 10; i++) {
-		timeAxis.push({"count": i, "posx": elem.width * i/10, "value": interval * i/10});
-	}
+	for (i = 0; i <= 5; i++) {
+		timeAxis.push({
+			"count": i, 
+			"posx": intervalWidth * i + offset.left, 
+			"posy": elem.height - offset.bottom + axisSpacing, 
+			"value": interval * i
+		});
+	};
 
-	console.log('speedAxis: '+JSON.stringify(speedAxis));
-	console.log('timeAxis: '+JSON.stringify(timeAxis));
+	//console.log('speedAxis: '+JSON.stringify(speedAxis));
+	//console.log('timeAxis: '+JSON.stringify(timeAxis));
+
+	context.clearRect(0, 0, elem.width, elem.height);
 
 	if(context) {
-		context.save();
+		// draw graph background
+		context.shadowColor = "#777";
+		context.shadowBlur = 0;
+		context.fillStyle = "#eee";	
+		context.fillRect(offset.left, offset.top, graph.width, graph.height);
+
+		// draw axis
+		context.fillStyle = "#000";	
+		context.strokeStyle = "#fff";
+		context.lineWidth = 2;
+
+		context.shadowBlur = 3;
+		context.beginPath();
+		context.moveTo(offset.left, offset.top);
+		context.lineTo(offset.left, elem.height - offset.bottom);
+		context.lineTo(elem.width - offset.right, elem.height - offset.bottom);
+		context.stroke();
+
+		// draw axis labels
+		context.shadowBlur = 0;
 		$.each(speedAxis, function(i, value) {
-			context.fillText(value.value, 0, value.posy);
+			context.save();
+
+			context.beginPath();
+			context.moveTo(offset.left - 3, value.posy);
+			context.lineTo(elem.width - offset.right, value.posy);
+			context.stroke();
+
+			context.shadowBlur = 0;
+			context.textBaseline = "middle";
+			context.textAlign = "end";
+			context.fillText(value.value, value.posx, value.posy);
+
+			context.restore();
 		});
 		$.each(timeAxis, function(i, value) {
-			context.fillText(value.value, value.posx, elem.height);
+			context.save();
+
+			context.beginPath();
+			context.moveTo(value.posx, elem.height - offset.bottom);
+			context.lineTo(value.posx, elem.height - offset.bottom + 3);
+			context.stroke();
+
+			context.textBaseline = "top";
+			context.textAlign = "center";
+			context.fillText(value.value, value.posx, value.posy);
+
+			context.restore();
 		});
-		context.restore();
+
+		// draw graph
+		context.fillStyle = "#219727";
+		context.shadowBlur = 3;
+
+		var speedData = new Array();
+		var i = 0;
+		for (i = 0; i <= 5; i++) {
+			speedData.push({
+				"count": i, 
+				"posx": offset.left + i*intervalWidth, 
+				"posy": (graph.height + offset.top) - (speed[i].value / maxspeed) * graph.height
+			});
+		};
+
+		context.beginPath();
+		context.moveTo(offset.left, elem.height - offset.bottom);
+		$.each(speedData, function(i, value) {
+			context.lineTo(value.posx, value.posy);
+		});
+		context.lineTo(offset.left + graph.width, offset.top + graph.height);
+		context.lineTo(offset.left, offset.top + graph.height);
+		context.fill();
+		context.stroke();
 	}
 }
 
