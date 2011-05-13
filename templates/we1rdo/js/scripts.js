@@ -693,7 +693,7 @@ function sabActions(start,limit,action,slot,value) {
 }
 
 function drawGraph(currentSpeed,interval) {
-	var numXLabels = 5;
+	var numXLabels = 8;
 	var numYLabels = 5;
 
 	if($("table.sabGraphData tbody > tr").size() == 1) {
@@ -718,7 +718,7 @@ function drawGraph(currentSpeed,interval) {
 	var offset = {
 		"top": 6,
 		"right": 6,
-		"bottom": 15, 
+		"bottom": 18, 
 		"left": 28
 	};
 	var graph = {
