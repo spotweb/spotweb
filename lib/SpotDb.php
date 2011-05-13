@@ -527,7 +527,7 @@ class SpotDb
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-						LEFT JOIN lists AS l ON s.messageid = l.messageid
+						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						WHERE " . $sqlFilter;
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
@@ -696,7 +696,7 @@ class SpotDb
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-									 LEFT JOIN lists AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
+									 LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
@@ -782,7 +782,7 @@ class SpotDb
 												f.fullxml AS fullxml,
 												f.filesize AS filesize
 												FROM spots AS s
-												LEFT JOIN lists AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
@@ -966,15 +966,15 @@ class SpotDb
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM lists WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, lists USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, spotstatelist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-									LEFT JOIN lists ON spots.messageid=lists.messageid
+									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1003,16 +1003,16 @@ class SpotDb
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM lists WHERE lists.messageid not in 
+				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, lists, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, spotstatelist USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-					LEFT JOIN lists ON spots.messageid=lists.messageid
+					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1069,39 +1069,39 @@ class SpotDb
 					  $fullSpot['filesize']));
 	} # addFullSpot
 
-	function addToList($list, $messageId, $ourUserId, $stamp='') {
+	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
 		SpotTiming::start(__FUNCTION__);
 		if (empty($stamp)) { $stamp = time(); }
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE lists SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+			case 'pdo_sqlite': $this->_conn->modify("UPDATE spotstatelist SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
 								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
+									$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
 										Array($messageId, (int) $ourUserId, $stamp));
 								} # if
 							break;
-			default			 : $this->_conn->modify("INSERT INTO lists (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
+			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
 										Array($messageId, (int) $ourUserId, $stamp, $stamp));
 		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
-	} # addToList
+	} # addToSpotStateList
 
-	function clearList($list, $ourUserId) {
+	function clearSpotStateList($list, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
-	} # clearList
+	} # clearSpotStatelist
 
-	function cleanLists() {
-		$this->_conn->rawExec("DELETE FROM lists WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
-	} # clearLists
+	function cleanSpotStateList() {
+		$this->_conn->rawExec("DELETE FROM spotstatelist WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
+	} # cleanSpotStateList
 
-	function removeFromList($list, $messageid, $ourUserId) {
+	function removeFromSpotStateList($list, $messageid, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE lists SET " . $list . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
+		$this->_conn->modify("UPDATE spotstatelist SET " . $list . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
 				Array($messageid, (int) $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $messageid, $ourUserId));
-	} # removeFromList
+	} # removeFromSpotStateList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

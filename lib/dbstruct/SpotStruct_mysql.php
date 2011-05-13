@@ -66,17 +66,17 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
 		} # if
 			
-		# lists
-		if (!$this->tableExists('lists')) {
-			$this->_dbcon->rawExec("CREATE TABLE lists(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+		# spotstatelist
+		if (!$this->tableExists('spotstatelist')) {
+			$this->_dbcon->rawExec("CREATE TABLE spotstatelist(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   ouruserid INTEGER DEFAULT 0,
 										   download INTEGER,
 										   watch INTEGER,
 										   seen INTEGER) ENGINE = MYISAM CHARSET=ascii;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_lists_1 ON lists(messageid,ouruserid);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_lists_2 ON lists(download);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_lists_3 ON lists(watch);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_lists_4 ON lists(seen);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_4 ON spotstatelist(seen);");
 		} # if
 
 		# commentsfull
@@ -121,7 +121,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	 * deze functie wijzigt geen data!
   	 */
 	function analyze() { 
-		$this->_dbcon->rawExec("ANALYZE TABLE lists");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotstatelist");
 		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
