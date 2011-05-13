@@ -45,7 +45,7 @@ class SpotsOverview {
 	} # getFullSpot
 
 	function addToSeenList($msgId, $ourUserId) {
-		$this->_db->addToList("seen", $msgId, $ourUserId);
+		$this->_db->addToSpotStateList("seen", $msgId, $ourUserId);
 	}
 
 	/*
@@ -471,7 +471,7 @@ class SpotsOverview {
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
-		# Spots in a list
+		# Spots in SpotStateList
 		$listFilter = array();
 		if (isset($search['filterValues']['Downloaded'])) {
 			$listFilter[] = ' (l.download IS NOT NULL)';

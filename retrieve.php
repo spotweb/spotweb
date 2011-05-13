@@ -144,9 +144,9 @@ catch(Exception $x) {
 	die();
 } # catch
 
-## Lists cleanup
+## rSpotStateList cleanup
 try {
-	$db->cleanLists();
+	$db->cleanSpotStateList();
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while cleaning up lists:" . PHP_EOL;
