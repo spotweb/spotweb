@@ -725,7 +725,10 @@ function drawGraph(currentSpeed,interval) {
 		"width": elem.width - offset.right - offset.left,
 		"height": elem.height - offset.bottom - offset.top
 	};
-	var axisSpacing = 6;
+	var axisSpacing = {
+		"x": 8,
+		"y": 6
+	};
 	var intervalWidth = (elem.width - offset.left - offset.right) / numXLabels;
 
 	var context = elem[0].getContext("2d");
@@ -750,7 +753,7 @@ function drawGraph(currentSpeed,interval) {
 	for (i = 0; i <= numYLabels; i++) {
 		speedAxis.push({
 			"count": i, 
-			"posx": offset.left - axisSpacing, 
+			"posx": offset.left - axisSpacing.x, 
 			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/numYLabels + offset.top, 
 			"value": Math.round(maxspeed * i/numYLabels)
 		});
@@ -763,7 +766,7 @@ function drawGraph(currentSpeed,interval) {
 		timeAxis.push({
 			"count": i, 
 			"posx": intervalWidth * i + offset.left, 
-			"posy": elem.height - offset.bottom + axisSpacing, 
+			"posy": elem.height - offset.bottom + axisSpacing.y, 
 			"value": interval * i
 		});
 	};
@@ -799,10 +802,12 @@ function drawGraph(currentSpeed,interval) {
 			context.lineTo(elem.width - offset.right, value.posy);
 			context.stroke();
 
-			context.shadowBlur = 0;
-			context.textBaseline = "middle";
-			context.textAlign = "end";
-			context.fillText(value.value, value.posx, value.posy);
+			if(maxspeed != 0 || value.count == 0) {
+				context.shadowBlur = 0;
+				context.textBaseline = "middle";
+				context.textAlign = "end";
+				context.fillText(value.value, value.posx, value.posy);
+			}
 
 			context.restore();
 		});
