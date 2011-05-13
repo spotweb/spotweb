@@ -114,6 +114,7 @@
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
                     <h4>Graph</h4>
                     <canvas id="graph" width="220" height="125"></canvas>
+                    <table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
                 </div>
             </div>
 

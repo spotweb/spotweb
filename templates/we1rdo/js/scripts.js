@@ -693,6 +693,25 @@ function sabActions(start,limit,action,slot,value) {
 }
 
 function drawGraph(currentSpeed,interval) {
+	var numXLabels = 5;
+	var numYLabels = 5;
+
+	if($("table.sabGraphData tbody > tr").size() == 1) {
+		// maak juiste hoeveelheid data rijen aan (afhankelijk van numXLabels
+		$("table.sabGraphData").empty();
+		i = 0;
+		for (i = 0; i <= numXLabels; i++) {
+			$("table.sabGraphData").append("<tr><td>0.00</td></tr>");
+		}
+	}
+	// vul de juiste rijen met de juiste data
+	if($("table.sabGraphData td:empty").size() != 0) {
+		$("table.sabGraphData td:empty").first().html(currentSpeed);
+	} else {
+		$("table.sabGraphData td").first().remove();
+		$("table.sabGraphData").append("<tr><td>"+currentSpeed+"</td></tr>");
+	}
+
 	var elem = $("canvas#graph");
 	elem.width = $("canvas#graph").width();
 	elem.height = $("canvas#graph").height();
@@ -707,21 +726,20 @@ function drawGraph(currentSpeed,interval) {
 		"height": elem.height - offset.bottom - offset.top
 	};
 	var axisSpacing = 6;
-	var intervalWidth = (elem.width - offset.left - offset.right) / 5;
+	var intervalWidth = (elem.width - offset.left - offset.right) / numXLabels;
 
 	var context = elem[0].getContext("2d");
 
-	var speed = [
-		{"count": 0, "value": 0},
-		{"count": 1, "value": 0},
-		{"count": 2, "value": 0},
-		{"count": 3, "value": currentSpeed},
-		{"count": 4, "value": 0},
-		{"count": 5, "value": 0}
-	];
+	var speed = new Array();
+	$("table.sabGraphData td").each(function(){
+		speed.push({
+			"count": $(this).index(),
+			"value": $(this).text()
+		});
+	});
 	var maxspeed = 0;
 	var i = 0;
-	for (i = 0; i <= 5; i++) {
+	for (i = 0; i <= numXLabels; i++) {
 		if(speed[i].value >= maxspeed) {
 			var maxspeed = speed[i].value;
 		}
@@ -729,19 +747,19 @@ function drawGraph(currentSpeed,interval) {
 
 	var speedAxis = new Array();
 	var i = 0;
-	for (i = 0; i <= 5; i++) {
+	for (i = 0; i <= numYLabels; i++) {
 		speedAxis.push({
 			"count": i, 
 			"posx": offset.left - axisSpacing, 
-			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/5 + offset.top, 
-			"value": Math.round(maxspeed * i/5)
+			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/numYLabels + offset.top, 
+			"value": Math.round(maxspeed * i/numYLabels)
 		});
 	};
 
 	var interval = interval / 1000;
 	var timeAxis = new Array();
 	var i = 0;
-	for (i = 0; i <= 5; i++) {
+	for (i = 0; i <= numXLabels; i++) {
 		timeAxis.push({
 			"count": i, 
 			"posx": intervalWidth * i + offset.left, 
@@ -749,9 +767,6 @@ function drawGraph(currentSpeed,interval) {
 			"value": interval * i
 		});
 	};
-
-	//console.log('speedAxis: '+JSON.stringify(speedAxis));
-	//console.log('timeAxis: '+JSON.stringify(timeAxis));
 
 	context.clearRect(0, 0, elem.width, elem.height);
 
@@ -812,7 +827,7 @@ function drawGraph(currentSpeed,interval) {
 
 		var speedData = new Array();
 		var i = 0;
-		for (i = 0; i <= 5; i++) {
+		for (i = 0; i <= numXLabels; i++) {
 			speedData.push({
 				"count": i, 
 				"posx": offset.left + i*intervalWidth, 
@@ -943,7 +958,7 @@ function updateSabPanel(start,limit) {
 
 		var timeOut = setTimeout(function(){
 			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
-				//updateSabPanel(start,limit); DEBUG DEBUG!!!
+				updateSabPanel(start,limit);
 			}
 		}, interval);
 	});
