@@ -178,6 +178,12 @@ try {
 				break;
 		} # login
 
+		case 'resetuserapi' : {
+				$page = new SpotPage_resetuserapi($db, $settings, $currentSession);
+				$page->render();
+				break;
+		} # resetapi
+		
 		case 'postcomment' : {
 				$page = new SpotPage_postcomment($db, $settings, $currentSession,
 							Array('commentform' => $req->getForm('postcommentform', array('submit')),
