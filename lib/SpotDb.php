@@ -1,13 +1,18 @@
 <?php
 define('SPOTDB_SCHEMA_VERSION', '0.25');
 
-class SpotDb
-{
+class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
-	
-    function __construct($db)
-    {
+
+	/*
+	 * Constants used for updating the SpotStateList 
+	 */
+	const spotstate_Down	= 0;
+	const spotstate_Watch	= 1;
+	const spotstate_Seen	= 2;
+
+	function __construct($db) {
 		$this->_dbsettings = $db;
 	} # __ctor
 
@@ -17,14 +22,14 @@ class SpotDb
 	 */
 	function connect() {
 		SpotTiming::start(__FUNCTION__);
-		
+
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'	: $this->_conn = new dbeng_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']); 
 							  break;
-							  
+
 			case 'pdo_mysql': $this->_conn = new dbeng_pdo_mysql($this->_dbsettings['host'],
 												$this->_dbsettings['user'],
 												$this->_dbsettings['pass'],
@@ -32,13 +37,13 @@ class SpotDb
 							  break;
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
-				
+
 			default			: throw new Exception('Unknown DB engine specified, please choose pdo_sqlite, mysql or pdo_mysql');
 		} # switch
-		
+
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
-    } # ctor
+    } # connect
 
 	/*
 	 * Geeft het database connectie object terug
@@ -64,7 +69,7 @@ class SpotDb
 		
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
-	
+
 	/*
 	 * Sla het gepostte comment op van deze user
 	 */
@@ -80,8 +85,7 @@ class SpotDb
 					  $comment['body'],
 					  (int) time()));
 	} # addPostedComment
-		
-	
+
 	/*
 	 * Update setting
 	 */
@@ -91,7 +95,7 @@ class SpotDb
 			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
 		} # if
 	} # updateSetting
-	
+
 	/*
 	 * Haalt een session op uit de database
 	 */
@@ -175,7 +179,7 @@ class SpotDb
 
 		return false;
 	} # userEmailExists
-	
+
 	/*
 	 * Haalt een user op uit de database 
 	 */
@@ -234,7 +238,7 @@ class SpotDb
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
 		} # if
-	
+
 		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
 		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
 		$hasMore = (count($tmpResult) > $limit);
@@ -242,11 +246,11 @@ class SpotDb
 			# verwijder het laatste, niet gevraagde, element
 			array_pop($tmpResult);
 		} # if
-		
+
 		SpotTiming::stop(__FUNCTION__, array($username, $pageNr, $limit));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # listUsers
-	
+
 	/*
 	 * Disable/delete een user. Echt wissen willen we niet 
 	 * omdat eventuele comments dan niet meer te traceren
@@ -259,7 +263,7 @@ class SpotDb
 								WHERE userid = '%s'", 
 							Array($user['userid']));
 	} # deleteUser
-	
+
 	/*
 	 * Update de informatie over een user behalve het password
 	 */
@@ -319,7 +323,7 @@ class SpotDb
 								WHERE userid = '%s'",
 				Array($publicKey, $privateKey, $userId));
 	} # setUserRsaKeys 
-	
+
 	/*
 	 * Vraagt de users' private key op
 	 */
@@ -346,7 +350,7 @@ class SpotDb
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
 		# lastInsertId() exposed in de db klasse
 		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
-		
+
 		# en voeg een usersettings record in
 		$this->_conn->modify("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
 										VALUES('%s', '', '', 'a:0:{}')",
@@ -375,7 +379,7 @@ class SpotDb
 	function setMaxArticleId($server, $maxarticleid) {
 		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
 		$res = $this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
-		
+
 		if ($this->_conn->rows() == 0) {	
 			$this->_conn->exec("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
 		} # if
@@ -391,7 +395,7 @@ class SpotDb
 			$this->setMaxArticleId($server, 0);
 			$artId = 0;
 		} # if
-		
+
 		return $artId;
 	} # getMaxArticleId
 
@@ -407,7 +411,7 @@ class SpotDb
 		if ($msgIds == null) {
 			return array();
 		} # if
-		
+
 		$tempMsgIdList = array();
 		$msgIdCount = count($msgIds);
 		for($i = 0; $i < $msgIdCount; $i++) {
@@ -415,16 +419,16 @@ class SpotDb
 		} # for
 		return $tempMsgIdList;
 	} # func. getMaxMessageId
-	
+
 	function getMaxMessageTime() {
 		$stamp = $this->_conn->singleQuery("SELECT MAX(stamp) AS stamp FROM spots");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
-		
+
 		return $stamp;
 	} # getMaxMessageTime()
-	
+
 	/*
 	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
 	 */
@@ -449,7 +453,7 @@ class SpotDb
 		} else {
 			$runTime = 0;
 		} # if
-		
+
 		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
 		$res = $this->_conn->exec("UPDATE nntp SET nowrunning = '%s' WHERE server = '%s'", Array((int) $runTime, $server));
 		if ($this->_conn->rows() == 0) {	
@@ -468,7 +472,7 @@ class SpotDb
 		if (empty($spot)) {
 			throw new Exception("Our highest spot is not in the database!?");
 		} # if
-		
+
 		# en wis nu alles wat 'jonger' is dan deze spot
 		switch ($this->_dbsettings['engine']) {
 			# geen join delete omdat sqlite dat niet kan
@@ -477,7 +481,7 @@ class SpotDb
 				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
 				break;
 			} # case
-			
+
 			default			  : {
 				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots 
 									INNER JOIN spotsfull on spots.messageid = spotsfull.messageid WHERE spots.id > %d", array($spot['id']));
@@ -497,7 +501,7 @@ class SpotDb
 		if (empty($commentId)) {
 			throw new Exception("Our highest comment is not in the database!?");
 		} # if
-		
+
 		# en wis nu alles wat 'jonger' is dan deze spot
 		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
 		$this->_conn->modify("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
@@ -516,7 +520,7 @@ class SpotDb
 	function getLastUpdate($server) {
 		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
 	} # getLastUpdate
-	
+
 	/**
 	 * Geef het aantal spots terug dat er op dit moment in de db zit
 	 */
@@ -538,7 +542,7 @@ class SpotDb
 			return $cnt;
 		} # if
 	} # getSpotCount
-	
+
 	/*
 	 * Match set of comments
 	 */
@@ -546,12 +550,12 @@ class SpotDb
 		# We negeren commentsfull hier een beetje express, als die een 
 		# keer ontbreken dan fixen we dat later wel.
 		$idList = array();
-		
+
 		# geen message id's gegeven? vraag het niet eens aan de db
 		if (count($hdrList) == 0) {
 			return $idList;
 		} # if
-		
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($hdrList as $hdr) {
@@ -561,26 +565,26 @@ class SpotDb
 
 		# en vraag alle comments op die we kennen
 		$rs = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
-		
+
 		# geef hier een array terug die kant en klaar is voor array_search
 		foreach($rs as $msgids) {
 			$idList[] = $msgids['messageid'];
 		} # foreach
-		
+
 		return $idList;
 	} # matchCommentMessageIds
-	
+
 	/*
 	 * Match set of spots
 	 */
 	function matchSpotMessageIds($hdrList) {
 		$idList = array('spot' => array(), 'fullspot' => array());
-		
+
 		# geen message id's gegeven? vraag het niet eens aan de db
 		if (count($hdrList) == 0) {
 			return $idList;
 		} # if
-		
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($hdrList as $hdr) {
@@ -592,21 +596,20 @@ class SpotDb
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as spot, messageid AS fullspot FROM spotsfull WHERE messageid IN (" . $msgIdList . ")");
-								
+
 		# en lossen we het hier op
 		foreach($rs as $msgids) {
 			if (!empty($msgids['spot'])) {
 				$idList['spot'][$msgids['spot']] = 1;
 			} # if
-			
+
 			if (!empty($msgids['fullspot'])) {
 				$idList['fullspot'][$msgids['fullspot']] = 1;
 			} # if
 		} # foreach
-		
+
 		return $idList;
 	} # matchMessageIds 
-		
 
 	/*
 	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
@@ -616,14 +619,13 @@ class SpotDb
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
-		
+
 		# je hebt de zoek criteria (category, titel, etc)
 		$criteriaFilter = $parsedSearch['filter'];
 		if (!empty($criteriaFilter)) {
 			$criteriaFilter = ' WHERE ' . $criteriaFilter;
 		} # if 
-		
-		
+
 		# de optie getFull geeft aan of we de volledige fieldlist moeten 
 		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
 		# het geheugen gebruik, dus liefst niet.
@@ -636,13 +638,13 @@ class SpotDb
 		} else {
 			$extendedFieldList = '';
 		} # else
-		
+
 		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
 		# als dat zo is, voeg die dan ook toe
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
-		
+
 		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 		# het voor MySQL ISAM een stuk sneller
@@ -655,7 +657,7 @@ class SpotDb
 			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
 			$sort['field'] = 's.' . $sort['field'];
 		} # if
-		
+
 		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
 		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
 		# 
@@ -701,7 +703,7 @@ class SpotDb
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
-								   
+
 		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
 		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
 		$hasMore = (count($tmpResult) > $limit);
@@ -709,7 +711,7 @@ class SpotDb
 			# verwijder het laatste, niet gevraagde, element
 			array_pop($tmpResult);
 		} # if
-		
+
 		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
@@ -744,8 +746,7 @@ class SpotDb
 		SpotTiming::stop(__FUNCTION__);
 		return $tmpArray[0];
 	} # getSpotHeader 
-	
-	
+
 	/*
 	 * Vraag 1 specifieke spot op, als de volledig spot niet in de database zit
 	 * geeft dit NULL terug
@@ -789,18 +790,17 @@ class SpotDb
 			return ;
 		} # if
 		$tmpArray = $tmpArray[0];
-	
+
 		# If spot is fully stored in db and is of the new type, we process it to
 		# make it exactly the same as when retrieved using NNTP
 		if (!empty($tmpArray['fullxml']) && (!empty($tmpArray['user-signature']))) {
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
-		
+
 		SpotTiming::stop(__FUNCTION__, array($messageId, $ourUserId));
 		return $tmpArray;		
 	} # getFullSpot()
 
-	
 	/*
 	 * Insert commentreg, 
 	 *   messageid is het werkelijke commentaar id
@@ -837,7 +837,7 @@ class SpotDb
 		if (count($spotMsgIdList) == 0) {
 			return;
 		} # if
-	
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
@@ -872,7 +872,7 @@ class SpotDb
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
-		
+
 		# en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET commentcount = 
@@ -893,16 +893,16 @@ class SpotDb
 		if (empty($commentMsgIds)) {
 			return array();
 		} # if
-		
+
 		SpotTiming::start(__FUNCTION__);
-		
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($commentMsgIds as $msgId) {
 			$msgIdList .= "'" . $this->_conn->safe($msgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
-		
+
 		# en vraag de comments daadwerkelijk op
 		$commentList = $this->_conn->arrayQuery("SELECT f.messageid AS messageid, 
 														f.fromhdr AS fromhdr, 
@@ -921,11 +921,11 @@ class SpotDb
 			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
 			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 		} # foreach
-		
+
 		SpotTiming::stop(__FUNCTION__, array($commentMsgIds));
 		return $commentList;
 	} # getCommentsFull
-	
+
 	/*
 	 * Geef al het commentaar references voor een specifieke spot terug
 	 */
@@ -935,7 +935,7 @@ class SpotDb
 		foreach($tmpList as $value) {
 			$msgIdList[] = $value['messageid'];
 		} # foreach
-		
+
 		return $msgIdList;
 	} # getCommentRef
 
@@ -951,7 +951,7 @@ class SpotDb
 	 */
 	function schemaValid() {
 		$schemaVer = $this->getSchemaVer();
-		
+
 		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
 		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
@@ -992,7 +992,7 @@ class SpotDb
 	 */
 	function deleteSpotsRetention($retention) {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
-		
+
 		switch ($this->_dbsettings['engine']) {
  			case 'pdo_sqlite': {
 				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
@@ -1039,12 +1039,12 @@ class SpotDb
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']) );
-			   
+
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
 		} # if
 	} # addSpot()
-	
+
 	/*
 	 * Voeg enkel de full spot toe aan de database, niet gebruiken zonder dat er een entry in 'spots' staat
 	 * want dan komt deze spot niet in het overzicht te staan.
@@ -1055,7 +1055,7 @@ class SpotDb
 		if (!is_numeric($fullSpot['filesize'])) {
 			$fullSpot['fileSize'] = 0;
 		} # if
-	
+
 		# en voeg het aan de database toe
 		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -1071,16 +1071,17 @@ class SpotDb
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
 		SpotTiming::start(__FUNCTION__);
+		$verifiedList = $this->verifyListType($list);
 		if (empty($stamp)) { $stamp = time(); }
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE spotstatelist SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+			case 'pdo_sqlite': $this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
 								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
+									$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
 										Array($messageId, (int) $ourUserId, $stamp));
 								} # if
 							break;
-			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
+			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
 										Array($messageId, (int) $ourUserId, $stamp, $stamp));
 		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
@@ -1088,7 +1089,8 @@ class SpotDb
 
 	function clearSpotStateList($list, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET " . $list . " = NULL WHERE ouruserid = %d", array($ourUserId));
+		$verifiedList = $this->verifyListType($list);
+		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE ouruserid = %d", array($ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
 	} # clearSpotStatelist
 
@@ -1098,10 +1100,22 @@ class SpotDb
 
 	function removeFromSpotStateList($list, $messageid, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET " . $list . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
+		$verifiedList = $this->verifyListType($list);
+		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
 				Array($messageid, (int) $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $messageid, $ourUserId));
 	} # removeFromSpotStateList
+
+	function verifyListType($list) {
+		switch($list) {
+			case self::spotstate_Down	: $verifiedList = 'downloads'; break;
+			case self::spotstate_Watch	: $verifiedList = 'watch'; break;
+			case self::spotstate_Seen	: $verifiedList = 'seen'; break;
+			default						: throw new Exception("Invalid listtype given!");
+		} # switch
+
+		return $verifiedList;
+	} # verifyListType
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
@@ -1110,13 +1124,13 @@ class SpotDb
 	function abortTransaction() {
 		$this->_conn->rollback();
 	} # abortTransaction
-	
+
 	function commitTransaction() {
 		$this->_conn->commit();
 	} # commitTransaction
-	
+
 	function safe($q) {
 		return $this->_conn->safe($q);
 	} # safe
-	
+
 } # class db
