@@ -36,8 +36,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 					
 			switch($this->_editUserForm['action']) {
 				case 'delete' : {
-					$spotUserSystem->removeUser($spotUser['userid']);
-					$editResult = array('result' => 'success');
+					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
+						$editResult = array('result' => 'failure');
+					} else {
+						$spotUserSystem->removeUser($spotUser['userid']);
+						$editResult = array('result' => 'success');
+					} # else
 						
 					break;
 				} # case delete
