@@ -38,8 +38,8 @@
 	$spotSigning = new SpotSigning();
 	$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 ?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> <?php showResult(array_search('openssl', $extList) !== false); ?> </td> </tr>
-		<td> gmp </td> <td> <?php showResult(array_search('gmp', $extList) !== false); ?> </td> </tr>
-		<td> bcmath </td> <td> <?php showResult(array_search('bcmath', $extList) !== false); ?> </td> </tr>
+	<tr> <td> gmp </td> <td> <?php showResult(array_search('gmp', $extList) !== false); ?> </td> </tr>
+	<tr> <td> bcmath </td> <td> <?php showResult(array_search('bcmath', $extList) !== false); ?> </td> </tr>
 	<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
 </table>
 <br />
