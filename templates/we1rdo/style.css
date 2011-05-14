@@ -285,7 +285,6 @@ div.details a.postimage img.full {position:absolute; top:0; left:0; z-index:3;}
 div.details table.spotdetails {margin:0 0 0 5px; border-collapse:collapse;}
 div.details table.spotdetails td {padding:0; vertical-align:top;}
 div.details table.spotdetails td.img {padding:2px 0 0 0;}
-div.details.external table.spotdetails td.img {padding:24px 0 0;}
 div.details table.spotdetails td.img a.loading {width:80px; background:url(img/loading.gif) no-repeat 50% 100%; padding:2px 0 24px 0; text-decoration:none; text-align:center; color:#000;}
 div.details table.spotdetails td.img a.loading:before {content: "Loading Image";}
 div.details table.spotdetails td.info {width:100%;}
@@ -330,9 +329,10 @@ div.details table.spotheader th.title {width:100%; background:url(img/sprite_x.p
 div.details table.spotheader th.watch {width:16px; padding:0 0 1px 0;}
 div.details table.spotheader th.watch a {display:block; cursor:pointer; background:url(img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 div.details table.spotheader th.watch a.remove {background-position:-56px -80px;}
-div.details table.spotheader th.nzb {width:92px; min-width:92px; text-align:center; padding:0; color:#fff;}
-div.details table.spotheader th.nzb a.search {display:inline-block; float:left; color:#000; text-decoration:none; padding:0 6px; border-right:1px solid #fff;}
+div.details table.spotheader th.nzb {width:40px; min-width:40px; text-align:center; padding:0; color:#fff;}
 div.details table.spotheader th.nzb a.nzb {display:inline-block; float:right; text-decoration:none; padding:0 6px;}
+div.details table.spotheader th.search {width:20px; padding:0;}
+div.details table.spotheader th.search a {display:inline-block; width:17px; height:12px; float:left; background:url(img/sprite.png) no-repeat 0 -129px; border-right:1px solid #fff;}
 div.details table.spotheader th.sabnzbd {width:20px; padding:0;}
 
 div.details table.spotinfo {width:100%; border-collapse:separate; border-spacing:5px 2px;}
