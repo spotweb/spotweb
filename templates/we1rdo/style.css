@@ -430,3 +430,4 @@ div.userPanel form dd {margin:0;}
 div.userPanel form input[type=password],
 div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; width:220px;}
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
+div.userpanel form input.api {width:200px;}
