@@ -3,7 +3,7 @@
 	
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-		<div class="listusers">
+		<div class="infopane">
 			<table class="spotslistusers" summary="Users">
 				<thead>
 					<tr class="head">
@@ -20,7 +20,16 @@
 	foreach($userlist as $user) {
 ?>
 					<tr> 
-						<td> <?php echo $user['username']; ?> </td>
+						<td> 
+<?php 
+	# We kunnen de anonymous user niet editten
+	if ($user['userid'] == 1) {
+		echo $user['username'];
+	} else {
+		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid']) . '">' . $user['username'] . '</a>'; 
+	} # else
+?> 
+						</td>
 						<td> <?php echo $user['firstname']; ?> </td>
 						<td> <?php echo $user['lastname']; ?> </td>
 						<td> <?php echo $user['mail']; ?> </td>
