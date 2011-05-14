@@ -16,9 +16,7 @@ class SpotPage_listusers extends SpotPage_Abs {
 		$userList = $this->_db->listUsers('', 0, 9999);
 		
 		#- display stuff -#
-		$this->template('header', array('activefilter' => $this->_params['search']));
 		$this->template('listusers', array('userlist' => $userList['list']));
-		$this->template('footer');
 	} # render
 	
 } # class SpotPage_listusers

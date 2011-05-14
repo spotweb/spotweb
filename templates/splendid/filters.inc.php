@@ -9,7 +9,7 @@ if(empty($_GET['ajax'])) { ?>
 					<h4>Zoeken</h4>
 
 					<form id="filterform" action="" onsubmit="return submitSearchForm(this)">
-						<?php $search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $search); ?>
+						<?php $search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => ''), $activefilter); ?>
 						<input type="hidden" id="search-tree" class="" value="<?php echo $search['tree']; ?>">
 						<table border="0" cellpadding="0" cellspacing="0" style="width: 214px;margin-left: 20px">
 						  <tr> 

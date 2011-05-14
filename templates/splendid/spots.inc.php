@@ -1,4 +1,9 @@
-<?php $getUrl = $tplHelper->getQueryParams(); ?>			
+<?php 
+	/* Render de header en filter templates */
+	require_once "header.inc.php";
+	require_once "filters.inc.php";
+	
+	$getUrl = $tplHelper->getQueryParams(); ?>			
 			
 			<div class="" id="spots">
 			
@@ -186,4 +191,7 @@ if ($settings->get('keep_watchlist')) { ?>
 		<div class="clear" id="ajax_calls"></div>
 		<br /><br />
 		
-<?php } ?>
+<?php } 
+	/* Render de footer template */
+	require_once "footer.inc.php";
+?>
