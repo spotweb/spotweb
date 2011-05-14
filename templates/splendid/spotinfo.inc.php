@@ -1,4 +1,5 @@
 <?php
+	require_once "header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
 	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 0);
 	$comments = $tplHelper->formatComments($comments);
@@ -92,3 +93,6 @@ if($tplHelper->isBeingWatched($spot)) { ?>
             </div>
 		</div>
 
+<?php
+		require_once "footer.inc.php";
+?>
