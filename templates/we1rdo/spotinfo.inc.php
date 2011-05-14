@@ -8,10 +8,22 @@
                     	<th class="back"> <a class="closeDetails" title="Ga terug naar het overzicht (esc / u)">&lt;&lt;</a> </th>
                         <th class="category"><span><?php echo $spot['formatname'];?></span></th>
                         <th class="title"><?php echo $spot['title'];?></th>
-                        <th class="nzb"><a class="search" href="<?php echo $spot['searchurl'];?>" title="NZB zoeken">Zoeken</a>
+						<th class="rating">
+<?php 
+	if($spot['rating'] == 0) {
+		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
+	} elseif($spot['rating'] == 1) {
+		echo '<span class="rating" title="Deze spot heeft '.$spot['rating'].' ster"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+	} else {
+		echo '<span class="rating" title="Deze spot heeft '.$spot['rating'].' sterren"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+	}
+?>
+						</th>
+                        <th class="nzb">
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>
-                            <a class="nzb" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>">NZB<?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '*';} else { echo '&nbsp;';} ?></a>
-<?php } ?></th>
+                            <a class="nzb<?php if ($tplHelper->hasBeenDownloaded($spot)) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
+<?php } ?>				</th>
+						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="NZB zoeken"></a></th>
 <?php if ($settings->get('keep_watchlist')) {
 echo "<th class='watch'>";
 echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($tplHelper->isBeingWatched($spot) == false) { echo " style='display: none;'"; } echo " title='Verwijder uit watchlist (w)'> </a>";
@@ -67,7 +79,6 @@ echo "</th>";
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		
                         		<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
-                                <tr> <th> Rating </th> <td class="rating"><?php echo $spot['rating']; ?></td> </tr>
                             </tbody>
                         </table>
 					</td>
@@ -103,7 +114,6 @@ echo "</th>";
 				});
 
 				var messageid = $('#messageid').val();
-                spotRating();
                 postCommentsForm();
                 loadSpotImage();
                 loadComments(messageid,'5','0');

@@ -52,6 +52,8 @@
 		
 		if($spot['rating'] == 0) {
 			$rating = '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
+		} elseif($spot['rating'] == 1) {
+			$rating = '<span class="rating" title="Deze spot heeft '.$spot['rating'].' ster"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		} else {
 			$rating = '<span class="rating" title="Deze spot heeft '.$spot['rating'].' sterren"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
