@@ -72,7 +72,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   ouruserid INTEGER DEFAULT 0,
 										   download INTEGER,
 										   watch INTEGER,
-										   seen INTEGER) ENGINE = MYISAM CHARSET=ascii;");
+										   seen INTEGER) ENGINE = InnoDB CHARSET=ascii;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
