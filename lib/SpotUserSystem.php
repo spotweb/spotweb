@@ -101,7 +101,7 @@ class SpotUserSystem {
 	function passToHash($password) {
 		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $password . $this->_settings->get('pass_salt'));
 	} # passToHash
-	
+
 	/*
 	 * Probeert de user aan te loggen met de gegeven credentials,
 	 * geeft user record terug of false als de user niet geauth kan
@@ -112,7 +112,7 @@ class SpotUserSystem {
 		$password = $this->passToHash($password);
 
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $password);
+		$userId = $this->_db->authUser($user, $password, false);
 		if ($userId !== false) {
 			# Als de user ingelogged is, creeer een sessie,
 			# volgorde is hier belangrijk omdat in de newsession
@@ -120,16 +120,36 @@ class SpotUserSystem {
 			# we eerst de sessie creeeren.
 			$userSession = $this->createNewSession($userId);
 			$this->updateCookie($userSession);
-		
+
 			# nu gebruiken we het user record om de lastlogin te fixen
 			$userSession['user']['lastlogin'] = time();
 			$this->_db->setUser($userSession['user']);
-			
+
 			return $userSession;
 		} else {
 			return false;
 		} # else
-	} # login()
+	} # login
+
+	function verifyApi($user, $apikey) {
+		# een bogus passhash aanmaken zodat er niet met userid 1 geauthenticeerd kan worden
+		$password = $this->passToHash($apikey);
+
+		# authenticeer de user?
+		$userId = $this->_db->authUser($user, $password, $apikey);
+
+		if ($userId !== false) {
+			$userId = SPOTWEB_ANONYMOUS_USERID;
+		} # if
+
+		$userRecord = $this->getUser($userId);
+
+		# nu gebruiken we het user record om lastapiusage te fixen
+		$userRecord['lastapiusage'] = time();
+		$this->_db->setUser($userRecord);
+		
+		return array('user' => $userRecord);
+	} # verifyApi
 
 	/*
 	 * Reset the lastvisit timestamp
@@ -150,13 +170,6 @@ class SpotUserSystem {
 
 		return $user;
 	} # resetReadStamp
-
-	/*
-	 * Clear the seen list
-	 */
-	function clearSeenList($user) {
-		$this->_db->clearSeenList($user);
-	} # clearSeenList
 
 	/*
 	 * Controleert een session cookie, en als de sessie geldig

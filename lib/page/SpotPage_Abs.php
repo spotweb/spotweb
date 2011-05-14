@@ -13,8 +13,8 @@ abstract class SpotPage_Abs {
 	
 	# Geef the tpl helper terug
 	function getTplHelper($params) {
-		if (file_exists($this->_settings->get('tpl_path') . '/CustomTplHelper.php')) {
-			require_once $this->_settings->get('tpl_path') . '/CustomTplHelper.php';
+		if (file_exists('templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php')) {
+			require_once 'templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php';
 			
 			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentSession, $this->_db, $params);
 		} else {
@@ -39,7 +39,7 @@ abstract class SpotPage_Abs {
 		$currentSession = $this->_currentSession;
 
 		# en we spelen de template af
-		require_once($settings->get('tpl_path') . $tpl . '.inc.php');
+		require_once('templates/' . $settings->get('tpl_name') . '/' . $tpl . '.inc.php');
 		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
 	} # template
 	

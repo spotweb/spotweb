@@ -41,7 +41,7 @@ $count = 0;
 	<div class="ui-block-a"><a href="<?php echo $setpath;?>#" disabled data-theme="c" rel=external data-role="button" data-icon="minus">&nbsp;</a></div>
 			<?php } ?> 
 			<?php if ($nextPage > 0) { ?>
-	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?pagenr=spots&amp;direction=next&amp;page=<?php echo $nextPage;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
+	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?direction=next&amp;pagenr=<?php echo $nextPage;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
 	<?php } ?>   
 </fieldset>
 

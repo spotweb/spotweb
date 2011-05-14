@@ -62,27 +62,21 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 										   messageid VARCHAR(128),
 										   nntpref VARCHAR(128),
 										   spotrating INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref)");
 		} # if
 			
-		# downloadlist table
-		if (!$this->tableExists('downloadlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY ASC,
-										   messageid VARCHAR(128),
-										   stamp INTEGER,
-										   ouruserid INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid,ouruserid)");
-		} # if
-			
-		# watchlist table
-		if (!$this->tableExists('watchlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY, 
-												   messageid VARCHAR(128),
-												   dateadded INTEGER,
-												   comment TEXT,
-												   ouruserid INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid,ouruserid)");
+		# spotstatelist table
+		if (!$this->tableExists('spotstatelist')) {
+			$this->_dbcon->rawExec("CREATE TABLE spotstatelist(messageid VARCHAR(128),
+										   ouruserid INTEGER DEFAULT 0,
+										   download INTEGER,
+										   watch INTEGER,
+										   seen INTEGER);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_4 ON spotstatelist(seen);");
 		} # if
 
 		# commentsfull
@@ -110,14 +104,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
 		} # if
 
-		# seen
-		if (!$this->tableExists('seenlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE seenlist(messageid VARCHAR(128) NOT NULL,
-										   ouruserid INTEGER DEFAULT 0,
-										   stamp INTEGER);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
-		} # if
-
 		# commentsposted
 		if (!$this->tableExists('commentsposted')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY,
@@ -137,9 +123,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	 * deze functie wijzigt geen data!
   	 */
 	function analyze() { 
-		$this->_dbcon->rawExec("ANALYZE seenlist");
-		$this->_dbcon->rawExec("ANALYZE downloadlist");
-		$this->_dbcon->rawExec("ANALYZE watchlist");
+		$this->_dbcon->rawExec("ANALYZE spotstatelist");
 		$this->_dbcon->rawExec("ANALYZE sessions");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE commentsfull");

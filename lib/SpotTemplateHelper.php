@@ -183,7 +183,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
-		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']);
+		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']) . $this->makeApiRequestString();
 	} # makeNzbUrl
 
 	/*
@@ -212,7 +212,20 @@ class SpotTemplateHelper {
 	 */
 	function makeUserIdUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
-	} # makeNzbUrl
+	} # makeUserIdUrl
+
+	/*
+	 * Creeert een request string met username en apikey als deze zijn opgegeven
+	 */
+	function makeApiRequestString() {
+		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
+			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
+		} elseif ($this->_currentSession['user']['userid'] > 1) {
+			return '&amp;username=' . urlencode($this->_currentSession['user']['username']) . '&amp;apikey=' . $this->_currentSession['user']['apikey'];
+		} else {
+			return;
+		}
+	} # makeApiRequestString
 	
 	/*
 	 * Creert een basis navigatie pagina
@@ -220,7 +233,7 @@ class SpotTemplateHelper {
 	function getPageUrl($page, $includeParams = false) {
 		$url = $this->makeBaseUrl("path") . '?page=' . $page;
 		if ($includeParams) {
-			$url .= $this->getQueryParams();
+			$url .= $this->getQueryParams("filterValues");
 		} # if
 		
 		return $url;
@@ -277,7 +290,7 @@ class SpotTemplateHelper {
 			return false;
 		} # if
 		
-		return ($spot['w_dateadded'] != NULL);
+		return ($spot['watchstamp'] != NULL);
 	} # isBeingWatched
 
 	function getQueryParams($dontInclude = array()) {

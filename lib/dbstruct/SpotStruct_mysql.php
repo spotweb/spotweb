@@ -62,29 +62,23 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
 										   nntpref VARCHAR(128) CHARACTER SET ascii,
 										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(nntpref, messageid)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_2 ON commentsxover(messageid)");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref)");
 		} # if
 			
-		# downloadlist
-		if (!$this->tableExists('downloadlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE downloadlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-										   stamp INTEGER,
-										   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_downloadlist_1 ON downloadlist(messageid,ouruserid);");
+		# spotstatelist
+		if (!$this->tableExists('spotstatelist')) {
+			$this->_dbcon->rawExec("CREATE TABLE spotstatelist(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
+										   ouruserid INTEGER DEFAULT 0,
+										   download INTEGER,
+										   watch INTEGER,
+										   seen INTEGER) ENGINE = InnoDB CHARSET=ascii;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_4 ON spotstatelist(seen);");
 		} # if
 
-		# watchlist
-		if (!$this->tableExists('watchlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE watchlist(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-												   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-												   dateadded INTEGER,
-												   comment TEXT,
-												   ouruserid INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_watchlist_1 ON watchlist(messageid,ouruserid);");
-		} # if
-			
 		# commentsfull
 		if (!$this->tableExists('commentsfull')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsfull (id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -108,14 +102,6 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name);");
 		} # if
 
-		# seen
-		if (!$this->tableExists('seenlist')) {
-			$this->_dbcon->rawExec("CREATE TABLE seenlist(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-										   ouruserid INTEGER DEFAULT 0,
-										   stamp INTEGER) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_seenlist_1 ON seenlist(messageid,ouruserid);");
-		} # if
-
 		# commentsposted
 		if (!$this->tableExists('commentsposted')) {
 			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -135,9 +121,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	 * deze functie wijzigt geen data!
   	 */
 	function analyze() { 
-		$this->_dbcon->rawExec("ANALYZE TABLE seenlist");
-		$this->_dbcon->rawExec("ANALYZE TABLE downloadlist");
-		$this->_dbcon->rawExec("ANALYZE TABLE watchlist");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotstatelist");
 		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
