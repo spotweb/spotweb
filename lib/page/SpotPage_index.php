@@ -38,8 +38,8 @@ class SpotPage_index extends SpotPage_Abs {
 		# afhankelijk van wat er gekozen is, voer het uit
 		if (isset($this->_params['search']['filterValues']['Watch'])) {
 			switch($this->_action) {
-				case 'remove'	: $this->_db->removeFromWatchlist($this->_params['messageid'], $this->_currentSession['user']['userid']); break;
-				case 'add'		: $this->_db->addToWatchList($this->_params['messageid'], $this->_currentSession['user']['userid'], ''); break;
+				case 'remove'	: $this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']); break;
+				case 'add'		: $this->_db->addToSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid'], ''); break;
 				default			: ;
 			}
 		}

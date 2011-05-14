@@ -45,7 +45,7 @@ class SpotsOverview {
 	} # getFullSpot
 
 	function addToSeenList($msgId, $ourUserId) {
-		$this->_db->addToSeenList($msgId, $ourUserId);
+		$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, $msgId, $ourUserId);
 	}
 
 	/*
@@ -467,18 +467,18 @@ class SpotsOverview {
 			} else {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
 			} # else
-			$newSpotsSearchTmp[] = '(c.stamp IS NULL)';
+			$newSpotsSearchTmp[] = '(l.seen IS NULL)';
 			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
 		} # if
 
-		# Spots in Downloadlist or Watchlist
+		# Spots in SpotStateList
 		$listFilter = array();
 		if (isset($search['filterValues']['Downloaded'])) {
-			$listFilter[] = ' (d.stamp IS NOT NULL)';
+			$listFilter[] = ' (l.download IS NOT NULL)';
 		} elseif (isset($search['filterValues']['Watch'])) {
-			$listFilter[] = ' (w.dateadded IS NOT NULL)';
+			$listFilter[] = ' (l.watch IS NOT NULL)';
 		} elseif (isset($search['filterValues']['Seen'])) {
-			$listFilter[] = ' (c.stamp IS NOT NULL)';
+			$listFilter[] = ' (l.seen IS NOT NULL)';
 		} # if
 
 		$endFilter = array();

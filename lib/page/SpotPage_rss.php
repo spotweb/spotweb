@@ -15,7 +15,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		# en sorteringen etc
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
 		$this->_params['search'] = $parsedSearch['search'];
-		
+
 		# laad de spots
 		$pageNr = $this->_params['page'];
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
@@ -48,14 +48,15 @@ class SpotPage_rss extends SpotPage_Abs {
 		
 		echo "<?xml version=\"1.0\" encoding=\"utf-8\"?" . ">" . PHP_EOL;
 		echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">" . PHP_EOL;
-		echo "<atom:link href=\"" . $tplHelper->makeSelfUrl("full") . "\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
+		echo "<atom10:link xmlns:atom10=\"http://www.w3.org/2005/Atom\" href=\"" . $tplHelper->makeSelfUrl("full") . "\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
+		if ($this->_settings->get('deny_robots')) { echo "<xhtml:meta xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" name=\"robots\" content=\"noindex\" />" . PHP_EOL; }
 		echo "<channel>" . PHP_EOL;
-		echo "<generator>Spotweb</generator>" . PHP_EOL;
-		echo "<language>nl</language>" . PHP_EOL;
-		echo "<title>SpotWeb</title>" . PHP_EOL;
-		echo "<description>SpotWeb RSS Feed</description>" . PHP_EOL;
-		echo "<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
-		echo "<pubDate>" . date('r') . "</pubDate>" . PHP_EOL;
+		echo "\t<generator>Spotweb</generator>" . PHP_EOL;
+		echo "\t<language>nl</language>" . PHP_EOL;
+		echo "\t<title>SpotWeb</title>" . PHP_EOL;
+		echo "\t<description>SpotWeb RSS Feed</description>" . PHP_EOL;
+		echo "\t<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
+		echo "\t<pubDate>" . date('r') . "</pubDate>" . PHP_EOL;
 	}
 	
 	function rss_data($fullSpots) {
@@ -65,27 +66,32 @@ class SpotPage_rss extends SpotPage_Abs {
 		foreach($fullSpots as $spot) {
 			$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 
-			echo "\t<item>" . PHP_EOL;
-			echo "\t\t<title>" . $title . "</title>" . PHP_EOL;
-			echo "\t\t<link>" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</link>" . PHP_EOL;
-			echo "\t\t<description><![CDATA[<p>" . $tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $spot['poster'] . " (" . $spot['userid'] . ")</font></p>]]></description>" . PHP_EOL;
-			echo "\t\t<author>" . $spot['messageid'] . " (" . $spot['poster'] . " (" . $spot['userid'] . "))</author>" . PHP_EOL;
-			echo "\t\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
-			echo "\t\t<category>" . SpotCategories::HeadCat2Desc($spot['category']) . ": " . SpotCategories::Cat2ShortDesc($spot['category'],$spot['subcat']) . "</category>" . PHP_EOL;
-			echo "\t\t<guid isPermaLink=\"true\">" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</guid>" . PHP_EOL;
+			$poster = $spot['poster'];
+			if (!empty($spot['userid'])) {
+				$poster .= " (" . $spot['userid'] . ")";
+			}
+
+			echo "\t\t<item>" . PHP_EOL;
+			echo "\t\t\t<title>" . $title . "</title>" . PHP_EOL;
+			echo "\t\t\t<link>" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . $tplHelper->makeApiRequestString() . "</link>" . PHP_EOL;
+			echo "\t\t\t<description><![CDATA[<p>" . $tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $poster . "</font></p>]]></description>" . PHP_EOL;
+			echo "\t\t\t<author>" . $spot['messageid'] . " (" . $poster . ")</author>" . PHP_EOL;
+			echo "\t\t\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
+			echo "\t\t\t<category>" . SpotCategories::HeadCat2Desc($spot['category']) . ": " . SpotCategories::Cat2ShortDesc($spot['category'],$spot['subcat']) . "</category>" . PHP_EOL;
+			echo "\t\t\t<guid isPermaLink=\"true\">" . $tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</guid>" . PHP_EOL;
 			
 			if ($nzbhandling['prepare_action'] == "zip") {
-				echo "\t\t<enclosure url=\"" . $tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/zip\" />" . PHP_EOL;
+				echo "\t\t\t<enclosure url=\"" . $tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/zip\" />" . PHP_EOL;
 			} else {
-				echo "\t\t<enclosure url=\"" . $tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/x-nzb\" />" . PHP_EOL;
+				echo "\t\t\t<enclosure url=\"" . $tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/x-nzb\" />" . PHP_EOL;
 			} # else
-			echo "\t</item>" . PHP_EOL . PHP_EOL;
+			echo "\t\t</item>" . PHP_EOL . PHP_EOL;
 		}
 	}
 	
 	function rss_footer() {
 		echo "</channel>" . PHP_EOL;
-		echo "</rss>" . PHP_EOL;
+		echo "</rss>";
 	}
 	
 } # class SpotPage_rss

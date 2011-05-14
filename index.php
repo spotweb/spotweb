@@ -31,17 +31,21 @@ try {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
 	} # if
 
-	# Haal het userobject op dat 'ingelogged' is
-	SpotTiming::start('auth');
-	$spotUserSystem = new SpotUserSystem($db, $settings);
-	$currentSession = $spotUserSystem->useOrStartSession();
-	SpotTiming::stop('auth');
-	
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
 	$page = $req->getDef('page', 'index');
-		
+
+	# Haal het userobject op dat 'ingelogged' is
+	SpotTiming::start('auth');
+	$spotUserSystem = new SpotUserSystem($db, $settings);
+	if ($req->doesExist('username') && $req->doesExist('apikey')) {
+		$currentSession = $spotUserSystem->verifyApi($req->getDef('username', ''), $req->getDef('apikey', ''));
+	} else {
+		$currentSession = $spotUserSystem->useOrStartSession();
+	} # if
+	SpotTiming::stop('auth');
+
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
@@ -60,7 +64,9 @@ try {
 				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
 					$page = new SpotPage_getnzb($db, $settings, $currentSession, 
 						Array('messageid' => $req->getDef('messageid', ''),
-							'action' => $req->getDef('action', 'display')));
+							'action' => $req->getDef('action', 'display'),
+							'username' => $req->getDef('username', ''),
+							'apikey' => $req->getDef('apikey', '')));
 				} else {
 					$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
 				} # else
@@ -71,7 +77,9 @@ try {
 		case 'getnzb' : {
 				$page = new SpotPage_getnzb($db, $settings, $currentSession, 
 								Array('messageid' => $req->getDef('messageid', ''),
-									  'action' => $req->getDef('action', 'display')));
+									  'action' => $req->getDef('action', 'display'),
+									  'username' => $req->getDef('username', ''),
+									  'apikey' => $req->getDef('apikey', '')));
 				$page->render();
 				break;
 		}
@@ -127,23 +135,13 @@ try {
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
-						  'sortdir' => $req->getDef('sortdir', ''))
+						  'sortdir' => $req->getDef('sortdir', ''),
+						  'username' => $req->getDef('username', ''),
+						  'apikey' => $req->getDef('apikey', ''))
 			);
 			$page->render();
 			break;
 		} # rss		
-
-		case 'atom' : {
-			// hier wordt een RSS gegenereerd. atom is nog geldig ivm backwards compatibility
-			$page = new SpotPage_rss($db, $settings, $currentSession,
-					Array('search' => $req->getDef('search', $settings->get('index_filter')),
-						  'page' => $req->getDef('page', 0),
-						  'sortby' => $req->getDef('sortby', ''),
-						  'sortdir' => $req->getDef('sortdir', ''))
-			);
-			$page->render();
-			break;
-		} # atom
 		
 		case 'statics' : {
 				$page = new SpotPage_statics($db, $settings, $currentSession,
@@ -223,7 +221,7 @@ try {
 	SpotTiming::stop('total');
 
 	# enable of disable de timer
-	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'markallasread')))) {
+	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'markallasread', 'rss')))) {
 		SpotTiming::display();
 	} # if
 	

@@ -1,8 +1,7 @@
-<?php 
-
+<?php
 if (!empty($editresult)) {
 	include 'includes/form-xmlresult.inc.php';
-	
+
 	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
 
@@ -41,5 +40,4 @@ if (empty($editresult)) {
 	</fieldset>
 </form>
 <?php
-	}
-?>
+}

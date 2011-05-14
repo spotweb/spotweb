@@ -96,7 +96,6 @@ abstract class NzbHandler_abs
 		return $path;
 	} # makeNzbLocalPath
 	
-	
 	/*
 	 * Voegt, indien nodig, een trailing slash toe
 	 */
