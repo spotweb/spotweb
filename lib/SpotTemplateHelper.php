@@ -111,7 +111,6 @@ class SpotTemplateHelper {
 		return $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
 	} # getFullSpot
 
-	
 	/*
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
 	 */
