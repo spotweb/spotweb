@@ -52,7 +52,6 @@ function openSpot(id,url) {
 		$("a[href^='http']").attr('target','_blank');
 		$(window).bind("resize", detectScrollbar);
 
-		spotRating();
 		postCommentsForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
@@ -967,27 +966,4 @@ function updateSabPanel(start,limit) {
 			}
 		}, interval);
 	});
-}
-
-// spotRating verwerken
-function spotRating() {
-	var rating = Math.round($("table.spotinfo td.rating").text());
-	if($("table.spotinfo td.rating").is(":empty") || rating == 0) {
-		$("table.spotinfo td.rating").html('N/A');
-	} else {
-		$("table.spotinfo td.rating").empty().addClass("stars");
-		var i = 1;
-		for (i = 1; i <= 10; i++) {
-			if(rating == 1) {
-				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" ster'></span>");
-			} else {
-				$("table.spotinfo td.rating").append("<span title='Deze spot heeft "+rating+" sterren'></span>");
-			}
-		}
-		$("table.spotinfo td.rating span").each(function(){
-			if($(this).index()+1 <= rating) {
-				$(this).addClass("active");
-			}
-		});
-	}
 }
