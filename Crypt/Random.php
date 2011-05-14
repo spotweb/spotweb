@@ -15,29 +15,26 @@
  * ?>
  * </code>
  *
- * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * LICENSE: This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA  02111-1307  USA
  *
  * @category   Crypt
  * @package    Crypt_Random
  * @author     Jim Wigginton <terrafrost@php.net>
  * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @license    http://www.gnu.org/licenses/lgpl.txt
  * @version    $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
  * @link       http://phpseclib.sourceforge.net
  */
@@ -64,14 +61,14 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
     }
 
     // see http://en.wikipedia.org/wiki//dev/random
-    static $urandom = true;
-    if ($urandom === true) {
-        // Warning's will be output unles the error suppression operator is used.  Errors such as
-        // "open_basedir restriction in effect", "Permission denied", "No such file or directory", etc.
-        $urandom = @fopen('/dev/urandom', 'rb');
-    }
-    if (!is_bool($urandom)) {
-        extract(unpack('Nrandom', fread($urandom, 4)));
+    // if open_basedir is enabled file_exists() will ouput an "open_basedir restriction in effect" warning,
+    // so we suppress it.
+    if (@file_exists('/dev/urandom')) {
+        static $fp;
+        if (!$fp) {
+            $fp = fopen('/dev/urandom', 'rb');
+        }
+        extract(unpack('Nrandom', fread($fp, 4)));
 
         // say $min = 0 and $max = 3.  if we didn't do abs() then we could have stuff like this:
         // -4 % 3 + 0 = -1, even though -1 < $min
