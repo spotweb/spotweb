@@ -82,7 +82,7 @@ if(sizeof($comments)>0){ ?>
 
 		foreach($comments as $comment) {
 ?>
-					<li><?php echo $comment['fromhdr']; ?> @ <?php echo $tplHelper->formatDate($comment['date'], 'comment'); ?> <br>
+					<li><?php echo $comment['fromhdr']; ?> @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> <br>
 					<?php echo join("<br>", $comment['body']); ?>
 					<br>
 					</li>
