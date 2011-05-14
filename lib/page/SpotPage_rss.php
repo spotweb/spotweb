@@ -11,12 +11,6 @@ class SpotPage_rss extends SpotPage_Abs {
 	function render() {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
-		# FIXME: in de toekomst moet dit op een hoger niveau al geregeld zijn
-		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			header('HTTP/1.1 403 Forbidden');
-			die('Error: invalid login. Please provide username & API key.');
-		}
-
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);

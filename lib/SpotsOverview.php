@@ -45,7 +45,7 @@ class SpotsOverview {
 	} # getFullSpot
 
 	function addToSeenList($msgId, $ourUserId) {
-		$this->_db->addToSpotStateList("seen", $msgId, $ourUserId);
+		$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, $msgId, $ourUserId);
 	}
 
 	/*
