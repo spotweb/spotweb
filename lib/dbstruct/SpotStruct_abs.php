@@ -440,11 +440,11 @@ abstract class SpotStruct_abs {
 		# Data van oude lists overzetten naar nieuwe tabel & Nieuwe kolom tbv API
 		if ($this->_spotdb->getSchemaVer() < 0.25) {
 			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM downloadlist;");
-			foreach($tmp as $download) { $this->_spotdb->addToSpotStateList("download", $download['messageid'], $download['ouruserid'], $download['stamp']); }
+			foreach($tmp as $download) { $this->_spotdb->addToSpotStateList(SpotDb::spotstate_Down, $download['messageid'], $download['ouruserid'], $download['stamp']); }
 			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM watchlist;");
-			foreach($tmp as $watch) { $this->_spotdb->addToSpotStateList("watch", $watch['messageid'], $watch['ouruserid'], $watch['dateadded']); }
+			foreach($tmp as $watch) { $this->_spotdb->addToSpotStateList(SpotDb::spotstate_Watch, $watch['messageid'], $watch['ouruserid'], $watch['dateadded']); }
 			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM seenlist;");
-			foreach($tmp as $seen) { $this->_spotdb->addToSpotStateList("watch", $seen['messageid'], $seen['ouruserid'], $seen['stamp']); }
+			foreach($tmp as $seen) { $this->_spotdb->addToSpotStateList(SpotDb::spotstate_Seen, $seen['messageid'], $seen['ouruserid'], $seen['stamp']); }
 
 			$this->dropTable('downloadlist');
 			$this->dropTable('watchlist');
