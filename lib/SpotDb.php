@@ -1108,7 +1108,7 @@ class SpotDb {
 
 	function verifyListType($list) {
 		switch($list) {
-			case self::spotstate_Down	: $verifiedList = 'downloads'; break;
+			case self::spotstate_Down	: $verifiedList = 'download'; break;
 			case self::spotstate_Watch	: $verifiedList = 'watch'; break;
 			case self::spotstate_Seen	: $verifiedList = 'seen'; break;
 			default						: throw new Exception("Invalid listtype given!");
