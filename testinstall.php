@@ -45,9 +45,13 @@
 <br />
 
 <table summary="Server settings">
-	<tr> <th> Server type  </th> <th> Setting </th> </tr>
-	<?php if ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] = "pdo_mysql") { ?>
+	<tr> <th> Server type </th> <th> Setting </th> </tr>
+	<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
+	<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, $settings['db']['path'], "No path entered"); ?> </td> </tr>
+	<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql") { ?>
 	<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, $settings['db']['host'], "No server entered"); ?> </td> </tr>
+	<?php } else { ?>
+	<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
 	<?php } ?>
 	<tr> <td> NNTP server </td> <td> <?php showResult(empty($settings['nntp_nzb']['host']) === false, $settings['nntp_nzb']['host'], "No server entered"); ?> </td> </tr>
 	<?php if ($settings['nntp_nzb'] != $settings['nntp_hdr']) { ?>
