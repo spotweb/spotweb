@@ -152,14 +152,14 @@ try {
 
 		case 'createuser' : {
 				$page = new SpotPage_createuser($db, $settings, $currentSession,
-							Array('createuserform' => $req->getForm('createuserform', array())));
+							Array('createuserform' => $req->getForm('createuserform', array('submit'))));
 				$page->render();
 				break;
 		} # createuser
 
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
-							Array('edituserform' => $req->getForm('edituserform', array()),
+							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete')),
 								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;
@@ -173,14 +173,14 @@ try {
 		
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
-							Array('loginform' => $req->getForm('loginform', array())));
+							Array('loginform' => $req->getForm('loginform', array('submit'))));
 				$page->render();
 				break;
 		} # login
 
 		case 'postcomment' : {
 				$page = new SpotPage_postcomment($db, $settings, $currentSession,
-							Array('commentform' => $req->getForm('postcommentform', array()),
+							Array('commentform' => $req->getForm('postcommentform', array('submit')),
 								  'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
 				break;

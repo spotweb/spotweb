@@ -27,7 +27,7 @@ class SpotUserSystem {
 	 * Creeer een nieuwe session
 	 */
 	function createNewSession($userid) {
-		# Als de user ingelogged is, creeer een sessie
+		# Als de user ingelogged	 is, creeer een sessie
 		$tmpUser = $this->getUser($userid);
 		
 		# Als dit een anonieme user is, of als de user nog nooit
@@ -355,7 +355,7 @@ class SpotUserSystem {
 	 * Verwijdert een user record
 	 */
 	function removeUser($userid) {
-		$this->deleteUser($userid);
+		$this->_db->deleteUser($userid);
 	} # removeUser()
 	
 } # class SpotUserSystem

@@ -257,11 +257,11 @@ class SpotDb {
 	 * zouden zijn waardoor anti-spam maatregelen erg lastig
 	 * worden
 	 */
-	function deleteUser($user) {
+	function deleteUser($userid) {
 		$this->_conn->modify("UPDATE users 
 								SET deleted = true
-								WHERE userid = '%s'", 
-							Array($user['userid']));
+								WHERE id = '%s'", 
+							Array( (int) $userid));
 	} # deleteUser
 
 	/*

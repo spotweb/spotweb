@@ -168,8 +168,8 @@ class SpotTemplateHelper {
 	/*
 	 * Creeert de url voor het bewerken van een bestaande user
 	 */
-	function makeEditUserUrl($userid) {
-		return $this->makeBaseUrl("path") . "?page=edituser&amp;userid=" . (int) $userid;
+	function makeEditUserUrl($userid, $action) {
+		return $this->makeBaseUrl("path") . "?page=edituser&amp;userid=" . ((int) $userid) . '&amp;action=' . $action;
 	} # makeEditUserUrl
 
 	/*
