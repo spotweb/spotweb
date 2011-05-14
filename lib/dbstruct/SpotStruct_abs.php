@@ -437,9 +437,6 @@ abstract class SpotStruct_abs {
 			$tmp = $this->_dbcon->arrayQuery("SELECT * FROM seenlist;");
 			foreach($tmp as $seen) { $this->_spotdb->addToSpotStateList(SpotDb::spotstate_Seen, $seen['messageid'], $seen['ouruserid'], $seen['stamp']); }
 
-			$this->dropTable('downloadlist');
-			$this->dropTable('watchlist');
-			$this->dropTable('seenlist');
 			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			
 			# messageid's zijn per definitie al uniek, een dubbele index is dus overbodig
@@ -447,6 +444,11 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_commentsxover_2", "commentsxover");
 			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "messageid");
 			$this->addIndex("idx_commentsxover_2", "", "commentsxover", "nntpref");
+			
+			# en de oude tabellen zijn niet meer nodig
+			$this->dropTable('downloadlist');
+			$this->dropTable('watchlist');
+			$this->dropTable('seenlist');
 		}
 			
 		# voeg het database schema versie nummer toe
