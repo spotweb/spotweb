@@ -1081,7 +1081,7 @@ class SpotDb {
 										Array($messageId, (int) $ourUserId, $stamp));
 								} # if
 							break;
-			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
+			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
 										Array($messageId, (int) $ourUserId, $stamp, $stamp));
 		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
