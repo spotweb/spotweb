@@ -35,7 +35,10 @@ if (empty($editresult)) {
 			<dt><label for="edituserform[apikey]">API key</label></dt>
 			<dd><input type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>"></dd>
 
-			<dd><input class="greyButton" type="submit" name="edituserform[submit]" value="Bijwerken"></dd>
+			<dd>
+				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
+				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="Wis gebruiker">
+			</dd>
 		</dl>
 	</fieldset>
 </form>

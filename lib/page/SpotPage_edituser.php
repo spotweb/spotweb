@@ -29,15 +29,28 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$editResult = array('result' => 'failure');
 		} # if
 		
+		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
+		$formAction = '';
+		if (isset($this->_editUserForm['submitedit'])) {
+			$formAction = 'edit';
+			unset($this->_editUserForm['submitedit']);
+		} elseif (isset($this->_editUserForm['submitdelete'])) {
+			$formAction = 'delete';
+			unset($this->_editUserForm['submitdelete']);
+		} # else
+		
 		# Is dit een submit van een form, of nog maar de aanroep?
-		if (isset($this->_editUserForm['submit']) && (empty($formMessages['errors']))) {
-			# submit unsetten we altijd
-			unset($this->_editUserForm['submit']);
-					
-			switch($this->_editUserForm['action']) {
+		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+			switch($formAction) {
 				case 'delete' : {
-					$spotUserSystem->removeUser($spotUser['userid']);
-					$editResult = array('result' => 'success');
+					$spotUser = array_merge($spotUser, $this->_editUserForm);
+					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
+						$editResult = array('result' => 'failure');
+					} else {
+						$spotUserSystem->removeUser($spotUser['userid']);
+						$editResult = array('result' => 'success');
+					} # else
 						
 					break;
 				} # case delete

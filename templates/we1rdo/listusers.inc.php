@@ -12,6 +12,7 @@
 						<th>Achternaam</th>
 						<th>Mail</th>
 						<th>Laatste bezoek</th>
+						<th>Remove</th>
 					</tr>
 				</thead>
 				<tbody id="userlist">
@@ -26,7 +27,7 @@
 	if ($user['userid'] == 1) {
 		echo $user['username'];
 	} else {
-		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid']) . '">' . $user['username'] . '</a>'; 
+		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '">' . $user['username'] . '</a>'; 
 	} # else
 ?> 
 						</td>
