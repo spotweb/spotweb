@@ -825,7 +825,7 @@ class Crypt_RSA {
                 }
 
                 $components = array();
-
+				
                 if (ord($this->_string_shift($key)) != CRYPT_RSA_ASN1_SEQUENCE) {
                     return false;
                 }
@@ -833,7 +833,42 @@ class Crypt_RSA {
                     return false;
                 }
 
-                $tag = ord($this->_string_shift($key));
+				$tag = ord($this->_string_shift($key));
+				if ($tag == CRYPT_RSA_ASN1_INTEGER) {
+					/*
+					 intended for keys for which openssl's asn1parse returns the following:
+					 
+						0:d=0  hl=4 l= 631 cons: SEQUENCE
+						4:d=1  hl=2 l=   1 prim:  INTEGER           :00
+						7:d=1  hl=2 l=  13 cons:  SEQUENCE
+						9:d=2  hl=2 l=   9 prim:   OBJECT            :rsaEncryption
+					   20:d=2  hl=2 l=   0 prim:   NULL
+					   22:d=1  hl=4 l= 609 prim:  OCTET STRING      [HEX DUMP]
+					*/
+                    $tag = ord($this->_string_shift($key, $this->_decodeLength($key)));
+					
+					/* Read the sequence with the object in it */
+                    if (ord($this->_string_shift($key)) != CRYPT_RSA_ASN1_SEQUENCE) {
+                        return false;
+                    }
+					
+					/* skip over the rsaEncryption object and over the trailing NULL */
+                    $encLength = $this->_decodeLength($key);
+					$this->_string_shift($key, $encLength);                   
+
+                    if (ord($this->_string_shift($key)) != 4) { /* skip over the OCTET STRING tag */
+						return false;
+					} # if
+					$this->_decodeLength($key); // skip over the OCTET STRING length
+					
+					/* Inside this package we will find another ASN1 sequence and length, 
+					   because at this time in the parser, it is expected to be beyond this,
+					   skip it */
+                    $this->_string_shift($key); // skip over the sequence tag
+					$this->_decodeLength($key); // skip over the sequence length
+					$tag = ord($this->_string_shift($key));
+				} # if
+
                 if ($tag == CRYPT_RSA_ASN1_SEQUENCE) {
                     /* intended for keys for which OpenSSL's asn1parse returns the following:
 
@@ -844,7 +879,7 @@ class Crypt_RSA {
                        19:d=1  hl=4 l= 271 prim:  BIT STRING */
                     $this->_string_shift($key, $this->_decodeLength($key));
                     $this->_string_shift($key); // skip over the BIT STRING tag
-                    $this->_decodeLength($key); // skip over the BIT STRING length
+					$this->_decodeLength($key); // skip over the BIT STRING length
                     // "The initial octet shall encode, as an unsigned binary integer wtih bit 1 as the least significant bit, the number of
                     //  unused bits in teh final subsequent octet. The number shall be in the range zero to seven."
                     //  -- http://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf (section 8.6.2.2)
@@ -863,6 +898,7 @@ class Crypt_RSA {
 
                 $length = $this->_decodeLength($key);
                 $temp = $this->_string_shift($key, $length);
+
                 if (strlen($temp) != 1 || ord($temp) > 2) {
                     $components['modulus'] = new Math_BigInteger($temp, -256);
                     $this->_string_shift($key); // skip over CRYPT_RSA_ASN1_INTEGER
@@ -919,7 +955,7 @@ class Crypt_RSA {
                         $components['coefficients'][] = new Math_BigInteger($this->_string_shift($key, $length), -256);
                     }
                 }
-
+				
                 return $components;
             case CRYPT_RSA_PUBLIC_FORMAT_OPENSSH:
                 $key = base64_decode(preg_replace('#^ssh-rsa | .+$#', '', $key));
