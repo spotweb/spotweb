@@ -418,15 +418,6 @@ abstract class SpotStruct_abs {
 
 		} # if
 
-		# Commentsxover krijgt nieuwe UNIQUE indexen
-		if ($this->_spotdb->getSchemaVer() < 0.23) {
-			$this->dropIndex("idx_commentsxover_1", "commentsxover");
-			$this->dropIndex("idx_commentsxover_2", "commentsxover");
-
-			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "nntpref,messageid");
-			$this->addIndex("idx_commentsxover_2", "UNIQUE", "commentsxover", "messageid");
-		} # if
-
 		# Gebruikers krijgen een API key toegewezen
 		if ($this->_spotdb->getSchemaVer() < 0.24) {
 			$this->addColumn('apikey', 'users', "VARCHAR(32) DEFAULT '' NOT NULL");
@@ -450,6 +441,12 @@ abstract class SpotStruct_abs {
 			$this->dropTable('watchlist');
 			$this->dropTable('seenlist');
 			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
+			
+			# messageid's zijn per definitie al uniek, een dubbele index is dus overbodig
+			$this->dropIndex("idx_commentsxover_1", "commentsxover");
+			$this->dropIndex("idx_commentsxover_2", "commentsxover");
+			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "messageid");
+			$this->addIndex("idx_commentsxover_2", "INDEX", "commentsxover", "nntpref");
 		}
 			
 		# voeg het database schema versie nummer toe

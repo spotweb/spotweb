@@ -144,7 +144,7 @@ catch(Exception $x) {
 	die();
 } # catch
 
-## rSpotStateList cleanup
+## SpotStateList cleanup
 try {
 	$db->cleanSpotStateList();
 } catch(Exception $x) {
