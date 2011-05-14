@@ -446,7 +446,7 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_commentsxover_1", "commentsxover");
 			$this->dropIndex("idx_commentsxover_2", "commentsxover");
 			$this->addIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", "messageid");
-			$this->addIndex("idx_commentsxover_2", "INDEX", "commentsxover", "nntpref");
+			$this->addIndex("idx_commentsxover_2", "", "commentsxover", "nntpref");
 		}
 			
 		# voeg het database schema versie nummer toe
