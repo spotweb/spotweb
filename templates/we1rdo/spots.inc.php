@@ -162,4 +162,4 @@
 
 <?php 
 	/* Render de footer template */
-	require_once "footer.inc.php";
+	require_once "includes/footer.inc.php";
