@@ -572,6 +572,13 @@ class SpotTemplateHelper {
 	} # formMessageToString
 
 	/*
+	 * Geeft de lijst met users terug
+	 */
+	function getUserList() {
+		return $this->_db->listUsers('', 0, 9999);
+	} # getUserList
+	
+	/*
 	 * Genereert een random string
 	 */
 	function getSessionCalculatedUserId() {

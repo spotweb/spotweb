@@ -1,8 +1,10 @@
 <?php 
+	require_once "includes/header.inc.php";
+	
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-		<div class="spots">
-			<table class="spots" summary="Spots">
+		<div class="listusers">
+			<table class="spotslistusers" summary="Users">
 				<thead>
 					<tr class="head">
 						<th>Username</th> 
@@ -32,3 +34,7 @@
 		</div>
 		
 		<div class="clear"></div>
+
+<?php
+	require_once "includes/footer.inc.php";
+?>
