@@ -159,11 +159,18 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 
 	/*
-	 * Creeert de action url voor het aanmaken van de user
+	 * Creeert de action url voor het aanmaken van de user (gebruikt in form post actions)
 	 */
 	function makeEditUserAction() {
 		return $this->makeBaseUrl("path") . "?page=edituser";
 	} # makeEditUserAction
+	
+	/*
+	 * Creeert de url voor het bewerken van een bestaande user
+	 */
+	function makeEditUserUrl($userid) {
+		return $this->makeBaseUrl("path") . "?page=edituser&amp;userid=" . (int) $userid;
+	} # makeEditUserUrl
 
 	/*
 	 * Creeert de action url voor het inloggen van een user
