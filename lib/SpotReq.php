@@ -17,7 +17,7 @@ class SpotReq {
 		}
     }    
 	
-	function getForm($formName) {
+	function getForm($formName, $submitNames) {
 		if (isset($_POST[$formName])) {
 			$form = $_POST[$formName]; 
 		} else {
@@ -26,14 +26,22 @@ class SpotReq {
 		
 		$form = $this->cleanup($form);
 		
-		if (isset($form['submit'])) {
-			if ($form['submit']) {
-				if (!$this->isXsrfValid($formName)) {
-					unset($form['submit']);
+		foreach($submitNames as $submitName) {
+			if (isset($form[$submitName])) {
+				if ($form[$submitName]) {
+				
+					/* Als er een ongeldige XSRF value is gegeven, moeten we 
+					   alle submit butotns verwijderen */
+					if (!$this->isXsrfValid($formName)) {
+						foreach($submitNames as $tmpName) {
+							unset($form[$tmpName]);
+						} # foreach
+					} # if
+					
 				} # if
 			} # if
-		} # if
-
+		} # foreach
+		
 		return $form;
 	} # getForm
     
