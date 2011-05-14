@@ -1,4 +1,8 @@
 <?php 
+	/* Render de header en filter templates */
+	require_once "header.inc.php";
+	require_once "filters.inc.php";
+	
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
             <div class="spots">
@@ -155,3 +159,7 @@
 			
 		</div>
 		<div class="clear"></div>
+
+<?php 
+	/* Render de footer template */
+	require_once "footer.inc.php";

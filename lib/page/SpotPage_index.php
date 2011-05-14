@@ -65,23 +65,16 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->_pageTitle = "overzicht";
 		
 		#- display stuff -#
-		$this->template('header', array('activefilter' => $this->_params['search']));
-
-		$this->template('filters', array('search' => $this->_params['search'],
-								  'lastupdate' => $lastUpdateTime,
-								  'quicklinks' => $this->_settings->get('quicklinks'),
-								  'filters' => $this->_settings->get('filters'),
-  								  'activefilter' => $this->_params['search'],
-								  'sortby' => $this->_params['sortby'],
-								  'sortdir' => $this->_params['sortdir']));
-		$this->template('spots', array('spots' => $spotsTmp['list'],
+		$this->template('spots', array(
+								'spots' => $spotsTmp['list'],
+								'quicklinks' => $this->_settings->get('quicklinks'),
+								'filters' => $this->_settings->get('filters'),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'lastupdate' => $lastUpdateTime,
 								'activefilter' => $this->_params['search'],
 								'sortby' => $this->_params['sortby'],
 								'sortdir' => $this->_params['sortdir']));
-		$this->template('footer');
 		SpotTiming::stop(__FUNCTION__);
 	} # render()
 	

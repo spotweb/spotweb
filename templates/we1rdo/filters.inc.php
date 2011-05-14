@@ -17,27 +17,27 @@
 
                 <form id="filterform" action="">
 <?php
-	$search = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $search);
+	$activefilter = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $activefilter);
 	
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
 	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
 	$searchType = 'Titel';
-	if (isset($search['filterValues'])) {
-		foreach(array_keys($search['filterValues']) as $filterType) {
+	if (isset($activefilter['filterValues'])) {
+		foreach(array_keys($activefilter['filterValues']) as $filterType) {
 			$searchType = $filterType;
 		} # foreach
 	} # if 
 ?>
-                    <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $search['tree']; ?>"></div>
+                    <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
 	$filterColCount = 3;
 	if ($settings->get('retrieve_full')) {
 		$filterColCount++;
 	} # if
 ?>
-                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($search['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($activefilter['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
@@ -51,16 +51,16 @@
                         </ul>
 
 						<h4 class="sorting">Sorteren op:</h4>
-                        <div><input type="hidden" name="sortdir" value="<?php if($search['sortby'] == "stamp") {echo "DESC";} else {echo "ASC";} ?>"></div>
+                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp") {echo "DESC";} else {echo "ASC";} ?>"></div>
                         <ul class="search sorting">
-                            <li> <input type="radio" name="sortby" value="" <?php echo $search['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
-                        	<li> <input type="radio" name="sortby" value="title" <?php echo $search['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
-                            <li> <input type="radio" name="sortby" value="poster" <?php echo $search['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
-                        	<li> <input type="radio" name="sortby" value="stamp" <?php echo $search['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+                            <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
+                        	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
+                            <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
+                        	<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
                         </ul>
 
 						<h4>Filtering</h4>
-                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true" <?php echo $search['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
+                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
     
                         <div id="tree"></div>
                     </div>
