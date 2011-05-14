@@ -12,6 +12,7 @@
 						<th>Achternaam</th>
 						<th>Mail</th>
 						<th>Laatste bezoek</th>
+						<th>Remove</th>
 					</tr>
 				</thead>
 				<tbody id="userlist">
@@ -34,6 +35,14 @@
 						<td> <?php echo $user['lastname']; ?> </td>
 						<td> <?php echo $user['mail']; ?> </td>
 						<td> <?php echo $tplHelper->formatDate($user['lastvisit'], 'userlist'); ?> </td>
+<?php 
+	# We kunnen de anonymous user niet wissen
+	if ($user['userid'] == 1) {
+		echo $user['username'];
+	} else {
+		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid']) . '">' . $user['username'] . '</a>'; 
+	} # else
+?> 
 					</tr>
 <?php
 	}
