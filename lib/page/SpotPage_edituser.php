@@ -53,7 +53,9 @@ class SpotPage_edituser extends SpotPage_Abs {
 						
 						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
 						# het wachtwoord ook
-						$spotUserSystem->setUserPassword($spotUser);
+						if (!empty($spotUser)) {
+							$spotUserSystem->setUserPassword($spotUser);
+						} # if
 						
 						# als het toevoegen van de user gelukt is, laat het weten
 						$editResult = array('result' => 'success');
