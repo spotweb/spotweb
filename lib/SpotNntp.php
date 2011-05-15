@@ -145,8 +145,8 @@ class SpotNntp {
 					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'usersignature' => '', 
 										'user-key' => '', 'userid' => '', 'verified' => false);
 										
-					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment . '>'));
-					$tmpAr['messageid'] = $comment;
+					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
+					$tmpAr['messageid'] = $comment['messageid'];
 
 					# extract de velden we die we willen hebben
 					foreach($tmpAr['header'] as $hdr) {
