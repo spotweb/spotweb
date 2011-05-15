@@ -76,7 +76,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('hashcash', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('body', 'commentsfull', 'TEXT');
 			$this->addColumn('verified', 'commentsfull', 'BOOLEAN');
-			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid,ouruserid");
+			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid");
 			$this->addIndex("idx_commentsfull_2", "", "commentsfull", "messageid,stamp");
 		} # if
 
