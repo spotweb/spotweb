@@ -7,7 +7,9 @@
 				persist: false, // Persist expand-status to a cookie
 				selectMode: 3, //  1:single, 2:multi, 3:multi-hier
 			    clickFolderMode: 2, // 1:activate, 2:expand, 3:activate and expand
-				
+			    ajaxDefaults: { // Used by initAjax option
+					cache: true // false: Append random '_' argument to the request url to prevent caching.
+				},
 				onPostInit: function(isReloading, isError) {
 					var formField = $("#search-tree");
 					matchTree(formField[0].value, false);
