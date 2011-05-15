@@ -85,7 +85,6 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					$spotMsgIdList[] = $msgheader['References'];
-
 					
 					# als dit een nieuw soort comment is met rating vul die dan ook op
 					if (count($msgIdParts) == 5) {
