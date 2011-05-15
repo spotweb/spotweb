@@ -295,7 +295,7 @@ abstract class SpotStruct_abs {
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
-			$this->addIndex("idx_users_3", "", "users", "mail,deleted");
+			$this->addIndex("idx_users_3", "", "users", "deleted");
 		} # if
 		
 		# users tabel aanmaken als hij nog niet bestaat
@@ -473,6 +473,11 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE usersettings ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
 			$this->_dbcon->rawExec("ALTER TABLE sessions ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
 			$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+		}
+		# een foute index herstellen
+		if ($this->_spotdb->getSchemaVer() < 0.26) {
+			$this->dropIndex("idx_users_3", "users");
+			$this->addIndex("idx_users_3", "", "users", "deleted");
 		}
 			
 		# voeg het database schema versie nummer toe
