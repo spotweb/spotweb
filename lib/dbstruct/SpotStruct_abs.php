@@ -463,6 +463,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE users ENGINE=InnoDB;");
 			$this->_dbcon->rawExec("ALTER TABLE usersettings ENGINE=InnoDB;");
 			$this->_dbcon->rawExec("ALTER TABLE sessions ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE settings ENGINE=InnoDB;");
 
 			# indexen aanmaken voor het gebruik van relaties
 			$this->addIndex("idx_sessionsrel_1", "", "sessions", "userid");
