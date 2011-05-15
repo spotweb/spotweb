@@ -63,64 +63,62 @@ class SpotsOverview {
 			return array();
 		} # if
 	
-		# Vraag een lijst op met alle comments messageid's
-		$commentList = $this->_db->getCommentRef($msgId);
+		# Bereken wat waardes zodat we dat niet steeds moeten doen
+		$totalCommentsNeeded = ($start + $length);
 		
-		# we hebben nu de lijst met messageid's, vraag die full
-		# comments op die al in de database zitten
-		$fullComments = $this->_db->getCommentsFull($commentList);
-		
-		# loop nu door de commentids heen, en die unsetten we feitelijk
-		# in the commentlist
-		foreach($fullComments as $fullComment) {
-			unset($commentList[array_search($fullComment['messageid'], $commentList)]);
-		} # foreach
+		SpotTiming::start(__FUNCTION__);
 
+		# vraag een lijst op met comments welke in de database zitten en
+		# als er een fullcomment voor bestaat, vraag die ook meteen op
+		$fullComments = $this->_db->getCommentsFull($msgId);
+		
+		# Nu gaan we op zoek naar het eerste comment dat nog volledig opgehaald
+		# moet worden. Niet verified comments negeren we.
+		$haveFullCount = 0;
+		$lastHaveFullOffset = -1;
+		$retrievedVerified = 0;
+		for ($i = 0; $i < count($fullComments); $i++) {
+			if ($fullComments[$i]['havefull']) {
+				$haveFullCount++;
+				$lastHaveFullOffset = $i;
+				
+				if ($fullComments[$i]['verified']) {
+					$retrievedVerified++;
+				} # if
+			} # if
+		} # for
+		
 		# en haal de overgebleven comments op van de NNTP server
-		if (!empty($commentList)) {
+		if ($retrievedVerified < $totalCommentsNeeded) {
 			# Als we de comments maar in delen moeten ophalen, gaan we loopen tot we
 			# net genoeg comments hebben. We moeten wel loopen omdat we niet weten 
 			# welke comments verified zijn tot we ze opgehaald hebben
 			if (($start > 0) || ($length > 0)) {
 				$newComments = array();
-				
-				# tmpoffset is puur de offset van de nog op te halen comments, heeft
-				# op zich niks te maken met de pagina nummering
-				$tmpOffset = 0;
-				
-				# we houden een aparte counter bij voor de geverifieerde spot, dit is omdat
-				# als we newcomments zouden filteren wat betreft verified spots, we de niet
-				# verified spots niet in de datbase zouden stoppen. Dit zou er dna weer voor
-				# zorgen dat we die steeds bij elke run moeten ophalen van de NNTP server.
-				$retrievedVerified = 0;
-				
+			
 				# en ga ze ophalen
-				while (($retrievedVerified < $length) && ( ($tmpOffset) < count($commentList) )) {
-					$tempList = $nntp->getComments(array_slice($commentList, $tmpOffset, $tmpOffset + $length));
-					#file_put_contents("/tmp/test.txt", "Retrieved remaining comment: " . $tmpOffset . " to: " . ($tmpOffset + $length) . "\r\n", FILE_APPEND);
-					#file_put_contents("/tmp/test.txt", ", commentList count: " . count($commentList) . "\r\n", FILE_APPEND);
+				while (($retrievedVerified < $totalCommentsNeeded) && ( ($lastHaveFullOffset) < count($fullComments) )) {
+					SpotTiming::start(__FUNCTION__);
+					$tempList = $nntp->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
+					SpotTiming::stop(__FUNCTION__ . ':nntp:getComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
 				
-					$tmpOffset += $length;
+					$lastHaveFullOffset += $length;
 					foreach($tempList as $comment) {
 						$newComments[] = $comment;
 						if ($comment['verified']) {
 							$retrievedVerified++;
 						} # if
 					} # foreach
-
-					#file_put_contents("/tmp/test.txt", ", tempList count: " . count($tempList) . "\r\n", FILE_APPEND);
-					#file_put_contents("/tmp/test.txt", ", newComment count: " . count($newComments) . "\r\n", FILE_APPEND);
-					#file_put_contents("/tmp/test.txt", ", fullComment count: " . count($fullComments) . "\r\n", FILE_APPEND);
 				} # while
 			} else {
-				$newComments = $nntp->getComments($commentList);
+				$newComments = $nntp->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, count($fullComments)));
 			} # else
 			
 			# voeg ze aan de database toe
 			$this->_db->addCommentsFull($newComments);
 			
 			# en voeg de oude en de nieuwe comments samen
-			$fullComments = array_merge($fullComments, $newComments);
+			$fullComments = $this->_db->getCommentsFull($msgId);
 		} # foreach
 		
 		# filter de comments op enkel geverifieerde comments
@@ -131,10 +129,11 @@ class SpotsOverview {
 		if (($start > 0) || ($length > 0)) {
 			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
-
+		
 		# omdat we soms array elementen unsetten, is de array niet meer
 		# volledig oplopend. We laten daarom de array hernummeren
-		return array_values($fullComments);
+		SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
+		return $fullComments;
 	} # getSpotComments()
 	
 	/* 
@@ -152,7 +151,7 @@ class SpotsOverview {
 	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
 	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
-		SpotTiming::start(__FUNCTION__, array($ourUserId, $start, $limit, $parsedSearch, $sort));
+		SpotTiming::start(__FUNCTION__);
 		# als er geen sorteer veld opgegeven is, dan sorteren we niet
 		if ($sort['field'] == '') {
 			$sort = array();
