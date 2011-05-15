@@ -33,7 +33,7 @@ if (empty($editresult)) {
 			<dd><input type="text" name="edituserform[mail]"  value="<?php echo htmlspecialchars($edituserform['mail']); ?>"></dd>
 
 			<dt><label for="edituserform[apikey]">API key</label></dt>
-			<dd><input class="withicon" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>"> <img src="images/icons/refresh.png"> </dd>
+			<dd><input class="withicon" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>"> <img src="images/icons/refresh.png" alt="Nieuwe API key aanmaken (nog niet actief)"> </dd>
 
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
