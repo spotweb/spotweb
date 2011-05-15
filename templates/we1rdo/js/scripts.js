@@ -742,7 +742,7 @@ function drawGraph(currentSpeed,interval) {
 	var maxspeed = 0;
 	var i = 0;
 	for (i = 0; i <= numXLabels; i++) {
-		if(speed[i].value >= maxspeed) {
+		if(Math.round(speed[i].value) >= Math.round(maxspeed)) {
 			var maxspeed = speed[i].value;
 		}
 	};
