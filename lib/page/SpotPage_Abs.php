@@ -15,7 +15,6 @@ abstract class SpotPage_Abs {
 	function getTplHelper($params) {
 		if (file_exists('templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php')) {
 			require_once 'templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php';
-			
 			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentSession, $this->_db, $params);
 		} else {
 			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_db, $params);
