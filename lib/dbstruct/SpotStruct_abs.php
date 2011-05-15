@@ -458,6 +458,22 @@ abstract class SpotStruct_abs {
 			$this->dropTable('watchlist');
 			$this->dropTable('seenlist');
 		}
+		
+		# Een paar tabellen omzetten naar InnoDB
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.26)) {
+			$this->_dbcon->rawExec("ALTER TABLE users ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE usersettings ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE sessions ENGINE=InnoDB;");
+
+			# indexen aanmaken voor het gebruik van relaties
+			$this->addIndex("idx_sessionsrel_1", "", "sessions", "userid");
+			$this->addIndex("idx_spotstatelistrel_1", "", "spotstatelist", "ouruserid");
+
+			#relaties aanleggen
+			$this->_dbcon->rawExec("ALTER TABLE usersettings ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE sessions ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+		}
 			
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
