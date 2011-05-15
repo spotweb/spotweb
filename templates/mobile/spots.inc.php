@@ -1,4 +1,8 @@
-<?php 
+<?php
+/* Render de header en filter templates */
+require_once "header.inc.php";
+require_once "filters.inc.php";
+
 $getUrl = $tplHelper->getQueryParams();
 $setpath = $tplHelper->makeBaseUrl("path");
 ?>
@@ -44,8 +48,6 @@ $count = 0;
 	<div class="ui-block-b"><a href="<?php echo $setpath;?>index.php?direction=next&amp;pagenr=<?php echo $nextPage;?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
 	<?php } ?>   
 </fieldset>
-
-
-		
-
-		
+<?php
+/* Render de footer template */
+require_once "footer.inc.php";
