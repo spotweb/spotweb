@@ -1,4 +1,5 @@
 <?php
+	require_once "includes/header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
 ?>
         <div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
