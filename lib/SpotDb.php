@@ -886,25 +886,14 @@ class SpotDb {
 	} # updateSpotCommentCount
 
 	/*
-	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
+	 * Vraag de volledige commentaar lijst op, gaat er van uit dat er al een commentsxover entry is
 	 */
-	function getCommentsFull($commentMsgIds) {
-		# als er geen comments gevraagd worden, vragen we het niet eens aan de db
-		if (empty($commentMsgIds)) {
-			return array();
-		} # if
-
+	function getCommentsFull($nntpRef) {
 		SpotTiming::start(__FUNCTION__);
 
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($commentMsgIds as $msgId) {
-			$msgIdList .= "'" . $this->_conn->safe($msgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
 		# en vraag de comments daadwerkelijk op
-		$commentList = $this->_conn->arrayQuery("SELECT f.messageid AS messageid, 
+		$commentList = $this->_conn->arrayQuery("SELECT c.messageid AS messageid, 
+														(f.messageid IS NOT NULL) AS havefull,
 														f.fromhdr AS fromhdr, 
 														f.stamp AS stamp, 
 														f.usersignature AS usersignature, 
@@ -914,30 +903,20 @@ class SpotDb {
 														f.verified AS verified,
 														c.spotrating AS spotrating 
 													FROM commentsfull f 
-													JOIN commentsxover c on (f.messageid = c.messageid)
-													WHERE f.messageid IN (" . $msgIdList . ")", array());
+													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
+													WHERE c.nntpref = '%s'
+													ORDER BY c.id", array($nntpRef));
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
-			$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
-			$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+			if ($commentList[$i]['havefull']) {
+				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
+				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+			} # if
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($commentMsgIds));
+		SpotTiming::stop(__FUNCTION__);
 		return $commentList;
 	} # getCommentsFull
-
-	/*
-	 * Geef al het commentaar references voor een specifieke spot terug
-	 */
-	function getCommentRef($nntpref) {
-		$tmpList = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE nntpref = '%s'", Array($nntpref));
-		$msgIdList = array();
-		foreach($tmpList as $value) {
-			$msgIdList[] = $value['messageid'];
-		} # foreach
-
-		return $msgIdList;
-	} # getCommentRef
 
 	/*
 	 * Geeft huidig database schema versie nummer terug
