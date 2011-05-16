@@ -128,11 +128,10 @@ class SpotTemplateHelper {
 	 * Geef het volledige URL of path naar Spotweb terug
 	 */
 	function makeBaseUrl($type) {
-		if ($type == "path") {
-			return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH);
-		} else {
-			return $this->_settings->get('spotweburl');
-		}
+		switch ($type) {
+			case 'path'	: return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH); break;
+			default		: return $this->_settings->get('spotweburl');
+		} # switch
 	} # makeBaseurl
 
 	/*
