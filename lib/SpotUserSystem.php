@@ -262,11 +262,11 @@ class SpotUserSystem {
 	/*
 	 * Update een gebruikers' API key
 	 */
-	function setUserApi($user) {
-		# converteer het password naar een pass hash
+	function resetUserApi($user) {
 		$user['apikey'] = md5($this->generateUniqueId());
 		
 		$this->_db->setUser($user);
+		return $user;
 	} # setUserApi
 
 	/*

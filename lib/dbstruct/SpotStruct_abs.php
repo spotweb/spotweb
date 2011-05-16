@@ -76,8 +76,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('hashcash', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('body', 'commentsfull', 'TEXT');
 			$this->addColumn('verified', 'commentsfull', 'BOOLEAN');
-			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid,ouruserid");
-			$this->addIndex("idx_commentsfull_2", "", "commentsfull", "messageid,stamp");
+			$this->addIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", "messageid");
 		} # if
 
 		# voeg de spotrating kolom toe
@@ -296,7 +295,7 @@ abstract class SpotStruct_abs {
 			
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
-			$this->addIndex("idx_users_3", "", "users", "mail,deleted");
+			$this->addIndex("idx_users_3", "", "users", "deleted");
 		} # if
 		
 		# users tabel aanmaken als hij nog niet bestaat
@@ -457,6 +456,28 @@ abstract class SpotStruct_abs {
 			$this->dropTable('downloadlist');
 			$this->dropTable('watchlist');
 			$this->dropTable('seenlist');
+		}
+		
+		# Een paar tabellen omzetten naar InnoDB
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.26)) {
+			$this->_dbcon->rawExec("ALTER TABLE users ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE usersettings ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE sessions ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE settings ENGINE=InnoDB;");
+
+			# indexen aanmaken voor het gebruik van relaties
+			$this->addIndex("idx_sessionsrel_1", "", "sessions", "userid");
+			$this->addIndex("idx_spotstatelistrel_1", "", "spotstatelist", "ouruserid");
+
+			#relaties aanleggen
+			$this->_dbcon->rawExec("ALTER TABLE usersettings ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE sessions ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+		}
+		# een foute index herstellen
+		if ($this->_spotdb->getSchemaVer() < 0.26) {
+			$this->dropIndex("idx_users_3", "users");
+			$this->addIndex("idx_users_3", "", "users", "deleted");
 		}
 			
 		# voeg het database schema versie nummer toe

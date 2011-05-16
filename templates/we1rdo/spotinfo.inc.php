@@ -120,3 +120,5 @@ echo "</th>";
                 loadComments(messageid,'5','0');
 			});
 		</script>
+<?
+require_once "includes/footer.inc.php";

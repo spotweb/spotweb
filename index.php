@@ -170,7 +170,7 @@ try {
 				$page->render();
 				break;
 		} # listusers
-		
+
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform', array('submit'))));
@@ -185,7 +185,7 @@ try {
 				$page->render();
 				break;
 		} # postcomment
-		
+
 		case 'logout' : {
 				$page = new SpotPage_logout($db, $settings, $currentSession);
 				$page->render();

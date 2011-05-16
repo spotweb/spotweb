@@ -376,6 +376,8 @@ div.details div.comments li:last-child:first-child {-moz-border-radius:4px; -web
 div.details div.comments li.firstComment,
 div.details div.comments li:first-child {-moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0; border-radius:4px 4px 0 0;}
 div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; border-radius:0 0 4px 4px;}
+div.details div.comments li span.rating {float:right; display:block; width:47px; height:18px; margin:1px 0 1px 5px; background:url(img/sprite.png) no-repeat 0 -111px;}
+div.details div.comments li span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(img/sprite_x.png) repeat-x 0 -127px;}
 
 div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec;}
 div.details div.comments li.addComment a.togglePostComment {position:relative; display:block; cursor:pointer; font-weight:bold; line-height: 18px;}
@@ -433,3 +435,4 @@ div.userPanel form dd {margin:0;}
 div.userPanel form input[type=password],
 div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; width:220px;}
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
+div.userpanel form input.withicon {width:200px;}
