@@ -39,7 +39,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 			unset($this->_editUserForm['submitdelete']);
 		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
 			$formAction = 'resetapi';
-			unset($this->_editUserForm['submitdelete']);
+			unset($this->_editUserForm['submitresetuserapi']);
 		} # else
 
 		# Is dit een submit van een form, of nog maar de aanroep?
