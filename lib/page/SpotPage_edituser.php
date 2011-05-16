@@ -82,7 +82,6 @@ class SpotPage_edituser extends SpotPage_Abs {
 				} # case 'edit' 
 
 				case 'resetapi' : {
-					$spotUser = array_merge($spotUser, $this->_editUserForm);
 					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
 						$editResult = array('result' => 'failure');
