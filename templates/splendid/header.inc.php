@@ -28,7 +28,6 @@
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery-ui.custom.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery.cookie.js' type='text/javascript'></script>
-		
 		<script src='templates/splendid/js/gen_tree.js' type='text/javascript'></script>
 		<script src='templates/splendid/js/scripts.js' type='text/javascript'></script>
 
@@ -51,19 +50,19 @@
 				'transitionOut'	: 'none',
 				'type'			: 'iframe'
 			})
-			
+
 		});
 		var min_width = 295;
 		</script>
 		<!--[if IE]><script type='text/javascript'>var min_width = 315;</script><![endif]-->
 	</head>
-	
+
 	<body>
-		
+
 		<div id="download_menu">
 		  <div><a onclick="downloadMultiple()">Download <span id="total_spots"></span></a></div>
 		</div>
-		
+
 		<div class="container">
 			<div id="page_header" align="center">
 			  <?php if(empty($_GET['page']) || $_GET['page'] == 'index') { ?>
