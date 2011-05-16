@@ -327,7 +327,7 @@ $(function(){
 // Pas sorteervolgorde aan voor datum
 $(function(){
 	$("ul.sorting input").click(function() {
-		if($(this).val() == 'stamp') {
+		if($(this).val() == 'stamp' || $(this).val() == 'commentcount' || $(this).val() == 'spotrating') {
 			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
 		} else {
 			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
