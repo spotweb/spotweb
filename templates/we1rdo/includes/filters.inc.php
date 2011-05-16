@@ -51,12 +51,14 @@
                         </ul>
 
 						<h4 class="sorting">Sorteren op:</h4>
-                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp") {echo "DESC";} else {echo "ASC";} ?>"></div>
+                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>"></div>
                         <ul class="search sorting">
                             <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
                         	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
                             <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
                         	<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+                            <li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
+                            <li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
                         </ul>
 
 						<h4>Filtering</h4>
