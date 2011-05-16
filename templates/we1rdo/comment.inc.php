@@ -12,10 +12,19 @@
 	$spot = $tplHelper->getFullSpot($messageId);
 	
 	foreach($comments as $comment) {
-			if ($comment['verified']) {
-					$commenterIsPoster = ($comment['userid'] == $spot['userid']);
+		if ($comment['verified']) {
+			$commenterIsPoster = ($comment['userid'] == $spot['userid']);
+
+			if($comment['spotrating'] == 0) {
+				$rating = '';
+			} elseif($comment['spotrating'] == 1) {
+				$rating = '<span class="rating" title="'.$comment['fromhdr'].' gaf deze spot '.$comment['spotrating'].' ster"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
+			} else {
+				$rating = '<span class="rating" title="'.$comment['fromhdr'].' gaf deze spot '.$comment['spotrating'].' sterren"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
+			}
 ?>
-					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>> <strong> Gepost door <span class="user"><?php echo $comment['fromhdr']; ?></span> (<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='Zoek naar spots van "<?php echo $comment['fromhdr']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br>
+					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><strong> <?php echo $rating; ?>Gepost door <span class="user"><?php echo $comment['fromhdr']; ?></span>
+					(<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='Zoek naar spots van "<?php echo $comment['fromhdr']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
 						<?php echo utf8_encode(join("<br>", $comment['body'])); ?>
 					</li>
 <?php	

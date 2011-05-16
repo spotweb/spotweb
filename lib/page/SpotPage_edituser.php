@@ -37,8 +37,11 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} elseif (isset($this->_editUserForm['submitdelete'])) {
 			$formAction = 'delete';
 			unset($this->_editUserForm['submitdelete']);
+		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
+			$formAction = 'resetapi';
+			unset($this->_editUserForm['submitresetuserapi']);
 		} # else
-		
+
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
@@ -51,25 +54,25 @@ class SpotPage_edituser extends SpotPage_Abs {
 						$spotUserSystem->removeUser($spotUser['userid']);
 						$editResult = array('result' => 'success');
 					} # else
-						
+
 					break;
 				} # case delete
-				
+
 				case 'edit'	: {
 					# valideer de user
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
 					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
-					
+
 					if (empty($formMessages['errors'])) {
 						# voeg de user toe
 						$spotUserSystem->setUser($spotUser);
-						
+
 						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
 						# het wachtwoord ook
 						if (!empty($spotUser)) {
 							$spotUserSystem->setUserPassword($spotUser);
 						} # if
-						
+
 						# als het toevoegen van de user gelukt is, laat het weten
 						$editResult = array('result' => 'success');
 					} else {
@@ -77,9 +80,21 @@ class SpotPage_edituser extends SpotPage_Abs {
 					} # else
 					break;
 				} # case 'edit' 
+
+				case 'resetapi' : {
+					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
+						$editResult = array('result' => 'failure');
+					} else {
+						$user = $spotUserSystem->resetUserApi($spotUser);
+						$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
+					} # else
+
+					break;
+				} # case resetapi
 			} # switch
 		} # if
-		
+
 		#- display stuff -#
 		$this->template('edituser', array('edituserform' => $spotUser,
 										    'formmessages' => $formMessages,
