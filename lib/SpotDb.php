@@ -454,11 +454,15 @@ class SpotDb {
 			$runTime = 0;
 		} # if
 
-		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
-		$res = $this->_conn->exec("UPDATE nntp SET nowrunning = '%s' WHERE server = '%s'", Array((int) $runTime, $server));
-		if ($this->_conn->rows() == 0) {	
-			$this->_conn->exec("INSERT INTO nntp(server, nowrunning) VALUES('%s', '%s')", Array($server, (int) $runTime));
-		} # if
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite': $this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
+								if ($this->_conn->rows() == 0) {
+									$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
+								} # if
+							break;
+			default			 : $this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
+										Array($server, (int) $runTime, (int) $runTime));
+		} # switch
 	} # setRetrieverRunning
 
 	/*
