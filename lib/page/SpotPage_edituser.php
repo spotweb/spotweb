@@ -83,12 +83,14 @@ class SpotPage_edituser extends SpotPage_Abs {
 
 				case 'resetapi' : {
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
+					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
+
 					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
 						$editResult = array('result' => 'failure');
 					} else {
-						$user = $spotUserSystem->resetUserApi($spotUser['userid']);
-						$editResult = array('result' => 'success', 'apikey' => $user['apikey']);
+						$user = $spotUserSystem->resetUserApi($spotUser);
+						$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
 					} # else
 
 					break;
