@@ -209,14 +209,14 @@ class SpotTemplateHelper {
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeSelfUrl("path") . '&amp;search[type]=Poster&amp;search[text]=' . urlencode($spot['poster']);
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makePosterUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[type]=UserID&amp;search[text]=' . urlencode($spot['userid']);
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*
@@ -300,15 +300,15 @@ class SpotTemplateHelper {
 
 	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
-		
+
 		if (!is_array($dontInclude)) {
 			$dontInclude = array($dontInclude);
 		} # if
-	
+
 		if (isset($this->_params['activefilter'])) {
 			foreach($this->_params['activefilter'] as $key => $val) {
-				if (array_search($key, $dontInclude) === false) {
-					if (!is_array($val)) { 
+				if (array_search($key, array_merge($dontInclude, array('filterValues', 'type'))) === false) {
+					if (!is_array($val)) {
 						if (!empty($val)) {
 							$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
 						} # if
@@ -322,7 +322,7 @@ class SpotTemplateHelper {
 				}
 			} # foreach
 		} # if
-		
+
 		# zijn er sorteer opties meegestuurd?
 		if (array_search('sortdir', $dontInclude) === false) {
 			if (!empty($this->_params['sortdir'])) {
@@ -334,7 +334,7 @@ class SpotTemplateHelper {
 				$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
 			} # if
 		} # if
-		
+
 		return $getUrl;
 	} # getQueryParams
 
