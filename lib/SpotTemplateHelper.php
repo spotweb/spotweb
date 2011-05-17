@@ -335,7 +335,7 @@ class SpotTemplateHelper {
 			} # if
 		} # if
 
-		# Deze vreemde uitzondering maakt het iets gemakkelijker filter te maken aan de hand van zoekacties
+		# Deze vreemde uitzondering maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
 		$getUrl = str_replace("%3A", ":", $getUrl);
 
 		return $getUrl;
