@@ -291,7 +291,7 @@ class SpotsOverview {
 							} # foreach
 						} # if
 					} # foreach
-					
+
 					$newTreeQuery .= $tmpStr;
 				} elseif (substr($dynaList[$i], 0, 1) == '!') {
 					# als het een NOT is, haal hem dan uit de lijst
@@ -308,7 +308,8 @@ class SpotsOverview {
 					$newTreeQuery .= "," . $dynaList[$i];
 				} # else
 			} # foreach
-			
+			if ($newTreeQuery[0] == ",") { $newTreeQuery = substr($newTreeQuery, 1); }
+
 			# explode the dynaList
 			$search['tree'] = $newTreeQuery;
 			$dynaList = explode(',', $search['tree']);
@@ -319,7 +320,7 @@ class SpotsOverview {
 					# 0e element is hoofdcategory
 					# 1e element is category
 					$val = explode('_', (substr($val, 3) . '_'));
-					
+
 					$catVal = $val[0];
 					$subCatIdx = substr($val[1], 0, 1);
 					$subCatVal = substr($val[1], 1);
@@ -330,7 +331,7 @@ class SpotsOverview {
 				} # if
 			} # foreach
 		} # if
-		
+
 		# Add a list of possible head categories
 		if ((isset($dyn2search['cat'])) && (is_array($dyn2search['cat']))) {
 			$filterList = array();
