@@ -23,12 +23,15 @@
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
 	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
-	$searchType = 'Titel';
+	$searchType = 'Titel'; $searchText = '';
 	if (isset($activefilter['filterValues'])) {
 		foreach(array_keys($activefilter['filterValues']) as $filterType) {
-			$searchType = $filterType;
+			if (array_search($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
+				$searchType = $filterType;
+				$searchText = (isset($activefilter['value'][0])) ? substr($activefilter['value'][0], strpos($activefilter['value'][0], ":")+1): $activefilter['text'];
+			}
 		} # foreach
-	} # if 
+	} # if
 ?>
                     <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
@@ -37,7 +40,7 @@
 		$filterColCount++;
 	} # if
 ?>
-                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($activefilter['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
