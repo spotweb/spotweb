@@ -69,7 +69,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 
 						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
 						# het wachtwoord ook
-						if (!empty($spotUser)) {
+						if (!empty($spotUser['newpassword1'])) {
 							$spotUserSystem->setUserPassword($spotUser);
 						} # if
 
