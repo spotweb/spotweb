@@ -28,7 +28,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
 		} # if
-		
+
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
 		$formAction = '';
 		if (isset($this->_editUserForm['submitedit'])) {
