@@ -151,8 +151,15 @@ function postCommentsForm() {
 			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
 		}
 	}
+	
+	var rating = 0;
+	
 	$("li.addComment dd.rating span").click(function() {
-		var rating = $(this).index();
+		if($(this).index() == rating) {
+			rating = 0;
+			} else {
+			rating = $(this).index();
+			}
 		$("li.addComment dd.rating span").removeClass("active");
 		$("li.addComment dd.rating span").each(function(){
 			if($(this).index() <= rating) {
