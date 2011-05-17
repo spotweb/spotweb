@@ -307,7 +307,7 @@ class SpotTemplateHelper {
 
 		if (isset($this->_params['activefilter'])) {
 			foreach($this->_params['activefilter'] as $key => $val) {
-				if (array_search($key, array_merge($dontInclude, array('filterValues', 'type'))) === false) {
+				if (array_search($key, array_merge($dontInclude, array('filterValues', 'type', 'text'))) === false) {
 					if (!is_array($val)) {
 						if (!empty($val)) {
 							$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
