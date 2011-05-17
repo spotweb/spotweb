@@ -113,7 +113,7 @@ if(empty($_GET['ajax'])) { ?>
 	}
 ?>
 						<li> <a href="?page=markallasread" id="markallasreadbtn" class="big_button markallasreadbtn"><div>Markeer als gelezen</div></a></li>
-					</ul><br style="clear: both" />
+					</ul><br />
 
 				</div>
 				<img src="templates/splendid/img/menu_end.jpg" width="255" height="24" border="0" />
