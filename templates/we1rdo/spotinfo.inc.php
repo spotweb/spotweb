@@ -74,7 +74,7 @@ echo "</th>";
                                 <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
-                                <tr> <th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
+                                <tr> <th> Tag </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='Zoek naar spots met de tag "<?php echo $spot['tag']; ?>"'><?php echo $spot['tag']; ?></a> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		

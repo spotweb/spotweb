@@ -220,6 +220,13 @@ class SpotTemplateHelper {
 	} # makeUserIdUrl
 
 	/*
+	 * Creeert een linkje naar een zoekopdracht op tag
+	 */
+	function makeTagUrl($spot) {
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:' . urlencode($spot['tag']);
+	} # makeUserIdUrl
+
+	/*
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
 	 */
 	function makeApiRequestString() {
