@@ -28,10 +28,15 @@
 		foreach(array_keys($activefilter['filterValues']) as $filterType) {
 			if (array_search($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
 				$searchType = $filterType;
-				$searchText = (isset($activefilter['value'][0])) ? substr($activefilter['value'][0], strpos($activefilter['value'][0], ":")+1): $activefilter['text'];
+				$searchText = $activefilter['text'];
 			}
 		} # foreach
 	} # if
+	$tmpSearch = explode(":", @$activefilter['value'][0]);
+	if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		//$searchText = (isset($activefilter['value'][0])) ? substr($activefilter['value'][0], strpos($activefilter['value'][0], ":")+1): $searchText;
+		$searchText = $tmpSearch[1];
+	}
 ?>
                     <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
