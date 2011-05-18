@@ -34,7 +34,6 @@
 	} # if
 	$tmpSearch = explode(":", @$activefilter['value'][0]);
 	if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
-		//$searchText = (isset($activefilter['value'][0])) ? substr($activefilter['value'][0], strpos($activefilter['value'][0], ":")+1): $searchText;
 		$searchText = $tmpSearch[1];
 	}
 ?>
