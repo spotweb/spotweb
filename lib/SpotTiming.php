@@ -1,14 +1,18 @@
 <?php
 
 class SpotTiming {
-	static private $_disabled = false;
+	static private $_disabled = true;
 	static private $_timings = array();
 	static private $_inflight = array();
 	static private $_curlevel = 0;
 	
+	static function enable() {
+		self::$_disabled = false;
+	} # enable
+	
 	static function disable() {
 		self::$_disabled = true;
-	} # enable
+	} #disable
 	
 	static function start($name) {
 		if (self::$_disabled) return;
