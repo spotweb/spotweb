@@ -146,7 +146,7 @@ function postCommentsForm() {
 	var i = 1;
 	for (i = 1; i <= 10; i++) {
 		if(i == 1) {
-			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" ster'></span>");
+			$("li.addComment dd.rating").append("<span title='Geef spot 1 ster'></span>");
 		} else {
 			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
 		}
@@ -157,9 +157,19 @@ function postCommentsForm() {
 	$("li.addComment dd.rating span").click(function() {
 		if($(this).index() == rating) {
 			rating = 0;
+			if($(this).index() == 1) {
+				$(this).attr('title', 'Geef spot 1 ster');
 			} else {
-			rating = $(this).index();
+				$(this).attr('title', 'Geef spot '+$(this).index()+' sterren');
 			}
+		} else {
+			rating = $(this).index();
+			if($(this).index() == 1) {
+				$(this).attr('title', 'Verwijder ster');
+			} else {
+				$(this).attr('title', 'Verwijder sterren');
+			}
+		}
 		$("li.addComment dd.rating span").removeClass("active");
 		$("li.addComment dd.rating span").each(function(){
 			if($(this).index() <= rating) {
