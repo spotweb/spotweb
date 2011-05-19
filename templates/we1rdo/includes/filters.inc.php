@@ -50,7 +50,7 @@
 
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
-                        <ul class="search<?php if ($filterColCount == 3) {echo " small";} ?>">
+                        <ul class="search<?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
                             <li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
                             <li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
                             <li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
@@ -60,8 +60,8 @@
                         </ul>
 
 						<h4 class="sorting">Sorteren op:</h4>
-                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>"></div>
-                        <ul class="search sorting">
+                        <input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
+                        <ul class="search threecol">
                             <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
                         	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
                             <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
@@ -70,9 +70,10 @@
                             <li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
                         </ul>
 
-						<h4>Filtering</h4>
-                        <div class="unfiltered"><input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label></div>
-    
+						<h4 class="unfiltered">Filtering</h4>
+						<ul class="search onecol">
+                            <li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet filters voor zoekopdracht</label> </li>
+                        </ul>
                         <div id="tree"></div>
                     </div>
                 </form>
