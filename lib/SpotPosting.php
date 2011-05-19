@@ -35,7 +35,7 @@ class SpotPosting {
 		} # if
 		
 		# Rating mag niet uit de range vallen
-		if (($comment['rating'] > 9) || ($comment['rating'] < 0)) {
+		if (($comment['rating'] > 10) || ($comment['rating'] < 0)) {
 			$errorList[] = array('postcomment_ratinginvalid', array());
 		} # if
 		
