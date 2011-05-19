@@ -32,10 +32,12 @@
 			}
 		} # foreach
 	} # if
-	$tmpSearch = explode(":", @$activefilter['value'][0]);
-	if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
-		$searchText = $tmpSearch[1];
-	}
+	if (isset($activefilter['value'][0])) {
+		$tmpSearch = explode(":", @$activefilter['value'][0]);
+		if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			$searchText = $tmpSearch[1];
+		} # if
+	} # if
 ?>
                     <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
