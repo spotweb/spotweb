@@ -28,7 +28,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
 		} # if
-		
+
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
 		$formAction = '';
 		if (isset($this->_editUserForm['submitedit'])) {
@@ -69,7 +69,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 
 						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
 						# het wachtwoord ook
-						if (!empty($spotUser)) {
+						if (!empty($spotUser['newpassword1'])) {
 							$spotUserSystem->setUserPassword($spotUser);
 						} # if
 

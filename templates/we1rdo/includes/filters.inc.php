@@ -23,12 +23,19 @@
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
 	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
-	$searchType = 'Titel';
+	$searchType = 'Titel'; $searchText = '';
 	if (isset($activefilter['filterValues'])) {
 		foreach(array_keys($activefilter['filterValues']) as $filterType) {
-			$searchType = $filterType;
+			if (array_search($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
+				$searchType = $filterType;
+				$searchText = $activefilter['text'];
+			}
 		} # foreach
-	} # if 
+	} # if
+	$tmpSearch = explode(":", @$activefilter['value'][0]);
+	if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		$searchText = $tmpSearch[1];
+	}
 ?>
                     <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
@@ -37,7 +44,7 @@
 		$filterColCount++;
 	} # if
 ?>
-                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($activefilter['text']); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
                     <div class="sidebarPanel advancedSearch">
                     	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
@@ -51,12 +58,14 @@
                         </ul>
 
 						<h4 class="sorting">Sorteren op:</h4>
-                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp") {echo "DESC";} else {echo "ASC";} ?>"></div>
+                        <div><input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>"></div>
                         <ul class="search sorting">
                             <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
                         	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
                             <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
                         	<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+                            <li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
+                            <li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
                         </ul>
 
 						<h4>Filtering</h4>

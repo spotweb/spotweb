@@ -34,7 +34,7 @@ if (empty($editresult)) {
 
 			<dt><label for="edituserform[apikey]">API key</label></dt>
 			<dd><input class="withicon" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
-			<input type="image" src="images/icons/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key aanmaken"></dd>
+			<input type="image" src="images/icons/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key genereren"></dd>
 
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">

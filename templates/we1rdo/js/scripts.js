@@ -327,7 +327,7 @@ $(function(){
 // Pas sorteervolgorde aan voor datum
 $(function(){
 	$("ul.sorting input").click(function() {
-		if($(this).val() == 'stamp') {
+		if($(this).val() == 'stamp' || $(this).val() == 'commentcount' || $(this).val() == 'spotrating') {
 			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
 		} else {
 			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
@@ -608,7 +608,7 @@ function toggleEditUser(userid) {
 			$("div.userPanel h4.dropDown").css("margin", "0");
 			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
 
-			$('form.edituserform').submit(function(){ 
+			$('form.edituserform').submit(function(){
 				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
 				var action = $("form.edituserform input[name='edituserform[action]']").val();
 				var newpassword1 = $("form.edituserform input[name='edituserform[newpassword1]']").val();
@@ -618,7 +618,7 @@ function toggleEditUser(userid) {
 				var mail = $("form.edituserform input[name='edituserform[mail]']").val();
 
 				var url = $("form.edituserform").attr("action");
-				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&edituserform[action]=' + action + '&userid=' + userid + '&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail + '&edituserform[submit]=true';
+				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&edituserform[action]=' + action + '&userid=' + userid + '&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail + '&edituserform[submitedit]=true';
 
 				$.ajax({
 					type: "POST",
@@ -742,7 +742,7 @@ function drawGraph(currentSpeed,interval) {
 	var maxspeed = 0;
 	var i = 0;
 	for (i = 0; i <= numXLabels; i++) {
-		if(speed[i].value >= maxspeed) {
+		if(Math.round(speed[i].value) >= Math.round(maxspeed)) {
 			var maxspeed = speed[i].value;
 		}
 	};
