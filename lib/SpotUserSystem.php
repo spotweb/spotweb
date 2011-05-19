@@ -180,7 +180,7 @@ class SpotUserSystem {
 		if (count($sessionParts) != 2) {
 			return false;
 		} # if
-		
+
 		# controleer of de sessie geldig is
 		$sessionValid = $this->_db->getSession($sessionParts[0], $sessionParts[1]);
 		if ($sessionValid === false) {
