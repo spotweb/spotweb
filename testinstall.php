@@ -31,6 +31,7 @@
 	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(array_search($settings['db']['engine'], $extList) !== false, "", ""); ?> </td> </tr>
 	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(array_search('ctype', $extList) !== false); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> <?php showResult(array_search('xml', $extList) !== false); ?> </td> </tr>
+	<tr> <td colspan="2"> dom </td> <td> <?php showResult(array_search('dom', $extList) !== false); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(array_search('zlib', $extList) !== false); ?> </td> </tr>
 	<tr> <td colspan="2"> GD </td> <td> <?php showResult(array_search('gd', $extList) !== false); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
