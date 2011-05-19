@@ -1,8 +1,6 @@
 <?php
 	@include('settings.php');
 	set_error_handler("ownWarning",E_WARNING);
-	$extList = get_loaded_extensions();
-	$phpVersion = explode(".", phpversion());
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -17,7 +15,7 @@
 
 <table summary="PHP settings">
 	<tr> <th> PHP settings </th> <th> Value </th> <th> Result </th> </tr>
-	<tr> <td> PHP version </td> <td> <?php echo phpversion(); ?> </td> <td> <?php showResult(($phpVersion[0] >= '5' && $phpVersion[1] >= 3), "", "PHP 5.3 or later is recommended"); ?> </td> </tr>
+	<tr> <td> PHP version </td> <td> <?php echo phpversion(); ?> </td> <td> <?php showResult((version_compare(PHP_VERSION, '5.3.0') >= 0), "", "PHP 5.3 or later is recommended"); ?> </td> </tr>
 	<tr> <td> timezone settings </td> <td> <?php echo ini_get("date.timezone"); ?> </td> <td> <?php showResult(ini_get("date.timezone"), "", "Please specify date.timezone in your PHP.ini"); ?> </td> </tr>
 	<tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), "", "Niet leeg, <strong>kan</strong> een probleem zijn"); ?> </td> </tr>
 	<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
@@ -28,19 +26,19 @@
 
 <table summary="PHP extensions">
 	<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(array_search($settings['db']['engine'], $extList) !== false, "", ""); ?> </td> </tr>
-	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(array_search('ctype', $extList) !== false); ?> </td> </tr>
-	<tr> <td colspan="2"> xml </td> <td> <?php showResult(array_search('xml', $extList) !== false); ?> </td> </tr>
-	<tr> <td colspan="2"> dom </td> <td> <?php showResult(array_search('dom', $extList) !== false); ?> </td> </tr>
-	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(array_search('zlib', $extList) !== false); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> <?php showResult(array_search('gd', $extList) !== false); ?> </td> </tr>
+	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
+	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
+	<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
+	<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
+	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
+	<tr> <td colspan="2"> GD </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
 	$spotSigning = new SpotSigning();
 	$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
-?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> <?php showResult(array_search('openssl', $extList) !== false); ?> </td> </tr>
-	<tr> <td> gmp </td> <td> <?php showResult(array_search('gmp', $extList) !== false); ?> </td> </tr>
-	<tr> <td> bcmath </td> <td> <?php showResult(array_search('bcmath', $extList) !== false); ?> </td> </tr>
+?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl')); ?> </td> </tr>
+	<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp')); ?> </td> </tr>
+	<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath')); ?> </td> </tr>
 	<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
 </table>
 <br />
