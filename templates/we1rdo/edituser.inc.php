@@ -10,7 +10,7 @@ if (empty($editresult)) {
 ?>
 <form class="edituserform" name="edituserform" action="<?php echo $tplHelper->makeEditUserAction(); ?>" method="post">
 	<input type="hidden" name="edituserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserform'); ?>">
-	<input type="hidden" name="edituserform[action]" value="edit">
+	<input type="hidden" name="edituserform[buttonpressed]" value="">
 	<input type="hidden" name="userid" value="<?php echo $edituserform['userid']; ?>">
 	<fieldset>
 		<dl>
@@ -39,6 +39,7 @@ if (empty($editresult)) {
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
 				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="Wis gebruiker">
+				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="Wis alle sessies">
 			</dd>
 		</dl>
 	</fieldset>
