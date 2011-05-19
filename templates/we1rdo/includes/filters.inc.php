@@ -26,15 +26,15 @@
 	$searchType = 'Titel'; $searchText = '';
 	if (isset($activefilter['filterValues'])) {
 		foreach(array_keys($activefilter['filterValues']) as $filterType) {
-			if (array_search($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			if (in_array($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
 				$searchType = $filterType;
 				$searchText = $activefilter['text'];
 			}
 		} # foreach
 	} # if
 	if (isset($activefilter['value'][0])) {
-		$tmpSearch = explode(":", @$activefilter['value'][0]);
-		if (array_search($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		$tmpSearch = explode(":", $activefilter['value'][0]);
+		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 			$searchText = $tmpSearch[1];
 		} # if
 	} # if
