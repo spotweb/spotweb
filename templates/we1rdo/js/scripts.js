@@ -620,6 +620,10 @@ function toggleEditUser(userid) {
 			$("div.userPanel h4.dropDown").css("margin", "0");
 			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
 
+			$(".greyButton").click(function(){
+				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
+			});
+
 			$('form.edituserform').submit(function(){
 				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
 				var action = $("form.edituserform input[name='edituserform[action]']").val();
@@ -628,9 +632,10 @@ function toggleEditUser(userid) {
 				var firstname = $("form.edituserform input[name='edituserform[firstname]']").val();
 				var lastname = $("form.edituserform input[name='edituserform[lastname]']").val();
 				var mail = $("form.edituserform input[name='edituserform[mail]']").val();
-
-				var url = $("form.edituserform").attr("action");
-				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&edituserform[action]=' + action + '&userid=' + userid + '&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail + '&edituserform[submitedit]=true';
+				
+				// determine which button was pressed
+				var buttonPressed = $("form.edituserform input[name='edituserform[buttonpressed]']").val();
+				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&userid=' + userid + '&' + buttonPressed + '=true&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail;
 
 				$.ajax({
 					type: "POST",

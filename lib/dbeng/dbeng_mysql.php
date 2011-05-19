@@ -97,7 +97,7 @@ class dbeng_mysql extends dbeng_abs {
 
 	function rawExec($s) {
 		SpotTiming::start(__FUNCTION__);
-		$tmpRes = @mysql_unbuffered_query($s, $this->_conn);
+		$tmpRes = mysql_unbuffered_query($s, $this->_conn);
 		if ($tmpRes === false) {
 			throw new Exception("Error executing query: " . mysql_error($this->_conn));
 		} # if
@@ -111,14 +111,13 @@ class dbeng_mysql extends dbeng_abs {
 	 */
 	function modify($s, $p = array()) {
 		SpotTiming::start(__FUNCTION__);
-		
+
 		$res = $this->exec($s, $p);
 		if (!is_bool($res)) {
 			mysql_free_result($res);
 		} # if
 		
 		SpotTiming::stop(__FUNCTION__, array($s,$p));
-		
 		return ((bool) $res);
 	} # modify
 	

@@ -141,6 +141,15 @@ class SpotDb {
 	/*
 	 * Haalt een session op uit de database
 	 */
+	function deleteAllUserSessions($userid) {
+		$this->_conn->modify(
+					"DELETE FROM sessions WHERE userid = %d",
+					Array( (int) $userid));
+	} # deleteAllUserSessions
+	
+	/*
+	 * Haalt een session op uit de database
+	 */
 	function deleteExpiredSessions($maxLifeTime) {
 		$this->_conn->modify(
 					"DELETE FROM sessions WHERE lasthit < %d",

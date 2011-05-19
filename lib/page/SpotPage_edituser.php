@@ -40,20 +40,26 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
 			$formAction = 'resetapi';
 			unset($this->_editUserForm['submitresetuserapi']);
+		} elseif (isset($this->_editUserForm['removeallsessions'])) {
+			$formAction = 'removeallsessions';
+			unset($this->_editUserForm['removeallsessions']);
 		} # else
+
+		# Is dit een submit van een form, of nog maar de aanroep?
+		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+			if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+				$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
+				$editResult = array('result' => 'failure');
+			} # if
+		} # if
 
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'delete' : {
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
-					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
-						$editResult = array('result' => 'failure');
-					} else {
-						$spotUserSystem->removeUser($spotUser['userid']);
-						$editResult = array('result' => 'success');
-					} # else
+					$spotUserSystem->removeUser($spotUser['userid']);
+					$editResult = array('result' => 'success');
 
 					break;
 				} # case delete
@@ -64,7 +70,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
 
 					if (empty($formMessages['errors'])) {
-						# voeg de user toe
+						# bewerkt de user
 						$spotUserSystem->setUser($spotUser);
 
 						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
@@ -80,15 +86,17 @@ class SpotPage_edituser extends SpotPage_Abs {
 					} # else
 					break;
 				} # case 'edit' 
+				
+				case 'removeallsessions' : {
+					$spotUserSystem->removeAllUserSessions($spotUser['userid']);
+					$editResult = array('result' => 'success');
+
+					break;
+				} # case 'removeallsessions'
 
 				case 'resetapi' : {
-					if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-						$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
-						$editResult = array('result' => 'failure');
-					} else {
-						$user = $spotUserSystem->resetUserApi($spotUser);
-						$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
-					} # else
+					$user = $spotUserSystem->resetUserApi($spotUser);
+					$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
 
 					break;
 				} # case resetapi

@@ -71,6 +71,13 @@ class SpotUserSystem {
 	} # removeSession
 	
 	/*
+	 * Verwijdert alle users' sessies
+	 */
+	function removeAllUserSessions($userId) {
+		$this->_db->deleteAllUserSessions($userId);
+	} # removeAllUserSessions
+	
+	/*
 	 * Kijk of de user een sessie heeft, als hij die heeft gebruik die dan,
 	 * anders creeeren we een sessie voor de anonieme user
 	 */
