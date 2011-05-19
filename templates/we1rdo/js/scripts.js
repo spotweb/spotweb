@@ -143,41 +143,36 @@ function postCommentsForm() {
 		}
 	});
 
-	var i = 1;
-	for (i = 1; i <= 10; i++) {
-		if(i == 1) {
-			$("li.addComment dd.rating").append("<span title='Geef spot 1 ster'></span>");
-		} else {
-			$("li.addComment dd.rating").append("<span title='Geef spot "+i+" sterren'></span>");
-		}
+	for (i=1; i<=10; i++) {
+		$("li.addComment dd.rating").append("<span id='ster"+i+"'></span>");
+		sterStatus(i, 0);
 	}
-	
+
 	var rating = 0;
-	
 	$("li.addComment dd.rating span").click(function() {
 		if($(this).index() == rating) {
 			rating = 0;
-			if($(this).index() == 1) {
-				$(this).attr('title', 'Geef spot 1 ster');
-			} else {
-				$(this).attr('title', 'Geef spot '+$(this).index()+' sterren');
-			}
 		} else {
 			rating = $(this).index();
-			if($(this).index() == 1) {
-				$(this).attr('title', 'Verwijder ster');
-			} else {
-				$(this).attr('title', 'Verwijder sterren');
-			}
 		}
-		$("li.addComment dd.rating span").removeClass("active");
+
 		$("li.addComment dd.rating span").each(function(){
-			if($(this).index() <= rating) {
-				$(this).addClass("active");
-			}
+			sterStatus($(this).index(), rating);
 		});
 		$("li.addComment input[name='postcommentform[rating]']").val(rating);
 	})
+
+	function sterStatus(id, rating) {
+		if (id == 1) { ster = 'ster'; } else { ster = 'sterren'; }
+
+		if (id < rating) {
+			$("span#ster"+id).addClass("active").attr('title', 'Geef spot '+id+' '+ster);
+		} else if (id == rating) {
+			$("span#ster"+id).addClass("active").attr('title', 'Geen '+ster+' geven');
+		} else {
+			$("span#ster"+id).removeClass("active").attr('title', 'Geef spot '+id+' '+ster);
+		}
+	}
 
 	$("form.postcommentform").submit(function(){ 
 		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
