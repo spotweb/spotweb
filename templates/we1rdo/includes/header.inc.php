@@ -11,7 +11,7 @@
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 		<script type='text/javascript'>
 		</script>
-	</head>
+  </head>
 	<body>
     	<div id="overlay"></div>
 		<div class="container" id="container">
