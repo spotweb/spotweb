@@ -257,6 +257,11 @@ function spotNav(direction) {
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
 }
 
+// Edit user preference tabs
+$(document).ready(function() {
+	$("#edituserpreferencetabs").tabs();
+});
+
 // Regel positie en gedrag van sidebar (fixed / relative)
 $().ready(function() {
 	$('#filterscroll').bind('change', function() {

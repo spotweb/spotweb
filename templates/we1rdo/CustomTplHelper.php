@@ -63,7 +63,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 		switch($type) {
 			case 'js'	: {
 				return array('js/jquery/jquery.min.js', 
-								'js/jquery/jquery-ui.custom.min.js',
+								'js/jquery/jquery-ui-1.8.13.custom.min.js',
 								'js/jquery/jquery.cookie.js',
 								'js/jquery/jquery.hotkeys.js',
 								'js/sha1/jquery.sha1.js',
