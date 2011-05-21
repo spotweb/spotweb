@@ -24,6 +24,8 @@ try {
 	echo "Updating settings" . PHP_EOL;
 	$spotUpgrader->settings($settings);
 	echo "Settings update done" . PHP_EOL;
+	$spotUpgrader->userpreferences($settings);
+	echo "Users' preferences update done" . PHP_EOL;
 	$spotUpgrader->analyze($settings);
 	echo "Basic database optimalisation done" . PHP_EOL;
 

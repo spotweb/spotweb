@@ -7,7 +7,7 @@ class SpotSettingsUpgrader {
 		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor
-	
+
 	function update() {
 		$this->createServerKeys($this->_settings->get('openssl_cnf_path'));
 		$this->createPasswordSalt();

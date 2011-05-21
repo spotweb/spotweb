@@ -10,7 +10,7 @@ if (!empty($edituserprefsresult)) {
 if (empty($edituserprefsresult)) {
 	include "includes/form-messages.inc.php";
 ?>
-<form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserAction(); ?>" method="post">
+<form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
 	<input type="hidden" name="userid" value="<?php echo $edituserprefsform['userid']; ?>">
@@ -19,7 +19,9 @@ if (empty($edituserprefsresult)) {
 		<ul>
 			<li><a href="#edituserpreftab-1"><span>Algemeen</span></a></li>
 			<li><a href="#edituserpreftab-2"><span>NZB afhandeling</span></a></li>
+<!--
 			<li><a href="#edituserpreftab-3"><span>Filters</span></a></li>
+-->			
 		</ul>
 			
 		<!-- [ ] Index filter -->
@@ -51,8 +53,13 @@ if (empty($edituserprefsresult)) {
 					<dd>
 						<select name="edituserprefsform[template]">
 							<option value="we1rdo" selected>we1rdo (standaard)</option>
+<!--
+	Deze zijn uitgeocmmentarieerd omdat als je deze kiest, je niet meer terug kan aangezien beide
+	templates geen edit-preferences geimplementeerd hebben
+	
 							<option value="splendid">Splendid</option>
 							<option value="mobile">Mobile</option>
+-->
 						</select>
 					</dd>
 
@@ -135,14 +142,15 @@ if (empty($edituserprefsresult)) {
 				</dl>
 			</fieldset>
 		</div>
-				
+	
+<!--	
 		<div id="edituserpreftab-3">
 			<fieldset>
 				<dl>
 				</dl>
 			</fieldset>
 		</div>
-
+-->
 		<dd>
 			<input class="greyButton" type="submit" name="edituserprefsform[submitedit]" value="Bijwerken">
 		</dd>
