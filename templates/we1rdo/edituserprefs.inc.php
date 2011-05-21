@@ -44,8 +44,8 @@ if (empty($edituserprefsresult)) {
 					<dd>
 						<select name="edituserprefsform[date_formatting]">
 							<option <?php if ($edituserprefsform['date_formatting'] == 'human') { echo 'selected="selected"'; } ?> value="human" selected>Human</option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%H:%M)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%H:%M)">Th, 12-jun-1980 (12:00)</option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%H:%M)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%H:%M)">12-06-1980 (12:00)</option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%R)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%R)"><?php echo strftime("%a, %d-%b-%Y (%R)"); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%R)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%R)"><?php echo strftime("%d-%m-%Y (%R)"); ?></option>
 						</select>
 					</dd>
 					
@@ -97,12 +97,12 @@ if (empty($edituserprefsresult)) {
 					<dt><label for="edituserprefsform[nzbhandling][action]">Wat moeten we met NZB files doen?</label></dt>
 					<dd>
 						<select name="edituserprefsform[nzbhandling][action]">
-							<option value="disable">Geen integratie met download client</option>
-							<option value="push-sabnzbd">Roep sabnzbd+ aan via HTTP door SpotWeb</option>
-							<option value="client-sabnzbd">Roep sabnzbd+ aan via de users' browser</option>
-							<option value="save">Save de file op disk</option>
-							<option value="runcommand">Save de file op disk en roep een commando aan</option>
-							<option value="nzbget">Roep NZBGet aan via HTTP door SpotWeb</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "disable") { echo 'selected="selected"'; } ?> value="disable">Geen integratie met download client</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "push-sabnzbd") { echo 'selected="selected"'; } ?> value="push-sabnzbd">Roep sabnzbd+ aan via HTTP door SpotWeb</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "client-sabnzbd") { echo 'selected="selected"'; } ?> value="client-sabnzbd">Roep sabnzbd+ aan via de users' browser</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "save") { echo 'selected="selected"'; } ?> value="save">Save de file op disk</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "runcommand") { echo 'selected="selected"'; } ?> value="runcommand">Save de file op disk en roep een commando aan</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "nzbget") { echo 'selected="selected"'; } ?> value="nzbget">Roep NZBGet aan via HTTP door SpotWeb</option>
 						</select>
 					</dd>
 
@@ -112,8 +112,8 @@ if (empty($edituserprefsresult)) {
 					<dt><label for="edituserprefsform[nzbhandling][action]">Wat moeten we met NZB files doen?</label></dt>
 					<dd>
 						<select name="edituserprefsform[nzbhandling][prepare_action]">
-							<option value="merge">Voeg de nzb files samen</option>
-							<option value="zip">Comprimeer de NZB files in 1 zip bestand</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['prepare_action'] == "merge") { echo 'selected="selected"'; } ?> value="merge">Voeg de nzb files samen</option>
+							<option <?php if ($edituserprefsform['nzbhandling']['prepare_action'] == "zip") { echo 'selected="selected"'; } ?> value="zip">Comprimeer de NZB files in 1 zip bestand</option>
 						</select>
 					</dd>
 					
