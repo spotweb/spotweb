@@ -392,7 +392,6 @@ class SpotUserSystem {
 	 */
 	function getUser($userid) {
 		$tmpUser = $this->_db->getUser($userid);
-		$tmpUser['prefs'] = $this->_settings->get('prefs');
 		
 		return $tmpUser;
 	} # getUser()
