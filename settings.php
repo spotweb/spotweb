@@ -146,19 +146,11 @@ $settings['retrieve_full'] = true;
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
-# hoeveel spots wil je tonen op 1 pagina?
-$settings['prefs']['perpage'] = 100;
-
 # Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen
 $settings['retention'] = 0;
 
 # Zet een minimum datum vanaf wanneer je spots op wilt halen, om alle spots van FTD te skippen geef je hier 1290578400 op
 $settings['retrieve_newer_than'] = 0;
-
-# hoe willen we datums geformatteerd hebben? Geef een strng in compatibel met http://php.net/strftime of 'human' voor 
-# een human-readable verhaal
-# $settings['prefs']['date_formatting'] = "%a, %d-%b-%Y (%H:%M)";
-$settings['prefs']['date_formatting'] = "human";
 
 # db
 $settings['db']['engine'] = 'mysql';
@@ -369,4 +361,9 @@ if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"
 # Voeg een sluitende slash toe als die er nog niet is
 if (substr($settings['spotweburl'], -1) != '/') {
 	$settings['spotweburl'] .= '/';
+} # if
+
+# Preferences lokaal niet meer toestaan
+if (isset($settings['prefs']['perpage']) || (isset($settings['prefs']['date_formatting']))) {
+	die("Preferences worden voortaan per user gezet, haal aub de preferences weg uit je ownsettings.php" . PHP_EOL);
 } # if
