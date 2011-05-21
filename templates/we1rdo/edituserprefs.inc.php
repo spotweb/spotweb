@@ -13,7 +13,7 @@ if (empty($edituserprefsresult)) {
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
-	<input type="hidden" name="userid" value="<?php echo $edituserprefsform['userid']; ?>">
+	<input type="hidden" name="userid" value="<?php echo $spotuser['userid']; ?>">
 	
 	<div id="edituserpreferencetabs">
 		<ul>
@@ -26,33 +26,33 @@ if (empty($edituserprefsresult)) {
 			
 		<!-- [ ] Index filter -->
 		<!-- [ ] Filters ? -->
-		
+
 		<div id="edituserpreftab-1">
 			<fieldset>
 				<dl>
 					<dt><label for="edituserprefsform[perpage]">Aantal items per pagina?</label></dt>
 					<dd>
 						<select name="edituserprefsform[perpage]">
-							<option value="25">25</option>
-							<option value="50">50</option>
-							<option value="100">100</option>
-							<option value="250">250</option>
+							<option <?php if ($edituserprefsform['perpage'] == 25) { echo 'selected="selected"'; } ?> value="25">25</option>
+							<option <?php if ($edituserprefsform['perpage'] == 50) { echo 'selected="selected"'; } ?> value="50">50</option>
+							<option <?php if ($edituserprefsform['perpage'] == 100) { echo 'selected="selected"'; } ?> value="100">100</option>
+							<option <?php if ($edituserprefsform['perpage'] == 250) { echo 'selected="selected"'; } ?> value="250">250</option>
 						</select>
 					</dd>
 
 					<dt><label for="edituserprefsform[date_formatting]">Opmaak van datums</label></dt>
 					<dd>
 						<select name="edituserprefsform[date_formatting]">
-							<option value="human" selected>Human</option>
-							<option value="%a, %d-%b-%Y (%H:%M)">Th, 12-jun-1980 (12:00)</option>
-							<option value="%d-%m-%Y (%H:%M)">12-06-1980 (12:00)</option>
+							<option <?php if ($edituserprefsform['date_formatting'] == 'human') { echo 'selected="selected"'; } ?> value="human" selected>Human</option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%H:%M)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%H:%M)">Th, 12-jun-1980 (12:00)</option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%H:%M)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%H:%M)">12-06-1980 (12:00)</option>
 						</select>
 					</dd>
 					
 					<dt><label for="edituserprefsform[template]">Template</label></dt>
 					<dd>
 						<select name="edituserprefsform[template]">
-							<option value="we1rdo" selected>we1rdo (standaard)</option>
+							<option <?php if ($edituserprefsform['template'] == 'we1rdo') { echo 'selected="selected"'; } ?> value="we1rdo" selected>we1rdo (standaard)</option>
 <!--
 	Deze zijn uitgeocmmentarieerd omdat als je deze kiest, je niet meer terug kan aangezien beide
 	templates geen edit-preferences geimplementeerd hebben
@@ -64,25 +64,25 @@ if (empty($edituserprefsresult)) {
 					</dd>
 
 					<dt><label for="edituserprefsform[count_newspots]">Nieuwe Spots tellen in de lijst met filters</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[count_newspots]" checked="checked" value="<?php echo htmlspecialchars($edituserprefsform['count_newspots']); ?>"></dd>
+					<dd><input type="checkbox" name="edituserprefsform[count_newspots]" <?php if ($edituserprefsform['count_newspots']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
 					<dt><label for="edituserprefsform[keep_seenlist]">Bijhouden wat je bekijkt</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[keep_seenlist]" checked="checked" value="<?php echo htmlspecialchars($edituserprefsform['keep_seenlist']); ?>"></dd>
+					<dd><input type="checkbox" name="edituserprefsform[keep_seenlist]" <?php if ($edituserprefsform['keep_seenlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
 					<dt><label for="edituserprefsform[auto_markasread]">Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[auto_markasread]" checked="checked" value="<?php echo htmlspecialchars($edituserprefsform['auto_markasread']); ?>"></dd>
+					<dd><input type="checkbox" name="edituserprefsform[auto_markasread]" <?php if ($edituserprefsform['auto_markasread']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
 					<dt><label for="edituserprefsform[keep_downloadlist]">Moeten we bijhouden welke downloads er gedaan zijn?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[keep_downloadlist]" checked="checked" value="<?php echo htmlspecialchars($edituserprefsform['keep_downloadlist']); ?>"></dd>
+					<dd><input type="checkbox" name="edituserprefsform[keep_downloadlist]" <?php if ($edituserprefsform['keep_downloadlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
 					<dt><label for="edituserprefsform[keep_watchlist]">Moeten we een watchlist bijhouden?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[keep_watchlist]" checked="checked" value="<?php echo htmlspecialchars($edituserprefsform['keep_watchlist']); ?>"></dd>
+					<dd><input type="checkbox" name="edituserprefsform[keep_watchlist]" <?php if ($edituserprefsform['keep_watchlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
 					<dt><label for="edituserprefsform[search_url]">Welke zoekmachine moet er gebruikt worden?</label></dt>
 					<dd>
 						<select name="edituserprefsform[search_url]">
-							<option value="http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME">binsearch</option>
-							<option value="http://nzbindex.nl/search/?q=$SPOTFNAME">nzbindex</option>
+							<option <?php if ($edituserprefsform['search_url'] == 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME') { echo 'selected="selected"'; } ?> value="http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME">binsearch</option>
+							<option <?php if ($edituserprefsform['search_url'] == 'http://nzbindex.nl/search/?q=$SPOTFNAME') { echo 'selected="selected"'; } ?> value="http://nzbindex.nl/search/?q=$SPOTFNAME">nzbindex</option>
 						</select>
 					</dd>
 

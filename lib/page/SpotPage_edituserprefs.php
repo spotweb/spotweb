@@ -36,18 +36,18 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			unset($this->_editUserPrefsForm['submitedit']);
 		} # if
 
+		# We vragen de anonymous user account op, omdat die z'n preferences gebruikt worden
+		# als basis.
+		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
+		
+		# user preferences mergen met anonymous account
+		$spotUser['prefs'] = array_merge($anonUser['prefs'], $spotUser['prefs'], $this->_editUserPrefsForm);
+		$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser['prefs']);
+		
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'edit'	: {
-					# We vragen de anonymous user account op, omdat die z'n preferences gebruikt worden
-					# als basis.
-					$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
-
-					# user preferences mergen met anonymous account
-					$spotUser['prefs'] = array_merge($anonUser['prefs'], $this->_editUserPrefsForm);
-					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser['prefs']);
-					
 					# controleer en repareer alle preferences 
 					$formMessages['errors'] = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
 
@@ -66,8 +66,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		} # if
 
 		#- display stuff -#
-		$this->template('edituserprefs', array('edituserprefsform' => $spotUser,
+		$this->template('edituserprefs', array('edituserprefsform' => $spotUser['prefs'],
 										    'formmessages' => $formMessages,
+											'spotuser' => $spotUser,
 											'edituserprefsresult' => $editResult));
 	} # render
 	
