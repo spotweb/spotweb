@@ -276,6 +276,58 @@ class SpotUserSystem {
 		return $user;
 	} # setUserApi
 
+	/* 
+	 * Cleanup van user preferences
+	 */
+	function cleanseUserPreferences($prefs, $tpl) {
+		# we willen nu zeker weten dat er in _editUserPrefsForm geen preferences gegeven zijn
+		# welke we helemaal niet ondersteunen.
+		foreach(array_diff_key($prefs, $tpl) as $keys => $values) {
+			unset($prefs[$keys]);
+		} # foreach
+		
+		return $prefs;
+	} # cleanseUserPreferences
+	
+	/*
+	 * Valideer de user preferences
+	 */
+	function validateUserPreferences($prefs) {
+		$errorList = array();
+		
+		# Definieer een aantal arrays met valid settings
+		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
+		$validTemplates = array('we1rdo');
+		
+		# Controleer de per page setting
+		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
+			$errorList[] = array('validateuser_invalidpreference', array('perpage'));
+		} # if
+		
+		# Controleer basis settings
+		if (in_array($prefs['date_formatting'], $validDateFormat) === false) {
+			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
+		} # if
+		
+		if (in_array($prefs['template'], $validTemplates) === false) { 	
+			$errorList[] = array('validateuser_invalidpreference', array('template'));
+		} # if
+		
+		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
+		$prefs['count_newspots'] = ($prefs['count_newspots'] ? "true" : "false");
+		$prefs['keep_seenlist'] = ($prefs['keep_seenlist'] ? "true" : "false");
+		$prefs['auto_markasread'] = ($prefs['auto_markasread'] ? "true" : "false");
+		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] ? "true" : "false");
+		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] ? "true" : "false");
+		
+		# we willen niet dat de searchurl te lang wordt
+		if (strlen($prefs['search_url']) > 250) {
+			$errorList[] = array('validateuser_invalidpreference', array('search_url'));
+		} # if
+		
+		return $errorList;
+	} # validateUserPreferences
+
 	/*
 	 * Valideer het user record, kan gebruikt worden voor het toegevoegd word of
 	 * geupdate wordt
@@ -340,7 +392,6 @@ class SpotUserSystem {
 	 */
 	function getUser($userid) {
 		$tmpUser = $this->_db->getUser($userid);
-		$tmpUser['prefs'] = $this->_settings->get('prefs');
 		
 		return $tmpUser;
 	} # getUser()
