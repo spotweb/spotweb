@@ -40,13 +40,13 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'edit'	: {
-					# We vragen de anonymous suer account op, omdat die z'n preferences gebruikt worden
+					# We vragen de anonymous user account op, omdat die z'n preferences gebruikt worden
 					# als basis.
 					$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
 
 					# user preferences mergen met anonymous account
 					$spotUser['prefs'] = array_merge($anonUser['prefs'], $this->_editUserPrefsForm);
-					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser);
+					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser['prefs']);
 					
 					# controleer en repareer alle preferences 
 					$formMessages['errors'] = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
