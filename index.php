@@ -158,9 +158,17 @@ try {
 				break;
 		} # createuser
 
+		case 'edituserprefs' : {
+				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
+							Array('edituserprefsform' => $req->getForm('edituserprefsform', array('submitedit')),
+								  'userid' => $req->getDef('userid', '')));
+				$page->render();
+				break;
+		} # edituserprefs
+
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
-							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete')),
+							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'removeallsessions')),
 								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;

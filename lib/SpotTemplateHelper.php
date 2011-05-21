@@ -157,11 +157,18 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 
 	/*
-	 * Creeert de action url voor het aanmaken van de user (gebruikt in form post actions)
+	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
 	 */
 	function makeEditUserAction() {
 		return $this->makeBaseUrl("path") . "?page=edituser";
 	} # makeEditUserAction
+	
+	/*
+	 * Creeert de action url voor het wijzigen van de users' preferences (gebruikt in form post actions)
+	 */
+	function makeEditUserPrefsAction() {
+		return $this->makeBaseUrl("path") . "?page=edituserprefs";
+	} # makeEditUserPrefsAction
 	
 	/*
 	 * Creeert de url voor het bewerken van een bestaande user
@@ -574,6 +581,7 @@ class SpotTemplateHelper {
 		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
 		$strings['validateuser_passwordtooshort'] = 'Opgegeven wachtwoord is te kort';
 		$strings['validateuser_passworddontmatch'] = 'Wachtwoord velden komen niet overeen';
+		$strings['validateuser_invalidpreference'] = 'Ongeldige user preference waarde (%s)';
 		
 		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
 		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
