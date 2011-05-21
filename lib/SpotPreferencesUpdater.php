@@ -7,7 +7,7 @@ class SpotPreferencesUpdater {
 	} # ctor
 
 	function update() {
-		$userList = $this->_db->listUsers("", 0, 999999999999999);
+		$userList = $this->_db->listUsers("", 0, 9999999);
 		
 		# loop through every user and fix it 
 		foreach($userList['list'] as $user) {
