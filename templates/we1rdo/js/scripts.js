@@ -740,7 +740,7 @@ function drawGraph(currentSpeed,interval) {
 		"top": 6,
 		"right": 6,
 		"bottom": 18, 
-		"left": 28
+		"left": 30
 	};
 	var graph = {
 		"width": elem.width - offset.right - offset.left,
