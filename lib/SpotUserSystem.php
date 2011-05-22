@@ -146,16 +146,16 @@ class SpotUserSystem {
 		$userId = $this->_db->authUser($user, $password, $apikey);
 
 		if ($userId !== false) {
-			$userId = SPOTWEB_ANONYMOUS_USERID;
-		} # if
+			$userRecord = $this->getUser($userId);
 
-		$userRecord = $this->getUser($userId);
+			# nu gebruiken we het user record om lastapiusage te fixen
+			$userRecord['lastapiusage'] = time();
+			$this->_db->setUser($userRecord);
 
-		# nu gebruiken we het user record om lastapiusage te fixen
-		$userRecord['lastapiusage'] = time();
-		$this->_db->setUser($userRecord);
-		
-		return array('user' => $userRecord);
+			return array('user' => $userRecord);
+		} else {
+			return false;
+		} # else
 	} # verifyApi
 
 	/*
