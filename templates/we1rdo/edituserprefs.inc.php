@@ -80,9 +80,9 @@ if (empty($edituserprefsresult)) {
 					
 					<dt><label for="edituserprefsform[search_url]">Welke zoekmachine moet er gebruikt worden?</label></dt>
 					<dd>
-						<select name="edituserprefsform[search_url]">
-							<option <?php if ($edituserprefsform['search_url'] == 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME') { echo 'selected="selected"'; } ?> value="http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME">binsearch</option>
-							<option <?php if ($edituserprefsform['search_url'] == 'http://nzbindex.nl/search/?q=$SPOTFNAME') { echo 'selected="selected"'; } ?> value="http://nzbindex.nl/search/?q=$SPOTFNAME">nzbindex</option>
+						<select name="edituserprefsform[nzb_search_engine]">
+							<option <?php if ($edituserprefsform['nzb_search_engine'] == 'binsearch') { echo 'selected="selected"'; } ?> value="binsearch">Binsearch</option>
+							<option <?php if ($edituserprefsform['nzb_search_engine'] == 'nzbindex') { echo 'selected="selected"'; } ?> value="nzbindex">NZBIndex</option>
 						</select>
 					</dd>
 

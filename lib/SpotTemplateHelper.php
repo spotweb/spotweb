@@ -115,13 +115,12 @@ class SpotTemplateHelper {
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
 	 */
 	function makeSearchUrl($spot) {
-		if (empty($spot['filename'])) {
-			$tmp = str_replace('$SPOTFNAME', $spot['title'], $this->_settings->get('search_url'));
-		} else {
-			$tmp = str_replace('$SPOTFNAME', $spot['filename'], $this->_settings->get('search_url'));
-		} # else 
-
-		return $tmp;
+		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
+		switch ($this->_settings->get('nzb_search_engine')) {
+			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
+			case 'binsearch':
+			default			: return 'http://www.binsearch.info/?adv_age=&amp;q=' . $searchString;
+		} # switch
 	} # makeSearchUrl
 	
 	/*

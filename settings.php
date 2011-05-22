@@ -261,9 +261,9 @@ $settings['sabnzbd']['categories'] = Array(
 	);
 					 
 
-# zoekmachine url (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
-$settings['search_url'] = 'http://www.binsearch.info/?adv_age=&amp;q=$SPOTFNAME';
-# $settings['search_url'] = 'http://nzbindex.nl/search/?q=$SPOTFNAME';
+# NZB zoekmachine (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
+$settings['nzb_search_engine'] = 'binsearch';
+#$settings['nzb_search_engine'] = 'nzbindex';
 
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
