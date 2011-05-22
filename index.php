@@ -27,6 +27,11 @@ try {
 		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 
+	# Controleer eerst of de settings versie nog wel geldig zijn
+	if (!$settings->settingsValid()) {
+		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+	} # if
+	
 	# Controleer dat er wel een password salt ingevuld is
 	if ($settings->get('pass_salt') == 'unieke string') {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
@@ -35,6 +40,7 @@ try {
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
+	
 	$page = $req->getDef('page', 'index');
 
 	# Haal het userobject op dat 'ingelogged' is

@@ -60,6 +60,15 @@ class SpotSettings {
 		
 		$this->_db->updateSetting($name, $value, $serialized);
 	} # set
+
+	/* 
+	 * Zijn onze settings versie nog wel geldig?
+	 */
+	function settingsValid() {
+		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
+		return ($this->get('settingsversion') == SPOTWEB_SETTINGS_VERSION);
+	} # schemaValid
+
 	
 	/* 
 	 * Bestaat de opgegeven setting ?
