@@ -657,16 +657,8 @@ class SpotDb {
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
-
-		# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
-		# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
-		# het voor MySQL ISAM een stuk sneller
+		
 		if (!empty($sort)) {
-			if ((strtolower($sort['field']) == 'stamp') && (strtolower($sort['direction']) == 'desc')) {
-				$sort['field'] = 'reversestamp';
-				$sort['direction'] = 'ASC';
-			} # if
-
 			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
 			$sort['field'] = 's.' . $sort['field'];
 		} # if
@@ -678,10 +670,18 @@ class SpotDb {
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
 			if (!empty($sortValue)) {
-				$sortList[] = ' ' . $sortValue['field'] . ' ' . $sortValue['direction'];
+				# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
+				# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
+				# het voor MySQL ISAM een stuk sneller
+				if ((strtolower($sortValue['field']) == 'stamp' || strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
+					$sortValue['field'] = 's.reversestamp';
+					$sortValue['direction'] = 'ASC';					
+				} # if
+				
+				$sortList[] = $sortValue['field'] . ' ' . $sortValue['direction'];
 			} # if
 		} # foreach
-		$sortList = implode(',', $sortList);
+		$sortList = implode(', ', $sortList);
 
 		# en voer de query uit. 
 		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag

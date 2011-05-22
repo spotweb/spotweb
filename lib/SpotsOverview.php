@@ -404,7 +404,7 @@ class SpotsOverview {
 						
 						$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
 						$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
-											  'direction' => 'ASC');
+											  'direction' => 'DESC');
 					} # if
 				} # if
 			} else {
@@ -437,6 +437,8 @@ class SpotsOverview {
 				} # if
 			} # if
 		} # foreach
+
+		$sortFields[] = array('field' => 'stamp', 'direction' => 'DESC');
 
 		# strong nots
 		$notSearch = '';
