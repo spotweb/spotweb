@@ -2,14 +2,14 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
 require_once "lib/SpotClassAutoload.php";
-SpotTiming::enable();
-SpotTiming::start('total');
-SpotTiming::start('settings');
-require_once "settings.php";
-SpotTiming::stop('settings');
-
 #- main() -#
 try {
+	SpotTiming::enable();
+	SpotTiming::start('total');
+	SpotTiming::start('settings');
+	require_once "settings.php";
+	SpotTiming::stop('settings');
+
 	# database object
 	$db = new SpotDb($settings['db']);
 	$db->connect();
@@ -233,9 +233,10 @@ try {
 	if (($settings->get('enable_timing')) && (!in_array(SpotReq::getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'markallasread', 'rss')))) {
 		SpotTiming::display();
 	} # if
-	
 }
 catch(Exception $x) {
-	var_dump($x);
+	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
+		var_dump($x);
+	} # if
 	die($x->getMessage());
 } # catch

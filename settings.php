@@ -252,6 +252,11 @@ $settings['sabnzbd']['categories'] = Array(
 	);
 					 
 
+# stacktraces maken het gemakkelijk bij een fout om een probleem te achterhalen, 
+# ze kunnen echter ook gevoelige informatie (bv. je usenet account!) bevatten. Als je
+# je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
+$settings['enable_stacktrace'] = true;
+
 # NZB zoekmachine (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
 $settings['nzb_search_engine'] = 'binsearch';
 #$settings['nzb_search_engine'] = 'nzbindex';
