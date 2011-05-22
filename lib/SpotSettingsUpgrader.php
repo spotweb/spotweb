@@ -15,6 +15,7 @@ class SpotSettingsUpgrader {
 		$this->updateSettingsVersion();
 		$this->createRsaKeys();
 		$this->createXsrfSecret();
+		$this->setIfNot('cookie_expires', 30);
 	} # update()
 	
 	/*
