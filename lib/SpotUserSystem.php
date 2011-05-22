@@ -320,11 +320,6 @@ class SpotUserSystem {
 		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] ? "true" : "false");
 		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] ? "true" : "false");
 		
-		# we willen niet dat de searchurl te lang wordt
-		if (strlen($prefs['search_url']) > 250) {
-			$errorList[] = array('validateuser_invalidpreference', array('search_url'));
-		} # if
-		
 		return $errorList;
 	} # validateUserPreferences
 
