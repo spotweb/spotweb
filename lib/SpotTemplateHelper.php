@@ -213,6 +213,22 @@ class SpotTemplateHelper {
 	} # makeSortUrl
 
 	/*
+	 * Creert een category url
+	 */
+	function makeCatUrl($spot) {
+		$catSpot = explode("|", $spot['subcata']);
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+	} # makeCatUrl
+
+	/*
+	 * Creert een subcategory url
+	 */
+	function makeSubCatUrl($spot, $cat) {
+		$catSpot = explode("|", $cat);
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+	} # makeSubCatUrl
+
+	/*
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
@@ -359,10 +375,12 @@ class SpotTemplateHelper {
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
-		# fix the sabnzbdurl, searchurl, sporturl
+		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		$spot['spoturl'] = $this->makeSpotUrl($spot);
+		$spot['caturl'] = $this->makeCatUrl($spot);
+		$spot['subcaturl'] = $this->makeSubCatUrl($spot, $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 		
 		// title escapen
@@ -372,7 +390,6 @@ class SpotTemplateHelper {
 		// we zetten de short description van de category bij
 		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 		$spot['catdesc'] = SpotCategories::Cat2Desc($spot['category'], $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
-		$spot['subcatfilter'] = SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 		
 		// commentcount en rating altijd teruggeven
 		$spot['commentcount'] = (int) $spot['commentcount'];
