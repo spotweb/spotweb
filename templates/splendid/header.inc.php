@@ -26,7 +26,7 @@
 
 		<!-- Jquery, necessary for dynatree -->
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
-		<script src='js/jquery/jquery-ui.custom.min.js' type='text/javascript'></script>
+		<script src='js/jquery/jquery-ui-1.8.13.custom.min.js' type='text/javascript'></script>
 		<script src='js/jquery/jquery.cookie.js' type='text/javascript'></script>
 		<script src='templates/splendid/js/gen_tree.js' type='text/javascript'></script>
 		<script src='templates/splendid/js/scripts.js' type='text/javascript'></script>
