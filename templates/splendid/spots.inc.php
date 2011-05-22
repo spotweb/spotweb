@@ -111,12 +111,11 @@ if ($settings->get('keep_watchlist')) { ?>
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
-		$subcatFilter =  SpotCategories::SubcatToFilter($spot['category'], $spot['subcata']);
 		$count++;
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . ' ' . ($count % 2 ? "even" : "odd") . $spot['subcata'].$spot['subcatb'].$spot['subcatc'].$spot['subcatd']."'>" . 
-			 "<td class='category'><a href='?search[tree]=" . $subcatFilter . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
+			 "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "\"'>" . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "' title='" . utf8_encode($tplHelper->remove_extensive_dots($spot['title'])) . "' class='spotlink'>" . utf8_encode($tplHelper->remove_extensive_dots($spot['title'])) . "</a></td>";
         
         if($settings->get('retrieve_comments')) echo "<td class='comments'><a href='?page=getspot&amp;messageid=" . $spot['messageid'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"' class='spotlink'>" . $spot['commentcount'] . "</a></td>";

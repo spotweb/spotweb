@@ -125,12 +125,6 @@ try {
 			break;
 		}
 
-		case 'selecttemplate' : {
-				$page = new SpotPage_selecttemplate($db, $settings, $currentSession, $req);
-				$page->render();
-				break;
-		} # selecttemplate
-
 		case 'rss' : {
 			$page = new SpotPage_rss($db, $settings, $currentSession,
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
