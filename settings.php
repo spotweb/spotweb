@@ -172,7 +172,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-$settings['allow_user_template'] = true;
 $settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
 						'mobile'	=> 'mobile',
 						'splendid'	=> 'splendid'
@@ -202,9 +201,6 @@ $settings['keep_downloadlist'] = true;
 
 # moeten we een watchlist bijhouden?
 $settings['keep_watchlist'] = true;
-
-# highlight nieuwe items - cookies
-$settings['cookie_expires'] = 30; // aantal dagen dat cookie bewaard moet worden
 
 # Cookie host
 if (isset($_SERVER['HTTP_HOST'])) {
@@ -320,20 +316,7 @@ if (($settings['templates']['autodetect']) &&
 		if ($detect->isMobile()) {
 			$settings['tpl_name'] = $settings['templates']['mobile']; 
 		} else { 
-			if (isset($_COOKIE['template'])) {
-				$chosenTemplate = $_COOKIE['template'];
-			} # if 
-
-			if ($settings['allow_user_template'] == true && isset($chosenTemplate) && 
-				(array_search($chosenTemplate, $settings['available_templates']) !== false)) {
-				// allow_user_template is ingeschakeld EN er is een cookie EN de cookie bevat een geldige template-naam --> tpl_path opzoeken
-				$settings['tpl_name'] = $settings['available_templates'][$chosenTemplate];
-				
-				// verleng cookie
-				setcookie('template', $chosenTemplate, time()+(86400*$settings['cookie_expires']), '', $settings['cookie_host']);
-			} else {
-				$settings['tpl_name'] = $settings['templates']['default']; 
-			} # else
+			$settings['tpl_name'] = $settings['templates']['default']; 
 		} # else
 } else {
 	$settings['tpl_name'] = $settings['templates']['default'];
@@ -366,4 +349,13 @@ if (substr($settings['spotweburl'], -1) != '/') {
 # Preferences lokaal niet meer toestaan
 if (isset($settings['prefs']['perpage']) || (isset($settings['prefs']['date_formatting']))) {
 	die("Preferences worden voortaan per user gezet, haal aub de preferences weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+# deprecated settings niet meer toestaan
+if (isset($settings['cookie_expires'])) {
+	die("Cookie_expires wordt voortaan in de db bijgehouden, haal aub deze weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['allow_user_template'])) {
+	die("allow_user_templates wordt niet meer bijgheouden, dit is een user preference geworden" . PHP_EOL);
 } # if
