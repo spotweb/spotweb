@@ -414,11 +414,11 @@ class SpotsOverview {
 				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
 				#   filesize:>=:4000000
 				$tmpFilter = explode(":", $searchValue);
-				
+
 				if (count($tmpFilter) >= 2) {
 					$filterOperator = $tmpFilter[0];
 					$searchValue = join(":", array_slice($tmpFilter, 1));
-					
+
 					# valideer eerst de operatoren
 					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
 						break;
@@ -430,6 +430,10 @@ class SpotsOverview {
 										  'moderated' => 's.moderated');
 					if (!isset($filterFieldMapping[$searchType])) {
 						break;
+					} # if
+
+					if ($searchType == 'date') {
+						$searchValue = date("U",  strtotime($searchValue));
 					} # if
 
 					# en creeer de query string
