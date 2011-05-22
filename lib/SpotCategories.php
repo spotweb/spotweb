@@ -423,11 +423,6 @@ class SpotCategories {
 		} # if
 	}
 	
-	static function SubcatToFilter($hcat, $scat) {
-		$subcat = explode('|',$scat);
-		return 'cat' . $hcat . '_' . $subcat[0];
-	}
-
 	static function SubcatDescription($hcat, $ch) {
 		if ((isset(self::$_subcat_descriptions[$hcat])) && (isset(self::$_subcat_descriptions[$hcat][$ch]))) {
 			return self::$_subcat_descriptions[$hcat][$ch];
