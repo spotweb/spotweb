@@ -376,7 +376,7 @@ class SpotsOverview {
 		} # if
 
 		# Add a list of possible text searches
-		$textSearch = array(); $stampSet = false;
+		$textSearch = array();
 		foreach($search['filterValues'] as $searchType => $searchValue) {
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
@@ -405,12 +405,6 @@ class SpotsOverview {
 						$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
 						$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 											  'direction' => 'DESC');
-						
-						if ($stampSet == false) {
-							$sortFields[] = array('field' => 'stamp',
-												  'direction' => 'DESC');
-							$stampSet = true;
-						} # if
 					} # if
 				} # if
 			} else {
@@ -443,6 +437,8 @@ class SpotsOverview {
 				} # if
 			} # if
 		} # foreach
+
+		$sortFields[] = array('field' => 'stamp', 'direction' => 'DESC');
 
 		# strong nots
 		$notSearch = '';
