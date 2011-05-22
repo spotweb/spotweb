@@ -172,11 +172,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-$settings['available_templates'] = Array('we1rdo'	=> 'we1rdo', 
-						'mobile'	=> 'mobile',
-						'splendid'	=> 'splendid'
-					);
-
 # tonen we een update knop in de web ui?
 $settings['show_updatebutton'] = false;
 
