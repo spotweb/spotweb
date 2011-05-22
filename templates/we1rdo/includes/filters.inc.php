@@ -81,7 +81,7 @@
                 <div class="sidebarPanel userPanel">
                     <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
                     <ul class="userInfo">
-<?php if ($currentSession['user']['userid'] == 1) { ?>
+<?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 						<li>U bent niet ingelogd</li>
 <?php } else { ?>
 						<li><?php echo "Gebruiker: <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
@@ -89,12 +89,10 @@
 <?php } ?>
                     </ul>
                     
-<?php if ($currentSession['user']['userid'] == 1) { ?>
                     <h4 class="dropDown"><span class="viewState"><a class="down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
                     <div class="createUser"></div>
-<?php } ?>
                     
-<?php if ($currentSession['user']['userid'] != 1) { ?>
+<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
 					<h4 class="dropdown"><span class="viewState"><a class="down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
 					<div class="editUser"></div>
 					
