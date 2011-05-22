@@ -71,7 +71,7 @@
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
-			 "<td class='category'><a href='?search[tree]=" . $spot['subcatfilter'] . ",~cat0_z3' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
+			 "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $rating . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
 
 		if ($settings->get('keep_watchlist')) {
@@ -85,7 +85,7 @@
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td class='genre'>" . $spot['catdesc'] . "</td>" .
+		echo "<td class='genre'><a href='" . $spot['caturl'] . "' title='Zoek spots in de categorie " . $spot['catdesc'] . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 

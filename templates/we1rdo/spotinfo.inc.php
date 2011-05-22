@@ -60,12 +60,13 @@ echo "</th>";
 } ?>
                         <table class="spotinfo">
                             <tbody>
-                                <tr><th> Categorie </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
+                                <tr><th> Categorie </th> <td><a href="<?php echo $tplHelper->makeCatUrl($spot); ?>" title='Zoek spots in de categorie "<?php echo $spot['catname']; ?>"'><?php echo $spot['catname']; ?></a></td> </tr>
 <?php
 	if (!empty($spot['subcatlist'])) {
 		foreach($spot['subcatlist'] as $sub) {
 			$subcatType = substr($sub, 0, 1);
-			echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th> <td> " . SpotCategories::Cat2Desc($spot['category'], $sub) . " </td> </tr>\r\n";
+			echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th>";
+			echo "<td><a href='" . $tplHelper->makeSubCatUrl($spot, $sub) . "' title='Zoek spots in de categorie " . SpotCategories::Cat2Desc($spot['category'], $sub) . "'>" . SpotCategories::Cat2Desc($spot['category'], $sub) . "</a></td> </tr>\r\n";
 		} # foreach
 	} # if
 ?>
@@ -73,7 +74,9 @@ echo "</th>";
                                 <tr><td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
-                                <tr> <th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>) </td> </tr>
+                                <tr> <th> Afzender </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['poster']; ?></a>
+								<?php if (!empty($spot['userid'])) { ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>)<?php } ?>
+								</td> </tr>
                                 <tr> <th> Tag </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='Zoek naar spots met de tag "<?php echo $spot['tag']; ?>"'><?php echo $spot['tag']; ?></a> </td> </tr>
                                 <tr> <td class="break" colspan="2">&nbsp;</td> </tr>
                                 <tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
