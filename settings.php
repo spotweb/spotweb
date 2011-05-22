@@ -357,5 +357,5 @@ if (isset($settings['cookie_expires'])) {
 } # if
 
 if (isset($settings['allow_user_template'])) {
-	die("allow_user_templates wordt niet meer bijgheouden, dit is een user preference geworden" . PHP_EOL);
+	die("allow_user_templates wordt niet meer bijgheouden, dit is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
