@@ -12,10 +12,10 @@ class SpotSettingsUpgrader {
 		$this->createServerKeys($this->_settings->get('openssl_cnf_path'));
 		$this->createPasswordSalt();
 		$this->setupNewsgroups();
-		$this->updateSettingsVersion();
 		$this->createRsaKeys();
 		$this->createXsrfSecret();
 		$this->setIfNot('cookie_expires', 30);
+		$this->updateSettingsVersion();
 	} # update()
 	
 	/*
