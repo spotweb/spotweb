@@ -10,6 +10,9 @@ class SpotPage_login extends SpotPage_Abs {
 	function render() {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
+
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_login, '');
 							  
 		# creeer een default credentials zodat het form altijd
 		# de waardes van het form kan renderen

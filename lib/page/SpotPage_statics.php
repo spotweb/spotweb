@@ -48,6 +48,9 @@ class SpotPage_statics extends SpotPage_Abs {
 	function render() {
 		$tplHelper = $this->getTplHelper(array());
 
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statics, '');
+		
 		# vraag de content op
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type']));
 

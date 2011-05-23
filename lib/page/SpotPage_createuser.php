@@ -10,7 +10,10 @@ class SpotPage_createuser extends SpotPage_Abs {
 	function render() {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
-							  
+		
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_create_new_user, '');
+
 		# creeer een default spotuser zodat het form altijd
 		# de waardes van het form kan renderen
 		$spotUser = array('username' => '',
