@@ -434,18 +434,17 @@ class SpotsOverview {
 
 					if ($searchType == 'date') {
 						$searchValue = date("U",  strtotime($searchValue));
-					} elseif ($searchType == 'filesize') {
+					} elseif ($searchType == 'filesize' && is_numeric($searchValue) == false) {
 						$val = trim($searchValue);
 						$last = strtolower($val[strlen($val)-1]);
 						switch($last) {
-							// The 'G' modifier is available since PHP 5.1.0
 							case 'g':
 								$val *= 1024;
 							case 'm':
 								$val *= 1024;
 							case 'k':
 								$val *= 1024;
-						}
+						} # switch
 						$searchValue = $val;
 					} # if
 
