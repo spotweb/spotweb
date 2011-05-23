@@ -369,6 +369,31 @@ abstract class SpotStruct_abs {
 			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+
+			# Vraag de password salt op 
+			$passSalt = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'pass_salt'");
+			
+			# Bereken het password van de dummy admin user
+			$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
+			
+			# Create the dummy 'admin' user
+			$admin_user = array(
+				# 'userid'		=> 2,		
+				'username'		=> 'admin',
+				'firstname'		=> '',
+				'passhash'		=> $adminPwdHash,
+				'lastname'		=> 'Doe',
+				'mail'			=> 'spotwebadmin@example.com',
+				'apikey'		=> '',
+				'lastlogin'		=> 0,
+				'lastvisit'		=> 0,
+				'deleted'		=> 0);
+			$this->_spotdb->addUser($admin_user);
+			
+			# update handmatig het userid
+			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
+			$this->_dbcon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
+			$this->_dbcon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
 
 		# Indexen moeten uniek zijn op de messageid
@@ -485,6 +510,88 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_users_3", "", "users", "deleted");
 		}
 
+		# Als er een userid is met 2, dan geven we die de username 'admin'
+		if ($this->_spotdb->getSchemaVer() < 0.28) {
+			$this->_dbcon->exec("UPDATE users SET username = 'admin' WHERE id = 2");
+		} # if
+
+		# securitygroups tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('securitygroups')) {
+			$this->createTable('securitygroups', "CHARSET=ascii");
+
+			$this->addColumn('name', 'securitygroups', 'VARCHAR(128)');
+
+			$this->addIndex("idx_securitygroups_1", "UNIQUE", "securitygroups", "name");
+
+			$this->_dbcon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
+			$this->_dbcon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
+			$this->_dbcon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");
+		} # if securitygroups
+		
+		# grouppermissions tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('grouppermissions')) {
+			$this->createTable('grouppermissions', "CHARSET=ascii");
+
+			$this->addColumn('groupid', 'grouppermissions', 'INTEGER DEFAULT 0 NOT NULL');
+			$this->addColumn('permissionid', 'grouppermissions', 'INTEGER DEFAULT 0 NOT NULL');
+			$this->addColumn('objectid', 'grouppermissions', "VARCHAR(128) DEFAULT '' NOT NULL");
+			$this->addColumn('deny', 'grouppermissions', "BOOLEAN DEFAULT 0 NOT NULL");
+
+			$this->addIndex("idx_grouppermissions_1", "UNIQUE", "grouppermissions", "groupid,permissionid,objectid");
+			
+			/* Default permissions for anonymous users */
+			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
+							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
+							   SpotSecurity::spotsec_view_statics, SpotSecurity::spotsec_create_new_user, SpotSecurity::spotsec_view_comments, 
+							   SpotSecurity::spotsec_view_spotcount_total);
+			foreach($anonPerms as $anonPerm) {
+				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . $anonPerm . ")");
+			} # foreach
+
+			/* Default permissions for authenticated users */
+			$authedPerms = array(SpotSecurity::spotsec_download_integration, SpotSecurity::spotsec_mark_spots_asread, SpotSecurity::spotsec_view_rssfeed,
+							   SpotSecurity::spotsec_edit_own_userprefs, SpotSecurity::spotsec_edit_own_user, SpotSecurity::spotsec_post_comment,
+							   SpotSecurity::spotsec_perform_logout, SpotSecurity::spotsec_use_sabapi, SpotSecurity::spotsec_keep_own_watchlist, 
+							   SpotSecurity::spotsec_keep_own_downloadlist, SpotSecurity::spotsec_keep_own_seenlist, SpotSecurity::spotsec_view_spotcount_filtered,
+							   SpotSecurity::spotsec_select_template, SpotSecurity::spotsec_consume_api);
+			foreach($authedPerms as $authedPerm) {
+				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . $authedPerm . ")");
+			} # foreach
+
+			/* Default permissions for administrative users */
+			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
+			foreach($adminPerms as $adminPerm) {
+				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
+			} # foreach
+		} # if grouppermissions
+		
+		
+		# grouppermissions tabel aanmaken als hij nog niet bestaat
+		if (!$this->tableExists('usergroups')) {
+			$this->createTable('usergroups', "CHARSET=ascii");
+			
+			$this->addColumn('userid', 'usergroups', 'INTEGER DEFAULT 0 NOT NULL');
+			$this->addColumn('groupid', 'usergroups', 'INTEGER DEFAULT 0 NOT NULL');
+			$this->addColumn('prio', 'usergroups', 'INTEGER DEFAULT 1 NOT NULL');
+			
+			# Geef de anonieme user de anonymous group
+			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");
+			
+			# Geef user 2 (de admin user, naar we van uit gaan) de anon, auth en admin group
+			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
+			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
+			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
+
+			# Geef de overige users anon en authenticated users rechten
+			$userList = $this->_dbcon->arrayQuery("SELECT id FROM users WHERE id > 2");
+			foreach($userList as $user) {
+				$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(" . $user['id'] . ", 1, 1)");
+				$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(" . $user['id'] . ", 2, 2)");
+			} # foreach
+			
+			$this->addIndex("idx_usergroups_1", "UNIQUE", "usergroups", "userid,groupid");
+		} # if usergroups
+		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema
