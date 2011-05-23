@@ -154,13 +154,17 @@ class SpotUserSystem {
 		$userId = $this->_db->authUser($user, $password, $apikey);
 
 		if ($userId !== false) {
-			$userRecord = $this->getUser($userId);
+			$userRecord['user'] = $this->getUser($userId);
 
 			# nu gebruiken we het user record om lastapiusage te fixen
-			$userRecord['lastapiusage'] = time();
-			$this->_db->setUser($userRecord);
+			$userRecord['user']['lastapiusage'] = time();
+			$this->_db->setUser($userRecord['user']);
 
-			return array('user' => $userRecord);
+			# initialiseer het security systeem
+			$spotSec = new SpotSecurity($this->_db, $userRecord['user']);
+			$userRecord['security'] = $spotSec;
+
+			return $userRecord;
 		} else {
 			return false;
 		} # else
