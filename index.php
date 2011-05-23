@@ -91,12 +91,6 @@ try {
 				break;
 		}
 		
-		case 'getspotmobile' : {
-				$page = new SpotPage_getspotmobile($db, $settings, $currentSession, $req->getDef('messageid', ''));
-				$page->render();
-				break;
-		} # getspotmobile
-
 		case 'getnzbmobile' : {
 				$page = new SpotPage_getnzbmobile($db, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),

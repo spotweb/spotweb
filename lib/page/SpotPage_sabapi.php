@@ -2,17 +2,18 @@
 class SpotPage_sabapi extends SpotPage_Abs {
 
 	function render() {
-		$tplHelper = $this->getTplHelper(array());
-
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_use_sabapi, '');
+		
 		parse_str($_SERVER['QUERY_STRING'], $request);
 		$nzbhandling = $this->_settings->get('nzbhandling');
 		$sabnzbd = $nzbhandling['sabnzbd'];
-
+	
 		if ($nzbhandling['action'] != 'push-sabnzbd' && $nzbhandling['action'] != 'client-sabnzbd') {
 			die ('SABzndb is not configured on this node.');
 		} elseif (!isset($request['apikey'])) {
 			die ('API Key Required');
-		} elseif ($tplHelper->apiToHash($sabnzbd['apikey']) != $request['apikey']) {
+		} elseif ($this->_tplHelper->apiToHash($sabnzbd['apikey']) != $request['apikey']) {
 			die ('API Key Incorrect');
 		} # else
 

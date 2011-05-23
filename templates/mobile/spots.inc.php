@@ -32,7 +32,7 @@ $count = 0;
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		
-		echo "<li><a href='". $setpath . "index.php?page=getspotmobile&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist')) ."</p></a></li>\n";
+		echo "<li><a href='". $setpath . "index.php?page=getspot&amp;messageid=" . $spot['messageid'] . "' data-rel='dialog' data-transition='slidedown'><h3>[". SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']) . "] ".$spot['title'] . "</h3><p>". strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist')) ."</p></a></li>\n";
 	}
 	
 ?>

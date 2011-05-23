@@ -13,6 +13,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
+		# Controleer de users' rechten
+		if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_user, '');
+		} else {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_other_users, '');
+		} # if
+		
 		# edituser resultaat is standaard niet geprobeerd
 		$editResult = array();
 

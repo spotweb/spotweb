@@ -97,7 +97,7 @@ if(empty($_GET['ajax'])) { ?>
 
 					<h4>Maintenance</h4>
 					<ul class="maintenancebox">
-						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($lastupdate, 'lastupdate'); ?> </li>
+						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php
 	if ($settings->get('show_updatebutton')) {
 ?>

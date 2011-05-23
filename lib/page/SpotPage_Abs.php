@@ -4,11 +4,15 @@ abstract class SpotPage_Abs {
 	protected $_settings;
 	protected $_pageTitle;
 	protected $_currentSession;
+	protected $_spotSec;
+	protected $_tplHelper;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
+		$this->_spotSec = $currentSession['security'];
+		$this->_tplHelper = $this->getTplHelper(array());
 	} # ctor
 	
 	# Geef the tpl helper terug
@@ -33,9 +37,13 @@ abstract class SpotPage_Abs {
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
 		
+		# update the template helper variables
+		$this->_tplHelper->setParams($params);
+		
 		# We maken een aantal variabelen / objecten standaard beschikbaar in de template.
-		$tplHelper = $this->getTplHelper($params);
+		$tplHelper = $this->_tplHelper;
 		$currentSession = $this->_currentSession;
+		$spotSec = $this->_currentSession['security'];
 
 		# en we spelen de template af
 		require_once('templates/' . $settings->get('tpl_name') . '/' . $tpl . '.inc.php');
