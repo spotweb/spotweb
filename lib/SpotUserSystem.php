@@ -26,8 +26,8 @@ class SpotUserSystem {
 	/*
 	 * Creeer een nieuwe session
 	 */
-	function createNewSession($userid) {
-		# Als de user ingelogged	 is, creeer een sessie
+	private function createNewSession($userid) {
+		# Als de user ingelogged is, creeer een sessie
 		$tmpUser = $this->getUser($userid);
 		
 		# Als dit een anonieme user is, of als de user nog nooit
@@ -45,7 +45,7 @@ class SpotUserSystem {
 						 'hitcount' => 1,
 						 'lasthit' => time());
 		$this->_db->addSession($session);
-
+		
 		return array('user' => $tmpUser,
 					 'session' => $session);
 	} # createNewSession
@@ -95,6 +95,10 @@ class SpotUserSystem {
 			$userSession = $this->createNewSession(SPOTWEB_ANONYMOUS_USERID);
 		} # if
 		
+		# initialiseer het security systeem
+		$spotSec = new SpotSecurity($this->_db, $userSession['user']);
+		$userSession['security'] = $spotSec;
+		
 		# update de sessie cookie zodat die niet spontaan gaat
 		# expiren
 		$this->updateCookie($userSession);
@@ -131,6 +135,10 @@ class SpotUserSystem {
 			# nu gebruiken we het user record om de lastlogin te fixen
 			$userSession['user']['lastlogin'] = time();
 			$this->_db->setUser($userSession['user']);
+
+			# initialiseer het security systeem
+			$spotSec = new SpotSecurity($this->_db, $userSession['user']);
+			$userSession['security'] = $spotSec;
 
 			return $userSession;
 		} else {
