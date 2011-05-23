@@ -98,7 +98,7 @@ class SpotsOverview {
 			
 				# en ga ze ophalen
 				while (($retrievedVerified < $totalCommentsNeeded) && ( ($lastHaveFullOffset) < count($fullComments) )) {
-					SpotTiming::start(__FUNCTION__);
+					SpotTiming::start(__FUNCTION__. ':nntp:getComments()');
 					$tempList = $nntp->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
 					SpotTiming::stop(__FUNCTION__ . ':nntp:getComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
 				

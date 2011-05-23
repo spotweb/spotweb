@@ -2,6 +2,9 @@
 class SpotPage_logout extends SpotPage_Abs {
 	
 	function render() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
+							  
 		# Instantieer het Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		

@@ -15,10 +15,12 @@ class SpotTemplateHelper {
 	protected $_currentSession;
 	protected $_params;
 	protected $_nzbhandler;
+	protected $_spotSec;
 	
 	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
+		$this->_spotSec = $currentSession['security'];
 		$this->_db = $db;
 		$this->_params = $params;
 		
@@ -40,9 +42,21 @@ class SpotTemplateHelper {
 	 * Geef het aantal spots terug
 	 */
 	function getSpotCount($sqlFilter) {
-		return $this->_db->getSpotCount($sqlFilter);
+		# Controleer de users' rechten
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) {
+			return $this->_db->getSpotCount($sqlFilter);
+		} else {
+			return 0;
+		} # else
 	} # getSpotCount
 
+	/*
+	 * Set params - update de gehele lijst van parameters
+	 */
+	function setParams($params) {
+		$this->_params = $params;
+	} # setParams
+	
 	/* 
 	 * Geeft de waarde van een parameter terug
 	 */
@@ -58,6 +72,11 @@ class SpotTemplateHelper {
  	 * Geef het aantal spots terug maar dan rekening houdende met het filter
  	 */
 	function getFilteredSpotCount($filterStr) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotcount_filtered, '')) {
+			return 0;
+		} # else
+
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
@@ -95,6 +114,9 @@ class SpotTemplateHelper {
 	 * Geeft een aantal comments terug
 	 */
 	function getSpotComments($msgId, $start, $length) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
+
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
@@ -105,10 +127,20 @@ class SpotTemplateHelper {
 	 * Geeft een full spot terug
 	 */
 	function getFullSpot($msgId) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
+		
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		return $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
+		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
+		
+		# seen list
+		if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
+			$spotsOverview->addToSeenList($msgId, $this->_currentSession['user']['userid']);
+		} # if
+		
+		return $fullSpot;
 	} # getFullSpot
 
 	/*
@@ -145,6 +177,11 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke spot
 	 */
 	function makeSpotUrl($spot) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotdetail, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']); 
 	} # makeSpotUrl
 
@@ -152,6 +189,11 @@ class SpotTemplateHelper {
 	 * Creeert de action url voor het aanmaken van de user
 	 */
 	function makeCreateUserAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_create_new_user, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
 
@@ -159,6 +201,11 @@ class SpotTemplateHelper {
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
 	 */
 	function makeEditUserAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_own_user, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=edituser";
 	} # makeEditUserAction
 	
@@ -166,6 +213,11 @@ class SpotTemplateHelper {
 	 * Creeert de action url voor het wijzigen van de users' preferences (gebruikt in form post actions)
 	 */
 	function makeEditUserPrefsAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=edituserprefs";
 	} # makeEditUserPrefsAction
 	
@@ -173,6 +225,11 @@ class SpotTemplateHelper {
 	 * Creeert de url voor het bewerken van een bestaande user
 	 */
 	function makeEditUserUrl($userid, $action) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_own_user, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=edituser&amp;userid=" . ((int) $userid) . '&amp;action=' . $action;
 	} # makeEditUserUrl
 
@@ -180,6 +237,11 @@ class SpotTemplateHelper {
 	 * Creeert de action url voor het inloggen van een user
 	 */
 	function makeLoginAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_perform_login, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=login";
 	} # makeLoginAction
 
@@ -187,6 +249,11 @@ class SpotTemplateHelper {
 	 * Creeert de action url voor het inloggen van een user
 	 */
 	function makePostCommentAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_post_comment, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . "?page=postcomment";
 	} # makePostCommentAction
 	
@@ -194,6 +261,11 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']) . $this->makeApiRequestString();
 	} # makeNzbUrl
 
@@ -201,6 +273,11 @@ class SpotTemplateHelper {
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotimage, '')) {
+			return '';
+		} # if
+		
 		return $this->makeBaseUrl("path") . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width;
 	} # makeImageUrl
 
@@ -252,6 +329,11 @@ class SpotTemplateHelper {
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
 	 */
 	function makeApiRequestString() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, '')) {
+			return '';
+		} # if
+		
 		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
 			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
 		} elseif ($this->_currentSession['user']['userid'] > 1) {
@@ -613,9 +695,31 @@ class SpotTemplateHelper {
 	/*
 	 * Geeft de lijst met users terug
 	 */
-	function getUserList() {
-		return $this->_db->listUsers('', 0, 9999);
+	function getUserList($username) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
+		
+		return $this->_db->listUsers($username, 0, 9999);
 	} # getUserList
+	
+	/*
+	 * Wanneer was de spotindex voor het laatst geupdate?
+	 */
+	function getLastSpotUpdates() {
+		# query wanneer de laatste keer de spots geupdate werden
+		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
+		return $this->_db->getLastUpdate($nntp_hdr_settings['host']);
+	} # getLastSpotUpdates
+	
+	/*
+	 * Leegt de lijst met gedownloade NZB bestanden
+	 */
+	function clearDownloadList() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
+		
+		$this->_db->clearSpotStateList(SpotDb::spotstate_Down, $this->_currentSession['user']['userid']);
+	} # clearDownloadList
 	
 	/*
 	 * Genereert een random string
