@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.27');
+define('SPOTDB_SCHEMA_VERSION', '0.28');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1113,6 +1113,44 @@ class SpotDb {
 
 		return $verifiedList;
 	} # verifyListType
+	
+	
+	/*
+	 * Geeft permissies terug welke user heeft, automatisch in het formaat zoals
+	 * SpotSecurity dat heeft (maw - dat de rechtencheck een simpele 'isset' is om 
+	 * overhead te voorkomen
+	 */
+	function getPermissions($userId) {
+		$permList = array();
+		$tmpList = $this->_conn->arrayQuery('SELECT permissionid, objectid, deny FROM grouppermissions 
+												WHERE groupid IN 
+													(SELECT groupid FROM usergroups WHERE userid = %d ORDER BY prio)',
+											 Array($userId));
+
+		foreach($tmpList as $perm) {
+			# Voeg dit permissionid toe aan de lijst met permissies
+			if (!isset($permList[$perm['permissionid']])) {
+				$permList[$perm['permissionid']] = array();
+			} # if
+			
+			$permList[$perm['permissionid']][$perm['objectid']] = !(boolean) $perm['deny'];
+		} # foreach
+		
+		return $permList;
+	} # getPermissions
+	
+	/*
+	 * Wijzigt group membership van een user
+	 */
+	function setUserGroupList($userId, $groupList) {
+		# We wissen eerst huidige group membership
+		$this->_conn->modify("DELETE FROM usergroups WHERE userid = %d", array($userId));
+		
+		foreach($groupList as $groupInfo) {
+			$this->_conn->modify("INSERT INTO usergroups(userid,groupid,prio) VALUES(%d, %d, %d)",
+						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
+		} # foreach
+	} # setUserGroupList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

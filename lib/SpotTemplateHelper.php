@@ -126,7 +126,7 @@ class SpotTemplateHelper {
 	/*
 	 * Geeft een full spot terug
 	 */
-	function getFullSpot($msgId) {
+	function getFullSpot($msgId, $markAsRead) {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		
@@ -136,8 +136,10 @@ class SpotTemplateHelper {
 		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
 		
 		# seen list
-		if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
-			$spotsOverview->addToSeenList($msgId, $this->_currentSession['user']['userid']);
+		if ($markAsRead) {
+			if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
+				$spotsOverview->addToSeenList($msgId, $this->_currentSession['user']['userid']);
+			} # if
 		} # if
 		
 		return $fullSpot;

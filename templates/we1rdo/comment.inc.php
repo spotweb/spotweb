@@ -9,7 +9,7 @@
 	
 	# we moeten ook de spot zelf hebben zodat we de userid's kunnen vergelijken, dit
 	# is op zich geen 'dure' operatie omdat de spot in de database zit.
-	$spot = $tplHelper->getFullSpot($messageId);
+	$spot = $tplHelper->getFullSpot($messageId, true);
 	
 	foreach($comments as $comment) {
 		if ($comment['verified']) {

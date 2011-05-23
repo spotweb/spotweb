@@ -264,6 +264,9 @@ class SpotUserSystem {
 		# en voeg het record daadwerkelijk toe
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
+		
+		# en geef de gebruiker de nodige groepen
+		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 	} # addUser()
 
 	/*
