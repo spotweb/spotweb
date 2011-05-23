@@ -296,7 +296,7 @@ class SpotUserSystem {
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
-		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
+		$validDateFormats = array('human', '%a, %d-%b-%Y (%R)', '%d-%m-%Y (%R)');
 		$validTemplates = array('we1rdo');
 		
 		# Controleer de per page setting
