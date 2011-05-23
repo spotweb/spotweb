@@ -72,6 +72,7 @@
 
 						<h4>Leeftijd limiteren</h4>
 						<ul class="search threecol">
+<?php if (!isset($activefilter['filterValues']['date'])) { $activefilter['filterValues']['date'] = ''; } ?>
 							<li> <input type="radio" name="search[value][]" value="" <?php echo $activefilter['filterValues']['date'] == "" ? 'checked="checked"' : "" ?>><label>Alles tonen</label> </li>
 							<li> <input type="radio" name="search[value][]" value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'checked="checked"' : "" ?>><label>1 dag</label> </li>
 							<li> <input type="radio" name="search[value][]" value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'checked="checked"' : "" ?>><label>3 dagen</label> </li>
