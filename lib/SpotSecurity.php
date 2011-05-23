@@ -21,14 +21,14 @@ class SpotSecurity {
 	const spotsec_view_spots_index			= 0;
 	const spotsec_perform_login				= 1;
 	const spotsec_perform_search			= 2;
-	const spotsec_view_spotdetail			= 3;
+	const spotsec_view_spotdetail			= 3; 	//
 	const spotsec_retrieve_nzb				= 4;
 	const spotsec_download_integration		= 5;
 	const spotsec_mark_spots_asread			= 6;
 	const spotsec_view_spotimage			= 7;
 	const spotsec_view_rssfeed				= 8;
 	const spotsec_view_statics				= 9;
-	const spotsec_create_new_user			= 10;
+	const spotsec_create_new_user			= 10;	//
 	const spotsec_edit_own_userprefs 		= 11;
 	const spotsec_edit_own_user				= 12;
 	const spotsec_list_all_users			= 13;
@@ -60,5 +60,11 @@ class SpotSecurity {
 	function allowed($perm, $object) {
 		return true;
 	} # allowed
+	
+	function fatalPermCheck($perm, $object) {
+		if (!$this->allowed($perm, $object)) {
+			throw new SecurityException($perm);
+		} # if
+	} # fatalPermCheck
 	
 } # class SpotSecurity
