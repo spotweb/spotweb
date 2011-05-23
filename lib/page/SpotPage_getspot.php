@@ -12,7 +12,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 
 		# Haal de volledige spotinhoud op
-		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid);
+		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
 
 		# zet de page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];

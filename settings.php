@@ -197,6 +197,13 @@ $settings['keep_downloadlist'] = true;
 # moeten we een watchlist bijhouden?
 $settings['keep_watchlist'] = true;
 
+# Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
+# dan standaard lid? 
+$settings['newuser_grouplist'] = array(
+		Array('groupid' => 1, 'prio' => 1),
+		Array('groupid' => 2, 'prio' => 2)
+	);
+
 # Cookie host
 if (isset($_SERVER['HTTP_HOST'])) {
 	// Strip leading periods

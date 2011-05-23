@@ -36,7 +36,7 @@ class SpotPage_rss extends SpotPage_Abs {
 
 		foreach($spotsTmp['list'] as $spot) {
 			try {
-				$fullSpots[] = $this->_tplHelper->getFullSpot($spot['messageid']);
+				$fullSpots[] = $this->_tplHelper->getFullSpot($spot['messageid'], false);
 			} # try
 			catch(Exception $x) {
 				// Article not found. ignore.

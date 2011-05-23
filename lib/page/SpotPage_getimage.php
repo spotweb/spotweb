@@ -17,8 +17,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
 		
 		# Haal de volledige spotinhoud op
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $this->_currentSession['user']['userid'], $spotnntp_hdr);
+		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
 		
 		# sluit de connectie voor de header, en open een nieuwe connectie voor de nzb
 		$spotnntp_hdr->quit();
