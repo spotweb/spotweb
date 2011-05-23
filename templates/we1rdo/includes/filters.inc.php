@@ -61,7 +61,7 @@
 
 						<h4>Sorteren op:</h4>
                         <input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
-                        <ul class="search threecol">
+                        <ul class="search sorting threecol">
                             <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
                         	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
                             <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
