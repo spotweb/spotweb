@@ -85,7 +85,7 @@
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td class='genre'><a href='" . $spot['caturl'] . "' title='Zoek spots in de categorie " . $spot['catdesc'] . "'>" . $spot['catdesc'] . "</a></td>" .
+		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='Zoek spots in de categorie " . $spot['catdesc'] . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 			 
