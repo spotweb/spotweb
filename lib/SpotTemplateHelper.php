@@ -399,10 +399,6 @@ class SpotTemplateHelper {
 		return $tmp;
 	} # formatContent
 	
-	function hasbeenDownloaded($spot) {
-		return ($spot['downloadstamp'] != NULL);
-	} # hasbeenDownloaded
-
 	function isBeingWatched($spot) {
 		if (!$this->_settings->get('keep_watchlist')) {
 			return false;
@@ -479,7 +475,7 @@ class SpotTemplateHelper {
 		$spot['rating'] = (int) $spot['rating'];
 		
 		// is deze spot al eens gedownload?
-		$spot['hasbeendownloaded'] = $this->hasBeenDownloaded($spot);
+		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
 		
 		// zit deze spot in de watchlist?
 		$spot['isbeingwatched'] = $this->isBeingWatched($spot);
@@ -545,6 +541,9 @@ class SpotTemplateHelper {
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
 				
+		// is deze spot al eens gedownload?
+		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+		
 		return $spot;
 	} # formatSpot
 

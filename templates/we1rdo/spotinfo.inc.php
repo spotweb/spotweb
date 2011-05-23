@@ -22,7 +22,7 @@
 						</th>
                         <th class="nzb">
 <?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>
-                            <a class="nzb<?php if ($tplHelper->hasBeenDownloaded($spot)) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($tplHelper->hasBeenDownloaded($spot)) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
+                            <a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
 						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="NZB zoeken"></a></th>
 <?php if ($settings->get('keep_watchlist')) {
@@ -32,7 +32,7 @@ echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot
 echo "</th>";
 } ?>                     
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
-<?php if ($tplHelper->hasBeenDownloaded($spot)) { ?>
+<?php if ($spot['hasbeendownloaded']) { ?>
                         <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot) (s)"> </a></th>
 <?php } else { ?>
                         <th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>

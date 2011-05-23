@@ -130,7 +130,7 @@ if ($settings->get('keep_watchlist')) { ?>
 			if ($settings->get('show_nzbbutton')) {
 				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' title ='Download NZB' class='nzb'>NZB";
 				
-				if ($tplHelper->hasBeenDownloaded($spot)) {
+				if ($spot['hasbeendownloaded']) {
 					echo '*';
 				} # if
 				
