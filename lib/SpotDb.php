@@ -96,7 +96,7 @@ class SpotDb {
 									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%d')", Array($name, $value, $serialized));
 								} # if
 							break;
-			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = %s, serialized = '%d'",
+			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
 										Array($name, $value, $serialized, $value, $serialized));
 		} # switch
 	} # updateSetting
