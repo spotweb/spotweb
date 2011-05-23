@@ -35,7 +35,7 @@
 <?php } ?>								
                         	<th class="watch">
 <?php
-if($tplHelper->isBeingWatched($spot)) { ?>
+if($spot['isbeingwatched']) { ?>
 								<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watched_<?php echo $spot['id'] ?>"><img src="templates/splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
 								<a onclick="addWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>);" style="display: none" id="watch_<?php echo $spot['id'] ?>"><img src="templates/splendid/img/watch.png" alt="Plaats in watchlist" title="Plaats in watchlist" border="0" /></a>
 <?php } else { ?>

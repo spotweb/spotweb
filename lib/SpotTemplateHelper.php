@@ -399,14 +399,6 @@ class SpotTemplateHelper {
 		return $tmp;
 	} # formatContent
 	
-	function isBeingWatched($spot) {
-		if (!$this->_settings->get('keep_watchlist')) {
-			return false;
-		} # if
-		
-		return ($spot['watchstamp'] != NULL);
-	} # isBeingWatched
-
 	function getQueryParams($dontInclude = array()) {
 		$getUrl = '';
 
@@ -478,8 +470,8 @@ class SpotTemplateHelper {
 		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
 		
 		// zit deze spot in de watchlist?
-		$spot['isbeingwatched'] = $this->isBeingWatched($spot);
-
+		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
+		
 		return $spot;
 	} # formatSpotHeader
 
@@ -509,9 +501,8 @@ class SpotTemplateHelper {
 	 * vullen we een aantal defaults in.
 	 */
 	function formatSpot($spot) {
-		# fix the sabnzbdurl en searchurl
-		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
-		$spot['searchurl'] = $this->makeSearchUrl($spot);
+		# formatteer de spot
+		$spot = $this->formatSpotHeader($spot);
 		
 		// Category is altijd een integer bij ons
 		$spot['category'] = (int) $spot['category'];
@@ -532,18 +523,11 @@ class SpotTemplateHelper {
 			$spot['image'] = '';
 		} # else
 		$spot['website'] = htmlspecialchars($spot['website']);
-		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
-
-		// title escapen
-		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
 				
-		// is deze spot al eens gedownload?
-		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
-		
 		return $spot;
 	} # formatSpot
 
