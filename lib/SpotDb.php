@@ -90,10 +90,15 @@ class SpotDb {
 	 * Update setting
 	 */
 	function updateSetting($name, $value, $serialized) {
-		$res = $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $serialized, $name));
-		if ($this->_conn->rows() == 0) {	
-			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
-		} # if
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $serialized, $name));
+								if ($this->_conn->rows() == 0) {
+									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
+								} # if
+							break;
+			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE value = %d, serialized = '%s'",
+										Array($name, $value, $serialized, $value, $serialized));
+		} # switch
 	} # updateSetting
 
 	/*
