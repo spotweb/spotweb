@@ -102,11 +102,11 @@
 <?php } ?>
                     </ul>
                     
-                    <h4 class="dropDown"><span class="viewState"><a class="down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
+                    <h4 class="dropDown"><span class="viewState"><a class="createUser down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
                     <div class="createUser"></div>
                     
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-					<h4 class="dropdown"><span class="viewState"><a class="down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
+					<h4 class="dropdown"><span class="viewState"><a class="editUser down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
 					<div class="editUser"></div>
 					
                     <h4>Uitloggen</h4>
