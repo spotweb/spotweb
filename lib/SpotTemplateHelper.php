@@ -618,6 +618,15 @@ class SpotTemplateHelper {
 	} # getUserList
 	
 	/*
+	 * Wanneer was de spotindex voor het laatst geupdate?
+	 */
+	function getLastSpotUpdates() {
+		# query wanneer de laatste keer de spots geupdate werden
+		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
+		return $this->_db->getLastUpdate($nntp_hdr_settings['host']);
+	} # getLastSpotUpdates
+	
+	/*
 	 * Genereert een random string
 	 */
 	function getSessionCalculatedUserId() {
