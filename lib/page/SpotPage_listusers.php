@@ -6,6 +6,9 @@ class SpotPage_listusers extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
+		
 		# Instantieer het Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		

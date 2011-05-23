@@ -2,8 +2,10 @@
 class SpotPage_erasedls extends SpotPage_Abs {
 
 	function render() {
-		$this->_db->clearSpotStateList(SpotDb::spotstate_Down, $this->_currentSession['user']['userid']);
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
 
+		$this->_tplHelper->clearDownloadList();
 		echo "<xml><return>ok</return></xml>";
 	} # render()
 

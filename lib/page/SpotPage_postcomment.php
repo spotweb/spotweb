@@ -13,6 +13,9 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_comment, '');
+							  
 		# Sportparser is nodig voor het escapen van de random string
 		$spotParser = new SpotParser();
 		

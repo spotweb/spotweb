@@ -13,6 +13,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_userprefs, '');
+		
 		# edituserprefs resultaat is standaard niet geprobeerd
 		$editResult = array();
 

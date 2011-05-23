@@ -13,6 +13,9 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 	function render() {
 		$hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
 		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');

@@ -13,6 +13,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 	function render() {
 		$spotnntp_hdr = new SpotNntp($this->_settings->get('nntp_hdr'));
 
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
+		
 		# Haal de volledige spotinhoud op
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($this->_messageid, $this->_currentSession['user']['userid'], $spotnntp_hdr);
