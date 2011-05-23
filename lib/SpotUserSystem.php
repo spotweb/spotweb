@@ -137,8 +137,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userSession['user']);
 
 			# initialiseer het security systeem
-			$spotSec = new SpotSecurity($this->_db, $userSession['user']);
-			$userSession['security'] = $spotSec;
+			$userSession['security'] = new SpotSecurity($this->_db, $userSession['user']);
 
 			return $userSession;
 		} else {
@@ -147,14 +146,11 @@ class SpotUserSystem {
 	} # login
 
 	function verifyApi($user, $apikey) {
-		# een bogus passhash aanmaken zodat er niet met userid 1 geauthenticeerd kan worden
-		$password = $this->passToHash($apikey);
-
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $password, $apikey);
+		$userId = $this->_db->authUser($user, false, $apikey);
 		if ($userId !== false) {
 			# Waar bij een normale login het aanmaken van
-			# een sessie belangrijk is, doen het hier
+			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
 			# van de user direct op.
 			$userRecord['user'] = $this->getUser($userId);
@@ -164,8 +160,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userRecord['user']);
 
 			# initialiseer het security systeem
-			$spotSec = new SpotSecurity($this->_db, $userRecord['user']);
-			$userRecord['security'] = $spotSec;
+			$userRecord['security'] = new SpotSecurity($this->_db, $userRecord['user']);
 
 			return $userRecord;
 		} else {
