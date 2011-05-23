@@ -125,8 +125,8 @@ class SpotUserSystem {
 		# authenticeer de user?
 		$userId = $this->_db->authUser($user, $password, false);
 		if ($userId !== false) {
-			# Als de user ingelogged is, creeer een sessie,
-			# volgorde is hier belangrijk omdat in de newsession
+			# Als de user ingelogged is, creeer een sessie.
+			# Volgorde is hier belangrijk omdat in de newsession
 			# de lastvisit tijd op lastlogon gezet wordt moeten
 			# we eerst de sessie creeeren.
 			$userSession = $this->createNewSession($userId);
@@ -152,8 +152,11 @@ class SpotUserSystem {
 
 		# authenticeer de user?
 		$userId = $this->_db->authUser($user, $password, $apikey);
-
 		if ($userId !== false) {
+			# Waar bij een normale login het aanmaken van
+			# een sessie belangrijk is, doen het hier
+			# expliciet niet. Daarom halen we de gegevens
+			# van de user direct op.
 			$userRecord['user'] = $this->getUser($userId);
 
 			# nu gebruiken we het user record om lastapiusage te fixen
