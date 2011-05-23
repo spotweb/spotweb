@@ -563,7 +563,7 @@ function toggleCreateUser() {
 	var url = '?page=createuser';
 
 	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
-		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel span.viewState > a.createUser").removeClass("up").addClass("down");
 		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
 		$("div.createUser").hide();
 	} else {
@@ -571,7 +571,7 @@ function toggleCreateUser() {
 		$("div.createUser").load(url, function() {
 			$("div.createUser").show();
 			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+			$("div.userPanel span.viewState > a.createUser").removeClass("down").addClass("up");
 
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
@@ -615,7 +615,7 @@ function toggleEditUser(userid) {
 	var url = '?page=edituser&userid='+userid;
 
 	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
-		$("div.userPanel span.viewState > a").removeClass("up").addClass("down");
+		$("div.userPanel span.viewState > a.editUser").removeClass("up").addClass("down");
 		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
 		$("div.editUser").hide();
 	} else {
@@ -623,7 +623,7 @@ function toggleEditUser(userid) {
 		$("div.editUser").load(url, function() {
 			$("div.editUser").show();
 			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a").removeClass("down").addClass("up");
+			$("div.userPanel span.viewState > a.editUser").removeClass("down").addClass("up");
 
 			$(".greyButton").click(function(){
 				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
