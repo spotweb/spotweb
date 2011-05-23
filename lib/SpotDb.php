@@ -91,12 +91,12 @@ class SpotDb {
 	 */
 	function updateSetting($name, $value, $serialized) {
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $serialized, $name));
+			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%d' WHERE name = '%s'", Array($value, $serialized, $name));
 								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $serialized));
+									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%d')", Array($name, $value, $serialized));
 								} # if
 							break;
-			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE value = %d, serialized = '%s'",
+			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = %s, serialized = '%d'",
 										Array($name, $value, $serialized, $value, $serialized));
 		} # switch
 	} # updateSetting
