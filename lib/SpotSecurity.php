@@ -9,7 +9,7 @@ class SpotSecurity {
 	 * 
 	 * Parameter:
 	 *     Permissie           - Permissie is de permissie die gevraagd wordt - moet gebruik maken van de gedefinieerde constants
-	 *     Object              - Geeft aan dat de permissie enkel voor dit spceifieke object geld. Denk bv. aan 'cat0_z4'.
+	 *     Object              - Geeft aan dat de permissie enkel voor dit specifieke object geld. Denk bv. aan 'cat0_z4'.
 	 *                           Als het objectid leeg is, dan geld de permissie voor alle objecten.
 	 *     DenyOrGranted       - Als deze op "True" staat, dan is de permissie expliciet gegeven. Als de permissie op FALSE
 	 *                           staat is de permissie expliciet denied. 
