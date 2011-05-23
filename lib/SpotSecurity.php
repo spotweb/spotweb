@@ -1,8 +1,10 @@
 <?php
+require_once "lib/exceptions/PermissionDeniedException.php";
 
 class SpotSecurity {
 	private $_db;
 	private $_user;
+	private $_permissions;
 	
 	/*
 	 * Het security systeem kent een aantal rechten welke gedefinieerd worden met een aantal parameters.
@@ -46,25 +48,21 @@ class SpotSecurity {
 	const spotsec_edit_other_users			= 25;	//
 	const spotsec_view_spotcount_total		= 26;	//
 			
-	private $defaultRights = array(
-		##### NAME OF PERMISSION ############## OBJECT ################ TRUE = Allowed, FALSE = Denied 
-		array('',								'',						TRUE)
-	);
-	
-	
 	
 	function __construct(SpotDb $db, array $user) {
 		$this->_db = $db;
 		$this->_user = $user;
+		
+		$this->_permissions = $db->getPermissions($user['userid']);
 	} # ctor
 	
 	function allowed($perm, $object) {
-		return true;
+		return isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
 	} # allowed
 	
 	function fatalPermCheck($perm, $object) {
 		if (!$this->allowed($perm, $object)) {
-			throw new SecurityException($perm);
+			throw new PermissionDeniedException($perm, $object);
 		} # if
 	} # fatalPermCheck
 	

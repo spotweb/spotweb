@@ -228,6 +228,9 @@ try {
 		SpotTiming::display();
 	} # if
 }
+catch(PermissionDeniedException $x) {
+	die($x->getMessage());
+} # PermissionDeniedException
 catch(Exception $x) {
 	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
