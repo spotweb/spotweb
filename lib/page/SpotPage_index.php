@@ -41,8 +41,8 @@ class SpotPage_index extends SpotPage_Abs {
 				case 'remove'	: $this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']); break;
 				case 'add'		: $this->_db->addToSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid'], ''); break;
 				default			: ;
-			}
-		}
+			} # switch 
+		} # if
 		
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
@@ -57,10 +57,6 @@ class SpotPage_index extends SpotPage_Abs {
 			$nextPage = -1;
 		} # if
 		
-		# query wanneer de laatste keer de spots geupdate werden
-		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
-		$lastUpdateTime = $this->_db->getLastUpdate($nntp_hdr_settings['host']);
-								  
 		# zet de page title
 		$this->_pageTitle = "overzicht";
 
@@ -71,7 +67,6 @@ class SpotPage_index extends SpotPage_Abs {
 								'filters' => $this->_settings->get('filters'),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
-								'lastupdate' => $lastUpdateTime,
 								'activefilter' => $this->_params['search'],
 								'sortby' => $this->_params['sortby'],
 								'sortdir' => $this->_params['sortdir']));
