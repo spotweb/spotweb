@@ -71,22 +71,24 @@
                         </ul>
 
 						<h4>Leeftijd limiteren</h4>
-						<ul class="search threecol">
+						<ul class="search age onecol">
 <?php if (!isset($activefilter['filterValues']['date'])) { $activefilter['filterValues']['date'] = ''; } ?>
-							<li> <input type="radio" name="search[value][]" value="" <?php echo $activefilter['filterValues']['date'] == "" ? 'checked="checked"' : "" ?>><label>Alles tonen</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'checked="checked"' : "" ?>><label>1 dag</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'checked="checked"' : "" ?>><label>3 dagen</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-1 week" <?php echo $activefilter['filterValues']['date'] == ">:-1 week" ? 'checked="checked"' : "" ?>><label>1 week</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'checked="checked"' : "" ?>><label>2 weken</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'checked="checked"' : "" ?>><label>1 maand</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'checked="checked"' : "" ?>><label>3 maanden</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'checked="checked"' : "" ?>><label>6 maanden</label> </li>
-							<li> <input type="radio" name="search[value][]" value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'checked="checked"' : "" ?>><label>1 jaar</label> </li>
+							<li><select name="search[value][]"> 
+                                <option value="" <?php echo $activefilter['filterValues']['date'] == "" ? 'checked="checked"' : "" ?>>Alles tonen</option>
+                                <option value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'selected="selected"' : "" ?>>1 dag</option>
+                                <option value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'selected="selected""' : "" ?>>3 dagen</option>
+                                <option value="date:>:-1 week" <?php echo $activefilter['filterValues']['date'] == ">:-1 week" ? 'selected="selected""' : "" ?>>1 week</option>
+                                <option value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'selected="selected"' : "" ?>>2 weken</option>
+                                <option value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'selected="selected"' : "" ?>>1 maand</option>
+                                <option value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'selected="selected"' : "" ?>>3 maanden</option>
+                                <option value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'selected="selected"' : "" ?>>6 maanden</option>
+                                <option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>>1 jaar</option>
+                            </select></li>
 						</ul>
 						
 						<h4>Categori&euml;n</h4>
                         <div id="tree"></div>
-						<ul class="search onecol">
+						<ul class="search clear onecol">
                             <li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet categori&euml;n voor deze zoekopdracht</label> </li>
                         </ul>
                     </div>
