@@ -40,12 +40,12 @@ form#filterform ul.search li input {opacity:0; position:absolute; width:100%; he
 form#filterform ul.search li input+label {background:url(../img/sprite_x.png) repeat-x 0 0; width:100%; color:#000; line-height:20px; display:block; text-align:center;}
 form#filterform ul.search li input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px; color:#fff;}
 form#filterform ul.search select {background:url(../img/sprite_x.png) repeat-x 0 0; color:#000; border:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0; width:100%; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px; outline:none;}
-form#filterform ul.search select option {background-color:#dddddd;}
+form#filterform ul.search select option {background-color:#ddd; border-top:1px solid #bbb;}
 form#filterform ul.search select option:checked {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 
 form#filterform ul.search.onecol li {width:100%;}
 form#filterform ul.search.threecol li {width:33.33%;}
-form#filterform ul.search.threecol li:nth-child(n+4) input+label {background-image:none; background-color:#dddddd;}
+form#filterform ul.search.threecol li:nth-child(n+4) input+label {background-image:none; background-color:#ddd; border-top:1px solid #bbb;}
 form#filterform ul.search.threecol li:nth-child(n+4) input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 form#filterform ul.search.fourcol li {width:25%;}
 
