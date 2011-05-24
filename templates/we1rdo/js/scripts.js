@@ -332,12 +332,9 @@ $(function(){
 		}
 	});
 
-	$("input.filtersubmit").click(function() {
-		if($("ul.dynatree-container li > span").hasClass("dynatree-partsel")) {
-			$("input[name='search[unfiltered]']").attr('checked', false);
-		} else {
-			$("input[name='search[unfiltered]']").attr('checked', true);
-		}
+	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
+	$("input[name='search[unfiltered]']").click(function() {
+		$("div#tree").toggle();
 	});
 });
 

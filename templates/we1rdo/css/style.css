@@ -34,26 +34,23 @@ div.sidebarPanel h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color
 div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer;}
 
 form#filterform ul.search {margin:0; padding:0; clear:both; overflow:hidden;}
-form#filterform ul.search li {width:25%; float:left; list-style:none; overflow:hidden; position:relative;}
-form#filterform ul.search.threecol:not(.foo) li:nth-child(3n) input+label {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
-form#filterform ul.search.fourcol:not(.foo) li:nth-child(4n) input+label {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
-form#filterform ul.search.threecol:not(.foo) li:nth-child(3) input+label {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
-form#filterform ul.search.fourcol:not(.foo) li:nth-child(4) input+label {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
-form#filterform ul.search:not(.foo) li input {opacity:0; position:absolute; margin:0; width:100%; height:20px; float:left; cursor:pointer;}
-form#filterform ul.search:not(.foo) li input+label {background:url(../img/sprite_x.png) repeat-x 0 0; width:100%; color:#000; line-height:20px; display:block; text-align:center; margin:0 0 5px 0;}
-form#filterform ul.search:not(.foo) li input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px; color:#fff;}
-
-form#filterform ul.age select {background-color:#969696; color:#fff; border:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0; width:100%; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px; outline:none;}
-form#filterform ul.age select option {background-color:#fff; color:#000;}
+form#filterform ul.search li {float:left; list-style:none; overflow:hidden; position:relative;}
+form#filterform ul.search li:last-child input+label {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+form#filterform ul.search li input {opacity:0; position:absolute; width:100%; height:20px; float:left; cursor:pointer;}
+form#filterform ul.search li input+label {background:url(../img/sprite_x.png) repeat-x 0 0; width:100%; color:#000; line-height:20px; display:block; text-align:center;}
+form#filterform ul.search li input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px; color:#fff;}
+form#filterform ul.search select {background:url(../img/sprite_x.png) repeat-x 0 0; color:#000; border:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0; width:100%; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px; outline:none;}
+form#filterform ul.search select option {background-color:#dddddd;}
+form#filterform ul.search select option:checked {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 
 form#filterform ul.search.onecol li {width:100%;}
 form#filterform ul.search.threecol li {width:33.33%;}
+form#filterform ul.search.threecol li:nth-child(n+4) input+label {background-image:none; background-color:#dddddd;}
+form#filterform ul.search.threecol li:nth-child(n+4) input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 form#filterform ul.search.fourcol li {width:25%;}
 
-ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none;}
 ul.dynatree-container a {display:inline-block; font:11px Arial, Helvetica, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
-
-form#filterform ul.search.clear:not(.foo) li input+label {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; margin:5px 0 5px 0;}
 
 div.logininfo {float:right;}
 div.logininfo p {margin:2px 2px 0 0; line-height:18px; color:#fff; padding:0 5px 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -105px; border:1px solid #b5b5b5; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
