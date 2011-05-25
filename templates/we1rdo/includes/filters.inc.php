@@ -1,21 +1,21 @@
 			<div id="toolbar">
-                <div class="notifications">
-                    <?php if ($settings->get('show_multinzb')) { ?>
-                    <p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a></p>
-                    <?php } ?>
-                </div>
-                
+				<div class="notifications">
+					<?php if ($settings->get('show_multinzb')) { ?>
+					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a></p>
+					<?php } ?>
+				</div>
+
 				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>	
-                	Inloggen
+					Inloggen
 <?php } else { ?>
 					<?php echo $currentSession['user']['firstname']; ?>
 <?php } ?>
 				</a></p></div>
 
-                <span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
+				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
-                <form id="filterform" action="">
+				<form id="filterform" action="">
 <?php
 	$activefilter = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $activefilter);
 	
@@ -39,113 +39,113 @@
 		} # if
 	} # if
 ?>
-                    <div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
+					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
 <?php
 	$filterColCount = 3;
 	if ($settings->get('retrieve_full')) {
 		$filterColCount++;
 	} # if
 ?>
-                    <div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
 
-                    <div class="sidebarPanel advancedSearch">
-                    	<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
-                        <ul class="search<?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
-                            <li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
-                            <li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
-                            <li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
+					<div class="sidebarPanel advancedSearch">
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
+						<ul class="search<?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
+							<li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label>Titel</label></li>
+							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label>Poster</label></li>
+							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label>Tag</label></li>
 <?php if ($settings->get('retrieve_full')) { ?>
-                            <li> <input type="radio" name="search[type]" value="UserID" <?php echo $searchType == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
+							<li> <input type="radio" name="search[type]" value="UserID" <?php echo $searchType == "UserID" ? 'checked="checked"' : "" ?> ><label>UserID</label></li>
 <?php } ?>
-                        </ul>
+						</ul>
 
 						<h4>Sorteren op:</h4>
-                        <input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
-                        <ul class="search sorting threecol">
-                            <li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
-                        	<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
-                            <li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
-                        	<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
-                            <li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
-                            <li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
-                        </ul>
+						<input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
+						<ul class="search sorting threecol">
+							<li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
+							<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
+							<li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
+							<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
+							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
+						</ul>
 
 						<h4>Leeftijd limiteren</h4>
 						<ul class="search age onecol">
 <?php if (!isset($activefilter['filterValues']['date'])) { $activefilter['filterValues']['date'] = ''; } ?>
-							<li><select name="search[value][]"> 
-                                <option value="" <?php echo $activefilter['filterValues']['date'] == "" ? 'checked="checked"' : "" ?>>Alles tonen</option>
-                                <option value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'selected="selected"' : "" ?>>1 dag</option>
-                                <option value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'selected="selected""' : "" ?>>3 dagen</option>
-                                <option value="date:>:-1 week" <?php echo $activefilter['filterValues']['date'] == ">:-1 week" ? 'selected="selected""' : "" ?>>1 week</option>
-                                <option value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'selected="selected"' : "" ?>>2 weken</option>
-                                <option value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'selected="selected"' : "" ?>>1 maand</option>
-                                <option value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'selected="selected"' : "" ?>>3 maanden</option>
-                                <option value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'selected="selected"' : "" ?>>6 maanden</option>
-                                <option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>>1 jaar</option>
-                            </select></li>
+							<li><select name="search[value][]">
+								<option value="">Alles tonen</option>
+								<option value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'selected="selected"' : "" ?>>1 dag</option>
+								<option value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'selected="selected""' : "" ?>>3 dagen</option>
+								<option value="date:>:-1 week" <?php echo $activefilter['filterValues']['date'] == ">:-1 week" ? 'selected="selected""' : "" ?>>1 week</option>
+								<option value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'selected="selected"' : "" ?>>2 weken</option>
+								<option value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'selected="selected"' : "" ?>>1 maand</option>
+								<option value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'selected="selected"' : "" ?>>3 maanden</option>
+								<option value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'selected="selected"' : "" ?>>6 maanden</option>
+								<option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>>1 jaar</option>
+							</select></li>
 						</ul>
-						
+
 						<h4>Categori&euml;n</h4>
-                        <div id="tree"></div>
+						<div id="tree"></div>
 						<ul class="search clear onecol">
-                            <li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet categori&euml;n voor deze zoekopdracht</label> </li>
-                        </ul>
-                    </div>
-                </form>
-                
-                <div class="sidebarPanel userPanel">
-                    <h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
-                    <ul class="userInfo">
+							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet categori&euml;n voor deze zoekopdracht</label> </li>
+						</ul>
+					</div>
+				</form>
+
+				<div class="sidebarPanel userPanel">
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
+					<ul class="userInfo">
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 						<li>U bent niet ingelogd</li>
 <?php } else { ?>
 						<li><?php echo "Gebruiker: <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
 						<li><?php echo "Laatst gezien: <strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"; ?></li>
 <?php } ?>
-                    </ul>
-                    
-                    <h4 class="dropDown"><span class="viewState"><a class="createUser down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
-                    <div class="createUser"></div>
-                    
+					</ul>
+
+					<h4 class="dropDown"><span class="viewState"><a class="createUser down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
+					<div class="createUser"></div>
+
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
 					<h4 class="dropdown"><span class="viewState"><a class="editUser down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
 					<div class="editUser"></div>
 					
-                    <h4>Uitloggen</h4>
-                    <a onclick="userLogout()" class="greyButton">Uitloggen</a>
+					<h4>Uitloggen</h4>
+					<a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
-                    <h4>Inloggen</h4>
-                    <div class="login"></div>
+					<h4>Inloggen</h4>
+					<div class="login"></div>
 <?php } ?>
 				</div>
 
-                <div class="sidebarPanel sabnzbdPanel">
-                	<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
+				<div class="sidebarPanel sabnzbdPanel">
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
 <?php 
-	$nzbHandling = $this->_settings->get('nzbhandling'); 
+	$nzbHandling = $this->_settings->get('nzbhandling');
 	$sabnzbd = $nzbHandling['sabnzbd']; 
 	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
 	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
 ?>
-                    <table class="sabInfo" summary="SABnzbd infomatie">
-                    	<tr><td>Status:</td><td class="state"></td></tr>
-                        <tr><td>Snelheid:</td><td class="speed"></td></tr>
-                        <tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
-                        <tr><td>Te gaan:</td><td class="timeleft"></td></tr>
-                        <tr><td>ETA:</td><td class="eta"></td></tr>
-                        <tr><td>Wachtrij:</td><td class="mb"></td></tr>
-                    </table>
-                    <canvas id="graph" width="215" height="125"></canvas>
-                    <table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
+					<table class="sabInfo" summary="SABnzbd infomatie">
+						<tr><td>Status:</td><td class="state"></td></tr>
+						<tr><td>Snelheid:</td><td class="speed"></td></tr>
+						<tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
+						<tr><td>Te gaan:</td><td class="timeleft"></td></tr>
+						<tr><td>ETA:</td><td class="eta"></td></tr>
+						<tr><td>Wachtrij:</td><td class="mb"></td></tr>
+					</table>
+					<canvas id="graph" width="215" height="125"></canvas>
+					<table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
 					<h4>Wachtrij</h4>
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
-                </div>
-            </div>
+				</div>
+			</div>
 
-            <div id="filter" class="filter">					
-                <h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Quick Links </h4>
-                <ul class="filterlist quicklinks">
+			<div id="filter" class="filter">
+				<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Quick Links </h4>
+				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
 			$newCount = ($settings->get('count_newspots') && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
@@ -154,11 +154,11 @@
 <?php } ?>
 					</ul>
 					
-                    <h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Filters </h4>
-                    <ul class="filterlist filters">
+					<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Filters </h4>
+					<ul class="filterlist filters">
 
 <?php
-    foreach($filters as $filter) {
+	foreach($filters as $filter) {
 		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
 		$newCount = ($settings->get('count_newspots')) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 ?>
@@ -189,11 +189,11 @@
 				} # is_array
 			
 			} # foreach 
-            echo "\t\t\t\t\t\t\t</ul>\r\n";
-        } # is_array
-    } # foreach
+			echo "\t\t\t\t\t\t\t</ul>\r\n";
+		} # is_array
+	} # foreach
 ?>
-                    </ul>
+					</ul>
 
 					<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Onderhoud </h4>
 					<ul class="filterlist maintenancebox">
