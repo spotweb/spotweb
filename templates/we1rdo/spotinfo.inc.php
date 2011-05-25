@@ -10,7 +10,7 @@
 						<th class="category"><span><?php echo $spot['formatname'];?></span></th>
 						<th class="title"><?php echo $spot['title'];?></th>
 						<th class="rating">
-<?php 
+<?php
 	if($spot['rating'] == 0) {
 		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
 	} elseif($spot['rating'] == 1) {
@@ -30,7 +30,7 @@ echo "<th class='watch'>";
 echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='Verwijder uit watchlist (w)'> </a>";
 echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched'] == true) { echo " style='display: none;'"; } echo " title='Plaats in watchlist (w)'> </a>";
 echo "</th>";
-} ?>					 
+} ?>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($spot['hasbeendownloaded']) { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot) (s)"> </a></th>
