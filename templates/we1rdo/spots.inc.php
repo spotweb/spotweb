@@ -6,37 +6,37 @@
 
 	$getUrl = $tplHelper->getQueryParams(); 
 ?>
-            <div class="spots">
+			<div class="spots">
 				<table class="spots" summary="Spots">
 					<thead>
-                        <tr class="head">
-                            <th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
-                            <th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
-                            <?php if ($settings->get('keep_watchlist')) { ?>
-                            <th class='watch'> </th>
-                            <?php }
-                            if ($settings->get('retrieve_comments')) {
-                                echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
-                            } # if ?>
-                            <th class='genre'> Genre </th> 
-                            <th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
-                            <th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
+						<tr class="head">
+							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
+							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
+							<?php if ($settings->get('keep_watchlist')) { ?>
+							<th class='watch'> </th>
+							<?php }
+							if ($settings->get('retrieve_comments')) {
+								echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
+							} # if ?>
+							<th class='genre'> Genre </th> 
+							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
+							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
 <?php if ($settings->get('show_nzbbutton')) { ?>
 							<th class='nzb'> NZB </th>
 <?php } ?>
 <?php if ($settings->get('show_multinzb') && !count($spots) == 0) { ?>
-                            <th class='multinzb'> 
-                                <form action="" method="GET" id="checkboxget" name="checkboxget">
-                                    <input type='hidden' name='page' value='getnzb'>
-                                    <input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
-                            </th>
+							<th class='multinzb'> 
+								<form action="" method="GET" id="checkboxget" name="checkboxget">
+									<input type='hidden' name='page' value='getnzb'>
+									<input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
+							</th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
 							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Open "SabNZBd paneel"'></a></th>
 <?php } ?>						
 						</tr>
 					</thead>
-                    <tbody id="spots">
+					<tbody id="spots">
 <?php
 	if (count($spots) == 0) {
 		$colSpan = 5;
@@ -140,20 +140,20 @@
 			</table>
 <?php if ($prevPage >= 0 || $nextPage > 0) { ?>
 			<table class="footer" summary="Footer">
-            	<tbody>
-                	<tr>
+				<tbody>
+					<tr>
 <?php if ($prevPage >= 0) { ?> 
-                        <td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
+						<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
 <?php }?> 
 						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
 <?php if ($nextPage > 0) { ?> 
-                        <td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
+						<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
 <?php } ?>
 					</tr>
-                </tbody>
-            </table>
-            <?php if ($settings->get('show_multinzb')) { echo "</form>"; } ?>
-            <input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
+				</tbody>
+			</table>
+			<?php if ($settings->get('show_multinzb')) { echo "</form>"; } ?>
+			<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
 			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
 			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
 <?php } ?>
