@@ -495,9 +495,9 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_spotstatelistrel_1", "", "spotstatelist", "ouruserid");
 
 			# niet-bestaande records opruimen. Deze werden veroorzaakt door handmatige wijzigingen
-			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid = users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid = users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid = users.id WHERE users.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL;");
 
 			# relaties aanleggen
 			$this->_dbcon->rawExec("ALTER TABLE usersettings ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
@@ -591,7 +591,27 @@ abstract class SpotStruct_abs {
 			
 			$this->addIndex("idx_usergroups_1", "UNIQUE", "usergroups", "userid,groupid");
 		} # if usergroups
-		
+
+		# Een paar tabellen omzetten naar InnoDB
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.29)) {
+			$this->_dbcon->rawExec("ALTER TABLE grouppermissions ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE securitygroups ENGINE=InnoDB;");
+			$this->_dbcon->rawExec("ALTER TABLE usergroups ENGINE=InnoDB;");
+
+			# indexen aanmaken voor het gebruik van relaties
+			$this->addIndex("idx_usergroupsrel_1", "", "usergroups", "groupid");
+
+			# niet-bestaande records opruimen
+			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
+
+			# relaties aanleggen
+			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->_dbcon->rawExec("ALTER TABLE grouppermissions ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+		}
+
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
 	} # updateSchema

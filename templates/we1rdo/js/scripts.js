@@ -107,8 +107,8 @@ function loadComments(messageid,perpage,pagenr) {
 	var xhr = null;
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
-		if (count == 0 && pagenr == 0) { 
-			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+		if (count == 0 && pagenr == 0) {
+			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
@@ -403,7 +403,7 @@ function toggleSidebarPanel(id) {
 function downloadSabnzbd(id,url) {
 	$(".sab_"+id).removeClass("succes").addClass("loading");
 	$.get(url, function(data) {
-		$(".sab_"+id).removeClass("loading").addClass("succes");	
+		$(".sab_"+id).removeClass("loading").addClass("succes");
 	});
 }
 
@@ -579,7 +579,7 @@ function toggleCreateUser() {
 
 				var url = $("form.createuserform").attr("action");
 				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
-				
+
 				$.ajax({
 					type: "POST",
 					url: url,
