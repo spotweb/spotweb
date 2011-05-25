@@ -12,11 +12,11 @@ if (empty($postresult)) {
 ?>
 
 <form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post">
-    <input type="hidden" name="postcommentform[submit]" value="Post">
-    <input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
-    <input type="hidden" name="postcommentform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
-    <input type="hidden" name="postcommentform[newmessageid]" value="">
-    <input type="hidden" name="postcommentform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
+	<input type="hidden" name="postcommentform[submit]" value="Post">
+	<input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
+	<input type="hidden" name="postcommentform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
+	<input type="hidden" name="postcommentform[newmessageid]" value="">
+	<input type="hidden" name="postcommentform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
 	<fieldset>
 		<dl>
 			<dd class="rating"><input type="hidden" name="postcommentform[rating]" value="0"></dd>
