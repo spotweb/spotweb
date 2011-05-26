@@ -89,8 +89,10 @@ if (empty($edituserprefsresult)) {
 				</dl>
 			</fieldset>
 		</div>
-		
+
 		<div id="edituserpreftab-2">
+<?php
+/*		
 			<fieldset>
 				<dl>
 					<!-- NZBHANDLING -->
@@ -141,8 +143,10 @@ if (empty($edituserprefsresult)) {
 					<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>
 				</dl>
 			</fieldset>
+*/
+
+?>	
 		</div>
-	
 <!--	
 		<div id="edituserpreftab-3">
 			<fieldset>

@@ -21,7 +21,7 @@ try {
 	if (!$settings->get('enable_timing')) {
 		SpotTiming::disable();
 	} # if
-	
+
 	# Controleer eerst of het schema nog wel geldig is
 	if (!$db->schemaValid()) {
 		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
@@ -31,7 +31,7 @@ try {
 	if (!$settings->settingsValid()) {
 		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
-	
+
 	# Controleer dat er wel een password salt ingevuld is
 	if ($settings->get('pass_salt') == 'unieke string') {
 		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
@@ -40,14 +40,14 @@ try {
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
-	
+
 	$page = $req->getDef('page', 'index');
 
 	# Haal het userobject op dat 'ingelogged' is
 	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
-	if ($req->doesExist('username') && $req->doesExist('apikey')) {
-		$currentSession = $spotUserSystem->verifyApi($req->getDef('username', ''), $req->getDef('apikey', ''));
+	if ($req->doesExist('apikey')) {
+		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
 	} else {
 		$currentSession = $spotUserSystem->useOrStartSession();
 	} # if
@@ -66,10 +66,10 @@ try {
 				$page->render();
 				break;
 		} # render
-		
+
 		case 'getspot' : {
 				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
-					$page = new SpotPage_getnzb($db, $settings, $currentSession, 
+					$page = new SpotPage_getnzb($db, $settings, $currentSession,
 						Array('messageid' => $req->getDef('messageid', ''),
 							'action' => $req->getDef('action', 'display'),
 							'username' => $req->getDef('username', ''),
@@ -82,7 +82,7 @@ try {
 		} # getspot
 
 		case 'getnzb' : {
-				$page = new SpotPage_getnzb($db, $settings, $currentSession, 
+				$page = new SpotPage_getnzb($db, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display'),
 									  'username' => $req->getDef('username', ''),
@@ -90,27 +90,27 @@ try {
 				$page->render();
 				break;
 		}
-		
+
 		case 'getnzbmobile' : {
 				$page = new SpotPage_getnzbmobile($db, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
 				break;
-		} # getnzbmobile		
+		} # getnzbmobile
 
 		case 'erasedls' : {
 				$page = new SpotPage_erasedls($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # erasedls
-		
+
 		case 'catsjson' : {
 				$page = new SpotPage_catsjson($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # getspot
-		
+
 		case 'markallasread' : {
 				$page = new SpotPage_markallasread($db, $settings, $currentSession);
 				$page->render();
@@ -125,6 +125,25 @@ try {
 			break;
 		}
 
+		case 'api' : {
+			$page = new SpotPage_api($db, $settings, $currentSession,
+					Array('t' => $req->getDef('t', ''),
+						  'apikey' => $req->getDef('apikey', ''),
+						  'q' => $req->getDef('q', ''),
+						  'limit' => $req->getDef('limit', ''),
+						  'cat' => $req->getDef('cat', ''),
+						  'imdbid' => $req->getDef('imdbid', ''),
+						  'season' => $req->getDef('season', ''),
+						  'ep' => $req->getDef('ep', ''),
+						  'o' => $req->getDef('o', ''),
+						  'maxage' => $req->getDef('maxage', ''),
+						  'offset' => $req->getDef('offset', '')
+						  )
+			);
+			$page->render();
+			break;
+		} # api
+
 		case 'rss' : {
 			$page = new SpotPage_rss($db, $settings, $currentSession,
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
@@ -136,8 +155,8 @@ try {
 			);
 			$page->render();
 			break;
-		} # rss		
-		
+		} # rss
+
 		case 'statics' : {
 				$page = new SpotPage_statics($db, $settings, $currentSession,
 							Array('type' => $req->getDef('type', '')));
@@ -167,7 +186,7 @@ try {
 				$page->render();
 				break;
 		} # edituser
-		
+
 		case 'listusers' : {
 				$page = new SpotPage_listusers($db, $settings, $currentSession, array());
 				$page->render();
@@ -200,7 +219,7 @@ try {
 			$page->render();
 			break;
 		} # sabapi
-		
+
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
 					$page = new SpotPage_speeddial($db, $settings, $currentSession);

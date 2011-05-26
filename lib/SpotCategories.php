@@ -1,43 +1,42 @@
 <?php
 
 class SpotCategories {
-	public static $_head_categories = 
+	public static $_head_categories =
 	  Array(0 => "Beeld",
 			1 => "Geluid",
 			2 => "Spellen",
 			3 => "Applicaties");
 
-	public static $_headcat_subcat_mapping = 
+	public static $_headcat_subcat_mapping =
 	  Array(0 => 'd',
 			1 => 'd',
 			2 => 'c',
 			3 => 'b');
-			
-	public static $_subcat_descriptions = 
-		Array(0 => 
+
+	public static $_subcat_descriptions =
+		Array(0 =>
 			Array('a' => 'Formaat',
-			      'b' => 'Bron',
+				  'b' => 'Bron',
 				  'c' => 'Taal',
 				  'd' => 'Genre',
 				  'z' => 'Type'),
 			  1 =>
 			Array('a' => 'Formaat',
-			      'b' => 'Bron',
+				  'b' => 'Bron',
 				  'c' => 'Bitrate',
 				  'd' => 'Genre',
 				  'z' => 'Type'),
 			  2 =>
 			Array('a' => 'Platform',
-			      'b' => 'Formaat',
+				  'b' => 'Formaat',
 				  'c' => 'Genre'),
 			  3 =>
 			Array('a' => 'Platform',
 				  'b' => 'Genre')
 			);
 
-
-	public static $_shortcat = 
-		Array(0 => 
+	public static $_shortcat =
+		Array(0 =>
 				Array(0 => "DivX",
 					  1 => "WMV",
 					  2 => "MPG",
@@ -49,7 +48,7 @@ class SpotCategories {
 					  8 => "WMVHD",
 					  9 => "x264HD",
 					  10 => "DVD9"),
-  			  1 =>
+			  1 =>
 				Array(0	=> "MP3",
 					  1 => "WMA",
 					  2 => "WAV",
@@ -59,7 +58,7 @@ class SpotCategories {
 					  6 => "AAC",
 					  7 => "APE",
 					  8 => "FLAC"),
-  			  2 =>
+			  2 =>
 				Array(0 => "WIN",
 					  1 => "MAC",
 					  2 => "TUX",
@@ -77,7 +76,7 @@ class SpotCategories {
 					  14 => "iOS",
 					  15 => "Android",
 					  16 => "3DS"),
-  			  3 =>
+			  3 =>
 				Array(0 => "WIN",
 					  1 => "MAC",
 					  2 => "TUX",
@@ -87,11 +86,62 @@ class SpotCategories {
 					  6 => "iOS",
 					  7 => "Android")
 			);
-			
-			
-	public static $_categories = 
-		Array(0 => 
-			Array('a' => 
+
+	public static $_newznabcat =
+		Array(0 =>
+				Array(0 => "2000|2030",
+					  1 => "2000|2030",
+					  2 => "2000|2030",
+					  3 => "2000|2030",
+					  4 => "2000|2040",
+					  5 => "7000|7020",
+					  6 => "2000|2040",
+					  7 => "2000|2040",
+					  8 => "2000|2040",
+					  9 => "2000|2040",
+					  10 => "2000|2030"),
+			  1 =>
+				Array(0	=> "3000|3010",
+					  1 => "3000|3010",
+					  2 => "3000|3040",
+					  3 => "3000|3010",
+					  4 => "3000|3040",
+					  5 => "3000|3040",
+					  6 => "3000|3010",
+					  7 => "3000|3040",
+					  8 => "3000|3040"),
+			  2 =>
+				Array(0 => "4000|4050",
+					  1 => "4000|4030",
+					  2 => "TUX",
+					  3 => "PS",
+					  4 => "PS2",
+					  5 => "1000|1020",
+					  6 => "1000|1040",
+					  7 => "1000|1050",
+					  8 => "GBA",
+					  9 => "GC",
+					  10 => "1000|1010",
+					  11 => "1000|1030",
+					  12 => "1000|1080",
+					  13 => "4000|4040",
+					  14 => "4000|4040",
+					  15 => "4000|4040",
+					  16 => "3DS"),
+			  3 =>
+				Array(0 => "4000|4020",
+					  1 => "4000|4030",
+					  2 => "TUX",
+					  3 => "OS/2",
+					  4 => "4000|4040",
+					  5 => "NAV",
+					  6 => "4000|4040",
+					  7 => "4000|4040")
+			);
+
+	public static $_categories =
+		Array(0 =>
+			Array('a' =>
 				Array(0 => "DivX",
 					  1 => "WMV",
 					  2 => "MPG",
@@ -117,20 +167,20 @@ class SpotCategories {
 					  10 => "Scan"),
 				  'c' =>
 				Array(0 => "Geen ondertitels",
-                      1 => "Nederlands ondertiteld (extern)",
-                      2 => "Nederlands ondertiteld (ingebakken)",
-                      3 => "Engels ondertiteld (extern)",
-                      4 => "Engels ondertiteld (ingebakken)",
-                      5 => "",
-                      6 => "Nederlands ondertiteld (instelbaar)",
-                      7 => "Engels ondertiteld (instelbaar)",
+					  1 => "Nederlands ondertiteld (extern)",
+					  2 => "Nederlands ondertiteld (ingebakken)",
+					  3 => "Engels ondertiteld (extern)",
+					  4 => "Engels ondertiteld (ingebakken)",
+					  5 => "",
+					  6 => "Nederlands ondertiteld (instelbaar)",
+					  7 => "Engels ondertiteld (instelbaar)",
 					  8 => "",
 					  9 => "",
-                      10 => "Engels gesproken",
-                      11 => "Nederlands gesproken",
-                      12 => "Duits gesproken",
-                      13 => "Frans gesproken",
-                      14 => "Spaans gesproken"),
+					  10 => "Engels gesproken",
+					  11 => "Nederlands gesproken",
+					  12 => "Duits gesproken",
+					  13 => "Frans gesproken",
+					  14 => "Spaans gesproken"),
 				  'd' =>
 				Array(0  => "Actie",
 					  1  => "Avontuur",
@@ -154,7 +204,7 @@ class SpotCategories {
 					  19  => "Korte film",
 					  20  => "Thriller",
 					  21  => "Oorlog",
-  					  22  => "Western",
+					  22  => "Western",
 					  23  => "Erotiek (hetero)",
 					  24  => "Erotiek (gay mannen)",
 					  25  => "Erotiek (gay vrouwen)",
@@ -220,7 +270,7 @@ class SpotCategories {
 					  3 => "Erotiek")
 			),
 			  1 => Array(
-			      'a' => 
+				  'a' =>
 				Array(0	=> "MP3",
 					  1 => "WMA",
 					  2 => "WAV",
@@ -230,7 +280,7 @@ class SpotCategories {
 					  6 => "AAC",
 					  7 => "APE",
 					  8 => "FLAC"),
-				  'b' => 
+				  'b' =>
 				Array(0 => "CD",
 					  1 => "Radio",
 					  2 => "Compilatie",
@@ -240,7 +290,7 @@ class SpotCategories {
 					  6 => "Stream"),
 				  'c' =>
 				Array(0 => "Variabel",
-				      1 => "< 96kbit",
+					  1 => "< 96kbit",
 					  2 => "96kbit",
 					  3 => "128kbit",
 					  4 => "160kbit",
@@ -249,7 +299,7 @@ class SpotCategories {
 					  7 => "320kbit",
 					  8 => "Lossless",
 					  9 => ""),
-				  'd' => 
+				  'd' =>
 				Array(0 => "Blues",
 					  1 => "Compilatie",
 					  2 => "Cabaret",
@@ -257,9 +307,9 @@ class SpotCategories {
 					  4 => "Diversen",
 					  5 => "Hardcore",
 					  6 => "Wereld",
-  					  7 => "Jazz",
+					  7 => "Jazz",
 					  8 => "Jeugd",
-				  	  9 => "Klassiek",
+					  9 => "Klassiek",
 					  10 => "Kleinkunst",
 					  11 => "Hollands",
 					  12 => "New Age",
@@ -269,7 +319,7 @@ class SpotCategories {
 					  16 => "Reggae",
 					  17 => "Religieus",
 					  18 => "Rock",
-				 	  19 => "Soundtracks",
+					  19 => "Soundtracks",
 					  20 => "",
 					  21 => "Hardstyle",
 					  22 => "Asian",
@@ -296,7 +346,7 @@ class SpotCategories {
 					  3 => "Luisterboek")
 			),
 			  2 => Array(
-			  	  'a' => 
+				  'a' =>
 				Array(0 => "Windows",
 					  1 => "Macintosh",
 					  2 => "Linux",
@@ -314,7 +364,7 @@ class SpotCategories {
 					  14 => "iOS",
 					  15 => "Android",
 					  16 => "Nintendo 3DS"),
-				  'b' => 
+				  'b' =>
 				Array(0 => "ISO",
 					  1 => "Rip",
 					  2 => "Retail",
@@ -343,7 +393,7 @@ class SpotCategories {
 					  17 => "Familie"),
 			),
 			  3 => Array(
-			       'a' =>
+				   'a' =>
 				Array(0 => "Windows",
 					  1 => "Macintosh",
 					  2 => "Linux",
@@ -354,14 +404,14 @@ class SpotCategories {
 					  7 => "Android"),
 				  'b' =>
 				Array(0 => "Audio",
-                      1 => "Video",
-                      2 => "Grafisch",
-                      3 => "CD/DVD Tools",
-                      4 => "Media spelers",
-                      5 => "Rippers &amp; Encoders",
-                      6 => "Plugins",
-                      7 => "Database tools",
-                      8 => "Email software",
+					  1 => "Video",
+					  2 => "Grafisch",
+					  3 => "CD/DVD Tools",
+					  4 => "Media spelers",
+					  5 => "Rippers &amp; Encoders",
+					  6 => "Plugins",
+					  7 => "Database tools",
+					  8 => "Email software",
 					  9 => "Foto",
 					  10 => "Screensavers",
 					  11 => "Skin software",
@@ -390,15 +440,15 @@ class SpotCategories {
 
 	static function Cat2Desc($hcat, $cat) {
 		$catList = explode("|", $cat);
-		$cat = $catList[0]; 
+		$cat = $catList[0];
 
 		if (empty($cat[0])) {
 			return '';
-		} # if 
-		
+		} # if
+
 		$type = $cat[0];
 		$nr = substr($cat, 1);
-	
+
 		if (!isset(self::$_categories[$hcat][$type][$nr])) {
 			return "-";
 		} else {
@@ -408,21 +458,38 @@ class SpotCategories {
 
 	static function Cat2ShortDesc($hcat, $cat) {
 		$catList = explode("|", $cat);
-		$cat = $catList[0]; 
+		$cat = $catList[0];
 
 		if (empty($cat[0])) {
 			return '';
-		} # if 
-		
+		} # if
+
 		$nr = substr($cat, 1);
-	
+
 		if (!isset(self::$_shortcat[$hcat][$nr])) {
 			return "-";
 		} else {
 			return self::$_shortcat[$hcat][$nr];
 		} # if
 	}
-	
+
+	static function Cat2NewznabCat($hcat, $cat) {
+		$catList = explode("|", $cat);
+		$cat = $catList[0];
+
+		if (empty($cat[0])) {
+			return '';
+		} # if
+
+		$nr = substr($cat, 1);
+
+		if (!isset(self::$_newznabcat[$hcat][$nr])) {
+			return "-";
+		} else {
+			return self::$_newznabcat[$hcat][$nr];
+		} # if
+	}
+
 	static function SubcatDescription($hcat, $ch) {
 		if ((isset(self::$_subcat_descriptions[$hcat])) && (isset(self::$_subcat_descriptions[$hcat][$ch]))) {
 			return self::$_subcat_descriptions[$hcat][$ch];
@@ -430,7 +497,7 @@ class SpotCategories {
 			return '-';
 		} # else
 	} # func SubcatDescription
-	
+
 	static function SubcatNumberFromHeadcat($hcat) {
 		if (isset(self::$_headcat_subcat_mapping[$hcat])) {
 			return self::$_headcat_subcat_mapping[$hcat];
@@ -438,7 +505,7 @@ class SpotCategories {
 			return '-';
 		} # else
 	} # SubcatNumberFromHeadcat
-	
+
 	static function HeadCat2Desc($cat) {
 		if (isset(self::$_head_categories[$cat])) {
 			return self::$_head_categories[$cat];
@@ -446,21 +513,21 @@ class SpotCategories {
 			return '-';
 		} # else
 	} # func. Cat2Desc
-	
+
 	static function createSubcatZ($hcat, $subcats) {
 		# z-categorieen gelden tot nu toe enkel voor films en muziek
 		if (($hcat != 0) && ($hcat != 1)) {
 			return '';
 		} # if
-		
+
 		$genreSubcatList = explode('|', $subcats);
 		$subcatz = '';
-		
+
 		foreach($genreSubcatList as $subCatVal) {
 			if ($subCatVal == '') {
 				continue;
 			} # if
-			
+
 			if ($hcat == 0) {
 				# 'Erotiek'
 				if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89|', ($subCatVal . '|')) !== false) {
@@ -480,7 +547,7 @@ class SpotCategories {
 				break;
 			} # if muziek
 		} # foreach
-		
+
 		return $subcatz;
 	} # createSubcatZ
-} 
+}
