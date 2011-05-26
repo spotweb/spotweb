@@ -265,6 +265,11 @@ class SpotUserSystem {
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 		
+		# Geef de user default preferences
+		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
+		$tmpUser['prefs'] = $anonUser['prefs'];
+		$this->_db->setUser($tmpUser);
+		
 		# en geef de gebruiker de nodige groepen
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 	} # addUser()
