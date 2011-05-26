@@ -2,35 +2,35 @@
 abstract class SpotStruct_abs {
 	protected $_spotdb;
 	protected $_dbcon;
-	
+
 	public function __construct(SpotDb $spotdb) {
 		$this->_spotdb = $spotdb;
 		$this->_dbcon = $spotdb->getDbHandle();
 	} # __construct
-	
+
 	abstract function createDatabase();
 
-	/* 
-	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
+	/*
+	 * optimaliseer/analyseer een aantal tables welke veel veranderen,
 	 * deze functie wijzigt geen data!
-  	 */
+	 */
 	abstract function analyze();
-	
+
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	abstract function addIndex($idxname, $idxType, $tablename, $colList);
-	
+
 	/* dropt een index als deze bestaat */
 	abstract function dropIndex($idxname, $tablename);
-	
+
 	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
 	abstract function addColumn($colName, $tablename, $colDef);
-	
+
 	/* dropt een kolom (mits db dit ondersteunt) */
 	abstract function dropColumn($colName, $tablename);
-	
+
 	/* controleert of een index bestaat */
 	abstract function indexExists($tablename, $idxname);
-	
+
 	/* controleert of een kolom bestaat */
 	abstract function columnExists($tablename, $colname);
 
@@ -42,16 +42,16 @@ abstract class SpotStruct_abs {
 
 	/* drop een table */
 	abstract function dropTable($tablename);
-	
-	
+
+
 	function updateSchema() {
 		# Fulltext indexes
 		$this->addIndex("idx_spots_fts_1", "FULLTEXT", "spots", "title");
 		$this->addIndex("idx_spots_fts_2", "FULLTEXT", "spots", "poster");
 		$this->addIndex("idx_spots_fts_3", "FULLTEXT", "spots", "tag");
 		$this->addIndex("idx_spotsfull_fts_1", "FULLTEXT", "spotsfull", "userid");
-		
-		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren 
+
+		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren
 		if (!$this->columnExists('spots', 'reversestamp')) {
 			$this->addColumn("reversestamp", "spots", "INTEGER DEFAULT 0");
 			$this->_dbcon->rawExec("UPDATE spots SET reversestamp = (stamp*-1)");
@@ -66,7 +66,7 @@ abstract class SpotStruct_abs {
 		# commentsfull tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('commentsfull')) {
 			$this->createTable('commentsfull', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			
+
 			$this->addColumn('messageid', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('fromhdr', 'commentsfull', 'VARCHAR(128)');
 			$this->addColumn('stamp', 'commentsfull', 'INTEGER');
@@ -83,7 +83,7 @@ abstract class SpotStruct_abs {
 		if (!$this->columnExists('commentsxover', 'spotrating')) {
 			$this->addColumn("spotrating", "commentsxover", "INTEGER DEFAULT 0");
 		} # if
-		
+
 		# als het schema 0.01 is, dan is value een varchar(128) veld, maar daar
 		# past geen RSA key in dus dan droppen we de tabel
 		$saveVersion = null;
@@ -93,22 +93,22 @@ abstract class SpotStruct_abs {
 				$this->dropTable('settings');
 			} # if
 		} # if
-		
+
 		# settings tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('settings')) {
 			$this->createTable('settings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			
+
 			$this->addColumn('name', 'settings', "VARCHAR(128) DEFAULT '' NOT NULL");
 			$this->addColumn('value', 'settings', 'text');
 			$this->addColumn('serialized', 'settings', 'boolean');
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
-			
+
 			if ($saveVersion != null) {
 				$this->_spotdb->updateSetting('schemaversion', $saveVersion, false);
 			} # if
 		} # if
-		
-		# Collation en dergelijke zijn alleen van toepassing op MySQL, we 
+
+		# Collation en dergelijke zijn alleen van toepassing op MySQL, we
 		# zetten alle collation exact hetzelfde zodat de indexes beter
 		# gebruikt kunnen worden.
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.03)) {
@@ -126,7 +126,7 @@ abstract class SpotStruct_abs {
 		
 
 			echo "Converting comments full fields to UTF8 (2/10)" . PHP_EOL;
-	
+
 			# en vervolgens alteren we elk tekst veld
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT '' NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE commentsfull MODIFY fromhdr VARCHAR(128) CHARACTER SET utf8");
@@ -170,8 +170,8 @@ abstract class SpotStruct_abs {
 
 			echo "Dropping indexes (5/10)" . PHP_EOL;
 
-			# Nu droppen we alle indexes en bouwen die opnieuw op, we doen dit 
-			# omdat legacy databases soms nog indexes hebben die niet meer kloppen 
+			# Nu droppen we alle indexes en bouwen die opnieuw op, we doen dit
+			# omdat legacy databases soms nog indexes hebben die niet meer kloppen
 			# doordat upgrades niet altijd goed zijn gegaan
 			if ($this->indexExists('spots', 'idx_spots_1'))
 				$this->_dbcon->rawExec("ALTER IGNORE TABLE spots DROP INDEX idx_spots_1");
@@ -196,7 +196,7 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_watchlist_1");
 			if ($this->indexExists('spotsfull', 'idx_spotsfull_fts_3'))
 				$this->_dbcon->rawExec("ALTER IGNORE TABLE spotsfull DROP INDEX idx_spotsfull_fts_3");
-			
+
 			# en maak nieuwe indexen aan
 			echo "Creating index on spots (6/10)" . PHP_EOL;
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
@@ -222,9 +222,9 @@ abstract class SpotStruct_abs {
 
 			# Erotiek
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z3|'
-										WHERE (Category = 0) 
-											AND 
-										( (subcatd like '%d23|%') OR (subcatd like '%d24|%') OR (subcatd like '%d25|%') 
+										WHERE (Category = 0)
+											AND
+										( (subcatd like '%d23|%') OR (subcatd like '%d24|%') OR (subcatd like '%d25|%')
 										   OR (subcatd like '%d72|%')  OR (subcatd like '%d73|%') OR (subcatd like '%d74|%')
 										   OR (subcatd like '%d75|%')  OR (subcatd like '%d76|%') OR (subcatd like '%d77|%')
 										   OR (subcatd like '%d78|%')  OR (subcatd like '%d79|%') OR (subcatd like '%d80|%')
@@ -235,14 +235,14 @@ abstract class SpotStruct_abs {
 
 			# Series
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z1|'
-										WHERE (Category = 0) 
-											AND 
+										WHERE (Category = 0)
+											AND
 										( (subcatd like '%b4|%') OR (subcatd like '%d11|%') )");
 
 			# Boeken
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = 'z2|'
-										WHERE (Category = 0) 
-											AND 
+										WHERE (Category = 0)
+											AND
 										(subcata = 'a5|')");
 
 			# Muziek
@@ -253,8 +253,8 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("UPDATE spots SET subcatz = ''
 										WHERE subcatz IS NULL");
 		} # if
-		
-		# Collation en dergelijke zijn alleen van toepassing op MySQL, we 
+
+		# Collation en dergelijke zijn alleen van toepassing op MySQL, we
 		# zetten alle collation exact hetzelfde zodat de indexes beter
 		# gebruikt kunnen worden.
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.06)) {
@@ -264,7 +264,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 		} # if
-		
+
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usersettings')) {
 			$this->createTable('usersettings', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
@@ -276,7 +276,7 @@ abstract class SpotStruct_abs {
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
-		
+
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('users')) {
 			$this->createTable('users', "CHARSET=utf8 COLLATE=utf8_unicode_ci");
@@ -292,12 +292,13 @@ abstract class SpotStruct_abs {
 			$this->addColumn('lastread', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
 			$this->addColumn('deleted', 'users', "BOOLEAN DEFAULT 0 NOT NULL");
-			
+
 			$this->addIndex("idx_users_1", "UNIQUE", "users", "username");
 			$this->addIndex("idx_users_2", "UNIQUE", "users", "mail");
 			$this->addIndex("idx_users_3", "", "users", "deleted");
+			$this->addIndex("idx_users_4", "UNIQUE", "users", "apikey");
 		} # if
-		
+
 		# users tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('sessions')) {
 			$this->createTable('sessions', "CHARSET=ascii");
@@ -337,8 +338,8 @@ abstract class SpotStruct_abs {
 
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
-		
-		# Wis alle users, en maak een nieuwe anonymous user aan
+
+		# Maak een bigint van de filesize column
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.12)) {
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
@@ -350,50 +351,6 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("DELETE FROM users");
 			$this->_dbcon->exec("DELETE FROM usersettings");
 			$this->_dbcon->exec("DELETE FROM sessions");
-			
-			# Create the dummy 'anonymous' user
-			$anonymous_user = array(
-				# 'userid'		=> 1,		<= Moet 1 zijn voor de anonymous user
-				'username'		=> 'anonymous',
-				'firstname'		=> 'Jane',
-				'passhash'		=> '',
-				'lastname'		=> 'Doe',
-				'mail'			=> 'john@example.com',
-				'apikey'		=> '',
-				'lastlogin'		=> 0,
-				'lastvisit'		=> 0,
-				'deleted'		=> 0);
-			$this->_spotdb->addUser($anonymous_user);
-			
-			# update handmatig het userid
-			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
-
-			# Vraag de password salt op 
-			$passSalt = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'pass_salt'");
-			
-			# Bereken het password van de dummy admin user
-			$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
-			
-			# Create the dummy 'admin' user
-			$admin_user = array(
-				# 'userid'		=> 2,		
-				'username'		=> 'admin',
-				'firstname'		=> '',
-				'passhash'		=> $adminPwdHash,
-				'lastname'		=> 'Doe',
-				'mail'			=> 'spotwebadmin@example.com',
-				'apikey'		=> '',
-				'lastlogin'		=> 0,
-				'lastvisit'		=> 0,
-				'deleted'		=> 0);
-			$this->_spotdb->addUser($admin_user);
-			
-			# update handmatig het userid
-			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
-			$this->_dbcon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
-			$this->_dbcon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
 
 		# Indexen moeten uniek zijn op de messageid
@@ -401,7 +358,7 @@ abstract class SpotStruct_abs {
 			$this->dropIndex("idx_commentsposted_1", "commentsposted");
 			$this->addIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", "messageid");
 		} # if
-		
+
 		# Rating van spots werd verkeerd berekend
 		if ($this->_spotdb->getSchemaVer() < 0.20) {
 			$this->_dbcon->rawExec("UPDATE commentsxover SET spotrating = 0");
@@ -424,22 +381,21 @@ abstract class SpotStruct_abs {
 
 		# Update de commentcount en de spotrating
 		if ($this->_spotdb->getSchemaVer() < 0.22) {
-			$this->_dbcon->rawExec("UPDATE spots 
-									SET spotrating = 
-										(SELECT AVG(spotrating) as spotrating 
-										 FROM commentsxover 
-										 WHERE 
-											spots.messageid = commentsxover.nntpref 
+			$this->_dbcon->rawExec("UPDATE spots
+									SET spotrating =
+										(SELECT AVG(spotrating) as spotrating
+										 FROM commentsxover
+										 WHERE
+											spots.messageid = commentsxover.nntpref
 											AND spotrating BETWEEN 1 AND 10
 										 GROUP BY nntpref)");
-			$this->_dbcon->rawExec("UPDATE spots 
-									SET commentcount = 
-										(SELECT COUNT(1) as commentcount 
-										 FROM commentsxover 
-										 WHERE 
-											spots.messageid = commentsxover.nntpref 
+			$this->_dbcon->rawExec("UPDATE spots
+									SET commentcount =
+										(SELECT COUNT(1) as commentcount
+										 FROM commentsxover
+										 WHERE
+											spots.messageid = commentsxover.nntpref
 										 GROUP BY nntpref)");
-
 		} # if
 
 		# Gebruikers krijgen een API key toegewezen
@@ -450,7 +406,7 @@ abstract class SpotStruct_abs {
 			foreach($userIds as $userid) {
 				$this->_dbcon->rawExec("UPDATE users SET apikey = '" . md5(rand(10e16, 10e20)) . "' WHERE id = " . $userid['id']);
 			}
-		}
+		} # if
 
 		# Data van oude lists overzetten naar nieuwe tabel & Nieuwe kolom tbv API
 		if ($this->_spotdb->getSchemaVer() < 0.25) {
@@ -470,7 +426,7 @@ abstract class SpotStruct_abs {
 			} # if
 
 			$this->addColumn('lastapiusage', 'users', "INTEGER DEFAULT 0 NOT NULL");
-			
+
 			# messageid's zijn per definitie al uniek, een dubbele index is dus overbodig
 			$this->dropIndex("idx_commentsxover_1", "commentsxover");
 			$this->dropIndex("idx_commentsxover_2", "commentsxover");
@@ -481,7 +437,7 @@ abstract class SpotStruct_abs {
 			$this->dropTable('downloadlist');
 			$this->dropTable('watchlist');
 			$this->dropTable('seenlist');
-		}
+		} # if
 
 		# Een paar tabellen omzetten naar InnoDB
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.26)) {
@@ -508,11 +464,6 @@ abstract class SpotStruct_abs {
 		if ($this->_spotdb->getSchemaVer() < 0.26) {
 			$this->dropIndex("idx_users_3", "users");
 			$this->addIndex("idx_users_3", "", "users", "deleted");
-		}
-
-		# Als er een userid is met 2, dan geven we die de username 'admin'
-		if ($this->_spotdb->getSchemaVer() < 0.28) {
-			$this->_dbcon->exec("UPDATE users SET username = 'admin' WHERE id = 2");
 		} # if
 
 		# securitygroups tabel aanmaken als hij nog niet bestaat
@@ -527,7 +478,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
 			$this->_dbcon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");
 		} # if securitygroups
-		
+
 		# grouppermissions tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('grouppermissions')) {
 			$this->createTable('grouppermissions', "CHARSET=ascii");
@@ -538,7 +489,7 @@ abstract class SpotStruct_abs {
 			$this->addColumn('deny', 'grouppermissions', "BOOLEAN DEFAULT 0 NOT NULL");
 
 			$this->addIndex("idx_grouppermissions_1", "UNIQUE", "grouppermissions", "groupid,permissionid,objectid");
-			
+
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
 							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
@@ -564,8 +515,7 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
 			} # foreach
 		} # if grouppermissions
-		
-		
+
 		# grouppermissions tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usergroups')) {
 			$this->createTable('usergroups', "CHARSET=ascii");
@@ -573,14 +523,6 @@ abstract class SpotStruct_abs {
 			$this->addColumn('userid', 'usergroups', 'INTEGER DEFAULT 0 NOT NULL');
 			$this->addColumn('groupid', 'usergroups', 'INTEGER DEFAULT 0 NOT NULL');
 			$this->addColumn('prio', 'usergroups', 'INTEGER DEFAULT 1 NOT NULL');
-			
-			# Geef de anonieme user de anonymous group
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");
-			
-			# Geef user 2 (de admin user, naar we van uit gaan) de anon, auth en admin group
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
 
 			# Geef de overige users anon en authenticated users rechten
 			$userList = $this->_dbcon->arrayQuery("SELECT id FROM users WHERE id > 2");
@@ -588,18 +530,31 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(" . $user['id'] . ", 1, 1)");
 				$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(" . $user['id'] . ", 2, 2)");
 			} # foreach
-			
+
 			$this->addIndex("idx_usergroups_1", "UNIQUE", "usergroups", "userid,groupid");
 		} # if usergroups
 
+		# Wis de 'admin' user
+		if ($this->_spotdb->getSchemaVer() < 0.29) {
+			$this->_dbcon->rawExec("DELETE FROM usergroups WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM usersettings WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM spotstatelist WHERE ouruserid = 2");
+			$this->_dbcon->rawExec("DELETE FROM commentsposted WHERE ouruserid = 2");
+			$this->_dbcon->rawExec("DELETE FROM sessions WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM users WHERE id = 2");
+		} # if
+
 		# Een paar tabellen omzetten naar InnoDB
-		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.29)) {
+		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.30)) {
 			$this->_dbcon->rawExec("ALTER TABLE grouppermissions ENGINE=InnoDB;");
 			$this->_dbcon->rawExec("ALTER TABLE securitygroups ENGINE=InnoDB;");
 			$this->_dbcon->rawExec("ALTER TABLE usergroups ENGINE=InnoDB;");
 
 			# indexen aanmaken voor het gebruik van relaties
 			$this->addIndex("idx_usergroupsrel_1", "", "usergroups", "groupid");
+			
+			# nog een index tbv API authenticatie
+			$this->addIndex("idx_users_4", "UNIQUE", "users", "apikey");
 
 			# niet-bestaande records opruimen
 			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL;");
@@ -610,7 +565,7 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
 			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
 			$this->_dbcon->rawExec("ALTER TABLE grouppermissions ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-		}
+		} # if
 
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);

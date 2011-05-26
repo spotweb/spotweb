@@ -23,14 +23,13 @@ class SpotUpgrader {
 	} # settings
 
 	/*
-	 * Upgrade de settings
+	 * Upgrade de users
 	 */
-	function userpreferences($settings) {
-		# Creer het settings object
-		$spotPreferencesUpdater = new SpotPreferencesUpdater($this->_db);
-		$spotPreferencesUpdater->update();
-	} # userpreferences
-	
+	function users() {
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db);
+		$spotUserUpgrader->update();
+	} # users
+	 
 	/*
 	 * Creeert en upgrade de database
 	 */

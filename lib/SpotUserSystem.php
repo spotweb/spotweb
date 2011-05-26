@@ -123,7 +123,7 @@ class SpotUserSystem {
 		$password = $this->passToHash($password);
 
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $password, false);
+		$userId = $this->_db->authUser($user, $password);
 		if ($userId !== false) {
 			# Als de user ingelogged is, creeer een sessie.
 			# Volgorde is hier belangrijk omdat in de newsession
@@ -145,9 +145,9 @@ class SpotUserSystem {
 		} # else
 	} # login
 
-	function verifyApi($user, $apikey) {
+	function verifyApi($apikey) {
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, false, $apikey);
+		$userId = $this->_db->authUser(false, $apikey);
 		if ($userId !== false) {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
@@ -265,6 +265,11 @@ class SpotUserSystem {
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 		
+		# Geef de user default preferences
+		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
+		$tmpUser['prefs'] = $anonUser['prefs'];
+		$this->_db->setUser($tmpUser);
+		
 		# en geef de gebruiker de nodige groepen
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 	} # addUser()
@@ -340,12 +345,14 @@ class SpotUserSystem {
 	 * Valideer het user record, kan gebruikt worden voor het toegevoegd word of
 	 * geupdate wordt
 	 */
-	function validateUserRecord($user) {
+	function validateUserRecord($user, $isEdit) {
 		$errorList = array();
 		
 		# Controleer de username
-		if (!$this->validUsername($user['username'])) {
-			$errorList[] = array('validateuser_invalidusername', array());
+		if (!$isEdit) {
+			if (!$this->validUsername($user['username'])) {
+				$errorList[] = array('validateuser_invalidusername', array());
+			} # if
 		} # if
 		
 		# controleer de firstname
@@ -408,10 +415,6 @@ class SpotUserSystem {
 	 * Update een user record
 	 */
 	function setUser($user) {
-		if (!$this->validUsername($user['username'])) {
-			throw new Exception("Invalid username");
-		} # if
-		
 		# We gaan er altijd van uit dat een password nooit gezet wordt
 		# via deze functie dus dat stuk negeren we
 		$this->_db->setUser($user);

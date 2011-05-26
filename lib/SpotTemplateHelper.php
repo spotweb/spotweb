@@ -337,9 +337,9 @@ class SpotTemplateHelper {
 		} # if
 		
 		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
-			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
+			return '&amp;apikey=' . $this->_params['apikey'];
 		} elseif ($this->_currentSession['user']['userid'] > 1) {
-			return '&amp;username=' . urlencode($this->_currentSession['user']['username']) . '&amp;apikey=' . $this->_currentSession['user']['apikey'];
+			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
 			return;
 		}

@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.29');
+define('SPOTDB_SCHEMA_VERSION', '0.30');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -377,14 +377,14 @@ class SpotDb {
 	 *
 	 * Een userid als de user gevonden kan worden, of false voor failure
 	 */
-	function authUser($username, $passhash, $apikey) {
-		$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND (passhash = '%s' OR apikey = '%s') AND NOT DELETED",
-						Array($username, $passhash, $apikey));
-		if (!empty($tmp)) {
-			return $tmp[0]['id'];
+	function authUser($username, $passhash) {
+		if ($username == false) {
+			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE apikey = '%s' AND NOT DELETED", Array($passhash));
+		} else {
+			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED", Array($username, $passhash));
 		} # if
 
-		return false;
+		return (empty($tmp)) ? false : $tmp[0]['id'];
 	} # authUser
 
 	/* 
