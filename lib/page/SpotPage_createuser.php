@@ -47,7 +47,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 				
 			# valideer de user
 			$spotUser = array_merge($spotUser, $this->_createUserForm);
-			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
+			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser, false);
 
 			# Is er geen andere user met dezelfde username?
 			if ($this->_db->usernameExists($spotUser['username'])) {

@@ -74,7 +74,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 				case 'edit'	: {
 					# valideer de user
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
-					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser);
+					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser, true);
 
 					if (empty($formMessages['errors'])) {
 						# bewerkt de user
