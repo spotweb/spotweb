@@ -6,7 +6,7 @@
 				</div>
 
 				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
-<?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>	
+<?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 					Inloggen
 <?php } else { ?>
 					<?php echo $currentSession['user']['firstname']; ?>

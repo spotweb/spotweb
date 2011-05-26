@@ -43,7 +43,7 @@ class SpotDb {
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
-    } # connect
+	} # connect
 
 	/*
 	 * Geeft het database connectie object terug
@@ -1138,7 +1138,7 @@ class SpotDb {
 		
 		return $permList;
 	} # getPermissions
-	
+
 	/*
 	 * Wijzigt group membership van een user
 	 */
