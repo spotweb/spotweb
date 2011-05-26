@@ -8,6 +8,21 @@ class SpotPage_edituser extends SpotPage_Abs {
 		$this->_editUserForm = $params['edituserform'];
 		$this->_userIdToEdit = $params['userid'];
 	} # ctor
+	
+	/* 
+	 * Wis niet gewenste velden uit het formulier om te voorkomen dat
+	 * er andere records geupdate kunnen worden
+	 */
+	function cleanseEditForm($editForm) {
+		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2');
+		foreach($editForm as $key => $value) {
+			if (in_array($key, $validFields) === false) {
+				unset($editForm[$key]);
+			} # if
+		} # foreach
+		
+		return $editForm;
+	} # cleanseEditForm
 
 	function render() {
 		$formMessages = array('errors' => array(),
@@ -72,6 +87,9 @@ class SpotPage_edituser extends SpotPage_Abs {
 				} # case delete
 
 				case 'edit'	: {
+					# Verwijder eventueel niet geldige velden uit het formulier
+					$this->_editUserForm = $this->cleanseEditForm($this->_editUserForm);
+					
 					# valideer de user
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
 					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser, true);
