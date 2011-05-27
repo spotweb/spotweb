@@ -53,7 +53,8 @@ class SpotUserUpgrader {
 		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 
 		# Geef de anonieme user de anonymous group
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");
+		$dbCon->rawExec("INSERT INTO usergroups(userid, groupid, prio) VALUES(1, 1, 1)");
+		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");			
 	} # createAnonymous
 
 	/*
