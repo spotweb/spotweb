@@ -49,11 +49,11 @@ class SpotUserUpgrader {
 
 		# update handmatig het userid
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
-		$dbCon("UPDATE users SET id = 1 WHERE username = 'anonymous'");
-		$dbCon("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
+		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 
 		# Geef de anonieme user de anonymous group
-		$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");			
+		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");
 	} # createAnonymous
 
 	/*
