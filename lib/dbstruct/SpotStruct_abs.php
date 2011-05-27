@@ -550,6 +550,12 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE securitygroups ENGINE=InnoDB;");
 			$this->_dbcon->rawExec("ALTER TABLE usergroups ENGINE=InnoDB;");
 
+			# Even wat data invoeren zodat de unique index straks niet in de soep loopt
+			$apikey = md5('anonymous');
+			$this->_dbcon->rawExec("UPDATE users SET apikey = " . $apikey . " WHERE id=1;");
+			$apikey = md5('admin');
+			$this->_dbcon->rawExec("UPDATE users SET apikey = " . $apikey . " WHERE id=2;");
+
 			# indexen aanmaken voor het gebruik van relaties
 			$this->addIndex("idx_usergroupsrel_1", "", "usergroups", "groupid");
 			
