@@ -149,7 +149,7 @@ class SpotPage_api extends SpotPage_Abs {
 				} # else
 
 				echo PHP_EOL;
-				$nabCat = explode("|", SpotCategories::Cat2NewznabCat($spot['category'], $spot['subcat']));
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcat']));
 				if ($nabCat[0] != "") {
 					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[0] . "\" />" . PHP_EOL;
 					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[1] . "\" />" . PHP_EOL;
@@ -163,6 +163,24 @@ class SpotPage_api extends SpotPage_Abs {
 			echo "</rss>";
 		}
 	} # showResults
+
+	function Cat2NewznabCat($hcat, $cat) {
+		$newznabcat = $this->spotcat2nabcat();
+		$catList = explode("|", $cat);
+		$cat = $catList[0];
+
+		if (empty($cat[0])) {
+			return '';
+		} # if
+
+		$nr = substr($cat, 1);
+
+		if (!isset($newznabcat[$hcat][$nr])) {
+			return "-";
+		} else {
+			return $newznabcat[$hcat][$nr];
+		} # if
+	}
 
 	function showApiError($errcode=900, $errtext="") {
 		switch ($errcode) {
@@ -274,6 +292,59 @@ class SpotPage_api extends SpotPage_Abs {
 
 			case 7020: return 'cat0_z2';
 		}
+	}
+
+	function spotcat2nabcat() {
+		return Array(0 =>
+				Array(0 => "2000|2030",
+					  1 => "2000|2030",
+					  2 => "2000|2030",
+					  3 => "2000|2030",
+					  4 => "2000|2040",
+					  5 => "7000|7020",
+					  6 => "2000|2040",
+					  7 => "2000|2040",
+					  8 => "2000|2040",
+					  9 => "2000|2040",
+					  10 => "2000|2030"),
+			  1 =>
+				Array(0	=> "3000|3010",
+					  1 => "3000|3010",
+					  2 => "3000|3040",
+					  3 => "3000|3010",
+					  4 => "3000|3040",
+					  5 => "3000|3040",
+					  6 => "3000|3010",
+					  7 => "3000|3040",
+					  8 => "3000|3040"),
+			  2 =>
+				Array(0 => "4000|4050",
+					  1 => "4000|4030",
+					  2 => "TUX",
+					  3 => "PS",
+					  4 => "PS2",
+					  5 => "1000|1020",
+					  6 => "1000|1040",
+					  7 => "1000|1050",
+					  8 => "GBA",
+					  9 => "GC",
+					  10 => "1000|1010",
+					  11 => "1000|1030",
+					  12 => "1000|1080",
+					  13 => "4000|4040",
+					  14 => "4000|4040",
+					  15 => "4000|4040",
+					  16 => "3DS"),
+			  3 =>
+				Array(0 => "4000|4020",
+					  1 => "4000|4030",
+					  2 => "TUX",
+					  3 => "OS/2",
+					  4 => "4000|4040",
+					  5 => "NAV",
+					  6 => "4000|4040",
+					  7 => "4000|4040")
+			);
 	}
 
 } # class SpotPage_api
