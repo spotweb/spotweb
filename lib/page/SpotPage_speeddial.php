@@ -7,9 +7,9 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		$text_color = "ffffff";
 		$ttfFont = "images/ttf/Arialbd.TTF";
 		$fontSize = 24;
-		
+
 		$tplHelper = $this->getTplHelper(array());
-		
+
 		// Create image
 		$img = imagecreatetruecolor(512, 320);
 
@@ -24,7 +24,7 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		list($width, $height, $type, $attr) = getimagesize($backgroundImage);
 		imagecopymerge($img, $bg, 256-($width/2), 160-($height/2), 0, 0, $width, $height, 30);
 		imagedestroy($bg);
-		
+
 		// Add some usefull text
 		$text = "Totaal aantal spots: " . $this->_db->getSpotCount('');
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
@@ -35,11 +35,11 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		$text = "Aantal nieuwe spots: " . $count;
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
 		imagettftext($img, $fontSize, 0, 256-($width/2), 90, $this->colorHex($img, $text_color), $ttfFont, $text);
-		
+
 		$text = "Laatste update:";
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
 		imagettftext($img, $fontSize, 0, 256-($width/2), 230+$fontSize, $this->colorHex($img, $text_color), $ttfFont, $text);
-		
+
 		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
 		$text = $tplHelper->formatDate($this->_db->getLastUpdate($nntp_hdr_settings['host']), 'lastupdate');
 		if (!$text) { $text = "onbekend"; }
@@ -51,8 +51,7 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		header('Expires: Mon, 15 Apr 2006 12:26:00 GMT');
 		header('Pragma: no-cache');
 		header('Content-Type: image/jpeg');
-		header('refresh:60'); 
-		
+
 		// Image output
 		imagejpeg($img);
 		imagedestroy($img);
