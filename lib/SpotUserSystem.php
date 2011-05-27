@@ -1,5 +1,6 @@
 <?php
 define('SPOTWEB_ANONYMOUS_USERID', 1);
+define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
 	private $_db;
@@ -148,7 +149,7 @@ class SpotUserSystem {
 	function verifyApi($apikey) {
 		# authenticeer de user?
 		$userId = $this->_db->authUser(false, $apikey);
-		if ($userId !== false) {
+		if ($userId !== false && $userId != SPOTWEB_ANONYMOUS_USERID && $userId != SPOTWEB_ADMIN_USERID) {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
