@@ -29,6 +29,9 @@ class SpotUserUpgrader {
 
 		# DB connectie
 		$dbCon = $this->_db->getDbHandle();
+
+		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
+		$apikey = md5('anonymous');
 		
 		# Create the dummy 'anonymous' user
 		$anonymous_user = array(
@@ -38,14 +41,11 @@ class SpotUserUpgrader {
 			'passhash'		=> '',
 			'lastname'		=> 'Doe',
 			'mail'			=> 'john@example.com',
-			'apikey'		=> '',
+			'apikey'		=> $apikey,
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
 			'deleted'		=> 0);
 		$this->_db->addUser($anonymous_user);
-
-		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
-		$apikey = md5('anonymous');
 
 		# update handmatig het userid
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
