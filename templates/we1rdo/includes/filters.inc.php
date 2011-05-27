@@ -88,8 +88,9 @@
 
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
-						<ul class="search clear onecol">
-							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : "" ?>><label>Vergeet categori&euml;n voor deze zoekopdracht</label> </li>
+						<ul class="search clearCategories onecol">
+							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
+							<label>Categori&euml;n <?php echo $activefilter['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
 					</div>
 				</form>
@@ -105,11 +106,11 @@
 <?php } ?>
 					</ul>
 
-					<h4 class="dropDown"><span class="viewState"><a class="createUser down" onclick="toggleCreateUser()"></a></span>Gebruiker toevoegen</h4>
+					<h4 class="viewState"><a onclick="toggleCreateUser()">Gebruiker toevoegen<span class="createUser down"></span></a></h4>
 					<div class="createUser"></div>
 
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-					<h4 class="dropdown"><span class="viewState"><a class="editUser down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
+					<h4 class="viewState"><a onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')">Gebruiker wijzigen<span class="editUser down"></span></a></h4>
 					<div class="editUser"></div>
 					
 					<h4>Uitloggen</h4>
@@ -144,7 +145,7 @@
 			</div>
 
 			<div id="filter" class="filter">
-				<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Quick Links </h4>
+				<h4 class="viewState"><a onclick="toggleSidebarItem(this)">Quick Links<span></span></a></h4>
 				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
 			$newCount = ($settings->get('count_newspots') && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
@@ -154,7 +155,7 @@
 <?php } ?>
 					</ul>
 					
-					<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Filters </h4>
+					<h4 class="viewState"><a onclick="toggleSidebarItem(this)">Filters<span></span></a></h4>
 					<ul class="filterlist filters">
 
 <?php

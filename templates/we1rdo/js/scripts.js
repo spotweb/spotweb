@@ -302,24 +302,24 @@ $(function(){
 		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	}
 	$.each(data, function(i, value) {
-		$("div#filter > h4").eq(value.count).next().css("display", value.state);
+		$("div#filter > h4.viewState").eq(value.count).next().css("display", value.state);
 		if(value.state != "none") {
-			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("down").addClass("up");
+			$("div#filter > h4.viewState").eq(value.count).children("a").children("span").removeClass("down").addClass("up");
 		} else {
-			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("up").addClass("down");
+			$("div#filter > h4.viewState").eq(value.count).children("a").children("span").removeClass("up").addClass("down");
 		}
 	});
 });
 
 function toggleSidebarItem(id) {
-	var hide = $(id).parent().parent().next();
+	var hide = $(id).parent().next();
 
 	if($(hide).is(":visible")) {
 		$(hide).hide();
-		$(id).removeClass("up").addClass("down");
+		$(id).children("span").removeClass("up").addClass("down");
 	} else {
 		$(hide).show();
-		$(id).removeClass("down").addClass("up");
+		$(id).children("span").removeClass("down").addClass("up");
 	}
 	getSidebarState()
 }
@@ -334,7 +334,13 @@ $(function(){
 
 	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
 	$("input[name='search[unfiltered]']").click(function() {
-		$("div#tree").toggle();
+		if($("div#tree").is(":visible")) {
+			$("div#tree").hide();
+			$("ul.clearCategories label").html('Categori&euml;n gebruiken');
+		} else {
+			$("div#tree").show();
+			$("ul.clearCategories label").html('Categori&euml;n niet gebruiken');
+		}
 	});
 });
 
@@ -560,15 +566,13 @@ function toggleCreateUser() {
 	var url = '?page=createuser';
 
 	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
-		$("div.userPanel span.viewState > a.createUser").removeClass("up").addClass("down");
-		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.userPanel > h4.viewState > a > span.createUser").removeClass("up").addClass("down");
 		$("div.createUser").hide();
 	} else {
 		if($("div.createUser")) {$("div.createUser").html()}		
 		$("div.createUser").load(url, function() {
 			$("div.createUser").show();
-			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a.createUser").removeClass("down").addClass("up");
+			$("div.userPanel > h4.viewState > a > span.createUser").removeClass("down").addClass("up");
 
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
@@ -612,15 +616,13 @@ function toggleEditUser(userid) {
 	var url = '?page=edituser&userid='+userid;
 
 	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
-		$("div.userPanel span.viewState > a.editUser").removeClass("up").addClass("down");
-		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.userPanel > h4.viewState > a > span.editUser").removeClass("up").addClass("down");
 		$("div.editUser").hide();
 	} else {
 		if($("div.editUser")) {$("div.editUser").html()}		
 		$("div.editUser").load(url, function() {
 			$("div.editUser").show();
-			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a.editUser").removeClass("down").addClass("up");
+			$("div.userPanel > h4.viewState > a > span.editUser").removeClass("down").addClass("up");
 
 			$(".greyButton").click(function(){
 				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
