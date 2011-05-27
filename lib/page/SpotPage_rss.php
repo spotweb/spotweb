@@ -13,7 +13,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
