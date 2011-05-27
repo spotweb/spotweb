@@ -45,7 +45,7 @@ class SpotUserUpgrader {
 		$dbCon = $this->_db->getDbHandle();
 		
 		# update handmatig het userid
-		$currentId = $this->_db->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
+		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 
