@@ -60,8 +60,9 @@ div.logininfo p a.user {background:url(../img/sprite.png) no-repeat -88px -112px
 div#filter {width:235px; float:left; left:0; top:0; position:relative;}
 body.fixed div#filter {position:fixed; top:25px;}
 
-div.filter h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0 0 5px 0; position:relative; overflow:hidden; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; text-shadow:1px 1px #000;}
-div.filter h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0;}
+div.filter a.viewState:first-child h4 {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0;}
+div.sidebarPanel a.viewState h4,
+div.filter a.viewState h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0 0 5px 0; position:relative; overflow:hidden; -moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; text-shadow:1px 1px #000;}
 body.spotinfo div.sidebarPanel:not(.advancedSearch) h4:first-child,
 body.spotinfo div.filter h4:first-child {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
 
@@ -96,13 +97,12 @@ div.notifications p.multinzb a.clear {float:left; display:block; width:20px; hei
 div.notifications p.multinzb a.button {cursor:pointer; margin:0 5px 0 0; color:#fff;}
 
 /* ZOEKEN */
+a.viewState {cursor:pointer;}
 h4 span.info,
-h4.viewState span {position:absolute; top:3px; right:4px; display:block; height:14px;}
-h4 span.info,
-h4.viewState span {display:block; width:17px; height:14px; line-height:normal; cursor:pointer; background:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
+a.viewState h4 span {position:absolute; display:block; top:3px; right:4px; width:17px; height:14px; line-height:normal; background:#333; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 h4 span.info {cursor:default; font-weight:normal;}
-h4.viewState span.up {background:#333 url(../img/sprite.png) no-repeat 0 -80px;}
-h4.viewState span.down {background:#333 url(../img/sprite.png) no-repeat -17px -80px;}
+a.viewState h4 span.up {background:#333 url(../img/sprite.png) no-repeat 0 -80px;}
+a.viewState h4 span.down {background:#333 url(../img/sprite.png) no-repeat -17px -80px;}
 
 /* QUICKLINKS */
 div.filter ul.quicklinks li {margin:0 0 2px 0;}
@@ -411,6 +411,7 @@ div#overlay.loading.notrans {opacity:1; filter:alpha(opacity = 100);}
 ul.userInfo {margin:0; padding:0 0 10px 0;}
 ul.userInfo li {line-height:20px; list-style:none; padding:0 5px;}
 ul.userInfo li.createUser {padding:0;}
+div.userPanel h4.dropDown {margin:0 0 5px 0;}
 div.userPanel a.greyButton {margin:5px 12px 10px 12px;}
 
 div.userPanel span.info {display:block; text-align:center; margin:12px 0 0 0; line-height:16px;}

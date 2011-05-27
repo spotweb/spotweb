@@ -106,14 +106,14 @@
 <?php } ?>
 					</ul>
 
-					<h4 class="viewState"><a onclick="toggleCreateUser()">Gebruiker toevoegen<span class="createUser down"></span></a></h4>
+					<a class="viewState" onclick="toggleCreateUser()"><h4>Gebruiker toevoegen<span class="createUser down"></span></h4></a>
 					<div class="createUser"></div>
 
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-					<h4 class="viewState"><a onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')">Gebruiker wijzigen<span class="editUser down"></span></a></h4>
+					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4>Gebruiker wijzigen<span class="editUser down"></span></h4></a>
 					<div class="editUser"></div>
 					
-					<h4>Uitloggen</h4>
+					<h4 class="dropdown">Uitloggen</h4>
 					<a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
 					<h4>Inloggen</h4>
@@ -145,7 +145,7 @@
 			</div>
 
 			<div id="filter" class="filter">
-				<h4 class="viewState"><a onclick="toggleSidebarItem(this)">Quick Links<span></span></a></h4>
+				<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Quick Links<span></span></h4></a>
 				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
 			$newCount = ($settings->get('count_newspots') && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
@@ -154,8 +154,8 @@
 					<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
 <?php } ?>
 					</ul>
-					
-					<h4 class="viewState"><a onclick="toggleSidebarItem(this)">Filters<span></span></a></h4>
+
+					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Filters<span></span></h4></a>
 					<ul class="filterlist filters">
 
 <?php
@@ -196,7 +196,7 @@
 ?>
 					</ul>
 
-					<h4><span class="viewState"><a onclick="toggleSidebarItem(this)"></a></span>Onderhoud </h4>
+					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Onderhoud<span></span></h4></a>
 					<ul class="filterlist maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php if ($settings->get('show_updatebutton')) { ?>

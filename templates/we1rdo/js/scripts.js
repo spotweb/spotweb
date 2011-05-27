@@ -288,7 +288,7 @@ function toggleScrolling(state) {
 // Sidebar items in/uitklapbaar maken
 function getSidebarState() {
 	var data = new Array();
-	$("div#filter > h4").each(function(index) {
+	$("div#filter > a.viewState").each(function(index) {
 		var state = $(this).next().css("display");
 		data.push({"count": index, "state": state});
 	});	
@@ -302,25 +302,21 @@ $(function(){
 		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	}
 	$.each(data, function(i, value) {
-		$("div#filter > h4.viewState").eq(value.count).next().css("display", value.state);
+		$("div#filter > a.viewState").eq(value.count).next().css("display", value.state);
 		if(value.state != "none") {
-			$("div#filter > h4.viewState").eq(value.count).children("a").children("span").removeClass("down").addClass("up");
+			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("down").addClass("up");
 		} else {
-			$("div#filter > h4.viewState").eq(value.count).children("a").children("span").removeClass("up").addClass("down");
+			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("up").addClass("down");
 		}
 	});
 });
 
 function toggleSidebarItem(id) {
-	var hide = $(id).parent().next();
+	var hide = $(id).next();
+	
+	$(hide).toggle();
+	$(id).children("h4").children("span").toggleClass("up down");
 
-	if($(hide).is(":visible")) {
-		$(hide).hide();
-		$(id).children("span").removeClass("up").addClass("down");
-	} else {
-		$(hide).show();
-		$(id).children("span").removeClass("down").addClass("up");
-	}
 	getSidebarState()
 }
 
@@ -566,13 +562,13 @@ function toggleCreateUser() {
 	var url = '?page=createuser';
 
 	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
-		$("div.userPanel > h4.viewState > a > span.createUser").removeClass("up").addClass("down");
+		$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("up").addClass("down");
 		$("div.createUser").hide();
 	} else {
 		if($("div.createUser")) {$("div.createUser").html()}		
 		$("div.createUser").load(url, function() {
 			$("div.createUser").show();
-			$("div.userPanel > h4.viewState > a > span.createUser").removeClass("down").addClass("up");
+			$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("down").addClass("up");
 
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
@@ -616,13 +612,13 @@ function toggleEditUser(userid) {
 	var url = '?page=edituser&userid='+userid;
 
 	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
-		$("div.userPanel > h4.viewState > a > span.editUser").removeClass("up").addClass("down");
+		$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("up").addClass("down");
 		$("div.editUser").hide();
 	} else {
 		if($("div.editUser")) {$("div.editUser").html()}		
 		$("div.editUser").load(url, function() {
 			$("div.editUser").show();
-			$("div.userPanel > h4.viewState > a > span.editUser").removeClass("down").addClass("up");
+			$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("down").addClass("up");
 
 			$(".greyButton").click(function(){
 				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
