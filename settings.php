@@ -167,7 +167,6 @@ $settings['db']['pass'] = 'spotweb';
 # zet eerst de standaard waarden...
 # deze kunnen in de ownsettings nog worden aangepast.
 # het detecteren komt pas na het laden van de ownsettings.
-
 $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
@@ -329,6 +328,7 @@ if (($settings['templates']['autodetect']) &&
 	$settings['tpl_name'] = $settings['templates']['default'];
 } # else
 $settings['tpl_name'] = str_replace('templates/', '', $settings['tpl_name']);
+$settings['tpl_name'] = 'splendid';
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server
