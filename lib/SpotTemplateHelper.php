@@ -327,17 +327,12 @@ class SpotTemplateHelper {
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
 	 */
 	function makeApiRequestString() {
-		# Controleer de users' rechten
-		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, '')) {
-			return '';
-		} # if
-		
-		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
+		if (!empty($this->_params['apikey'])) {
 			return '&amp;apikey=' . $this->_params['apikey'];
-		} elseif ($this->_currentSession['user']['userid'] > 1) {
+		} elseif ($this->_currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID && !$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, '')) {
 			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
-			return;
+			return '';
 		}
 	} # makeApiRequestString
 	

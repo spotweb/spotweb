@@ -149,7 +149,7 @@ class SpotUserSystem {
 	function verifyApi($apikey) {
 		# authenticeer de user?
 		$userId = $this->_db->authUser(false, $apikey);
-		if ($userId !== false && $userId != SPOTWEB_ANONYMOUS_USERID && $userId != SPOTWEB_ADMIN_USERID) {
+		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID) {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
@@ -324,7 +324,7 @@ class SpotUserSystem {
 		} # if
 		
 		# Controleer basis settings
-		if (in_array($prefs['date_formatting'], $validDateFormat) === false) {
+		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
 			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
 		} # if
 		

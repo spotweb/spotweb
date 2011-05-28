@@ -83,10 +83,6 @@ function openOverlay(id,url) {
 	});
 } // openOverlay
 
-function toggleEditUserPreferences(userid) {
-	openOverlay(null, "?page=edituserprefs&userid=" + userid);
-} // toggleEditUser
-
 // Open spot in los scherm
 function openNewWindow() {
 	url = $('table.spots tr.active a.spotlink').attr("onclick").toString().match(/"(.*?)"/)[1];
