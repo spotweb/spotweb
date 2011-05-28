@@ -142,7 +142,7 @@ class SpotTemplateHelper {
 		if ($markAsRead) {
 			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist)) {
 			
-				if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
+				if ($fullSpot['seenstamp'] == NULL) {
 					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
 												$msgId, 
 												$this->_currentSession['user']['userid']);
