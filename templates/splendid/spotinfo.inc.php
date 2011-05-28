@@ -1,7 +1,7 @@
 <?php
 	require_once "header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
-	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 0);
+	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 99999);
 	$comments = $tplHelper->formatComments($comments);
 	
 	// fix the sabnzbdurl en searchurl

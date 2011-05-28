@@ -167,7 +167,6 @@ $settings['db']['pass'] = 'spotweb';
 # zet eerst de standaard waarden...
 # deze kunnen in de ownsettings nog worden aangepast.
 # het detecteren komt pas na het laden van de ownsettings.
-
 $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';

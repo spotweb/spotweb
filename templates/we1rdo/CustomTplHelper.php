@@ -78,6 +78,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 			
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
+							 'templates/we1rdo/css/jquery-ui-1.8.13.custom.css',
 							 'templates/we1rdo/css/style.css'
 							 );
 				break;
