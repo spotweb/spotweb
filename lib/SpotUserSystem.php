@@ -323,7 +323,7 @@ class SpotUserSystem {
 		} # if
 		
 		# Controleer basis settings
-		if (in_array($prefs['date_formatting'], $validDateFormat) === false) {
+		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
 			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
 		} # if
 		
