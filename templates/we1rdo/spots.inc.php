@@ -1,4 +1,4 @@
-<?php 
+	<?php 
 	/* Render de header en filter templates */
 	require_once "includes/header.inc.php";
 	
@@ -54,7 +54,7 @@
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
-		
+	
 		if($spot['rating'] == 0) {
 			$rating = '';
 		} elseif($spot['rating'] == 1) {
