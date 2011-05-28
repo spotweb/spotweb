@@ -48,7 +48,13 @@ try {
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
+		
+		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
 		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
+		
+		# maar ook het pagina specifieke, anders zou je bv. "getnzb" kunnen uitvoeren
+		# met een apikey
+		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
 	} else {
 		$currentSession = $spotUserSystem->useOrStartSession();
 	} # if
@@ -131,7 +137,6 @@ try {
 			break;
 		}
 		case 'newznabapi' : {
-			$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
 			$page = new SpotPage_newznabapi($db, $settings, $currentSession,
 					Array('t' => $req->getDef('t', ''),
 						  'apikey' => $req->getDef('apikey', ''),
@@ -151,11 +156,6 @@ try {
 		} # api
 
 		case 'rss' : {
-			# De RSS feed kan en mag soms ook zonder apikey worden opgevraagd, dan is het checken daarop niet nodig
-			if (isset($req->doesExist['apikey'])) {
-				$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
-			} # if
-
 			$page = new SpotPage_rss($db, $settings, $currentSession,
 					Array('search' => $req->getDef('search', $settings->get('index_filter')),
 						  'page' => $req->getDef('page', 0),
