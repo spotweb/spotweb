@@ -112,6 +112,9 @@
 					<h4 class="dropdown"><span class="viewState"><a class="editUser down" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Gebruiker wijzigen</h4>
 					<div class="editUser"></div>
 					
+					<h4 class="dropdown"><span class="viewState"><a class="editUserPrefs down" onclick="toggleEditUserPreferences('<?php echo $currentSession['user']['userid'] ?>')"></a></span>Voorkeuren wijzigen</h4>
+					<div class="editUserPrefs"></div>
+					
                     <h4>Uitloggen</h4>
                     <a onclick="userLogout()" class="greyButton">Uitloggen</a>
 <?php } else { ?>
