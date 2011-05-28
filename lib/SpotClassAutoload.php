@@ -10,7 +10,7 @@ function __autoload($class_name) {
 		case 'NzbHandler'	: require_once 'lib/nzbhandler/' . $class_name . '.php'; break;
 		case 'Crypt'		: break; /* Crypt/Random.php gebruikt class_exist om een random generator te zoeken, welke autoload triggered */
 		case 'SpotUbb'		: {
-				require_once "lib/ubb/SpotUbb_parse.php";
+				require_once "lib/ubb/SpotUbb_parser.php";
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
