@@ -58,18 +58,52 @@ function openSpot(id,url) {
 	});
 }
 
+// Open een URL in de overlay div
+function openOverlay(id,url) {
+	if($("#overlay").is(":visible")) {
+		$("#overlay").addClass('notrans');
+	}
+	
+	// Toon een "loading" div
+	$("#overlay").addClass('loading');
+	$("#overlay").empty().show();
+	
+	$("#overlay").load(url, function() {
+		// vervolgens hiden we de gehele container
+		$("div.container").removeClass("visible").addClass("hidden");
+		
+		// en halen we het loading en notrans weg zodat onze div zichtbaar is
+		$("#overlay").removeClass('loading notrans');
+
+		// nu moeten we alleen nog even de close er aanvast plakken
+		$("a.closeDetails").click(function(){ 
+			closeOverlay();
+		});
+		
+	});
+} // openOverlay
+
+function toggleEditUserPreferences(userid) {
+	openOverlay(null, "?page=edituserprefs&userid=" + userid);
+} // toggleEditUser
+
 // Open spot in los scherm
 function openNewWindow() {
 	url = $('table.spots tr.active a.spotlink').attr("onclick").toString().match(/"(.*?)"/)[1];
 	window.open(url);
 }
 
-// Sluit spotinfo overlay
-function closeDetails(scrollLocation) {
+// En maak de overlay onzichtbaar
+function closeOverlay() {
 	$("div.container").removeClass("hidden").addClass("visible");
-	$("body").removeClass("spotinfo");
 	$("#overlay").hide();
 	$("#details").remove();
+} // closeOverlay
+
+// Sluit spotinfo overlay
+function closeDetails(scrollLocation) {
+	closeOverlay();
+	$("body").removeClass("spotinfo");
 	$(document).scrollTop(scrollLocation);
 }
 
