@@ -83,10 +83,6 @@ function openOverlay(id,url) {
 	});
 } // openOverlay
 
-function toggleEditUserPreferences(userid) {
-	openOverlay(null, "?page=edituserprefs&userid=" + userid);
-} // toggleEditUser
-
 // Open spot in los scherm
 function openNewWindow() {
 	url = $('table.spots tr.active a.spotlink').attr("onclick").toString().match(/"(.*?)"/)[1];
@@ -141,8 +137,8 @@ function loadComments(messageid,perpage,pagenr) {
 	var xhr = null;
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
-		if (count == 0 && pagenr == 0) { 
-			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>"); 
+		if (count == 0 && pagenr == 0) {
+			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
@@ -322,7 +318,7 @@ function toggleScrolling(state) {
 // Sidebar items in/uitklapbaar maken
 function getSidebarState() {
 	var data = new Array();
-	$("div#filter > h4").each(function(index) {
+	$("div#filter > a.viewState").each(function(index) {
 		var state = $(this).next().css("display");
 		data.push({"count": index, "state": state});
 	});	
@@ -336,25 +332,21 @@ $(function(){
 		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	}
 	$.each(data, function(i, value) {
-		$("div#filter > h4").eq(value.count).next().css("display", value.state);
+		$("div#filter > a.viewState").eq(value.count).next().css("display", value.state);
 		if(value.state != "none") {
-			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("down").addClass("up");
+			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("down").addClass("up");
 		} else {
-			$("div#filter > h4").eq(value.count).children("span.viewState").children("a").removeClass("up").addClass("down");
+			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("up").addClass("down");
 		}
 	});
 });
 
 function toggleSidebarItem(id) {
-	var hide = $(id).parent().parent().next();
+	var hide = $(id).next();
+	
+	$(hide).toggle();
+	$(id).children("h4").children("span").toggleClass("up down");
 
-	if($(hide).is(":visible")) {
-		$(hide).hide();
-		$(id).removeClass("up").addClass("down");
-	} else {
-		$(hide).show();
-		$(id).removeClass("down").addClass("up");
-	}
 	getSidebarState()
 }
 
@@ -366,11 +358,14 @@ $(function(){
 		}
 	});
 
-	$("input.filtersubmit").click(function() {
-		if($("ul.dynatree-container li > span").hasClass("dynatree-partsel")) {
-			$("input[name='search[unfiltered]']").attr('checked', false);
+	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
+	$("input[name='search[unfiltered]']").click(function() {
+		if($("div#tree").is(":visible")) {
+			$("div#tree").hide();
+			$("ul.clearCategories label").html('Categori&euml;n gebruiken');
 		} else {
-			$("input[name='search[unfiltered]']").attr('checked', true);
+			$("div#tree").show();
+			$("ul.clearCategories label").html('Categori&euml;n niet gebruiken');
 		}
 	});
 });
@@ -440,7 +435,7 @@ function toggleSidebarPanel(id) {
 function downloadSabnzbd(id,url) {
 	$(".sab_"+id).removeClass("succes").addClass("loading");
 	$.get(url, function(data) {
-		$(".sab_"+id).removeClass("loading").addClass("succes");	
+		$(".sab_"+id).removeClass("loading").addClass("succes");
 	});
 }
 
@@ -597,15 +592,13 @@ function toggleCreateUser() {
 	var url = '?page=createuser';
 
 	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
-		$("div.userPanel span.viewState > a.createUser").removeClass("up").addClass("down");
-		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("up").addClass("down");
 		$("div.createUser").hide();
 	} else {
 		if($("div.createUser")) {$("div.createUser").html()}		
 		$("div.createUser").load(url, function() {
 			$("div.createUser").show();
-			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a.createUser").removeClass("down").addClass("up");
+			$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("down").addClass("up");
 
 			$('form.createuserform').submit(function(){ 
 				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
@@ -616,7 +609,7 @@ function toggleCreateUser() {
 
 				var url = $("form.createuserform").attr("action");
 				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
-				
+
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -649,15 +642,13 @@ function toggleEditUser(userid) {
 	var url = '?page=edituser&userid='+userid;
 
 	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
-		$("div.userPanel span.viewState > a.editUser").removeClass("up").addClass("down");
-		$("div.userPanel h4.dropDown").css("margin", "0 0 5px 0");
+		$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("up").addClass("down");
 		$("div.editUser").hide();
 	} else {
 		if($("div.editUser")) {$("div.editUser").html()}		
 		$("div.editUser").load(url, function() {
 			$("div.editUser").show();
-			$("div.userPanel h4.dropDown").css("margin", "0");
-			$("div.userPanel span.viewState > a.editUser").removeClass("down").addClass("up");
+			$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("down").addClass("up");
 
 			$(".greyButton").click(function(){
 				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
@@ -704,7 +695,7 @@ function toggleEditUser(userid) {
 // SabNZBd actions
 function sabBaseURL() {
 	var apikey = $("div.sabnzbdPanel input.apikey").val();
-	var sabBaseURL = createBaseURL()+'?page=sabapi&apikey='+apikey;
+	var sabBaseURL = createBaseURL()+'?page=sabapi&sabapikey='+apikey;
 	return sabBaseURL;
 }
 

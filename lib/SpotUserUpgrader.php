@@ -26,6 +26,12 @@ class SpotUserUpgrader {
 			
 			return ;
 		} # if
+
+		# DB connectie
+		$dbCon = $this->_db->getDbHandle();
+
+		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
+		$apikey = md5('anonymous');
 		
 		# Create the dummy 'anonymous' user
 		$anonymous_user = array(
@@ -35,22 +41,19 @@ class SpotUserUpgrader {
 			'passhash'		=> '',
 			'lastname'		=> 'Doe',
 			'mail'			=> 'john@example.com',
-			'apikey'		=> '',
+			'apikey'		=> $apikey,
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
 			'deleted'		=> 0);
 		$this->_db->addUser($anonymous_user);
-		
-		# DB connectie
-		$dbCon = $this->_db->getDbHandle();
-		
+
 		# update handmatig het userid
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 
 		# Geef de anonieme user de anonymous group
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");			
+		$dbCon->rawExec("INSERT INTO usergroups(userid, groupid, prio) VALUES(1, 1, 1)");
 	} # createAnonymous
 
 	/*
@@ -72,6 +75,9 @@ class SpotUserUpgrader {
 		# Bereken het password van de dummy admin user
 		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
 		
+		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
+		$apikey = md5('admin');
+		
 		# Create the dummy 'admin' user
 		$admin_user = array(
 			# 'userid'		=> 2,		
@@ -80,12 +86,12 @@ class SpotUserUpgrader {
 			'passhash'		=> $adminPwdHash,
 			'lastname'		=> 'user',
 			'mail'			=> 'spotwebadmin@example.com',
-			'apikey'		=> '',
+			'apikey'		=> $apikey,
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
 			'deleted'		=> 0);
 		$this->_db->addUser($admin_user);
-		
+
 		# update handmatig het userid
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
 		$dbCon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
@@ -102,13 +108,13 @@ class SpotUserUpgrader {
 	 */
 	function updateUserPreferences() {
 		$userList = $this->_db->listUsers("", 0, 9999999);
-		
+
 		# loop through every user and fix it 
 		foreach($userList['list'] as $user) {
 			# Omdat we vanuti listUsers() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
 			$user = $this->_db->getUser($user['userid']);
-			
+
 			# set the users' preferences
 			$this->setSettingIfNot($user['prefs'], 'perpage', '50');
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
@@ -120,12 +126,12 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'keep_downloadlist', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_watchlist', true);
 			$this->setSettingIfNot($user['prefs'], 'search_url', 'nzbindex');
-			
+
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
 	} # update()
-	
+
 	/*
 	 * Set een setting alleen als hij nog niet bestaat
 	 */
@@ -133,7 +139,7 @@ class SpotUserUpgrader {
 		if (isset($pref[$name])) {
 			return ;
 		} # if
-		
+
 		$pref[$name] = $value;
 	} # setSettingIfNot
 } # SpotUserUpgrader

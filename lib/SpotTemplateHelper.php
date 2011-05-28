@@ -331,13 +331,11 @@ class SpotTemplateHelper {
 		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, '')) {
 			return '';
 		} # if
-		
-		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
-			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
-		} elseif ($this->_currentSession['user']['userid'] > 1) {
-			return '&amp;username=' . urlencode($this->_currentSession['user']['username']) . '&amp;apikey=' . $this->_currentSession['user']['apikey'];
+
+		if ($this->_currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
+			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
-			return;
+			return '';
 		}
 	} # makeApiRequestString
 	
