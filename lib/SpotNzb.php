@@ -14,7 +14,7 @@ class SpotNzb {
 	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
-	function handleNzbAction($messageids, $ourUserId, $action, $hdr_spotnntp, $nzb_spotnntp) {
+	function handleNzbAction($messageids, $userSession, $action, $hdr_spotnntp, $nzb_spotnntp) {
 		if (!is_array($messageids)) {
 			$messageids = array($messageids);
 		} # if
@@ -24,7 +24,7 @@ class SpotNzb {
 		
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
-			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $ourUserId, $hdr_spotnntp);
+			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $userSession['user']['userid'], $hdr_spotnntp);
 			
 			if (!empty($fullSpot['nzb'])) {
 				$nzbList[] = array('spot' => $fullSpot, 
@@ -40,9 +40,11 @@ class SpotNzb {
 
 		# en voeg hem toe aan de lijst met downloads
 		if ($this->_settings->get('keep_downloadlist')) {
-			foreach($messageids as $thisMsgId) {
-				$this->_db->addToSpotStateList(SpotDb::spotstate_Down, $thisMsgId, $ourUserId);
-			} # foreach
+			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) {
+				foreach($messageids as $thisMsgId) {
+					$this->_db->addToSpotStateList(SpotDb::spotstate_Down, $thisMsgId, $userSession['user']['userid']);
+				} # foreach
+			} # if
 		} # if
 	} # handleNzbAction
 	
