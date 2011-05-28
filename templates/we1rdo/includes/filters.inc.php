@@ -106,21 +106,31 @@
 <?php } ?>
 					</ul>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
 					<a class="viewState" onclick="toggleCreateUser()"><h4>Gebruiker toevoegen<span class="createUser down"></span></h4></a>
 					<div class="createUser"></div>
+<?php } ?>
 
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
 					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4>Gebruiker wijzigen<span class="editUser down"></span></h4></a>
 					<div class="editUser"></div>
+	<?php } ?>
 
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
 					<h4 class="dropdown"><a class="editUserPrefs down" onclick="openOverlay(null, '?page=edituserprefs')">Voorkeuren wijzigen</a></h4>
 					<div class="editUserPrefs"></div>
+	<?php } ?>
 					
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 					<h4 class="dropdown">Uitloggen</h4>
 					<a onclick="userLogout()" class="greyButton">Uitloggen</a>
+	<?php } ?>
 <?php } else { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					<h4>Inloggen</h4>
 					<div class="login"></div>
+	<?php } ?>
 <?php } ?>
 				</div>
 
@@ -201,13 +211,18 @@
 
 					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Onderhoud<span></span></h4></a>
 					<ul class="filterlist maintenancebox">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) { ?>
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
-<?php if ($settings->get('show_updatebutton')) { ?>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) { ?>
 						<li><a href="retrieve.php?output=xml" onclick="retrieveSpots()" class="greyButton retrievespots">Update Spots</a></li>
 <?php } ?>
-<?php if ($settings->get('keep_downloadlist')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads">Verwijder downloadgeschiedenis</a></li>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread">Markeer alles als gelezen</a></li>
+<?php } ?>
 					</ul>
 				</div>
