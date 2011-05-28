@@ -9,6 +9,11 @@ function __autoload($class_name) {
 		case 'dbeng'		: require_once 'lib/dbeng/' . $class_name . '.php'; break;
 		case 'NzbHandler'	: require_once 'lib/nzbhandler/' . $class_name . '.php'; break;
 		case 'Crypt'		: break; /* Crypt/Random.php gebruikt class_exist om een random generator te zoeken, welke autoload triggered */
+		case 'SpotUbb'		: {
+				require_once "lib/ubb/SpotUbb_parse.php";
+				require_once "lib/ubb/TagHandler.inc.php";
+				break;
+		} # ubb
 		default				: require_once 'lib/' . $class_name . '.php';
 	} # switch
 } # __autoload
