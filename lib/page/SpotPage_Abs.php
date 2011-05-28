@@ -33,6 +33,7 @@ abstract class SpotPage_Abs {
 	 */
 	function template($tpl, $params = array()) {
 		SpotTiming::start(__FUNCTION__ . ':' . $tpl);
+		
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;

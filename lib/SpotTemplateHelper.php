@@ -1,8 +1,4 @@
 <?php
-/* Externe library */
-require_once 'lib/ubb/ubbparse.php';
-require_once 'lib/ubb/taghandler.inc.php';
-
 /* nog een externe library */
 require_once 'lib/linkify/linkify.php';
 
@@ -385,7 +381,7 @@ class SpotTemplateHelper {
 		# $tmp = linkify($tmp);
 		
 		# initialize ubb parser
-		$parser = new UbbParse($tmp);
+		$parser = new SpotUbb_parser($tmp);
 		TagHandler::setDeniedTags( Array() );
 		TagHandler::setadditionalinfo('img', 'allowedimgs', $this->getSmileyList() );
         $tmp = $parser->parse();

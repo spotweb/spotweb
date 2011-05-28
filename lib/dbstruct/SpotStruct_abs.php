@@ -338,7 +338,7 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_usersettings_1", "UNIQUE", "usersettings", "userid");
 		} # if usersettings
 		
-		# Wis alle users, en maak een nieuwe anonymous user aan
+		# Maak een bigint van de filesize column
 		if (($this instanceof SpotStruct_mysql) && ($this->_spotdb->getSchemaVer() < 0.12)) {
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spotsfull MODIFY filesize BIGINT DEFAULT 0 NOT NULL");
@@ -350,50 +350,6 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->exec("DELETE FROM users");
 			$this->_dbcon->exec("DELETE FROM usersettings");
 			$this->_dbcon->exec("DELETE FROM sessions");
-			
-			# Create the dummy 'anonymous' user
-			$anonymous_user = array(
-				# 'userid'		=> 1,		<= Moet 1 zijn voor de anonymous user
-				'username'		=> 'anonymous',
-				'firstname'		=> 'Jane',
-				'passhash'		=> '',
-				'lastname'		=> 'Doe',
-				'mail'			=> 'john@example.com',
-				'apikey'		=> '',
-				'lastlogin'		=> 0,
-				'lastvisit'		=> 0,
-				'deleted'		=> 0);
-			$this->_spotdb->addUser($anonymous_user);
-			
-			# update handmatig het userid
-			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
-			$this->_dbcon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
-
-			# Vraag de password salt op 
-			$passSalt = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'pass_salt'");
-			
-			# Bereken het password van de dummy admin user
-			$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
-			
-			# Create the dummy 'admin' user
-			$admin_user = array(
-				# 'userid'		=> 2,		
-				'username'		=> 'admin',
-				'firstname'		=> '',
-				'passhash'		=> $adminPwdHash,
-				'lastname'		=> 'Doe',
-				'mail'			=> 'spotwebadmin@example.com',
-				'apikey'		=> '',
-				'lastlogin'		=> 0,
-				'lastvisit'		=> 0,
-				'deleted'		=> 0);
-			$this->_spotdb->addUser($admin_user);
-			
-			# update handmatig het userid
-			$currentId = $this->_dbcon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
-			$this->_dbcon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
-			$this->_dbcon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
 		} # if
 
 		# Indexen moeten uniek zijn op de messageid
@@ -510,11 +466,6 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_users_3", "", "users", "deleted");
 		}
 
-		# Als er een userid is met 2, dan geven we die de username 'admin'
-		if ($this->_spotdb->getSchemaVer() < 0.28) {
-			$this->_dbcon->exec("UPDATE users SET username = 'admin' WHERE id = 2");
-		} # if
-
 		# securitygroups tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('securitygroups')) {
 			$this->createTable('securitygroups', "CHARSET=ascii");
@@ -565,7 +516,6 @@ abstract class SpotStruct_abs {
 			} # foreach
 		} # if grouppermissions
 		
-		
 		# grouppermissions tabel aanmaken als hij nog niet bestaat
 		if (!$this->tableExists('usergroups')) {
 			$this->createTable('usergroups', "CHARSET=ascii");
@@ -574,14 +524,6 @@ abstract class SpotStruct_abs {
 			$this->addColumn('groupid', 'usergroups', 'INTEGER DEFAULT 0 NOT NULL');
 			$this->addColumn('prio', 'usergroups', 'INTEGER DEFAULT 1 NOT NULL');
 			
-			# Geef de anonieme user de anonymous group
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid, prio) VALUES(1, 1, 1)");
-			
-			# Geef user 2 (de admin user, naar we van uit gaan) de anon, auth en admin group
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
-			$this->_dbcon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
-
 			# Geef de overige users anon en authenticated users rechten
 			$userList = $this->_dbcon->arrayQuery("SELECT id FROM users WHERE id > 2");
 			foreach($userList as $user) {
@@ -591,6 +533,16 @@ abstract class SpotStruct_abs {
 			
 			$this->addIndex("idx_usergroups_1", "UNIQUE", "usergroups", "userid,groupid");
 		} # if usergroups
+		
+		# Wis de 'admin' user
+		if ($this->_spotdb->getSchemaVer() < 0.29) {
+			$this->_dbcon->rawExec("DELETE FROM usergroups WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM usersettings WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM spotstatelist WHERE ouruserid = 2");
+			$this->_dbcon->rawExec("DELETE FROM commentsposted WHERE ouruserid = 2");
+			$this->_dbcon->rawExec("DELETE FROM sessions WHERE userid = 2");
+			$this->_dbcon->rawExec("DELETE FROM users WHERE id = 2");
+		} # if 
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);

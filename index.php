@@ -46,10 +46,15 @@ try {
 	# Haal het userobject op dat 'ingelogged' is
 	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
-	if ($req->doesExist('username') && $req->doesExist('apikey')) {
+	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('username', ''), $req->getDef('apikey', ''));
 	} else {
 		$currentSession = $spotUserSystem->useOrStartSession();
+	} # if
+	
+	/* Zonder sessie ook geen security systeem, dus dit is altijd fatal */
+	if ($currentSession === false) {
+		throw new Exception("Unable to create session");
 	} # if
 	SpotTiming::stop('auth');
 
