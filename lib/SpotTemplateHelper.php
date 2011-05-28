@@ -119,6 +119,13 @@ class SpotTemplateHelper {
 		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
+	/* 
+	 * Geeft terug of een bepaalde actie toegestaan is of niet
+	 */
+	function allowed($perm, $object) {
+		return $this->_spotSec->allowed($perm, $object);
+	} # allowed
+	
 	/*
 	 * Geeft een full spot terug
 	 */
@@ -133,9 +140,15 @@ class SpotTemplateHelper {
 		
 		# seen list
 		if ($markAsRead) {
-			if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
-				$spotsOverview->addToSeenList($msgId, $this->_currentSession['user']['userid']);
-			} # if
+			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist)) {
+			
+				if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
+					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
+												$msgId, 
+												$this->_currentSession['user']['userid']);
+				} # if
+				
+			} # if allowed
 		} # if
 		
 		return $fullSpot;
