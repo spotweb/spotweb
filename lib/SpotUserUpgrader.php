@@ -125,7 +125,8 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'auto_markasread', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_downloadlist', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_watchlist', true);
-			$this->setSettingIfNot($user['prefs'], 'search_url', 'nzbindex');
+			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
+			$this->unsetSetting($user['prefs'], 'search_url');
 
 			# update the user record in the database			
 			$this->_db->setUser($user);
@@ -142,4 +143,16 @@ class SpotUserUpgrader {
 
 		$pref[$name] = $value;
 	} # setSettingIfNot
+	
+	/*
+	 * Verwijdert een gekozen setting
+	 */
+	function unsetSetting(&$pref, $name) {
+		if (!isset($pref[$name])) {
+			return ;
+		} # if
+
+		unset($pref[$name]);
+	} # setSettingIfNot
+	 
 } # SpotUserUpgrader
