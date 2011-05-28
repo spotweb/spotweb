@@ -80,7 +80,7 @@ if (empty($edituserprefsresult)) {
 					<dt><label for="edituserprefsform[keep_watchlist]">Moeten we een watchlist bijhouden?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[keep_watchlist]" <?php if ($edituserprefsform['keep_watchlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
-					<dt><label for="edituserprefsform[search_url]">Welke zoekmachine moet er gebruikt worden?</label></dt>
+					<dt><label for="edituserprefsform[nzb_search_engine]">Welke zoekmachine moet er gebruikt worden?</label></dt>
 					<dd>
 						<select name="edituserprefsform[nzb_search_engine]">
 							<option <?php if ($edituserprefsform['nzb_search_engine'] == 'binsearch') { echo 'selected="selected"'; } ?> value="binsearch">Binsearch</option>
