@@ -39,7 +39,7 @@ class SpotSecurity {
 	const spotsec_use_sabapi				= 16;	//
 	const spotsec_keep_own_watchlist		= 17;	//
 	const spotsec_keep_own_downloadlist 	= 18;	//
-	const spotsec_keep_own_seenlist			= 19;	
+	const spotsec_keep_own_seenlist			= 19;	//
 	const spotsec_view_spotcount_filtered	= 20;	//
 	const spotsec_retrieve_spots			= 21;
 	const spotsec_view_comments				= 22;	//
