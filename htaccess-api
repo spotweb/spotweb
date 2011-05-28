@@ -2,4 +2,4 @@ RewriteEngine on
 #RewriteBase /
 
 # Rewrite web pages to one master page
-RewriteRule ^api/?$ index.php?page=api [QSA,L]
+RewriteRule ^api/?$ index.php?page=newznabapi [QSA,L]

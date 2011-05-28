@@ -11,9 +11,9 @@ class SpotPage_sabapi extends SpotPage_Abs {
 	
 		if ($nzbhandling['action'] != 'push-sabnzbd' && $nzbhandling['action'] != 'client-sabnzbd') {
 			die ('SABzndb is not configured on this node.');
-		} elseif (!isset($request['apikey'])) {
+		} elseif (!isset($request['sabapikey'])) {
 			die ('API Key Required');
-		} elseif ($this->_tplHelper->apiToHash($sabnzbd['apikey']) != $request['apikey']) {
+		} elseif ($this->_tplHelper->apiToHash($sabnzbd['apikey']) != $request['sabapikey']) {
 			die ('API Key Incorrect');
 		} # else
 
@@ -28,7 +28,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 
 		$apicall = array();
 		foreach($request as $key => $value) {
-			if ($key != 'page' && $key != 'apikey') {
+			if ($key != 'page' && $key != 'sabapikey') {
 				$apicall[] = $key . '=' . $value;
 			} # if
 		} # foreach

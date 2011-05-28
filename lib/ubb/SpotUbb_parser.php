@@ -6,16 +6,15 @@
  *    ...
  */
 
-require_once('taghandler.inc.php');
 
-class UbbParse {
+class SpotUbb_parser {
 	/*
  	 * Current parser state
 	 */
 	private $curpos = -1;
 	private $inputstr = '';
 
-	function UbbParse($inputstr) {
+	function __construct($inputstr) {
 		$this->setinputstring($inputstr);
 	} // ctor UbbParse
 
@@ -363,4 +362,4 @@ class UbbParse {
 		return $this->converttoubb($parseresult);
 	} // func. parse()
 	
-} # class UbbParse
+} # class SpotUbb_Parse

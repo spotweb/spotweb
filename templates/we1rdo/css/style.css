@@ -31,6 +31,8 @@ div.sidebarPanel {display:none; position:absolute; left:0; top:25px; bottom:0; w
 body.fixed div.sidebarPanel {position:fixed;}
 div.sidebarPanel h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0; margin-top:0;}
 div.sidebarPanel h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:5px 0 0 0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 0 0; -webkit-border-radius:0 4px 0 0; border-radius:0 4px 0 0; position:relative;}
+div.sidebarPanel h4.dropdown {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
+div.sidebarPanel h4.dropdown a {cursor:pointer;}
 div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer;}
 
 form#filterform ul.search {margin:0; padding:0; clear:both; overflow:hidden;}
@@ -411,7 +413,6 @@ div#overlay.loading.notrans {opacity:1; filter:alpha(opacity = 100);}
 ul.userInfo {margin:0; padding:0 0 10px 0;}
 ul.userInfo li {line-height:20px; list-style:none; padding:0 5px;}
 ul.userInfo li.createUser {padding:0;}
-div.userPanel h4.dropDown {margin:0 0 5px 0;}
 div.userPanel a.greyButton {margin:5px 12px 10px 12px;}
 
 div.userPanel span.info {display:block; text-align:center; margin:12px 0 0 0; line-height:16px;}

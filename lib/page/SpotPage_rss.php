@@ -13,7 +13,11 @@ class SpotPage_rss extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
+
+		# Deze pagina kan en mag ook zonder apikey worden opgevraagd, dan is het checken daarop niet nodig
+		if (isset($this->_params['apikey'])) {
+			//$this->_currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page); # needs fix
+		}
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
