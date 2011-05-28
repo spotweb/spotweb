@@ -46,8 +46,8 @@ if (empty($edituserprefsresult)) {
 					<dd>
 						<select name="edituserprefsform[date_formatting]">
 							<option <?php if ($edituserprefsform['date_formatting'] == 'human') { echo 'selected="selected"'; } ?> value="human" selected>Human</option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%R)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%R)"><?php echo strftime("%a, %d-%b-%Y (%R)"); ?></option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%R)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%R)"><?php echo strftime("%d-%m-%Y (%R)"); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%R)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%R)"><?php echo strftime("%a, %d-%b-%Y (%R)", time()); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%R)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%R)"><?php echo strftime("%d-%m-%Y (%R)", time()); ?></option>
 						</select>
 					</dd>
 					
