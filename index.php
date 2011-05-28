@@ -48,8 +48,14 @@ try {
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
+		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 	} else {
 		$currentSession = $spotUserSystem->useOrStartSession();
+	} # if
+	
+	/* Zonder sessie ook geen security systeem, dus dit is altijd fatal */
+	if ($currentSession === false) {
+		throw new Exception("Unable to create session");
 	} # if
 	SpotTiming::stop('auth');
 
@@ -124,9 +130,8 @@ try {
 			$page->render();
 			break;
 		}
-
-		case 'api' : {
-			$page = new SpotPage_api($db, $settings, $currentSession,
+		case 'newznabapi' : {
+			$page = new SpotPage_newznabapi($db, $settings, $currentSession,
 					Array('t' => $req->getDef('t', ''),
 						  'apikey' => $req->getDef('apikey', ''),
 						  'q' => $req->getDef('q', ''),

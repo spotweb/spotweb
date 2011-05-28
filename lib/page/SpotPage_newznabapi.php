@@ -1,5 +1,5 @@
 ﻿<?php
-class SpotPage_api extends SpotPage_Abs {
+class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
