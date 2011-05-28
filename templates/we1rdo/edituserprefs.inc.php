@@ -10,6 +10,8 @@ if (!empty($edituserprefsresult)) {
 if (empty($edituserprefsresult)) {
 	include "includes/form-messages.inc.php";
 ?>
+<h4><a class="closeDetails" title='Sluit "User preferences"'>[x]</a>Gebruikers voorkeuren:</h4>
+
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
@@ -157,6 +159,7 @@ if (empty($edituserprefsresult)) {
 -->
 		<dd>
 			<input class="greyButton" type="submit" name="edituserprefsform[submitedit]" value="Bijwerken">
+			<input class="greyButton" type="submit" name="" value="Afbreken">
 		</dd>
 	</div>
 </form>
