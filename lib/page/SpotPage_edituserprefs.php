@@ -1,12 +1,10 @@
 <?php
 class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_editUserPrefsForm;
-	private $_userIdToEdit;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_editUserPrefsForm = $params['edituserprefsform'];
-		$this->_userIdToEdit = $params['userid'];
 	} # ctor
 
 	function render() {
@@ -26,7 +24,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		$this->_pageTitle = "spot: edit user preferences";
 		
 		# haal de te editten user op 
-		$spotUser = $this->_db->getUser($this->_userIdToEdit);
+		$spotUser = $this->_db->getUser($this->_currentSession['user']['userid']);
 		if ($spotUser === false) {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
