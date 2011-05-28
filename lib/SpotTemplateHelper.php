@@ -421,12 +421,12 @@ class SpotTemplateHelper {
 		# zijn er sorteer opties meegestuurd?
 		if (array_search('sortdir', $dontInclude) === false) {
 			if (!empty($this->_params['sortdir'])) {
-				$getUrl .= '&amp;sortdir=' . $this->_params['sortdir'];
+				$getUrl .= '&amp;sortdir=' . urlencode($this->_params['sortdir']);
 			} # if
 		} # if
 		if (array_search('sortby', $dontInclude) === false) {
 			if (!empty($this->_params['sortby'])) {
-				$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
+				$getUrl .= '&amp;sortby=' . urlencode($this->_params['sortby']);
 			} # if
 		} # if
 
