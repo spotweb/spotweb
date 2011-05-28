@@ -378,7 +378,7 @@ class SpotDb {
 	 * Een userid als de user gevonden kan worden, of false voor failure
 	 */
 	function authUser($username, $passhash) {
-		if ($username == false) {
+		if ($username === false) {
 			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE apikey = '%s' AND NOT DELETED", Array($passhash));
 		} else {
 			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED", Array($username, $passhash));

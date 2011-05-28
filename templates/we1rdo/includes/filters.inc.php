@@ -113,7 +113,7 @@
 					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4>Gebruiker wijzigen<span class="editUser down"></span></h4></a>
 					<div class="editUser"></div>
 
-					<h4 class="dropdown"><a class="editUserPrefs down" onclick="toggleEditUserPreferences('<?php echo $currentSession['user']['userid'] ?>')">Voorkeuren wijzigen</a></h4>
+					<h4 class="dropdown"><a class="editUserPrefs down" onclick="openOverlay(null, '?page=edituserprefs&userid=<?php echo $currentSession['user']['userid'] ?>')">Voorkeuren wijzigen</a></h4>
 					<div class="editUserPrefs"></div>
 					
 					<h4 class="dropdown">Uitloggen</h4>
