@@ -1,5 +1,6 @@
 <?php
 define('SPOTWEB_ANONYMOUS_USERID', 1);
+define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
 	private $_db;
@@ -123,7 +124,7 @@ class SpotUserSystem {
 		$password = $this->passToHash($password);
 
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, $password, false);
+		$userId = $this->_db->authUser($user, $password);
 		if ($userId !== false) {
 			# Als de user ingelogged is, creeer een sessie.
 			# Volgorde is hier belangrijk omdat in de newsession
@@ -145,10 +146,10 @@ class SpotUserSystem {
 		} # else
 	} # login
 
-	function verifyApi($user, $apikey) {
+	function verifyApi($apikey) {
 		# authenticeer de user?
-		$userId = $this->_db->authUser($user, false, $apikey);
-		if ($userId !== false) {
+		$userId = $this->_db->authUser(false, $apikey);
+		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID) {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
@@ -323,7 +324,7 @@ class SpotUserSystem {
 		} # if
 		
 		# Controleer basis settings
-		if (in_array($prefs['date_formatting'], $validDateFormat) === false) {
+		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
 			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
 		} # if
 		

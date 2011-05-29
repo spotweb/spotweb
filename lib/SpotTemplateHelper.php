@@ -119,6 +119,13 @@ class SpotTemplateHelper {
 		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
+	/* 
+	 * Geeft terug of een bepaalde actie toegestaan is of niet
+	 */
+	function allowed($perm, $object) {
+		return $this->_spotSec->allowed($perm, $object);
+	} # allowed
+	
 	/*
 	 * Geeft een full spot terug
 	 */
@@ -133,9 +140,15 @@ class SpotTemplateHelper {
 		
 		# seen list
 		if ($markAsRead) {
-			if ($this->_settings->get('keep_seenlist') && $fullSpot['seenstamp'] == NULL) {
-				$spotsOverview->addToSeenList($msgId, $this->_currentSession['user']['userid']);
-			} # if
+			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
+			
+				if ($fullSpot['seenstamp'] == NULL) {
+					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
+												$msgId, 
+												$this->_currentSession['user']['userid']);
+				} # if
+				
+			} # if allowed
 		} # if
 		
 		return $fullSpot;
@@ -331,13 +344,11 @@ class SpotTemplateHelper {
 		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, '')) {
 			return '';
 		} # if
-		
-		if (!empty($this->_params['username']) && !empty($this->_params['apikey'])) {
-			return '&amp;username=' . urlencode($this->_params['username']) . '&amp;apikey=' . $this->_params['apikey'];
-		} elseif ($this->_currentSession['user']['userid'] > 1) {
-			return '&amp;username=' . urlencode($this->_currentSession['user']['username']) . '&amp;apikey=' . $this->_currentSession['user']['apikey'];
+
+		if ($this->_currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
+			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
-			return;
+			return '';
 		}
 	} # makeApiRequestString
 	
@@ -423,12 +434,12 @@ class SpotTemplateHelper {
 		# zijn er sorteer opties meegestuurd?
 		if (array_search('sortdir', $dontInclude) === false) {
 			if (!empty($this->_params['sortdir'])) {
-				$getUrl .= '&amp;sortdir=' . $this->_params['sortdir'];
+				$getUrl .= '&amp;sortdir=' . urlencode($this->_params['sortdir']);
 			} # if
 		} # if
 		if (array_search('sortby', $dontInclude) === false) {
 			if (!empty($this->_params['sortby'])) {
-				$getUrl .= '&amp;sortby=' . $this->_params['sortby'];
+				$getUrl .= '&amp;sortby=' . urlencode($this->_params['sortby']);
 			} # if
 		} # if
 
