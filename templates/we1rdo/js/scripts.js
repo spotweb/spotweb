@@ -216,6 +216,10 @@ function postCommentsForm() {
 
 // Laadt de spotImage wanneer spotinfo wordt geopend
 function loadSpotImage() {
+	if (!spotweb_security_allow_view_spotimage) {
+		return false;
+	} // if
+	
 	$('img.spotinfoimage').hide();
 	$('a.postimage').addClass('loading');
 
