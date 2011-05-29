@@ -5,6 +5,9 @@
 	require_once "includes/filters.inc.php";
 
 	$getUrl = $tplHelper->getQueryParams(); 
+	
+	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
+	$show_nzb_button = ($settings->get('show_nzbbutton') && $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''));
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -21,7 +24,7 @@
 							<th class='genre'> Genre </th> 
 							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
 							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
-<?php if ($settings->get('show_nzbbutton')) { ?>
+<?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
 <?php } ?>
 <?php if ($settings->get('show_multinzb') && !count($spots) == 0) { ?>
@@ -42,7 +45,7 @@
 		$colSpan = 5;
 		$nzbHandlingTmp = $settings->get('nzbhandling'); 
 		if ($settings->get('retrieve_comments')) { $colSpan++; }
-		if ($settings->get('show_nzbbutton')) { $colSpan++; }
+		if ($show_nzb_button) { $colSpan++; }
 		if ($settings->get('show_multinzb')) { $colSpan++; }
 		if ($settings->get('keep_watchlist')) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
@@ -92,7 +95,7 @@
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td class='nzb'><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='Download NZB (n)' class='nzb'>NZB";
 				
 				if ($spot['hasbeendownloaded']) {
@@ -118,7 +121,7 @@
 				} # else
 			} # if
 		} else {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td> &nbsp; </td>";
 			} # if
 			

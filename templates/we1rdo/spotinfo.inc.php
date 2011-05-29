@@ -1,6 +1,13 @@
 <?php
 	require_once "includes/header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
+	
+	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
+	$show_nzb_button = ( (!empty($spot['nzb'])) && 
+						 ($spot['stamp'] > 1290578400) && 
+						 ($settings->get('show_nzbbutton')) &&
+						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
+						);
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
@@ -21,7 +28,7 @@
 ?>
 						</th>
 						<th class="nzb">
-<?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>
+<?php if ($show_nzb_button) { ?>
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
 						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="NZB zoeken"></a></th>
@@ -80,7 +87,7 @@ echo "</th>";
 								<tr> <th> Tag </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='Zoek naar spots met de tag "<?php echo $spot['tag']; ?>"'><?php echo $spot['tag']; ?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
-<?php if (!empty($spot['nzb']) && $spot['stamp'] > 1290578400 && $settings->get('show_nzbbutton')) { ?>		
+<?php if ($show_nzb_button) { ?>		
 								<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
 							</tbody>
