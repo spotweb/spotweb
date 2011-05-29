@@ -103,11 +103,14 @@ echo "</th>";
 			<div class="comments" id="comments">
 				<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
-<?php if ($currentSession['user']['userid'] > 2) { 
-	echo "<li class='addComment'>";
-	echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div><div></div>";
-	include "postcomment.inc.php"; 
-	echo "</div></li>";
+<?php 
+if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) { ?>
+	if ($currentSession['user']['userid'] > 2) { 
+		echo "<li class='addComment'>";
+		echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div><div></div>";
+		include "postcomment.inc.php"; 
+		echo "</div></li>";
+	}
 } ?>
 				</ul>
 			</div>

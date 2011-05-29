@@ -136,6 +136,7 @@
 <?php } ?>
 				</div>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
 				<div class="sidebarPanel sabnzbdPanel">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
 <?php 
@@ -158,6 +159,7 @@
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
 				</div>
 			</div>
+<?php } ?>
 
 			<div id="filter" class="filter">
 				<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Quick Links<span></span></h4></a>
