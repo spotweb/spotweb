@@ -15,6 +15,7 @@
 
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="">
 <?php
 	$activefilter = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $activefilter);
@@ -94,6 +95,7 @@
 						</ul>
 					</div>
 				</form>
+<?php } # if perform search ?>
 
 				<div class="sidebarPanel userPanel">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='Sluit "Gebruikers paneel"'>[x]</a>Gebruikers paneel</h4>
