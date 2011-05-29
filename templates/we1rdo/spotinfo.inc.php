@@ -105,7 +105,7 @@ echo "</th>";
 				<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
 <?php 
-if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) { ?>
+if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) { 
 	if ($currentSession['user']['userid'] > 2) { 
 		echo "<li class='addComment'>";
 		echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div><div></div>";
