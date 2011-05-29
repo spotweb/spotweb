@@ -13,6 +13,7 @@
 			// Define some global variables showing or hiding specific parts of the UI
 			// based on users' security rights
 			var spotweb_security_allow_spotdetail = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_spotdetail, ''); ?>;
+			var spotweb_security_allow_view_spotimage = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_spotimage, ''); ?>;
 		</script>
 	</head>
 	<body>
