@@ -8,6 +8,7 @@
 	
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = ($settings->get('show_nzbbutton') && $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''));
+	$show_watchlist_button = ($settings->get('keep_watchlist') && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -15,7 +16,7 @@
 						<tr class="head">
 							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="Sorteren op Categorie">Cat.</a> </th> 
 							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="Sorteren op Titel [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="Sorteren op Titel [Z-0]"> </a></span> Titel </th> 
-							<?php if ($settings->get('keep_watchlist')) { ?>
+							<?php if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
 							if ($settings->get('retrieve_comments')) {
@@ -47,7 +48,7 @@
 		if ($settings->get('retrieve_comments')) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
 		if ($settings->get('show_multinzb')) { $colSpan++; }
-		if ($settings->get('keep_watchlist')) { $colSpan++; }
+		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
 		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>Geen resultaten gevonden</td></tr>\r\n";
@@ -77,7 +78,7 @@
 			 "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $rating . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
 
-		if ($settings->get('keep_watchlist')) {
+		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
 			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='Verwijder uit watchlist (w)'> </a>";
 			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='Plaats in watchlist (w)'> </a>";

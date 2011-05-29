@@ -8,6 +8,7 @@
 						 ($settings->get('show_nzbbutton')) &&
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
+	$show_watchlist_button = ($settings->get('keep_watchlist') && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
@@ -32,7 +33,7 @@
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
 						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="NZB zoeken"></a></th>
-<?php if ($settings->get('keep_watchlist')) {
+<?php if ($show_watchlist_button) {
 echo "<th class='watch'>";
 echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='Verwijder uit watchlist (w)'> </a>";
 echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched'] == true) { echo " style='display: none;'"; } echo " title='Plaats in watchlist (w)'> </a>";
