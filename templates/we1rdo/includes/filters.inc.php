@@ -1,3 +1,4 @@
+
 			<div id="toolbar">
 				<div class="notifications">
 					<?php if ($settings->get('show_multinzb')) { ?>
@@ -7,7 +8,9 @@
 
 				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					Inloggen
+	<?php } ?>
 <?php } else { ?>
 					<?php echo $currentSession['user']['firstname']; ?>
 <?php } ?>
@@ -136,8 +139,8 @@
 <?php } ?>
 				</div>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
 				<div class="sidebarPanel sabnzbdPanel">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
 <?php 
 	$nzbHandling = $this->_settings->get('nzbhandling');
@@ -157,9 +160,9 @@
 					<table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
 					<h4>Wachtrij</h4>
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
+<?php } ?>
 				</div>
 			</div>
-<?php } ?>
 
 			<div id="filter" class="filter">
 				<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Quick Links<span></span></h4></a>
