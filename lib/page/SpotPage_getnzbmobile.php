@@ -27,7 +27,7 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
-			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession['user']['userid'], 
+			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 							$this->_action, $hdr_spotnntp, $nzb_spotnntp);
 			
 			if ($this->_action != 'display') {

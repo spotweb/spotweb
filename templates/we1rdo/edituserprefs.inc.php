@@ -46,8 +46,8 @@ if (empty($edituserprefsresult)) {
 					<dd>
 						<select name="edituserprefsform[date_formatting]">
 							<option <?php if ($edituserprefsform['date_formatting'] == 'human') { echo 'selected="selected"'; } ?> value="human" selected>Human</option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%R)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%R)"><?php echo strftime("%a, %d-%b-%Y (%R)"); ?></option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%R)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%R)"><?php echo strftime("%d-%m-%Y (%R)"); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%R)') { echo 'selected="selected"'; } ?> value="%a, %d-%b-%Y (%R)"><?php echo strftime("%a, %d-%b-%Y (%R)", time()); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%R)') { echo 'selected="selected"'; } ?> value="%d-%m-%Y (%R)"><?php echo strftime("%d-%m-%Y (%R)", time()); ?></option>
 						</select>
 					</dd>
 					
@@ -65,22 +65,30 @@ if (empty($edituserprefsresult)) {
 						</select>
 					</dd>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_filtered, '')) { ?>					
 					<dt><label for="edituserprefsform[count_newspots]">Nieuwe Spots tellen in de lijst met filters</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[count_newspots]" <?php if ($edituserprefsform['count_newspots']) { echo 'checked="checked"'; } ?> value="true"></dd>
+<?php } ?>
 					
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>					
 					<dt><label for="edituserprefsform[keep_seenlist]">Bijhouden wat je bekijkt</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[keep_seenlist]" <?php if ($edituserprefsform['keep_seenlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
+<?php } ?>
 					
 					<dt><label for="edituserprefsform[auto_markasread]">Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[auto_markasread]" <?php if ($edituserprefsform['auto_markasread']) { echo 'checked="checked"'; } ?> value="true"></dd>
 					
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) { ?>					
 					<dt><label for="edituserprefsform[keep_downloadlist]">Moeten we bijhouden welke downloads er gedaan zijn?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[keep_downloadlist]" <?php if ($edituserprefsform['keep_downloadlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
+<?php } ?>
 					
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) { ?>
 					<dt><label for="edituserprefsform[keep_watchlist]">Moeten we een watchlist bijhouden?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[keep_watchlist]" <?php if ($edituserprefsform['keep_watchlist']) { echo 'checked="checked"'; } ?> value="true"></dd>
+<?php } ?>
 					
-					<dt><label for="edituserprefsform[search_url]">Welke zoekmachine moet er gebruikt worden?</label></dt>
+					<dt><label for="edituserprefsform[nzb_search_engine]">Welke zoekmachine moet er gebruikt worden?</label></dt>
 					<dd>
 						<select name="edituserprefsform[nzb_search_engine]">
 							<option <?php if ($edituserprefsform['nzb_search_engine'] == 'binsearch') { echo 'selected="selected"'; } ?> value="binsearch">Binsearch</option>
