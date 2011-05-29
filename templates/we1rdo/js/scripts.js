@@ -21,6 +21,10 @@ function detectScrollbar() {
 
 // openSpot in overlay
 function openSpot(id,url) {
+	if (!spotweb_security_allow_spotdetail) {
+		return false;
+	} // if
+	
 	if($("#overlay").is(":visible")) {
 		$("#overlay").addClass('notrans');
 	}
