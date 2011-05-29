@@ -9,6 +9,7 @@
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = ($settings->get('show_nzbbutton') && $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''));
 	$show_watchlist_button = ($settings->get('keep_watchlist') && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -19,7 +20,7 @@
 							<?php if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
-							if ($settings->get('retrieve_comments')) {
+							if ($show_comments) {
 								echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
 							} # if ?>
 							<th class='genre'> Genre </th> 
@@ -45,7 +46,7 @@
 	if (count($spots) == 0) {
 		$colSpan = 5;
 		$nzbHandlingTmp = $settings->get('nzbhandling'); 
-		if ($settings->get('retrieve_comments')) { $colSpan++; }
+		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
 		if ($settings->get('show_multinzb')) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
@@ -85,7 +86,7 @@
 			echo "</td>";
 		}
 
-		if ($settings->get('retrieve_comments')) {
+		if ($show_comments) {
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . $spot['commentcount'] . " comments bij \"" . $spot['title'] . "\"'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		

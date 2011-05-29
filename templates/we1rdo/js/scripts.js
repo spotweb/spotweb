@@ -138,6 +138,10 @@ $(function(){
 
 // Haal de comments op en zet ze per batch op het scherm
 function loadComments(messageid,perpage,pagenr) {
+	if (!spotweb_security_allow_view_comments) {
+		return false;
+	} // if 
+	
 	var xhr = null;
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
 		count = $(html+' > li').length / 2;
