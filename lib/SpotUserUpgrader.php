@@ -147,7 +147,7 @@ class SpotUserUpgrader {
 		
 		if ($this->_settings->get('securityversion') < 0.01) {
 			/* Truncate de  huidige permissies */
-			$dbCon->rawExec("TRUNCATE grouppermissions");
+			$dbCon->rawExec("DELETE FROM grouppermissions");
 			
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
