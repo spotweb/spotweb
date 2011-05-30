@@ -19,7 +19,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 
 		$outputtype = ($this->_params['o'] == "json") ? "json" : "xml";
 
