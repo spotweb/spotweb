@@ -123,6 +123,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			echo json_encode($spots); //TODO:make that a more specific array of data to return rather than resultset
 		} else {
 			header('Content-Type: text/xml; charset=UTF-8');
+			ob_end_clean();
 			echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?".">" . PHP_EOL;
 			echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:newznab=\"http://www.newznab.com/DTD/2010/feeds/attributes/\" encoding=\"UTF-8\">" . PHP_EOL;
 			echo "<channel>" . PHP_EOL;
@@ -175,6 +176,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			echo "</channel>" . PHP_EOL;
 			echo "</rss>";
+			
+			$rssData = ob_get_contents();
+			echo utf8_encode($rssData);
 		}
 	} # showResults
 
