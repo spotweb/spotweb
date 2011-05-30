@@ -149,7 +149,7 @@ class SpotUserSystem {
 	function verifyApi($apikey) {
 		# authenticeer de user?
 		$userId = $this->_db->authUser(false, $apikey);
-		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID) {
+		if ($userId !== false) {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
