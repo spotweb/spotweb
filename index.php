@@ -49,6 +49,11 @@ try {
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
 		
+		if ($currentSession === false) {
+			header('Status: 403 Forbidden');
+			die('API Key Incorrect');
+		}
+		
 		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
 		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 		
