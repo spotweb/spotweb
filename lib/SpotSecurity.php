@@ -1,10 +1,13 @@
 <?php
+define('SPOTWEB_SECURITY_VERSION', '0.01');
+
 require_once "lib/exceptions/PermissionDeniedException.php";
 
 class SpotSecurity {
 	private $_db;
 	private $_user;
 	private $_permissions;
+	private $_settings;
 	
 	/*
 	 * Het security systeem kent een aantal rechten welke gedefinieerd worden met een aantal parameters.
@@ -49,9 +52,10 @@ class SpotSecurity {
 	const spotsec_view_spotcount_total		= 26;	//
 			
 	
-	function __construct(SpotDb $db, array $user) {
+	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
 		$this->_db = $db;
 		$this->_user = $user;
+		$this->_settings = $settings;
 		
 		$this->_permissions = $db->getPermissions($user['userid']);
 	} # ctor
@@ -65,5 +69,10 @@ class SpotSecurity {
 			throw new PermissionDeniedException($perm, $object);
 		} # if
 	} # fatalPermCheck
+	
+	function securityValid() {
+		# SPOTWEB_SECURITY_VERSION is gedefinieerd bovenin dit bestand
+		return ($this->_settings->get('securityversion') == SPOTWEB_SECURITY_VERSION);
+	} # securityValid
 	
 } # class SpotSecurity

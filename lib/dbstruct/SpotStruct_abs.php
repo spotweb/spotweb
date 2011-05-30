@@ -489,31 +489,6 @@ abstract class SpotStruct_abs {
 			$this->addColumn('deny', 'grouppermissions', "BOOLEAN DEFAULT 0 NOT NULL");
 
 			$this->addIndex("idx_grouppermissions_1", "UNIQUE", "grouppermissions", "groupid,permissionid,objectid");
-
-			/* Default permissions for anonymous users */
-			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
-							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
-							   SpotSecurity::spotsec_view_statics, SpotSecurity::spotsec_create_new_user, SpotSecurity::spotsec_view_comments, 
-							   SpotSecurity::spotsec_view_spotcount_total);
-			foreach($anonPerms as $anonPerm) {
-				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . $anonPerm . ")");
-			} # foreach
-
-			/* Default permissions for authenticated users */
-			$authedPerms = array(SpotSecurity::spotsec_download_integration, SpotSecurity::spotsec_mark_spots_asread, SpotSecurity::spotsec_view_rssfeed,
-							   SpotSecurity::spotsec_edit_own_userprefs, SpotSecurity::spotsec_edit_own_user, SpotSecurity::spotsec_post_comment,
-							   SpotSecurity::spotsec_perform_logout, SpotSecurity::spotsec_use_sabapi, SpotSecurity::spotsec_keep_own_watchlist, 
-							   SpotSecurity::spotsec_keep_own_downloadlist, SpotSecurity::spotsec_keep_own_seenlist, SpotSecurity::spotsec_view_spotcount_filtered,
-							   SpotSecurity::spotsec_select_template, SpotSecurity::spotsec_consume_api);
-			foreach($authedPerms as $authedPerm) {
-				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . $authedPerm . ")");
-			} # foreach
-
-			/* Default permissions for administrative users */
-			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
-			foreach($adminPerms as $adminPerm) {
-				$this->_dbcon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
-			} # foreach
 		} # if grouppermissions
 
 		# grouppermissions tabel aanmaken als hij nog niet bestaat

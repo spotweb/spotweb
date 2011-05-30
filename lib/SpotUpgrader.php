@@ -14,7 +14,7 @@ class SpotUpgrader {
 	 * Upgrade de settings
 	 */
 	function settings($settings) {
-		require_once "settings.php";
+		include "settings.php";
 		
 		# Creer het settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
@@ -26,7 +26,11 @@ class SpotUpgrader {
 	 * Upgrade de users
 	 */
 	function users() {
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db);
+		include "settings.php";
+		
+		# Creer het settings object
+		$settings = SpotSettings::singleton($this->_db, $settings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->update();
 	} # users
 	 
