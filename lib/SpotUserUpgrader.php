@@ -1,9 +1,11 @@
 <?php
 class SpotUserUpgrader {
 	private $_db;
+	private $_settings;
 
-	function __construct(SpotDb $db) {
+	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
+		$this->_settings = $settings;
 	} # ctor
 
 	function update() {
@@ -11,6 +13,9 @@ class SpotUserUpgrader {
 		$this->createAdmin();
 		
 		$this->updateUserPreferences();
+		$this->updateSecurityGroups();
+		
+		$this->updateSecurityVersion();
 	} # update()
 
 	/*
@@ -132,6 +137,63 @@ class SpotUserUpgrader {
 			$this->_db->setUser($user);
 		} # foreach
 	} # update()
+
+	/* 
+	 * Update de 'default' security groepen
+	 */
+	function updateSecurityGroups() {
+		# DB connectie
+		$dbCon = $this->_db->getDbHandle();
+		
+		if ($this->_settings->get('securityversion') < 0.01) {
+			/* Truncate de  huidige permissies */
+			$dbCon->rawExec("TRUNCATE grouppermissions");
+			
+			/* Default permissions for anonymous users */
+			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
+							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
+							   SpotSecurity::spotsec_view_statics, SpotSecurity::spotsec_create_new_user, SpotSecurity::spotsec_view_comments, 
+							   SpotSecurity::spotsec_view_spotcount_total);
+			foreach($anonPerms as $anonPerm) {
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . $anonPerm . ")");
+			} # foreach
+
+			/* Default permissions for authenticated users */
+			$authedPerms = array(SpotSecurity::spotsec_download_integration, SpotSecurity::spotsec_mark_spots_asread, SpotSecurity::spotsec_view_rssfeed,
+							   SpotSecurity::spotsec_edit_own_userprefs, SpotSecurity::spotsec_edit_own_user, SpotSecurity::spotsec_post_comment,
+							   SpotSecurity::spotsec_perform_logout, SpotSecurity::spotsec_use_sabapi, SpotSecurity::spotsec_keep_own_watchlist, 
+							   SpotSecurity::spotsec_keep_own_downloadlist, SpotSecurity::spotsec_keep_own_seenlist, SpotSecurity::spotsec_view_spotcount_filtered,
+							   SpotSecurity::spotsec_select_template, SpotSecurity::spotsec_consume_api);
+			foreach($authedPerms as $authedPerm) {
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . $authedPerm . ")");
+			} # foreach
+
+			/* Default permissions for administrative users */
+			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
+			foreach($adminPerms as $adminPerm) {
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
+			} # foreach
+		} # if
+		
+		# We voegen nog extra security toe voor de logged in user, deze mag gebruik
+		# maken van een aantal paginas via enkel api authenticatie
+		if ($this->_settings->get('securityversion') < 0.01) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'rss')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'newznabapi')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzb')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getspot')");
+		} # if
+	} # updateSecurityGroups
+	
+	/*
+	 * Update de huidige versie van de settings
+	 */
+	function updateSecurityVersion() {
+		# Lelijke truc om de class autoloader de SpotSecurity klasse te laten laden
+		if (SpotSecurity::spotsec_perform_login == 0) { } ;
+		
+		$this->_settings->set('securityversion', SPOTWEB_SECURITY_VERSION);
+	} # updateSecurityVersion
 
 	/*
 	 * Set een setting alleen als hij nog niet bestaat
