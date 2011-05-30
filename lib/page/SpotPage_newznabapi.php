@@ -6,35 +6,33 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
-	}
+	} # __construct
 
 	function render() {
 		# CAPS function is used to query the server for supported features and the protocol version and other 
 		# meta data relevant to the implementation. This function doesn't require the client to provide any
 		# login information but can be executed out of "login session".
-		if (isset($this->_params['t']) && ($this->_params['t'] == "caps" || $this->_params['t'] == "c")) {
+		if ($this->_params['t'] == "caps" || $this->_params['t'] == "c") {
 			$this->caps();
 			die();
-		}
+		} # if
 
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 
-		$outputtype = (isset($this->_params['o']) && $this->_params['o'] == "json") ? "json" : "xml";
+		$outputtype = ($this->_params['o'] == "json") ? "json" : "xml";
 
-		if (isset($this->_params['t'])) {
-			switch ($this->_params['t']) {
-				case "search"	:
-				case "s"		:
-				case "tvsearch"	:
-				case "t"		:
-				case "movie"	:
-				case "m"		: $this->search($outputtype); break;
-				default			: $this->showApiError(202);
-			}
-		} else
-			$this->showApiError(200);
+		switch ($this->_params['t']) {
+			case ""			: $this->showApiError(200); break;
+			case "search"	:
+			case "s"		:
+			case "tvsearch"	:
+			case "t"		:
+			case "movie"	:
+			case "m"		: $this->search($outputtype); break;
+			default			: $this->showApiError(202);
+		} # switch
 	} # render()
 
 	function caps() {
@@ -62,11 +60,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # foreach
 
 			echo "\t\t</category>" . PHP_EOL;
-		}
+		} # foreach
 
 		echo "\t</categories>" . PHP_EOL;
-		echo "</caps>" . PHP_EOL;
-		echo "</xml>";
+		echo "</caps>";
 	} # caps
 
 	function search($outputtype) {
@@ -82,10 +79,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$tvSearch = "Titel:\"" . trim($showTitle[1]) . "\"";
 
 			if ($this->_params['season'] != "")
-				$tvSearch .= (is_numeric($this->_params['season'])) ? ' +S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' ' . $this->_params['season'];
+				$tvSearch .= (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
 
 			if ($this->_params['ep'] != "")
-				$tvSearch .= (is_numeric($this->_params['ep'])) ? ' +E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : ' ' . $this->_params['ep'];
+				$tvSearch .= (is_numeric($this->_params['ep'])) ? ' AND E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['ep'];
 
 			$search['value'][] = $tvSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
@@ -103,7 +100,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$search['tree'] = $this->nabcat2spotcat($this->_params['cat']);
 
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
-		if (isset($this->_params['limit']) && $this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)
+		if ($this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)
 			$limit = $this->_params['limit'];
 
 		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
@@ -133,7 +130,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			echo "<title>Spotweb Index</title>" . PHP_EOL;
 			echo "<description>SpotWeb Index API Results</description>" . PHP_EOL;
 			echo "<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
-			echo "<language>en</language>" . PHP_EOL;
+			echo "<language>en-gb</language>" . PHP_EOL;
 			echo "<webMaster>spotweb@example.com (Spotweb Index)</webMaster>" . PHP_EOL;
 			echo "<category></category>" . PHP_EOL;
 			echo "<image>" . PHP_EOL;
@@ -164,15 +161,18 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				if ($nabCat[0] != "") {
 					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[0] . "\" />" . PHP_EOL;
 					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[1] . "\" />" . PHP_EOL;
-				}
+				} # if
+
 				echo "\t<newznab:attr name=\"size\" value=\"" . $spot['filesize'] . "\" />" . PHP_EOL;
 
 				if ($this->_params['extended'] == "1") {
 					echo "\t<newznab:attr name=\"poster\" value=\"" . $spot['poster'] . "@spot.net\" />" . PHP_EOL;
 					echo "\t<newznab:attr name=\"comments\" value=\"" . $spot['commentcount'] . "\" />" . PHP_EOL;
-				}
+				} # if
+
 				echo "</item>" . PHP_EOL . PHP_EOL;
-			}
+			} # foreach
+
 			echo "</channel>" . PHP_EOL;
 			echo "</rss>";
 		}
@@ -217,7 +217,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 500: $errtext = "Request limit reached"; break;
 			case 501: $errtext = "Download limit reached"; break;
 			default: $errtext = "Unknown error"; break;
-		}
+		} # switch
 
 		header('Content-type: text/xml; charset=UTF-8');
 		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . PHP_EOL;
@@ -266,7 +266,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						 'subcat'	=> array('Ebook'	=> '7020')
 				)
 		);
-	}
+	} # categories
 
 	function nabcat2spotcat($cat) {
 		switch ($cat) {
@@ -306,7 +306,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 7020: return 'cat0_z2';
 		}
-	}
+	} # nabcat2spotcat
 
 	function spotcat2nabcat() {
 		return Array(0 =>
@@ -359,6 +359,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					  6 => "4000|4040",
 					  7 => "4000|4040")
 			);
-	}
+	} # spotcat2nabcat
 
 } # class SpotPage_api
