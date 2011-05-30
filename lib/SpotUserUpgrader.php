@@ -189,6 +189,9 @@ class SpotUserUpgrader {
 	 * Update de huidige versie van de settings
 	 */
 	function updateSecurityVersion() {
+		# Lelijke truc om de class autoloader de SpotSecurity klasse te laten laden
+		if (SpotSecurity::spotsec_perform_login == 0) { } ;
+		
 		$this->_settings->set('securityversion', SPOTWEB_SECURITY_VERSION);
 	} # updateSecurityVersion
 
