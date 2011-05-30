@@ -149,9 +149,11 @@ try {
 						  'limit' => $req->getDef('limit', ''),
 						  'cat' => $req->getDef('cat', ''),
 						  'imdbid' => $req->getDef('imdbid', ''),
+						  'rid' => $req->getDef('rid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
+						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', '')
 						  )
