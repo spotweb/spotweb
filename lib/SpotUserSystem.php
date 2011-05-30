@@ -97,7 +97,7 @@ class SpotUserSystem {
 		} # if
 		
 		# initialiseer het security systeem
-		$spotSec = new SpotSecurity($this->_db, $userSession['user']);
+		$spotSec = new SpotSecurity($this->_db, $this->_settings, $userSession['user']);
 		$userSession['security'] = $spotSec;
 		
 		# update de sessie cookie zodat die niet spontaan gaat
@@ -138,7 +138,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userSession['user']);
 
 			# initialiseer het security systeem
-			$userSession['security'] = new SpotSecurity($this->_db, $userSession['user']);
+			$userSession['security'] = new SpotSecurity($this->_db, $this->_settings, $userSession['user']);
 
 			return $userSession;
 		} else {
@@ -161,7 +161,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userRecord['user']);
 
 			# initialiseer het security systeem
-			$userRecord['security'] = new SpotSecurity($this->_db, $userRecord['user']);
+			$userRecord['security'] = new SpotSecurity($this->_db, $this->_settings, $userRecord['user']);
 
 			return $userRecord;
 		} else {
@@ -266,9 +266,9 @@ class SpotUserSystem {
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 		
-		# Geef de user default preferences
+		# Geef de user default preferences en settingss
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
-		$tmpUser['prefs'] = $anonUser['prefs'];
+		$tmpUser = array_merge($anonUser, $tmpUser);
 		$this->_db->setUser($tmpUser);
 		
 		# en geef de gebruiker de nodige groepen
@@ -315,7 +315,7 @@ class SpotUserSystem {
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
-		$validDateFormats = array('human', '%a, %d-%b-%Y (%R)', '%d-%m-%Y (%R)');
+		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
 		$validTemplates = array('we1rdo');
 		
 		# Controleer de per page setting

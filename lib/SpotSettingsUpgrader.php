@@ -9,6 +9,11 @@ class SpotSettingsUpgrader {
 	} # ctor
 
 	function update() {
+		# Zorg dat de diverse versienummers altijd in de db staan zodat
+		# we er mee kunnen vergelijken
+		$this->setIfNot("settingsversion", "0.00");
+		$this->setIfNot("securityversion", "0.00");
+		
 		$this->createServerKeys($this->_settings->get('openssl_cnf_path'));
 		$this->createPasswordSalt();
 		$this->setupNewsgroups();
