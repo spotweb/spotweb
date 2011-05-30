@@ -65,6 +65,11 @@ try {
 	} # if
 	SpotTiming::stop('auth');
 
+	# Controleer nu pas of de securitygroups wel valid zijn
+	if (!$currentSession['security']->securityValid()) {
+		die("Security settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+	} # if
+	
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
