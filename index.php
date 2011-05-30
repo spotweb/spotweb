@@ -49,6 +49,11 @@ try {
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
 		
+		if ($currentSession === false) {
+			header('Status: 403 Forbidden');
+			die('API Key Incorrect');
+		}
+		
 		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
 		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 		
@@ -149,9 +154,11 @@ try {
 						  'limit' => $req->getDef('limit', ''),
 						  'cat' => $req->getDef('cat', ''),
 						  'imdbid' => $req->getDef('imdbid', ''),
+						  'rid' => $req->getDef('rid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
+						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', '')
 						  )
