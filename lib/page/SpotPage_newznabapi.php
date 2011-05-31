@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
 
@@ -35,61 +35,130 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # render()
 
 	function caps() {
-		header('Content-Type: text/xml; charset=UTF-8');
-		echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?".">" . PHP_EOL;
-		echo "<caps>" . PHP_EOL;
-		echo "\t<server appversion=\"" . SPOTDB_SCHEMA_VERSION . "\" version=\"0.1\" title=\"Spotweb\" strapline=\"Spotweb API Index\" email=\"" . "spotweb@example.com (Spotweb Index)" . "\" url=\"" . $this->_settings->get('spotweburl') . "\" image=\"" . $this->_settings->get('spotweburl') . "images/spotnet.gif\" />" . PHP_EOL;
-		echo "\t<limits max=\"500\" default=\"" . $this->_currentSession['user']['prefs']['perpage'] . "\"/>" . PHP_EOL;
-		if ($this->_settings->get('retention') > 0) { echo "\t<retention days=\"" . $this->_settings->get('retention') . "\"/>" . PHP_EOL; }
-		echo "\t<registration available=\"no\" open=\"no\"/>" . PHP_EOL . PHP_EOL;
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
 
-		echo "\t<searching>" . PHP_EOL;
-		echo "\t\t<search available=\"yes\"/>" . PHP_EOL;
-		echo "\t\t<tv-search available=\"yes\"/>" . PHP_EOL;
-		echo "\t\t<movie-search available=\"yes\"/>" . PHP_EOL;
-		echo "\t\t<audio-search available=\"yes\"/>" . PHP_EOL;
-		echo "\t</searching>" . PHP_EOL . PHP_EOL;
-		echo "\t<categories>";
+		$caps = $doc->createElement('caps');
+		$doc->appendChild($caps);
+
+		$server = $doc->createElement('server');
+		$server->setAttribute('appversion', SPOTDB_SCHEMA_VERSION);
+		$server->setAttribute('version', '0.1');
+		$server->setAttribute('title', 'Spotweb');
+		$server->setAttribute('strapline', 'Spotweb API Index');
+		$server->setAttribute('email', 'spotweb@example.com (Spotweb Index)');
+		$server->setAttribute('url', $this->_settings->get('spotweburl'));
+		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
+		$caps->appendChild($server);
+
+		$limits = $doc->createElement('limits');
+		$limits->setAttribute('max', '500');
+		$limits->setAttribute('default', $this->_currentSession['user']['prefs']['perpage']);
+		$caps->appendChild($limits);
+
+		if ($this->_settings->get('retention') > 0) {
+			$ret = $doc->createElement('retention');
+			$ret->setAttribute('days', $this->_settings->get('retention'));
+			$caps->appendChild($ret);
+		}
+
+		$reg = $doc->createElement('registration');
+		$reg->setAttribute('available', 'no');
+		$reg->setAttribute('open', 'no');
+		$caps->appendChild($reg);
+
+		$searching = $doc->createElement('searching');
+		$caps->appendChild($searching);
+
+		$search = $doc->createElement('search');
+		$search->setAttribute('available', 'yes');
+		$searching->appendChild($search);
+
+		$tvsearch = $doc->createElement('tv-search');
+		$tvsearch->setAttribute('available', 'yes');
+		$searching->appendChild($tvsearch);
+
+		$moviesearch = $doc->createElement('movie-search');
+		$moviesearch->setAttribute('available', 'yes');
+		$searching->appendChild($moviesearch);
+
+		$audiosearch = $doc->createElement('audio-search');
+		$audiosearch->setAttribute('available', 'yes');
+		$searching->appendChild($audiosearch);
+
+		$categories = $doc->createElement('categories');
+		$caps->appendChild($categories);
 
 		foreach($this->categories() as $category) {
-			echo PHP_EOL . "\t\t<category id=\"" . $category['cat'] . "\" name=\"" . $category['name'] . "\">" . PHP_EOL;
+			$cat = $doc->createElement('category');
+			$cat->setAttribute('id', $category['cat']);
+			$cat->setAttribute('name', $category['name']);
+			$categories->appendChild($cat);
 
 			foreach($category['subcat'] as $name => $subcat) {
-				echo "\t\t\t<subcat id=\"" . $subcat . "\" name=\"" . $name . "\"/>" . PHP_EOL;
+				$subCat = $doc->createElement('subcat');
+				$subCat->setAttribute('id', $subcat);
+				$subCat->setAttribute('name', $name);
+				$cat->appendChild($subCat);
 			} # foreach
-
-			echo "\t\t</category>" . PHP_EOL;
 		} # foreach
 
-		echo "\t</categories>" . PHP_EOL;
-		echo "</caps>";
+		header('Content-Type: text/xml; charset=UTF-8');
+		echo $doc->saveXML();
 	} # caps
 
 	function search($outputtype) {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
-		if ($this->_params['q'] == "" && (($this->_params['t'] == "m" || $this->_params['t'] == "movie") && $this->_params['imdbid'] == "")) $this->showApiError(200);
-		if ($this->_params['q'] == "" && (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] == "")) $this->showApiError(200);
-
 		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch")) {
-			$tvrage_content = file_get_contents('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'] . '/');
-			preg_match('/<showname>(.*)<\/showname>/isU', $tvrage_content, $showTitle);
-			$tvSearch = "Titel:\"" . trim($showTitle[1]) . "\"";
+			# validate input
+			if ($this->_params['rid'] == "") {
+				$this->showApiError(200);
+			} elseif (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+				$this->showApiError(201);
+			} # if
 
-			if ($this->_params['season'] != "")
+			# fetch remote content
+			$dom = new DomDocument();
+			$dom->prevservWhiteSpace = false;
+			
+			if (!@$dom->load('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'] . '/')) {
+				$this->showApiError(300);
+			} # if
+			$showTitle = $dom->getElementsByTagName('showname');
+			$tvSearch = "Titel:\"" . trim($showTitle->item(0)->nodeValue) . "\"";
+
+			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
 				$tvSearch .= (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
+			} elseif ($this->_params['season'] != "") {
+				$this->showApiError(201);
+			} # if
 
-			if ($this->_params['ep'] != "")
+			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
 				$tvSearch .= (is_numeric($this->_params['ep'])) ? ' AND E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['ep'];
+			} elseif ($this->_params['ep'] != "") {
+				$this->showApiError(201);
+			} # if
 
 			$search['value'][] = $tvSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
-			$imdb_content = file_get_contents('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/');
+			# validate input
+			if ($this->_params['imdbid'] == "") {
+				$this->showApiError(200);
+			} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
+				$this->showApiError(201);
+			} # if
+
+			# fetch remote content
+			if (!@$imdb_content = file_get_contents('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/')) {
+				$this->showApiError(300);
+			} # if
 			preg_match('/<title>(.*) - IMDb<\/title>/isU', $imdb_content, $movieTitle);
 			$movieTitle = preg_replace('/\([0-9]+\)/', '', $movieTitle[1]);
 			$search['value'][] = "Titel:\"" . trim($movieTitle) . "\"";
 		} else {
+			if (empty($this->_params['q'])) $this->showApiError(200);
 			$search['value'][] = "Titel:" . $this->_params['q'];
 		} # else
 
@@ -112,6 +181,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$parsedSearch,
 						array('field' => 'stamp', 'direction' => 'DESC'));
 
+		if (count($spots['list']) == 0 ) {
+			$this->showApiError(300);
+		} # if
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
@@ -121,63 +193,99 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		if ($outputtype == "json") {
 			echo json_encode($spots); //TODO:make that a more specific array of data to return rather than resultset
 		} else {
-			header('Content-Type: text/xml; charset=UTF-8');
-			ob_end_clean();
-			echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?".">" . PHP_EOL;
-			echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:newznab=\"http://www.newznab.com/DTD/2010/feeds/attributes/\" encoding=\"UTF-8\">" . PHP_EOL;
-			echo "<channel>" . PHP_EOL;
-			echo "<atom:link href=\"" . $this->_settings->get('spotweburl') . "api\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
-			echo "<title>Spotweb Index</title>" . PHP_EOL;
-			echo "<description>SpotWeb Index API Results</description>" . PHP_EOL;
-			echo "<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
-			echo "<language>en-gb</language>" . PHP_EOL;
-			echo "<webMaster>spotweb@example.com (Spotweb Index)</webMaster>" . PHP_EOL;
-			echo "<category></category>" . PHP_EOL;
-			echo "<image>" . PHP_EOL;
-			echo "\t<url>" . $this->_settings->get('spotweburl') . "images/spotnet.gif</url>" . PHP_EOL;
-			echo "\t<title>Spotweb Index</title>" . PHP_EOL;
-			echo "\t<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
-			echo "\t<description>SpotWeb Index API Results</description>" . PHP_EOL;
-			echo "</image>" . PHP_EOL;
-			echo "<newznab:response offset=\"" . $offset . "\" total=\"" . count($spots['list']) . "\" />" . PHP_EOL;
+			# Opbouwen XML
+			$doc = new DOMDocument('1.0', 'utf-8');
+			$doc->formatOutput = true;
+
+			$rss = $doc->createElement('rss');
+			$rss->setAttribute('version', '2.0');
+			$rss->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+			$rss->setAttribute('xmlns:newznab', 'http://www.newznab.com/DTD/2010/feeds/attributes/');
+			$doc->appendChild($rss);
+
+			$atomSelfLink = $doc->createElement('atom:link');
+			$atomSelfLink->setAttribute('href', $this->_settings->get('spotweburl') . 'api');
+			$atomSelfLink->setAttribute('rel', 'self');
+			$atomSelfLink->setAttribute('type', 'application/rss+xml');
+
+			$channel = $doc->createElement('channel');
+			$channel->appendChild($atomSelfLink);
+			$channel->appendChild($doc->createElement('title', 'Spotweb Index'));
+			$channel->appendChild($doc->createElement('description', 'Spotweb Index API Results'));
+			$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$channel->appendChild($doc->createElement('language', 'en-gb'));
+			$channel->appendChild($doc->createElement('webMaster', 'spotweb@example.com (Spotweb Index)'));
+			$channel->appendChild($doc->createElement('category', ''));
+			$rss->appendChild($channel);
+
+			$image = $doc->createElement('image');
+			$image->appendChild($doc->createElement('url', $this->_settings->get('spotweburl') . 'images/spotnet.gif'));
+			$image->appendChild($doc->createElement('title', 'Spotweb Index'));
+			$image->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$image->appendChild($doc->createElement('description', 'SpotWeb Index API Results'));
+			$channel->appendChild($image);
+
+			$newznabResponse = $doc->createElement('newznab:response');
+			$newznabResponse->setAttribute('offset', $offset);
+			$newznabResponse->setAttribute('total', count($spots['list']));
+			$channel->appendChild($newznabResponse);
 
 			foreach($spots['list'] as $spot) {
 				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 
-				echo "<item>" . PHP_EOL;
-				echo "\t<title>" . $spot['title'] . "</title>" . PHP_EOL;
-				echo "\t<guid isPermaLink=\"true\">" . $this->_tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</guid>" . PHP_EOL;
-				echo "\t<link>" . $this->_tplHelper->makeNzbUrl($spot) . "</link>" . PHP_EOL;
-				echo "\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
-				echo "\t<category>" . SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat']) . "</category>" . PHP_EOL;
+				$guid = $doc->createElement('guid', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']));
+				$guid->setAttribute('isPermaLink', 'true');
 
+				$item = $doc->createElement('item');
+				$item->appendChild($doc->createElement('title', $title));
+				$item->appendChild($guid);
+				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
+				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
+				$channel->appendChild($item);
+
+				$enclosure = $doc->createElement('enclosure');
+				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+				$enclosure->setAttribute('length', $spot['filesize']);
 				switch ($nzbhandling['prepare_action']) {
-					case 'zip':	echo "\t<enclosure url=\"" . $this->_tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/zip\" />" . PHP_EOL; break;
-					default	  : echo "\t<enclosure url=\"" . $this->_tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/x-nzb\" />" . PHP_EOL; break;
+					case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
+					default		: $enclosure->setAttribute('type', 'application/x-nzb');
 				} # switch
+				$item->appendChild($enclosure);
 
-				echo PHP_EOL;
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcat']));
-				if ($nabCat[0] != "") {
-					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[0] . "\" />" . PHP_EOL;
-					echo "\t<newznab:attr name=\"category\" value=\"" . $nabCat[1] . "\" />" . PHP_EOL;
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'category');
+					$attr->setAttribute('value', $nabCat[0]);
+					$item->appendChild($attr);
+
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'category');
+					$attr->setAttribute('value', $nabCat[1]);
+					$item->appendChild($attr);
 				} # if
 
-				echo "\t<newznab:attr name=\"size\" value=\"" . $spot['filesize'] . "\" />" . PHP_EOL;
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'size');
+				$attr->setAttribute('value', $spot['filesize']);
+				$item->appendChild($attr);
 
 				if ($this->_params['extended'] == "1") {
-					echo "\t<newznab:attr name=\"poster\" value=\"" . $spot['poster'] . "@spot.net\" />" . PHP_EOL;
-					echo "\t<newznab:attr name=\"comments\" value=\"" . $spot['commentcount'] . "\" />" . PHP_EOL;
-				} # if
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'poster');
+					$attr->setAttribute('value', $spot['poster'] . '@spot.net');
+					$item->appendChild($attr);
 
-				echo "</item>" . PHP_EOL . PHP_EOL;
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'comments');
+					$attr->setAttribute('value', $spot['commentcount']);
+					$item->appendChild($attr);
+				} # if
 			} # foreach
 
-			echo "</channel>" . PHP_EOL;
-			echo "</rss>";
-			
-			$rssData = ob_get_contents();
-			echo utf8_encode($rssData);
+			header('Content-Type: text/xml; charset=UTF-8');
+			echo $doc->saveXML();
 		}
 	} # showResults
 
@@ -199,7 +307,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # if
 	}
 
-	function showApiError($errcode=900, $errtext="") {
+	function showApiError($errcode=42) {
 		switch ($errcode) {
 			case 100: $errtext = "Incorrect user credentials"; break;
 			case 101: $errtext = "Account suspended"; break;
@@ -222,10 +330,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			default: $errtext = "Unknown error"; break;
 		} # switch
 
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
+
+		$error = $doc->createElement('error');
+		$error->setAttribute('code', $errcode);
+		$error->setAttribute('description', $errtext);
+		$doc->appendChild($error);
+
 		header('Content-type: text/xml; charset=UTF-8');
-		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . PHP_EOL;
-		echo "<error code=\"$errcode\" description=\"$errtext\"/>" . PHP_EOL;
-		die();
+		echo $doc->saveXML(); die();
 	} # showApiError
 
 	function categories() {

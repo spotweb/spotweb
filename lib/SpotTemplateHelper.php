@@ -386,6 +386,7 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
+		$tmp = utf8_decode($tmp);
 		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
 		
 		# Converteer urls naar links
