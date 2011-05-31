@@ -195,7 +195,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$attr->setAttribute('value', $spot['filesize']);
 				$item->appendChild($attr);
 
-				if ($this->_params['extended'] == "1") {
+				if ($this->_params['extended'] != "0") {
 					$attr = $doc->createElement('newznab:attr');
 					$attr->setAttribute('name', 'poster');
 					$attr->setAttribute('value', $spot['poster'] . '@spot.net');

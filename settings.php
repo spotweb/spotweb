@@ -150,6 +150,7 @@ $settings['retrieve_comments'] = true;
 $settings['retention'] = 0;
 
 # Zet een minimum datum vanaf wanneer je spots op wilt halen, om alle spots van FTD te skippen geef je hier 1290578400 op
+# Andere data kun je omrekenen op http://www.unixtimestamp.com/
 $settings['retrieve_newer_than'] = 0;
 
 # db
