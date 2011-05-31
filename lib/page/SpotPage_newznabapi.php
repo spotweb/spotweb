@@ -34,79 +34,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # switch
 	} # render()
 
-	function caps() {
-		$doc = new DOMDocument('1.0', 'utf-8');
-		$doc->formatOutput = true;
-
-		$caps = $doc->createElement('caps');
-		$doc->appendChild($caps);
-
-		$server = $doc->createElement('server');
-		$server->setAttribute('appversion', SPOTDB_SCHEMA_VERSION);
-		$server->setAttribute('version', '0.1');
-		$server->setAttribute('title', 'Spotweb');
-		$server->setAttribute('strapline', 'Spotweb API Index');
-		$server->setAttribute('email', 'spotweb@example.com (Spotweb Index)');
-		$server->setAttribute('url', $this->_settings->get('spotweburl'));
-		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
-		$caps->appendChild($server);
-
-		$limits = $doc->createElement('limits');
-		$limits->setAttribute('max', '500');
-		$limits->setAttribute('default', $this->_currentSession['user']['prefs']['perpage']);
-		$caps->appendChild($limits);
-
-		if ($this->_settings->get('retention') > 0) {
-			$ret = $doc->createElement('retention');
-			$ret->setAttribute('days', $this->_settings->get('retention'));
-			$caps->appendChild($ret);
-		}
-
-		$reg = $doc->createElement('registration');
-		$reg->setAttribute('available', 'no');
-		$reg->setAttribute('open', 'no');
-		$caps->appendChild($reg);
-
-		$searching = $doc->createElement('searching');
-		$caps->appendChild($searching);
-
-		$search = $doc->createElement('search');
-		$search->setAttribute('available', 'yes');
-		$searching->appendChild($search);
-
-		$tvsearch = $doc->createElement('tv-search');
-		$tvsearch->setAttribute('available', 'yes');
-		$searching->appendChild($tvsearch);
-
-		$moviesearch = $doc->createElement('movie-search');
-		$moviesearch->setAttribute('available', 'yes');
-		$searching->appendChild($moviesearch);
-
-		$audiosearch = $doc->createElement('audio-search');
-		$audiosearch->setAttribute('available', 'yes');
-		$searching->appendChild($audiosearch);
-
-		$categories = $doc->createElement('categories');
-		$caps->appendChild($categories);
-
-		foreach($this->categories() as $category) {
-			$cat = $doc->createElement('category');
-			$cat->setAttribute('id', $category['cat']);
-			$cat->setAttribute('name', $category['name']);
-			$categories->appendChild($cat);
-
-			foreach($category['subcat'] as $name => $subcat) {
-				$subCat = $doc->createElement('subcat');
-				$subCat->setAttribute('id', $subcat);
-				$subCat->setAttribute('name', $name);
-				$cat->appendChild($subCat);
-			} # foreach
-		} # foreach
-
-		header('Content-Type: text/xml; charset=UTF-8');
-		echo $doc->saveXML();
-	} # caps
-
 	function search($outputtype) {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
@@ -155,11 +82,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			preg_match('/<title>(.*) - IMDb<\/title>/isU', $imdb_content, $movieTitle);
 			$movieTitle = preg_replace('/\([0-9]+\)/', '', $movieTitle[1]);
 			$search['value'][] = "Titel:\"" . trim($movieTitle) . "\"";
-		} else {
-			if (!empty($this->_params['q'])) {
-				$search['value'][] = "Titel:" . $this->_params['q'];
-			} # if
-		} # else
+		} elseif (!empty($this->_params['q'])) {
+			$search['value'][] = "Titel:" . $this->_params['q'];
+		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
 			$search['value'][] = "date:>:-" . $this->_params['maxage'] . "days";
@@ -287,6 +212,78 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			echo $doc->saveXML();
 		}
 	} # showResults
+
+	function caps() {
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
+
+		$caps = $doc->createElement('caps');
+		$doc->appendChild($caps);
+
+		$server = $doc->createElement('server');
+		$server->setAttribute('version', '0.1');
+		$server->setAttribute('title', 'Spotweb');
+		$server->setAttribute('strapline', 'Spotweb API Index');
+		$server->setAttribute('email', 'spotweb@example.com (Spotweb Index)');
+		$server->setAttribute('url', $this->_settings->get('spotweburl'));
+		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
+		$caps->appendChild($server);
+
+		$limits = $doc->createElement('limits');
+		$limits->setAttribute('max', '500');
+		$limits->setAttribute('default', $this->_currentSession['user']['prefs']['perpage']);
+		$caps->appendChild($limits);
+
+		if ($this->_settings->get('retention') > 0) {
+			$ret = $doc->createElement('retention');
+			$ret->setAttribute('days', $this->_settings->get('retention'));
+			$caps->appendChild($ret);
+		}
+
+		$reg = $doc->createElement('registration');
+		$reg->setAttribute('available', 'no');
+		$reg->setAttribute('open', 'no');
+		$caps->appendChild($reg);
+
+		$searching = $doc->createElement('searching');
+		$caps->appendChild($searching);
+
+		$search = $doc->createElement('search');
+		$search->setAttribute('available', 'yes');
+		$searching->appendChild($search);
+
+		$tvsearch = $doc->createElement('tv-search');
+		$tvsearch->setAttribute('available', 'yes');
+		$searching->appendChild($tvsearch);
+
+		$moviesearch = $doc->createElement('movie-search');
+		$moviesearch->setAttribute('available', 'yes');
+		$searching->appendChild($moviesearch);
+
+		$audiosearch = $doc->createElement('audio-search');
+		$audiosearch->setAttribute('available', 'yes');
+		$searching->appendChild($audiosearch);
+
+		$categories = $doc->createElement('categories');
+		$caps->appendChild($categories);
+
+		foreach($this->categories() as $category) {
+			$cat = $doc->createElement('category');
+			$cat->setAttribute('id', $category['cat']);
+			$cat->setAttribute('name', $category['name']);
+			$categories->appendChild($cat);
+
+			foreach($category['subcat'] as $name => $subcat) {
+				$subCat = $doc->createElement('subcat');
+				$subCat->setAttribute('id', $subcat);
+				$subCat->setAttribute('name', $name);
+				$cat->appendChild($subCat);
+			} # foreach
+		} # foreach
+
+		header('Content-Type: text/xml; charset=UTF-8');
+		echo $doc->saveXML();
+	} # caps
 
 	function Cat2NewznabCat($hcat, $cat) {
 		$newznabcat = $this->spotcat2nabcat();
