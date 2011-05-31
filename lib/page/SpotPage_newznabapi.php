@@ -111,18 +111,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
-		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch")) {
+		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
 			# validate input
-			if ($this->_params['rid'] == "") {
-				$this->showApiError(200);
-			} elseif (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
 				$this->showApiError(201);
 			} # if
 
 			# fetch remote content
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
-			
+
 			if (!@$dom->load('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'] . '/')) {
 				$this->showApiError(300);
 			} # if
@@ -158,8 +156,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$movieTitle = preg_replace('/\([0-9]+\)/', '', $movieTitle[1]);
 			$search['value'][] = "Titel:\"" . trim($movieTitle) . "\"";
 		} else {
-			if (empty($this->_params['q'])) $this->showApiError(200);
-			$search['value'][] = "Titel:" . $this->_params['q'];
+			if (!empty($this->_params['q'])) {
+				$search['value'][] = "Titel:" . $this->_params['q'];
+			} # if
 		} # else
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
