@@ -1,6 +1,6 @@
 <?php
-require_once "includes/header.inc.php";
-
+	require "includes/header.inc.php";
+	
 if (!empty($edituserprefsresult)) {
 	include 'includes/form-xmlresult.inc.php';
 
@@ -10,7 +10,10 @@ if (!empty($edituserprefsresult)) {
 if (empty($edituserprefsresult)) {
 	include "includes/form-messages.inc.php";
 ?>
-<h4><a class="closeDetails" title='Sluit "User preferences"'>[x]</a>Gebruikers voorkeuren:</h4>
+</div>
+<div id="fullscreenoverlay" style='display:block'>
+
+<div id="titlebar"><a class="closeDetails" title='Sluit "User preferences"'>[x]</a></div> 
 
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
