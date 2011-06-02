@@ -181,10 +181,6 @@ $settings['show_nzbbutton'] = true;
 # toon een multi-nzb knop?
 $settings['show_multinzb'] = true;
 
-# Moeten we bijhouden welke individuele spots er zijn bekeken?
-# Deze lijst wordt automatisch geleegd wanneer je "Markeer alles als gelezen" aanklikt!
-$settings['keep_seenlist'] = true;
-
 # Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
 $settings['auto_markasread'] = true;
 
@@ -366,4 +362,8 @@ if (isset($settings['allow_user_template'])) {
 
 if (isset($settings['count_newspots'])) {
 	die("count_newspots is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['keep_seenlist'])) {
+	die("keep_seenlist is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
