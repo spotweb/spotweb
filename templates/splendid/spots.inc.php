@@ -1,5 +1,6 @@
 <?php 
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	
 	/* Render de header en filter templates */
 	require_once "header.inc.php";
@@ -93,7 +94,7 @@
 						<th class='genre'> Genre </th> 
 						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 
 						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
-<?php if ($settings->get('show_nzbbutton')) { ?>
+<?php if ($show_nzb_button) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>
 <?php if ($settings->get('show_multinzb')) { ?>
@@ -129,7 +130,7 @@ if ($show_watchlist_button) { ?>
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400) {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' title ='Download NZB' class='nzb'>NZB";
 				
 				if ($spot['hasbeendownloaded']) {
@@ -152,7 +153,7 @@ if ($show_watchlist_button) { ?>
 				echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td> &nbsp; </td>";
 			} # if
 

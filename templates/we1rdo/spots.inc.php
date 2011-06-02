@@ -7,7 +7,7 @@
 	$getUrl = $tplHelper->getQueryParams(); 
 	
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
-	$show_nzb_button = ($settings->get('show_nzbbutton') && $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''));
+	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 ?>
