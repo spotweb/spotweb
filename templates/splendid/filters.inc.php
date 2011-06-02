@@ -46,12 +46,14 @@ if(empty($_GET['ajax'])) { ?>
 					<ul id="quicklinksmenu">
 <?php
 	foreach($quicklinks as $quicklink) {
-		$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
-		$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
+		if ($tplHelper->allowed($quicklink[4][0], $quicklink[4][1])) {
+			$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
+			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 						<li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $strFilter;?>&amp;ajax=1');clearTree();">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "(".$tplHelper->getNewCountForFilter($quicklink[2]).")"; } ?></a></div></li>
 <?php
+		}
 	}
 ?>
                     </ul><br /><br />
