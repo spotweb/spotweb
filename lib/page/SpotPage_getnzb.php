@@ -17,7 +17,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
 		
 		# als het niet display is, check of we ook download integratie rechten hebben
-		if ($this->_action != 'page') {
+		if ($this->_action != 'display') {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
 		} # if
 
