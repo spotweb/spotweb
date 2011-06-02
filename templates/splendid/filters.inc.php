@@ -102,13 +102,10 @@ if(empty($_GET['ajax'])) { ?>
 					<h4>Maintenance</h4>
 					<ul class="maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
-<?php
-	if ($settings->get('show_updatebutton')) {
-?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) { ?>
 						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="big_button updatespotsbtn"><div>Update Spots</div></a></li>
-<?php
-	}
-?>
+<?php } ?>
+
 <?php
 	if ($show_downloadedlistButton) {
 ?>
