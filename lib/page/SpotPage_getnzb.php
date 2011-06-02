@@ -15,6 +15,11 @@ class SpotPage_getnzb extends SpotPage_Abs {
 
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+		
+		# als het niet display is, check of we ook download integratie rechten hebben
+		if ($this->_action != 'page') {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
+		} # if
 
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
