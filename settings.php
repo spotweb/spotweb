@@ -181,9 +181,6 @@ $settings['show_nzbbutton'] = true;
 # toon een multi-nzb knop?
 $settings['show_multinzb'] = true;
 
-# Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
-$settings['auto_markasread'] = true;
-
 # moeten we bijhouden welke downloads er gedaan zijn?
 $settings['keep_downloadlist'] = true;
 
@@ -366,4 +363,8 @@ if (isset($settings['count_newspots'])) {
 
 if (isset($settings['keep_seenlist'])) {
 	die("keep_seenlist is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['auto_markasread'])) {
+	die("auto_markasread is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
