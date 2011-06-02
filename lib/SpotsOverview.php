@@ -473,7 +473,7 @@ class SpotsOverview {
 
 		# New spots
 		if (isset($search['filterValues']['New'])) {
-			if ($currentSession['prefs']['auto_markasread']) {
+			if ($currentSession['user']['prefs']['auto_markasread']) {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
 			} else {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
