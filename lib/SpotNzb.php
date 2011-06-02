@@ -19,6 +19,12 @@ class SpotNzb {
 			$messageids = array($messageids);
 		} # if
 		
+		# Controleer de security
+		$userSession['security']->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+		if ($action != 'display') {
+			$userSession['security']->fatalPermCheck(SpotSecurity::spotsec_download_integration, $action);
+		} # if
+			
 		# Haal de volledige spot op en gebruik de informatie daarin om de NZB file op te halen
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		
