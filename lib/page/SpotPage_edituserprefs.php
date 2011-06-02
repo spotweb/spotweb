@@ -50,7 +50,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					# controleer en repareer alle preferences 
-					$formMessages['errors'] = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
+					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
 
 					if (empty($formMessages['errors'])) {
 						# bewerkt de user
