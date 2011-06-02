@@ -39,7 +39,7 @@ class SpotNzb {
 		$nzbHandler->processNzb($fullSpot, $nzbList);
 
 		# en voeg hem toe aan de lijst met downloads
-		if ($this->_settings->get('keep_downloadlist')) {
+		if ($userSession['prefs']['keep_downloadlist']) {
 			if ($userSession['security']->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) {
 				foreach($messageids as $thisMsgId) {
 					$this->_db->addToSpotStateList(SpotDb::spotstate_Down, $thisMsgId, $userSession['user']['userid']);

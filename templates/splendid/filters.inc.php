@@ -4,6 +4,7 @@ if(empty($_GET['page'])) $_GET['page'] = '';
 
 // We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 $count_newspots = ($currentSession['user']['prefs']['count_newspots']);
+$show_downloadedlistButton = ($currentSession['user']['prefs']['keep_downloadlist']);
 
 // check if it's a ajax call
 if(empty($_GET['ajax'])) { ?>
@@ -109,7 +110,7 @@ if(empty($_GET['ajax'])) { ?>
 	}
 ?>
 <?php
-	if ($settings->get('keep_downloadlist')) {
+	if ($show_downloadedlistButton) {
 ?>
 						<li> <a href="?page=erasedls" id="removedllistbtn" class="big_button erasedlsbtn"><div>Reset download geschiedenis</div></a></li>
 <?php

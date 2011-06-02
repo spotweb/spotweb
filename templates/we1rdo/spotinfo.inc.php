@@ -8,7 +8,7 @@
 						 ($settings->get('show_nzbbutton')) &&
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
-	$show_watchlist_button = ($settings->get('keep_watchlist') && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
