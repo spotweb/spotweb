@@ -1,4 +1,6 @@
 <?php 
+	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	
 	/* Render de header en filter templates */
 	require_once "header.inc.php";
 	require_once "filters.inc.php";
@@ -100,7 +102,7 @@
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
 						<th class='sabnzbd'> SAB </th> 
 <?php }
-if ($settings->get('keep_watchlist')) { ?>						
+if ($show_watchlist_button) { ?>						
 						<th class='watch'></th>
 <?php } ?>
 					</tr>
@@ -160,7 +162,7 @@ if ($settings->get('keep_watchlist')) { ?>
 			} # if
 		} # else
 		
-		if ($settings->get('keep_watchlist')) {
+		if ($show_watchlist_button) {
 			echo "<td>\n";
 			if($spot['isbeingwatched']) { ?>
 				<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watched_<?php echo $spot['id'] ?>"><img src="templates/splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>
