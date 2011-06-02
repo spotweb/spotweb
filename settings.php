@@ -172,9 +172,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-# toon een download-nzb knop op het overzicht?
-$settings['show_nzbbutton'] = true;
-
 # toon een multi-nzb knop?
 $settings['show_multinzb'] = true;
 
@@ -364,4 +361,8 @@ if (isset($settings['keep_watchlist'])) {
 
 if (isset($settings['show_updatebutton'])) {
 	die("show_updatebutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_nzbbutton'])) {
+	die("show_nzbbutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
