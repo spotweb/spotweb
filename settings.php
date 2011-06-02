@@ -356,7 +356,7 @@ if (isset($settings['keep_downloadlist'])) {
 } # if
 
 if (isset($settings['keep_watchlist'])) {
-	die("keep_downloadlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+	die("keep_watchlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
 if (isset($settings['show_updatebutton'])) {
