@@ -541,7 +541,7 @@ class SpotTemplateHelper {
 	} # formatSpot
 
 	function isSpotNew($spot) {
-		if ($this->_currentSession['user']['prefs']['auto_maskasread']) {
+		if ($this->_currentSession['user']['prefs']['auto_markasread']) {
 			return ( max($this->_currentSession['user']['lastvisit'],$this->_currentSession['user']['lastread']) < $spot['stamp'] && $spot['seenstamp'] == NULL);
 		} else {
 			return ($this->_currentSession['user']['lastread'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
