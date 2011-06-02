@@ -182,6 +182,11 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_download_integration, $nzbHandling['action'])) {
+			return '';
+		} # if
+		
 		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
 	} # makeSabnzbdUrl
 

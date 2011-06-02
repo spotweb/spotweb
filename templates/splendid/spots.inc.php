@@ -101,7 +101,8 @@
 <?php if ($show_multinzb_checkbox) { ?>
                         <th class="multinzb"><input type="checkbox" name="checkall" class="checkboxes"></th>
 <?php } ?>				
-<?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
+<?php $nzbHandlingTmp = $settings->get('nzbhandling'); 
+if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
 						<th class='sabnzbd'> SAB </th> 
 <?php }
 if ($show_watchlist_button) { ?>						
