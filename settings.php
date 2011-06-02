@@ -172,9 +172,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-# toon een multi-nzb knop?
-$settings['show_multinzb'] = true;
-
 # Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
 # dan standaard lid? 
 $settings['newuser_grouplist'] = array(
@@ -365,4 +362,8 @@ if (isset($settings['show_nzbbutton'])) {
 
 if (isset($settings['nzb_search_engine'])) {
 	die("nzb_search_engine is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_multinzb'])) {
+	die("show_multinzb is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
 } # if

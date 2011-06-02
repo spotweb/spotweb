@@ -131,6 +131,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'keep_downloadlist', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_watchlist', true);
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
+			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
 			$this->unsetSetting($user['prefs'], 'search_url');
 
 			# update the user record in the database			

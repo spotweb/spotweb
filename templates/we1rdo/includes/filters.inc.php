@@ -1,11 +1,12 @@
 <?php
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$count_newspots = ($currentSession['user']['prefs']['count_newspots']);
+	$show_multinzb_checkbox = ($currentSession['user']['prefs']['show_multinzb']);
 ?>
 		
 			<div id="toolbar">
 				<div class="notifications">
-					<?php if ($settings->get('show_multinzb')) { ?>
+					<?php if ($show_multinzb_checkbox) { ?>
 					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a></p>
 					<?php } ?>
 				</div>

@@ -1,6 +1,7 @@
 <?php 
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
+	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	
 	/* Render de header en filter templates */
 	require_once "header.inc.php";
@@ -97,7 +98,7 @@
 <?php if ($show_nzb_button) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>
-<?php if ($settings->get('show_multinzb')) { ?>
+<?php if ($show_multinzb_checkbox) { ?>
                         <th class="multinzb"><input type="checkbox" name="checkall" class="checkboxes"></th>
 <?php } ?>				
 <?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
@@ -140,7 +141,7 @@ if ($show_watchlist_button) { ?>
 				echo "</a></td>";
 			} # if
 			
-			if ($settings->get('show_multinzb')) {
+			if ($show_multinzb_checkbox) { 
 				$multispotid = htmlspecialchars($spot['messageid']);
 				echo "<td>";
 				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
