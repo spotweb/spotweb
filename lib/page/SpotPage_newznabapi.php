@@ -138,7 +138,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$channel->appendChild($doc->createElement('description', 'Spotweb Index API Results'));
 			$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
 			$channel->appendChild($doc->createElement('language', 'en-gb'));
-			$channel->appendChild($doc->createElement('webMaster', 'spotweb@example.com (Spotweb Index)'));
+			$channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')'));
 			$channel->appendChild($doc->createElement('category', ''));
 			$rss->appendChild($channel);
 
@@ -157,8 +157,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 
-				$guid = $doc->createElement('guid', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']));
-				$guid->setAttribute('isPermaLink', 'true');
+				$guid = $doc->createElement('guid', $spot['messageid']);
+				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
 				$item->appendChild($doc->createElement('title', $title));
@@ -224,7 +224,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$server->setAttribute('version', '0.1');
 		$server->setAttribute('title', 'Spotweb');
 		$server->setAttribute('strapline', 'Spotweb API Index');
-		$server->setAttribute('email', 'spotweb@example.com (Spotweb Index)');
+		$server->setAttribute('email', 'spotweb@example.com (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')');
 		$server->setAttribute('url', $this->_settings->get('spotweburl'));
 		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
 		$caps->appendChild($server);
