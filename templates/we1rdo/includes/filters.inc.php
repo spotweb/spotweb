@@ -1,11 +1,12 @@
 <?php
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$count_newspots = ($currentSession['user']['prefs']['count_newspots']);
+	$show_multinzb_checkbox = ($currentSession['user']['prefs']['show_multinzb']);
 ?>
 		
 			<div id="toolbar">
 				<div class="notifications">
-					<?php if ($settings->get('show_multinzb')) { ?>
+					<?php if ($show_multinzb_checkbox) { ?>
 					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="MultiNZB"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="Reset selectie">[x]</a></p>
 					<?php } ?>
 				</div>
@@ -172,11 +173,13 @@
 				<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Quick Links<span></span></h4></a>
 				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
+		if ($tplHelper->allowed($quicklink[4][0], $quicklink[4][1])) {
 			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 					<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
-<?php } ?>
+<?php 	}
+	} ?>
 					</ul>
 
 					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Filters<span></span></h4></a>

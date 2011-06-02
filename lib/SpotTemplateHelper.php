@@ -160,7 +160,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
-		switch ($this->_settings->get('nzb_search_engine')) {
+		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
 			default			: return 'http://www.binsearch.info/?adv_age=&amp;q=' . $searchString;
@@ -182,6 +182,11 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_download_integration, $nzbHandling['action'])) {
+			return '';
+		} # if
+		
 		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
 	} # makeSabnzbdUrl
 
@@ -677,6 +682,7 @@ class SpotTemplateHelper {
 		
 		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
 		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
+		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
 
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';

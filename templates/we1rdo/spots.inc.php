@@ -10,6 +10,7 @@
 	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
+	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -29,14 +30,15 @@
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
 <?php } ?>
-<?php if ($settings->get('show_multinzb') && !count($spots) == 0) { ?>
+<?php if ($show_multinzb_checkbox && !count($spots) == 0) { ?>
 							<th class='multinzb'> 
 								<form action="" method="GET" id="checkboxget" name="checkboxget">
 									<input type='hidden' name='page' value='getnzb'>
 									<input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
 							</th>
 <?php } ?>						
-<?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
+<?php $nzbHandlingTmp = $settings->get('nzbhandling'); 
+if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
 							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Open "SabNZBd paneel"'></a></th>
 <?php } ?>						
 						</tr>
@@ -48,7 +50,7 @@
 		$nzbHandlingTmp = $settings->get('nzbhandling'); 
 		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
-		if ($settings->get('show_multinzb')) { $colSpan++; }
+		if ($show_multinzb_checkbox) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
@@ -107,7 +109,7 @@
 				echo "</a></td>";
 			} # if
 			
-			if ($settings->get('show_multinzb')) {
+			if ($show_multinzb_checkbox) {
 				$multispotid = htmlspecialchars($spot['messageid']);
 				echo "<td class='multinzb'>";
 				echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
@@ -128,7 +130,7 @@
 			} # if
 			
 			# display (empty) MultiNZB td
-			if ($settings->get('show_multinzb')) {
+			if ($show_multinzb_checkbox) { 
 				echo "<td> &nbsp; </td>";
 			}
 
@@ -157,7 +159,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<?php if ($settings->get('show_multinzb')) { echo "</form>"; } ?>
+			<?php if ($show_multinzb_checkbox) { echo "</form>"; } ?>
 			<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
 			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
 			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">

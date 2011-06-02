@@ -172,9 +172,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-# toon een multi-nzb knop?
-$settings['show_multinzb'] = true;
-
 # Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
 # dan standaard lid? 
 $settings['newuser_grouplist'] = array(
@@ -242,10 +239,6 @@ $settings['sabnzbd']['categories'] = Array(
 # je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
 $settings['enable_stacktrace'] = true;
 
-# NZB zoekmachine (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
-$settings['nzb_search_engine'] = 'binsearch';
-#$settings['nzb_search_engine'] = 'nzbindex';
-
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
 $settings['index_filter'] = array();
@@ -274,12 +267,12 @@ if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== d
 # we de keep_watchlist en keep_downloadlist settings.
 if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'] = Array();
-	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
-	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
-	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "");
-	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
-	$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "");
-	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external");
+	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''));
+	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
+	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "", Array(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "", Array(SpotSecurity::spotsec_keep_own_downloadlist, ''));
+	$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
+	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''));
 } # if isset
 
 #
@@ -366,3 +359,19 @@ if (isset($settings['show_updatebutton'])) {
 if (isset($settings['show_nzbbutton'])) {
 	die("show_nzbbutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
+
+if (isset($settings['nzb_search_engine'])) {
+	die("nzb_search_engine is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_multinzb'])) {
+	die("show_multinzb is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
+} # if
+
+# Cotnroleer op oud type quicklinks (zonder security)
+foreach($settings['quicklinks'] as $link) {
+	if (count($link) != 5) {
+		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je qiucklinks in je settings.php (zie settings.php voor een voorbeeld)");
+	} # if
+} # foreach
+
