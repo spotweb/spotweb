@@ -160,7 +160,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
-		switch ($this->_settings->get('nzb_search_engine')) {
+		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
 			default			: return 'http://www.binsearch.info/?adv_age=&amp;q=' . $searchString;

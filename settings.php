@@ -242,10 +242,6 @@ $settings['sabnzbd']['categories'] = Array(
 # je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
 $settings['enable_stacktrace'] = true;
 
-# NZB zoekmachine (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
-$settings['nzb_search_engine'] = 'binsearch';
-#$settings['nzb_search_engine'] = 'nzbindex';
-
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
 $settings['index_filter'] = array();
@@ -365,4 +361,8 @@ if (isset($settings['show_updatebutton'])) {
 
 if (isset($settings['show_nzbbutton'])) {
 	die("show_nzbbutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['nzb_search_engine'])) {
+	die("nzb_search_engine is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
 } # if
