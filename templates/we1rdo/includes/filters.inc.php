@@ -173,11 +173,13 @@
 				<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Quick Links<span></span></h4></a>
 				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
+		if ($tplHelper->allowed($quicklink[4][0], $quicklink[4][1])) {
 			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 					<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
-<?php } ?>
+<?php 	}
+	} ?>
 					</ul>
 
 					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Filters<span></span></h4></a>
