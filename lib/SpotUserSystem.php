@@ -338,6 +338,7 @@ class SpotUserSystem {
 		$prefs['auto_markasread'] = ($prefs['auto_markasread'] == "on") ? true : false;
 		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] == "on") ? true : false;
 		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] == "on") ? true : false;
+		$prefs['show_multinzb'] = ($prefs['show_multinzb'] == "on") ? true : false;
 		
 		return array($errorList, $prefs);
 	} # validateUserPreferences
