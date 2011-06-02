@@ -38,7 +38,9 @@ if (empty($editresult)) {
 
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
+<?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID) { ?>
 				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="Wis gebruiker">
+<?php } ?>
 				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="Wis alle sessies">
 			</dd>
 		</dl>
