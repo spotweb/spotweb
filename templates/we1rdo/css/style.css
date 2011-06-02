@@ -1,3 +1,4 @@
+
 /* GENERAL */
 html {overflow:auto; height:100%;}
 body {margin:0;}
@@ -434,3 +435,11 @@ div.userPanel form input[type=password],
 div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; width:220px;}
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
 div.userpanel form input.withicon {width:200px;}
+
+/* Fullscreen */
+div.overlay.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden;}
+div#fullscreenoverlay {position:absolute; top:0; bottom:0; left:0; right:0; margin: 0; background-color:#fff; z-index:5; display:none; overflow:auto;}
+div#fullscreenoverlay.loading {position:fixed; background:#fff url(../img/loading.gif) no-repeat 50% 50%; opacity:0.75; filter:alpha(opacity = 75);}
+div#fullscreenoverlay.loading.notrans {opacity:1; filter:alpha(opacity = 100);}
+
+div#fullscrenoverlay div#titlebar { background:url(../img/sprite_x.png) repeat-x 0 -80px; margin: 0; height: 25px; width: 100%; }
