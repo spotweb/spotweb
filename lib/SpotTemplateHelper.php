@@ -677,6 +677,7 @@ class SpotTemplateHelper {
 		
 		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
 		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
+		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
 
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
