@@ -333,13 +333,13 @@ class SpotUserSystem {
 		} # if
 		
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
-		$prefs['count_newspots'] = ($prefs['count_newspots'] ? "true" : "false");
-		$prefs['keep_seenlist'] = ($prefs['keep_seenlist'] ? "true" : "false");
-		$prefs['auto_markasread'] = ($prefs['auto_markasread'] ? "true" : "false");
-		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] ? "true" : "false");
-		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] ? "true" : "false");
+		$prefs['count_newspots'] = ($prefs['count_newspots'] == "on") ? true : false;
+		$prefs['keep_seenlist'] = ($prefs['keep_seenlist'] == "on") ? true : false;
+		$prefs['auto_markasread'] = ($prefs['auto_markasread'] == "on") ? true : false;
+		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] == "on") ? true : false;
+		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] == "on") ? true : false;
 		
-		return $errorList;
+		return array($errorList, $prefs);
 	} # validateUserPreferences
 
 	/*
