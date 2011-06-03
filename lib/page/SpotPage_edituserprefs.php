@@ -29,18 +29,21 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
 		} # if
-
+		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
 		$formAction = '';
 		if (isset($this->_editUserPrefsForm['submitedit'])) {
 			$formAction = 'edit';
 			unset($this->_editUserPrefsForm['submitedit']);
+		} elseif (isset($this->_editUserPrefsForm['submitcancel'])) {
+			$formAction = 'cancel';
+			unset($this->_editUserPrefsForm['submitcancel']);
 		} # if
-
+		
 		# We vragen de anonymous user account op, omdat die z'n preferences gebruikt worden
 		# als basis.
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
-		
+
 		# user preferences mergen met anonymous account
 		$spotUser['prefs'] = array_merge($anonUser['prefs'], $spotUser['prefs'], $this->_editUserPrefsForm);
 		$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser['prefs']);
@@ -50,7 +53,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					# controleer en repareer alle preferences 
-					$formMessages['errors'] = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
+					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
 
 					if (empty($formMessages['errors'])) {
 						# bewerkt de user
@@ -63,6 +66,10 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					} # else
 					break;
 				} # case 'edit' 
+				
+				case 'cancel' : {
+					$editResult = array('result' => 'success');
+				} # case 'cancel'
 			} # switch
 		} # if
 
@@ -70,6 +77,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		$this->template('edituserprefs', array('edituserprefsform' => $spotUser['prefs'],
 										    'formmessages' => $formMessages,
 											'spotuser' => $spotUser,
+											'http_referer' => $this->_editUserPrefsForm['http_referer'],
 											'edituserprefsresult' => $editResult));
 	} # render
 	

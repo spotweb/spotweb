@@ -150,6 +150,7 @@ $settings['retrieve_comments'] = true;
 $settings['retention'] = 0;
 
 # Zet een minimum datum vanaf wanneer je spots op wilt halen, om alle spots van FTD te skippen geef je hier 1290578400 op
+# Andere data kun je omrekenen op http://www.unixtimestamp.com/
 $settings['retrieve_newer_than'] = 0;
 
 # db
@@ -170,31 +171,6 @@ $settings['db']['pass'] = 'spotweb';
 $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
-
-# tonen we een update knop in de web ui?
-$settings['show_updatebutton'] = false;
-
-# toon een download-nzb knop op het overzicht?
-$settings['show_nzbbutton'] = true;
-
-# toon een multi-nzb knop?
-$settings['show_multinzb'] = true;
-
-# toon aantal nieuwe spots in het menu? Kan vertragend werken, uitzetten op trage systemen!
-$settings['count_newspots'] = true;
-
-# Moeten we bijhouden welke individuele spots er zijn bekeken?
-# Deze lijst wordt automatisch geleegd wanneer je "Markeer alles als gelezen" aanklikt!
-$settings['keep_seenlist'] = true;
-
-# Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?
-$settings['auto_markasread'] = true;
-
-# moeten we bijhouden welke downloads er gedaan zijn?
-$settings['keep_downloadlist'] = true;
-
-# moeten we een watchlist bijhouden?
-$settings['keep_watchlist'] = true;
 
 # Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
 # dan standaard lid? 
@@ -263,10 +239,6 @@ $settings['sabnzbd']['categories'] = Array(
 # je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
 $settings['enable_stacktrace'] = true;
 
-# NZB zoekmachine (gebruikt bij spots voor 24 november als download knop, en onderaan de spot info)
-$settings['nzb_search_engine'] = 'binsearch';
-#$settings['nzb_search_engine'] = 'nzbindex';
-
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
 $settings['index_filter'] = array();
@@ -295,18 +267,12 @@ if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== d
 # we de keep_watchlist en keep_downloadlist settings.
 if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'] = Array();
-	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "");
-	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "");
-	if ($settings['keep_watchlist']) {
-		$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "");
-	}
-	if ($settings['keep_downloadlist']) {
-		$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "");
-	}
-	if ($settings['keep_seenlist']) {
-		$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "");
-	}
-	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external");
+	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''));
+	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
+	$settings['quicklinks'][] = Array('Watchlist', "images/icons/fav.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "", Array(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$settings['quicklinks'][] = Array('Gedownload', "images/icons/download.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "", Array(SpotSecurity::spotsec_keep_own_downloadlist, ''));
+	$settings['quicklinks'][] = Array('Recent bekeken', "images/icons/eye.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
+	$settings['quicklinks'][] = Array('Documentatie', "images/icons/help.png", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''));
 } # if isset
 
 #
@@ -365,3 +331,47 @@ if (isset($settings['cookie_expires'])) {
 if (isset($settings['allow_user_template'])) {
 	die("allow_user_templates wordt niet meer bijgheouden, dit is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
+
+if (isset($settings['count_newspots'])) {
+	die("count_newspots is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['keep_seenlist'])) {
+	die("keep_seenlist is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['auto_markasread'])) {
+	die("auto_markasread is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['keep_downloadlist'])) {
+	die("keep_downloadlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['keep_watchlist'])) {
+	die("keep_watchlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_updatebutton'])) {
+	die("show_updatebutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_nzbbutton'])) {
+	die("show_nzbbutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['nzb_search_engine'])) {
+	die("nzb_search_engine is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['show_multinzb'])) {
+	die("show_multinzb is een user preference geworden. Haal dit aub weg uti je ownsettings.php" . PHP_EOL);
+} # if
+
+# Cotnroleer op oud type quicklinks (zonder security)
+foreach($settings['quicklinks'] as $link) {
+	if (count($link) != 5) {
+		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je qiucklinks in je settings.php (zie settings.php voor een voorbeeld)");
+	} # if
+} # foreach
+

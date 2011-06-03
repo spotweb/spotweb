@@ -1,4 +1,8 @@
 <?php 
+	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
+	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
+	
 	/* Render de header en filter templates */
 	require_once "header.inc.php";
 	require_once "filters.inc.php";
@@ -91,16 +95,17 @@
 						<th class='genre'> Genre </th> 
 						<th class='poster'> <a href="?page=index&sortby=poster<?php echo $getUrl;?>" title="Sorteren op Afzender">Afzender</a> </th> 
 						<th class='date'> <a href="?page=index&sortby=stamp<?php echo $getUrl;?>" title="Sorteren op Datum">Datum</a> </th> 
-<?php if ($settings->get('show_nzbbutton')) { ?>
+<?php if ($show_nzb_button) { ?>
 						<th class='nzb'> NZB </th> 
 <?php } ?>
-<?php if ($settings->get('show_multinzb')) { ?>
+<?php if ($show_multinzb_checkbox) { ?>
                         <th class="multinzb"><input type="checkbox" name="checkall" class="checkboxes"></th>
 <?php } ?>				
-<?php $nzbHandlingTmp = $settings->get('nzbhandling'); if ($nzbHandlingTmp['action'] != 'disable') { ?>
+<?php $nzbHandlingTmp = $settings->get('nzbhandling'); 
+if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
 						<th class='sabnzbd'> SAB </th> 
 <?php }
-if ($settings->get('keep_watchlist')) { ?>						
+if ($show_watchlist_button) { ?>						
 						<th class='watch'></th>
 <?php } ?>
 					</tr>
@@ -127,7 +132,7 @@ if ($settings->get('keep_watchlist')) { ?>
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400) {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td><a href='?page=getnzb&amp;messageid=" . $spot['messageid'] . "' title ='Download NZB' class='nzb'>NZB";
 				
 				if ($spot['hasbeendownloaded']) {
@@ -137,7 +142,7 @@ if ($settings->get('keep_watchlist')) { ?>
 				echo "</a></td>";
 			} # if
 			
-			if ($settings->get('show_multinzb')) {
+			if ($show_multinzb_checkbox) { 
 				$multispotid = htmlspecialchars($spot['messageid']);
 				echo "<td>";
 				echo "<input type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
@@ -150,7 +155,7 @@ if ($settings->get('keep_watchlist')) { ?>
 				echo "<td><a class='sabnzbd-button' target='_blank' href='" . $spot['sabnzbdurl'] . "' title='Add NZB to SabNZBd queue'><img height='16' width='16' class='sabnzbd-button' src='images/download-small.png'></a></td>";
 			} # if
 		} else {
-			if ($settings->get('show_nzbbutton')) {
+			if ($show_nzb_button) {
 				echo "<td> &nbsp; </td>";
 			} # if
 
@@ -160,7 +165,7 @@ if ($settings->get('keep_watchlist')) { ?>
 			} # if
 		} # else
 		
-		if ($settings->get('keep_watchlist')) {
+		if ($show_watchlist_button) {
 			echo "<td>\n";
 			if($spot['isbeingwatched']) { ?>
 				<a onclick="removeWatchSpot('<?php echo $spot['messageid'].'\','.$spot['id'] ?>)" id="watched_<?php echo $spot['id'] ?>"><img src="templates/splendid/img/watch_active.png" alt="Verwijder uit watchlist" title="Verwijder uit watchlist" border="0" /></a>

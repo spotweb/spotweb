@@ -1,3 +1,4 @@
+
 /* GENERAL */
 html {overflow:auto; height:100%;}
 body {margin:0;}
@@ -30,7 +31,8 @@ form#filterform div.search input.filtersubmit {font:11px Arial, Helvetica, sans-
 div.sidebarPanel {display:none; position:absolute; left:0; top:25px; bottom:0; width:235px; background:#fff; z-index:1;}
 body.fixed div.sidebarPanel {position:fixed;}
 div.sidebarPanel h4:first-child {-moz-border-radius:0; -webkit-border-radius:0; border-radius:0; margin-top:0;}
-div.sidebarPanel h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:5px 0 0 0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 0 0; -webkit-border-radius:0 4px 0 0; border-radius:0 4px 0 0; position:relative;}
+div.sidebarPanel h4 a,
+div.sidebarPanel h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:5px 0 0 0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 0 0; -webkit-border-radius:0 4px 0 0; border-radius:0 4px 0 0; position:relative; text-decoration: none;}
 div.sidebarPanel h4.dropdown {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 div.sidebarPanel h4.dropdown a {cursor:pointer;}
 div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer;}
@@ -434,3 +436,11 @@ div.userPanel form input[type=password],
 div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; width:220px;}
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
 div.userpanel form input.withicon {width:200px;}
+
+/* Fullscreen */
+div.overlay.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden;}
+div#fullscreenoverlay {position:absolute; top:0; bottom:0; left:0; right:0; margin: 0; background-color:#fff; z-index:5; display:none; overflow:auto;}
+div#fullscreenoverlay.loading {position:fixed; background:#fff url(../img/loading.gif) no-repeat 50% 50%; opacity:0.75; filter:alpha(opacity = 75);}
+div#fullscreenoverlay.loading.notrans {opacity:1; filter:alpha(opacity = 100);}
+
+div#fullscrenoverlay div#titlebar { background:url(../img/sprite_x.png) repeat-x 0 -80px; margin: 0; height: 25px; width: 100%; }

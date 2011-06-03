@@ -1,6 +1,6 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.01');
-
+define('SPOTWEB_SETTINGS_VERSION', '0.02');
+define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
  */

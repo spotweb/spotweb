@@ -1,9 +1,9 @@
 <?php 
 	require_once "includes/header.inc.php";
-	
-	$getUrl = $tplHelper->getQueryParams(); 
 ?>
 		<div class="infopane">
+			<a href='<?php echo $tplHelper->makeBaseUrl('path'); ?>'>Terug naar de index</a>
+			<br>
 			<table class="spotslistusers" summary="Users">
 				<thead>
 					<tr class="head">
@@ -12,7 +12,6 @@
 						<th>Achternaam</th>
 						<th>Mail</th>
 						<th>Laatste bezoek</th>
-						<th>Remove</th>
 					</tr>
 				</thead>
 				<tbody id="userlist">

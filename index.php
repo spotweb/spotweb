@@ -48,25 +48,17 @@ try {
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
-		
-		if ($currentSession === false) {
-			header('Status: 403 Forbidden');
-			die('API Key Incorrect');
-		}
-		
-		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
-		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
-		
-		# maar ook het pagina specifieke, anders zou je bv. "getnzb" kunnen uitvoeren
-		# met een apikey
-		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
 	} else {
 		$currentSession = $spotUserSystem->useOrStartSession();
 	} # if
-	
-	/* Zonder sessie ook geen security systeem, dus dit is altijd fatal */
+
+	/* Zonder userobject ook geen security systeem, dus dit is altijd fatal */
 	if ($currentSession === false) {
-		throw new Exception("Unable to create session");
+		if ($req->doesExist('apikey')) {
+			throw new Exception("API Key Incorrect");
+		} else {
+			throw new Exception("Unable to create session");
+		} # else
 	} # if
 	SpotTiming::stop('auth');
 
@@ -74,7 +66,17 @@ try {
 	if (!$currentSession['security']->securityValid()) {
 		die("Security settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
-	
+
+	# Nu is het pas veilig rechten te checken op het gebruik van de apikey
+	if ($req->doesExist('apikey')) {
+		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
+		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
+		
+		# maar ook het pagina specifieke, anders zou je bv. "preferences" kunnen wijzigen
+		# met een apikey
+		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
+	} # if
+
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
@@ -196,7 +198,7 @@ try {
 
 		case 'edituserprefs' : {
 				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
-							Array('edituserprefsform' => $req->getForm('edituserprefsform', array('submitedit'))));
+							Array('edituserprefsform' => $req->getForm('edituserprefsform', array('submitedit', 'submitcancel'))));
 				$page->render();
 				break;
 		} # edituserprefs

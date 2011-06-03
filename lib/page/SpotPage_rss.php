@@ -15,6 +15,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		$nzbhandling = $this->_settings->get('nzbhandling');
 
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
@@ -27,72 +28,74 @@ class SpotPage_rss extends SpotPage_Abs {
 							$pageNr,
 							$this->_currentSession['user']['prefs']['perpage'],
 							$parsedSearch,
-							array('field' => $this->_params['sortby'], 
+							array('field' => $this->_params['sortby'],
 								  'direction' => $this->_params['sortdir']));
 
-		$fullSpots = array();
-		$this->rss_header();
+		# Opbouwen XML
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
 
-		foreach($spotsTmp['list'] as $spot) {
+		$rss = $doc->createElement('rss');
+		$rss->setAttribute('version', '2.0');
+		$rss->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+		$doc->appendChild($rss);
+
+		$channel = $doc->createElement('channel');
+		$channel->appendChild($doc->createElement('generator', 'Spotweb v' . SPOTWEB_VERSION));
+		$channel->appendChild($doc->createElement('language', 'nl'));
+		$channel->appendChild($doc->createElement('title', 'Spotweb'));
+		$channel->appendChild($doc->createElement('description', 'Spotweb RSS Feed'));
+		$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+		$channel->appendChild($doc->createElement('pubDate', date('r')));
+		$rss->appendChild($channel);
+
+		$atomSelfLink = $doc->createElementNS('http://www.w3.org/2005/Atom', 'atom10:link');
+		$atomSelfLink->setAttribute('href', html_entity_decode($this->_tplHelper->makeSelfUrl("full")));
+		$atomSelfLink->setAttribute('rel', 'self');
+		$atomSelfLink->setAttribute('type', 'application/rss+xml');
+		$channel->appendChild($atomSelfLink);
+
+		# Fullspots ophalen en aan XML toevoegen
+		foreach($spotsTmp['list'] as $spotHeaders) {
 			try {
-				$fullSpots[] = $this->_tplHelper->getFullSpot($spot['messageid'], false);
+				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
+				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
+				$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
+				$descriptionCdata = $doc->createCDATASection($this->_tplHelper->formatContent($spot['description']) . '<br /><font color="#ca0000">Door: ' . $poster . '</font>');
+				$description = $doc->createElement('description');
+				$description->appendChild($descriptionCdata);
+
+				$item = $doc->createElement('item');
+				$item->appendChild($doc->createElement('title', $title));
+				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']) . $this->_tplHelper->makeApiRequestString()));
+				$item->appendChild($description);
+				$item->appendChild($doc->createElement('author', $spot['messageid'] . ' (' . $poster . ')'));
+				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
+				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
+
+				$guid = $doc->createElement('guid', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']));
+				$guid->setAttribute('isPermaLink', 'true');
+				$item->appendChild($guid);
+
+				$enclosure = $doc->createElement('enclosure');
+				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+				$enclosure->setAttribute('length', $spot['filesize']);
+				switch ($nzbhandling['prepare_action']) {
+					case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
+					default		: $enclosure->setAttribute('type', 'application/x-nzb');
+				} # switch
+				$item->appendChild($enclosure);
+
+				$channel->appendChild($item);
 			} # try
 			catch(Exception $x) {
 				// Article not found. ignore.
 			} # catch
 		} # foreach
 
-		$this->rss_data($fullSpots);
-		$this->rss_footer();
-	} # render()
-
-	function rss_header() {
+		# XML output
 		header('Content-Type: application/rss+xml; charset=UTF-8');
-		echo "<?xml version=\"1.0\" encoding=\"utf-8\"?" . ">" . PHP_EOL;
-		echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">" . PHP_EOL;
-		echo "<atom10:link xmlns:atom10=\"http://www.w3.org/2005/Atom\" href=\"" . $this->_tplHelper->makeSelfUrl("full") . "\" rel=\"self\" type=\"application/rss+xml\" />" . PHP_EOL;
-		if ($this->_settings->get('deny_robots')) { echo "<xhtml:meta xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" name=\"robots\" content=\"noindex\" />" . PHP_EOL; }
-		echo "<channel>" . PHP_EOL;
-		echo "\t<generator>Spotweb</generator>" . PHP_EOL;
-		echo "\t<language>nl</language>" . PHP_EOL;
-		echo "\t<title>SpotWeb</title>" . PHP_EOL;
-		echo "\t<description>SpotWeb RSS Feed</description>" . PHP_EOL;
-		echo "\t<link>" . $this->_settings->get('spotweburl') . "</link>" . PHP_EOL;
-		echo "\t<pubDate>" . date('r') . "</pubDate>" . PHP_EOL;
-	}
-
-	function rss_data($fullSpots) {
-		$nzbhandling = $this->_settings->get('nzbhandling');
-
-		foreach($fullSpots as $spot) {
-			$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
-
-			$poster = $spot['poster'];
-			if (!empty($spot['userid'])) {
-				$poster .= " (" . $spot['userid'] . ")";
-			}
-
-			echo "\t\t<item>" . PHP_EOL;
-			echo "\t\t\t<title>" . $title . "</title>" . PHP_EOL;
-			echo "\t\t\t<link>" . $this->_tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . $this->_tplHelper->makeApiRequestString() . "</link>" . PHP_EOL;
-			echo "\t\t\t<description><![CDATA[<p>" . $this->_tplHelper->formatContent($spot['description']) . "<br /><font color=\"#ca0000\">Door: " . $poster . "</font></p>]]></description>" . PHP_EOL;
-			echo "\t\t\t<author>" . $spot['messageid'] . " (" . $poster . ")</author>" . PHP_EOL;
-			echo "\t\t\t<pubDate>" . date('r', $spot['stamp']) . "</pubDate>" . PHP_EOL;
-			echo "\t\t\t<category>" . SpotCategories::HeadCat2Desc($spot['category']) . ": " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat']) . "</category>" . PHP_EOL;
-			echo "\t\t\t<guid isPermaLink=\"true\">" . $this->_tplHelper->makeBaseUrl("full") . "?page=getspot&amp;messageid=" . urlencode($spot['messageid']) . "</guid>" . PHP_EOL;
-
-			if ($nzbhandling['prepare_action'] == "zip") {
-				echo "\t\t\t<enclosure url=\"" . $this->_tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/zip\" />" . PHP_EOL;
-			} else {
-				echo "\t\t\t<enclosure url=\"" . $this->_tplHelper->makeNzbUrl($spot) . "\" length=\"" . $spot['filesize'] . "\" type=\"application/x-nzb\" />" . PHP_EOL;
-			} # else
-			echo "\t\t</item>" . PHP_EOL . PHP_EOL;
-		}
-	}
-
-	function rss_footer() {
-		echo "</channel>" . PHP_EOL;
-		echo "</rss>";
-	}
+		echo $doc->saveXML();
+	} # render()
 
 } # class SpotPage_rss

@@ -141,11 +141,12 @@ class SpotTemplateHelper {
 		# seen list
 		if ($markAsRead) {
 			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
-			
-				if ($fullSpot['seenstamp'] == NULL) {
-					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
-												$msgId, 
-												$this->_currentSession['user']['userid']);
+				if ($this->_currentSession['user']['prefs']['keep_seenlist']) {
+					if ($fullSpot['seenstamp'] == NULL) {
+						$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
+													$msgId, 
+													$this->_currentSession['user']['userid']);
+					} # if
 				} # if
 				
 			} # if allowed
@@ -159,7 +160,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
-		switch ($this->_settings->get('nzb_search_engine')) {
+		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
 			default			: return 'http://www.binsearch.info/?adv_age=&amp;q=' . $searchString;
@@ -181,6 +182,11 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
+		$nzbHandling = $this->_settings->get('nzbhandling');
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_download_integration, $nzbHandling['action'])) {
+			return '';
+		} # if
+		
 		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
 	} # makeSabnzbdUrl
 
@@ -386,6 +392,7 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
+		$tmp = utf8_decode($tmp);
 		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
 		
 		# Converteer urls naar links
@@ -539,7 +546,7 @@ class SpotTemplateHelper {
 	} # formatSpot
 
 	function isSpotNew($spot) {
-		if ($this->_settings->get('auto_markasread')) {
+		if ($this->_currentSession['user']['prefs']['auto_markasread']) {
 			return ( max($this->_currentSession['user']['lastvisit'],$this->_currentSession['user']['lastread']) < $spot['stamp'] && $spot['seenstamp'] == NULL);
 		} else {
 			return ($this->_currentSession['user']['lastread'] < $spot['stamp'] && $spot['seenstamp'] == NULL);
@@ -675,6 +682,7 @@ class SpotTemplateHelper {
 		
 		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
 		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
+		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
 
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
@@ -720,6 +728,13 @@ class SpotTemplateHelper {
 		$spotSigning = new SpotSigning();
 		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
 	} # getSessionCalculatedUserId
+	
+	/*
+	 * Redirect naar een opgegeven url
+	 */
+	function redirect($url) {
+		Header("Location: " . $url); 
+	} # redirect()
 	
 	/*
 	 * Genereert een random string

@@ -2,6 +2,10 @@
 // Set $_GET['page'] if it's not set
 if(empty($_GET['page'])) $_GET['page'] = '';
 
+// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
+$count_newspots = ($currentSession['user']['prefs']['count_newspots']);
+$show_downloadedlistButton = ($currentSession['user']['prefs']['keep_downloadlist']);
+
 // check if it's a ajax call
 if(empty($_GET['ajax'])) { ?>
 				<div style="float: left">
@@ -42,12 +46,14 @@ if(empty($_GET['ajax'])) { ?>
 					<ul id="quicklinksmenu">
 <?php
 	foreach($quicklinks as $quicklink) {
-		$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
-		$newCount = ($settings->get('count_newspots') && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
+		if ($tplHelper->allowed($quicklink[4][0], $quicklink[4][1])) {
+			$strFilter = $tplHelper->getPageUrl('index') . $quicklink[2];
+			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 						<li><div><a class="quicklink <?php echo $quicklink[3]; ?>" onclick="$('#spots').load('<?php echo $strFilter;?>&amp;ajax=1');clearTree();">
 						<img src='<?php echo $quicklink[1]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "(".$tplHelper->getNewCountForFilter($quicklink[2]).")"; } ?></a></div></li>
 <?php
+		}
 	}
 ?>
                     </ul><br /><br />
@@ -58,7 +64,7 @@ if(empty($_GET['ajax'])) { ?>
 <?php
     foreach($filters as $filter) {
 		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
-		$newCount = ($settings->get('count_newspots')) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+		$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 		
 ?>
 						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>><div><a class="filter <?php echo $filter[3]; ?>" onclick="$('#spots').load('?search[tree]=<?php echo $strFilter;?>&amp;ajax=1');clearTree();">
@@ -69,7 +75,7 @@ if(empty($_GET['ajax'])) { ?>
             //echo "\t\t\t\t\t\t\t<ul class=''>\r\n";
 			foreach($filter[4] as $subFilter) {
 				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
-				$newSubCount = ($settings->get('count_newspots')) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+				$newSubCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 ?>
             			<li><div><a class="subfilter <?php echo $subFilter[3];?>" onclick="$('#spots').load('<?php echo $strFilter; ?>&amp;ajax=1');clearTree();">
 						<img src='<?php echo $subFilter[1]; ?>'><?php echo $subFilter[0]; if ($newSubCount) { echo "(".$newSubCount.")"; } ?></a></div></li>
@@ -79,7 +85,7 @@ if(empty($_GET['ajax'])) { ?>
 					//echo "\t\t\t\t\t\t\t<ul class=''>\r\n";
 					foreach($subFilter[4] as $sub2Filter) {
 						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
-						$newSub2Count = ($settings->get('count_newspots')) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+						$newSub2Count = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 		?>
 							<li><div><a class="subsubfilter <?php echo $sub2Filter[3];?>" onclick="$('#spots').load('<?php echo $strFilter; ?>&amp;ajax=1');clearTree();">
 							<img src='<?php echo $sub2Filter[1]; ?>'><?php echo $sub2Filter[0]; if ($newSub2Count) { echo "(".$newSub2Count.")"; } ?></a></div></li>
@@ -98,15 +104,12 @@ if(empty($_GET['ajax'])) { ?>
 					<h4>Maintenance</h4>
 					<ul class="maintenancebox">
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
-<?php
-	if ($settings->get('show_updatebutton')) {
-?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) { ?>
 						<li> <a href="retrieve.php?output=xml" id="updatespotsbtn" class="big_button updatespotsbtn"><div>Update Spots</div></a></li>
+<?php } ?>
+
 <?php
-	}
-?>
-<?php
-	if ($settings->get('keep_downloadlist')) {
+	if ($show_downloadedlistButton) {
 ?>
 						<li> <a href="?page=erasedls" id="removedllistbtn" class="big_button erasedlsbtn"><div>Reset download geschiedenis</div></a></li>
 <?php

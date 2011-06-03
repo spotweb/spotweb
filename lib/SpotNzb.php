@@ -19,6 +19,12 @@ class SpotNzb {
 			$messageids = array($messageids);
 		} # if
 		
+		# Controleer de security
+		$userSession['security']->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+		if ($action != 'display') {
+			$userSession['security']->fatalPermCheck(SpotSecurity::spotsec_download_integration, $action);
+		} # if
+			
 		# Haal de volledige spot op en gebruik de informatie daarin om de NZB file op te halen
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		
@@ -39,7 +45,7 @@ class SpotNzb {
 		$nzbHandler->processNzb($fullSpot, $nzbList);
 
 		# en voeg hem toe aan de lijst met downloads
-		if ($this->_settings->get('keep_downloadlist')) {
+		if ($userSession['user']['prefs']['keep_downloadlist']) {
 			if ($userSession['security']->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) {
 				foreach($messageids as $thisMsgId) {
 					$this->_db->addToSpotStateList(SpotDb::spotstate_Down, $thisMsgId, $userSession['user']['userid']);
