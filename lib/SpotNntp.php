@@ -219,7 +219,7 @@ class SpotNntp {
 			# $header .= 'X-User-Gravatar: ' 
 			# Hashcode van een Gravatar
 
-			$header .= "X-Newsreader: SpotWeb 0.9\r\n";
+			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 			
 			return $this->post(array($header, $comment['body']));

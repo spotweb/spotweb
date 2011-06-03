@@ -133,6 +133,29 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
 			$this->unsetSetting($user['prefs'], 'search_url');
+			
+			# sabnzbd handling is nog iets speciaals, die settings lijst is
+			# dusdanig groot dat dat met individuele setjes niet ewrkt, we gaan
+			# dus uit van een template met alle settings, en die mergen we.
+			$nzbHandlingTpl = array('action' => 'disable',
+									'local_dir' => '/tmp',
+									'prepare_action' => 'zip',
+									'command' => '',
+									'sabnzbd' => array('host' => '',
+													   'apikey' => ''),
+									'nzbget' => array('host' => '',
+													  'port' => '',
+													  'username' => '',
+													  'password' => '')
+									);
+			if (!isset($user['prefs']['nzbhandling'])) {
+				$user['prefs']['nzbhandling'] = array();
+			} # if
+			$nzbHandlingUsr = array_merge_recursive($nzbHandlingTpl, $user['prefs']['nzbhandling']);
+			
+			# en deze gemergede array zetten we /altijd/ omdat anders
+			# subkeys niet goed mee zouden kunnen
+			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
 
 			# update the user record in the database			
 			$this->_db->setUser($user);
@@ -179,6 +202,9 @@ class SpotUserUpgrader {
 		# We voegen nog extra security toe voor de logged in user, deze mag gebruik
 		# maken van een aantal paginas via enkel api authenticatie
 		if ($this->_settings->get('securityversion') < 0.02) {
+			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_consume_api . " AND 
+								objectid in ('rss', 'newznabapi', 'getnzb', 'getspot')");
+			
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'rss')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'newznabapi')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzb')");
