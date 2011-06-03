@@ -105,9 +105,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$parsedSearch,
 						array('field' => 'stamp', 'direction' => 'DESC'));
 
-		if (count($spots['list']) == 0 ) {
-			$this->showApiError(300);
-		} # if
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
