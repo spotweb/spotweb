@@ -39,6 +39,9 @@ class SpotNzb {
 		} # foreach
 
 		# send nzblist to NzbHandler plugin
+		if ($action == 'display') {
+			$userSession['user']['prefs']['nzbhandling']['action'] = 'display';
+		}
 		$nzbHandlerFactory = new NzbHandler_Factory();
 		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $userSession['user']['prefs']['nzbhandling']);
 
