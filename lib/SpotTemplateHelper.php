@@ -730,6 +730,13 @@ class SpotTemplateHelper {
 	} # getSessionCalculatedUserId
 	
 	/*
+	 * Redirect naar een opgegeven url
+	 */
+	function redirect($url) {
+		Header("Location: " . $url); 
+	} # redirect()
+	
+	/*
 	 * Genereert een random string
 	 */
 	function getCleanRandomString($len) {
