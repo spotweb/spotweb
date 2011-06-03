@@ -3,6 +3,7 @@
 	<head>
 		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 		<title><?php echo $pagetitle?></title>
+		<meta name="generator" content="SpotWeb v<?php echo SPOTWEB_VERSION; ?>">
 <?php if ($settings->get('deny_robots')) { echo "\t\t<meta name=\"robots\" content=\"noindex, nofollow\">\r\n"; } ?>
 		<base href='<?php echo $tplHelper->makeBaseUrl("full"); ?>'>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_rssfeed, '')) { ?>
