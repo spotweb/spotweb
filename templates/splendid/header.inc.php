@@ -13,6 +13,8 @@
 	<head>
 		<title><?php echo $pagetitle?></title>
 		<meta charset="utf-8" />
+
+		<meta name="generator" content="SpotWeb v<?php echo SPOTWEB_VERSION; ?>">
 		
 		<!-- Stylesheets -->
 		<style type="text/css">
