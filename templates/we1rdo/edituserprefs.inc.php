@@ -196,5 +196,7 @@ if (empty($edituserprefsresult)) {
 		</dd>
 	</div>
 </form>
+
 <?php
+	require_once "includes/footer.inc.php";
 }
