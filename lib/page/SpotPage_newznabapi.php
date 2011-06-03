@@ -30,6 +30,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "t"		:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
+			case "g"		:
+			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
 		} # switch
 	} # render()
@@ -209,6 +211,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			echo $doc->saveXML();
 		}
 	} # showResults
+
+	function getNzb() {
+		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . '&apikey=' . $this->_params['apikey']);
+	} # getNzb
 
 	function caps() {
 		$doc = new DOMDocument('1.0', 'utf-8');
