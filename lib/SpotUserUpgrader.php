@@ -148,7 +148,7 @@ class SpotUserUpgrader {
 													  'username' => '',
 													  'password' => '')
 									);
-			if ((!isset($user['prefs']['nzbhandling'])) | ($this->_settings->get('securityversion') < 0.04)) {
+			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
  				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
 			} # if
 			$nzbHandlingUsr = array_merge($nzbHandlingTpl, $user['prefs']['nzbhandling']);
