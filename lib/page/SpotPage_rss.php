@@ -15,7 +15,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc

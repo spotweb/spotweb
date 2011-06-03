@@ -153,7 +153,7 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
 <?php 
-	$nzbHandling = $this->_settings->get('nzbhandling');
+	$nzbHandling = $currentSession['user']['prefs']['nzbhandling'];
 	$sabnzbd = $nzbHandling['sabnzbd']; 
 	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
 	echo "<input class='apikey' type='hidden' value='".$apikey."'>";

@@ -5,19 +5,18 @@ class NzbHandler_Runcommand extends NzbHandler_abs
 	private $_localDir = null;
 	private $_cmdToRun = null;
 	
-	function __construct(SpotSettings $settings)
+	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
-		parent::__construct($settings, 'Runcommand', 'Run');
+		parent::__construct($settings, 'Runcommand', 'Run', $nzbHandling);
 
 		# als het commando leeg is, gooi een exception anders geeft php een warning
-		$nzbhandling = $settings->get('nzbhandling');
-		$this->_cmdToRun = $nzbhandling['command'];
+		$this->_cmdToRun = $nzbHandling['command'];
 		if (empty($this->_cmdToRun))
 		{
 			throw new Exception("command in handler is leeg maar 'runcommand' gekozen!");
 		} # if
 
-		$this->_localDir = $nzbhandling['local_dir'];
+		$this->_localDir = $nzbHandling['local_dir'];
 		if (empty($this->_localDir))
 		{
 			throw new InvalidLocalDirException("Unable to save NZB file, local dir in config is empty");
