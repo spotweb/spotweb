@@ -151,6 +151,7 @@ try {
 		case 'newznabapi' : {
 			$page = new SpotPage_newznabapi($db, $settings, $currentSession,
 					Array('t' => $req->getDef('t', ''),
+						  'messageid' => $req->getDef('id', ''),
 						  'apikey' => $req->getDef('apikey', ''),
 						  'q' => $req->getDef('q', ''),
 						  'limit' => $req->getDef('limit', ''),
