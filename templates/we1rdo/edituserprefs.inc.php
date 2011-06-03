@@ -20,7 +20,7 @@ if (empty($edituserprefsresult)) {
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
 	<input type="hidden" name="userid" value="<?php echo $spotuser['userid']; ?>">
 	
-	<div id="edituserpreferencetabs">
+	<div id="edituserpreferencetabs" class="ui-tabs">
 		<ul>
 			<li><a href="#edituserpreftab-1"><span>Algemeen</span></a></li>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, '')) { ?>
@@ -34,7 +34,7 @@ if (empty($edituserprefsresult)) {
 		<!-- [ ] Index filter -->
 		<!-- [ ] Filters ? -->
 
-		<div id="edituserpreftab-1">
+		<div id="edituserpreftab-1" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
 					<dt><label for="edituserprefsform[perpage]">Aantal items per pagina?</label></dt>
@@ -112,37 +112,32 @@ if (empty($edituserprefsresult)) {
 
 		
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, '')) { ?>
-		<div id="edituserpreftab-2">
+		<div id="edituserpreftab-2" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
 					<!-- NZBHANDLING -->
 					<dt><label for="edituserprefsform[nzbhandling][action]">Wat moeten we met NZB files doen?</label></dt>
 					<dd>
-						<select name="edituserprefsform[nzbhandling][action]">
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "disable") { echo 'selected="selected"'; } ?> value="disable">Geen integratie met download client</option>
+						<select id="nzbhandlingselect" name="edituserprefsform[nzbhandling][action]">
+							<option data-fields="" <?php if ($edituserprefsform['nzbhandling']['action'] == "disable") { echo 'selected="selected"'; } ?> value="disable">Geen integratie met download client</option>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd')) { ?>
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "push-sabnzbd") { echo 'selected="selected"'; } ?> value="push-sabnzbd">Roep sabnzbd+ aan via HTTP door SpotWeb</option>
+							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "push-sabnzbd") { echo 'selected="selected"'; } ?> value="push-sabnzbd">Roep sabnzbd+ aan via HTTP door SpotWeb</option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "client-sabnzbd") { echo 'selected="selected"'; } ?> value="client-sabnzbd">Roep sabnzbd+ aan via de users' browser</option>
+							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "client-sabnzbd") { echo 'selected="selected"'; } ?> value="client-sabnzbd">Roep sabnzbd+ aan via de users' browser</option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'save')) { ?>
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "save") { echo 'selected="selected"'; } ?> value="save">Save de file op disk</option>
+							<option data-fields="localdir" <?php if ($edituserprefsform['nzbhandling']['action'] == "save") { echo 'selected="selected"'; } ?> value="save">Save de file op disk</option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'runcommand')) { ?>
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "runcommand") { echo 'selected="selected"'; } ?> value="runcommand">Save de file op disk en roep een commando aan</option>
+							<option data-fields="localdir runcommand" <?php if ($edituserprefsform['nzbhandling']['action'] == "runcommand") { echo 'selected="selected"'; } ?> value="runcommand">Save de file op disk en roep een commando aan</option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbget')) { ?>
-							<option <?php if ($edituserprefsform['nzbhandling']['action'] == "nzbget") { echo 'selected="selected"'; } ?> value="nzbget">Roep NZBGet aan via HTTP door SpotWeb</option>
+							<option data-fields="nzbget" <?php if ($edituserprefsform['nzbhandling']['action'] == "nzbget") { echo 'selected="selected"'; } ?> value="nzbget">Roep NZBGet aan via HTTP door SpotWeb</option>
 <?php } ?>
 						</select>
 					</dd>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'save') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'runcommand')) { ?>
-					<dt><label for="edituserprefsform[nzbhandling][local_dir]">Waar moet de file opgeslagen worden?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][local_dir]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['local_dir']); ?>"></dd>
-<?php } ?>
-					
 					<dt><label for="edituserprefsform[nzbhandling][prepare_action]">Wat moeten we met meerdere NZB files doen?</label></dt>
 					<dd>
 						<select name="edituserprefsform[nzbhandling][prepare_action]">
@@ -150,32 +145,47 @@ if (empty($edituserprefsresult)) {
 							<option <?php if ($edituserprefsform['nzbhandling']['prepare_action'] == "zip") { echo 'selected="selected"'; } ?> value="zip">Comprimeer de NZB files in 1 zip bestand</option>
 						</select>
 					</dd>
-					
-					<dt><label for="edituserprefsform[nzbhandling][command]">Welk programma moet uitgevoerd worden?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][command]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['command']); ?>"></dd>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'save') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'runcommand')) { ?>
+					<fieldset id="nzbhandling-fieldset-localdir">
+						<dt><label for="edituserprefsform[nzbhandling][local_dir]">Waar moet de file opgeslagen worden?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][local_dir]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['local_dir']); ?>"></dd>
+					</fieldset>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'runcommand')) { ?>
+					<fieldset id="nzbhandling-fieldset-runcommand">
+						<dt><label for="edituserprefsform[nzbhandling][command]">Welk programma moet uitgevoerd worden?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][command]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['command']); ?>"></dd>
+					</fieldset>
+<?php } ?>
 
 					<!-- Sabnzbd -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
-					<dt><label for="edituserprefsform[nzbhandling][sabnzbd][host]">Host name van sabnzbd?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['host']); ?>"></dd>
+					<fieldset id="nzbhandling-fieldset-sabnzbd">
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][host]">Host name van sabnzbd?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['host']); ?>"></dd>
 
-					<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]">API key voor sabnzbd?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['apikey']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]">API key voor sabnzbd?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['apikey']); ?>"></dd>
+					</fieldset>
 <?php } ?>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbget')) { ?>
-					<!-- NZBget -->
-					<dt><label for="edituserprefsform[nzbhandling][nzbget][host]">Host name van nzbget?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['host']); ?>"></dd>
+					<fieldset id="nzbhandling-fieldset-nzbget">
+						<!-- NZBget -->
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][host]">Host name van nzbget?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['host']); ?>"></dd>
 
-					<dt><label for="edituserprefsform[nzbhandling][nzbget][port]">Port nummer voor nzbget?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['port']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][port]">Port nummer voor nzbget?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['port']); ?>"></dd>
 
-					<dt><label for="edituserprefsform[nzbhandling][nzbget][username]">Username voor nzbget?</label></dt>
-					<dd><input type="input" name="edituserprefsform[nzbhandling][nzbgetusername]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['username']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][username]">Username voor nzbget?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][username]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['username']); ?>"></dd>
 
-					<dt><label for="edituserprefsform[nzbhandling][nzbget][password]">Password voor nzbget?</label></dt>
-					<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][password]">Password voor nzbget?</label></dt>
+						<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>
+					</fieldset>
 <?php } ?>
 				</dl>
 			</fieldset>
