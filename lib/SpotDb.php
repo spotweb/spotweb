@@ -216,10 +216,10 @@ class SpotDb {
 						 JOIN usersettings s ON (u.id = s.userid)
 						 WHERE u.id = %d AND NOT DELETED",
 				 Array( (int) $userid ));
+
 		if (!empty($tmp)) {
 			# Other preferences worden serialized opgeslagen in de database
 			$tmp[0]['prefs'] = unserialize($tmp[0]['prefs']);
-			
 			return $tmp[0];
 		} # if
 		
