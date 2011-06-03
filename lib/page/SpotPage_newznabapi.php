@@ -66,7 +66,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = $tvSearch;
+			$search['value'][] = "Titel:" . $tvSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
@@ -80,7 +80,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<title>(.*?) \(.*?<\/title>/ms', $imdb_content, $movieTitle);
-			$search['value'][] = "Titel:\"" . trim($movieTitle[1]) . "\"";
+			$search['value'][] = "Titel:" . trim($movieTitle[1]);
 		} elseif (!empty($this->_params['q'])) {
 			$search['value'][] = "Titel:" . $this->_params['q'];
 		} # elseif
