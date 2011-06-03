@@ -179,6 +179,9 @@ class SpotUserUpgrader {
 		# We voegen nog extra security toe voor de logged in user, deze mag gebruik
 		# maken van een aantal paginas via enkel api authenticatie
 		if ($this->_settings->get('securityversion') < 0.02) {
+			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_consume_api . " AND 
+								objectid in ('rss', 'newznabapi', 'getnzb', 'getspot')");
+			
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'rss')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'newznabapi')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzb')");
