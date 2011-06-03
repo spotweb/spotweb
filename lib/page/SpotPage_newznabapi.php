@@ -52,21 +52,23 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(300);
 			} # if
 			$showTitle = $dom->getElementsByTagName('showname');
-			$tvSearch = "Titel:\"" . trim($showTitle->item(0)->nodeValue) . "\"";
+			$tvSearch = $showTitle->item(0)->nodeValue;
 
+			$epSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
-				$tvSearch .= (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
+				$epSearch = (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 			} # if
 
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
-				$tvSearch .= (is_numeric($this->_params['ep'])) ? ' AND E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['ep'];
+				$episode = (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
+				$epSearch .= (!empty($epSearch)) ? $episode : ' AND ' . $episode;
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = "Titel:" . $tvSearch;
+			$search['value'][] = "Titel:" . trim($tvSearch) . $epSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
@@ -103,7 +105,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$limit,
 						$parsedSearch,
 						array('field' => 'stamp', 'direction' => 'DESC'));
-
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
