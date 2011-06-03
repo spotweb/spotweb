@@ -20,6 +20,7 @@ class SpotSettingsUpgrader {
 		$this->createRsaKeys();
 		$this->createXsrfSecret();
 		$this->setIfNot('cookie_expires', 30);
+		$this->setIfNot('sabnzbdurltpl', 'http://$SABNZBDHOST/sabnzbd/api?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SABNZBDCAT&apikey=$APIKEY&output=text');
 		$this->updateSettingsVersion();
 	} # update()
 	

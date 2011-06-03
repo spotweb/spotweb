@@ -7,12 +7,11 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	private $_url = null;
 	private $_credentials = null;
 
-	function __construct(SpotSettings $settings)
+	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
-		parent::__construct($settings, 'NZBGet', 'D/L');
+		parent::__construct($settings, 'NZBGet', 'D/L', $nzbHandling);
 				
-		$nzbhandling = $settings->get('nzbhandling');
-		$nzbget = $nzbhandling['nzbget'];
+		$nzbget = $nzbHandling['nzbget'];
 		$this->_host = $nzbget['host'];
 		$this->_timeout = $nzbget['timeout'];
 		$this->_url = "http://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";

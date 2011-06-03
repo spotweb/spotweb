@@ -37,7 +37,7 @@
 									<input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
 							</th>
 <?php } ?>						
-<?php $nzbHandlingTmp = $settings->get('nzbhandling'); 
+<?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
 							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Open "SabNZBd paneel"'></a></th>
 <?php } ?>						
@@ -47,7 +47,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 <?php
 	if (count($spots) == 0) {
 		$colSpan = 5;
-		$nzbHandlingTmp = $settings->get('nzbhandling'); 
+		$nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
