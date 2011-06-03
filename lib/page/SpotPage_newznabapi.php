@@ -112,7 +112,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # search
 
 	function showResults($spots, $offset, $outputtype) {
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
 		if ($outputtype == "json") {
 			echo json_encode($spots); //TODO:make that a more specific array of data to return rather than resultset

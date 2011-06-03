@@ -3,12 +3,14 @@ abstract class NzbHandler_abs
 {
 	protected $_name = "Abstract";
 	protected $_nameShort = "Abstract";
-	
+
+	protected $_nzbHandling = null;
 	protected $_settings = null;
 	
-	function __construct($settings, $name, $nameShort)
+	function __construct($settings, $name, $nameShort, array $nzbHandling)
 	{
 		$this->_settings = $settings;
+		$this->_nzbHandling = $nzbHandling;
 		$this->_name = $name;
 		$this->_nameShort = $nameShort;
 	} # __construct
@@ -53,8 +55,7 @@ abstract class NzbHandler_abs
 	public function generateNzbHandlerUrl($spot)
 	{
 		$spotwebUrl = $this->_settings->get('spotweburl');
-		$nzbHandling = $this->_settings->get('nzbhandling');
-		$action = $nzbHandling['action'];
+		$action = $this->_nzbHandling['action'];
 		$url = $spotwebUrl . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
 		
 		return $url;
@@ -87,7 +88,6 @@ abstract class NzbHandler_abs
 		$category = $this->convertCatToSabnzbdCat($fullspot);
 		
 		# add category to path als dat gevraagd is
-		$path = str_replace('$SANZBDCAT', $this->cleanForFileSystem($category), $path);
 		$path = str_replace('$SABNZBDCAT', $this->cleanForFileSystem($category), $path);
 
 		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
@@ -127,9 +127,8 @@ abstract class NzbHandler_abs
 	{
 		# nu we alle nzb files hebben, trekken we de 'file' secties eruit, 
 		# en plakken die in onze overkoepelende nzb
-		$nzbHandling = $this->_settings->get('nzbhandling');
 		$result = array();
-		switch($nzbHandling['prepare_action'])
+		switch($this->_nzbHandling['prepare_action'])
 		{
 			case 'zip'	: {
 				$result['nzb'] = $this->zipNzbList($nzblist); 

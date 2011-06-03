@@ -5,12 +5,11 @@ class NzbHandler_Save extends NzbHandler_abs
 {
 	private $_localDir = null;
 	
-	function __construct(SpotSettings $settings)
+	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'Save', 'Save');
 		
-		$nzbhandling = $settings->get('nzbhandling');
-		$this->_localDir = $nzbhandling['local_dir'];
+		$this->_localDir = $nzbHandling['local_dir'];
 		if (empty($this->_localDir))
 		{
 			throw new InvalidLocalDirException("Unable to save NZB file, local dir in config is empty");

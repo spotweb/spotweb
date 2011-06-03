@@ -1,9 +1,9 @@
 <?php
 class NzbHandler_Disable extends NzbHandler_abs
 {
-	function __construct(SpotSettings $settings)
+	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
-		parent::__construct($settings, 'Disable', 'Disable');
+		parent::__construct($settings, 'Disable', 'Disable', $nzbHandling);
 		
 	} # __construct
 	
