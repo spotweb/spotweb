@@ -128,8 +128,13 @@
 	<?php } ?>
 
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
-					<h4 class="dropdown"><a class="editUserPrefs down" onclick="openOverlay(null, '?page=edituserprefs')">Voorkeuren wijzigen</a></h4>
+					<h4 class="dropdown"><a class="editUserPrefs down" href="?page=edituserprefs">Voorkeuren wijzigen</a></h4>
 					<div class="editUserPrefs"></div>
+	<?php } ?>
+
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, '')) { ?>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=listusers">Gebruikerslijst</a></h4>
+					<div class="listUsers"></div>
 	<?php } ?>
 					
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
