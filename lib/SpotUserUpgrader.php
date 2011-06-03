@@ -148,10 +148,12 @@ class SpotUserUpgrader {
 													  'username' => '',
 													  'password' => '')
 									);
-			if (!isset($user['prefs']['nzbhandling'])) {
-				$user['prefs']['nzbhandling'] = array();
+			if ((!isset($user['prefs']['nzbhandling'])) | ($this->_settings->get('securityversion') < 0.04)) {
+ 				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
 			} # if
-			$nzbHandlingUsr = array_merge_recursive($nzbHandlingTpl, $user['prefs']['nzbhandling']);
+			$nzbHandlingUsr = array_merge($nzbHandlingTpl, $user['prefs']['nzbhandling']);
+			$nzbHandlingUsr['sabnzbd'] = array_merge($nzbHandlingTpl['sabnzbd'], $user['prefs']['nzbhandling']['sabnzbd']);
+			$nzbHandlingUsr['nzbget'] = array_merge($nzbHandlingTpl['nzbget'], $user['prefs']['nzbhandling']['nzbget']);
 			
 			# en deze gemergede array zetten we /altijd/ omdat anders
 			# subkeys niet goed mee zouden kunnen
