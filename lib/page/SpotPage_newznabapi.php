@@ -224,7 +224,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$server->setAttribute('version', '0.1');
 		$server->setAttribute('title', 'Spotweb');
 		$server->setAttribute('strapline', 'Spotweb API Index');
-		$server->setAttribute('email', 'spotweb@example.com (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')');
+		$server->setAttribute('email', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')');
 		$server->setAttribute('url', $this->_settings->get('spotweburl'));
 		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
 		$caps->appendChild($server);
