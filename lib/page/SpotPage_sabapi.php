@@ -6,7 +6,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_use_sabapi, '');
 		
 		parse_str($_SERVER['QUERY_STRING'], $request);
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 		$sabnzbd = $nzbhandling['sabnzbd'];
 	
 		if ($nzbhandling['action'] != 'push-sabnzbd' && $nzbhandling['action'] != 'client-sabnzbd') {

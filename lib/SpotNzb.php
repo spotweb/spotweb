@@ -40,7 +40,7 @@ class SpotNzb {
 
 		# send nzblist to NzbHandler plugin
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action);
+		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $userSession['user']['prefs']['nzbhandling']);
 
 		$nzbHandler->processNzb($fullSpot, $nzbList);
 
