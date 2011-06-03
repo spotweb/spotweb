@@ -41,7 +41,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$doc->appendChild($rss);
 
 		$channel = $doc->createElement('channel');
-		$channel->appendChild($doc->createElement('generator', 'Spotweb'));
+		$channel->appendChild($doc->createElement('generator', 'Spotweb v' . SPOTWEB_VERSION));
 		$channel->appendChild($doc->createElement('language', 'nl'));
 		$channel->appendChild($doc->createElement('title', 'Spotweb'));
 		$channel->appendChild($doc->createElement('description', 'Spotweb RSS Feed'));
