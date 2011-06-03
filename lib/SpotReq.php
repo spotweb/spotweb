@@ -3,10 +3,12 @@
 class SpotReq {
     static private $_merged = array(); 
 	static private $_xsrfsecret = '';
+	static private $_settings = null;
     
     function initialize($settings) {
 		self::$_merged = array_merge($_POST, $_GET);
 		self::$_xsrfsecret = $settings->get('xsrfsecret');
+		self::$_settings = $settings;
     }
     
     function get($varName, $escapeType = 'none') {
@@ -21,10 +23,8 @@ class SpotReq {
 		if (isset($_POST[$formName])) {
 			$form = $_POST[$formName]; 
 		} else {
-			return array();
+			return array('http_referer' => $this->getHttpReferer());
 		} # else
-		
-		$form = $this->cleanup($form);
 		
 		foreach($submitNames as $submitName) {
 			if (isset($form[$submitName])) {
@@ -42,8 +42,22 @@ class SpotReq {
 			} # if
 		} # foreach
 		
+		# Vul altijd een referer in als die nog niet ingevuld is
+		if (!isset($form['http_referer'])) {
+			$form['http_referer'] = $this->getHttpReferer();
+		} # if
+		
 		return $form;
 	} # getForm
+	
+	function getHttpReferer() {
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			return $_SERVER['HTTP_REFERER'];
+		} else {
+			return self::$_settings->get('spotweburl');
+		} # else
+	} # getHttpReferer
+	
     
 	function cleanup($var) {
 		if (is_array($var)) {
