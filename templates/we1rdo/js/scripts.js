@@ -64,24 +64,25 @@ function openSpot(id,url) {
 
 // Open een URL in de overlay div
 function openOverlay(id,url) {
-	if($("#overlay").is(":visible")) {
-		$("#overlay").addClass('notrans');
+	if($("#fullscreenoverlay").is(":visible")) {
+		$("#fullscreenoverlay").addClass('notrans');
 	}
 	
 	// Toon een "loading" div
-	$("#overlay").addClass('loading');
-	$("#overlay").empty().show();
+	$("#fullscreenoverlay").addClass('loading');
+	$("#fullscreenoverlay").empty().show();
 	
-	$("#overlay").load(url, function() {
+	$("#fullscreenoverlay").load(url, function() {
 		// vervolgens hiden we de gehele container
 		$("div.container").removeClass("visible").addClass("hidden");
 		
 		// en halen we het loading en notrans weg zodat onze div zichtbaar is
-		$("#overlay").removeClass('loading notrans');
+		$("#fullscreenoverlay").removeClass('loading notrans');
+		$("body").addClass('fullscreen');
 
 		// nu moeten we alleen nog even de close er aanvast plakken
 		$("a.closeDetails").click(function(){ 
-			closeOverlay();
+			closeFullscreenOverlay();
 		});
 		
 	});
@@ -99,6 +100,12 @@ function closeOverlay() {
 	$("#overlay").hide();
 	$("#details").remove();
 } // closeOverlay
+
+// En maak de fullscreen overlay onzichtbaar
+function closeFullscreenOverlay() {
+	$("body").removeClass("fullscreen");
+	$("#fullscreenoverlay").hide();
+} // closeFullscreenOverlay
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {

@@ -69,11 +69,19 @@ class SpotPage_edituser extends SpotPage_Abs {
 
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+			# sta niet toe, dat de anonymous user gewijzigd wordt
 			if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 				$formMessages['errors'][] = array('edituser_cannoteditanonymous', array());
 				$editResult = array('result' => 'failure');
 			} # if
+
+			# sta niet toe, dat de admin user gewist wordt
+			if (($spotUser['userid'] <= SPOTWEB_ADMIN_USERID) && ($formAction == 'delete')) {
+				$formMessages['errors'][] = array('edituser_cannotremovesystemuser', array());
+				$editResult = array('result' => 'failure');
+			} # if
 		} # if
+
 
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
