@@ -125,14 +125,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 						# Zijn er ook groupmembership lijsten meegestuurd? Zo ja, 
 						# en als de user het recht heeft, update die dan ook
 						if (isset($this->_editUserForm['grouplist'])) {
-							# Haal de dummy group weg
-							unset($this->_editUserForm['grouplist']['dummy']);
-							
 							# vraag de lijst met usergroepen op
 							$groupList = array();
-							for($i = 0; $i < count($this->_editUserForm['grouplist']); $i++) {
-								$groupList[] = array('groupid' => $this->_editUserForm['grouplist'][$i],
-													 'prio' => $i);
+							foreach($this->_editUserForm['grouplist'] as $val) {
+								if ($val != 'dummy') {
+									$groupList[] = array('groupid' => $val,
+														'prio' => count($groupList));
+								} # if
 							} # for
 							
 							# zorg er voor dat er meer dan 1 groep overblijft
