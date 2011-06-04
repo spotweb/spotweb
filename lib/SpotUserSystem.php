@@ -276,6 +276,13 @@ class SpotUserSystem {
 	} # addUser()
 
 	/*
+	 * Update een gebruikers' group membership
+	 */
+	function setUserGroupList($user, $groupList) {
+		$this->_db->setUserGroupList($user['userid'], $groupList);
+	} # setUserGroupList
+	 
+	/*
 	 * Update een gebruikers' password
 	 */
 	function setUserPassword($user) {

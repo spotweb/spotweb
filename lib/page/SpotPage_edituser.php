@@ -14,7 +14,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	 * er andere records geupdate kunnen worden
 	 */
 	function cleanseEditForm($editForm) {
-		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2');
+		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist');
 		foreach($editForm as $key => $value) {
 			if (in_array($key, $validFields) === false) {
 				unset($editForm[$key]);
@@ -120,6 +120,28 @@ class SpotPage_edituser extends SpotPage_Abs {
 						# het wachtwoord ook
 						if (!empty($spotUser['newpassword1'])) {
 							$spotUserSystem->setUserPassword($spotUser);
+						} # if
+						
+						# Zijn er ook groupmembership lijsten meegestuurd? Zo ja, 
+						# en als de user het recht heeft, update die dan ook
+						if (isset($this->_editUserForm['grouplist'])) {
+							# Haal de dummy group weg
+							unset($this->_editUserForm['grouplist']['dummy']);
+							
+							# vraag de lijst met usergroepen op
+							$groupList = array();
+							for($i = 0; $i < count($this->_editUserForm['grouplist']); $i++) {
+								$groupList[] = array('groupid' => $this->_editUserForm['grouplist'][$i],
+													 'prio' => $i);
+							} # for
+							
+							# zorg er voor dat er meer dan 1 groep overblijft
+							if (count($groupList) < 1) {
+								$formMessages['errors'][] = array('edituser_usermusthaveonegroup', array());
+								$editResult = array('result' => 'failure');
+							} else {
+								$spotUserSystem->setUserGroupList($spotUser, $groupList);
+							} # if
 						} # if
 
 						# als het toevoegen van de user gelukt is, laat het weten
