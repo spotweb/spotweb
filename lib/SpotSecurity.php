@@ -51,6 +51,7 @@ class SpotSecurity {
 	const spotsec_edit_other_users			= 25;	//
 	const spotsec_view_spotcount_total		= 26;	//
 	const spotsec_delete_user				= 27;
+	const spotsec_edit_groupmembership		= 28;
 			
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
