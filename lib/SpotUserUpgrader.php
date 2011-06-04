@@ -121,10 +121,9 @@ class SpotUserUpgrader {
 			$user = $this->_db->getUser($user['userid']);
 
 			# set the users' preferences
-			$this->setSettingIfNot($user['prefs'], 'perpage', '50');
+			$this->setSettingIfNot($user['prefs'], 'perpage', '25');
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
 			$this->setSettingIfNot($user['prefs'], 'template', 'we1rdo');
-			$this->setSettingIfNot($user['prefs'], 'perpage', '50');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_seenlist', true);
 			$this->setSettingIfNot($user['prefs'], 'auto_markasread', true);
