@@ -50,7 +50,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 				case 'edit'	: {
 					# Er mogen geen user preferences doorgegeven worden, welke niet in de anonuser preferences staan,
 					# een merge met de anonuser preferences kan niet, omdat dat niet opgegeven checkboxes (die komen gewoon
-					# niet door), op true of false zou zetten naar gelang de defaul parameter en dus het formulier zou
+					# niet door), op true of false zou zetten naar gelang de default parameter en dus het formulier zou
 					# negeren.
 					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
 					
