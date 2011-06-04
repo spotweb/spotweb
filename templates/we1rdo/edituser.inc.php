@@ -36,6 +36,23 @@ if (empty($editresult)) {
 			<dd><input class="withicon" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
 			<input type="image" src="images/icons/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key genereren"></dd>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { ?>
+			<table>
+				<thead>
+					<tr> <th> Group </th> <th> Member </th>
+				</thead>
+				
+				<tbody>
+<?php
+	foreach($groupMembership as $secGroup) {
+?>
+					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> </td> </tr>
+<?php } ?>
+
+				</tbody>
+			</table>
+<?php } ?>
+
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
 <?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID) { ?>

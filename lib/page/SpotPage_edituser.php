@@ -25,6 +25,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	} # cleanseEditForm
 
 	function render() {
+		$groupMembership = array();
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
@@ -49,6 +50,11 @@ class SpotPage_edituser extends SpotPage_Abs {
 		if ($spotUser === false) {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
+		} # if
+		
+		# Vraag group membership van deze user op
+		if ($spotUser != false) {
+			$groupMembership = $this->_db->getGroupList($spotUser['userid']);
 		} # if
 
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
@@ -143,7 +149,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 		#- display stuff -#
 		$this->template('edituser', array('edituserform' => $spotUser,
 										    'formmessages' => $formMessages,
-											'editresult' => $editResult));
+											'editresult' => $editResult,
+											'groupMembership' => $groupMembership));
 	} # render
 	
 } # class SpotPage_edituser
