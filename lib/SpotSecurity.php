@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.05');
+define('SPOTWEB_SECURITY_VERSION', '0.06');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 
@@ -50,6 +50,7 @@ class SpotSecurity {
 	const spotsec_consume_api				= 24;	//
 	const spotsec_edit_other_users			= 25;	//
 	const spotsec_view_spotcount_total		= 26;	//
+	const spotsec_delete_user				= 27;
 			
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
