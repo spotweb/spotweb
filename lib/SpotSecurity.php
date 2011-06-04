@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.04');
+define('SPOTWEB_SECURITY_VERSION', '0.05');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 

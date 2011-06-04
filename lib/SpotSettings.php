@@ -43,6 +43,15 @@ class SpotSettings {
 	} # get
 
 	/*
+	 * Unset een bepaalde waarde
+	 */
+	function remove($name) {
+		unset(self::$_settings[$name]);
+		
+		$this->_db->removeSetting($name);
+	} # remove
+	
+	/*
 	 * Set de waarde van de setting, maakt hem ook
 	 * meteen persistent dus mee oppassen
 	 */

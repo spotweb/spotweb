@@ -11,8 +11,8 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 
 		# prepare sabnzbd url
 		# substitute variables that are not download specific
-		$this->_url = $settings->get('sabnzbdurltpl');
-		$this->_url = str_replace('$SABNZBDHOST', $sabnzbd['host'], $this->_url);
+		$this->_url = $settings->get('sabnzbdurl');
+		$this->_url = str_replace('$SABNZBDURL', $sabnzbd['url'], $this->_url);
 		$this->_url = str_replace('$APIKEY', $sabnzbd['apikey'], $this->_url);
 		$this->_url = str_replace('$SABNZBDMODE', 'addurl', $this->_url);
 	} # __construct

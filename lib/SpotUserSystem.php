@@ -332,6 +332,15 @@ class SpotUserSystem {
 			$errorList[] = array('validateuser_invalidpreference', array('template'));
 		} # if
 		
+		# als er een sabnzbd host opgegeven is, moet die geldig zijn
+		if ( ($prefs['nzbhandling']['action'] == 'push-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
+			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
+			
+			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
+				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
+			} # if
+		} # if
+		
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
 		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;

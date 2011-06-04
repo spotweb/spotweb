@@ -7,11 +7,11 @@ if (!empty($edituserprefsresult)) {
 	
 	if ($edituserprefsresult['result'] == 'success') {
 		$tplHelper->redirect($http_referer);
+		return ;
 	} # if
 } # if
 
-if (empty($edituserprefsresult)) {
-	include "includes/form-messages.inc.php";
+include "includes/form-messages.inc.php";
 ?>
 </div>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
@@ -163,8 +163,8 @@ if (empty($edituserprefsresult)) {
 					<!-- Sabnzbd -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
 					<fieldset id="nzbhandling-fieldset-sabnzbd">
-						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][host]">Host name van sabnzbd?</label></dt>
-						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['host']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]">URL naar sabnzbd (inclusief HTTP en directory waar sabnzbd geinstalleerd is)?</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][url]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['url']); ?>"></dd>
 
 						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]">API key voor sabnzbd?</label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['apikey']); ?>"></dd>
@@ -209,4 +209,3 @@ if (empty($edituserprefsresult)) {
 
 <?php
 	require_once "includes/footer.inc.php";
-}
