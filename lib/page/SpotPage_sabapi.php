@@ -34,7 +34,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		} # foreach
 		$request = implode('&amp;', $apicall);
 		
-		$output = @file_get_contents('http://' . $sabnzbd['host'] . '/sabnzbd/api?' . $request . '&apikey=' . $sabnzbd['apikey']);
+		$output = @file_get_contents($sabnzbd['url'] . 'api?' . $request . '&apikey=' . $sabnzbd['apikey']);
 		echo $output;
 	} # render
 

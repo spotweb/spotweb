@@ -87,6 +87,13 @@ class SpotDb {
 	} # addPostedComment
 
 	/*
+	 * Verwijder een setting
+	 */
+	function removeSetting($name) {
+		$this->_conn->exec("DELETE FROM settings WHERE name = '%s'", Array($name));
+	} # removeSetting
+	
+	/*
 	 * Update setting
 	 */
 	function updateSetting($name, $value, $serialized) {

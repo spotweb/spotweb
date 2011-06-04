@@ -140,7 +140,7 @@ class SpotUserUpgrader {
 									'local_dir' => '/tmp',
 									'prepare_action' => 'zip',
 									'command' => '',
-									'sabnzbd' => array('host' => '',
+									'sabnzbd' => array('url' => '',
 													   'apikey' => ''),
 									'nzbget' => array('host' => '',
 													  'port' => '',
@@ -164,6 +164,12 @@ class SpotUserUpgrader {
 			# subkeys niet goed mee zouden kunnen
 			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
 
+			# Upgrade de sabnzbd api host setting
+			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.05)) {
+				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/sabnzbd/';
+				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
+			} # if
+			
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
