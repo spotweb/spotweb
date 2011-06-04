@@ -1,11 +1,11 @@
 <?php
 class NzbHandler_Factory
 {
-	public static function build(SpotSettings $settings, array $nzbHandling)
+	public static function build(SpotSettings $settings, $action, array $nzbHandling)
 	{
 		# Nieuwe handlers voegen we expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
-		switch ($nzbHandling['action'])
+		switch ($action) 
 		{
 			case 'disable'			: $handler = new NzbHandler_Disable($settings, $nzbHandling); break;
 			case 'save'	  			: $handler = new NzbHandler_Save($settings, $nzbHandling); break;

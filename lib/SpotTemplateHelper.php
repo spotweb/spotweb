@@ -29,7 +29,9 @@ class SpotTemplateHelper {
 		# dat we voor iedere spot een nieuw object initialiseren, een property
 		# zou mooier zijn, maar daar is PHP dan weer te traag voor
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $currentSession['user']['prefs']['nzbhandling']);
+		$this->_nzbHandler = $nzbHandlerFactory->build($settings, 
+					$currentSession['user']['prefs']['nzbhandling']['action'], 
+					$currentSession['user']['prefs']['nzbhandling']);
 	} # ctor
 
 	/*
