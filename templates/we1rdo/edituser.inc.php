@@ -39,7 +39,9 @@ if (empty($editresult)) {
 			<dd>
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="Bijwerken">
 <?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_delete_user, '')) { ?>
 				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="Wis gebruiker">
+<?php } ?>
 <?php } ?>
 				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="Wis alle sessies">
 			</dd>
