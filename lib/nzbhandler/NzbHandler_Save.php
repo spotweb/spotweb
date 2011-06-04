@@ -7,7 +7,7 @@ class NzbHandler_Save extends NzbHandler_abs
 	
 	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
-		parent::__construct($settings, 'Save', 'Save');
+		parent::__construct($settings, 'Save', 'Save', $nzbHandling);
 		
 		$this->_localDir = $nzbHandling['local_dir'];
 		if (empty($this->_localDir))
