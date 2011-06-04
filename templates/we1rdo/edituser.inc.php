@@ -37,6 +37,8 @@ if (empty($editresult)) {
 			<input type="image" src="images/icons/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key genereren"></dd>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { ?>
+			<!-- Dummy grouplist variable om zeker te zijn dat de grouplist altijd gepost wordt -->
+			<input type="hidden" name="edituserform[grouplist][]" value="dummy">
 			<table>
 				<thead>
 					<tr> <th> Group </th> <th> Member </th>
@@ -46,7 +48,7 @@ if (empty($editresult)) {
 <?php
 	foreach($groupMembership as $secGroup) {
 ?>
-					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> </td> </tr>
+					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>]" value="<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> </td> </tr>
 <?php } ?>
 
 				</tbody>
