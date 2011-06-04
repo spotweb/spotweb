@@ -43,15 +43,17 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# We vragen de anonymous user account op, omdat die z'n preferences gebruikt worden
 		# als basis.
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
-
-		# user preferences mergen met anonymous account
-		$spotUser['prefs'] = array_merge($anonUser['prefs'], $spotUser['prefs'], $this->_editUserPrefsForm);
-		$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($spotUser['prefs'], $anonUser['prefs']);
 		
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'edit'	: {
+					# Er mogen geen user preferences doorgegeven worden, welke niet in de anonuser preferences staan,
+					# een merge met de anonuser preferences kan niet, omdat dat niet opgegeven checkboxes (die komen gewoon
+					# niet door), op true of false zou zetten naar gelang de defaul parameter en dus het formulier zou
+					# negeren.
+					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
+					
 					# controleer en repareer alle preferences 
 					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
 
