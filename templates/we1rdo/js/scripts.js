@@ -6,7 +6,7 @@ $(function(){
 
 // createBaseURL
 function createBaseURL() {
-	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.pathname;
+	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.port+window.location.pathname;
 	return baseURL;
 }
 
