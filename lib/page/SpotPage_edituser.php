@@ -59,9 +59,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} elseif (isset($this->_editUserForm['submitdelete'])) {
 			$formAction = 'delete';
 			unset($this->_editUserForm['submitdelete']);
+			
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
 		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
 			$formAction = 'resetapi';
 			unset($this->_editUserForm['submitresetuserapi']);
+
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 		} elseif (isset($this->_editUserForm['removeallsessions'])) {
 			$formAction = 'removeallsessions';
 			unset($this->_editUserForm['removeallsessions']);

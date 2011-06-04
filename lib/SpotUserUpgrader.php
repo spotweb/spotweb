@@ -236,6 +236,13 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'runcommand')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'nzbget')");
 		} # if
+
+		# We voegen nog extra security toe voor de admin user, deze mag users wissen en
+		# groepen van users aanpassen
+		if ($this->_settings->get('securityversion') < 0.06) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_delete_user . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_groupmembership . ")");
+		} # if
 	} # updateSecurityGroups
 	
 	/*
