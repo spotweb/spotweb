@@ -723,6 +723,13 @@ class SpotTemplateHelper {
 	} # clearDownloadList
 	
 	/*
+	 * Converteert een permission id naar een string
+	 */
+	function permToString($perm) {
+		return $this->_spotSec->toHuman($perm);
+	} # permToString
+	
+	/*
 	 * Genereert een random string
 	 */
 	function getSessionCalculatedUserId() {

@@ -145,7 +145,8 @@ class SpotUserUpgrader {
 									'nzbget' => array('host' => '',
 													  'port' => '',
 													  'username' => '',
-													  'password' => '')
+													  'password' => '',
+													  'timeout' => 15)
 									);
 			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
  				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
@@ -168,6 +169,13 @@ class SpotUserUpgrader {
 			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.05)) {
 				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/';
 				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
+			} # if
+			
+			# Upgrade de sabnzbd api host setting
+			if ($this->_settings->get('securityversion') < 0.06) {
+				if (substr($user['prefs']['nzbhandling']['sabnzbd']['url'], -1 * strlen('/sabnzbd/')) == '/sabnzbd/') {
+					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
+				} # if				
 			} # if
 			
 			# update the user record in the database			

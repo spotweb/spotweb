@@ -1140,6 +1140,14 @@ class SpotDb {
 	} # verifyListType
 	
 	
+	/* 
+	 * Geeft de permissies terug van een bepaalde groep
+	 */
+	function getGroupPerms($groupId) {
+		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = %d",
+					Array($groupId));
+	} # getgroupPerms
+	
 	/*
 	 * Geeft permissies terug welke user heeft, automatisch in het formaat zoals
 	 * SpotSecurity dat heeft (maw - dat de rechtencheck een simpele 'isset' is om 

@@ -93,4 +93,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 		return array();
 	} # getStaticFiles 
 	
+	function getSecGroup($id) {
+		return $this->_db->getGroupPerms($id);
+	} # getSecGroup
 } # class CustomTplHelper
