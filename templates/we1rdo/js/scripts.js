@@ -6,7 +6,7 @@ $(function(){
 
 // createBaseURL
 function createBaseURL() {
-	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.pathname;
+	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.port+window.location.pathname;
 	return baseURL;
 }
 
@@ -309,6 +309,18 @@ function spotNav(direction) {
 // Edit user preference tabs
 $(document).ready(function() {
 	$("#edituserpreferencetabs").tabs();
+	
+	$('#nzbhandlingselect').change(function() {
+	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
+	   
+	   var selOpt = $(this).find('option:selected').data('fields').split(' ');
+	   $.each(selOpt, function(index) {
+			$('#nzbhandling-fieldset-' + selOpt[index]).show();
+		}); // each
+	});	// change
+	
+	// roep de change handler aan zodat alles goed staat
+	$('#nzbhandlingselect').change();
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)

@@ -276,6 +276,13 @@ class SpotUserSystem {
 	} # addUser()
 
 	/*
+	 * Update een gebruikers' group membership
+	 */
+	function setUserGroupList($user, $groupList) {
+		$this->_db->setUserGroupList($user['userid'], $groupList);
+	} # setUserGroupList
+	 
+	/*
 	 * Update een gebruikers' password
 	 */
 	function setUserPassword($user) {
@@ -332,13 +339,22 @@ class SpotUserSystem {
 			$errorList[] = array('validateuser_invalidpreference', array('template'));
 		} # if
 		
+		# als er een sabnzbd host opgegeven is, moet die geldig zijn
+		if ( ($prefs['nzbhandling']['action'] == 'push-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
+			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
+			
+			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
+				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
+			} # if
+		} # if
+		
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
-		$prefs['count_newspots'] = ($prefs['count_newspots'] == "on") ? true : false;
-		$prefs['keep_seenlist'] = ($prefs['keep_seenlist'] == "on") ? true : false;
-		$prefs['auto_markasread'] = ($prefs['auto_markasread'] == "on") ? true : false;
-		$prefs['keep_downloadlist'] = ($prefs['keep_downloadlist'] == "on") ? true : false;
-		$prefs['keep_watchlist'] = ($prefs['keep_watchlist'] == "on") ? true : false;
-		$prefs['show_multinzb'] = ($prefs['show_multinzb'] == "on") ? true : false;
+		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
+		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
+		$prefs['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
+		$prefs['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
+		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
+		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
 		return array($errorList, $prefs);
 	} # validateUserPreferences

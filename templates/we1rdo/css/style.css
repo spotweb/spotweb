@@ -35,7 +35,7 @@ div.sidebarPanel h4 a,
 div.sidebarPanel h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:5px 0 0 0; text-shadow:1px 1px #000; -moz-border-radius:0 4px 0 0; -webkit-border-radius:0 4px 0 0; border-radius:0 4px 0 0; position:relative; text-decoration: none;}
 div.sidebarPanel h4.dropdown {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 div.sidebarPanel h4.dropdown a {cursor:pointer;}
-div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer;}
+div.sidebarPanel h4 a.toggle {float:left; font-weight:bold; line-height:18px; padding:0 0 0 3px; cursor:pointer; margin:0;}
 
 form#filterform ul.search {margin:0; padding:0; clear:both; overflow:hidden;}
 form#filterform ul.search li {float:left; list-style:none; overflow:hidden; position:relative;}

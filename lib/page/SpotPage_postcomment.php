@@ -39,8 +39,16 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
+			unset($this->_commentForm['submit']);
 		} # if
 
+		# Zorg er voor dat reserved usernames geen comments kunnen posten
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
+			$postResult = array('result' => 'notloggedin');
+			unset($this->_commentForm['submit']);
+		} # if
+		
 		if (isset($this->_commentForm['submit'])) {
 			# submit unsetten we altijd
 			unset($this->_commentForm['submit']);

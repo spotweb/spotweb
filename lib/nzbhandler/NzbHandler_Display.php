@@ -1,9 +1,9 @@
 <?php
 class NzbHandler_Display extends NzbHandler_abs
 {
-	function __construct(SpotSettings $settings)
+	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
-		parent::__construct($settings, 'Display', 'Show');
+		parent::__construct($settings, 'Display', 'Show', $nzbHandling);
 	} # __construct
 
 	public function processNzb($fullspot, $nzblist)

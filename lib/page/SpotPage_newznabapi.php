@@ -30,6 +30,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "t"		:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
+			case "g"		:
+			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
 		} # switch
 	} # render()
@@ -52,21 +54,23 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(300);
 			} # if
 			$showTitle = $dom->getElementsByTagName('showname');
-			$tvSearch = "Titel:\"" . trim($showTitle->item(0)->nodeValue) . "\"";
+			$tvSearch = $showTitle->item(0)->nodeValue;
 
+			$epSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
-				$tvSearch .= (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
+				$epSearch = (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 			} # if
 
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
-				$tvSearch .= (is_numeric($this->_params['ep'])) ? ' AND E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['ep'];
+				$episode = (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
+				$epSearch .= (!empty($epSearch)) ? $episode : ' AND ' . $episode;
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = $tvSearch;
+			$search['value'][] = "Titel:" . trim($tvSearch) . $epSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
@@ -79,9 +83,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			if (!@$imdb_content = file_get_contents('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/')) {
 				$this->showApiError(300);
 			} # if
-			preg_match('/<title>(.*) - IMDb<\/title>/isU', $imdb_content, $movieTitle);
-			$movieTitle = preg_replace('/\([0-9]+\)/', '', $movieTitle[1]);
-			$search['value'][] = "Titel:\"" . trim($movieTitle) . "\"";
+			preg_match('/<title>(.*?) \(.*?<\/title>/ms', $imdb_content, $movieTitle);
+			$search['value'][] = "Titel:\"" . trim($movieTitle[1]) . "\"";
 		} elseif (!empty($this->_params['q'])) {
 			$search['value'][] = "Titel:" . $this->_params['q'];
 		} # elseif
@@ -104,15 +107,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$limit,
 						$parsedSearch,
 						array('field' => 'stamp', 'direction' => 'DESC'));
-
-		if (count($spots['list']) == 0 ) {
-			$this->showApiError(300);
-		} # if
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
 	function showResults($spots, $offset, $outputtype) {
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
 		if ($outputtype == "json") {
 			echo json_encode($spots); //TODO:make that a more specific array of data to return rather than resultset
@@ -138,7 +137,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$channel->appendChild($doc->createElement('description', 'Spotweb Index API Results'));
 			$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
 			$channel->appendChild($doc->createElement('language', 'en-gb'));
-			$channel->appendChild($doc->createElement('webMaster', 'spotweb@example.com (Spotweb Index)'));
+			$channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')'));
 			$channel->appendChild($doc->createElement('category', ''));
 			$rss->appendChild($channel);
 
@@ -157,8 +156,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 
-				$guid = $doc->createElement('guid', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']));
-				$guid->setAttribute('isPermaLink', 'true');
+				$guid = $doc->createElement('guid', $spot['messageid']);
+				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
 				$item->appendChild($doc->createElement('title', $title));
@@ -213,6 +212,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 	} # showResults
 
+	function getNzb() {
+		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . '&apikey=' . $this->_params['apikey']);
+	} # getNzb
+
 	function caps() {
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
@@ -224,7 +227,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$server->setAttribute('version', '0.1');
 		$server->setAttribute('title', 'Spotweb');
 		$server->setAttribute('strapline', 'Spotweb API Index');
-		$server->setAttribute('email', 'spotweb@example.com (Spotweb Index)');
+		$server->setAttribute('email', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')');
 		$server->setAttribute('url', $this->_settings->get('spotweburl'));
 		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
 		$caps->appendChild($server);

@@ -20,6 +20,8 @@ class SpotSettingsUpgrader {
 		$this->createRsaKeys();
 		$this->createXsrfSecret();
 		$this->setIfNot('cookie_expires', 30);
+		$this->remove('sabnzbdurltpl');
+		$this->setIfNot('sabnzbdurl', '$SABNZBDURLapi?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SABNZBDCAT&apikey=$APIKEY&output=text');
 		$this->updateSettingsVersion();
 	} # update()
 	
@@ -34,6 +36,13 @@ class SpotSettingsUpgrader {
 		$this->_settings->set($name,$value);
 	} # setIfNot
 	 
+	/*
+	 * Verwijder een setting
+	 */
+	function remove($name) {
+		$this->_settings->remove($name);
+	} # remove
+	
 	/*
 	 * Update de huidige versie van de settings
 	 */

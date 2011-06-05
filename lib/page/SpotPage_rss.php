@@ -15,7 +15,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
 
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
@@ -40,42 +40,49 @@ class SpotPage_rss extends SpotPage_Abs {
 		$rss->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
 		$doc->appendChild($rss);
 
+		$atomSelfLink = $doc->createElementNS('http://www.w3.org/2005/Atom', 'atom10:link');
+		$atomSelfLink->setAttribute('href', html_entity_decode($this->_tplHelper->makeSelfUrl("full")));
+		$atomSelfLink->setAttribute('rel', 'self');
+		$atomSelfLink->setAttribute('type', 'application/rss+xml');
+
 		$channel = $doc->createElement('channel');
 		$channel->appendChild($doc->createElement('generator', 'Spotweb v' . SPOTWEB_VERSION));
 		$channel->appendChild($doc->createElement('language', 'nl'));
 		$channel->appendChild($doc->createElement('title', 'Spotweb'));
 		$channel->appendChild($doc->createElement('description', 'Spotweb RSS Feed'));
-		$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+		$channel->appendChild($doc->createElement('link', $this->_tplHelper->makeBaseUrl("full")));
+		$channel->appendChild($atomSelfLink);
+		$channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')'));
 		$channel->appendChild($doc->createElement('pubDate', date('r')));
 		$rss->appendChild($channel);
-
-		$atomSelfLink = $doc->createElementNS('http://www.w3.org/2005/Atom', 'atom10:link');
-		$atomSelfLink->setAttribute('href', html_entity_decode($this->_tplHelper->makeSelfUrl("full")));
-		$atomSelfLink->setAttribute('rel', 'self');
-		$atomSelfLink->setAttribute('type', 'application/rss+xml');
-		$channel->appendChild($atomSelfLink);
 
 		# Fullspots ophalen en aan XML toevoegen
 		foreach($spotsTmp['list'] as $spotHeaders) {
 			try {
 				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
+				# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
+				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 140
+				# wat een onbruikbare RSS oplevert
+				$spot = @$this->_tplHelper->formatSpot($spot);
+
 				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
 				$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
-				$descriptionCdata = $doc->createCDATASection($this->_tplHelper->formatContent($spot['description']) . '<br /><font color="#ca0000">Door: ' . $poster . '</font>');
+
+				$guid = $doc->createElement('guid', $spot['messageid']);
+				$guid->setAttribute('isPermaLink', 'false');
+
 				$description = $doc->createElement('description');
+				$descriptionCdata = $doc->createCDATASection($spot['description'] . '<br /><font color="#ca0000">Door: ' . $poster . '</font>');
 				$description->appendChild($descriptionCdata);
 
 				$item = $doc->createElement('item');
 				$item->appendChild($doc->createElement('title', $title));
+				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']) . $this->_tplHelper->makeApiRequestString()));
 				$item->appendChild($description);
 				$item->appendChild($doc->createElement('author', $spot['messageid'] . ' (' . $poster . ')'));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
 				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
-
-				$guid = $doc->createElement('guid', $this->_tplHelper->makeBaseUrl("full") . '?page=getspot&amp;messageid=' . urlencode($spot['messageid']));
-				$guid->setAttribute('isPermaLink', 'true');
-				$item->appendChild($guid);
 
 				$enclosure = $doc->createElement('enclosure');
 				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));

@@ -121,10 +121,9 @@ class SpotUserUpgrader {
 			$user = $this->_db->getUser($user['userid']);
 
 			# set the users' preferences
-			$this->setSettingIfNot($user['prefs'], 'perpage', '50');
+			$this->setSettingIfNot($user['prefs'], 'perpage', '25');
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
 			$this->setSettingIfNot($user['prefs'], 'template', 'we1rdo');
-			$this->setSettingIfNot($user['prefs'], 'perpage', '50');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_seenlist', true);
 			$this->setSettingIfNot($user['prefs'], 'auto_markasread', true);
@@ -141,22 +140,36 @@ class SpotUserUpgrader {
 									'local_dir' => '/tmp',
 									'prepare_action' => 'zip',
 									'command' => '',
-									'sabnzbd' => array('host' => '',
+									'sabnzbd' => array('url' => '',
 													   'apikey' => ''),
 									'nzbget' => array('host' => '',
 													  'port' => '',
 													  'username' => '',
 													  'password' => '')
 									);
-			if (!isset($user['prefs']['nzbhandling'])) {
-				$user['prefs']['nzbhandling'] = array();
+			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
+ 				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
 			} # if
-			$nzbHandlingUsr = array_merge_recursive($nzbHandlingTpl, $user['prefs']['nzbhandling']);
+			if ((!isset($user['prefs']['nzbhandling']['nzbget'])) || (!is_array($user['prefs']['nzbhandling']['nzbget']))) {
+ 				$user['prefs']['nzbhandling']['nzbget'] = array();
+			} # if
+			if ((!isset($user['prefs']['nzbhandling']['sabnzbd'])) || (!is_array($user['prefs']['nzbhandling']['sabnzbd']))) {
+ 				$user['prefs']['nzbhandling']['sabnzbd'] = array();
+			} # if
+			$nzbHandlingUsr = array_merge($nzbHandlingTpl, $user['prefs']['nzbhandling']);
+			$nzbHandlingUsr['sabnzbd'] = array_merge($nzbHandlingTpl['sabnzbd'], $user['prefs']['nzbhandling']['sabnzbd']);
+			$nzbHandlingUsr['nzbget'] = array_merge($nzbHandlingTpl['nzbget'], $user['prefs']['nzbhandling']['nzbget']);
 			
 			# en deze gemergede array zetten we /altijd/ omdat anders
 			# subkeys niet goed mee zouden kunnen
 			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
 
+			# Upgrade de sabnzbd api host setting
+			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.05)) {
+				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/sabnzbd/';
+				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
+			} # if
+			
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
@@ -222,6 +235,13 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'save')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'runcommand')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'nzbget')");
+		} # if
+
+		# We voegen nog extra security toe voor de admin user, deze mag users wissen en
+		# groepen van users aanpassen
+		if ($this->_settings->get('securityversion') < 0.06) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_delete_user . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_groupmembership . ")");
 		} # if
 	} # updateSecurityGroups
 	

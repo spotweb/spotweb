@@ -56,7 +56,17 @@ class SpotDb {
 	 * Haalt alle settings op uit de database
 	 */
 	function getAllSettings() {
-		return $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$tmpSettings = array();
+		foreach($dbSettings as $item) {
+			if ($item['serialized']) {
+				$item['value'] = unserialize($item['value']);
+			} # if
+			
+			$tmpSettings[$item['name']] = $item['value'];
+		} # foreach
+		
+		return $tmpSettings;
 	} # getAllSettings
 
 	/* 
@@ -87,9 +97,24 @@ class SpotDb {
 	} # addPostedComment
 
 	/*
+	 * Verwijder een setting
+	 */
+	function removeSetting($name) {
+		$this->_conn->exec("DELETE FROM settings WHERE name = '%s'", Array($name));
+	} # removeSetting
+	
+	/*
 	 * Update setting
 	 */
-	function updateSetting($name, $value, $serialized) {
+	function updateSetting($name, $value) {
+		# zet het eventueel serialized in de database als dat nodig is
+		if ((is_array($value) || is_object($value))) {
+			$value = serialize($value);
+			$serialized = true;
+		} else {
+			$serialized = false;
+		} # if
+		
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%d' WHERE name = '%s'", Array($value, $serialized, $name));
 								if ($this->_conn->rows() == 0) {
@@ -216,10 +241,10 @@ class SpotDb {
 						 JOIN usersettings s ON (u.id = s.userid)
 						 WHERE u.id = %d AND NOT DELETED",
 				 Array( (int) $userid ));
+
 		if (!empty($tmp)) {
 			# Other preferences worden serialized opgeslagen in de database
 			$tmp[0]['prefs'] = unserialize($tmp[0]['prefs']);
-			
 			return $tmp[0];
 		} # if
 		
@@ -1139,6 +1164,18 @@ class SpotDb {
 		return $permList;
 	} # getPermissions
 
+	/*
+	 * Geeft alle gedefinieerde groepen terug
+	 */
+	function getGroupList($userId) {
+		if ($userId == null) {
+			return $this->_conn->arrayQuery("SELECT ID,name,0 as \"ismember\" FROM securitygroups");
+		} else {
+			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.id IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
+										Array($userId));
+		} # if
+	} # getGroupList
+		
 	/*
 	 * Wijzigt group membership van een user
 	 */

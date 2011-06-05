@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.02');
+define('SPOTWEB_SETTINGS_VERSION', '0.03');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -19,17 +19,9 @@ class SpotSettings {
 			
 			# haal alle settings op, en prepareer die 
 			$dbSettings = $db->getAllSettings();
-			$tmpSettings = array();
-			foreach($dbSettings as $item) {
-				if ($item['serialized']) {
-					$item['value'] = unserialize($item['value']);
-				} # if
-				
-				$tmpSettings[$item['name']] = $item['value'];
-			} # foreach
 
 			# en merge de settings met degene die we door krijgen 
-			self::$_settings = array_merge($settings, $tmpSettings);
+			self::$_settings = array_merge($settings, $dbSettings);
 		} # if
 		
 		return self::$_instance;
@@ -43,6 +35,15 @@ class SpotSettings {
 	} # get
 
 	/*
+	 * Unset een bepaalde waarde
+	 */
+	function remove($name) {
+		unset(self::$_settings[$name]);
+		
+		$this->_db->removeSetting($name);
+	} # remove
+	
+	/*
 	 * Set de waarde van de setting, maakt hem ook
 	 * meteen persistent dus mee oppassen
 	 */
@@ -50,15 +51,7 @@ class SpotSettings {
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
 		self::$_settings[$name] = $value;
 		
-		# maar zet het eventueel serialized in de database als dat nodig is
-		if ((is_array($value) || is_object($value))) {
-			$value = serialize($value);
-			$serialized = true;
-		} else {
-			$serialized = false;
-		} # if
-		
-		$this->_db->updateSetting($name, $value, $serialized);
+		$this->_db->updateSetting($name, $value);
 	} # set
 
 	/* 

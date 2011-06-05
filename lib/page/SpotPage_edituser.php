@@ -14,7 +14,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	 * er andere records geupdate kunnen worden
 	 */
 	function cleanseEditForm($editForm) {
-		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2');
+		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist');
 		foreach($editForm as $key => $value) {
 			if (in_array($key, $validFields) === false) {
 				unset($editForm[$key]);
@@ -25,6 +25,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	} # cleanseEditForm
 
 	function render() {
+		$groupMembership = array();
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
@@ -50,6 +51,11 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$formMessages['errors'][] = array('edituser_usernotfound', array($spotUser['username']));
 			$editResult = array('result' => 'failure');
 		} # if
+		
+		# Vraag group membership van deze user op
+		if ($spotUser != false) {
+			$groupMembership = $this->_db->getGroupList($spotUser['userid']);
+		} # if
 
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
 		$formAction = '';
@@ -59,9 +65,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} elseif (isset($this->_editUserForm['submitdelete'])) {
 			$formAction = 'delete';
 			unset($this->_editUserForm['submitdelete']);
+			
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
 		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
 			$formAction = 'resetapi';
 			unset($this->_editUserForm['submitresetuserapi']);
+
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 		} elseif (isset($this->_editUserForm['removeallsessions'])) {
 			$formAction = 'removeallsessions';
 			unset($this->_editUserForm['removeallsessions']);
@@ -111,6 +121,27 @@ class SpotPage_edituser extends SpotPage_Abs {
 						if (!empty($spotUser['newpassword1'])) {
 							$spotUserSystem->setUserPassword($spotUser);
 						} # if
+						
+						# Zijn er ook groupmembership lijsten meegestuurd? Zo ja, 
+						# en als de user het recht heeft, update die dan ook
+						if (isset($this->_editUserForm['grouplist'])) {
+							# vraag de lijst met usergroepen op
+							$groupList = array();
+							foreach($this->_editUserForm['grouplist'] as $val) {
+								if ($val != 'dummy') {
+									$groupList[] = array('groupid' => $val,
+														'prio' => count($groupList));
+								} # if
+							} # for
+							
+							# zorg er voor dat er meer dan 1 groep overblijft
+							if (count($groupList) < 1) {
+								$formMessages['errors'][] = array('edituser_usermusthaveonegroup', array());
+								$editResult = array('result' => 'failure');
+							} else {
+								$spotUserSystem->setUserGroupList($spotUser, $groupList);
+							} # if
+						} # if
 
 						# als het toevoegen van de user gelukt is, laat het weten
 						$editResult = array('result' => 'success');
@@ -139,7 +170,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 		#- display stuff -#
 		$this->template('edituser', array('edituserform' => $spotUser,
 										    'formmessages' => $formMessages,
-											'editresult' => $editResult));
+											'editresult' => $editResult,
+											'groupMembership' => $groupMembership));
 	} # render
 	
 } # class SpotPage_edituser
