@@ -25,21 +25,22 @@
 <br />
 
 <table summary="PHP extensions">
-	<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
-	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
-	<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
-	<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
-	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
+	<tr> <th colspan="2"> PHP extension </th> <th> Info </th> <th> Result </th> </tr>
+	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
+	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
+	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
+	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
+	<tr> <td colspan="2"> zip </td> <td> NZB files comprimeren </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
+	<tr> <td colspan="2"> zlib </td> <td> </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
+	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial</td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
 	$spotSigning = new SpotSigning();
 	$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
-?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl')); ?> </td> </tr>
-	<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp')); ?> </td> </tr>
-	<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath')); ?> </td> </tr>
-	<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
+?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> </td> <td> <?php showResult(extension_loaded('openssl')); ?> </td> </tr>
+	<tr> <td> gmp </td> <td> </td> <td> <?php showResult(extension_loaded('gmp')); ?> </td> </tr>
+	<tr> <td> bcmath </td> <td> </td> <td> <?php showResult(extension_loaded('bcmath')); ?> </td> </tr>
+	<tr> <td colspan="2"> Can create private key? </td> <td> </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
 </table>
 <br />
 

@@ -1171,7 +1171,7 @@ class SpotDb {
 		if ($userId == null) {
 			return $this->_conn->arrayQuery("SELECT ID,name,0 as \"ismember\" FROM securitygroups");
 		} else {
-			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.id IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
+			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
 										Array($userId));
 		} # if
 	} # getGroupList
