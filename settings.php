@@ -226,7 +226,7 @@ if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== d
 # QuickLinks, we testen eerst of hij niet al door iemand anders is gezet in ownsettings.php en
 # anders vullen we hem zelf op. We kunnen dit niet boven ownsettings.php plaatsen want dan missen
 # we de keep_watchlist en keep_downloadlist settings.
-if (!isset($settings['quicklinks']) && basename($_SERVER['REQUEST_URI']) != 'testinstall.php') {
+if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'] = Array();
 	$settings['quicklinks'][] = Array('Reset filters', "images/icons/home.png", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''));
 	$settings['quicklinks'][] = Array('Nieuw', "images/icons/today.png", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));

@@ -1,4 +1,5 @@
 <?php
+	require_once "lib/SpotClassAutoload.php";
 	@include('settings.php');
 	set_error_handler("ownWarning",E_WARNING);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
