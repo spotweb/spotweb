@@ -346,6 +346,11 @@ class SpotUserSystem {
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
 				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
 			} # if
+			
+			# SABnzbd URL moet altijd eindigen met een slash
+			if(substr($prefs['nzbhandling']['sabnzbd']['url'], -1) !== '/') {
+				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
+			} # if
 		} # if
 		
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt

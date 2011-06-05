@@ -12,13 +12,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		$sabnzbd = $nzbHandling['sabnzbd'];
 		
 		# prepare sabnzbd url
-		# substitute variables that are not download specific
-		$this->_url = $settings->get('sabnzbdurl');
-		$this->_url = str_replace('$SABNZBDURL', $sabnzbd['url'], $this->_url);
-		$this->_url = str_replace('$APIKEY', $sabnzbd['apikey'], $this->_url);
-		$this->_url = str_replace('$SABNZBDMODE', 'addfile', $this->_url);
-		$this->_url = str_replace('$NZBURL', '', $this->_url); # not used for push-sabnzbd
-
+		$this->_url = $sabnzbd['url'] . 'sabnzbd/api?mode=addfile&apikey=' . $sabnzbd['apikey'] . '&output=text';
 	} # __construct
 	
 	public function processNzb($fullspot, $nzblist)
@@ -27,9 +21,8 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		$title = urlencode($this->cleanForFileSystem($fullspot['title']));
 		$category = urlencode($this->convertCatToSabnzbdCat($fullspot));
 
-		# yes, using a local variable instead of the member variable is intentional		
-		$url = str_replace('$SPOTTITLE', $title, $this->_url);
-		$url = str_replace('$SABNZBDCAT', $category, $url);
+		# yes, using a local variable instead of the member variable is intentional
+		$url = $this->_url . '&nzbname=' . $title . '&cat=' . $category;
 
 		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
 		# equivalent to <input type="file" name="nzbfile"/>

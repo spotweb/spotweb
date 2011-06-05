@@ -166,7 +166,7 @@ class SpotUserUpgrader {
 
 			# Upgrade de sabnzbd api host setting
 			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.05)) {
-				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/sabnzbd/';
+				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/';
 				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
 			} # if
 			
