@@ -145,7 +145,8 @@ class SpotUserUpgrader {
 									'nzbget' => array('host' => '',
 													  'port' => '',
 													  'username' => '',
-													  'password' => '')
+													  'password' => '',
+													  'timeout' => 15)
 									);
 			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
  				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
