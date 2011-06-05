@@ -163,7 +163,7 @@ include "includes/form-messages.inc.php";
 					<!-- Sabnzbd -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
 					<fieldset id="nzbhandling-fieldset-sabnzbd">
-						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]">URL naar sabnzbd (inclusief HTTP en directory waar sabnzbd geinstalleerd is)?</label></dt>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]">URL naar sabnzbd (inclusief HTTP en portnummer waar sabnzbd geinstalleerd is)?</label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][url]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['url']); ?>"></dd>
 
 						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]">API key voor sabnzbd?</label></dt>
