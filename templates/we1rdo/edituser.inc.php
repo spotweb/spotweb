@@ -38,7 +38,7 @@ if (empty($editresult)) {
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { ?>
 			<!-- Dummy grouplist variable om zeker te zijn dat de grouplist altijd gepost wordt -->
-			<input type="hidden" name="edituserform[grouplist][]" value="dummy">
+			<input type="hidden" name="edituserform[grouplist][dummy]" value="dummy">
 			<table>
 				<thead>
 					<tr> <th> Group </th> <th> Member </th>

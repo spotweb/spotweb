@@ -19,17 +19,9 @@ class SpotSettings {
 			
 			# haal alle settings op, en prepareer die 
 			$dbSettings = $db->getAllSettings();
-			$tmpSettings = array();
-			foreach($dbSettings as $item) {
-				if ($item['serialized']) {
-					$item['value'] = unserialize($item['value']);
-				} # if
-				
-				$tmpSettings[$item['name']] = $item['value'];
-			} # foreach
 
 			# en merge de settings met degene die we door krijgen 
-			self::$_settings = array_merge($settings, $tmpSettings);
+			self::$_settings = array_merge($settings, $dbSettings);
 		} # if
 		
 		return self::$_instance;
@@ -59,15 +51,7 @@ class SpotSettings {
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
 		self::$_settings[$name] = $value;
 		
-		# maar zet het eventueel serialized in de database als dat nodig is
-		if ((is_array($value) || is_object($value))) {
-			$value = serialize($value);
-			$serialized = true;
-		} else {
-			$serialized = false;
-		} # if
-		
-		$this->_db->updateSetting($name, $value, $serialized);
+		$this->_db->updateSetting($name, $value);
 	} # set
 
 	/* 
