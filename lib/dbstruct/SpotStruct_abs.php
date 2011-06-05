@@ -104,7 +104,7 @@ abstract class SpotStruct_abs {
 			$this->addIndex("idx_settings_1", "UNIQUE", "settings", "name");
 
 			if ($saveVersion != null) {
-				$this->_spotdb->updateSetting('schemaversion', $saveVersion, false);
+				$this->_spotdb->updateSetting('schemaversion', $saveVersion);
 			} # if
 		} # if
 
@@ -549,7 +549,7 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# voeg het database schema versie nummer toe
-		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION, false);
+		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
 
 } # class

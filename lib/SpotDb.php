@@ -56,7 +56,17 @@ class SpotDb {
 	 * Haalt alle settings op uit de database
 	 */
 	function getAllSettings() {
-		return $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$tmpSettings = array();
+		foreach($dbSettings as $item) {
+			if ($item['serialized']) {
+				$item['value'] = unserialize($item['value']);
+			} # if
+			
+			$tmpSettings[$item['name']] = $item['value'];
+		} # foreach
+		
+		return $tmpSettings;
 	} # getAllSettings
 
 	/* 
@@ -96,7 +106,15 @@ class SpotDb {
 	/*
 	 * Update setting
 	 */
-	function updateSetting($name, $value, $serialized) {
+	function updateSetting($name, $value) {
+		# zet het eventueel serialized in de database als dat nodig is
+		if ((is_array($value) || is_object($value))) {
+			$value = serialize($value);
+			$serialized = true;
+		} else {
+			$serialized = false;
+		} # if
+		
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%d' WHERE name = '%s'", Array($value, $serialized, $name));
 								if ($this->_conn->rows() == 0) {
