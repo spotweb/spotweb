@@ -26,12 +26,12 @@ class SpotTemplateHelper {
 		$this->_spotnzb = new SpotNzb($db, $settings);
 
 		# We initialiseren hier een NzbHandler object om te voorkomen
-		# dat we voor iedere spot een nieuw object initialiseren
-		$nzbhandling = $settings->get('nzbhandling');
-		$action =  $nzbhandling['action'];
+		# dat we voor iedere spot een nieuw object initialiseren, een property
+		# zou mooier zijn, maar daar is PHP dan weer te traag voor
 		$nzbHandlerFactory = new NzbHandler_Factory();
-		$this->_nzbHandler = $nzbHandlerFactory->build($settings, $action);
-		
+		$this->_nzbHandler = $nzbHandlerFactory->build($settings, 
+					$currentSession['user']['prefs']['nzbhandling']['action'], 
+					$currentSession['user']['prefs']['nzbhandling']);
 	} # ctor
 
 	/*
@@ -182,7 +182,7 @@ class SpotTemplateHelper {
 	 * settings
 	 */
 	function makeSabnzbdUrl($spot) {
-		$nzbHandling = $this->_settings->get('nzbhandling');
+		$nzbHandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_download_integration, $nzbHandling['action'])) {
 			return '';
 		} # if
@@ -683,6 +683,7 @@ class SpotTemplateHelper {
 		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
 		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
 		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
+		$strings['edituser_usermusthaveonegroup'] = 'Een gebruiker moet in minstens een groep zitten';
 
 		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';

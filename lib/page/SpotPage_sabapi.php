@@ -6,7 +6,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_use_sabapi, '');
 		
 		parse_str($_SERVER['QUERY_STRING'], $request);
-		$nzbhandling = $this->_settings->get('nzbhandling');
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 		$sabnzbd = $nzbhandling['sabnzbd'];
 	
 		if ($nzbhandling['action'] != 'push-sabnzbd' && $nzbhandling['action'] != 'client-sabnzbd') {
@@ -34,10 +34,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		} # foreach
 		$request = implode('&amp;', $apicall);
 		
-		$url = parse_url($sabnzbd['url']);
-		$url['host'] = str_replace('$SABNZBDHOST', $sabnzbd['host'], $url['host']);
-
-		$output = @file_get_contents($url['scheme'] . '://' . $url['host'] . $url['path'] . '?' . $request . '&apikey=' . $sabnzbd['apikey']);
+		$output = @file_get_contents($sabnzbd['url'] . 'api?' . $request . '&apikey=' . $sabnzbd['apikey']);
 		echo $output;
 	} # render
 
