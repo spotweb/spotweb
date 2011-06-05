@@ -171,6 +171,13 @@ class SpotUserUpgrader {
 				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
 			} # if
 			
+			# Upgrade de sabnzbd api host setting
+			if ($this->_settings->get('securityversion') < 0.06) {
+				if (substr($user['prefs']['nzbhandling']['sabnzbd']['url'], -1 * strlen('/sabnzbd/')) == '/sabnzbd/') {
+					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
+				} # if				
+			} # if
+			
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
