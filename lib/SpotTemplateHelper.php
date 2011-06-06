@@ -213,6 +213,13 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
+	
+	/*
+	 * Creeert de action url voor het wissen van een permissie 
+	 */
+	function makeDeletePermFromSecGroupAction() {
+		return $this->makeBaseUrl("path") . "?page=editsecgroup";
+	} # makeDeletePermFromSecGroupAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
@@ -728,6 +735,13 @@ class SpotTemplateHelper {
 	function permToString($perm) {
 		return $this->_spotSec->toHuman($perm);
 	} # permToString
+	
+	/*
+	 * Geeft alle mogelijke Spotweb permissies terug
+	 */
+	function getAllAvailablePerms() {
+		return $this->_spotSec->getAllPermissions();
+	} # getAllAvailablePerms
 	
 	/*
 	 * Genereert een random string

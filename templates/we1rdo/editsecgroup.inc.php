@@ -13,7 +13,7 @@ if (!empty($edituserprefsresult)) {
 
 include "includes/form-messages.inc.php";
 
-$permList = $tplHelper->getSecGroup(1);
+$permList = $tplHelper->getSecGroup(2);
 ?>
 </div>
 <form class="editsecgroupform" name="editsecgroupform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
@@ -35,11 +35,33 @@ $permList = $tplHelper->getSecGroup(1);
 			<tr>
 				<td> <?php echo $tplHelper->permToString($perm['permissionid']); ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
-				<td> </td>
+				<td> 
+					<form action="<?php echo $tplHelper->makeDeletePermFromSecGroupAction(); ?>" method="get">
+						<input type="hidden" name="editsecgroupform[permissiond]" value="<?php echo $perm['permissionid']; ?>">
+						<input type="hidden" name="editsecgroupform[objectid]" value="<?php echo $perm['objectid']; ?>">
+						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
+						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
+						<input class="greyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="Wis">
+					</form>
+				</td>
 			</tr>
 <?php } ?>
 		</tbody>
+
+		<dt><label for="editsecgroupform[permissionid]">Volgende recht toevoegen</label></dt>
+		<dd>
+			<select name="editsecgroupform[permissionid]">
 		
+<?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
+				<option value="$key"><?php echo $val; ?></option>
+<?php } ?>
+			</select>
+		</dd>
+		
+		<dt><label for="editsecgroupform[objectid]">ObjectID (meestal leeg)</label></dt>
+		<dd>
+			<input type="text" name="editsecgroupform[objectid]" ></input>
+		</dd>
 	</table>
 </form>
 
