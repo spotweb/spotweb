@@ -553,7 +553,8 @@ abstract class SpotStruct_abs {
 			$this->dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
-			if (!$this->tableExists('spottexts') && $this->columnExists('spots', 'poster')) {
+			if ($this->columnExists('spots', 'poster') && $this->columnExists('spots', 'title') && $this->columnExists('spots', 'tag')) {
+				$this->_dbcon->rawExec("DELETE FROM spottexts;");
 				$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
 			} # if
 
