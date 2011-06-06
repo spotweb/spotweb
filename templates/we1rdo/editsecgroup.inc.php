@@ -20,7 +20,7 @@ $permList = $tplHelper->getSecGroup(2);
 
 	<!-- Naam van security group wijzigen -->
 	<fieldset>
-		<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="get">
+		<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 			<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 			<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
 			
@@ -51,7 +51,7 @@ $permList = $tplHelper->getSecGroup(2);
 				<td> <?php echo $tplHelper->permToString($perm['permissionid']); ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
 				<td> 
-					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="get">
+					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissiond]" value="<?php echo $perm['permissionid']; ?>">
 						<input type="hidden" name="editsecgroupform[objectid]" value="<?php echo $perm['objectid']; ?>">
 						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
