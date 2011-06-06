@@ -426,6 +426,50 @@ class SpotUserSystem {
 	} # setUserRsaKeys
 	
 	/*
+	 * Valideert een group record
+	 */
+	function validateSecGroup($group) {
+		$errorList = array();
+
+		# Verwijder overbodige spaties e.d.
+		$group['name'] = trim($group['name']);
+		
+		# Controleer of er een usergroup opgegeven is en of de 
+		# naam niet te kort is
+		if (strlen($group['name']) < 3) {
+			$errorList[] = array('validatesecgroup_invalidname', array('name'));
+		} # if
+		
+		# Vraag nu alle security groepen om, om er zeker van te zijn
+		# dat deze security groep nog niet voorkomt. Niet het meest efficient
+		# maar het aantal verwachtte securitygroepen zal meevallen
+		$secGroupList = $this->_db->getGroupList(null);
+		foreach($secGroupList as $secGroup) {
+			if ($secGroup['name'] == $group['name']) {
+				if ($secGroup['id'] != $group['id']) {
+					$errorList[] = array('validatesecgroup_duplicatename', array('name'));
+				} # if
+			} # if
+		} # foreach
+		
+		return array($errorList, $group);
+	} # validateSecGroup
+
+	/*
+	 * Update een group record
+	 */
+	function setSecGroup($group) {
+		$this->_db->setSecurityGroup($group);
+	} # setSecGroup
+	
+	/*
+	 * Geeft een group record terug
+	 */
+	function getSecGroup($groupId) {
+		return $this->_db->getSecGroup($groupId);
+	} # getSecGroup
+	
+	/*
 	 * Geeft een user record terug
 	 */
 	function getUser($userid) {
