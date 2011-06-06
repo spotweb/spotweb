@@ -559,7 +559,7 @@ abstract class SpotStruct_abs {
 			$this->dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
-			if (($this->columnExists('spots', 'title'))) {
+			if ($this->columnExists('spots', 'poster') && $this->columnExists('spots', 'title') && $this->columnExists('spots', 'tag')) {
 				if ($this instanceof SpotStruct_mysql) {
 					$this->_dbcon->rawExec("TRUNCATE spottexts");
 				} else {
@@ -571,7 +571,7 @@ abstract class SpotStruct_abs {
 			# niet-bestaande records opruimen
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spots.messageid = spotsfull.messageid WHERE spots.id IS NULL");
+			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
 
 			if ($this instanceof SpotStruct_mysql) {
 				# Oude kolommen droppen
