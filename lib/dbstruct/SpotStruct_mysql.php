@@ -22,15 +22,11 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
 										moderated BOOLEAN,
 										commentcount INTEGER DEFAULT 0,
-										spotrating INTEGER DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										spotrating INTEGER DEFAULT 0) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(category, subcata, subcatb, subcatc, subcatd, subcatz DESC);");
-
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_1 ON spots(title);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_2 ON spots(poster);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spots_fts_3 ON spots(tag);");
 		} # if
 
 		# spotsfull
@@ -43,17 +39,28 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										userkey VARCHAR(200),
 										xmlsignature VARCHAR(128),
 										fullxml TEXT,
-										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfull_fts_1 ON spotsfull(userid);");
 		} # if
-		
+
+		# spottexts
+		if (!$this->tableExists('spottexts')) {
+			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128) CHARACTER SET ascii NOT NULL,
+										userid varchar(128),
+										userid varchar(128),
+										userid varchar(128)) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_2 ON spottexts(poster);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_3 ON spottexts(title);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_4 ON spottexts(tag);");
+		} # if
+
 		# NNTP table
 		if (!$this->tableExists('nntp')) {
 			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
 										   maxarticleid INTEGER UNIQUE,
 										   nowrunning INTEGER DEFAULT 0,
-										   lastrun INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										   lastrun INTEGER DEFAULT 0) ENGINE = InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 		} # if 
 
 		# commentsxover
@@ -111,7 +118,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 									  randompart VARCHAR(32) CHARACTER SET ascii NOT NULL,
 									  rating INTEGER DEFAULT 0 NOT NULL,
 									  body TEXT,
-									  stamp INTEGER DEFAULT 0 NOT NULL) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+									  stamp INTEGER DEFAULT 0 NOT NULL) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(messageid);");
 		} # if
 	} # createDatabase
