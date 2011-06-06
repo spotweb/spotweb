@@ -340,7 +340,7 @@ class SpotUserSystem {
 		} # if
 		
 		# als er een sabnzbd host opgegeven is, moet die geldig zijn
-		if ( ($prefs['nzbhandling']['action'] == 'push-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
+		if ( ($prefs['nzbhandling']['action'] == 'client-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
