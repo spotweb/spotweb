@@ -39,6 +39,9 @@ abstract class SpotStruct_abs {
 
 	/* ceeert een lege tabel met enkel een ID veld */
 	abstract function createTable($tablename, $collations);
+	
+	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	abstract function alterStorageEngine($tablename, $engine);
 
 	/* drop een table */
 	abstract function dropTable($tablename);
@@ -553,7 +556,12 @@ abstract class SpotStruct_abs {
 			$this->dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
-			if (!$this->tableExists('spottexts')) {
+			if (($this->columnExists('spots', 'title'))) {
+				if ($this instanceof SpotStruct_mysql) {
+					$this->_dbcon->rawExec("TRUNCATE spottexts");
+				} else {
+					$this->_dbcon->rawExec("DELETE FROM spottexts");
+				} # else
 				$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
 			} # if
 
@@ -563,15 +571,16 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spots.messageid = spotsfull.messageid WHERE spots.id IS NULL");
 
 			if ($this instanceof SpotStruct_mysql) {
-				$this->_dbcon->rawExec("ALTER TABLE spots ENGINE=InnoDB;");
-				$this->_dbcon->rawExec("ALTER TABLE spotsfull ENGINE=InnoDB;");
-				$this->_dbcon->rawExec("ALTER TABLE commentsposted ENGINE=InnoDB;");
-				$this->_dbcon->rawExec("ALTER TABLE nntp ENGINE=InnoDB;");
-				
 				# Oude kolommen droppen
 				$this->dropColumn("poster", "spots");
 				$this->dropColumn("title", "spots");
 				$this->dropColumn("tag", "spots");
+
+				# storage engine wijzigen
+				$this->alterStorageEngine("spots", "InnoDB");
+				$this->alterStorageEngine("spotsfull", "InnoDB");
+				$this->alterStorageEngine("commentsposted", "InnoDB");
+				$this->alterStorageEngine("nntp", "InnoDB");
 				
 				# indexen aanmaken voor het gebruik van relaties
 				$this->addIndex("idx_commentspostedrel_1", "", "commentsposted", "ouruserid");

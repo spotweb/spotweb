@@ -210,4 +210,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("DROP TABLE " . $tablename);
 		} # if
 	} # dropTable
+
+	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	function alterStorageEngine($tablename, $engine) {
+		return ; // null operatie
+	} # alterStorageEngine
+	
 } # class
