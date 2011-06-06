@@ -551,12 +551,12 @@ abstract class SpotStruct_abs {
 		# Nog een paar tabellen omzetten naar InnoDB
 		if ($this->_spotdb->getSchemaVer() < 0.31) {
 			echo "Big upgrade of database, this might take 20 minutes or more!" . PHP_EOL;
-			$this->_dbcon->dropIndex('idx_spots_fts_1', 'spots');
-			$this->_dbcon->dropIndex('idx_spots_fts_2', 'spots');
-			$this->_dbcon->dropIndex('idx_spots_fts_3', 'spots');
-			$this->_dbcon->dropIndex('idx_spotsfull_fts_1', 'spotsfull');
-			$this->_dbcon->dropIndex('idx_spots_5', 'spots');
-			$this->_dbcon->dropIndex('idx_spots_6', 'spots');
+			$this->dropIndex('idx_spots_fts_1', 'spots');
+			$this->dropIndex('idx_spots_fts_2', 'spots');
+			$this->dropIndex('idx_spots_fts_3', 'spots');
+			$this->dropIndex('idx_spotsfull_fts_1', 'spotsfull');
+			$this->dropIndex('idx_spots_5', 'spots');
+			$this->dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
 			$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
@@ -574,9 +574,9 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("ALTER TABLE nntp ENGINE=InnoDB;");
 				
 				# Oude kolommen droppen
-				$this->_dbcon->dropColumn("poster", "spots");
-				$this->_dbcon->dropColumn("title", "spots");
-				$this->_dbcon->dropColumn("tag", "spots");
+				$this->dropColumn("poster", "spots");
+				$this->dropColumn("title", "spots");
+				$this->dropColumn("tag", "spots");
 				
 				# indexen aanmaken voor het gebruik van relaties
 				$this->addIndex("idx_commentspostedrel_1", "", "commentsposted", "ouruserid");
@@ -588,7 +588,7 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
 				 
 			} else {
-				$this->_dbcon->addIndex("idx_spots_5", "", "spots", "reversestamp");
+				$this->addIndex("idx_spots_5", "", "spots", "reversestamp");
 
 				# Oude data verwijderen
 				$this->_dbcon->rawExec("UPDATE spots SET poster = NULL, title = NULL, tag = NULL;");
