@@ -108,6 +108,10 @@ class SpotSecurity {
 		return $this->_secHumanReadable[$perm];
 	} # toHuman
 	
+	function getAllPermissions() {
+		return $this->_secHumanReadable;
+	} # getAllPermissions
+	
 	function securityValid() {
 		# SPOTWEB_SECURITY_VERSION is gedefinieerd bovenin dit bestand
 		return ($this->_settings->get('securityversion') == SPOTWEB_SECURITY_VERSION);
