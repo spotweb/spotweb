@@ -45,12 +45,6 @@ abstract class SpotStruct_abs {
 
 
 	function updateSchema() {
-		# Fulltext indexes
-		$this->addIndex("idx_spots_fts_1", "FULLTEXT", "spots", "title");
-		$this->addIndex("idx_spots_fts_2", "FULLTEXT", "spots", "poster");
-		$this->addIndex("idx_spots_fts_3", "FULLTEXT", "spots", "tag");
-		$this->addIndex("idx_spotsfull_fts_1", "FULLTEXT", "spotsfull", "userid");
-
 		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren
 		if (!$this->columnExists('spots', 'reversestamp')) {
 			$this->addColumn("reversestamp", "spots", "INTEGER DEFAULT 0");
