@@ -23,7 +23,7 @@ $permList = $tplHelper->getSecGroup(2);
 		<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 			<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 			<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
-			<input type="hidden" name="editsecgroupform[groupid]" value="0">
+			<input type="hidden" name="groupid" value="<?php echo $editsecgroupform['id']; ?>">
 			
 			<dt><label for="editsecgroupform[name]">Naam</label></dt>
 			<dd>
@@ -57,7 +57,7 @@ $permList = $tplHelper->getSecGroup(2);
 						<input type="hidden" name="editsecgroupform[objectid]" value="<?php echo $perm['objectid']; ?>">
 						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
-						<input type="hidden" name="editsecgroupform[groupid]" value="0">
+						<input type="hidden" name="groupid" value="<?php echo $editsecgroupform['id']; ?>">
 						<input class="greyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="Wis">
 					</form>
 				</td>
@@ -70,7 +70,7 @@ $permList = $tplHelper->getSecGroup(2);
 	<form class="editsecgroupform" name="editsecgroupform" action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 		<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 		<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
-		<input type="hidden" name="editsecgroupform[groupid]" value="0">
+		<input type="hidden" name="groupid" value="<?php echo $editsecgroupform['id']; ?>">
 
 		<fieldset>
 			<dt><label for="editsecgroupform[permissionid]">Volgende recht toevoegen</label></dt>
