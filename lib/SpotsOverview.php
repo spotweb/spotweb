@@ -376,7 +376,7 @@ class SpotsOverview {
 		foreach($search['filterValues'] as $searchType => $searchValue) {
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
-			if (in_array($searchType, array('Tag', 'Poster', 'UserID', 'Titel'))) {
+			if (in_array($searchType, array('Tag', 'Poster', 'Titel'))) {
 				$field = '';
 
 				switch($searchType) {
