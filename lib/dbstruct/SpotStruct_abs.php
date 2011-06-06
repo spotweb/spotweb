@@ -586,7 +586,7 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
 				 
 			} else {
-				$this->_dbcon->rawExec("CREATE INDEX idx_spots_5 ON spots(reversestamp);");
+				addIndex("idx_spots_5", "", "spots", "reversestamp")
 			}
 		}
 
