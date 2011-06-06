@@ -196,4 +196,17 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # dropTable
 	
+	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	function alterStorageEngine($tablename, $engine) {
+		$q = $this->_dbcon->singleQuery("SELECT ENGINE 
+										FROM information_schema.TABLES 
+										WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $tablename . "'");
+		
+	
+		if (strtolower($q) != strtolower($engine)) {
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
+		} # if
+	} # alterStorageEngine
+
+	
 } # class
