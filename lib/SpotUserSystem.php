@@ -456,6 +456,20 @@ class SpotUserSystem {
 	} # validateSecGroup
 
 	/*
+	 * Verwijdert een permissie uit een security group
+	 */
+	function removePermFromSecGroup($groupId, $perm) {
+		$this->_db->removePermFromSecGroup($groupId, $perm);
+	} # removePermFromSecGroup
+	
+	/*
+	 * Voegt een permissie aan een security group toe
+	 */
+	function addPermToSecGroup($groupId, $perm) {
+		$this->_db->addPermToSecGroup($groupId, $perm);
+	} # addPermToSecGroup
+	
+	/*
 	 * Update een group record
 	 */
 	function setSecGroup($group) {
@@ -466,7 +480,7 @@ class SpotUserSystem {
 	 * Geeft een group record terug
 	 */
 	function getSecGroup($groupId) {
-		return $this->_db->getSecGroup($groupId);
+		return $this->_db->getSecurityGroup($groupId);
 	} # getSecGroup
 	
 	/*
