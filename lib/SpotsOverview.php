@@ -374,15 +374,17 @@ class SpotsOverview {
 		# Add a list of possible text searches
 		$textSearch = array();
 		foreach($search['filterValues'] as $searchType => $searchValue) {
+			$searchType = strtolower($searchType);
+			
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
-			if (in_array($searchType, array('Tag', 'Poster', 'Titel'))) {
+			if (in_array($searchType, array('tag', 'poster', 'titel'))) {
 				$field = '';
 
 				switch($searchType) {
-					case 'Poster'	: $field = 't.poster'; break;
-					case 'Titel'	: $field = 't.title'; break;
-					case 'Tag'		: $field = 't.tag'; break;
+					case 'poster'	: $field = 't.poster'; break;
+					case 'titel'	: $field = 't.title'; break;
+					case 'tag'		: $field = 't.tag'; break;
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
