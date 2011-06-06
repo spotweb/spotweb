@@ -559,12 +559,11 @@ abstract class SpotStruct_abs {
 			dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
-			$this->_dbcon->rawExec("INSERT INTO spotsfulltext SELECT spots.messageid,spots.poster,spots.title,tag,spotsfull.userid FROM spots LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid;");
+			$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
 
 			# Oude data verwijderen
 			# Het liefst zou ik de kolommon helemaal zien verdwijnen, maar dat is best een gedoe met SQLite
 			$this->_dbcon->rawExec("UPDATE spots SET poster = NULL, title = NULL, tag = NULL;");
-			$this->_dbcon->rawExec("UPDATE spotsfull SET userid = NULL;");
 
 			# niet-bestaande records opruimen
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");

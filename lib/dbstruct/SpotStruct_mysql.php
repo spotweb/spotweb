@@ -43,18 +43,16 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
 		} # if
 
-		# spotsfulltext
-		if (!$this->tableExists('spotsfulltext')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotsfulltext(messageid varchar(128) CHARACTER SET ascii NOT NULL,
+		# spottexts
+		if (!$this->tableExists('spottexts')) {
+			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										userid varchar(128),
 										userid varchar(128),
-										userid varchar(128),
-										userid varchar(32)) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfulltext_1 ON spotsfulltext(messageid);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfulltext_2 ON spotsfull(poster);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfulltext_3 ON spotsfull(title);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfulltext_4 ON spotsfull(tag);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spotsfulltext_5 ON spotsfull(userid);");
+										userid varchar(128)) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_2 ON spottexts(poster);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_3 ON spottexts(title);");
+			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_4 ON spottexts(tag);");
 		} # if
 
 		# NNTP table
