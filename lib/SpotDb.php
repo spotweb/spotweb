@@ -1185,12 +1185,35 @@ class SpotDb {
 	} # getGroupList
 	
 	/*
+	 * Verwijdert een permissie uit een security group
+	 */
+	function removePermFromSecGroup($groupId, $perm) {
+		$this->_db->modify("DELETE FROM grouppermissons WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
+				Array($groupId, $perm['permissionid'], $perm['objectid']));
+	} # removePermFromSecGroup
+	
+	/*
+	 * Voegt een permissie aan een security group toe
+	 */
+	function addPermToSecGroup($groupId, $perm) {
+		$this->_db->modify("INSERT INTO grouppermissons(groupid,permissionid,objectid) VALUES (%d, %d, '%s')",
+				Array($groupId, $perm['permissionid'], $perm['objectid']));
+	} # addPermToSecGroup
+
+	/*
 	 * Geef een specifieke security group terug
 	 */
 	function getSecurityGroup($groupId) {
 		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array($groupId));
 	} # getSecurityGroup
 		
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function setSecurityGroup($group) {
+		$this->_conn->modify("UPDATE name FROM securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
+	} # setSecurityGroup
+	
 	/*
 	 * Wijzigt group membership van een user
 	 */
