@@ -211,5 +211,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # alterStorageEngine
 
+	/* creeert een foreign key constraint */
+	function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
+		$q = $this->_dbcon->arrayQuery("SELECT * FROM information_schema.key_column_usage 
+										WHERE TABLE_SCHEMA = DATABASE() 
+										  AND TABLE_NAME = '" . $tablename . "' 
+										  AND COLUMN_NAME = '" . $colname . "'
+										  AND REFERENCED_TABLE_NAME = '" . $reftable . "' 
+										  AND REFERENCED_COLUMN_NAME = '" . $refcolumn . "'");
+		if (empty($q)) {
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD FOREIGN KEY (" . $colname . ") 
+										REFERENCES " . $reftable . " (" . $refcolumn . ") " . $action);
+		} # if
+	} # addForeignKey
 	
 } # class
