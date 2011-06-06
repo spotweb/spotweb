@@ -466,7 +466,28 @@ class SpotUserSystem {
 	 * Voegt een permissie aan een security group toe
 	 */
 	function addPermToSecGroup($groupId, $perm) {
-		$this->_db->addPermToSecGroup($groupId, $perm);
+		$errorList = array();
+		
+		// trim het objectid
+		$perm['objectid'] = trim($perm['objectid']);
+		
+		// controleer dat deze specifieke permissie niet al in de security groep zit
+		$groupPerms = $this->_db->getGroupPerms($groupId);
+		foreach($groupPerms as $groupPerm) {
+			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
+				($groupPerm['objectid'] == $perm['objectid'])) {
+				
+				# Dubbele permissie
+				$errorList[] = array('validatesecgroup_duplicatepermission', array('name'));
+			} # if
+		} # foreach
+	
+		// voeg de permissie aan de groep
+		if (empty($errorList)) {
+			$this->_db->addPermToSecGroup($groupId, $perm);
+		} # if
+		
+		return $errorList;
 	} # addPermToSecGroup
 	
 	/*

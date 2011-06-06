@@ -699,6 +699,7 @@ class SpotTemplateHelper {
 		
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
 		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
+		$strings['validatesecgroup_duplicatepermission'] = 'Permissie bestaat al in deze groep';
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
