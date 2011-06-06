@@ -373,9 +373,10 @@ class SpotsOverview {
 
 		# Add a list of possible text searches
 		$textSearch = array();
+
 		foreach($search['filterValues'] as $searchType => $searchValue) {
 			$searchType = strtolower($searchType);
-			
+
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
 			if (in_array($searchType, array('tag', 'poster', 'titel'))) {
@@ -390,6 +391,7 @@ class SpotsOverview {
 				if (!empty($field) && !empty($searchValue)) {
 					$parsedTextQueryResult = $this->_db->createTextQuery($field, $searchValue);
 					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
+
 					
 					# We voegen deze extended textqueryies toe aan de filterlist als
 					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
@@ -404,18 +406,29 @@ class SpotsOverview {
 											  'direction' => 'DESC');
 					} # if
 				} # if
-			} else {
+			} else if (!empty($searchValue)) {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
 				#
 				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
 				#   filesize:>=:4000000
 				$tmpFilter = explode(":", $searchValue);
+				if (empty($tmpFilter)) {
+					$tmpFilter = $searchValue;
+				} # if
 
-				if (count($tmpFilter) >= 2) {
-					$filterOperator = $tmpFilter[0];
-					$searchValue = join(":", array_slice($tmpFilter, 1));
-
+				if (count($tmpFilter) >= 1) {
+					# Als we een filter in de vorm name:value krijgen, gaan we altijd 
+					# uit van een gelijkheids filter
+					
+					if (count($tmpFilter) == 1) {
+						$filterOperator = '=';
+						$searchValue = join(":", $tmpFilter);
+					} else {
+						$filterOperator = $tmpFilter[0];
+						$searchValue = join(":", array_slice($tmpFilter, 1));
+					} # else
+					
 					# valideer eerst de operatoren
 					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
 						break;

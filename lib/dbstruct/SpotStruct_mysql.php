@@ -129,6 +129,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
+		$this->_dbcon->rawExec("ANALYZE TABLE spottexts");
 	} # analyze
 	
 	/* controleert of een index bestaat */
