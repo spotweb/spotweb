@@ -376,14 +376,13 @@ class SpotsOverview {
 		foreach($search['filterValues'] as $searchType => $searchValue) {
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
-			if (in_array($searchType, array('Tag', 'Poster', 'UserID', 'Titel'))) {
+			if (in_array($searchType, array('Tag', 'Poster', 'Titel'))) {
 				$field = '';
 
 				switch($searchType) {
 					case 'Poster'	: $field = 't.poster'; break;
 					case 'Titel'	: $field = 't.title'; break;
 					case 'Tag'		: $field = 't.tag'; break;
-					case 'UserID'	: $field = 't.userid'; break;
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
@@ -423,6 +422,7 @@ class SpotsOverview {
 					# en valideer dan de zoekvelden
 					$filterFieldMapping = array('filesize' => 's.filesize',
 										  'date' => 's.stamp',
+										  'userid' => 'f.userid',
 										  'moderated' => 's.moderated');
 					if (!isset($filterFieldMapping[$searchType])) {
 						break;

@@ -47,20 +47,18 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
 		} # if
 
-		# spotsfulltext table
-		if (!$this->tableExists('spotsfulltext')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotsfulltext(messageid varchar(128),
+		# spottexts table
+		if (!$this->tableExists('spottexts')) {
+			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128),
 										poster varchar(128),
 										title varchar(128),
-										tag varchar(128),
-										userid varchar(32));");										
+										tag varchar(128));");										
 
 			# create indices
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfulltext_1 ON spotsfulltext(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfulltext_2 ON spotsfulltext(poster);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfulltext_3 ON spotsfulltext(title);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfulltext_4 ON spotsfulltext(tag);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfulltext_5 ON spotsfulltext(userid);");
+			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid)");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_2 ON spottexts(poster);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_3 ON spottexts(title);");
+			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_4 ON spottexts(tag);");
 
 		} # if
 
