@@ -480,7 +480,12 @@ class SpotUserSystem {
 	 * Geeft een group record terug
 	 */
 	function getSecGroup($groupId) {
-		return $this->_db->getSecurityGroup($groupId);
+		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		if ($tmpGroup !== false) {
+			return $tmpGroup[0];
+		} else {
+			return false;
+		} # else
 	} # getSecGroup
 	
 	/*
