@@ -589,7 +589,7 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("ALTER TABLE spotsfull ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
 				$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
 				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
+				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (inreplyto) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
 				 
 			} else {
 				$this->addIndex("idx_spots_5", "", "spots", "reversestamp");
