@@ -48,7 +48,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										poster varchar(128),
 										title varchar(128),
-										tag varchar(128)) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+										tag varchar(128)) ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_2 ON spottexts(poster);");
 			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_3 ON spottexts(title);");
