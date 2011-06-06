@@ -39,6 +39,9 @@ abstract class SpotStruct_abs {
 
 	/* ceeert een lege tabel met enkel een ID veld */
 	abstract function createTable($tablename, $collations);
+
+	/* creeert een foreign key constraint */
+	abstract function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
 	
 	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
@@ -453,9 +456,9 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL;");
 
 			# relaties aanleggen
-			$this->_dbcon->rawExec("ALTER TABLE usersettings ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-			$this->_dbcon->rawExec("ALTER TABLE sessions ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-			$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		}
 		# een foute index herstellen
 		if ($this->_spotdb->getSchemaVer() < 0.26) {
@@ -540,9 +543,9 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
 
 			# relaties aanleggen
-			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-			$this->_dbcon->rawExec("ALTER TABLE usergroups ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-			$this->_dbcon->rawExec("ALTER TABLE grouppermissions ADD FOREIGN KEY (groupid) REFERENCES securitygroups (id) ON DELETE CASCADE ON UPDATE CASCADE;");
+			$this->addForeignKey('usergroups', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->addForeignKey('usergroups', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->addForeignKey('grouppermissions', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		} # if
 
 		# Nog een paar tabellen omzetten naar InnoDB
@@ -568,7 +571,7 @@ abstract class SpotStruct_abs {
 			# niet-bestaande records opruimen
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spots.messageid = spotsfull.messageid WHERE spots.id IS NULL");
+//			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spots.messageid = spotsfull.messageid WHERE spots.id IS NULL");
 
 			if ($this instanceof SpotStruct_mysql) {
 				# Oude kolommen droppen
@@ -586,11 +589,10 @@ abstract class SpotStruct_abs {
 				$this->addIndex("idx_commentspostedrel_1", "", "commentsposted", "ouruserid");
 
 				# relaties aanleggen
-				$this->_dbcon->rawExec("ALTER TABLE spotsfull ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
-				$this->_dbcon->rawExec("ALTER TABLE spotstatelist ADD FOREIGN KEY (messageid) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
-				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (ouruserid) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE;");
-				$this->_dbcon->rawExec("ALTER TABLE commentsposted ADD FOREIGN KEY (inreplyto) REFERENCES spots (messageid) ON DELETE CASCADE ON UPDATE CASCADE;");
-				 
+				$this->addForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+				$this->addForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+				$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+				$this->addForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 			} else {
 				$this->addIndex("idx_spots_5", "", "spots", "reversestamp");
 
