@@ -997,9 +997,10 @@ class SpotDb {
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover USING spots
+				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
 									LEFT JOIN spottexts ON spots.messageid=spottexts.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1035,9 +1036,10 @@ class SpotDb {
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover USING spots
+				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
 					LEFT JOIN spottexts ON spots.messageid=spottexts.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
