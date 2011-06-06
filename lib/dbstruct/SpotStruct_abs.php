@@ -601,6 +601,11 @@ abstract class SpotStruct_abs {
 			}
 		}
 
+		# Index op userid voor zoeken is wel wat sneller
+		if ($this->_spotdb->getSchemaVer() < 0.32) {
+			$this->addIndex("idx_fullspots_2", "", "fullspots", "userid");
+		} # if
+
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
