@@ -45,12 +45,6 @@ abstract class SpotStruct_abs {
 
 
 	function updateSchema() {
-		# Fulltext indexes
-		$this->addIndex("idx_spots_fts_1", "FULLTEXT", "spots", "title");
-		$this->addIndex("idx_spots_fts_2", "FULLTEXT", "spots", "poster");
-		$this->addIndex("idx_spots_fts_3", "FULLTEXT", "spots", "tag");
-		$this->addIndex("idx_spotsfull_fts_1", "FULLTEXT", "spotsfull", "userid");
-
 		# We voegen een reverse timestamp toe omdat MySQL MyISAM niet goed kan reverse sorteren
 		if (!$this->columnExists('spots', 'reversestamp')) {
 			$this->addColumn("reversestamp", "spots", "INTEGER DEFAULT 0");
@@ -559,13 +553,14 @@ abstract class SpotStruct_abs {
 			$this->dropIndex('idx_spots_6', 'spots');
 
 			# Data kopiëren naar de nieuwe tabel
-			$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
-
-
+			if (!$this->tableExists('spottexts')) {
+				$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
+			} # if
 
 			# niet-bestaande records opruimen
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
 			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
+			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spots.messageid = spotsfull.messageid WHERE spots.id IS NULL");
 
 			if ($this instanceof SpotStruct_mysql) {
 				$this->_dbcon->rawExec("ALTER TABLE spots ENGINE=InnoDB;");
