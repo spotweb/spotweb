@@ -2,22 +2,22 @@
 	require "includes/header.inc.php";
 	
 if (!empty($editsecgroupresult)) {
-	//include 'includes/form-xmlresult.inc.php';
-	//echo formResult2Xml($editsecgroupresult, $formmessages, $tplHelper);
-	
-	if ($editsecgroupresult['result'] == 'success') {
-		#$tplHelper->redirect($http_referer);
-		#return ;
-	} # if
+	include "includes/form-messages.inc.php";
 } # if
 
-include "includes/form-messages.inc.php";
 
 $permList = $tplHelper->getSecGroup($securitygroup['id']);
 ?>
 	<span><a href='<?php echo $http_referer;?>'>Terug naar vorige pagina</a></span>
 	<br>
 
+	############################### <br>
+	############################### <br>
+	1. Geen geldige groep moet gecontroleerd worden <br>
+	2. Toevoegen van dubbel recht geeft allerlei notices<br>
+	############################### <br>
+	############################### <br>
+	
 	<!-- Naam van security group wijzigen -->
 	<fieldset>
 		<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
@@ -53,7 +53,7 @@ $permList = $tplHelper->getSecGroup($securitygroup['id']);
 				<td> <?php echo $perm['objectid']; ?> </td>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
-						<input type="hidden" name="editsecgroupform[permissiond]" value="<?php echo $perm['permissionid']; ?>">
+						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
 						<input type="hidden" name="editsecgroupform[objectid]" value="<?php echo $perm['objectid']; ?>">
 						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
@@ -78,7 +78,7 @@ $permList = $tplHelper->getSecGroup($securitygroup['id']);
 				<select name="editsecgroupform[permissionid]">
 			
 <?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
-					<option value="$key"><?php echo $val; ?></option>
+					<option value="<?php echo $key; ?>"><?php echo $val; ?></option>
 <?php } ?>
 				</select>
 			</dd>

@@ -474,6 +474,7 @@ class SpotUserSystem {
 		// controleer dat deze specifieke permissie niet al in de security groep zit
 		$groupPerms = $this->_db->getGroupPerms($groupId);
 		foreach($groupPerms as $groupPerm) {
+		var_dump($groupPerm);
 			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
