@@ -697,6 +697,9 @@ class SpotTemplateHelper {
 		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
 		$strings['postcomment_replayattack'] = 'Replay attack';
 		
+		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
+		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 
