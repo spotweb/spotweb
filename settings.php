@@ -336,7 +336,7 @@ if (isset($settings['nzbhandling'])) {
 # Controleer op oud type quicklinks (zonder security)
 foreach($settings['quicklinks'] as $link) {
 	if (count($link) != 5) {
-		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je qiucklinks in je settings.php (zie settings.php voor een voorbeeld)");
+		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je quicklinks in je settings.php (zie settings.php voor een voorbeeld)");
 	} # if
 } # foreach
 
