@@ -1177,7 +1177,7 @@ class SpotDb {
 	 */
 	function getGroupList($userId) {
 		if ($userId == null) {
-			return $this->_conn->arrayQuery("SELECT ID,name,0 as \"ismember\" FROM securitygroups");
+			return $this->_conn->arrayQuery("SELECT id,name,0 as \"ismember\" FROM securitygroups");
 		} else {
 			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
 										Array($userId));
@@ -1211,7 +1211,7 @@ class SpotDb {
 	 * Geef een specifieke security group terug
 	 */
 	function setSecurityGroup($group) {
-		$this->_conn->modify("UPDATE name FROM securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
+		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
 	} # setSecurityGroup
 	
 	/*
