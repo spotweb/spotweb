@@ -380,10 +380,10 @@ class SpotsOverview {
 				$field = '';
 
 				switch($searchType) {
-					case 'Tag'		: $field = 'tag'; break;
-					case 'Poster'	: $field = 'poster'; break;
-					case 'UserID'	: $field = 'userid'; break;
-					case 'Titel'	: $field = 'title'; break;
+					case 'Poster'	: $field = 't.poster'; break;
+					case 'Titel'	: $field = 't.title'; break;
+					case 'Tag'		: $field = 't.tag'; break;
+					case 'UserID'	: $field = 't.userid'; break;
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
