@@ -804,15 +804,15 @@ class SpotDb {
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
-												s.poster AS poster,
+												t.poster AS poster,
 												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
 												s.subcatd AS subcatd,
 												s.subcatz AS subcatz,
-												s.title AS title,
-												s.tag AS tag,
+												t.title AS title,
+												t.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
 												s.spotrating AS rating,
@@ -830,6 +830,7 @@ class SpotDb {
 												f.fullxml AS fullxml,
 												f.filesize AS filesize
 												FROM spots AS s
+												LEFT JOIN spottexts AS t ON (s.messageid = t.messageid)
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
