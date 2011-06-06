@@ -1183,6 +1183,13 @@ class SpotDb {
 										Array($userId));
 		} # if
 	} # getGroupList
+	
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function getSecurityGroup($groupId) {
+		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array($groupId));
+	} # getSecurityGroup
 		
 	/*
 	 * Wijzigt group membership van een user
