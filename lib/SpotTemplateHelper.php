@@ -339,7 +339,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*

@@ -440,9 +440,16 @@ class SpotsOverview {
 						} # switch
 						$searchValue = (int) $val;
 					} # if
+					
+					# als het niet numeriek is, zet er dan een quote by
+					if (!is_numeric($searchValue)) {
+						$searchValue = "'" . $this->_db->safe($searchValue) . "'";
+					} else {
+						$searchValue = $this->_db->safe($searchValue);
+					} # if
 
 					# en creeer de query string
-					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $this->_db->safe($searchValue) . ') ';
+					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $searchValue . ') ';
 				} # if
 			} # if
 		} # foreach
