@@ -217,9 +217,9 @@ class SpotTemplateHelper {
 	/*
 	 * Creeert de action url voor het wissen van een permissie 
 	 */
-	function makeDeletePermFromSecGroupAction() {
+	function makeEditSecGroupAction() {
 		return $this->makeBaseUrl("path") . "?page=editsecgroup";
-	} # makeDeletePermFromSecGroupAction
+	} # makeEditSecGroupAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)

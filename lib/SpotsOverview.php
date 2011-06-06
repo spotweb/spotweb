@@ -382,7 +382,6 @@ class SpotsOverview {
 				switch($searchType) {
 					case 'Tag'		: $field = 'tag'; break;
 					case 'Poster'	: $field = 'poster'; break;
-					case 'UserID'	: $field = 'userid'; break;
 					case 'Titel'	: $field = 'title'; break;
 				} # switch
 				
@@ -423,6 +422,7 @@ class SpotsOverview {
 					# en valideer dan de zoekvelden
 					$filterFieldMapping = array('filesize' => 's.filesize',
 										  'date' => 's.stamp',
+										  'userid' => 'f.userid',
 										  'moderated' => 's.moderated');
 					if (!isset($filterFieldMapping[$searchType])) {
 						break;
