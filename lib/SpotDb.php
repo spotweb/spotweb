@@ -728,7 +728,6 @@ class SpotDb {
 												l.download as downloadstamp, 
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -774,7 +773,6 @@ class SpotDb {
 												s.category AS category,
 												s.subcat AS subcat,
 												t.poster AS poster,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -807,7 +805,6 @@ class SpotDb {
 												s.category AS category,
 												s.subcat AS subcat,
 												t.poster AS poster,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -1052,12 +1049,11 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->modify("INSERT INTO spots(messageid, category, subcat, groupname, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+		$this->_conn->modify("INSERT INTO spots(messageid, category, subcat, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
 				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
 					   (int) $spot['category'],
 					   $spot['subcat'],
-					   $spot['groupname'],
 					   $spot['subcata'],
 					   $spot['subcatb'],
 					   $spot['subcatc'],

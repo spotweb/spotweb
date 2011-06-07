@@ -130,8 +130,6 @@ class SpotParser {
 			// key id
 			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 
-			// groupname
-			$spot['groupname'] = 'free.pt';
 			if ($spot['keyid'] >= 0) {
 
 				$expression = '';

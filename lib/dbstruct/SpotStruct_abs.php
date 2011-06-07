@@ -156,7 +156,6 @@ abstract class SpotStruct_abs {
 
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY messageid VARCHAR(128) CHARACTER SET ascii DEFAULT ''  NOT NULL");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY poster VARCHAR(128) CHARACTER SET utf8");
-			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY groupname VARCHAR(128) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcata VARCHAR(64) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatb VARCHAR(64) CHARACTER SET utf8");
 			$this->_dbcon->rawExec("ALTER TABLE spots MODIFY subcatc VARCHAR(64) CHARACTER SET utf8");
@@ -624,7 +623,6 @@ abstract class SpotStruct_abs {
 										tag varchar(128),
 										category INTEGER, 
 										subcat INTEGER,
-										groupname VARCHAR(128),
 										subcata VARCHAR(64),
 										subcatb VARCHAR(64),
 										subcatc VARCHAR(64),
@@ -639,11 +637,11 @@ abstract class SpotStruct_abs {
 			
 			# Copieer de data uit de andere tabellen
 			$this->_dbcon->rawExec("INSERT INTO spotstmp(messageid, poster, title, tag, category, subcat, 
-														 groupname, subcata, subcatb, subcatc, subcatd, 
+														 subcata, subcatb, subcatc, subcatd, 
 														 subcatz, stamp, reversestamp, filesize, 
 														 moderated, commentcount, spotrating) 
 										(SELECT s.messageid, t.poster, t.title, t.tag, 
-												s.category, s.subcat, s.groupname, 
+												s.category, s.subcat, 
 												s.subcata, s.subcatb, s.subcatc, 
 												s.subcatd, s.subcatz, s.stamp, 
 												s.reversestamp, s.filesize, s.moderated, 
