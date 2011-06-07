@@ -8,7 +8,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 											messageid VARCHAR(128),
 											category INTEGER, 
 											subcat INTEGER,
-											groupname VARCHAR(128),
 											subcata VARCHAR(64),
 											subcatb VARCHAR(64),
 											subcatc VARCHAR(64),

@@ -8,7 +8,6 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										category INTEGER, 
 										subcat INTEGER,
-										groupname VARCHAR(128),
 										subcata VARCHAR(64),
 										subcatb VARCHAR(64),
 										subcatc VARCHAR(64),
