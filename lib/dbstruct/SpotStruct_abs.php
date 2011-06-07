@@ -43,11 +43,17 @@ abstract class SpotStruct_abs {
 	/* creeert een foreign key constraint */
 	abstract function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
 	
+	/* dropped een foreign key constraint */
+	abstract function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
+	
 	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
 
 	/* drop een table */
 	abstract function dropTable($tablename);
+	
+	/* rename een table */
+	abstract function renameTable($tablename, $newTableName);
 
 
 	function updateSchema() {
@@ -551,6 +557,14 @@ abstract class SpotStruct_abs {
 		# Nog een paar tabellen omzetten naar InnoDB
 		if ($this->_spotdb->getSchemaVer() < 0.31) {
 			echo "Big upgrade of database, this might take 20 minutes or more!" . PHP_EOL;
+
+			# niet-bestaande records opruimen
+			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
+			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
+			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
+			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL;");
+			
+			# daarna de indexen droppen
 			$this->dropIndex('idx_spots_fts_1', 'spots');
 			$this->dropIndex('idx_spots_fts_2', 'spots');
 			$this->dropIndex('idx_spots_fts_3', 'spots');
@@ -567,11 +581,6 @@ abstract class SpotStruct_abs {
 				} # else
 				$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
 			} # if
-
-			# niet-bestaande records opruimen
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
 
 			if ($this instanceof SpotStruct_mysql) {
 				# Oude kolommen droppen
@@ -605,6 +614,65 @@ abstract class SpotStruct_abs {
 		if ($this->_spotdb->getSchemaVer() < 0.32) {
 			$this->addIndex("idx_spotsfull_2", "", "spotsfull", "userid");
 		} # if
+		
+		# Tabellen terug samenvoegen en naar MyISAM converteren samenvoegen
+		if ((false) && ($this->_spotdb->getSchemaVer() < 0.33)) {
+			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
+										messageid varchar(128) CHARACTER SET ascii NOT NULL,
+										poster varchar(128),
+										title varchar(128),
+										tag varchar(128),
+										category INTEGER, 
+										subcat INTEGER,
+										groupname VARCHAR(128),
+										subcata VARCHAR(64),
+										subcatb VARCHAR(64),
+										subcatc VARCHAR(64),
+										subcatd VARCHAR(64),
+										subcatz VARCHAR(64),
+										stamp INTEGER(10) UNSIGNED,
+										reversestamp INTEGER DEFAULT 0,
+										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
+										moderated BOOLEAN,
+										commentcount INTEGER DEFAULT 0,
+										spotrating INTEGER DEFAULT 0) ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
+			
+			# Copieer de data uit de andere tabellen
+			$this->_dbcon->rawExec("INSERT INTO spotstmp(messageid, poster, title, tag, category, subcat, 
+														 groupname, subcata, subcatb, subcatc, subcatd, 
+														 subcatz, stamp, reversestamp, filesize, 
+														 moderated, commentcount, spotrating) 
+										(SELECT s.messageid, t.poster, t.title, t.tag, 
+												s.category, s.subcat, s.groupname, 
+												s.subcata, s.subcatb, s.subcatc, 
+												s.subcatd, s.subcatz, s.stamp, 
+												s.reversestamp, s.filesize, s.moderated, 
+												s.commentcount, s.spotrating 
+											FROM spots s 
+											JOIN spottexts t ON (s.messageid = t.messageid))");
+
+			# relaties wissen
+			$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+			$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+
+			# drop de 'oude' tabellen
+			$this->dropTable('spots');
+			$this->dropTable('spottexts');
+			
+			# rename deze tabel
+			$this->renameTable('spotstmp', 'spots');
+			
+			# Creer de diverse indexen
+			$this->addIndex("idx_spots_1", "UNIQUE", "spots", "messageid");
+			$this->addIndex("idx_spots_2", "", "spots", "stamp");
+			$this->addIndex("idx_spots_3", "", "spots", "reversestamp");
+			$this->addIndex("idx_spots_4", "", "spots", "category, subcata, subcatb, subcatc, subcatd, subcatz");
+			$this->addIndex("idx_fts_spots_1", "FULLTEXT", "spots", "poster");
+			$this->addIndex("idx_fts_spots_2", "FULLTEXT", "spots", "title");
+			$this->addIndex("idx_fts_spots_3", "FULLTEXT", "spots", "tag");
+		} # if
+		
 
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);

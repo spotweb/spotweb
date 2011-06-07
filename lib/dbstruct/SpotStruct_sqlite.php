@@ -218,5 +218,14 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return ; // null
 	} # addForeignKey
 
+	/* dropped een foreign key constraint */
+	function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
+		return ; // null
+	} # dropForeignKey
+	
+	/* rename een table */
+	function renameTable($tablename, $newTableName) {
+		$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " RENAME TO " . $newTableName);
+	} # renameTable
 	
 } # class

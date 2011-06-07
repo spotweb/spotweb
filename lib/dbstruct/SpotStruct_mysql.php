@@ -208,6 +208,24 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
 		} # if
 	} # alterStorageEngine
+	
+	/* rename een table */
+	function renameTable($tablename, $newTableName) {
+		$this->_dbcon->rawExec("RENAME TABLE " . $tablename . " TO " . $newTableName);
+	} # renameTable
+
+	/* dropped een foreign key constraint */
+	function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
+		$q = $this->_dbcon->singleQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage 
+										WHERE TABLE_SCHEMA = DATABASE() 
+										  AND TABLE_NAME = '" . $tablename . "' 
+										  AND COLUMN_NAME = '" . $colname . "'
+										  AND REFERENCED_TABLE_NAME = '" . $reftable . "' 
+										  AND REFERENCED_COLUMN_NAME = '" . $refcolumn . "'");
+		if (empty($q)) {
+			$this->_dbcon->rawExec("DROP FOREIGN KEY " . $q['CONSTRAINT_NAME']);
+		} # if
+	} # dropForeignKey
 
 	/* creeert een foreign key constraint */
 	function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
