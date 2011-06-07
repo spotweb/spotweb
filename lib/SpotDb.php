@@ -527,8 +527,10 @@ class SpotDb {
 			} # case
 
 			default			  : {
-				$this->_conn->modify("DELETE FROM spots, spottexts USING spots
-									INNER JOIN spottexts on spots.messageid=spottexts.messageid WHERE spots.id > %d", array($spot['id']));
+				$this->_conn->modify("DELETE FROM spots, spotsfull, spottexts USING spots
+										JOIN spottexts on spots.messageid=spottexts.messageid 
+										LEFT JOIN spotsfull on spots.messageid=spotsfull.messageid
+									  WHERE spots.id > %d", array($spot['id']));
 			} # default
 		} # switch
 	} # removeExtraSpots
