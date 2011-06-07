@@ -743,7 +743,7 @@ class SpotDb {
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-									 LEFT JOIN spottexts AS t ON (s.messageid = t.messageid)
+									 JOIN spottexts AS t ON (s.messageid = t.messageid)
 									 LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
