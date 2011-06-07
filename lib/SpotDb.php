@@ -785,7 +785,7 @@ class SpotDb {
 												s.commentcount AS commentcount,
 												s.moderated AS moderated
 											  FROM spots AS s
-											  LEFT JOIN spottexts AS t ON (s.messageid = t.messageid)
+											  JOIN spottexts AS t ON (s.messageid = t.messageid)
 											  WHERE s.messageid = '%s'", Array($msgId));
 		if (empty($tmpArray)) {
 			return ;
@@ -830,7 +830,7 @@ class SpotDb {
 												f.fullxml AS fullxml,
 												f.filesize AS filesize
 												FROM spots AS s
-												LEFT JOIN spottexts AS t ON (s.messageid = t.messageid)
+												JOIN spottexts AS t ON (s.messageid = t.messageid)
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
@@ -999,7 +999,7 @@ class SpotDb {
 			} # pdo_sqlite
 			default			: {
 				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
-									LEFT JOIN spottexts ON spots.messageid=spottexts.messageid
+									JOIN spottexts ON spots.messageid=spottexts.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
@@ -1038,7 +1038,7 @@ class SpotDb {
 			} # pdo_sqlite
 			default		: {
 				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
-					LEFT JOIN spottexts ON spots.messageid=spottexts.messageid
+					JOIN spottexts ON spots.messageid=spottexts.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
