@@ -187,7 +187,7 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
-		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
+		return $this->_nzbHandler->generateNzbHandlerUrl($spot, $this->makeApiRequestString());
 	} # makeSabnzbdUrl
 
 	/*
