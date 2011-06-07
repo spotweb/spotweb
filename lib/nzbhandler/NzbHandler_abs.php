@@ -52,11 +52,11 @@ abstract class NzbHandler_abs
 	
 	abstract public function processNzb($fullspot, $nzblist);
 
-	public function generateNzbHandlerUrl($spot)
+	public function generateNzbHandlerUrl($spot, $spotwebApiParam)
 	{
 		$spotwebUrl = $this->_settings->get('spotweburl');
 		$action = $this->_nzbHandling['action'];
-		$url = $spotwebUrl . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'];
+		$url = $spotwebUrl . '?page=getnzb&amp;action=' . $action . '&amp;messageid=' . $spot['messageid'] . $spotwebApiParam;
 		
 		return $url;
 	} # generateNzbHandlerUrl
