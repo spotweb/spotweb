@@ -517,9 +517,20 @@ class SpotDb {
 		} # if
 
 		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-		$this->_conn->modify("DELETE FROM spottexts WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-		$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+		switch ($this->_dbsettings['engine']) {
+			# geen join delete omdat sqlite dat niet kan
+			case 'pdo_sqlite' : {
+				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
+				$this->_conn->modify("DELETE FROM spottexts WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
+				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+				break;
+			} # case
+
+			default			  : {
+				$this->_conn->modify("DELETE FROM spots, spottexts USING spots
+									INNER JOIN spottexts on spots.messageid=spottexts.messageid WHERE spots.id > %d", array($spot['id']));
+			} # default
+		} # switch
 	} # removeExtraSpots
 
 	/*
@@ -976,12 +987,24 @@ class SpotDb {
 	 * Verwijder een spot uit de db
 	 */
 	function deleteSpot($msgId) {
-		$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
-		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
-		$this->_conn->modify("DELETE FROM spottexts WHERE messageid = '%s'", Array($msgId));
-		$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
-		$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite' : {
+				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
+				$this->_conn->modify("DELETE FROM spottexts WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
+				break; 
+			} # pdo_sqlite
+			default			: {
+				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
+									JOIN spottexts ON spots.messageid=spottexts.messageid
+									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+									WHERE spots.messageid = '%s'", Array($msgId));
+			} # default
+		} # switch
 	} # deleteSpot
 
 	/*
@@ -997,17 +1020,30 @@ class SpotDb {
 	function deleteSpotsRetention($retention) {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
-		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
-		$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid NOT IN 
-								(SELECT messageid FROM spots)") ;
-		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
-								(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref NOT IN SELECT messageid FROM spots))") ;
-		$this->_conn->modify("DELETE FROM spottexts WHERE spottexts.messageid NOT IN 
-								(SELECT messageid FROM spots)") ;
-		$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref NOT IN 
-								(SELECT messageid FROM spots)") ;
-		$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid NOT IN 
-								(SELECT messageid FROM spots)") ;
+		switch ($this->_dbsettings['engine']) {
+ 			case 'pdo_sqlite': {
+				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
+				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
+									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
+									(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref not in 
+									(SELECT messageid FROM spots))") ;
+				$this->_conn->modify("DELETE FROM spottexts WHERE spottexts.messageid not in 
+									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
+									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
+									(SELECT messageid FROM spots)") ;
+				break;
+			} # pdo_sqlite
+			default		: {
+				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
+					JOIN spottexts ON spots.messageid=spottexts.messageid
+					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+					WHERE spots.stamp < " . (time() - $retention) );
+			} # default
+		} # switch
 	} # deleteSpotsRetention
 
 	/*
