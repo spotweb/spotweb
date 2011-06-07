@@ -362,7 +362,7 @@ class SpotTemplateHelper {
 			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
 			return '';
-		}
+		} # else
 	} # makeApiRequestString
 	
 	/*
