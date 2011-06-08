@@ -6,6 +6,9 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		if (!$this->tableExists('spots')) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
 											messageid VARCHAR(128),
+											poster varchar(128),
+											title varchar(128),
+											tag varchar(128),
 											category INTEGER, 
 											subcat INTEGER,
 											subcata VARCHAR(64),
@@ -41,21 +44,6 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			# create indices
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
 			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
-		} # if
-
-		# spottexts table
-		if (!$this->tableExists('spottexts')) {
-			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128),
-										poster varchar(128),
-										title varchar(128),
-										tag varchar(128));");										
-
-			# create indices
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_2 ON spottexts(poster);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_3 ON spottexts(title);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spottexts_4 ON spottexts(tag);");
-
 		} # if
 
 		# NNTP table

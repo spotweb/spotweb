@@ -383,9 +383,9 @@ class SpotsOverview {
 				$field = '';
 
 				switch($searchType) {
-					case 'poster'	: $field = 't.poster'; break;
-					case 'titel'	: $field = 't.title'; break;
-					case 'tag'		: $field = 't.tag'; break;
+					case 'poster'	: $field = 's.poster'; break;
+					case 'titel'	: $field = 's.title'; break;
+					case 'tag'		: $field = 's.tag'; break;
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
