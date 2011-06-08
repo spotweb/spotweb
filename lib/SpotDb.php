@@ -990,7 +990,7 @@ class SpotDb {
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots commentsxover, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, commentsxover, commentsfull USING spots
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
@@ -1039,7 +1039,7 @@ class SpotDb {
 	 */
 	function addSpot($spot, $fullSpot = array()) {
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcat, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
 					   $spot['poster'],
 					   $spot['title'],
