@@ -179,6 +179,11 @@ abstract class SpotStruct_abs {
 	
 
 	function updateSchema() {
+		# drop eventueel FTS indexes op de spotsfull tabel
+		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
+		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
+		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+		
 		# ---- spots table ---- #
 		$this->createTable('spots', "utf8"); 
 		$this->validateColumn('messageid', 'spots', 'VARCHAR(128)', "''", true, 'ascii');
