@@ -164,7 +164,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
-				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
+				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 				$channel->appendChild($item);
 
 				$enclosure = $doc->createElement('enclosure');
