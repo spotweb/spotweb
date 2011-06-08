@@ -66,6 +66,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
+		# Check eerst of de tabel bestaat, anders kan
+		# indexExists mislukken en een fatal error geven
+		if (!$this->tableExists($tablename)) {
+			return ;
+		} # if
+		
 		if ($this->indexExists($idxname, $tablename)) {
 			$this->_dbcon->rawExec("DROP INDEX " . $idxname);
 		} # if
