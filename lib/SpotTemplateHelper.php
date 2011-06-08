@@ -700,6 +700,8 @@ class SpotTemplateHelper {
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
 		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
 		$strings['validatesecgroup_duplicatepermission'] = 'Permissie bestaat al in deze groep';
+		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
+		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
@@ -754,6 +756,20 @@ class SpotTemplateHelper {
 		$spotSigning = new SpotSigning();
 		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
 	} # getSessionCalculatedUserId
+	
+	/*
+	 * Geeft een lijst met alle security groepen terug
+	 */
+	function getGroupList() {
+		return $this->_db->getGroupList(null);
+	}  # getGroupList
+
+	/*
+	 * Geeft alle permissies in een bepaalde securitygroup terug
+	 */
+	function getSecGroup($id) {
+		return $this->_db->getGroupPerms($id);
+	} # getSecGroup
 	
 	/*
 	 * Redirect naar een opgegeven url
