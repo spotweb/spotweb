@@ -6,6 +6,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		if (!$this->tableExists('spots')) {
 			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
+										poster varchar(128),
+										title varchar(128),
+										tag varchar(128),
 										category INTEGER, 
 										subcat INTEGER,
 										subcata VARCHAR(64),
@@ -37,18 +40,6 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										fullxml TEXT,
 										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
-		} # if
-
-		# spottexts
-		if (!$this->tableExists('spottexts')) {
-			$this->_dbcon->rawExec("CREATE TABLE spottexts(messageid varchar(128) CHARACTER SET ascii NOT NULL,
-										poster varchar(128),
-										title varchar(128),
-										tag varchar(128)) ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spottexts_1 ON spottexts(messageid);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_2 ON spottexts(poster);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_3 ON spottexts(title);");
-			$this->_dbcon->rawExec("CREATE FULLTEXT INDEX idx_spottexts_4 ON spottexts(tag);");
 		} # if
 
 		# NNTP table
@@ -215,14 +206,16 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 	/* dropped een foreign key constraint */
 	function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
-		$q = $this->_dbcon->singleQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage 
+		$q = $this->_dbcon->arrayQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage 
 										WHERE TABLE_SCHEMA = DATABASE() 
 										  AND TABLE_NAME = '" . $tablename . "' 
 										  AND COLUMN_NAME = '" . $colname . "'
 										  AND REFERENCED_TABLE_NAME = '" . $reftable . "' 
 										  AND REFERENCED_COLUMN_NAME = '" . $refcolumn . "'");
-		if (empty($q)) {
-			$this->_dbcon->rawExec("DROP FOREIGN KEY " . $q['CONSTRAINT_NAME']);
+		if (!empty($q)) {
+			foreach($q as $res) {
+				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP FOREIGN KEY " . $res['CONSTRAINT_NAME']);
+			} # foreach
 		} # if
 	} # dropForeignKey
 

@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.32');
+define('SPOTDB_SCHEMA_VERSION', '0.33');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -521,14 +521,12 @@ class SpotDb {
 			# geen join delete omdat sqlite dat niet kan
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-				$this->_conn->modify("DELETE FROM spottexts WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
 				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
 				break;
 			} # case
 
 			default			  : {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, spottexts USING spots
-										JOIN spottexts on spots.messageid=spottexts.messageid 
+				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots
 										LEFT JOIN spotsfull on spots.messageid=spotsfull.messageid
 									  WHERE spots.id > %d", array($spot['id']));
 			} # default
@@ -577,7 +575,6 @@ class SpotDb {
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s 
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-						LEFT JOIN spottexts AS t ON (s.messageid = t.messageid)
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						WHERE " . $sqlFilter;
 		} # else
@@ -724,7 +721,7 @@ class SpotDb {
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
-												t.poster AS poster,
+												s.poster AS poster,
 												l.download as downloadstamp, 
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -733,8 +730,8 @@ class SpotDb {
 												s.subcatc AS subcatc,
 												s.subcatd AS subcatd,
 												s.subcatz AS subcatz,
-												t.title AS title,
-												t.tag AS tag,
+												s.title AS title,
+												s.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
 												s.filesize AS filesize,
@@ -744,7 +741,6 @@ class SpotDb {
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s 
-									 JOIN spottexts AS t ON (s.messageid = t.messageid)
 									 LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
@@ -772,20 +768,19 @@ class SpotDb {
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
-												t.poster AS poster,
+												s.poster AS poster,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
 												s.subcatd AS subcatd,
 												s.subcatz AS subcatz,
-												t.title AS title,
-												t.tag AS tag,
+												s.title AS title,
+												s.tag AS tag,
 												s.stamp AS stamp,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
 												s.moderated AS moderated
 											  FROM spots AS s
-											  JOIN spottexts AS t ON (s.messageid = t.messageid)
 											  WHERE s.messageid = '%s'", Array($msgId));
 		if (empty($tmpArray)) {
 			return ;
@@ -804,14 +799,14 @@ class SpotDb {
 												s.messageid AS messageid,
 												s.category AS category,
 												s.subcat AS subcat,
-												t.poster AS poster,
+												s.poster AS poster,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
 												s.subcatd AS subcatd,
 												s.subcatz AS subcatz,
-												t.title AS title,
-												t.tag AS tag,
+												s.title AS title,
+												s.tag AS tag,
 												s.stamp AS stamp,
 												s.moderated AS moderated,
 												s.spotrating AS rating,
@@ -829,7 +824,6 @@ class SpotDb {
 												f.fullxml AS fullxml,
 												f.filesize AS filesize
 												FROM spots AS s
-												JOIN spottexts AS t ON (s.messageid = t.messageid)
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
@@ -991,14 +985,12 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
-				$this->_conn->modify("DELETE FROM spottexts WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
-									JOIN spottexts ON spots.messageid=spottexts.messageid
+				$this->_conn->modify("DELETE FROM spots commentsxover, commentsfull USING spots
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
@@ -1027,8 +1019,6 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
 									(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots))") ;
-				$this->_conn->modify("DELETE FROM spottexts WHERE spottexts.messageid not in 
-									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
@@ -1036,8 +1026,7 @@ class SpotDb {
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spottexts, commentsxover, commentsfull USING spots
-					JOIN spottexts ON spots.messageid=spottexts.messageid
+				$this->_conn->modify("DELETE FROM spots commentsxover, commentsfull USING spots
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
@@ -1049,9 +1038,12 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->modify("INSERT INTO spots(messageid, category, subcat, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcat, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
 				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
+					   $spot['poster'],
+					   $spot['title'],
+					   $spot['tag'],
 					   (int) $spot['category'],
 					   $spot['subcat'],
 					   $spot['subcata'],
@@ -1062,12 +1054,6 @@ class SpotDb {
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']) );
-
-		$this->_conn->modify("INSERT INTO spottexts(messageid, poster, title) VALUES('%s', '%s', '%s')",
-				 Array($spot['messageid'],
-					   $spot['poster'],
-					   $spot['title'],
-					   $spot['tag']) );
 
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);

@@ -564,50 +564,9 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL;");
 			
 			# daarna de indexen droppen
-			$this->dropIndex('idx_spots_fts_1', 'spots');
-			$this->dropIndex('idx_spots_fts_2', 'spots');
-			$this->dropIndex('idx_spots_fts_3', 'spots');
-			$this->dropIndex('idx_spotsfull_fts_1', 'spotsfull');
 			$this->dropIndex('idx_spots_5', 'spots');
 			$this->dropIndex('idx_spots_6', 'spots');
-
-			# Data kopiëren naar de nieuwe tabel
-			if ($this->columnExists('spots', 'poster') && $this->columnExists('spots', 'title') && $this->columnExists('spots', 'tag')) {
-				if ($this instanceof SpotStruct_mysql) {
-					$this->_dbcon->rawExec("TRUNCATE spottexts");
-				} else {
-					$this->_dbcon->rawExec("DELETE FROM spottexts");
-				} # else
-				$this->_dbcon->rawExec("INSERT INTO spottexts SELECT messageid,poster,title,tag FROM spots;");
-			} # if
-
-			if ($this instanceof SpotStruct_mysql) {
-				# Oude kolommen droppen
-				$this->dropColumn("poster", "spots");
-				$this->dropColumn("title", "spots");
-				$this->dropColumn("tag", "spots");
-
-				# storage engine wijzigen
-				$this->alterStorageEngine("spots", "InnoDB");
-				$this->alterStorageEngine("spotsfull", "InnoDB");
-				$this->alterStorageEngine("commentsposted", "InnoDB");
-				$this->alterStorageEngine("nntp", "InnoDB");
-				
-				# indexen aanmaken voor het gebruik van relaties
-				$this->addIndex("idx_commentspostedrel_1", "", "commentsposted", "ouruserid");
-
-				# relaties aanleggen
-				$this->addForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-				$this->addForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-				$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-				$this->addForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			} else {
-				$this->addIndex("idx_spots_5", "", "spots", "reversestamp");
-
-				# Oude data verwijderen
-				$this->_dbcon->rawExec("UPDATE spots SET poster = NULL, title = NULL, tag = NULL;");
-			}
-		}
+		} # if
 
 		# Index op userid voor zoeken is wel wat sneller
 		if ($this->_spotdb->getSchemaVer() < 0.32) {
@@ -615,7 +574,7 @@ abstract class SpotStruct_abs {
 		} # if
 		
 		# Tabellen terug samenvoegen en naar MyISAM converteren samenvoegen
-		if ((false) && ($this->_spotdb->getSchemaVer() < 0.33)) {
+		if ($this->_spotdb->getSchemaVer() < 0.33) {
 			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										poster varchar(128),
