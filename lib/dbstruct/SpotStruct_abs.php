@@ -574,7 +574,7 @@ abstract class SpotStruct_abs {
 		} # if
 		
 		# Tabellen terug samenvoegen en naar MyISAM converteren samenvoegen
-		if (($this->_spotdb->getSchemaVer() < 0.33) && ($this->tableExists('spottexts'))) {
+		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
 			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
 										poster varchar(128),
