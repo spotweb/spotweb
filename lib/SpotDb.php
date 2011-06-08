@@ -808,9 +808,7 @@ class SpotDb {
 												s.moderated AS moderated,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
-												s.id AS spotdbid,
 												s.filesize AS filesize,
-												f.id AS fullspotdbid,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -1195,6 +1193,20 @@ class SpotDb {
 	function setSecurityGroup($group) {
 		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
 	} # setSecurityGroup
+	
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function addSecurityGroup($group) {
+		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($group['name']));
+	} # addSecurityGroup
+
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function removeSecurityGroup($group) {
+		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($group['id']));
+	} # removeSecurityGroup
 	
 	/*
 	 * Wijzigt group membership van een user
