@@ -392,6 +392,7 @@ div.details form.postcommentform fieldset dd {margin:0;}
 div.details form.postcommentform fieldset textarea {width:204px; font:11px Arial, Helvetica, sans-serif;}
 div.details form.postcommentform input.greyButton {display:inline; margin: 2px 0 5px 0;}
 div.details form.postcommentform dd.rating {margin:5px 0; height:16px;}
+div.details form.postcommentform dd.smileys {margin:0; width:210px;}
 div.details table.spotinfo td.rating span,
 div.details form.postcommentform dd.rating span {display:inline-block; width:16px; height:16px; background:url(../img/sprite.png) no-repeat -40px -80px; margin:0 1px 0 1px; cursor:pointer;}
 div.details table.spotinfo td.rating span.active,
