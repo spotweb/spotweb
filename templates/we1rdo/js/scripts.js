@@ -772,6 +772,11 @@ function sabActions(start,limit,action,slot,value) {
 	}
 }
 
+// Text toevoegen aan id (Smiley's)
+function addText(text,element_id) {
+	document.getElementById(element_id).value += text;
+}
+
 function drawGraph(currentSpeed,interval) {
 	var numXLabels = 8;
 	var numYLabels = 5;
