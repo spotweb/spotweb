@@ -73,27 +73,6 @@
 </table>
 <br />
 
-<?php
-	switch ($settings['nzbhandling']['action'] )
-	{
-		case "save":
-		case "runcommand":
-			echo "<table summary=\"NZB handling\">";
-			echo "<tr> <th> NZB local download enabled </th> <th> Value </th> </tr>";
-			echo "<tr><td>NZB action: </td><td>" . $settings['nzbhandling']['action'] . "</td></tr>";
-			echo "<tr><td>NZB directory: </td><td>" .$settings['nzbhandling']['local_dir'] ."</td></tr>";
-			echo "<tr><td>Directory access: </td><td>";
-			$TestFileName = $settings['nzbhandling']['local_dir'] ."testFile.txt";
-			$TestFileHandle = fopen($TestFileName, 'w') or die("Cannot create file</td></tr>");
-			showResult(true);
-			echo "</td></tr>";
-			echo "</table>";
-			fclose($TestFileHandle);
-			unlink($TestFileName);
-			break;
-	}
-?>
-
 </body>
 </html><?php
 	function return_bytes($val) {
