@@ -481,7 +481,6 @@ class SpotUserSystem {
 		// controleer dat deze specifieke permissie niet al in de security groep zit
 		$groupPerms = $this->_db->getGroupPerms($groupId);
 		foreach($groupPerms as $groupPerm) {
-		var_dump($groupPerm);
 			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
@@ -504,19 +503,33 @@ class SpotUserSystem {
 	function setSecGroup($group) {
 		$this->_db->setSecurityGroup($group);
 	} # setSecGroup
+
+	/*
+	 * Voegt een group record toe
+	 */
+	function addSecGroup($group) {
+		$this->_db->addSecurityGroup($group);
+	} # addSecGroup
 	
 	/*
 	 * Geeft een group record terug
 	 */
 	function getSecGroup($groupId) {
 		$tmpGroup = $this->_db->getSecurityGroup($groupId);
-		if ($tmpGroup !== false) {
+		if (!empty($tmpGroup)) {
 			return $tmpGroup[0];
 		} else {
 			return false;
 		} # else
 	} # getSecGroup
-	
+
+	/*
+	 * Verwijdert een group record
+	 */
+	function removeSecGroup($group) {
+		$this->_db->removeSecurityGroup($group);
+	} # removeSecGroup
+
 	/*
 	 * Geeft een user record terug
 	 */
