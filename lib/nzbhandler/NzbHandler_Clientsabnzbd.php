@@ -25,9 +25,7 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 
 		# yes, using a local variable instead of the member variable is intentional
 		$url = htmlspecialchars($this->_url . '&nzbname=' . $title . '&cat=' . $category);
-		$url .= '&name=' . urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid']);
-		$url .= $spotwebApiParam;
-
+		$url .= '&name=' . urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . html_entity_decode($spotwebApiParam));
 		return $url;
 	} # generateNzbHandlerUrl
 
