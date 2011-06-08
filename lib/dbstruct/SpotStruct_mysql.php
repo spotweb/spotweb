@@ -1,115 +1,6 @@
 <?php
 class SpotStruct_mysql extends SpotStruct_abs {
 
-	function createDatabase() {
-		# spots
-		if (!$this->tableExists('spots')) {
-			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) CHARACTER SET ascii NOT NULL,
-										poster varchar(128),
-										title varchar(128),
-										tag varchar(128),
-										category INTEGER, 
-										subcat INTEGER,
-										subcata VARCHAR(64),
-										subcatb VARCHAR(64),
-										subcatc VARCHAR(64),
-										subcatd VARCHAR(64),
-										subcatz VARCHAR(64),
-										stamp INTEGER(10) UNSIGNED,
-										reversestamp INTEGER DEFAULT 0,
-										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
-										moderated BOOLEAN,
-										commentcount INTEGER DEFAULT 0,
-										spotrating INTEGER DEFAULT 0) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spots_1 ON spots(messageid);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(stamp);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(reversestamp);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(category, subcata, subcatb, subcatc, subcatd, subcatz DESC);");
-		} # if
-
-		# spotsfull
-		if (!$this->tableExists('spotsfull')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) CHARACTER SET ascii NOT NULL,
-										userid varchar(32),
-										verified BOOLEAN,
-										usersignature VARCHAR(128),
-										userkey VARCHAR(200),
-										xmlsignature VARCHAR(128),
-										fullxml TEXT,
-										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid);");
-		} # if
-
-		# NNTP table
-		if (!$this->tableExists('nntp')) {
-			$this->_dbcon->rawExec("CREATE TABLE nntp(server varchar(128) PRIMARY KEY,
-										   maxarticleid INTEGER UNIQUE,
-										   nowrunning INTEGER DEFAULT 0,
-										   lastrun INTEGER DEFAULT 0) ENGINE = InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-		} # if 
-
-		# commentsxover
-		if (!$this->tableExists('commentsxover')) {
-			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY AUTO_INCREMENT,
-										   messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-										   nntpref VARCHAR(128) CHARACTER SET ascii,
-										   spotrating INTEGER DEFAULT 0) ENGINE = MYISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref)");
-		} # if
-			
-		# spotstatelist
-		if (!$this->tableExists('spotstatelist')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotstatelist(messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-										   ouruserid INTEGER DEFAULT 0,
-										   download INTEGER,
-										   watch INTEGER,
-										   seen INTEGER) ENGINE = InnoDB CHARSET=ascii;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_4 ON spotstatelist(seen);");
-		} # if
-
-		# commentsfull
-		if (!$this->tableExists('commentsfull')) {
-			$this->_dbcon->rawExec("CREATE TABLE commentsfull (id INTEGER PRIMARY KEY AUTO_INCREMENT,
-									  messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-									  fromhdr VARCHAR(128),
-									  stamp INTEGER(10) UNSIGNED,
-									  usersignature VARCHAR(128),
-									  userkey VARCHAR(200),
-									  userid VARCHAR(32),
-									  hashcash VARCHAR(128),
-									  body TEXT,
-									  verified BOOLEAN) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid);");
-		} # if
-
-		# settings
-		if (!$this->tableExists('settings')) {
-			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTO_INCREMENT,
-									  name VARCHAR(128) NOT NULL,
-									  value TEXT) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name);");
-		} # if
-
-		# commentsposted
-		if (!$this->tableExists('commentsposted')) {
-			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY AUTO_INCREMENT,
-									  ouruserid INTEGER DEFAULT 0 NOT NULL,
-									  messageid VARCHAR(128) CHARACTER SET ascii NOT NULL,
-									  inreplyto VARCHAR(128) CHARACTER SET ascii NOT NULL,
-									  randompart VARCHAR(32) CHARACTER SET ascii NOT NULL,
-									  rating INTEGER DEFAULT 0 NOT NULL,
-									  body TEXT,
-									  stamp INTEGER DEFAULT 0 NOT NULL) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(messageid);");
-		} # if
-	} # createDatabase
-
 	/* 
 	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
 	 * deze functie wijzigt geen data!
@@ -122,8 +13,34 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE spottexts");
 	} # analyze
 	
+	/* converteert een "spotweb" datatype naar een mysql datatype */
+	function swDtToNative($colType) {
+		switch(strtoupper($colType)) {
+			case 'INTEGER'				: $colType = 'int(11)'; break;
+			case 'UNSIGNED INTEGER'		: $colType = 'int(10) unsigned'; break;
+			case 'BIGINTEGER'			: $colType = 'bigint(20)'; break;
+			case 'UNSIGNED BIGINTEGER'	: $colType = 'bigint(20) unsigned'; break;
+			case 'BOOLEAN'				: $colType = 'tinyint(1)'; break;
+		} # switch
+		
+		return $colType;
+	} # swDtToNative 
+
+	/* converteert een mysql datatype naar een "spotweb" datatype */
+	function nativeDtToSw($colInfo) {
+		switch(strtolower($colInfo)) {
+			case 'int(11)'				: $colInfo = 'INTEGER'; break;
+			case 'int(10) unsigned'		: $colInfo = 'UNSIGNED INTEGER'; break;
+			case 'bigint(20)'			: $colInfo = 'BIGINTEGER'; break;
+			case 'bigint(20) unsigned'	: $colInfo = 'UNSIGNED BIGINTEGER'; break;
+			case 'tinyint(1)'			: $colInfo = 'BOOLEAN'; break;
+		} # switch
+		
+		return $colInfo;
+	} # nativeDtToSw 
+	
 	/* controleert of een index bestaat */
-	function indexExists($tablename, $idxname) {
+	function indexExists($idxname, $tablename) {
 		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));
 		return !empty($q);
 	} # indexExists
@@ -137,28 +54,80 @@ class SpotStruct_mysql extends SpotStruct_abs {
 
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
-		if (!$this->indexExists($tablename, $idxname)) {
+		if (!$this->indexExists($idxname, $tablename)) {
 			if ($idxType == "UNIQUE") {
-				$this->_dbcon->rawExec("ALTER IGNORE TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . $colList . ");");
+				$this->_dbcon->rawExec("ALTER IGNORE TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
 			} else {
-				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . $colList . ");");
-			}
+				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
+			} # else
 		} # if
 	} # addIndex
 
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
-		if ($this->indexExists($tablename, $idxname)) {
+		if ($this->indexExists($idxname, $tablename)) {
 			$this->_dbcon->rawExec("DROP INDEX " . $idxname . " ON " . $tablename);
 		} # if
 	} # dropIndex
 	
 	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-	function addColumn($colName, $tablename, $colDef) {
+	function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		if (!$this->columnExists($tablename, $colName)) {
-			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN(" . $colName . " " . $colDef . ")");
+			# zet de DEFAULT waarde
+			if (strlen($colDefault) != 0) {
+				$colDefault = 'DEFAULT ' . $colDefault;
+			} # if
+
+			# converteer het kolom type naar het type dat wij gebruiken
+			$colType = $this->swDtToNative($colType);
+
+			# Zet de collation om naar iets dat we begrijpen
+			switch(strtolower($collation)) {
+				case 'utf8'		: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
+				case 'ascii'	: $colSetting = 'CHARACTER SET ascii'; break;
+				case ''			: $colSetting = ''; break;
+				default			: throw new Exception("Invalid collation setting");
+			} # switch
+			
+			# en zet de 'NOT NULL' om naar een string
+			switch($notNull) {
+				case true		: $nullStr = 'NOT NULL'; break;
+				default			: $nullStr = '';
+			} # switch
+			
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . 
+						" ADD COLUMN(" . $colName . " " . $colType . " " . $colSetting . " " . $colDefault . " " . $nullStr . ")");
 		} # if
 	} # addColumn
+	
+	/* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
+	function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what) {
+		# zet de DEFAULT waarde
+		if (strlen($colDefault) != 0) {
+			$colDefault = 'DEFAULT ' . $colDefault;
+		} # if
+
+		# converteer het kolom type naar het type dat wij gebruiken
+		$colType = $this->swDtToNative($colType);
+
+		# Zet de collation om naar iets dat we begrijpen
+		switch(strtolower($collation)) {
+			case 'utf8'		: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
+			case 'ascii'	: $colSetting = 'CHARACTER SET ascii'; break;
+			case ''			: $colSetting = ''; break;
+			default			: throw new Exception("Invalid collation setting");
+		} # switch
+		
+		# en zet de 'NOT NULL' om naar een string
+		switch($notNull) {
+			case true		: $nullStr = 'NOT NULL'; break;
+			default			: $nullStr = '';
+		} # switch
+		
+		$this->_dbcon->rawExec("ALTER TABLE " . $tablename . 
+					" MODIFY COLUMN " . $colName . " " . $colType . " " . $colSetting . " " . $colDefault . " " . $nullStr);
+	} # modifyColumn
+
 
 	/* dropt een kolom (mits db dit ondersteunt) */
 	function dropColumn($colName, $tablename) {
@@ -173,10 +142,16 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return !empty($q);
 	} # tableExists
 
-	/* ceeert een lege tabel met enkel een ID veld */
-	function createTable($tablename, $collations) {
+	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+	function createTable($tablename, $collation) {
 		if (!$this->tableExists($tablename)) {
-			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT) " . $collations);
+			switch(strtolower($collation)) {
+				case 'utf8'		: $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci'; break;
+				case 'ascii'	: $colSetting = 'CHARSET=ascii'; break;
+				default			: throw new Exception("Invalid collation setting");
+			} # switch
+		
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
 		} # if
 	} # createTable
 	
@@ -192,8 +167,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$q = $this->_dbcon->singleQuery("SELECT ENGINE 
 										FROM information_schema.TABLES 
 										WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $tablename . "'");
-		
-	
+
 		if (strtolower($q) != strtolower($engine)) {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
 		} # if
@@ -232,5 +206,41 @@ class SpotStruct_mysql extends SpotStruct_abs {
 										REFERENCES " . $reftable . " (" . $refcolumn . ") " . $action);
 		} # if
 	} # addForeignKey
+
+	/* Geeft, in een afgesproken formaat, de index formatie terug */
+	function getColumnInfo($tablename, $colname) {
+		$q = $this->_dbcon->arrayQuery("SELECT COLUMN_NAME, 
+											   COLUMN_DEFAULT, 
+											   IS_NULLABLE, 
+											   COLUMN_TYPE, 
+											   CHARACTER_SET_NAME, 
+											   COLLATION_NAME 
+										FROM information_schema.COLUMNS 
+										WHERE TABLE_NAME = '" . $tablename . "'
+										  AND COLUMN_NAME = '" . $colname . "'
+										  AND TABLE_SCHEMA = DATABASE()");
+		if (!empty($q)) {
+			$q = $q[0];
+			$q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
+
+			# converteer het default waarde naar iets anders
+			if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {	
+				$q['COLUMN_DEFAULT'] = "''";
+			} # if
+		} # if
+		
+		return $q;
+	} # getColumnInfo
+	
+	/* Geeft, in een afgesproken formaat, de index informatie terug */
+	function getIndexInfo($idxname, $tablename) {
+		$q = $this->_dbcon->arrayQuery("SELECT index_name, seq_in_index, column_name, non_unique, lower(index_type) as index_type
+										FROM information_schema.STATISTICS 
+										WHERE TABLE_SCHEMA = DATABASE() 
+										  AND table_name = '" . $tablename . "' 
+										  AND index_name = '" . $idxname . "' 
+										ORDER BY seq_in_index");
+		return $q;
+	} # getIndexInfo
 	
 } # class

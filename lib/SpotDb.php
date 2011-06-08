@@ -720,7 +720,6 @@ class SpotDb {
  		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
 												l.download as downloadstamp, 
 												l.watch as watchstamp,
@@ -767,7 +766,6 @@ class SpotDb {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
@@ -798,7 +796,6 @@ class SpotDb {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
@@ -812,6 +809,7 @@ class SpotDb {
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
 												s.id AS spotdbid,
+												s.filesize AS filesize,
 												f.id AS fullspotdbid,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
@@ -821,8 +819,7 @@ class SpotDb {
 												f.usersignature AS \"user-signature\",
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
-												f.fullxml AS fullxml,
-												f.filesize AS filesize
+												f.fullxml AS fullxml
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
@@ -1038,14 +1035,13 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcat, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
 					   $spot['poster'],
 					   $spot['title'],
 					   $spot['tag'],
 					   (int) $spot['category'],
-					   $spot['subcat'],
 					   $spot['subcata'],
 					   $spot['subcatb'],
 					   $spot['subcatc'],
@@ -1065,23 +1061,16 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
-		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
-		# versies een verkeerde afronding geeft bij >32bits getallen.
-		if (!is_numeric($fullSpot['filesize'])) {
-			$fullSpot['fileSize'] = 0;
-		} # if
-
 		# en voeg het aan de database toe
-		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
-				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
+				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
 					  (int) $fullSpot['verified'],
 					  $fullSpot['user-signature'],
 					  base64_encode(serialize($fullSpot['user-key'])),
 					  $fullSpot['xml-signature'],
-					  $fullSpot['fullxml'],
-					  $fullSpot['filesize']));
+					  $fullSpot['fullxml']));
 	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
