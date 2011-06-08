@@ -353,6 +353,13 @@ class SpotUserSystem {
 			} # if
 		} # if
 		
+		# als men runcommand of save wil, moet er een local_dir opgegeven worden
+		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
+			if (empty($prefs['nzbhandling']['local_dir'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
+			} # if
+		} # if
+		
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
 		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
