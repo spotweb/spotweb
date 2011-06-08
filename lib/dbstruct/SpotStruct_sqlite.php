@@ -1,121 +1,5 @@
 <?php
 class SpotStruct_sqlite extends SpotStruct_abs {
-	
-	function createDatabase() {
-		# spots
-		if (!$this->tableExists('spots')) {
-			$this->_dbcon->rawExec("CREATE TABLE spots(id INTEGER PRIMARY KEY ASC, 
-											messageid VARCHAR(128),
-											poster varchar(128),
-											title varchar(128),
-											tag varchar(128),
-											category INTEGER, 
-											subcat INTEGER,
-											subcata VARCHAR(64),
-											subcatb VARCHAR(64),
-											subcatc VARCHAR(64),
-											subcatd VARCHAR(64),
-											subcatz VARCHAR(64),
-											stamp INTEGER,
-											reversestamp INTEGER DEFAULT 0,
-											filesize BIGINT DEFAULT 0,
-											moderated BOOLEAN DEFAULT FALSE,
-											commentcount INTEGER DEFAULT 0,
-											spotrating INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_1 ON spots(id, category, subcata, subcatd, stamp DESC)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_2 ON spots(id, category, subcatd, stamp DESC)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_3 ON spots(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_4 ON spots(stamp);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spots_5 ON spots(reversestamp);");
-		} # if
-
-		# spotsfull table
-		if (!$this->tableExists('spotsfull')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotsfull(id INTEGER PRIMARY KEY, 
-										messageid varchar(128),
-										userid varchar(32),
-										verified BOOLEAN,
-										usersignature TEXT,
-										userkey TEXT,
-										xmlsignature TEXT,
-										fullxml TEXT,
-										filesize BIGINT);");										
-
-			# create indices
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotsfull_1 ON spotsfull(messageid, userid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotsfull_2 ON spotsfull(userid);");
-		} # if
-
-		# NNTP table
-		if (!$this->tableExists('nntp')) {
-			$this->_dbcon->rawExec("CREATE TABLE nntp(server TEXT PRIMARY KEY,
-										maxarticleid INTEGER UNIQUE,
-										nowrunning INTEGER DEFAULT 0,
-										lastrun INTEGER DEFAULT 0);");
-		} # if
-
-		# commentsxover table
-		if (!$this->tableExists('commentsxover')) {
-			$this->_dbcon->rawExec("CREATE TABLE commentsxover(id INTEGER PRIMARY KEY ASC,
-										   messageid VARCHAR(128),
-										   nntpref VARCHAR(128),
-										   spotrating INTEGER DEFAULT 0);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsxover_1 ON commentsxover(messageid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_commentsxover_2 ON commentsxover(nntpref)");
-		} # if
-			
-		# spotstatelist table
-		if (!$this->tableExists('spotstatelist')) {
-			$this->_dbcon->rawExec("CREATE TABLE spotstatelist(messageid VARCHAR(128),
-										   ouruserid INTEGER DEFAULT 0,
-										   download INTEGER,
-										   watch INTEGER,
-										   seen INTEGER);");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_spotstatelist_1 ON spotstatelist(messageid,ouruserid)");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_2 ON spotstatelist(download);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_3 ON spotstatelist(watch);");
-			$this->_dbcon->rawExec("CREATE INDEX idx_spotstatelist_4 ON spotstatelist(seen);");
-		} # if
-
-		# commentsfull
-		if (!$this->tableExists('commentsfull')) {
-			$this->_dbcon->rawExec("CREATE TABLE `commentsfull` (
-									  `id` integer PRIMARY KEY,
-									  `messageid` varchar(128) DEFAULT NULL,
-									  `fromhdr` varchar(128) DEFAULT NULL,
-									  `stamp` int(11) DEFAULT NULL,
-									  `usersignature` varchar(128) DEFAULT NULL,
-									  `userkey` varchar(128) DEFAULT NULL,
-									  `userid` varchar(128) DEFAULT NULL,
-									  `hashcash` varchar(128) DEFAULT NULL,
-									  `body` TEXT DEFAULT '',
-									  `verified` tinyint(1) DEFAULT NULL)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_1 ON commentsfull(messageid)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsfull_2 ON commentsfull(messageid,stamp)");
-		} # if
-
-		# settings
-		if (!$this->tableExists('settings')) {
-			$this->_dbcon->rawExec("CREATE TABLE settings (id INTEGER PRIMARY KEY,
-									  name VARCHAR(128) NOT NULL,
-									  value TEXT)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_settings_1 ON settings(name)");
-		} # if
-
-		# commentsposted
-		if (!$this->tableExists('commentsposted')) {
-			$this->_dbcon->rawExec("CREATE TABLE commentsposted (id INTEGER PRIMARY KEY,
-									  ouruserid INTEGER DEFAULT 0 NOT NULL,
-									  messageid VARCHAR(128) NOT NULL,
-									  inreplyto VARCHAR(128) NOT NULL,
-									  randompart VARCHAR(32) NOT NULL,
-									  rating INTEGER DEFAULT 0 NOT NULL,
-									  body TEXT,
-									  stamp INTEGER DEFAULT 0 NOT NULL)");
-			$this->_dbcon->rawExec("CREATE UNIQUE INDEX idx_commentsposted_1 ON commentsposted(messageid);");
-		} # if
-	} # createDatabase
-
 	/* 
 	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
 	 * deze functie wijzigt geen data!
@@ -126,9 +10,27 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE commentsfull");
 	} # analyze
+
+	/* converteert een "spotweb" datatype naar een mysql datatype */
+	public function swDtToNative($colType) {
+		switch(strtoupper($colType)) {
+			case 'INTEGER'				: $colType = 'INTEGER'; break;
+			case 'UNSIGNED INTEGER'		: $colType = 'INTEGER'; break;
+			case 'BIGINTEGER'			: $colType = 'BIGINT'; break;
+			case 'UNSIGNED BIGINTEGER'	: $colType = 'BIGINT'; break;
+			case 'BOOLEAN'				: $colType = 'BOOLEAN'; break;
+		} # switch
+		
+		return $colType;
+	} # swDtToNative
+
+	/* converteert een mysql datatype naar een "spotweb" datatype */
+	public function nativeDtToSw($colInfo) {
+		return $colInfo;
+	} # nativeDtToSw 
 	
 	/* controleert of een index bestaat */
-	function indexExists($tablename, $idxname) {
+	function indexExists($idxname, $tablename) {
 		$q = $this->_dbcon->arrayQuery("PRAGMA index_info(" . $idxname . ")");
 		return !empty($q);
 	} # indexExists
@@ -151,28 +53,54 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
-		if (!$this->indexExists($tablename, $idxname)) {
-			$this->_dbcon->rawExec("CREATE INDEX " . $idxname . " ON " . $tablename . "(" . $colList . ");");
+		if (!$this->indexExists($idxname, $tablename)) {
+			
+			$this->_dbcon->rawExec("PRAGMA synchronous = OFF;");
+			
+			switch(strtolower($idxType)) {
+				case ''		  : $this->_dbcon->rawExec("CREATE INDEX " . $idxname . " ON " . $tablename . "(" . implode(",", $colList) . ");"); break;
+				case 'unique'  : $this->_dbcon->rawExec("CREATE UNIQUE INDEX " . $idxname . " ON " . $tablename . "(" . implode(",", $colList) . ");"); break;
+			} # switch
 		} # if
 	} # addIndex
 
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
-		if ($this->indexExists($tablename, $idxname)) {
+		if ($this->indexExists($idxname, $tablename)) {
 			$this->_dbcon->rawExec("DROP INDEX " . $idxname);
 		} # if
 	} # dropIndex
 	
 	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-	function addColumn($colName, $tablename, $colDef) {
+	function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		if (!$this->columnExists($tablename, $colName)) {
-			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD COLUMN " . $colName . " " . $colDef);
+			# zet de DEFAULT waarde
+			if (strlen($colDefault) != 0) {
+				$colDefault = 'DEFAULT ' . $colDefault;
+			} # if
+
+			# Collation doen we niet in sqlite
+			$colSetting = '';
+			
+			# converteer het kolom type naar het type dat wij gebruiken
+			$colType = $this->swDtToNative($colType);
+			
+			# en zet de 'NOT NULL' om naar een string
+			switch($notNull) {
+				case true		: $nullStr = 'NOT NULL'; break;
+				default			: $nullStr = '';
+			} # switch
+			
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . 
+						" ADD COLUMN " . $colName . " " . $colType . " " . $colSetting . " " . $colDefault . " " . $nullStr);
 		} # if
 	} # addColumn
 	
 	/* dropt een kolom (mits db dit ondersteunt) */
 	function dropColumn($colName, $tablename) {
-		throw new Exception("Dropping of columns is not supported in sqlite");
+		if ($this->columnExists($tablename, $colName)) {
+			throw new Exception("Dropping of columns is not supported in sqlite");
+		} # if
 	} # dropColumn
 	
 	/* controleert of een tabel bestaat */
@@ -181,8 +109,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return !empty($q);
 	} # tableExists
 
-	/* creeert een lege tabel met enkel een ID veld */
-	function createTable($tablename, $collations) {
+	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+	function createTable($tablename, $collation) {
 		if (!$this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
 		} # if
@@ -214,5 +142,85 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " RENAME TO " . $newTableName);
 	} # renameTable
+
+	/* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
+	function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what) {
+		# als het de NOT NULL is of de charset, dan negeren we de gevraagde wijziging
+		if (($what == 'not null') || ($what == 'charset') | ($what == 'default')) {
+			return ;
+		} # if
+		
+		throw new Exception("sqlite ondersteund het wijzigen van kolommen niet");
+	} # modifyColumn
+	
+	/* Geeft, in een afgesproken formaat, de index formatie terug */
+	function getColumnInfo($tablename, $colname) {
+		# sqlite kent niet echt een manier om deze informatie in z'n geheel terug te geven, 
+		# we vragen dus de index op en manglen hem vervolgens zodat het beeld klopt
+		$q = $this->_dbcon->arrayQuery("PRAGMA table_info('" . $tablename . "')");
+		
+		# find the keyname
+		$colIndex = -1;
+		for($i = 0; $i < count($q); $i++) {
+			if ($q[$i]['name'] == $colname) {
+				$colIndex = $i;
+				break;
+			} # if
+		} # for
+		
+		# als de kolom niet gevonden is, geef dit ook terug
+		if ($colIndex < 0) {
+			return array();
+		} # if
+		
+		# en vertaal de sqlite info naar het mysql-achtige formaat
+		$colInfo = array();
+		$colInfo['COLUMN_NAME'] = $colname;
+		$colInfo['COLUMN_DEFAULT'] = $q[$colIndex]['dflt_value'];
+		$colInfo['NOTNULL'] = $q[$colIndex]['notnull'];
+		$colInfo['COLUMN_TYPE'] = $this->nativeDtToSw($q[$colIndex]['type']);
+		$colInfo['CHARACTER_SET_NAME'] = 'bin';
+		$colInfo['COLLATION_NAME'] = 'bin';
+		
+		return $colInfo;
+	} # getColumnInfo
+	
+	/* Geeft, in een afgesproken formaat, de index informatie terug */
+	function getIndexInfo($idxname, $tablename) {
+		# sqlite kent niet echt een manier om deze informatie in z'n geheel terug te geven, 
+		# we vragen dus de index op en manglen hem vervolgens zodat het beeld klopt
+		$q = $this->_dbcon->arrayQuery("SELECT * FROM sqlite_master 
+										  WHERE type = 'index' 
+										    AND name = '" . $idxname . "' 
+											AND tbl_name = '" . $tablename . "'");
+		if (empty($q)) {
+			return array();
+		} # if
+		
+		# er is maar 1 index met die naam
+		$q = $q[0];
+											
+		# eerst kijken we of de index unique gemarkeerd is
+		$tmpAr = explode(" ", $q['sql']);
+		$isNotUnique = (strtolower($tmpAr[1]) != 'unique');
+		
+		# vraag nu de kolom lijst op, en explode die op commas
+		preg_match_all("/\((.*)\)/", $q['sql'], $tmpAr);
+		$colList = explode(",", $tmpAr[1][0]);
+		$colList = array_map('trim', $colList);
+		
+		# en nu bouwen we een array aan het formaat wat er verwacht wordt
+		$idxInfo = array();
+		for($i = 0; $i < count($colList); $i++) {
+			$idxInfo[] = array('index_name' => $idxname,
+			                   'seq_in_index' => $i + 1,
+							   'column_name' => $colList[$i],
+							   'non_unique' => (int) $isNotUnique,
+							   'index_type' => 'BTREE'
+						);
+		} # foreach
+
+		return $idxInfo;
+	} # getIndexInfo
 	
 } # class
