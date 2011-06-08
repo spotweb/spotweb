@@ -137,7 +137,7 @@ class SpotTemplateHelper {
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
-		
+
 		# seen list
 		if ($markAsRead) {
 			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
