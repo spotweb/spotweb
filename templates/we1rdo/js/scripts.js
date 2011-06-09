@@ -65,31 +65,72 @@ function openSpot(id,url) {
 	});
 }
 
-// Open een URL in de overlay div
-function openOverlay(id,url) {
-	if($("#fullscreenoverlay").is(":visible")) {
-		$("#fullscreenoverlay").addClass('notrans');
-	}
-	
-	// Toon een "loading" div
-	$("#fullscreenoverlay").addClass('loading');
-	$("#fullscreenoverlay").empty().show();
-	
-	$("#fullscreenoverlay").load(url, function() {
-		// vervolgens hiden we de gehele container
-		$("div.container").removeClass("visible").addClass("hidden");
-		
-		// en halen we het loading en notrans weg zodat onze div zichtbaar is
-		$("#fullscreenoverlay").removeClass('loading notrans');
-		$("body").addClass('fullscreen');
+function openDialog(divid, title, url, formname) {
+	$.ajax({
+		type: "GET",
+		dataType: "html",
+		url: url,
+		data: {},
+		success: function(response) {
+			// Laad de content van de pagina in de dialog zodat we die daarna 
+			// kunnen laten zien
+			var $diagdiv = $("#" + divid);
+			$diagdiv.empty().html(response);
+			
+			// we vragen vervolgens alle submit buttons op, hier gaan we dan een
+			// form submit handler aan vast knopen. Dit is nodig omdat standaard
+			// de form submit handler van jquery niet weet op welke knop er gedrukt
+			// is, dus moeten we wat doen om dat duidelijk te krijgen.
+			var $buttons = $("form." + formname + " input[type='submit']"); 
+			$buttons.click(function() {  
+				// In deze context is 'this' de submit button waarop gedrukt is,
+				// dus die data voegen we gewoon aan de post data toe.
+				var formdata = $(this).attr("name") + "=" + $(this).val();  
+				formdata = $(this.form).serialize() + "&" + formdata;
+				
+				// post de data
+				$.ajax({
+					type: "POST",
+					url: this.form.action,
+					data: formdata,
+					success: function(xml) {
+						var result = $(xml).find('result').text();
+						
+						var $diagdiv = $("#"+divid)
+						if (result == 'success') {
+							$diagdiv.dialog('close');
+						} else {						
+							var $formerrors = $diagdiv.find("ul.formerrors");
+							$formerrors.empty();
 
-		// nu moeten we alleen nog even de close er aanvast plakken
-		$("a.closeDetails").click(function(){ 
-			closeFullscreenOverlay();
-		});
-		
-	});
-} // openOverlay
+							// zet de errors van het formulier in de errorlijst
+							$('errors', xml).each(function() {
+								$formerrors.append("<li>" + $(this).text() + "</li>");
+							}); // each
+						} // if post was not succesful
+					} // success()
+				});
+				
+				return false;
+			}); // click handler op button
+				
+			// en nu kunnen we de dialog wel tonen
+			$diagdiv.dialog( {
+				title: title,
+				autoOpen: true,
+				resizable: false,
+				position: 'center',
+				stack: true,
+				closeOnEscape: true,
+				height: 'auto',
+				width: 'auto',
+				modal: true
+			} );
+		} // success function
+	}); // ajax call
+	
+	return false;
+} // openDialog
 
 // Open spot in los scherm
 function openNewWindow() {
@@ -312,6 +353,7 @@ function spotNav(direction) {
 // Edit user preference tabs
 $(document).ready(function() {
 	$("#edituserpreferencetabs").tabs();
+	$("#adminpaneltabs").tabs();
 	
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
