@@ -10,11 +10,7 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		$sabnzbd = $nzbHandling['sabnzbd'];
 
 		# prepare sabnzbd url
-		# substitute variables that are not download specific
-		$this->_url = $settings->get('sabnzbdurl');
-		$this->_url = str_replace('$SABNZBDURL', $sabnzbd['url'], $this->_url);
-		$this->_url = str_replace('$APIKEY', $sabnzbd['apikey'], $this->_url);
-		$this->_url = str_replace('$SABNZBDMODE', 'addurl', $this->_url);
+		$this->_url = $sabnzbd['url'] . 'sabnzbd/api?mode=addurl&apikey=' . $sabnzbd['apikey'] . '&output=text';
 	} # __construct
 
 	public function processNzb($fullspot, $nzblist)
@@ -22,19 +18,14 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		// do nothing
 	} # processNzb
 
-	public function generateNzbHandlerUrl($spot)
+	public function generateNzbHandlerUrl($spot, $spotwebApiParam)
 	{
 		$title = urlencode($this->cleanForFileSystem($spot['title']));
 		$category = urlencode($this->convertCatToSabnzbdCat($spot));
 
-		# yes, using a local variable instead of the member variable is intentional		
-		$url = str_replace('$SPOTTITLE', $title, $this->_url);
-		$url = str_replace('$SABNZBDCAT', $category, $url);
-
-		$url = htmlspecialchars($url);
-		$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid']), $url);
-		//$url = str_replace('$NZBURL', urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . $tplHelper->makeApiRequestString()), $url);
-
+		# yes, using a local variable instead of the member variable is intentional
+		$url = htmlspecialchars($this->_url . '&nzbname=' . $title . '&cat=' . $category);
+		$url .= '&name=' . urlencode($this->_settings->get('spotweburl') . '?page=getnzb&action=display&messageid=' . $spot['messageid'] . html_entity_decode($spotwebApiParam));
 		return $url;
 	} # generateNzbHandlerUrl
 

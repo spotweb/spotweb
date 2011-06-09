@@ -373,22 +373,25 @@ class SpotsOverview {
 
 		# Add a list of possible text searches
 		$textSearch = array();
+
 		foreach($search['filterValues'] as $searchType => $searchValue) {
+			$searchType = strtolower($searchType);
+
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
-			if (in_array($searchType, array('Tag', 'Poster', 'UserID', 'Titel'))) {
+			if (in_array($searchType, array('tag', 'poster', 'titel'))) {
 				$field = '';
 
 				switch($searchType) {
-					case 'Tag'		: $field = 'tag'; break;
-					case 'Poster'	: $field = 'poster'; break;
-					case 'UserID'	: $field = 'userid'; break;
-					case 'Titel'	: $field = 'title'; break;
+					case 'poster'	: $field = 's.poster'; break;
+					case 'titel'	: $field = 's.title'; break;
+					case 'tag'		: $field = 's.tag'; break;
 				} # switch
 				
 				if (!empty($field) && !empty($searchValue)) {
 					$parsedTextQueryResult = $this->_db->createTextQuery($field, $searchValue);
 					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
+
 					
 					# We voegen deze extended textqueryies toe aan de filterlist als
 					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
@@ -403,18 +406,29 @@ class SpotsOverview {
 											  'direction' => 'DESC');
 					} # if
 				} # if
-			} else {
+			} else if (!empty($searchValue)) {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
 				#
 				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
 				#   filesize:>=:4000000
 				$tmpFilter = explode(":", $searchValue);
+				if (empty($tmpFilter)) {
+					$tmpFilter = $searchValue;
+				} # if
 
-				if (count($tmpFilter) >= 2) {
-					$filterOperator = $tmpFilter[0];
-					$searchValue = join(":", array_slice($tmpFilter, 1));
-
+				if (count($tmpFilter) >= 1) {
+					# Als we een filter in de vorm name:value krijgen, gaan we altijd 
+					# uit van een gelijkheids filter
+					
+					if (count($tmpFilter) == 1) {
+						$filterOperator = '=';
+						$searchValue = join(":", $tmpFilter);
+					} else {
+						$filterOperator = $tmpFilter[0];
+						$searchValue = join(":", array_slice($tmpFilter, 1));
+					} # else
+					
 					# valideer eerst de operatoren
 					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
 						break;
@@ -423,6 +437,7 @@ class SpotsOverview {
 					# en valideer dan de zoekvelden
 					$filterFieldMapping = array('filesize' => 's.filesize',
 										  'date' => 's.stamp',
+										  'userid' => 'f.userid',
 										  'moderated' => 's.moderated');
 					if (!isset($filterFieldMapping[$searchType])) {
 						break;
@@ -440,9 +455,16 @@ class SpotsOverview {
 						} # switch
 						$searchValue = (int) $val;
 					} # if
+					
+					# als het niet numeriek is, zet er dan een quote by
+					if (!is_numeric($searchValue)) {
+						$searchValue = "'" . $this->_db->safe($searchValue) . "'";
+					} else {
+						$searchValue = $this->_db->safe($searchValue);
+					} # if
 
 					# en creeer de query string
-					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $this->_db->safe($searchValue) . ') ';
+					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $searchValue . ') ';
 				} # if
 			} # if
 		} # foreach

@@ -137,7 +137,7 @@ class SpotTemplateHelper {
 		
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
-		
+
 		# seen list
 		if ($markAsRead) {
 			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
@@ -187,7 +187,7 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
-		return $this->_nzbHandler->generateNzbHandlerUrl($spot);
+		return $this->_nzbHandler->generateNzbHandlerUrl($spot, $this->makeApiRequestString());
 	} # makeSabnzbdUrl
 
 	/*
@@ -213,6 +213,13 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
+	
+	/*
+	 * Creeert de action url voor het wissen van een permissie 
+	 */
+	function makeEditSecGroupAction() {
+		return $this->makeBaseUrl("path") . "?page=editsecgroup";
+	} # makeEditSecGroupAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
@@ -332,7 +339,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*
@@ -355,7 +362,7 @@ class SpotTemplateHelper {
 			return '&amp;apikey=' . $this->_currentSession['user']['apikey'];
 		} else {
 			return '';
-		}
+		} # else
 	} # makeApiRequestString
 	
 	/*
@@ -690,6 +697,12 @@ class SpotTemplateHelper {
 		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
 		$strings['postcomment_replayattack'] = 'Replay attack';
 		
+		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
+		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
+		$strings['validatesecgroup_duplicatepermission'] = 'Permissie bestaat al in deze groep';
+		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
+		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 
@@ -723,12 +736,40 @@ class SpotTemplateHelper {
 	} # clearDownloadList
 	
 	/*
+	 * Converteert een permission id naar een string
+	 */
+	function permToString($perm) {
+		return $this->_spotSec->toHuman($perm);
+	} # permToString
+	
+	/*
+	 * Geeft alle mogelijke Spotweb permissies terug
+	 */
+	function getAllAvailablePerms() {
+		return $this->_spotSec->getAllPermissions();
+	} # getAllAvailablePerms
+	
+	/*
 	 * Genereert een random string
 	 */
 	function getSessionCalculatedUserId() {
 		$spotSigning = new SpotSigning();
 		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
 	} # getSessionCalculatedUserId
+	
+	/*
+	 * Geeft een lijst met alle security groepen terug
+	 */
+	function getGroupList() {
+		return $this->_db->getGroupList(null);
+	}  # getGroupList
+
+	/*
+	 * Geeft alle permissies in een bepaalde securitygroup terug
+	 */
+	function getSecGroup($id) {
+		return $this->_db->getGroupPerms($id);
+	} # getSecGroup
 	
 	/*
 	 * Redirect naar een opgegeven url

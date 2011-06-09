@@ -132,6 +132,10 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				loadSpotImage();
 				loadComments(messageid,'5','0');
 			});
+
+			function addText(text,element_id) {
+				document.getElementById(element_id).value += text;
+			}
 		</script>
 <?
 require_once "includes/footer.inc.php";

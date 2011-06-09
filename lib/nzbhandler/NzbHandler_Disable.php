@@ -12,7 +12,7 @@ class NzbHandler_Disable extends NzbHandler_abs
 		# do nothing
 	} # processNzb
 	
-	public function generateNzbHandlerUrl($spot)
+	public function generateNzbHandlerUrl($spot, $spotwebApiParam)
 	{
 		return '';
 	} # generateNzbHandlerUrl

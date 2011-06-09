@@ -164,7 +164,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
-				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
+				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 				$channel->appendChild($item);
 
 				$enclosure = $doc->createElement('enclosure');
@@ -176,7 +176,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				} # switch
 				$item->appendChild($enclosure);
 
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcat']));
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$attr = $doc->createElement('newznab:attr');
 					$attr->setAttribute('name', 'category');
@@ -276,7 +276,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$cat->setAttribute('name', $category['name']);
 			$categories->appendChild($cat);
 
-			foreach($category['subcat'] as $name => $subcat) {
+			foreach($category['subcata'] as $name => $subcat) {
 				$subCat = $doc->createElement('subcat');
 				$subCat->setAttribute('id', $subcat);
 				$subCat->setAttribute('name', $name);

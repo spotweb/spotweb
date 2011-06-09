@@ -145,7 +145,8 @@ class SpotUserUpgrader {
 									'nzbget' => array('host' => '',
 													  'port' => '',
 													  'username' => '',
-													  'password' => '')
+													  'password' => '',
+													  'timeout' => 15)
 									);
 			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
  				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
@@ -165,9 +166,10 @@ class SpotUserUpgrader {
 			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
 
 			# Upgrade de sabnzbd api host setting
-			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.05)) {
-				$user['prefs']['nzbhandling']['sabnzbd']['url'] = 'http://' . $user['prefs']['nzbhandling']['sabnzbd']['host'] . '/sabnzbd/';
-				unset($user['prefs']['nzbhandling']['sabnzbd']['host']);
+			if ($this->_settings->get('securityversion') < 0.06) {
+				if (substr($user['prefs']['nzbhandling']['sabnzbd']['url'], -1 * strlen('/sabnzbd/')) == '/sabnzbd/') {
+					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
+				} # if				
 			} # if
 			
 			# update the user record in the database			
@@ -185,6 +187,12 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.01) {
 			/* Truncate de  huidige permissies */
 			$dbCon->rawExec("DELETE FROM grouppermissions");
+			$dbCon->rawExec("DELETE FROM securitygroups");
+
+			/* Creeer de security groepen */
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");
 			
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,

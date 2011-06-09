@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.30');
+define('SPOTDB_SCHEMA_VERSION', '0.34');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -526,8 +526,9 @@ class SpotDb {
 			} # case
 
 			default			  : {
-				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots 
-									INNER JOIN spotsfull on spots.messageid = spotsfull.messageid WHERE spots.id > %d", array($spot['id']));
+				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots
+										LEFT JOIN spotsfull on spots.messageid=spotsfull.messageid
+									  WHERE spots.id > %d", array($spot['id']));
 			} # default
 		} # switch
 	} # removeExtraSpots
@@ -719,12 +720,10 @@ class SpotDb {
  		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
 												l.download as downloadstamp, 
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -767,9 +766,7 @@ class SpotDb {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -782,7 +779,7 @@ class SpotDb {
 												s.commentcount AS commentcount,
 												s.moderated AS moderated
 											  FROM spots AS s
-											  WHERE messageid = '%s'", Array($msgId));
+											  WHERE s.messageid = '%s'", Array($msgId));
 		if (empty($tmpArray)) {
 			return ;
 		} # if
@@ -799,9 +796,7 @@ class SpotDb {
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
-												s.subcat AS subcat,
 												s.poster AS poster,
-												s.groupname AS groupname,
 												s.subcata AS subcata,
 												s.subcatb AS subcatb,
 												s.subcatc AS subcatc,
@@ -813,8 +808,7 @@ class SpotDb {
 												s.moderated AS moderated,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
-												s.id AS spotdbid,
-												f.id AS fullspotdbid,
+												s.filesize AS filesize,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -823,8 +817,7 @@ class SpotDb {
 												f.usersignature AS \"user-signature\",
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
-												f.fullxml AS fullxml,
-												f.filesize AS filesize
+												f.fullxml AS fullxml
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
@@ -992,11 +985,9 @@ class SpotDb {
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, spotstatelist USING spots
-									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+				$this->_conn->modify("DELETE FROM spots, commentsxover, commentsfull USING spots
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1030,11 +1021,9 @@ class SpotDb {
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, commentsfull, spotstatelist USING spots
-					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
+				$this->_conn->modify("DELETE FROM spots, commentsxover, commentsfull USING spots
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
-					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1044,20 +1033,18 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
-		$this->_conn->modify("INSERT INTO spots(messageid, category, subcat, poster, groupname, subcata, subcatb, subcatc, subcatd, subcatz, title, tag, stamp, reversestamp, filesize) 
-				VALUES('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 				 Array($spot['messageid'],
-					   (int) $spot['category'],
-					   $spot['subcat'],
 					   $spot['poster'],
-					   $spot['groupname'],
+					   $spot['title'],
+					   $spot['tag'],
+					   (int) $spot['category'],
 					   $spot['subcata'],
 					   $spot['subcatb'],
 					   $spot['subcatc'],
 					   $spot['subcatd'],
 					   $spot['subcatz'],
-					   $spot['title'],
-					   $spot['tag'],
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']) );
@@ -1072,23 +1059,16 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
-		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
-		# versies een verkeerde afronding geeft bij >32bits getallen.
-		if (!is_numeric($fullSpot['filesize'])) {
-			$fullSpot['fileSize'] = 0;
-		} # if
-
 		# en voeg het aan de database toe
-		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml, filesize)
-				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
+				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				Array($fullSpot['messageid'],
 					  $fullSpot['userid'],
 					  (int) $fullSpot['verified'],
 					  $fullSpot['user-signature'],
 					  base64_encode(serialize($fullSpot['user-key'])),
 					  $fullSpot['xml-signature'],
-					  $fullSpot['fullxml'],
-					  $fullSpot['filesize']));
+					  $fullSpot['fullxml']));
 	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
@@ -1140,6 +1120,14 @@ class SpotDb {
 	} # verifyListType
 	
 	
+	/* 
+	 * Geeft de permissies terug van een bepaalde groep
+	 */
+	function getGroupPerms($groupId) {
+		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = %d",
+					Array($groupId));
+	} # getgroupPerms
+	
 	/*
 	 * Geeft permissies terug welke user heeft, automatisch in het formaat zoals
 	 * SpotSecurity dat heeft (maw - dat de rechtencheck een simpele 'isset' is om 
@@ -1169,13 +1157,57 @@ class SpotDb {
 	 */
 	function getGroupList($userId) {
 		if ($userId == null) {
-			return $this->_conn->arrayQuery("SELECT ID,name,0 as \"ismember\" FROM securitygroups");
+			return $this->_conn->arrayQuery("SELECT id,name,0 as \"ismember\" FROM securitygroups");
 		} else {
-			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.id IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
+			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
 										Array($userId));
 		} # if
 	} # getGroupList
+	
+	/*
+	 * Verwijdert een permissie uit een security group
+	 */
+	function removePermFromSecGroup($groupId, $perm) {
+		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
+				Array($groupId, $perm['permissionid'], $perm['objectid']));
+	} # removePermFromSecGroup
+	
+	/*
+	 * Voegt een permissie aan een security group toe
+	 */
+	function addPermToSecGroup($groupId, $perm) {
+		$this->_conn->modify("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES (%d, %d, '%s')",
+				Array($groupId, $perm['permissionid'], $perm['objectid']));
+	} # addPermToSecGroup
+
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function getSecurityGroup($groupId) {
+		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array($groupId));
+	} # getSecurityGroup
 		
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function setSecurityGroup($group) {
+		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
+	} # setSecurityGroup
+	
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function addSecurityGroup($group) {
+		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($group['name']));
+	} # addSecurityGroup
+
+	/*
+	 * Geef een specifieke security group terug
+	 */
+	function removeSecurityGroup($group) {
+		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($group['id']));
+	} # removeSecurityGroup
+	
 	/*
 	 * Wijzigt group membership van een user
 	 */

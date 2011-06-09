@@ -6,7 +6,10 @@ $(function(){
 
 // createBaseURL
 function createBaseURL() {
-	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.port+window.location.pathname;
+	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.pathname;
+	if (window.location.port != '') {
+		var baseURL = '$HTTP_S://'+window.location.hostname+':'+window.location.port+window.location.pathname;
+	}
 	return baseURL;
 }
 
@@ -767,6 +770,11 @@ function sabActions(start,limit,action,slot,value) {
 			updateSabPanel(start,limit);
 		});
 	}
+}
+
+// Text toevoegen aan id (Smiley's)
+function addText(text,element_id) {
+	document.getElementById(element_id).value += text;
 }
 
 function drawGraph(currentSpeed,interval) {
