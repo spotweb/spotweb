@@ -340,11 +340,23 @@ class SpotUserSystem {
 		} # if
 		
 		# als er een sabnzbd host opgegeven is, moet die geldig zijn
-		if ( ($prefs['nzbhandling']['action'] == 'push-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
+		if ( ($prefs['nzbhandling']['action'] == 'client-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
 				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
+			} # if
+			
+			# SABnzbd URL moet altijd eindigen met een slash
+			if(substr($prefs['nzbhandling']['sabnzbd']['url'], -1) !== '/') {
+				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
+			} # if
+		} # if
+		
+		# als men runcommand of save wil, moet er een local_dir opgegeven worden
+		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
+			if (empty($prefs['nzbhandling']['local_dir'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
 			} # if
 		} # if
 		
@@ -420,6 +432,104 @@ class SpotUserSystem {
 		$this->_db->setUserRsaKeys($user['userid'], $privateKey, $publicKey);
 	} # setUserRsaKeys
 	
+	/*
+	 * Valideert een group record
+	 */
+	function validateSecGroup($group) {
+		$errorList = array();
+
+		# Verwijder overbodige spaties e.d.
+		$group['name'] = trim($group['name']);
+		
+		# Controleer of er een usergroup opgegeven is en of de 
+		# naam niet te kort is
+		if (strlen($group['name']) < 3) {
+			$errorList[] = array('validatesecgroup_invalidname', array('name'));
+		} # if
+		
+		# Vraag nu alle security groepen om, om er zeker van te zijn
+		# dat deze security groep nog niet voorkomt. Niet het meest efficient
+		# maar het aantal verwachtte securitygroepen zal meevallen
+		$secGroupList = $this->_db->getGroupList(null);
+		foreach($secGroupList as $secGroup) {
+			if ($secGroup['name'] == $group['name']) {
+				if ($secGroup['id'] != $group['id']) {
+					$errorList[] = array('validatesecgroup_duplicatename', array('name'));
+				} # if
+			} # if
+		} # foreach
+		
+		return array($errorList, $group);
+	} # validateSecGroup
+
+	/*
+	 * Verwijdert een permissie uit een security group
+	 */
+	function removePermFromSecGroup($groupId, $perm) {
+		$this->_db->removePermFromSecGroup($groupId, $perm);
+	} # removePermFromSecGroup
+	
+	/*
+	 * Voegt een permissie aan een security group toe
+	 */
+	function addPermToSecGroup($groupId, $perm) {
+		$errorList = array();
+		
+		// trim het objectid
+		$perm['objectid'] = trim($perm['objectid']);
+		
+		// controleer dat deze specifieke permissie niet al in de security groep zit
+		$groupPerms = $this->_db->getGroupPerms($groupId);
+		foreach($groupPerms as $groupPerm) {
+			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
+				($groupPerm['objectid'] == $perm['objectid'])) {
+				
+				# Dubbele permissie
+				$errorList[] = array('validatesecgroup_duplicatepermission', array('name'));
+			} # if
+		} # foreach
+	
+		// voeg de permissie aan de groep
+		if (empty($errorList)) {
+			$this->_db->addPermToSecGroup($groupId, $perm);
+		} # if
+		
+		return $errorList;
+	} # addPermToSecGroup
+	
+	/*
+	 * Update een group record
+	 */
+	function setSecGroup($group) {
+		$this->_db->setSecurityGroup($group);
+	} # setSecGroup
+
+	/*
+	 * Voegt een group record toe
+	 */
+	function addSecGroup($group) {
+		$this->_db->addSecurityGroup($group);
+	} # addSecGroup
+	
+	/*
+	 * Geeft een group record terug
+	 */
+	function getSecGroup($groupId) {
+		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		if (!empty($tmpGroup)) {
+			return $tmpGroup[0];
+		} else {
+			return false;
+		} # else
+	} # getSecGroup
+
+	/*
+	 * Verwijdert een group record
+	 */
+	function removeSecGroup($group) {
+		$this->_db->removeSecurityGroup($group);
+	} # removeSecGroup
+
 	/*
 	 * Geeft een user record terug
 	 */

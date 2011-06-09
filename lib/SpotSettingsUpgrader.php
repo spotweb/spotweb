@@ -21,7 +21,7 @@ class SpotSettingsUpgrader {
 		$this->createXsrfSecret();
 		$this->setIfNot('cookie_expires', 30);
 		$this->remove('sabnzbdurltpl');
-		$this->setIfNot('sabnzbdurl', '$SABNZBDURLapi?mode=$SABNZBDMODE&name=$NZBURL&nzbname=$SPOTTITLE&cat=$SABNZBDCAT&apikey=$APIKEY&output=text');
+		$this->remove('sabnzbdurl');
 		$this->updateSettingsVersion();
 	} # update()
 	

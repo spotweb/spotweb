@@ -48,7 +48,6 @@ class SpotUpgrader {
 			default					: throw new Exception("Onbekende database engine");
 		} # switch
 		
-		$dbStruct->createDatabase();
 		$dbStruct->updateSchema();
 	 } # database
 

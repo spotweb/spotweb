@@ -1,4 +1,5 @@
 <?php
+	require_once "lib/SpotClassAutoload.php";
 	@include('settings.php');
 	set_error_handler("ownWarning",E_WARNING);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -25,21 +26,22 @@
 <br />
 
 <table summary="PHP extensions">
-	<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
-	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
-	<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
-	<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
-	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
+	<tr> <th colspan="2"> PHP extension </th> <th> Info </th> <th> Result </th> </tr>
+	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
+	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
+	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
+	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
+	<tr> <td colspan="2"> zip </td> <td> NZB files comprimeren </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
+	<tr> <td colspan="2"> zlib </td> <td> </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
+	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial</td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
 	$spotSigning = new SpotSigning();
 	$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
-?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl')); ?> </td> </tr>
-	<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp')); ?> </td> </tr>
-	<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath')); ?> </td> </tr>
-	<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
+?>	<tr> <td rowspan="3"> Minimaal 1 moet OK zijn<br />In volgorde van snelste naar langzaamste </td> <td> openssl </td> <td> </td> <td> <?php showResult(extension_loaded('openssl')); ?> </td> </tr>
+	<tr> <td> gmp </td> <td> </td> <td> <?php showResult(extension_loaded('gmp')); ?> </td> </tr>
+	<tr> <td> bcmath </td> <td> </td> <td> <?php showResult(extension_loaded('bcmath')); ?> </td> </tr>
+	<tr> <td colspan="2"> Can create private key? </td> <td> </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private'])); ?> </td> </tr>
 </table>
 <br />
 
@@ -70,27 +72,6 @@
 	<tr> <td> <a href="http://pear.php.net/package/Net_NNTP">Net_NNTP</a> </td> <td> <?php $result=testInclude("Net".DIRECTORY_SEPARATOR."NNTP".DIRECTORY_SEPARATOR."Client.php"); echo showResult($result, $result); ?> </td> </tr>
 </table>
 <br />
-
-<?php
-	switch ($settings['nzbhandling']['action'] )
-	{
-		case "save":
-		case "runcommand":
-			echo "<table summary=\"NZB handling\">";
-			echo "<tr> <th> NZB local download enabled </th> <th> Value </th> </tr>";
-			echo "<tr><td>NZB action: </td><td>" . $settings['nzbhandling']['action'] . "</td></tr>";
-			echo "<tr><td>NZB directory: </td><td>" .$settings['nzbhandling']['local_dir'] ."</td></tr>";
-			echo "<tr><td>Directory access: </td><td>";
-			$TestFileName = $settings['nzbhandling']['local_dir'] ."testFile.txt";
-			$TestFileHandle = fopen($TestFileName, 'w') or die("Cannot create file</td></tr>");
-			showResult(true);
-			echo "</td></tr>";
-			echo "</table>";
-			fclose($TestFileHandle);
-			unlink($TestFileName);
-			break;
-	}
-?>
 
 </body>
 </html><?php

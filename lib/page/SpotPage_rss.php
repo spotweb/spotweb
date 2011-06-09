@@ -82,7 +82,7 @@ class SpotPage_rss extends SpotPage_Abs {
 				$item->appendChild($description);
 				$item->appendChild($doc->createElement('author', $spot['messageid'] . ' (' . $poster . ')'));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
-				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcat'])));
+				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 
 				$enclosure = $doc->createElement('enclosure');
 				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));

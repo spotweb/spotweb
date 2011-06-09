@@ -204,6 +204,14 @@ try {
 				break;
 		} # edituserprefs
 
+		case 'editsecgroup' : {
+				$page = new SpotPage_editsecgroup($db, $settings, $currentSession,
+							Array('editsecgroupform' => $req->getForm('editsecgroupform', array('submitaddperm', 'submitremoveperm', 'submitchangename', 'submitaddgroup', 'submitremovegroup')),
+							      'groupid' => $req->getDef('groupid', 0)));
+				$page->render();
+				break;
+		} # editsecgroup
+
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
 							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'removeallsessions')),

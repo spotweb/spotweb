@@ -52,7 +52,39 @@ class SpotSecurity {
 	const spotsec_view_spotcount_total		= 26;	//
 	const spotsec_delete_user				= 27;
 	const spotsec_edit_groupmembership		= 28;
-			
+	
+	// Array mapping the security id to a human readable text
+	private $_secHumanReadable = array(
+		0		=> "Overzicht van spots tonen",
+		1		=> "Inloggen",
+		2		=> "Zoekopdracht uitvoeren",
+		3		=> "Spot in detail zien",
+		4		=> "NZB file opvragen",
+		5		=> "Integratie met download manager",
+		6		=> "Spots markeren als gelezen",
+		7		=> "Afbeelding van een spot tonen",
+		8		=> "RSS feed",
+		9		=> "Static resources",
+		10		=> "Nieuwe gebruiker aanmaken",
+		11		=> "Eigen voorkeuren wijzigen",
+		12		=> "Eigen gebruiker wijzigen",
+		13		=> "Alle gebruikers oplijsten",
+		14		=> "Commentaar op een spot posten",
+		15		=> "Uitloggen",
+		16		=> "sabnzbd API gebruiken (niet download manager integratie)",
+		17		=> "Watchlist bijhouden",
+		18		=> "Downloadlist bijhouden",
+		19		=> "Seenlist bijhouden",
+		20		=> "Spotcount in filterlijst tonen",
+		21		=> "Nieuwe spots ophalen knop tonen",
+		22		=> "Comments op een spot laten zien",
+		23		=> "Eigen template selecteren",
+		24		=> "SpotWeb gebruiken via API key",
+		25		=> "Andere gebruikers wijzigen",
+		26		=> "Totaal aantal spots tonen",
+		27		=> "Gebruikers wissen",
+		28		=> "Groupen waar een user lid van is wijzigen"
+	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
 		$this->_db = $db;
@@ -71,6 +103,14 @@ class SpotSecurity {
 			throw new PermissionDeniedException($perm, $object);
 		} # if
 	} # fatalPermCheck
+	
+	function toHuman($perm) {
+		return $this->_secHumanReadable[$perm];
+	} # toHuman
+	
+	function getAllPermissions() {
+		return $this->_secHumanReadable;
+	} # getAllPermissions
 	
 	function securityValid() {
 		# SPOTWEB_SECURITY_VERSION is gedefinieerd bovenin dit bestand

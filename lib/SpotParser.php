@@ -130,8 +130,6 @@ class SpotParser {
 			// key id
 			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
 
-			// groupname
-			$spot['groupname'] = 'free.pt';
 			if ($spot['keyid'] >= 0) {
 
 				$expression = '';
@@ -149,9 +147,6 @@ class SpotParser {
 							$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . '|';
 						} # if
 					} # foeeach
-
-					$spot['subcat'] = (int) (substr($subcatAr[0], 1));
-
 				} else {
 					$list = array();
 					for($i = 0; $i < strlen($strInput); $i++) {
@@ -168,8 +163,6 @@ class SpotParser {
 					foreach($list as $str) {
 						$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
 					} # foreach
-
-					$spot['subcat'] = (int) (substr($list[0], 1));
 				} # else if $recentKey 
 
 				# Break up the subcategories per subcat-type
