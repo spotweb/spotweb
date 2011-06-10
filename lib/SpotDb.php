@@ -1042,7 +1042,7 @@ class SpotDb {
 		} # if
 
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s)",
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['messageid'],
 					   $spot['poster'],
 					   $spot['title'],
@@ -1055,7 +1055,7 @@ class SpotDb {
 					   $spot['subcatz'],
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
-					   $spot['filesize']) );
+					   $spot['filesize']));
 
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
