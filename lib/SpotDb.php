@@ -1035,8 +1035,14 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
+		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
+		# versies een verkeerde afronding geeft bij >32bits getallen.
+		if (!is_numeric($spot['filesize'])) {
+			$spot['fileSize'] = 0;
+		} # if
+
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s)",
 				 Array($spot['messageid'],
 					   $spot['poster'],
 					   $spot['title'],
