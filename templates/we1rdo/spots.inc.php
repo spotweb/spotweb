@@ -10,6 +10,7 @@
 	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
+	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 ?>
 			<div class="spots">
@@ -27,6 +28,9 @@
 							<th class='genre'> Genre </th> 
 							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
 							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
+<?php if ($show_filesize) { ?>
+							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="Sorteren op Bestandsgrootte [aflopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="Sorteren op Bestandsgrootte [oplopend]"> </a></span> Size </th> 
+<?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
 <?php } ?>
@@ -50,6 +54,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		$nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
+		if ($show_filesize) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
@@ -95,7 +100,10 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='Zoek spots in de categorie " . $spot['catdesc'] . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='Zoek spots van " . $spot['poster'] . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
-			 
+
+		if ($show_filesize) {
+			echo "<td class='filesize'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
+		} 
 
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {

@@ -195,6 +195,9 @@ table.spots th.poster {min-width:110px; width:110px; overflow:hidden;}
 table.spots td.poster a {width:110px;}
 table.spots td.date,
 table.spots th.date {min-width:140px; width:140px;}
+table.spots td.filesize,
+table.spots th.filesize {min-width:62px; width:62px;}
+table.spots td.filesize {text-align:right;}
 table.spots td.nzb,
 table.spots th.nzb {min-width:26px; width:26px;}
 table.spots td.multinzb,
