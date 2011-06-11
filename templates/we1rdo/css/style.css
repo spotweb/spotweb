@@ -7,9 +7,10 @@ body.fixed {padding:25px 0 0 0;}
 div.container {position:relative; font:11px Arial, Helvetica, sans-serif;}
 div.container.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden;}
 
-.greyButton {font:11px Arial, Helvetica, sans-serif; display:block; background:url(../img/sprite_button.png) no-repeat 0 0; width:210px !important; margin:0 10px 5px 10px; line-height:20px; height:20px; color:#fff !important; font-weight:bold; text-align:center; cursor:pointer; border:0;}
-.greyButton:focus,
-.greyButton:hover {background-position:0 -20px;}
+.smallGreyButton, .greyButton {font:11px Arial, Helvetica, sans-serif; display:block; background:url(../img/sprite_button.png) no-repeat 0 0; width:210px !important; margin:0 10px 5px 10px; line-height:20px; height:20px; color:#fff !important; font-weight:bold; text-align:center; cursor:pointer; border:0;}
+.smallGreyButton:focus, .greyButton:focus,
+.smallGreyButton:hover, .greyButton:hover {background-position:0 -20px;}
+.smallGreyButton { background:url(../img/sprite_button_small.png) no-repeat 0 0; width: 84px !important; }
 
 input {outline:none;}
 div.clear {clear:both;}
