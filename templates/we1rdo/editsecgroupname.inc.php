@@ -1,13 +1,16 @@
 <?php
+	# is form voor het toevoegen van een groep ipv wijzigen van een
+	$isNew = (isset($data['isnew']));
+	
 	# vraag de opgegeven securitygroup op
-	$securitygroup = $tplHelper->getSecGroup($data['groupid']);
+	if (!$isNew) {
+		$securitygroup = $tplHelper->getSecGroup($data['groupid']);
+	} # if
 
 	# bereid alvast een UL voor voor de errors e.d., worden er later
 	# via AJAX ingegooid
 	include "includes/form-messages.inc.php";
 	
-	# is form voor het toevoegen van een groep ipv wijzigen van een
-	$isNew = (isset($data['isnew']));
 ?>
 
 	<!-- Naam van security group wijzigen of nieuwe security groep toevoegen -->
