@@ -66,6 +66,18 @@ function openSpot(id,url) {
 }
 
 /*
+ * Refresht een tab in een bepaalde tab lijst, 
+ * kan als callback gegeven worden aan showDialog()
+ */
+function refreshTab(tabName) {    
+	var tab = $('#' + tabName);
+	
+	var selected = tab.tabs('option', 'selected');
+	tab.tabs('load', selected);
+} // refreshTab
+
+	
+/*
  * Helper functie om een dialog te openen, er moeten een aantal paramters 
  * meegegeven worden:
  *
@@ -74,8 +86,9 @@ function openSpot(id,url) {
  * url = url van de content waar deze dialog geladen zou moeten worden
  * formname = naam van het formulier, dit is nodig om de submit buttons te attachen
  * autoClose = moet hte formulier automatisch sluiten als het resultaat 'success' was ?
+ * closeCb = functie welke aangeroepen moet worden als de dialog gesloten wordt
  */
-function openDialog(divid, title, url, formname, autoClose) {
+function openDialog(divid, title, url, formname, autoClose, closeCb) {
 	var $dialdiv = $("#" + divid);
   
     if (!$dialdiv.is(".ui-dialog-content")) {
@@ -112,6 +125,10 @@ function openDialog(divid, title, url, formname, autoClose) {
 				if ((result == 'success') && (autoClose)) {
 					$dialdiv.empty();
 					$dialdiv.dialog('close');
+					
+					if (closeCb) {
+						closeCb();
+					} // if
 				} else {						
 					/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
 					if (!autoClose) {
