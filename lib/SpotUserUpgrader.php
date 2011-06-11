@@ -215,8 +215,7 @@ class SpotUserUpgrader {
 			} # foreach
 
 			/* Default permissions for administrative users */
-			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users, 
-							  SpotSecurity::spotsec_display_groupmembership, SpotSecurity::spotsec_edit_securitygroups);
+			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
 			foreach($adminPerms as $adminPerm) {
 				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
 			} # foreach
