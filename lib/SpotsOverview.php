@@ -446,14 +446,16 @@ class SpotsOverview {
 					if ($searchType == 'date') {
 						$searchValue = date("U",  strtotime($searchValue));
 					} elseif ($searchType == 'filesize' && is_numeric($searchValue) === false) {
-						$val = trim($searchValue);
-						$last = strtolower($val[strlen($val)-1]);
+						# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
+						# platform te omzeilen.
+						$val = (float) trim(substr($searchValue, 0, -1));
+						$last = strtolower($searchValue[strlen($searchValue) - 1]);
 						switch($last) {
-							case 'g': $val *= 1024;
-							case 'm': $val *= 1024;
-							case 'k': $val *= 1024;
+							case 'g': $val *= (float) 1024;
+							case 'm': $val *= (float) 1024;
+							case 'k': $val *= (float) 1024;
 						} # switch
-						$searchValue = (int) $val;
+						$searchValue = round($val, 0);
 					} # if
 					
 					# als het niet numeriek is, zet er dan een quote by

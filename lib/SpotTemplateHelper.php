@@ -761,15 +761,46 @@ class SpotTemplateHelper {
 	 * Geeft een lijst met alle security groepen terug
 	 */
 	function getGroupList() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
+		
 		return $this->_db->getGroupList(null);
 	}  # getGroupList
 
 	/*
+ 	 * Geeft een lijst met alle security groepen terug voor een bepaalde user
+	 */
+	function getGroupListForUser($userId) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
+		
+		return $this->_db->getGroupList($userId);
+	}  # getGroupListForUser
+
+	/*
 	 * Geeft alle permissies in een bepaalde securitygroup terug
 	 */
-	function getSecGroup($id) {
-		return $this->_db->getGroupPerms($id);
+	function getSecGroup($groupId) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
+		
+		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		if (!empty($tmpGroup)) {
+			return $tmpGroup[0];
+		} else {
+			return false;
+		} # else
 	} # getSecGroup
+
+	/*
+	 * Geeft alle permissies in een bepaalde securitygroup terug
+	 */
+	function getSecGroupPerms($id) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
+		
+		return $this->_db->getGroupPerms($id);
+	} # getSecGroupPerms
 	
 	/*
 	 * Redirect naar een opgegeven url

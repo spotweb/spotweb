@@ -130,6 +130,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'keep_downloadlist', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_watchlist', true);
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
+			$this->setSettingIfNot($user['prefs'], 'show_filesize', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
 			$this->unsetSetting($user['prefs'], 'search_url');
 			
@@ -250,6 +251,13 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.06) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_delete_user . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_groupmembership . ")");
+		} # if
+
+		# We voegen nog extra security toe voor de admin user, deze mag group membership van
+		# een user tonen, en securitygroepen inhoudleijk wijzigen
+		if ($this->_settings->get('securityversion') < 0.07) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_display_groupmembership . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_securitygroups . ")");
 		} # if
 	} # updateSecurityGroups
 	

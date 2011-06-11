@@ -23,6 +23,5 @@
 		</script>
 	</head>
 	<body>
-		<div id="fullscreenoverlay"></div>
 		<div id="overlay"></div>
 		<div class="container" id="container">

@@ -134,10 +134,16 @@
 					<div class="editUserPrefs"></div>
 	<?php } ?>
 
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, '')) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=listusers">Gebruikerslijst</a></h4>
+<?php if (
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_securitygroups, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
+		 ) { ?>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=render&tplname=adminpanel">Admin panel</a></h4>
 					<div class="listUsers"></div>
-	<?php } ?>
+<?php } ?>
 					
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 					<h4 class="dropdown">Uitloggen</h4>
