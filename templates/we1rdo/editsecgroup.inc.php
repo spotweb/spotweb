@@ -1,56 +1,42 @@
 <?php
-	require "includes/header.inc.php";
-	
-if (!empty($editsecgroupresult)) {
-	include "includes/form-messages.inc.php";
+if (!empty($editresult)) {
+	include 'includes/form-xmlresult.inc.php';
+
+	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
 
-
-$permList = $tplHelper->getSecGroup($securitygroup['id']);
+if (empty($editresult)) {
+	include "includes/form-messages.inc.php";
+	
+	# vraag de opgegeven securitygroup op
+	$permList = $tplHelper->getSecGroupPerms($securitygroup['id']);
 ?>
-	<span><a href='<?php echo $http_referer;?>'>Terug naar vorige pagina</a></span>
-	<br>
-
-	############################### <br>
-	############################### <br>
-	1. Geen geldige groep moet gecontroleerd worden <br>
-	2. Toevoegen van dubbel recht geeft allerlei notices<br>
-	############################### <br>
-	############################### <br>
-	
-	<!-- Naam van security group wijzigen -->
-	<fieldset>
-		<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
-			<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
-			<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
-			<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
-			
-			<dt><label for="editsecgroupform[name]">Naam</label></dt>
-			<dd>
-				<input type="text" name="editsecgroupform[name]" value="<?php echo htmlspecialchars($securitygroup['name']); ?>"></input>
-			</dd>
-			
-			<dd>
-				<input class="greyButton" type="submit" name="editsecgroupform[submitchangename]" value="Wijzig">
-			</dd>
-		</form>
-	</fieldset>
-	
-	
-	<table class="secgroupperms" summary="Permissions">
+	<table class="ui-widget ui-widget-content secgroupperms" summary="Permissions">
 		<thead>
-			<tr class="head">
+			<tr class="ui-widget-header head">
 				<th>Permissie</th> 
 				<th>Object</th>
-				<th>Wis</th>
+				<?php if ($securitygroup['id'] > 3) { ?>
+					<th>Wis</th>
+				<?php } ?>
+				<th>|</th>
+				<th>Permissie</th> 
+				<th>Object</th>
+				<?php if ($securitygroup['id'] > 3) { ?>
+					<th>Wis</th>
+				<?php } ?>
 			</tr>
 		</thead>
 		
 		<tbody id="secgroupermlist">
-<?php foreach($permList as $perm) { ?>
-			<tr>
+<?php for($i = 0; $i < count($permList); $i += 2) { 
+		echo '<tr>';
+		for($j = 0; $j < 2 && count($permList) > ($i + $j); $j++) { 
+			$perm = $permList[$i+$j];
+?>
 				<td> <?php echo $tplHelper->permToString($perm['permissionid']); ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
+				<?php if ($securitygroup['id'] > 3) { ?>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
@@ -58,15 +44,28 @@ $permList = $tplHelper->getSecGroup($securitygroup['id']);
 						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
 						<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
-						<input class="greyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="Wis">
+						<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="Wis">
 					</form>
 				</td>
-			</tr>
-<?php } ?>
+				<?php } ?>
+				
+<?php
+			if ($j == 0) {
+				echo '<td></td>';
+			} # if
+
+		} // for j
+		echo '</tr>';
+	}
+?>
 		</tbody>
 	</table>
 
+	<br >
+	<br >
+	
 	<!-- Security recht toevoegen -->
+<?php if ($securitygroup['id'] > 3) { ?>
 	<form class="editsecgroupform" name="editsecgroupform" action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 		<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 		<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
@@ -89,10 +88,14 @@ $permList = $tplHelper->getSecGroup($securitygroup['id']);
 			</dd>
 
 			<dd>
-				<input class="greyButton" type="submit" name="editsecgroupform[submitaddperm]" value="Voeg toe">
+				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitaddperm]" value="Voeg toe">
 			</dd>
 		</fieldset>
 	</form>
+<?php } ?>
 
 <?php
 	require_once "includes/footer.inc.php";
+
+	} # if not only  xml
+	
