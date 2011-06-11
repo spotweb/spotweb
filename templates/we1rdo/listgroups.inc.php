@@ -37,7 +37,7 @@
 ?>
 		<tr>
 			<td colspan='4'>
-				<a href="" onclick="return openDialog('editdialogdiv', 'Nieuwe groep toevoegen', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', true);"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
+				<a href="" onclick="return openDialog('editdialogdiv', 'Nieuwe groep toevoegen', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', true, function() { refreshTab('adminpaneltabs')});"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
 			</td>
 		</tr>
 		
