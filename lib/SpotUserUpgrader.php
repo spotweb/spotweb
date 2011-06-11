@@ -214,7 +214,8 @@ class SpotUserUpgrader {
 			} # foreach
 
 			/* Default permissions for administrative users */
-			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
+			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users, 
+							  SpotSecurity::spotsec_display_groupmembership, SpotSecurity::spotsec_edit_securitygroups);
 			foreach($adminPerms as $adminPerm) {
 				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
 			} # foreach
@@ -250,6 +251,13 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.06) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_delete_user . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_groupmembership . ")");
+		} # if
+
+		# We voegen nog extra security toe voor de admin user, deze mag group membership van
+		# een user tonen, en securitygroepen inhoudleijk wijzigen
+		if ($this->_settings->get('securityversion') < 0.07) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_display_groupmembership . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_securitygroups . ")");
 		} # if
 	} # updateSecurityGroups
 	
