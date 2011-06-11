@@ -297,6 +297,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # caps
 
 	function Cat2NewznabCat($hcat, $cat) {
+		$result = "-";
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
 		$nr = substr($cat, 1);
@@ -308,7 +309,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			}
 		}
 
-		return ($result) ? $result : "-";
+		return $result;
 	}
 
 	function showApiError($errcode=42) {
