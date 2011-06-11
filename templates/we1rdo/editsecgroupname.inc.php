@@ -16,6 +16,8 @@
 			<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 <?php if (!$isNew) { ?>			
 			<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
+<?php } else {  ?>
+			<input type="hidden" name="groupid" value="9999">
 <?php } ?>
 			
 			<dt><label for="editsecgroupform[name]">Naam</label></dt>
