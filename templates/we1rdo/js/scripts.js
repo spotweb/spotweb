@@ -65,70 +65,116 @@ function openSpot(id,url) {
 	});
 }
 
-function openDialog(divid, title, url, formname) {
-	$.ajax({
-		type: "GET",
-		dataType: "html",
-		url: url,
-		data: {},
-		success: function(response) {
-			// Laad de content van de pagina in de dialog zodat we die daarna 
-			// kunnen laten zien
-			var $diagdiv = $("#" + divid);
-			$diagdiv.empty().html(response);
-			
-			// we vragen vervolgens alle submit buttons op, hier gaan we dan een
-			// form submit handler aan vast knopen. Dit is nodig omdat standaard
-			// de form submit handler van jquery niet weet op welke knop er gedrukt
-			// is, dus moeten we wat doen om dat duidelijk te krijgen.
-			var $buttons = $("form." + formname + " input[type='submit']"); 
-			$buttons.click(function() {  
-				// In deze context is 'this' de submit button waarop gedrukt is,
-				// dus die data voegen we gewoon aan de post data toe.
-				var formdata = $(this).attr("name") + "=" + $(this).val();  
-				formdata = $(this.form).serialize() + "&" + formdata;
-				
-				// post de data
-				$.ajax({
-					type: "POST",
-					url: this.form.action,
-					data: formdata,
-					success: function(xml) {
-						var result = $(xml).find('result').text();
-						
-						var $diagdiv = $("#"+divid)
-						if (result == 'success') {
-							$diagdiv.dialog('close');
-						} else {						
-							var $formerrors = $diagdiv.find("ul.formerrors");
-							$formerrors.empty();
-
-							// zet de errors van het formulier in de errorlijst
-							$('errors', xml).each(function() {
-								$formerrors.append("<li>" + $(this).text() + "</li>");
-							}); // each
-						} // if post was not succesful
-					} // success()
-				});
-				
-				return false;
-			}); // click handler op button
-				
-			// en nu kunnen we de dialog wel tonen
-			$diagdiv.dialog( {
-				title: title,
-				autoOpen: true,
-				resizable: false,
-				position: 'center',
-				stack: true,
-				closeOnEscape: true,
-				height: 'auto',
-				width: 'auto',
-				modal: true
-			} );
-		} // success function
-	}); // ajax call
+/*
+ * Helper functie om een dialog te openen, er moeten een aantal paramters 
+ * meegegeven worden:
+ *
+ * divid = id van een div welke geburikt wordt om om te vormen tot een dialog.
+ * title = title van de dialogbox
+ * url = url van de content waar deze dialog geladen zou moeten worden
+ * formname = naam van het formulier, dit is nodig om de submit buttons te attachen
+ * autoClose = moet hte formulier automatisch sluiten als het resultaat 'success' was ?
+ */
+function openDialog(divid, title, url, formname, autoClose) {
+	var $dialdiv = $("#" + divid);
+  
+    if (!$dialdiv.is(".ui-dialog-content")) {
+		// en nu kunnen we de dialog wel tonen
+		$dialdiv.dialog( {
+			title: title,
+			autoOpen: false,
+			resizable: false,
+			position: 'center',
+			stack: true,
+			closeOnEscape: true,
+			height: 'auto',
+			width: 'auto',
+			modal: true
+		} );
+	} // if
 	
+	/* submit button handler */
+	var buttonClick = function() {
+		// In deze context is 'this' de submit button waarop gedrukt is,
+		// dus die data voegen we gewoon aan de post data toe.
+		var formdata = $(this).attr("name") + "=" + $(this).val();  
+		formdata = $(this.form).serialize() + "&" + formdata;
+		
+		// post de data
+		$.ajax({
+			type: "POST",
+			url: this.form.action,
+			data: formdata,
+			success: function(xml) {
+				var $dialdiv = $("#"+divid)
+				var result = $(xml).find('result').text();
+				
+				if ((result == 'success') && (autoClose)) {
+					$dialdiv.empty();
+					$dialdiv.dialog('close');
+				} else {						
+					/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
+					if (!autoClose) {
+						loadDialogContent(false);
+					} // if
+
+					// voeg nu de errors in de html
+					var $formerrors = $dialdiv.find("ul.formerrors");
+					$formerrors.empty();
+
+					// zet de errors van het formulier in de errorlijst
+					$('errors', xml).each(function() {
+						$formerrors.append("<li>" + $(this).text() + "</li>");
+					}); // each
+				} // if post was not succesful
+			} // success()
+		}); // ajax call om de form te submitten
+		
+		return false; // standaard button submit supressen
+	} // buttonClick
+
+	
+	/*
+	 * definieer een dialog loader functie welke tegelijkertijd
+	 * de submit buttons attached, deze wordt namelijk aangeroepen
+	 * als een dialog submit succesvol is, maar de dialog niet gesloten
+	 * mag worden. Dat is namelijk de simpelste manier om de content
+	 * te refreshen
+	 */
+	function loadDialogContent(async) {
+		/* en laad de werkelijke content */
+		$.ajax({
+			type: "GET",
+			dataType: "html",
+			async: async,
+			url: url,
+			data: {},
+			success: function(response) {
+				// Laad de content van de pagina in de dialog zodat we die daarna 
+				// kunnen laten zien
+				var $dialdiv = $("#" + divid);
+				$dialdiv.empty().html(response);
+				
+				// sla de geladen url op zodat we het resultaat zien
+				$dialdiv.data('dialogurl', url);
+				
+				// we vragen vervolgens alle submit buttons op, hier gaan we dan een
+				// form submit handler aan vast knopen. Dit is nodig omdat standaard
+				// de form submit handler van jquery niet weet op welke knop er gedrukt
+				// is, dus moeten we wat doen om dat duidelijk te krijgen.
+				//var $buttons = $("form." + formname + " input[type='submit']"); 
+				var $buttons = $("#" + divid + " input[type='submit']"); 
+				$buttons.click(buttonClick)
+				
+				// en toon de dialog
+				$dialdiv.dialog('open');
+					
+				return false; // standaard link actie voor openen dialog supressen
+			} // success function
+		}); // ajax call
+	} // loadDialogContent
+	
+	loadDialogContent(true);
 	return false;
 } // openDialog
 
@@ -144,12 +190,6 @@ function closeOverlay() {
 	$("#overlay").hide();
 	$("#details").remove();
 } // closeOverlay
-
-// En maak de fullscreen overlay onzichtbaar
-function closeFullscreenOverlay() {
-	$("body").removeClass("fullscreen");
-	$("#fullscreenoverlay").hide();
-} // closeFullscreenOverlay
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
