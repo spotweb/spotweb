@@ -105,6 +105,11 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 			modal: true
 		} );
 	} // if
+
+	// Update de dialogs' title, de tweede manier is er omdat het niet altijd goed
+	// werkt met de 1e methode
+	$dialdiv.dialog("option", 'title', title);
+	$("span.ui-dialog-title").text(title);
 	
 	/* submit button handler */
 	var buttonClick = function() {
@@ -190,7 +195,8 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 			} // success function
 		}); // ajax call
 	} // loadDialogContent
-	
+
+	// en laad de content
 	loadDialogContent(true);
 	return false;
 } // openDialog
