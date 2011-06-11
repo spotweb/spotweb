@@ -65,31 +65,135 @@ function openSpot(id,url) {
 	});
 }
 
-// Open een URL in de overlay div
-function openOverlay(id,url) {
-	if($("#fullscreenoverlay").is(":visible")) {
-		$("#fullscreenoverlay").addClass('notrans');
-	}
+/*
+ * Refresht een tab in een bepaalde tab lijst, 
+ * kan als callback gegeven worden aan showDialog()
+ */
+function refreshTab(tabName) {    
+	var tab = $('#' + tabName);
 	
-	// Toon een "loading" div
-	$("#fullscreenoverlay").addClass('loading');
-	$("#fullscreenoverlay").empty().show();
-	
-	$("#fullscreenoverlay").load(url, function() {
-		// vervolgens hiden we de gehele container
-		$("div.container").removeClass("visible").addClass("hidden");
-		
-		// en halen we het loading en notrans weg zodat onze div zichtbaar is
-		$("#fullscreenoverlay").removeClass('loading notrans');
-		$("body").addClass('fullscreen');
+	var selected = tab.tabs('option', 'selected');
+	tab.tabs('load', selected);
+} // refreshTab
 
-		// nu moeten we alleen nog even de close er aanvast plakken
-		$("a.closeDetails").click(function(){ 
-			closeFullscreenOverlay();
-		});
+	
+/*
+ * Helper functie om een dialog te openen, er moeten een aantal paramters 
+ * meegegeven worden:
+ *
+ * divid = id van een div welke geburikt wordt om om te vormen tot een dialog.
+ * title = title van de dialogbox
+ * url = url van de content waar deze dialog geladen zou moeten worden
+ * formname = naam van het formulier, dit is nodig om de submit buttons te attachen
+ * autoClose = moet hte formulier automatisch sluiten als het resultaat 'success' was ?
+ * closeCb = functie welke aangeroepen moet worden als de dialog gesloten wordt
+ */
+function openDialog(divid, title, url, formname, autoClose, closeCb) {
+	var $dialdiv = $("#" + divid);
+  
+    if (!$dialdiv.is(".ui-dialog-content")) {
+		// en nu kunnen we de dialog wel tonen
+		$dialdiv.dialog( {
+			title: title,
+			autoOpen: false,
+			resizable: false,
+			position: 'center',
+			stack: true,
+			closeOnEscape: true,
+			height: 'auto',
+			width: 'auto',
+			modal: true
+		} );
+	} // if
+	
+	/* submit button handler */
+	var buttonClick = function() {
+		// In deze context is 'this' de submit button waarop gedrukt is,
+		// dus die data voegen we gewoon aan de post data toe.
+		var formdata = $(this).attr("name") + "=" + $(this).val();  
+		formdata = $(this.form).serialize() + "&" + formdata;
 		
-	});
-} // openOverlay
+		// post de data
+		$.ajax({
+			type: "POST",
+			url: this.form.action,
+			data: formdata,
+			success: function(xml) {
+				var $dialdiv = $("#"+divid)
+				var result = $(xml).find('result').text();
+				
+				if ((result == 'success') && (autoClose)) {
+					$dialdiv.empty();
+					$dialdiv.dialog('close');
+					
+					if (closeCb) {
+						closeCb();
+					} // if
+				} else {						
+					/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
+					if (!autoClose) {
+						loadDialogContent(false);
+					} // if
+
+					// voeg nu de errors in de html
+					var $formerrors = $dialdiv.find("ul.formerrors");
+					$formerrors.empty();
+
+					// zet de errors van het formulier in de errorlijst
+					$('errors', xml).each(function() {
+						$formerrors.append("<li>" + $(this).text() + "</li>");
+					}); // each
+				} // if post was not succesful
+			} // success()
+		}); // ajax call om de form te submitten
+		
+		return false; // standaard button submit supressen
+	} // buttonClick
+
+	
+	/*
+	 * definieer een dialog loader functie welke tegelijkertijd
+	 * de submit buttons attached, deze wordt namelijk aangeroepen
+	 * als een dialog submit succesvol is, maar de dialog niet gesloten
+	 * mag worden. Dat is namelijk de simpelste manier om de content
+	 * te refreshen
+	 */
+	function loadDialogContent(async) {
+		/* en laad de werkelijke content */
+		$.ajax({
+			type: "GET",
+			dataType: "html",
+			async: async,
+			url: url,
+			data: {},
+			success: function(response) {
+				// Laad de content van de pagina in de dialog zodat we die daarna 
+				// kunnen laten zien
+				var $dialdiv = $("#" + divid);
+				$dialdiv.empty().html(response);
+				
+				// sla de geladen url op zodat we het resultaat zien
+				$dialdiv.data('dialogurl', url);
+				
+				// we vragen vervolgens alle submit buttons op, hier gaan we dan een
+				// form submit handler aan vast knopen. Dit is nodig omdat standaard
+				// de form submit handler van jquery niet weet op welke knop er gedrukt
+				// is, dus moeten we wat doen om dat duidelijk te krijgen.
+				//var $buttons = $("form." + formname + " input[type='submit']"); 
+				var $buttons = $("#" + divid + " input[type='submit']"); 
+				$buttons.click(buttonClick)
+				
+				// en toon de dialog
+				$dialdiv.dialog('open');
+					
+				return false; // standaard link actie voor openen dialog supressen
+			} // success function
+		}); // ajax call
+	} // loadDialogContent
+	
+	loadDialogContent(true);
+	return false;
+} // openDialog
 
 // Open spot in los scherm
 function openNewWindow() {
@@ -103,12 +207,6 @@ function closeOverlay() {
 	$("#overlay").hide();
 	$("#details").remove();
 } // closeOverlay
-
-// En maak de fullscreen overlay onzichtbaar
-function closeFullscreenOverlay() {
-	$("body").removeClass("fullscreen");
-	$("#fullscreenoverlay").hide();
-} // closeFullscreenOverlay
 
 // Sluit spotinfo overlay
 function closeDetails(scrollLocation) {
@@ -312,6 +410,7 @@ function spotNav(direction) {
 // Edit user preference tabs
 $(document).ready(function() {
 	$("#edituserpreferencetabs").tabs();
+	$("#adminpaneltabs").tabs();
 	
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();

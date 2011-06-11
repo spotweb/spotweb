@@ -979,15 +979,16 @@ class SpotDb {
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT nntpref FROM commentsxover WHERE messageid= '%s')", Array($msgId));
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref= '%s')", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, commentsxover, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-									LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1012,7 +1013,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
-									(SELECT nntpref FROM commentsxover WHERE commentsxover.nntpref not in 
+									(SELECT messageid FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
@@ -1021,9 +1022,10 @@ class SpotDb {
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, commentsxover, commentsfull USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-					LEFT JOIN commentsfull ON spots.messageid=commentsfull.messageid
+					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1033,8 +1035,14 @@ class SpotDb {
 	 * Voeg een spot toe aan de database
 	 */
 	function addSpot($spot, $fullSpot = array()) {
+		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
+		# versies een verkeerde afronding geeft bij >32bits getallen.
+		if (!is_numeric($spot['filesize'])) {
+			$spot['fileSize'] = 0;
+		} # if
+
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				 Array($spot['messageid'],
 					   $spot['poster'],
 					   $spot['title'],
@@ -1047,7 +1055,7 @@ class SpotDb {
 					   $spot['subcatz'],
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
-					   $spot['filesize']) );
+					   $spot['filesize']));
 
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);

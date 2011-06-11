@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.06');
+define('SPOTWEB_SECURITY_VERSION', '0.07');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 
@@ -52,6 +52,8 @@ class SpotSecurity {
 	const spotsec_view_spotcount_total		= 26;	//
 	const spotsec_delete_user				= 27;
 	const spotsec_edit_groupmembership		= 28;
+	const spotsec_display_groupmembership	= 29;
+	const spotsec_edit_securitygroups		= 30;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -83,7 +85,9 @@ class SpotSecurity {
 		25		=> "Andere gebruikers wijzigen",
 		26		=> "Totaal aantal spots tonen",
 		27		=> "Gebruikers wissen",
-		28		=> "Groupen waar een user lid van is wijzigen"
+		28		=> "Groupen waar een user lid van is wijzigen",
+		29		=> "Groupen waar een user lid van is tonen",
+		30 		=> "Security groupen kunnen wijzigen"
 	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {

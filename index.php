@@ -82,6 +82,7 @@ try {
 		case 'render' : {
 				$page = new SpotPage_render($db, $settings, $currentSession, $req->getDef('tplname', ''),
 							Array('search' => $req->getDef('search', $settings->get('index_filter')),
+								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
