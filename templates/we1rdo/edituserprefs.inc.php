@@ -177,6 +177,8 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbget')) { ?>
 					<fieldset id="nzbhandling-fieldset-nzbget">
 						<!-- NZBget -->
+						<input type="hidden" name="edituserprefsform[nzbhandling][nzbget][timeout]" value="30">
+						
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][host]">Host name van nzbget?</label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['host']); ?>"></dd>
 
