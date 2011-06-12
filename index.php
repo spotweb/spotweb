@@ -224,7 +224,8 @@ try {
 
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
-							Array('loginform' => $req->getForm('loginform', array('submit'))));
+							Array('loginform' => $req->getForm('loginform', array('submit')),
+							      'data' => $req->getDef('data', array())));
 				$page->render();
 				break;
 		} # login
@@ -277,7 +278,12 @@ try {
 	} # if
 }
 catch(PermissionDeniedException $x) {
-	die($x->getMessage());
+	// Render een permission denied template zodat het eventueel opgevangen kan worden
+	$page = new SpotPage_render($db, $settings, $currentSession, 'permdenied',
+				Array('exception' => $x,
+					  'page' => $page,
+					  'http_referer' => $req->getHttpReferer()));
+	$page->render();
 } # PermissionDeniedException
 catch(Exception $x) {
 	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
