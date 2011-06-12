@@ -13,6 +13,7 @@
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
+	
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -178,5 +179,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		<div class="clear"></div>
 
 <?php 
-	/* Render de footer template */
-	require_once "includes/footer.inc.php";
+	/* Render de header en filter templates */
+	if (!isset($data['spotsonly'])) {
+		/* Render de footer template */
+		require_once "includes/footer.inc.php";
+	} # if
