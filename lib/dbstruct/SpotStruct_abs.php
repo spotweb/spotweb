@@ -189,33 +189,37 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		if ($this instanceof SpotStruct_mysql) {
 			echo "Cleaning up old data..." . PHP_EOL;
-			if ($this->tableExists('usersettings')) {
+			if ($this->tableExists('usersettings') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
 			} # if
-			if ($this->tableExists('sessions')) {
+			if ($this->tableExists('sessions') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL");
 			} # if
-			if ($this->tableExists('spotstatelist')) {
+			if ($this->tableExists('spotstatelist') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL");
 			} # if
-			if ($this->tableExists('usergroups')) {
+			if ($this->tableExists('usergroups') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('usergroups') && $this->tableExists('securitygroups')) {
 				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
 			} # if
-			if ($this->tableExists('grouppermissions')) {
+			if ($this->tableExists('grouppermissions') && $this->tableExists('securitygroups')) {
 				$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
 			} # if
-			if ($this->tableExists('commentsposted')) {
+			if ($this->tableExists('commentsposted') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('commentsposted') && $this->tableExists('spots')) {
 				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
 			} # if
-			if ($this->tableExists('usersettings')) {
+			if ($this->tableExists('usersettings') && $this->tableExists('commentsxover')) {
 				$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL");
 			} # if
-			if ($this->tableExists('spotsfull')) {
+			if ($this->tableExists('spotsfull') && $this->tableExists('spots')) {
 				$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL");
 			} # if
-			if ($this->tableExists('spotsfull')) {
+			if ($this->tableExists('spotstatelist') && $this->tableExists('spots')) {
 				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL");
 			} # if
 		} # if
