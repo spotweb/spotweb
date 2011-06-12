@@ -1,12 +1,11 @@
 <?php
 if (!empty($loginresult)) {
-
-	if ((!isset($data['performredirect'])) || ($loginresult['result'] !== 'success')) {
+	if ((!isset($data['performredirect'])) || ($loginresult['result'] != 'success')) {
 		include 'includes/form-xmlresult.inc.php';
 		
 		echo formResult2Xml($loginresult, $formmessages, $tplHelper);
 	} else {
-		$tplHelper->redirect($http_referer);
+		$tplHelper->redirect($loginform['http_referer']);
 	} # if
 } # if
 
