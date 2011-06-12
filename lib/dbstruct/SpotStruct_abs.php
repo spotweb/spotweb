@@ -187,19 +187,19 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		# Opschonen data #############################################################################
 		##############################################################################################
-		if (($this instanceof SpotStruct_mysql) && (false)) {
+		if ($this instanceof SpotStruct_mysql) {
 			echo "Cleaning up old data..." . PHP_EOL;
-			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL;");
+			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
+			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL");
+			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL");
+			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL");
+			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL");
+			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
+			$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL");
+			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL");
 		} # if
 		
 		# ---- spots table ---- #
@@ -322,6 +322,7 @@ abstract class SpotStruct_abs {
 		# ---- securitygroups ----
 		$this->createTable('securitygroups', "ascii"); 
 		$this->validateColumn('name', 'securitygroups', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->alterStorageEngine("securitygroups", "InnoDB");
 
 		# ---- grouppermissions ----
 		$this->createTable('grouppermissions', "ascii"); 
@@ -329,12 +330,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
 		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "0", true, ''); 
+		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
 		$this->createTable('usergroups', "ascii"); 
 		$this->validateColumn('userid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('groupid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('prio', 'usergroups', 'INTEGER', '1', true, '');
+		$this->alterStorageEngine("usergroups", "InnoDB");
 
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
