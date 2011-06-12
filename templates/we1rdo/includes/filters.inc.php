@@ -141,7 +141,7 @@
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
 		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=render&tplname=adminpanel">Admin panel</a></h4>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=adminpanel">Admin panel</a></h4>
 					<div class="listUsers"></div>
 <?php } ?>
 					
