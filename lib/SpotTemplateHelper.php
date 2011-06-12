@@ -393,6 +393,12 @@ class SpotTemplateHelper {
 			return('n/a'); 
 		} else {
 			return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]); 
+
+			// test (n.a.v. http://gathering.tweakers.net/forum/list_message/36208481#36208481) om altijd op 
+			// 3 getallen te eindigen, maar maakt het niet rustiger.
+			//
+			//		$roundedSize = round($size/pow(1024, ($i = floor(log($size, 1024)))),99);
+			//		return number_format($roundedSize, 3 - strlen(round($roundedSize))) . $sizes[$i];
 		} # else
 	} # format_size
 
