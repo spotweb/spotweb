@@ -326,6 +326,7 @@ class SpotUserSystem {
 		$validTemplates = array('we1rdo');
 		
 		# Controleer de per page setting
+		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
 			$errorList[] = array('validateuser_invalidpreference', array('perpage'));
 		} # if
@@ -352,14 +353,7 @@ class SpotUserSystem {
 				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
 			} # if
 		} # if
-		
-		# als men runcommand of save wil, moet er een local_dir opgegeven worden
-		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
-			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
-			} # if
-		} # if
-		
+
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
 		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
@@ -368,7 +362,47 @@ class SpotUserSystem {
 		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
+		$prefs['notifications']['libnotify']['enabled'] = (isset($prefs['notifications']['libnotify']['enabled'])) ? true : false;
+		$prefs['notifications']['growl']['enabled'] = (isset($prefs['notifications']['growl']['enabled'])) ? true : false;
+		$prefs['notifications']['notifo']['enabled'] = (isset($prefs['notifications']['notifo']['enabled'])) ? true : false;
+		$prefs['notifications']['prowl']['enabled'] = (isset($prefs['notifications']['prowl']['enabled'])) ? true : false;
+		foreach (array('growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
+		}
 		
+		# als men runcommand of save wil, moet er een local_dir opgegeven worden
+		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
+			if (empty($prefs['nzbhandling']['local_dir'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
+			} # if
+		} # if
+
+		# als men Growl wil gebruiken, moet er een host opgegeven worden
+		if ($prefs['notifications']['growl']['enabled']) {
+			if (empty($prefs['notifications']['growl']['host'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('growl host'));
+			} # if
+		} # if
+
+		# als men Notifo wil gebruiken, moet er een username & apikey opgegeven worden
+		if ($prefs['notifications']['notifo']['enabled']) {
+			if (empty($prefs['notifications']['notifo']['username'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('notifo username'));
+			} # if
+			if (empty($prefs['notifications']['notifo']['api'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('notifo api'));
+			} # if
+		} # if
+
+		# als men Prowl wil gebruiken, moet er een apikey opgegeven worden
+		if ($prefs['notifications']['prowl']['enabled']) {
+			if (empty($prefs['notifications']['prowl']['apikey'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('prowl apikey'));
+			} # if
+		} # if
+
 		return array($errorList, $prefs);
 	} # validateUserPreferences
 
