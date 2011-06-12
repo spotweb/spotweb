@@ -1,3 +1,8 @@
+<?php
+	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
+	$grouplist = $tplHelper->getGroupList();
+?>
+
 	<div id='editdialogdiv'></div>
 	
 	<table id="spotslistgroups" class="ui-widget ui-widget-content">
@@ -12,8 +17,6 @@
 		<tbody id="grouplist">
 				
 <?php
-	$grouplist = $tplHelper->getGroupList();
-
 	foreach($grouplist as $group) {
 ?>
 			<tr> 
