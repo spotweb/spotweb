@@ -278,13 +278,18 @@ try {
 	} # if
 }
 catch(PermissionDeniedException $x) {
-	// Render een permission denied template zodat het eventueel opgevangen kan worden
-	$page = new SpotPage_render($db, $settings, $currentSession, 'permdenied',
-				Array('exception' => $x,
-					  'page' => $page,
-					  'http_referer' => $req->getHttpReferer()));
-	$page->render();
+	// Render een permission denied template zodat het eventueel opgevangen kan worden,
+	// als we al een spotpage object hebben dan laten we het over aan de implementatie
+	// specifieke renderer, anders creeeren we zelf een spotpage object.
+	// Dit laat ons toe om bijvoorbeeld voor renderers die XML output geven, ook een XML
+	// error pagina te creeeren
+	if (! ($page instanceof SpotPage_Abs)) {
+		$page = new SpotPage_render($db, $settings, $currentSession, '', array());
+	} # if
+	
+	$page->permissionDenied($x, $page, $req->getHttpReferer());
 } # PermissionDeniedException
+
 catch(Exception $x) {
 	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
