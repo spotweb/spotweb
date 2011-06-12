@@ -10,7 +10,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
-		$this->_dbcon->rawExec("ANALYZE TABLE spottexts");
+		$this->_dbcon->rawExec("ANALYZE TABLE spots");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotsfull");
+		$this->_dbcon->rawExec("ANALYZE TABLE commentsxover");
 	} # analyze
 	
 	/* converteert een "spotweb" datatype naar een mysql datatype */
