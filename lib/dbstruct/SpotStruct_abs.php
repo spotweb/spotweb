@@ -221,7 +221,7 @@ abstract class SpotStruct_abs {
 			if ($this->tableExists('commentsposted') && $this->tableExists('spots')) {
 				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
 			} # if
-			if ($this->tableExists('usersettings') && $this->tableExists('commentsxover')) {
+			if ($this->tableExists('commentsfull') && $this->tableExists('commentsxover')) {
 				$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL");
 			} # if
 			if ($this->tableExists('spotsfull') && $this->tableExists('spots')) {

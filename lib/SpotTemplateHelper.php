@@ -341,7 +341,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*
@@ -465,8 +465,9 @@ class SpotTemplateHelper {
 			} # if
 		} # if
 
-		# Deze vreemde uitzondering maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
+		# Deze vreemde uitzonderingen maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
 		$getUrl = str_ireplace("%3a", ":", $getUrl);
+		$getUrl = str_ireplace("%3d", "=", $getUrl);
 
 		return $getUrl;
 	} # getQueryParams
