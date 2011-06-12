@@ -291,7 +291,7 @@ catch(PermissionDeniedException $x) {
 } # PermissionDeniedException
 
 catch(Exception $x) {
-	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
+	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
 	die($x->getMessage());
