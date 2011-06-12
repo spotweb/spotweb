@@ -80,6 +80,7 @@ class SpotPage_index extends SpotPage_Abs {
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'activefilter' => $this->_params['search'],
+								'data' => $this->_params['data'],
 								'sortby' => $this->_params['sortby'],
 								'sortdir' => $this->_params['sortdir']));
 		SpotTiming::stop(__FUNCTION__);
