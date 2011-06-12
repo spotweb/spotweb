@@ -273,7 +273,8 @@ class SpotDb {
 					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 		if (!empty($tmpResult)) {
 			# Other preferences worden serialized opgeslagen in de database
-			for($i = 0; $i < count($tmpResult); $i++) {
+			$tmpResultCount = count($tmpResult);
+			for($i = 0; $i < $tmpResultCount; $i++) {
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
 		} # if
