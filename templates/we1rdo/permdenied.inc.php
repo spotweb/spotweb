@@ -6,9 +6,7 @@
 				background-color: #fef1fc;
 				color: #cd0a0a;
 
-				font-size: 1.1em;
-				
-				padding: 8px;
+				font-size: 0.9em;
 				
 				margin-top: 4px;
 				margin-left: auto;
