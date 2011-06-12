@@ -94,6 +94,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$search['tree'] = $this->nabcat2spotcat($this->_params['cat']);
 
+		# Spots met een filesize 0 niet opvragen
+		$search['value'][] = "filesize:>:0";
+
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
 		if ($this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)
 			$limit = $this->_params['limit'];

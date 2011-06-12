@@ -43,10 +43,8 @@
 	} # if
 	if (isset($activefilter['value'][0])) {
 		$tmpSearch = explode(":", $activefilter['value'][0]);
-		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag'))) {
+		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 			$searchText = $tmpSearch[1];
-		} elseif (in_array($tmpSearch[0], array('UserID'))) {
-			$searchText = $tmpSearch[2];
 		} # if
 	} # if
 ?>
