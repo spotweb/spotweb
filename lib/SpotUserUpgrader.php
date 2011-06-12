@@ -9,11 +9,12 @@ class SpotUserUpgrader {
 	} # ctor
 
 	function update() {
+		$this->createSecurityGroups();
 		$this->createAnonymous();
 		$this->createAdmin();
 		
 		$this->updateUserPreferences();
-		$this->updateSecurityGroups();
+		$this->updateSecurityGroupMembership();
 		
 		$this->updateSecurityVersion();
 	} # update()
@@ -178,23 +179,35 @@ class SpotUserUpgrader {
 		} # foreach
 	} # update()
 
-	/* 
-	 * Update de 'default' security groepen
+	/*
+	 * Creeer de default security groepen
 	 */
-	function updateSecurityGroups() {
+	function createSecurityGroups() {
+		# DB connectie
+		$dbCon = $this->_db->getDbHandle();
+		
+		if ($this->_settings->get('securityversion') < 0.01) {
+			/* Truncate de  huidige permissies */
+			$dbCon->rawExec("DELETE FROM securitygroups");
+
+			/* Creeer de security groepen */
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");			
+		} # if
+	} # createSecurityGroups
+	
+	/* 
+	 * Update de 'default' security groepen hun membership
+	 */
+	function updateSecurityGroupMembership() {
 		# DB connectie
 		$dbCon = $this->_db->getDbHandle();
 		
 		if ($this->_settings->get('securityversion') < 0.01) {
 			/* Truncate de  huidige permissies */
 			$dbCon->rawExec("DELETE FROM grouppermissions");
-			$dbCon->rawExec("DELETE FROM securitygroups");
 
-			/* Creeer de security groepen */
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");
-			
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
 							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
