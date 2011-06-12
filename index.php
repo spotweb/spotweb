@@ -32,11 +32,6 @@ try {
 		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 
-	# Controleer dat er wel een password salt ingevuld is
-	if ($settings->get('pass_salt') == 'unieke string') {
-		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
-	} # if
-
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
