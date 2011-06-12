@@ -76,7 +76,7 @@ class SpotUserUpgrader {
 		$dbCon = $this->_db->getDbHandle();
 
 		# Vraag de password salt op 
-		$passSalt = $dbCon->singleQuery("SELECT value FROM settings WHERE name = 'pass_salt'");
+		$passSalt = $this->_settings->get('pass_salt');
 		
 		# Bereken het password van de dummy admin user
 		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
