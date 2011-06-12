@@ -344,7 +344,7 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
 			throw new Exception("Je hudige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-							    "Download een eerdere versie van spotweb (https://download.github.com/spotweb-spotweb-da6ba29.zip), " . PHP_EOL . 
+							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
 								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie");
 		} # if
 
