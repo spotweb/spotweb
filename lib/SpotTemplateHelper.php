@@ -475,6 +475,22 @@ class SpotTemplateHelper {
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
+	/*
+		$spot['sabnzbdurl'] = '';
+		$spot['searchurl'] = '';
+		$spot['spoturl'] = '';
+		$spot['caturl'] = '';
+		$spot['subcaturl'] = '';
+		$spot['posterurl'] = '';
+		$spot['title'] = '';
+		$spot['poster'] = '';
+		$spot['catshortdesc'] = '';
+		$spot['catdesc'] = '';
+		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
+		return $spot;
+	*/
+		
 		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
