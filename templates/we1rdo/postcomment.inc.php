@@ -26,7 +26,7 @@ if (empty($postresult)) {
 <?php
 	$smileyList = $tplHelper->getSmileyList();
 	foreach ($smileyList as $name => $image) {
-		echo "<img onclick=\"addText(' [img=" . $name . "]', 'postcommentform[body]'); return false;\" src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"> ";
+		echo "<a onclick=\"addText(' [img=" . $name . "]', 'postcommentform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
 	}
 ?>
 			</dd>
