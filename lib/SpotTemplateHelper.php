@@ -160,6 +160,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
+		
 		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
@@ -316,8 +317,9 @@ class SpotTemplateHelper {
 	 * Creert een category url
 	 */
 	function makeCatUrl($spot) {
-		$catSpot = explode("|", $spot['subcata']);
-		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+		# subcata mag altijd maar 1 category hebben, dus exploden we niet
+		$catSpot = substr($spot['subcata'], 0, -1);
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeCatUrl
 
 	/*
@@ -474,7 +476,7 @@ class SpotTemplateHelper {
 		$spot['caturl'] = $this->makeCatUrl($spot);
 		$spot['subcaturl'] = $this->makeSubCatUrl($spot, $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['posterurl'] = $this->makePosterUrl($spot);
-		
+
 		// title escapen
 		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
