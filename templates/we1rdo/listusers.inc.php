@@ -1,3 +1,8 @@
+<?php
+	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
+	$userlist = $tplHelper->getUserList('');
+	$userlist = $userlist['list'];
+?>
 	<div id='editdialogdiv'></div>
 	<table  class="ui-widget ui-widget-content" summary="Users">
 		<thead>
@@ -13,9 +18,6 @@
 		<tbody id="userlist">
 				
 <?php
-	$userlist = $tplHelper->getUserList('');
-	$userlist = $userlist['list'];
-
 	foreach($userlist as $user) {
 		# We vragen nu de group membership op, en geven die mee als string zodat
 		# ze kunnen zien welke groepen een user lid van is
