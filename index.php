@@ -260,7 +260,8 @@ try {
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),
 								  'messageid' => $req->getDef('messageid', ''),
-								  'action' => $req->getDef('action', ''))
+								  'action' => $req->getDef('action', ''),
+								  'data'	=> $req->getDef('data', array()))
 					);
 				}
 				$page->render();

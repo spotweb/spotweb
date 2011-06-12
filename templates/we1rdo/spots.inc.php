@@ -1,8 +1,9 @@
 	<?php 
 	/* Render de header en filter templates */
-	require_once "includes/header.inc.php";
-	
-	require_once "includes/filters.inc.php";
+	if (!isset($data['spotsonly'])) {
+		require_once "includes/header.inc.php";	
+		require_once "includes/filters.inc.php";
+	} # if
 
 	$getUrl = $tplHelper->getQueryParams(); 
 	
