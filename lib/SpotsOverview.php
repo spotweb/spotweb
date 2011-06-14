@@ -73,7 +73,8 @@ class SpotsOverview {
 		$haveFullCount = 0;
 		$lastHaveFullOffset = -1;
 		$retrievedVerified = 0;
-		for ($i = 0; $i < count($fullComments); $i++) {
+		$fullCommentsCount = count($fullComments);
+		for ($i = 0; $i < $fullCommentsCount; $i++) {
 			if ($fullComments[$i]['havefull']) {
 				$haveFullCount++;
 				$lastHaveFullOffset = $i;
@@ -256,7 +257,8 @@ class SpotsOverview {
 			
 			# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
 			$newTreeQuery = '';
-			for($i = 0; $i < count($dynaList); $i++) {
+			$dynaListCount = count($dynaList);
+			for($i = 0; $i < $dynaListCount; $i++) {
 				# De opgegeven category kan in twee soorten voorkomen:
 				#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
 				#	  cat1				==> Heel cat1 selecteren

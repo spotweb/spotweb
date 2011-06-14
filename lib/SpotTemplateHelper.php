@@ -160,6 +160,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
+		
 		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
@@ -316,8 +317,9 @@ class SpotTemplateHelper {
 	 * Creert een category url
 	 */
 	function makeCatUrl($spot) {
-		$catSpot = explode("|", $spot['subcata']);
-		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+		# subcata mag altijd maar 1 category hebben, dus exploden we niet
+		$catSpot = substr($spot['subcata'], 0, -1);
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeCatUrl
 
 	/*
@@ -339,7 +341,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*
@@ -391,6 +393,12 @@ class SpotTemplateHelper {
 			return('n/a'); 
 		} else {
 			return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]); 
+
+			// test (n.a.v. http://gathering.tweakers.net/forum/list_message/36208481#36208481) om altijd op 
+			// 3 getallen te eindigen, maar maakt het niet rustiger.
+			//
+			//		$roundedSize = round($size/pow(1024, ($i = floor(log($size, 1024)))),99);
+			//		return number_format($roundedSize, 3 - strlen(round($roundedSize))) . $sizes[$i];
 		} # else
 	} # format_size
 
@@ -457,8 +465,9 @@ class SpotTemplateHelper {
 			} # if
 		} # if
 
-		# Deze vreemde uitzondering maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
+		# Deze vreemde uitzonderingen maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
 		$getUrl = str_ireplace("%3a", ":", $getUrl);
+		$getUrl = str_ireplace("%3d", "=", $getUrl);
 
 		return $getUrl;
 	} # getQueryParams
@@ -467,6 +476,22 @@ class SpotTemplateHelper {
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
+	/*
+		$spot['sabnzbdurl'] = '';
+		$spot['searchurl'] = '';
+		$spot['spoturl'] = '';
+		$spot['caturl'] = '';
+		$spot['subcaturl'] = '';
+		$spot['posterurl'] = '';
+		$spot['title'] = '';
+		$spot['poster'] = '';
+		$spot['catshortdesc'] = '';
+		$spot['catdesc'] = '';
+		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
+		return $spot;
+	*/
+		
 		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
@@ -474,7 +499,7 @@ class SpotTemplateHelper {
 		$spot['caturl'] = $this->makeCatUrl($spot);
 		$spot['subcaturl'] = $this->makeSubCatUrl($spot, $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['posterurl'] = $this->makePosterUrl($spot);
-		
+
 		// title escapen
 		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
