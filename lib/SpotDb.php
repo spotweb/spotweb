@@ -35,6 +35,13 @@ class SpotDb {
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']);
 							  break;
+							  
+			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
+												$this->_dbsettings['user'],
+												$this->_dbsettings['pass'],
+												$this->_dbsettings['dbname']);
+							  break;
+							
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 
