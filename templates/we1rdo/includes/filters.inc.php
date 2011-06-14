@@ -43,10 +43,8 @@
 	} # if
 	if (isset($activefilter['value'][0])) {
 		$tmpSearch = explode(":", $activefilter['value'][0]);
-		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag'))) {
+		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 			$searchText = $tmpSearch[1];
-		} elseif (in_array($tmpSearch[0], array('UserID'))) {
-			$searchText = $tmpSearch[2];
 		} # if
 	} # if
 ?>
@@ -141,7 +139,7 @@
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
 		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=render&tplname=adminpanel">Admin panel</a></h4>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=adminpanel">Admin panel</a></h4>
 					<div class="listUsers"></div>
 <?php } ?>
 					

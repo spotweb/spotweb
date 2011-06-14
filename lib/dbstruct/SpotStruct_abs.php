@@ -183,23 +183,53 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+
+		# relaties wissen
+		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsxover', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Opschonen data #############################################################################
 		##############################################################################################
-		if (($this instanceof SpotStruct_mysql) && (false)) {
+		if ($this instanceof SpotStruct_mysql) {
 			echo "Cleaning up old data..." . PHP_EOL;
-			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL;");
+			if ($this->tableExists('usersettings') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('sessions') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('spotstatelist') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('usergroups') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('usergroups') && $this->tableExists('securitygroups')) {
+				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			} # if
+			if ($this->tableExists('grouppermissions') && $this->tableExists('securitygroups')) {
+				$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			} # if
+			if ($this->tableExists('commentsposted') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('commentsposted') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
+			if ($this->tableExists('commentsfull') && $this->tableExists('commentsxover')) {
+				$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL");
+			} # if
+			if ($this->tableExists('spotsfull') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
+			if ($this->tableExists('spotstatelist') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
 		} # if
 		
 		# ---- spots table ---- #
@@ -322,6 +352,7 @@ abstract class SpotStruct_abs {
 		# ---- securitygroups ----
 		$this->createTable('securitygroups', "ascii"); 
 		$this->validateColumn('name', 'securitygroups', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->alterStorageEngine("securitygroups", "InnoDB");
 
 		# ---- grouppermissions ----
 		$this->createTable('grouppermissions', "ascii"); 
@@ -329,19 +360,21 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
 		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "0", true, ''); 
+		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
 		$this->createTable('usergroups', "ascii"); 
 		$this->validateColumn('userid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('groupid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('prio', 'usergroups', 'INTEGER', '1', true, '');
+		$this->alterStorageEngine("usergroups", "InnoDB");
 
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
 			throw new Exception("Je hudige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-							    "Download een eerdere versie van spotweb (https://download.github.com/spotweb-spotweb-da6ba29.zip), " . PHP_EOL . 
+							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
 								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie");
 		} # if
 
@@ -379,14 +412,6 @@ abstract class SpotStruct_abs {
 												s.commentcount, s.spotrating 
 											FROM spots s 
 											JOIN spottexts t ON (s.messageid = t.messageid))");
-
-			# relaties wissen
-			$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsxover', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 
 			# drop de 'oude' tabellen
 			$this->dropTable('spots');

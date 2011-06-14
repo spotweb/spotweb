@@ -218,9 +218,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		# en nu bouwen we een array aan het formaat wat er verwacht wordt
 		$idxInfo = array();
 		for($i = 0; $i < count($colList); $i++) {
-			$idxInfo[] = array('index_name' => $idxname,
-			                   'seq_in_index' => $i + 1,
-							   'column_name' => $colList[$i],
+			$idxInfo[] = array('column_name' => $colList[$i],
 							   'non_unique' => (int) $isNotUnique,
 							   'index_type' => 'BTREE'
 						);

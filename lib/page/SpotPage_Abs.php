@@ -56,4 +56,15 @@ abstract class SpotPage_Abs {
 	 */
 	abstract function render();
 	
+	/*
+	 * Renderen van een permission denied pagina, kan overridden worden door een implementatie
+	 * specifieke renderer
+	 */
+	function permissionDenied($exception, $page, $http_referer) {
+		$this->template('permdenied',
+							array('exception' => $exception,
+								  'page' => $page,
+								  'http_referer' => $http_referer));
+	} # permissionDenied
+	
 } # SpotPage_Abs 

@@ -32,11 +32,6 @@ try {
 		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 
-	# Controleer dat er wel een password salt ingevuld is
-	if ($settings->get('pass_salt') == 'unieke string') {
-		die("Verander de setting 'pass_salt' in je ownsettings.php naar iets unieks!" . PHP_EOL);
-	} # if
-
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
@@ -229,7 +224,8 @@ try {
 
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
-							Array('loginform' => $req->getForm('loginform', array('submit'))));
+							Array('loginform' => $req->getForm('loginform', array('submit')),
+							      'data' => $req->getDef('data', array())));
 				$page->render();
 				break;
 		} # login
@@ -264,7 +260,8 @@ try {
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),
 								  'messageid' => $req->getDef('messageid', ''),
-								  'action' => $req->getDef('action', ''))
+								  'action' => $req->getDef('action', ''),
+								  'data'	=> $req->getDef('data', array()))
 					);
 				}
 				$page->render();
@@ -282,10 +279,20 @@ try {
 	} # if
 }
 catch(PermissionDeniedException $x) {
-	die($x->getMessage());
+	// Render een permission denied template zodat het eventueel opgevangen kan worden,
+	// als we al een spotpage object hebben dan laten we het over aan de implementatie
+	// specifieke renderer, anders creeeren we zelf een spotpage object.
+	// Dit laat ons toe om bijvoorbeeld voor renderers die XML output geven, ook een XML
+	// error pagina te creeeren
+	if (! ($page instanceof SpotPage_Abs)) {
+		$page = new SpotPage_render($db, $settings, $currentSession, '', array());
+	} # if
+	
+	$page->permissionDenied($x, $page, $req->getHttpReferer());
 } # PermissionDeniedException
+
 catch(Exception $x) {
-	if ((isset($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
+	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
 	die($x->getMessage());

@@ -35,6 +35,13 @@ class SpotDb {
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']);
 							  break;
+							  
+			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
+												$this->_dbsettings['user'],
+												$this->_dbsettings['pass'],
+												$this->_dbsettings['dbname']);
+							  break;
+							
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 
@@ -273,7 +280,8 @@ class SpotDb {
 					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 		if (!empty($tmpResult)) {
 			# Other preferences worden serialized opgeslagen in de database
-			for($i = 0; $i < count($tmpResult); $i++) {
+			$tmpResultCount = count($tmpResult);
+			for($i = 0; $i < $tmpResultCount; $i++) {
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
 		} # if
