@@ -242,7 +242,10 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	
 	/* Geeft, in een afgesproken formaat, de index informatie terug */
 	function getIndexInfo($idxname, $tablename) {
-		$q = $this->_dbcon->arrayQuery("SELECT index_name, seq_in_index, column_name, non_unique, lower(index_type) as index_type
+		$q = $this->_dbcon->arrayQuery("SELECT 
+											column_name, 
+											non_unique, 
+											lower(index_type) as index_type
 										FROM information_schema.STATISTICS 
 										WHERE TABLE_SCHEMA = DATABASE() 
 										  AND table_name = '" . $tablename . "' 
