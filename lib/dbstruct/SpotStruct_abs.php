@@ -467,7 +467,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_sessionsrel_1", "", "sessions", array("userid"));
 
 		# ---- Indexen op spotstatelist ----
-		$this->validateIndex("idx_spotstatelist_1", "UNIQUE", "spotstatelist", array("messageid"));
+		$this->validateIndex("idx_spotstatelist_1", "UNIQUE", "spotstatelist", array("messageid,ouruserid"));
 		$this->validateIndex("idx_spotstatelistrel_1", "", "spotstatelist", array("ouruserid"));
 
 		# ---- Indexen op securitygroups ----
