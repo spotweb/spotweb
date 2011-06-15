@@ -1,7 +1,12 @@
 <?php
 require_once "lib/notifications/class.growl.php";
 require_once "lib/notifications/Notifo_API.php";
-require_once "lib/notifications/prowl/Connector.php";
+
+
+# Prowl gebruikt namespaces, welke in PHP 5.3 geintroduceerd werden 
+if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+	require_once "lib/notifications/prowl/Connector.php";
+} # if
 
 class SpotsNotifications {
 	private $_notifs;
@@ -92,7 +97,7 @@ class SpotsNotifications {
 				} # if
 			} # if
 
-			# Prowl gebruikt namespaces, waarvoor PHP 5.3 geintroduceerd werden met PHP 5.3
+			# Prowl gebruikt namespaces, welke in PHP 5.3 geintroduceerd werden 
 			if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 				if ($this->_notifs['prowl']['enabled'] && $this->_notifs['prowl']['events'][$messageType]) {
 					if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
