@@ -120,6 +120,7 @@ abstract class SpotStruct_abs {
 			#var_dump($q);
 			#var_dump($colType);
 			#var_dump($this->swDtToNative($colType));
+			#die();
 			return 'type';
 		} # if
 
@@ -134,7 +135,7 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# controleer NOT NULL setting
-		if (strtolower($q['CHARACTER_SET_NAME']) != $collation) {
+		if ((strtolower($q['CHARACTER_SET_NAME']) != $collation) && ($q['CHARACTER_SET_NAME'] != null)) {
 			return 'charset';
 		} # if
 		
