@@ -5,7 +5,7 @@ require_once "lib/notifications/Notifo_API.php";
 
 # Prowl gebruikt namespaces, welke in PHP 5.3 geintroduceerd werden 
 if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-	require_once "lib/notifications/prowl/Connector.php";
+	require_once "lib/notifications/prowlhandler.php";
 } # if
 
 class SpotsNotifications {
@@ -101,17 +101,7 @@ class SpotsNotifications {
 			if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 				if ($this->_notifs['prowl']['enabled'] && $this->_notifs['prowl']['events'][$messageType]) {
 					if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
-						$oProwl = new \Prowl\Connector();
-						$oMsg = new \Prowl\Message();
-						$oMsg->addApiKey($this->_notifs['prowl']['apikey']);
-						$oMsg->setApplication('Spotweb');
-						$oMsg->setEvent($title);
-						$oMsg->setDescription($message);
-
-						$oFilter = new \Prowl\Security\PassthroughFilterImpl();
-						$oProwl->setFilter($oFilter);
-						$oProwl->setIsPostRequest(true);
-						$oResponse = $oProwl->push($oMsg);
+						prowlNotify($this->_notifs['prowl']['apikey'], $title, $message);
 					} # if
 				} # if
 			} # if
