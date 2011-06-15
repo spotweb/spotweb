@@ -33,14 +33,21 @@ class SpotsNotifications {
 
 	function sendNzbHandled($action, $fullSpot) {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) {
+			$message = '';
+			$title = '';
+			
 			switch ($action) {
 				case 'save'	  			: $title = 'NZB opgeslagen!';		$message = $fullSpot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir']; break;
 				case 'runcommand'		: $title = 'Programma gestart!';	$message = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $fullSpot['title']; break;
 				case 'push-sabnzbd' 	: 
 				case 'client-sabnzbd' 	: $title = 'NZB verstuurd!';		$message = $fullSpot['title'] . ' verstuurd naar SABnzbd+'; break;
 				case 'nzbget'			: $title = 'NZB verstuurd!';		$message = $fullSpot['title'] . ' verstuurd naar NZBGet'; break;
+				default					: break; 
 			} # switch
-			$this->sendMessage('nzb_handled', 'User', $title, $message);
+			
+			if (!empty($message)) {
+				$this->sendMessage('nzb_handled', 'User', $title, $message);
+			} # if
 		} # if
 	} # sendNzbHandled
 
