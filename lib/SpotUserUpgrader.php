@@ -122,7 +122,7 @@ class SpotUserUpgrader {
 			$user = $this->_db->getUser($user['userid']);
 
 			# set the users' preferences
-			$this->setSettingIfNot($user['prefs'], 'perpage', '25');
+			$this->setSettingIfNot($user['prefs'], 'perpage', 25);
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
 			$this->setSettingIfNot($user['prefs'], 'template', 'we1rdo');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
@@ -133,39 +133,36 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
 			$this->setSettingIfNot($user['prefs'], 'show_filesize', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
+
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'prepare_action', 'zip');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', 'zip');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'url', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'apikey', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'host', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'port', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'username', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
+
+			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'enabled', false);
+			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['libnotify'], 'enabled', false);
+			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'enabled', false);
+			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'enabled', false);
+			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
+			foreach (array('growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
+			}
+
+			# oude settings verwijderen
 			$this->unsetSetting($user['prefs'], 'search_url');
-			
-			# sabnzbd handling is nog iets speciaals, die settings lijst is
-			# dusdanig groot dat dat met individuele setjes niet ewrkt, we gaan
-			# dus uit van een template met alle settings, en die mergen we.
-			$nzbHandlingTpl = array('action' => 'disable',
-									'local_dir' => '/tmp',
-									'prepare_action' => 'zip',
-									'command' => '',
-									'sabnzbd' => array('url' => '',
-													   'apikey' => ''),
-									'nzbget' => array('host' => '',
-													  'port' => '',
-													  'username' => '',
-													  'password' => '',
-													  'timeout' => 15)
-									);
-			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
- 				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
-			} # if
-			if ((!isset($user['prefs']['nzbhandling']['nzbget'])) || (!is_array($user['prefs']['nzbhandling']['nzbget']))) {
- 				$user['prefs']['nzbhandling']['nzbget'] = array();
-			} # if
-			if ((!isset($user['prefs']['nzbhandling']['sabnzbd'])) || (!is_array($user['prefs']['nzbhandling']['sabnzbd']))) {
- 				$user['prefs']['nzbhandling']['sabnzbd'] = array();
-			} # if
-			$nzbHandlingUsr = array_merge($nzbHandlingTpl, $user['prefs']['nzbhandling']);
-			$nzbHandlingUsr['sabnzbd'] = array_merge($nzbHandlingTpl['sabnzbd'], $user['prefs']['nzbhandling']['sabnzbd']);
-			$nzbHandlingUsr['nzbget'] = array_merge($nzbHandlingTpl['nzbget'], $user['prefs']['nzbhandling']['nzbget']);
-			
-			# en deze gemergede array zetten we /altijd/ omdat anders
-			# subkeys niet goed mee zouden kunnen
-			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
 
 			# Upgrade de sabnzbd api host setting
 			if ($this->_settings->get('securityversion') < 0.06) {
@@ -173,7 +170,7 @@ class SpotUserUpgrader {
 					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
 				} # if				
 			} # if
-			
+
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
@@ -267,10 +264,23 @@ class SpotUserUpgrader {
 		} # if
 
 		# We voegen nog extra security toe voor de admin user, deze mag group membership van
-		# een user tonen, en securitygroepen inhoudleijk wijzigen
+		# een user tonen, en securitygroepen inhoudelijk wijzigen
 		if ($this->_settings->get('securityversion') < 0.07) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_display_groupmembership . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_securitygroups . ")");
+		} # if
+
+		# We voegen nog extra security toe voor notificaties
+		if ($this->_settings->get('securityversion') < 0.08) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications . ", 'growl')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications . ", 'libnotify')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications . ", 'notifo')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications . ", 'prowl')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'nzb_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
 		} # if
 	} # updateSecurityGroups
 	

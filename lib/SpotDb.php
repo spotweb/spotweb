@@ -123,13 +123,20 @@ class SpotDb {
 		} # if
 		
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%d' WHERE name = '%s'", Array($value, $serialized, $name));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%d')", Array($name, $value, $serialized));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
 										Array($name, $value, $serialized, $value, $serialized));
+					 break;
+			} # mysql
+			
+			default				: {
+					$this->_conn->exec("UPDATE settings SET value = '%s', serialized = %d WHERE name = '%s'", Array($value, (int) $serialized, $name));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', %d)", Array($name, $value, (int) $serialized));
+					} # if
+					break;
+			} # default
 		} # switch
 	} # updateSetting
 
@@ -325,8 +332,8 @@ class SpotDb {
 									lastvisit = %d,
 									lastread = %d,
 									lastapiusage = %d,
-									deleted = '%s'
-								WHERE id = '%s'", 
+									deleted = %d
+								WHERE id = %d", 
 				Array($user['firstname'],
 					  $user['lastname'],
 					  $user['mail'],
@@ -335,7 +342,7 @@ class SpotDb {
 					  (int) $user['lastvisit'],
 					  (int) $user['lastread'],
 					  (int) $user['lastapiusage'],
-					  $user['deleted'],
+					  (int) $user['deleted'],
 					  (int) $user['userid']));
 
 		# daarna updaten we zijn preferences
@@ -502,13 +509,19 @@ class SpotDb {
 		} # if
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
-										Array($server, (int) $runTime, (int) $runTime));
+			case 'mysql'		:
+			case 'pdo_mysql' 	: {
+				$this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
+								Array($server, (int) $runTime, (int) $runTime));
+				break;
+			} # mysql
+			
+			default				: {
+				$this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
+				if ($this->_conn->rows() == 0) {
+					$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
+				} # if
+			} # default
 		} # switch
 	} # setRetrieverRunning
 
@@ -1046,7 +1059,7 @@ class SpotDb {
 		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
 		# versies een verkeerde afronding geeft bij >32bits getallen.
 		if (!is_numeric($spot['filesize'])) {
-			$spot['fileSize'] = 0;
+			$spot['filesize'] = 0;
 		} # if
 
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
@@ -1093,14 +1106,20 @@ class SpotDb {
 		if (empty($stamp)) { $stamp = time(); }
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
-										Array($messageId, (int) $ourUserId, $stamp));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
+			case 'pdo_mysql'	:
+			case 'mysql'		:  {
+				$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
 										Array($messageId, (int) $ourUserId, $stamp, $stamp));
+				break;
+			} # mysql
+			
+			default				:  {
+				$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+				if ($this->_conn->rows() == 0) {
+					$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
+						Array($messageId, (int) $ourUserId, $stamp));
+				} # if
+			} # default
 		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
 	} # addToSpotStateList

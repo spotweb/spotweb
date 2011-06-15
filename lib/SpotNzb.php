@@ -52,6 +52,10 @@ class SpotNzb {
 				} # foreach
 			} # if
 		} # if
+		
+		# en verstuur een notificatie
+		$spotsNotifications = new SpotsNotifications($this->_db, $this->_settings, $userSession);
+		$spotsNotifications->sendNzbHandled($action, $fullSpot);
 	} # handleNzbAction
 	
 } # SpotNzb
