@@ -22,7 +22,10 @@ class SpotPage_getimage extends SpotPage_Abs {
 		# sluit de connectie voor de header, en open een nieuwe connectie voor de nzb
 		$spotnntp_hdr->quit();
 		$spotnntp_img = new SpotNntp($this->_settings->get('nntp_nzb'));
-		
+
+		# Images mogen gecached worden op de client
+		$this->sendExpireHeaders(false);
+
 		#
 		# is het een array met een segment nummer naar de image, of is het 
 		# een string met de URL naar de image?

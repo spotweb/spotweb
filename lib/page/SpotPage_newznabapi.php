@@ -17,6 +17,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			die();
 		} # if
 
+		# we willen niet dat de RSS output gecached wordt
+		$this->sendExpireHeaders(true);
+		
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 

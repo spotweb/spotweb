@@ -17,6 +17,9 @@ class SpotPage_rss extends SpotPage_Abs {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
+		# we willen niet dat de RSS feed gecached wordt
+		$this->sendExpireHeaders(true);
+		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);

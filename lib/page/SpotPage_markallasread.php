@@ -12,6 +12,9 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
 			$this->_db->clearSpotStateList(SpotDb::spotstate_Seen, $this->_currentSession['user']['userid']);
 		} # if
+
+		# we willen niet dat dit gecached wordt
+		$this->sendExpireHeaders(true);
 		
 		# reset the lastvisit en lastread timestamp
 		$spotUserSystem->resetLastVisit($this->_currentSession['user']);

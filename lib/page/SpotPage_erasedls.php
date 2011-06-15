@@ -6,6 +6,8 @@ class SpotPage_erasedls extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
 
 		$this->_tplHelper->clearDownloadList();
+		
+		$this->sendExpireHeaders(true);
 		echo "<xml><return>ok</return></xml>";
 	} # render()
 

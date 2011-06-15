@@ -1,12 +1,9 @@
 <?php
 class SpotPage_catsjson extends SpotPage_Abs {
 
-
 	function render() {
 		# stuur een expires header zodat dit een jaar of 10 geldig is
-		Header("Cache-Control: public");
-		Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
-		Header("Pragma: ");
+		$this->sendExpireHeaders(false);
 
 		$this->categoriesToJson();
 	} # render
