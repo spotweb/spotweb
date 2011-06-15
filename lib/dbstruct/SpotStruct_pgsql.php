@@ -294,6 +294,14 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {	
 				$q['COLUMN_DEFAULT'] = "''";
 			} # if
+
+			# pgsql typecast de default waarde standaard, maar
+			# wij gaar daar niet van uit, dus strip dat
+			if (strpos($q['COLUMN_DEFAULT'], ':') !== false) {
+				$elems = explode(':', $q['COLUMN_DEFAULT']);
+				
+				$q['COLUMN_DEFAULT'] = $elems[0];
+			} # if
 		} # if
 		
 		return $q;
