@@ -50,7 +50,7 @@
 	<tr> <th> Server type </th> <th> Setting </th> </tr>
 	<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
 	<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, $settings['db']['path'], "No path entered"); ?> </td> </tr>
-	<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql") { ?>
+	<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql" || $settings['db']['engine'] == "pdo_pgsql" ) { ?>
 	<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, $settings['db']['host'], "No server entered"); ?> </td> </tr>
 	<?php } else { ?>
 	<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
