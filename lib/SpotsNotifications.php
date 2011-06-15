@@ -94,6 +94,7 @@ class SpotsNotifications {
 
 			if ($this->_notifs['prowl']['enabled'] && $this->_notifs['prowl']['events'][$messageType]) {
 				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
+				/*
 					$oProwl = new \Prowl\Connector();
 					$oMsg = new \Prowl\Message();
 					$oMsg->addApiKey($this->_notifs['prowl']['apikey']);
@@ -105,6 +106,7 @@ class SpotsNotifications {
 					$oProwl->setFilter($oFilter);
 					$oProwl->setIsPostRequest(true);
 					$oResponse = $oProwl->push($oMsg);
+				*/
 				} # if
 			} # if
 		} # if
