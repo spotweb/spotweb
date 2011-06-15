@@ -49,7 +49,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 		// FIXME 
 		// Sorteeren op rank, zie http://www.postgresql.org/docs/8.3/static/textsearch-controls.html
 		//
-		$queryPart = " to_tsvector('Dutch', " . $field . ") @@ '" . $this->safe($searchValue) . "' ";
+		$queryPart = " to_tsvector('Dutch', " . $field . ") @@ '" . $this->safe(strtolower($searchValue)) . "' ";
 
 		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
 		
