@@ -6,7 +6,7 @@ class SpotDb {
 	private $_conn = null;
 
 	/*
-	 * Constants used for updating the SpotStateList 
+	 * Constants used for updating the SpotStateList
 	 */
 	const spotstate_Down	= 0;
 	const spotstate_Watch	= 1;
@@ -540,6 +540,7 @@ class SpotDb {
 		# en wis nu alles wat 'jonger' is dan deze spot
 		switch ($this->_dbsettings['engine']) {
 			# geen join delete omdat sqlite dat niet kan
+			case 'pdo_pgsql'  : 
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
 				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
@@ -997,6 +998,7 @@ class SpotDb {
 	 */
 	function deleteSpot($msgId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'  : 
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
@@ -1005,6 +1007,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
+			
 			default			: {
 				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
@@ -1029,6 +1032,7 @@ class SpotDb {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql' : 
  			case 'pdo_sqlite': {
 				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
 				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
@@ -1061,6 +1065,16 @@ class SpotDb {
 		if (!is_numeric($spot['filesize'])) {
 			$spot['filesize'] = 0;
 		} # if
+		
+		# Kap de verschillende strings af op een maximum van 
+		# de datastructuur, de unique keys kappen we expres niet af
+		$spot['poster'] = substr($spot['poster'], 0, 127);
+		$spot['title'] = substr($spot['title'], 0, 127);
+		$spot['tag'] = substr($spot['tag'], 0, 127);
+		$spot['subcata'] = substr($spot['subcata'], 0, 63);
+		$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
+		$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
+		$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
 				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -1077,7 +1091,7 @@ class SpotDb {
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']));
-
+		
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
 		} # if
@@ -1088,6 +1102,11 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
+		# Kap de verschillende strings af op een maximum van 
+		# de datastructuur, de unique keys en de RSA keys en dergeijke
+		# kappen we expres niet af
+		$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
+		
 		# en voeg het aan de database toe
 		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
