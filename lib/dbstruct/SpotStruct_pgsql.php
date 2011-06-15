@@ -277,6 +277,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 													WHEN (data_type = 'integer') THEN 'integer' 
 													WHEN (data_type = 'bigint') THEN 'bigint' 
 													WHEN (data_type = 'boolean') THEN 'boolean' 
+													WHEN (data_type = 'text') THEN 'text'
 											   END as \"COLUMN_TYPE\",
    											   character_set_name AS \"CHARACTER_SET_NAME\", 
 											   collation_name AS \"COLLATION_NAME\"
