@@ -338,7 +338,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('lastvisit', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastread', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastapiusage', 'users', "INTEGER", "0", true, '');
-		$this->validateColumn('deleted', 'users', "BOOLEAN", "0", true, '');
+		$this->validateColumn('deleted', 'users', "BOOLEAN", 'false', true, '');
 		$this->alterStorageEngine("users", "InnoDB");
 
 		# ---- sessions ---- #
@@ -359,7 +359,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "0", true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "false", true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
