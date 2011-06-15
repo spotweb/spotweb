@@ -164,13 +164,17 @@ abstract class SpotStruct_abs {
 
 			if ($same) {
 				switch(strtolower($type)) {
-					case 'fulltext'		: $same = ($q[$i]['index_type'] == 'fulltext'); break;
+					case 'fulltext'		: $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
 					case 'unique'		: $same = ($q[$i]['non_unique'] == 0); break;
-					case ''				: $same = ($q[$i]['index_type'] != 'fulltext') && ($q[$i]['non_unique'] == 1);
+					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['non_unique'] == 1);
 				} # switch
 			} # if
 			
 			if (!$same) {
+				#var_dump($q[$i]);
+				#var_dump($type);
+				#var_dump($colList);
+				#die();
 				return false;
 			} # if
 		} # for
