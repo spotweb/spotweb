@@ -295,6 +295,18 @@ class SpotTemplateHelper {
 	} # makeNzbUrl
 
 	/*
+	 * Creeert een linkje naar retrieve.php
+	 */
+	function makeRetrieveUrl() {
+		# Controleer de users' rechten
+		if ((!$this->_spotSec->allowed(SpotSecurity::spotsec_retrieve_spots, '')) || (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, ''))) {
+			return '';
+		} # if
+		
+		return $this->makeBaseUrl("full") . 'retrieve.php?output=xml' . $this->makeApiRequestString();
+	} # makeRetrieveUrl
+
+	/*
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
