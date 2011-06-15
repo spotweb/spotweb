@@ -240,9 +240,12 @@
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php } ?>
 
-<?php if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
+<?php 
+		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
+			if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
 						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots()" class="greyButton retrievespots">Update Spots</a></li>
-<?php } ?>
+<?php 		}
+		} ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads">Verwijder downloadgeschiedenis</a></li>
 <?php } ?>
