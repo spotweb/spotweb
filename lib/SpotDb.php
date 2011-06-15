@@ -1274,6 +1274,27 @@ class SpotDb {
 						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
 		} # foreach
 	} # setUserGroupList
+	
+	/*
+	 * Voegt een nieuwe notificatie toe
+	 */
+	function addNewNotification($userId, $objectId, $type, $title, $body) {
+		$this->_conn->modify("INSERT INTO notifications(userid,objectid,type,title,body,sent) VALUES(%d, '%s', '%s', '%s', '%s', %d)",
+					Array($userId, $objectId, $type, $title, $body, 0));
+	} # addNewNotification
+	
+	/*
+	 * Haalt niet-verzonden notificaties op van een user
+	 */
+	function getUnsentNotifications($userId) {
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
+					Array($userId));
+		return $tmpResult;
+	} # getUnsentNotifications
+	
+	function markNotificationSent($id) {
+		$this->_conn->modify("UPDATE notifications SET sent = 1 WHERE id = %d;", Array($id));
+	}
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

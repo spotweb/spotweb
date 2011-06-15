@@ -69,7 +69,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 
 					# Spotweb registreren bij de notificatie-providers. Dit moet mininmaal 1 keer, dus de veiligste optie is om dit
 					# elke keer te doen als de voorkeuren worden opgeslagen
-					$spotsNotifications = new SpotsNotifications($this->_db, $this->_settings, $this->_currentSession);
+					$spotsNotifications = new Notifications_abs($this->_db, $this->_settings, $this->_currentSession);
 					$spotsNotifications->register();
 					
 					break;

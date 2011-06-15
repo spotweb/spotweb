@@ -8,6 +8,7 @@ function __autoload($class_name) {
 		case 'SpotRetriever': require_once 'lib/retriever/' . $class_name . '.php'; break;
 		case 'dbeng'		: require_once 'lib/dbeng/' . $class_name . '.php'; break;
 		case 'NzbHandler'	: require_once 'lib/nzbhandler/' . $class_name . '.php'; break;
+		case 'Notifications': require_once 'lib/notifications/' . $class_name . '.php'; break;
 		case 'Crypt'		: break; /* Crypt/Random.php gebruikt class_exist om een random generator te zoeken, welke autoload triggered */
 		case 'SpotUbb'		: {
 				require_once "lib/ubb/SpotUbb_parser.php";
