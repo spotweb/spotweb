@@ -136,17 +136,17 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			} # if
 		} else {
 			if ($show_nzb_button) {
-				echo "<td> &nbsp; </td>";
+				echo "<td class='nzb'> &nbsp; </td>";
 			} # if
 			
 			# display (empty) MultiNZB td
 			if ($show_multinzb_checkbox) { 
-				echo "<td> &nbsp; </td>";
+				echo "<td class='multinzb'> &nbsp; </td>";
 			}
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td> &nbsp; </td>";
+				echo "<td class='sabnzbd'> &nbsp; </td>";
 			} # if
 		} # else
 		
