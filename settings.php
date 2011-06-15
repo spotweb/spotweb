@@ -115,14 +115,14 @@ $settings['retention'] = 0;
 $settings['retrieve_newer_than'] = 0;
 
 # db
-$settings['db']['engine'] = 'mysql';
+$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
 $settings['db']['host'] = 'localhost';
 $settings['db']['dbname'] = 'spotweb';
 $settings['db']['user'] = 'spotweb';
 $settings['db']['pass'] = 'spotweb';
 
 # Als je sqlite wilt gebruiken, vul dan onderstaande in
-#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
+#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
 #$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # waar moeten we de templates vinden?
