@@ -426,9 +426,21 @@ $(document).ready(function() {
 			$('#nzbhandling-fieldset-' + selOpt[index]).show();
 		}); // each
 	});	// change
-	
+
 	// roep de change handler aan zodat alles goed staat
 	$('#nzbhandlingselect').change();
+
+    $(".enabler").each(function(){
+        if (!$(this).prop('checked'))
+            $('#content_'+$(this).attr('id')).hide();
+    });
+
+	$(".enabler").click(function() {
+		if ($(this).prop('checked'))
+			$('#content_'+$(this).attr('id')).show();
+		else
+			$('#content_'+$(this).attr('id')).hide();
+	});
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)

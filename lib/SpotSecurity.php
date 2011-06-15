@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.07');
+define('SPOTWEB_SECURITY_VERSION', '0.08');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 
@@ -54,6 +54,8 @@ class SpotSecurity {
 	const spotsec_edit_groupmembership		= 28;
 	const spotsec_display_groupmembership	= 29;
 	const spotsec_edit_securitygroups		= 30;
+	const spotsec_send_notifications		= 31;
+	const spotsec_send_notifications_types	= 32;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -73,7 +75,7 @@ class SpotSecurity {
 		13		=> "Alle gebruikers oplijsten",
 		14		=> "Commentaar op een spot posten",
 		15		=> "Uitloggen",
-		16		=> "sabnzbd API gebruiken (niet download manager integratie)",
+		16		=> "SABnzbd+ API gebruiken (niet download manager integratie)",
 		17		=> "Watchlist bijhouden",
 		18		=> "Downloadlist bijhouden",
 		19		=> "Seenlist bijhouden",
@@ -87,7 +89,9 @@ class SpotSecurity {
 		27		=> "Gebruikers wissen",
 		28		=> "Groupen waar een user lid van is wijzigen",
 		29		=> "Groupen waar een user lid van is tonen",
-		30 		=> "Security groupen kunnen wijzigen"
+		30 		=> "Security groupen kunnen wijzigen",
+		31 		=> "Notificaties versturen (per service)",
+		32 		=> "Notificaties versturen (per type)"
 	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
