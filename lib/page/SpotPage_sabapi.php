@@ -17,8 +17,8 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			die ('API Key Incorrect');
 		} # else
 
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Expires: Mon, 15 Apr 2006 12:26:00 GMT');
+		# de sabapi output moet niet gecached worden
+		$this->sendExpireHeaders(true);
 
 		if (stripos($_SERVER['QUERY_STRING'], 'output=xml')) {
 			header('Content-Type:text/xml');
