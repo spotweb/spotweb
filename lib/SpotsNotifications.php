@@ -92,21 +92,22 @@ class SpotsNotifications {
 				} # if
 			} # if
 
-			if ($this->_notifs['prowl']['enabled'] && $this->_notifs['prowl']['events'][$messageType]) {
-				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
-				/*
-					$oProwl = new \Prowl\Connector();
-					$oMsg = new \Prowl\Message();
-					$oMsg->addApiKey($this->_notifs['prowl']['apikey']);
-					$oMsg->setApplication('Spotweb');
-					$oMsg->setEvent($title);
-					$oMsg->setDescription($message);
+			# Prowl gebruikt namespaces, waarvoor PHP 5.3 geintroduceerd werden met PHP 5.3
+			if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+				if ($this->_notifs['prowl']['enabled'] && $this->_notifs['prowl']['events'][$messageType]) {
+					if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
+						$oProwl = new \Prowl\Connector();
+						$oMsg = new \Prowl\Message();
+						$oMsg->addApiKey($this->_notifs['prowl']['apikey']);
+						$oMsg->setApplication('Spotweb');
+						$oMsg->setEvent($title);
+						$oMsg->setDescription($message);
 
-					$oFilter = new \Prowl\Security\PassthroughFilterImpl();
-					$oProwl->setFilter($oFilter);
-					$oProwl->setIsPostRequest(true);
-					$oResponse = $oProwl->push($oMsg);
-				*/
+						$oFilter = new \Prowl\Security\PassthroughFilterImpl();
+						$oProwl->setFilter($oFilter);
+						$oProwl->setIsPostRequest(true);
+						$oResponse = $oProwl->push($oMsg);
+					} # if
 				} # if
 			} # if
 		} # if
