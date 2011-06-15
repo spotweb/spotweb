@@ -122,6 +122,7 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 		$.ajax({
 			type: "POST",
 			url: this.form.action,
+			dataType: "xml",
 			data: formdata,
 			success: function(xml) {
 				var $dialdiv = $("#"+divid)
@@ -821,7 +822,7 @@ function toggleEditUser(userid) {
 				$.ajax({
 					type: "POST",
 					url: url,
-					// dataType: "xml",
+					dataType: "xml",
 					data: dataString,
 					success: function(xml) {
 						var result = $(xml).find('result').text();
