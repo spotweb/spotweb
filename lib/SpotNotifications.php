@@ -1,5 +1,5 @@
 <?php
-class Notifications_abs {
+class SpotNotifications {
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
@@ -121,14 +121,14 @@ class Notifications_abs {
 				if ($user['prefs']['notifications']['libnotify']['enabled'] && $user['prefs']['notifications']['libnotify']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'libnotify')) {
 						//$this->notifyServices['libnotify'] = new Notifications_libnotify();
-						//$this->notifyServices['libnotify']->sendMessage($newMessage['title'], $newMessage['body']);
+						//$this->notifyServices['libnotify']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
 					} # if
 				} # libnotify
 
 				if ($user['prefs']['notifications']['notifo']['enabled'] && $user['prefs']['notifications']['notifo']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) {
 						$this->notifyServices['notifo'] = new Notifications_prowl($user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
-						$this->notifyServices['notifo']->sendMessage($newMessage['title'], $newMessage['body']);
+						$this->notifyServices['notifo']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
 					} # if
 				} # Notifo
 
@@ -137,7 +137,7 @@ class Notifications_abs {
 					if ($user['prefs']['notifications']['prowl']['enabled'] && $user['prefs']['notifications']['prowl']['events'][$objectId]) {
 						if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
 							$this->notifyServices['prowl'] = new Notifications_prowl($user['prefs']['notifications']['prowl']['apikey']);
-							$this->notifyServices['prowl']->sendMessage($newMessage['title'], $newMessage['body']);
+							$this->notifyServices['prowl']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
 						} # if
 					} # if
 				} # Prowl

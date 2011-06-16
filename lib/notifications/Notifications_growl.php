@@ -1,7 +1,7 @@
 <?php
 require_once "lib/notifications/growl/class.growl.php";
 
-class Notifications_growl extends Notifications_abs {
+class Notifications_growl extends SpotNotifications {
 	var $growlObj;
 
 	function __construct($host, $password) {

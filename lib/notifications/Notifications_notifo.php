@@ -1,14 +1,14 @@
 <?php
 require_once "lib/notifications/notifo/Notifo_API.php";
 
-class Notifications_prowl extends Notifications_abs {
+class Notifications_prowl extends SpotNotifications {
 	var $notifoObj;
 
 	function __construct($username, $apikey) {
 		$this->notifoObj = new Notifo_API($username, $apikey);
 	} # ctor
 
-	function sendMessage($title, $body) {
+	function sendMessage($type, $title, $body) {
 		$params = array('label' => 'Spotweb',
 						'title' => $title,
 						'msg' => $body,
