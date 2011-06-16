@@ -112,6 +112,7 @@ class SpotNotifications {
 			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
 				$objectId = $newMessage['objectid'];
+				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
 
 				if ($user['prefs']['notifications']['growl']['enabled'] && $user['prefs']['notifications']['growl']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
@@ -144,7 +145,7 @@ class SpotNotifications {
 				# Hier wordt het bericht pas echt verzonden
 				foreach($this->notificationServices as $notificationService) {
 					$appName = 'Spotweb';
-					$notificationService->sendMessage($appName, $newMessage['type'], $newMessage['title'], $newMessage['body'], $this->_settings->get('spotweburl'));
+					$notificationService->sendMessage($appName, $newMessage['type'], $newMessage['title'], $newMessage['body'], $spotweburl);
 				} # foreach
 
 				# Alle services resetten, deze mogen niet hergebruikt worden
