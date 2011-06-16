@@ -1279,8 +1279,8 @@ class SpotDb {
 	 * Voegt een nieuwe notificatie toe
 	 */
 	function addNewNotification($userId, $objectId, $type, $title, $body) {
-		$this->_conn->modify("INSERT INTO notifications(userid,objectid,type,title,body,sent) VALUES(%d, '%s', '%s', '%s', '%s', %d)",
-					Array($userId, $objectId, $type, $title, $body, 0));
+		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', %d)",
+					Array($userId, (int) time(), $objectId, $type, $title, $body, 0));
 	} # addNewNotification
 	
 	/*

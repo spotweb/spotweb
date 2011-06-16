@@ -377,6 +377,7 @@ abstract class SpotStruct_abs {
 		# ---- notifications ----
 		$this->createTable('notifications', "ascii"); 
 		$this->validateColumn('userid', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'notifications', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
