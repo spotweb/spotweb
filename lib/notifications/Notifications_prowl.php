@@ -1,14 +1,14 @@
 <?php
 require_once "lib/notifications/prowl/Connector.php";
 
-class Notifications_prowl extends Notifications_abs {
+class Notifications_prowl extends SpotNotifications {
 	var $growlObj;
 
 	function __construct($apikey) {
 		$this->prowlObj = new \Prowl\Connector();
 	} # ctor
 
-	function sendMessage($title, $body) {
+	function sendMessage($type, $title, $body) {
 		$this->prowlObj = new \Prowl\Connector();
 		$oMsg = new \Prowl\Message();
 		$oMsg->addApiKey($user['prefs']['notifications']['prowl']['apikey']);
