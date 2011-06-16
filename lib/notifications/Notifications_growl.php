@@ -14,7 +14,7 @@ class Notifications_growl extends Notifications_abs {
 		$this->growlObj->register();
 	} # register
 
-	function sendMessage($type, $title, $body) {
+	function sendMessage($appName, $type, $title, $body, $sourceUrl) {
 		$this->growlObj->notify($type, $title, $body);
 	} # sendMessage
 
