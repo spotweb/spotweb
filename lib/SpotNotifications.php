@@ -40,12 +40,11 @@ class SpotNotifications {
 		} # if
 	} # sendNzbHandled
 
-	# TODO: deze functie opvragen vanaf betreffende actie
 	function sendRetrieverFinished() {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) {
 			$this->newMultiMessage('retriever_finished', 'Multi', 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
 		} # if
-	} # sendSpotsRetrieved
+	} # sendRetrieverFinished
 
 	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
 	function sendUserAdded($username) {
