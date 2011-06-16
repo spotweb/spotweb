@@ -16,11 +16,14 @@ class SpotNotifications {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, '')) {
 			if ($this->_currentSession['user']['prefs']['notifications']['growl']['enabled']) {
 				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
-					$this->notifyServices['growl'] = new Notifications_growl($this->_currentSession['user']['prefs']['notifications']['growl']['host'], $this->_currentSession['user']['prefs']['notifications']['growl']['password']);
-					$this->notifyServices['growl']->register();
+					$this->notificationServices['growl'] = new Notifications_growl($this->_currentSession['user']['prefs']['notifications']['growl']['host'], false, $this->_currentSession['user']['prefs']['notifications']['growl']['password']);
 				} # if
 			} # if
 		} # if
+
+		foreach($this->notificationServices as $notificationService) {
+			$notificationService->register();
+		} # foreach
 	} # register
 
 	function sendNzbHandled($action, $fullSpot) {
@@ -112,23 +115,20 @@ class SpotNotifications {
 
 				if ($user['prefs']['notifications']['growl']['enabled'] && $user['prefs']['notifications']['growl']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
-						$this->notifyServices['growl'] = new Notifications_growl($user['prefs']['notifications']['growl']['host'], $user['prefs']['notifications']['growl']['password']);
-						$this->notifyServices['growl']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+						$this->notificationServices['growl'] = new Notifications_growl($user['prefs']['notifications']['growl']['host'], false, $user['prefs']['notifications']['growl']['password']);
 					} # if
 				} # Growl
 
 				# TODO libnotify-library toevoegen en aanspreken
 				if ($user['prefs']['notifications']['libnotify']['enabled'] && $user['prefs']['notifications']['libnotify']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'libnotify')) {
-						//$this->notifyServices['libnotify'] = new Notifications_libnotify();
-						//$this->notifyServices['libnotify']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+						//$this->notificationServices['libnotify'] = new Notifications_libnotify(false, false, false);
 					} # if
 				} # libnotify
 
 				if ($user['prefs']['notifications']['notifo']['enabled'] && $user['prefs']['notifications']['notifo']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) {
-						$this->notifyServices['notifo'] = new Notifications_prowl($user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
-						$this->notifyServices['notifo']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+						$this->notificationServices['notifo'] = new Notifications_prowl(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
 					} # if
 				} # Notifo
 
@@ -136,11 +136,18 @@ class SpotNotifications {
 				if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 					if ($user['prefs']['notifications']['prowl']['enabled'] && $user['prefs']['notifications']['prowl']['events'][$objectId]) {
 						if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
-							$this->notifyServices['prowl'] = new Notifications_prowl($user['prefs']['notifications']['prowl']['apikey']);
-							$this->notifyServices['prowl']->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+							$this->notificationServices['prowl'] = new Notifications_prowl(false, false, $user['prefs']['notifications']['prowl']['apikey']);
 						} # if
 					} # if
 				} # Prowl
+
+				# Hier wordt het bericht pas echt verzonden
+				foreach($this->notificationServices as $notificationService) {
+					$notificationService->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+				} # foreach
+
+				# Alle services resetten, deze mogen niet hergebruikt worden
+				unset($this->notificationServices);
 
 				$this->_db->markNotificationSent($newMessage['id']);
 			} # foreach message
