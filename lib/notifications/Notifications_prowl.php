@@ -1,22 +1,27 @@
 <?php
 require_once "lib/notifications/prowl/Connector.php";
+require_once "lib/notifications/prowl/Message.php";
+require_once "lib/notifications/prowl/Security/PassthroughFilterImpl.php";
+require_once "lib/notifications/prowl/Security/Secureable.php";
 
 class Notifications_prowl extends Notifications_abs {
-	var $growlObj;
+	private $_secret;
+	var $prowlObj;
 
 	function __construct($host, $username, $secret) {
 		$this->prowlObj = new \Prowl\Connector();
+		$this->_secret = $secret;
 	} # ctor
 
 	function register() {
 		return;
 	} # register
 
-	function sendMessage($type, $title, $body) {
+	function sendMessage($appName, $type, $title, $body, $sourceUrl) {
 		$this->prowlObj = new \Prowl\Connector();
 		$oMsg = new \Prowl\Message();
-		$oMsg->addApiKey($secret);
-		$oMsg->setApplication('Spotweb');
+		$oMsg->addApiKey($this->_secret);
+		$oMsg->setApplication($appName);
 		$oMsg->setEvent($title);
 		$oMsg->setDescription($body);
 

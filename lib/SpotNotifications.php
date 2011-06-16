@@ -59,6 +59,7 @@ class SpotNotifications {
 			foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
 				if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled'] && $this->_currentSession['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
 					$this->_db->addNewNotification($userId, $objectId, $type, $title, $body);
+					break;
 				} # if
 			} # foreach
 		} # if
@@ -128,7 +129,7 @@ class SpotNotifications {
 
 				if ($user['prefs']['notifications']['notifo']['enabled'] && $user['prefs']['notifications']['notifo']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) {
-						$this->notificationServices['notifo'] = new Notifications_prowl(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
+						$this->notificationServices['notifo'] = new Notifications_notifo(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
 					} # if
 				} # Notifo
 
@@ -143,7 +144,8 @@ class SpotNotifications {
 
 				# Hier wordt het bericht pas echt verzonden
 				foreach($this->notificationServices as $notificationService) {
-					$notificationService->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body']);
+					$appName = 'Spotweb';
+					$notificationService->sendMessage($appName, $newMessage['type'], $newMessage['title'], $newMessage['body'], $this->_settings->get('spotweburl'));
 				} # foreach
 
 				# Alle services resetten, deze mogen niet hergebruikt worden
