@@ -382,11 +382,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
 		$this->validateColumn('body', 'notifications', 'TEXT', "''", true, 'utf8');
-<<<<<<< HEAD
-		$this->validateColumn('sent', 'notifications', 'BOOLEAN', "false", true, ''); 
-=======
 		$this->validateColumn('sent', 'notifications', 'BOOLEAN', 'false', true, ''); 
->>>>>>> 1d1c811... Renamed spotsec_send_notifications -> spotsec_send_notifications_services
 		$this->alterStorageEngine("notifications", "InnoDB");
 
 		##############################################################################################
