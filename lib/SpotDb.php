@@ -1291,10 +1291,14 @@ class SpotDb {
 					Array($userId));
 		return $tmpResult;
 	} # getUnsentNotifications
-	
+
+	/* 
+	 * markeer een bepaalde notificatioe als verzonden
+	 */
 	function markNotificationSent($id) {
-		$this->_conn->modify("UPDATE notifications SET sent = 1 WHERE id = %d;", Array($id));
-	}
+		// we sturen de 1 (true) als een string waardoor PostgreSQL hem automaticsh kan casten
+		$this->_conn->modify("UPDATE notifications SET sent = '1' WHERE id = %d;", Array($id));
+	} // markNotificationSrnt
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
