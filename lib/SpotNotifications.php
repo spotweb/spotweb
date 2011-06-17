@@ -1,6 +1,6 @@
 <?php
 class SpotNotifications {
-	private $_notificationServices;
+	private $_notificationServices = array();
 	private $_spotSecTmp;
 	private $_spotSec;
 	private $_currentSession;
