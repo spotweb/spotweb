@@ -45,6 +45,11 @@ if (!$db->schemaValid()) {
 # Creer het settings object
 $settings = SpotSettings::singleton($db, $settings);
 
+# Controleer eerst of de settings versie nog wel geldig zijn
+if (!$settings->settingsValid()) {
+	die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+} # if
+
 $req = new SpotReq();
 $req->initialize($settings);
 
