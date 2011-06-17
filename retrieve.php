@@ -45,21 +45,29 @@ if (!$db->schemaValid()) {
 # Creer het settings object
 $settings = SpotSettings::singleton($db, $settings);
 
+# Controleer eerst of de settings versie nog wel geldig zijn
+if (!$settings->settingsValid()) {
+	die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+} # if
+
 $req = new SpotReq();
 $req->initialize($settings);
 
 # We willen alleen uitgevoerd worden door een user die dat mag als
-# we via de browser aangeroepen worden
+# het admin-account op
+$spotUserSystem = new SpotUserSystem($db, $settings);
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	# Vraag de API key op die de gebruiker opgegeven heeft
 	$apiKey = $req->getDef('apikey', '');
 	
-	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$userSession = $spotUserSystem->verifyApi($apiKey);
 
 	if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) { 
 		die("Access denied");
 	} # if
+} else {
+	$userSession['user'] = $db->getUser(SPOTWEB_ADMIN_USERID);
+	$userSession['security'] = new SpotSecurity($db, $settings, $userSession['user']);
 } # if
 
 if ($req->getDef('output', '') == 'xml') {
@@ -188,6 +196,10 @@ try {
 	echo PHP_EOL . PHP_EOL;
 	die();
 } # catch
+
+# Verstuur notificaties
+$spotsNotifications = new SpotNotifications($db, $settings, $userSession);
+$spotsNotifications->sendRetrieverFinished();
 
 if ($req->getDef('output', '') == 'xml') {
 	echo "</xml>";

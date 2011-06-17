@@ -364,7 +364,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "false", true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", 'false', true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
@@ -373,18 +373,29 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('prio', 'usergroups', 'INTEGER', '1', true, '');
 		$this->alterStorageEngine("usergroups", "InnoDB");
+		
+		# ---- notifications ----
+		$this->createTable('notifications', "ascii"); 
+		$this->validateColumn('userid', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('body', 'notifications', 'TEXT', "''", true, 'utf8');
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', "false", true, ''); 
+		$this->alterStorageEngine("notifications", "InnoDB");
 
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
-			throw new Exception("Je hudige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+			throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
 							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
-								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie");
+								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
 		} # if
 
 
-		# Tabellen terug samenvoegen en naar MyISAM converteren samenvoegen
+		# Tabellen terug samenvoegen in een MyISAM tabel
 		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
 			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
@@ -485,6 +496,10 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_usergroups_1", "UNIQUE", "usergroups", array("userid", "groupid"));
 		$this->validateIndex("idx_usergroupsrel_1", "", "usergroups", array("groupid"));
 
+		# ---- Indexen op notifications ----
+		$this->validateIndex("idx_notifications_1", "", "notifications", array("userid"));
+		$this->validateIndex("idx_notifications_2", "", "notifications", array("sent"));
+
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -493,6 +508,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('usergroups', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('grouppermissions', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsfull', 'messageid', 'commentsxover', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Hier droppen we kolommen ###################################################################
