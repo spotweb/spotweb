@@ -117,7 +117,7 @@ class SpotUserUpgrader {
 
 		# loop through every user and fix it 
 		foreach($userList['list'] as $user) {
-			# Omdat we vanuti listUsers() niet alle velden meekrijgen
+			# Omdat we vanuit listUsers() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
 			$user = $this->_db->getUser($user['userid']);
 
@@ -146,6 +146,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
 
+			$this->setSettingIfNot($user['prefs']['notifications']['email'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
@@ -155,7 +156,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
-			foreach (array('growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+			foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
