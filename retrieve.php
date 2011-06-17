@@ -50,13 +50,13 @@ $req->initialize($settings);
 
 # We willen alleen uitgevoerd worden door een user die dat mag als
 # we via de browser aangeroepen worden
-if(php_sapi_name() != "cli") {
+if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	# Vraag de API key op die de gebruiker opgegeven heeft
 	$apiKey = $req->getDef('apikey', '');
 	
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	$userSession = $spotUserSystem->verifyApi($apiKey);
-	
+
 	if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) { 
 		die("Access denied");
 	} # if
