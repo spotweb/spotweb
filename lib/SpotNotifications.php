@@ -1,9 +1,18 @@
 <?php
 class SpotNotifications {
+	private $_notificationServices;
+	private $_spotSecTmp;
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
 	private $_db;
+
+	/*
+	 * Constants used for securing the system
+	 */
+	const notifytype_nzb_handled			= 'nzb_handled';
+	const notifytype_retriever_finished		= 'retriever_finished';
+	const notifytype_user_added				= 'user_added';
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
 		$this->_db = $db;
@@ -16,18 +25,18 @@ class SpotNotifications {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, '')) {
 			if ($this->_currentSession['user']['prefs']['notifications']['growl']['enabled']) {
 				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
-					$this->notificationServices['growl'] = new Notifications_growl($this->_currentSession['user']['prefs']['notifications']['growl']['host'], false, $this->_currentSession['user']['prefs']['notifications']['growl']['password']);
+					$this->_notificationServices['growl'] = new Notifications_growl($this->_currentSession['user']['prefs']['notifications']['growl']['host'], false, $this->_currentSession['user']['prefs']['notifications']['growl']['password']);
 				} # if
 			} # if
 		} # if
 
-		foreach($this->notificationServices as $notificationService) {
+		foreach($this->_notificationServices as $notificationService) {
 			$notificationService->register();
 		} # foreach
 	} # register
 
 	function sendNzbHandled($action, $fullSpot) {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) {
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_nzb_handled)) {
 			switch ($action) {
 				case 'save'	  			: $title = 'NZB opgeslagen!';		$body = $fullSpot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir']; break;
 				case 'runcommand'		: $title = 'Programma gestart!';	$body = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $fullSpot['title']; break;
@@ -36,59 +45,55 @@ class SpotNotifications {
 				case 'nzbget'			: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar NZBGet'; break;
 				default					: return;
 			} # switch
-			$this->newSingleMessage($this->_currentSession['user']['userid'], 'nzb_handled', 'Single', $title, $body);
+			$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
 		} # if
 	} # sendNzbHandled
 
 	function sendRetrieverFinished() {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) {
-			$this->newMultiMessage('retriever_finished', 'Multi', 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_retriever_finished)) {
+			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
 		} # if
 	} # sendRetrieverFinished
 
 	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
 	function sendUserAdded($username) {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) {
-			$this->newMultiMessage('user_added', 'Multi', 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' is toegevoegd.');
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_user_added)) {
+			$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' is toegevoegd.');
 		} # if
 	} # sendUserAdded
-	
-	function newSingleMessage($userId, $objectId, $type, $title, $body) {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, '')) {
+
+	function newSingleMessage($user, $objectId, $type, $title, $body) {
+		# Aangezien het niet zeker als welke user we dit stuk code uitvoeren, halen
+		# we voor de zekerheid opnieuw het user record op
+		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
+		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user']);
+		$this->_spotSecTmp = $tmpUser['security'];
+
+		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications, '')) {
 			foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
-				if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled'] && $this->_currentSession['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
-					$this->_db->addNewNotification($userId, $objectId, $type, $title, $body);
-					break;
+				if ($tmpUser['user']['prefs']['notifications'][$notifProvider]['enabled'] && $tmpUser['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
+					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications, $notifProvider)) {
+						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $title, $body);
+						break;
+					} # if
 				} # if
 			} # foreach
 		} # if
 
-		$this->sendNowOrLater($userId);
+		if ($type == 'Single') {
+			$this->sendNowOrLater($tmpUser['user']['userid']);
+		} # if
 	} # newSingleMessage
 
-	function newMultiMessage($objectId, $type, $title, $body) {
+	function newMultiMessage($objectId, $title, $body) {
 		$userArray = $this->_db->listUsers("", 0, 9999999);
-		foreach ($userArray['list'] as $user) {
-			# Omdat we vanuit listUsers() niet alle velden meekrijgen
-			# vragen we opnieuw het user record op
-			$user = $this->_db->getUser($user['userid']);
-			$security = new SpotSecurity($this->_db, $this->_settings, $user);
-
-			if ($security->allowed(SpotSecurity::spotsec_send_notifications, '')) {
-				foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
-					if ($user['prefs']['notifications'][$notifProvider]['enabled'] && $user['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
-						if ($security->allowed(SpotSecurity::spotsec_send_notifications, $notifProvider)) {
-							$this->_db->addNewNotification($user['userid'], $objectId, $type, $title, $body);
-							break;
-						} # if
-					} # if
-				} # foreach
-			} # if
+		foreach ($userArray['list'] as $user['user']) {
+			$this->newSingleMessage($user, $objectId, 'Multi', $title, $body);
 		} # foreach
 
 		$this->sendNowOrLater(0);
 	} # newMultiMessage
-	
+
 	function sendNowOrLater($userId) {
 		# TODO: optioneel maken of berichten direct worden verstuurd of via cron
 		# Tot die tijd versturen we ze direct
@@ -116,20 +121,20 @@ class SpotNotifications {
 
 				if ($user['prefs']['notifications']['growl']['enabled'] && $user['prefs']['notifications']['growl']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
-						$this->notificationServices['growl'] = new Notifications_growl($user['prefs']['notifications']['growl']['host'], false, $user['prefs']['notifications']['growl']['password']);
+						$this->_notificationServices['growl'] = new Notifications_growl($user['prefs']['notifications']['growl']['host'], false, $user['prefs']['notifications']['growl']['password']);
 					} # if
 				} # Growl
 
 				# TODO libnotify-library toevoegen en aanspreken
 				if ($user['prefs']['notifications']['libnotify']['enabled'] && $user['prefs']['notifications']['libnotify']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'libnotify')) {
-						//$this->notificationServices['libnotify'] = new Notifications_libnotify(false, false, false);
+						//$this->_notificationServices['libnotify'] = new Notifications_libnotify(false, false, false);
 					} # if
 				} # libnotify
 
 				if ($user['prefs']['notifications']['notifo']['enabled'] && $user['prefs']['notifications']['notifo']['events'][$objectId]) {
 					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) {
-						$this->notificationServices['notifo'] = new Notifications_notifo(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
+						$this->_notificationServices['notifo'] = new Notifications_notifo(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
 					} # if
 				} # Notifo
 
@@ -137,19 +142,19 @@ class SpotNotifications {
 				if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 					if ($user['prefs']['notifications']['prowl']['enabled'] && $user['prefs']['notifications']['prowl']['events'][$objectId]) {
 						if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
-							$this->notificationServices['prowl'] = new Notifications_prowl(false, false, $user['prefs']['notifications']['prowl']['apikey']);
+							$this->_notificationServices['prowl'] = new Notifications_prowl(false, false, $user['prefs']['notifications']['prowl']['apikey']);
 						} # if
 					} # if
 				} # Prowl
 
 				# Hier wordt het bericht pas echt verzonden
-				foreach($this->notificationServices as $notificationService) {
+				foreach($this->_notificationServices as $notificationService) {
 					$appName = 'Spotweb';
 					$notificationService->sendMessage($appName, $newMessage['type'], $newMessage['title'], $newMessage['body'], $spotweburl);
 				} # foreach
 
 				# Alle services resetten, deze mogen niet hergebruikt worden
-				unset($this->notificationServices);
+				unset($this->_notificationServices);
 
 				$this->_db->markNotificationSent($newMessage['id']);
 			} # foreach message
