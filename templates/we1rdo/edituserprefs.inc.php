@@ -29,7 +29,7 @@ include "includes/form-messages.inc.php";
 <!--
 			<li><a href="#edituserpreftab-3"><span>Filters</span></a></li>
 -->
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span>Notificaties</span></a></li>
 <?php } ?>
 	
@@ -211,10 +211,10 @@ include "includes/form-messages.inc.php";
 -->
 
 <!-- Notificaties -->
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 		<div id="edituserpreftab-4">
 		
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'growl')) { ?>
 <!-- Growl -->
 			<fieldset>
 				<dt><label for="use_growl">Growl gebruiken?</label></dt>
@@ -244,7 +244,7 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, 'libnotify')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'libnotify')) { ?>
 <!-- libnotify -->
 <!--
 			<fieldset>
@@ -269,7 +269,7 @@ include "includes/form-messages.inc.php";
 -->
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'notifo')) { ?>
 <!-- Notifo -->
 			<fieldset>
 				<dt><label for="use_notifo">Notifo gebruiken?</label></dt>
@@ -299,7 +299,7 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
 <!-- Prowl -->
 			<fieldset>
 				<dt><label for="use_prowl">Prowl gebruiken? <?php if (version_compare(PHP_VERSION, '5.3.0') < 0) { echo "Werkt niet met de geïnstalleerde PHP versie."; } ?></label></dt>
