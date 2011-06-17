@@ -1,6 +1,6 @@
 <?php
 class SpotNotifications {
-	private $_notificationServices;
+	private $_notificationServices = array();
 	private $_spotSecTmp;
 	private $_spotSec;
 	private $_currentSession;
@@ -22,9 +22,9 @@ class SpotNotifications {
 	} # ctor
 
 	function register() {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, '')) {
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
 			if ($this->_currentSession['user']['prefs']['notifications']['growl']['enabled']) {
-				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
+				if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'growl')) {
 					$this->_notificationServices['growl'] = new Notifications_growl($this->_currentSession['user']['prefs']['notifications']['growl']['host'], false, $this->_currentSession['user']['prefs']['notifications']['growl']['password']);
 				} # if
 			} # if
@@ -69,10 +69,10 @@ class SpotNotifications {
 		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
-		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications, '')) {
+		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
 			foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
 				if ($tmpUser['user']['prefs']['notifications'][$notifProvider]['enabled'] && $tmpUser['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
-					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications, $notifProvider)) {
+					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
 						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $title, $body);
 						break;
 					} # if
@@ -120,20 +120,20 @@ class SpotNotifications {
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
 
 				if ($user['prefs']['notifications']['growl']['enabled'] && $user['prefs']['notifications']['growl']['events'][$objectId]) {
-					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'growl')) {
+					if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, 'growl')) {
 						$this->_notificationServices['growl'] = new Notifications_growl($user['prefs']['notifications']['growl']['host'], false, $user['prefs']['notifications']['growl']['password']);
 					} # if
 				} # Growl
 
 				# TODO libnotify-library toevoegen en aanspreken
 				if ($user['prefs']['notifications']['libnotify']['enabled'] && $user['prefs']['notifications']['libnotify']['events'][$objectId]) {
-					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'libnotify')) {
+					if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, 'libnotify')) {
 						//$this->_notificationServices['libnotify'] = new Notifications_libnotify(false, false, false);
 					} # if
 				} # libnotify
 
 				if ($user['prefs']['notifications']['notifo']['enabled'] && $user['prefs']['notifications']['notifo']['events'][$objectId]) {
-					if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'notifo')) {
+					if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, 'notifo')) {
 						$this->_notificationServices['notifo'] = new Notifications_notifo(false, $user['prefs']['notifications']['notifo']['username'], $user['prefs']['notifications']['notifo']['api']);
 					} # if
 				} # Notifo
@@ -141,7 +141,7 @@ class SpotNotifications {
 				# Prowl gebruikt namespaces, welke geintroduceerd werden met PHP 5.3
 				if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 					if ($user['prefs']['notifications']['prowl']['enabled'] && $user['prefs']['notifications']['prowl']['events'][$objectId]) {
-						if ($security->allowed(SpotSecurity::spotsec_send_notifications, 'prowl')) {
+						if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) {
 							$this->_notificationServices['prowl'] = new Notifications_prowl(false, false, $user['prefs']['notifications']['prowl']['apikey']);
 						} # if
 					} # if
