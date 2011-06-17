@@ -1,8 +1,14 @@
 <?php
+/*
+ * We includen de libraries hier en in deze volgorde om te voorkomen
+ * dat de autoclass loader triggered, die snapt namelijk op dit moment
+ * nog niets van namespaces en dan gaat het mis 
+ */
 require_once "lib/notifications/prowl/Connector.php";
 require_once "lib/notifications/prowl/Message.php";
-require_once "lib/notifications/prowl/Security/PassthroughFilterImpl.php";
 require_once "lib/notifications/prowl/Security/Secureable.php";
+require_once "lib/notifications/prowl/Response.php";
+require_once "lib/notifications/prowl/Security/PassthroughFilterImpl.php";
 
 class Notifications_prowl extends Notifications_abs {
 	private $_secret;
