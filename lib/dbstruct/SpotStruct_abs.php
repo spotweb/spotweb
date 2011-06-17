@@ -343,7 +343,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('lastvisit', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastread', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastapiusage', 'users', "INTEGER", "0", true, '');
-		$this->validateColumn('deleted', 'users', "BOOLEAN", false, true, '');
+		$this->validateColumn('deleted', 'users', "BOOLEAN", 'false', true, '');
 		$this->alterStorageEngine("users", "InnoDB");
 
 		# ---- sessions ---- #
@@ -364,7 +364,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", false, true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", 'false', true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
@@ -381,8 +381,8 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
-		$this->validateColumn('body', 'notifications', 'TEXT', "", true, 'utf8');
-		$this->validateColumn('sent', 'notifications', 'BOOLEAN', false, true, ''); 
+		$this->validateColumn('body', 'notifications', 'TEXT', "''", true, 'utf8');
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', "false", true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
 		##############################################################################################
