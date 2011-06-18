@@ -92,8 +92,10 @@ class SpotUserSystem {
 		if ($userSession === false) {
 			# als er nu nog geen sessie bestaat, creeer dan een nieuwe
 			# anonieme sessie
-			# userid 1 is altijd onze anonymous user
-			$userSession = $this->createNewSession(SPOTWEB_ANONYMOUS_USERID);
+			# userid 1 is altijd onze anonymous user. 
+			# In de settings.php kan de beheerder van Spotweb dit overriden maar
+			# als resultaat van de vele klachten.
+			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid') );
 		} # if
 		
 		# initialiseer het security systeem
