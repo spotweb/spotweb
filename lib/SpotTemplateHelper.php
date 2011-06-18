@@ -815,6 +815,17 @@ class SpotTemplateHelper {
 	}  # getGroupListForUser
 
 	/*
+	 * Geeft de users' custom CSS terug 
+	 */
+	function getUserCustomCss() {
+		if (!$this->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) {
+			return '';
+		} # if
+		
+		return $this->_currentSession['user']['prefs']['customcss'];
+	} # if 
+	
+	/*
 	 * Geeft alle permissies in een bepaalde securitygroup terug
 	 */
 	function getSecGroup($groupId) {
