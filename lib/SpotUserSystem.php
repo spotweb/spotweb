@@ -321,6 +321,7 @@ class SpotUserSystem {
 	 * Valideer de user preferences
 	 */
 	function validateUserPreferences($prefs) {
+		$notificationHandling = new Notifications_Factory();
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
@@ -364,12 +365,10 @@ class SpotUserSystem {
 		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
-		$prefs['notifications']['email']['enabled'] = (isset($prefs['notifications']['email']['enabled'])) ? true : false;
-		$prefs['notifications']['growl']['enabled'] = (isset($prefs['notifications']['growl']['enabled'])) ? true : false;
-		$prefs['notifications']['libnotify']['enabled'] = (isset($prefs['notifications']['libnotify']['enabled'])) ? true : false;
-		$prefs['notifications']['notifo']['enabled'] = (isset($prefs['notifications']['notifo']['enabled'])) ? true : false;
-		$prefs['notifications']['prowl']['enabled'] = (isset($prefs['notifications']['prowl']['enabled'])) ? true : false;
-		foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+		
+		$notifProviders = $notificationHandling->futureServices();
+		foreach ($notifProviders as $notifProvider) {
+			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;

@@ -113,6 +113,7 @@ class SpotUserUpgrader {
 	 * Update all users preferences
 	 */
 	function updateUserPreferences() {
+		$notificationHandling = new Notifications_Factory();
 		$userList = $this->_db->listUsers("", 0, 9999999);
 
 		# loop through every user and fix it 
@@ -157,7 +158,8 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
-			foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+			$notifProviders = $notificationHandling->futureServices();
+			foreach ($notifProviders as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		

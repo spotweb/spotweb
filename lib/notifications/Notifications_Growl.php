@@ -1,11 +1,11 @@
 <?php
 require_once "lib/notifications/growl/class.growl.php";
 
-class Notifications_growl extends Notifications_abs {
+class Notifications_Growl extends Notifications_abs {
 	var $growlObj;
 
-	function __construct($host, $username, $secret) {
-		$this->growlObj = new Growl($host, $secret, 'Spotweb');
+	function __construct($appName, array $dataArray) {
+		$this->growlObj = new Growl($dataArray['host'], $dataArray['password'], $appName);
 	} # ctor
 
 	function register() {
@@ -14,8 +14,8 @@ class Notifications_growl extends Notifications_abs {
 		$this->growlObj->register();
 	} # register
 
-	function sendMessage($appName, $type, $title, $body, $sourceUrl) {
+	function sendMessage($type, $title, $body, $sourceUrl) {
 		$this->growlObj->notify($type, $title, $body);
 	} # sendMessage
 
-} # SpotsNotifications
+} # Notifications_Growl
