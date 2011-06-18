@@ -32,6 +32,9 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span>Notificaties</span></a></li>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
+			<li><a href="#edituserpreftab-5"><span>Eigen CSS stylesheet</span></a></li>
+<?php } ?>
 	
 		</ul>
 			
@@ -328,6 +331,22 @@ include "includes/form-messages.inc.php";
 		</div>
 <?php } ?>
 <!-- Einde notificaties -->
+
+
+<!-- Custom Stylesheet -->
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
+		<div id="edituserpreftab-5" class="ui-tabs-hide">
+			<fieldset>
+				<dt>
+					<label for="edituserprefsform[customcss]">Custom CSS stylesheet gebruiken</label>
+				</dt>
+				<dd>
+					<textarea name="edituserprefsform[customcss]" rows="15" cols="120"><?php echo $edituserprefsform['customcss']; ?></textarea>
+				</dd>
+			</fieldset>
+		</div>
+<?php } ?>
+<!-- Einde Custom Stylesheet -->
 
 		<dd>
 			<input class="greyButton" type="submit" name="edituserprefsform[submitedit]" value="Bijwerken">

@@ -374,6 +374,11 @@ class SpotUserSystem {
 			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
+
+		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
+		if (strlen($prefs['customcss'] > 1024 * 10)) { 
+			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
+		} # if		
 		
 		# als men runcommand of save wil, moet er een local_dir opgegeven worden
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {

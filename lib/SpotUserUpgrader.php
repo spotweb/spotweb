@@ -133,6 +133,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
 			$this->setSettingIfNot($user['prefs'], 'show_filesize', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
+			$this->setSettingIfNot($user['prefs'], 'customcss', '');
 
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
@@ -160,17 +161,10 @@ class SpotUserUpgrader {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
-			}
+			} // foreach
 
 			# oude settings verwijderen
 			$this->unsetSetting($user['prefs'], 'search_url');
-
-			# Upgrade de sabnzbd api host setting
-			if ($this->_settings->get('securityversion') < 0.06) {
-				if (substr($user['prefs']['nzbhandling']['sabnzbd']['url'], -1 * strlen('/sabnzbd/')) == '/sabnzbd/') {
-					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
-				} # if				
-			} # if
 
 			# update the user record in the database			
 			$this->_db->setUser($user);
@@ -283,6 +277,11 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'nzb_handled')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
+		} # if
+
+		# We voegen nog extra security toe voor custom stylesheets
+		if ($this->_settings->get('securityversion') < 0.09) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_allow_custom_stylesheet . ")");
 		} # if
 	} # updateSecurityGroups
 	
