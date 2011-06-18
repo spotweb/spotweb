@@ -1,7 +1,6 @@
 <?php
 abstract class Notifications_abs {
-
-	public function __construct($host, $username, $secret) {
+	public function __construct() {
     }
 
 	/* registreert een service bij een host
@@ -9,5 +8,5 @@ abstract class Notifications_abs {
 	abstract function register();
 
 	/* verstuurt het bericht */
-	abstract function sendMessage($appName, $type, $title, $body, $sourceUrl);
+	abstract function sendMessage($type, $title, $body, $sourceUrl);
 } # SpotNotifyService_abs
