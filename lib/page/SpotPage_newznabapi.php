@@ -107,12 +107,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
 		$offset = $pageNr*$limit;
 
-		$parsedSearch = $spotsOverview->filterToQuery($search, $this->_currentSession);
+		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession);
 		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 						$pageNr,
 						$limit,
-						$parsedSearch,
-						array('field' => 'stamp', 'direction' => 'DESC'));
+						$parsedSearch);
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 

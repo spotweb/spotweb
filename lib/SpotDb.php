@@ -681,7 +681,7 @@ class SpotDb {
 	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
 	 * 
 	 */
-	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch, $sort, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch, $getFull) {
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
@@ -711,24 +711,17 @@ class SpotDb {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
 		
-		if (!empty($sort)) {
-			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
-			$sort['field'] = 's.' . $sort['field'];
-		} # if
-
-		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
-		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
-		# 
-		$sortFields = array_merge(array($sort), $parsedSearch['sortFields']);
+		# Nu prepareren we de sorterings lijst
+		$sortFields = $parsedSearch['sortFields'];
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
 			if (!empty($sortValue)) {
 				# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 				# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 				# het voor MySQL ISAM een stuk sneller
-				if ((strtolower($sortValue['field']) == 'stamp' || strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
+				if ((strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
 					$sortValue['field'] = 's.reversestamp';
-					$sortValue['direction'] = 'ASC';					
+					$sortValue['direction'] = 'ASC';
 				} # if
 				
 				$sortList[] = $sortValue['field'] . ' ' . $sortValue['direction'];
@@ -776,7 +769,7 @@ class SpotDb {
 			array_pop($tmpResult);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull));
+		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $getFull));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 

@@ -22,7 +22,10 @@ class SpotPage_rss extends SpotPage_Abs {
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'],
+							array('field' => $this->_params['sortby'],
+								  'direction' => $this->_params['sortdir']),
+						    $this->_currentSession);
 		$this->_params['search'] = $parsedSearch['search'];
 
 		# laad de spots
@@ -30,9 +33,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 							$pageNr,
 							$this->_currentSession['user']['prefs']['perpage'],
-							$parsedSearch,
-							array('field' => $this->_params['sortby'],
-								  'direction' => $this->_params['sortdir']));
+							$parsedSearch);
 
 		# Opbouwen XML
 		$doc = new DOMDocument('1.0', 'utf-8');
