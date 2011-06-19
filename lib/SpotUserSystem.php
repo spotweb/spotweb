@@ -321,7 +321,6 @@ class SpotUserSystem {
 	 * Valideer de user preferences
 	 */
 	function validateUserPreferences($prefs) {
-		$notificationHandling = new Notifications_Factory();
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
@@ -366,7 +365,7 @@ class SpotUserSystem {
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
-		$notifProviders = $notificationHandling::getFutureServices();
+		$notifProviders = Notifications_Factory::getFutureServices();
 		foreach ($notifProviders as $notifProvider) {
 			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;

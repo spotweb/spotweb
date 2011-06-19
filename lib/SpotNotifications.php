@@ -22,14 +22,12 @@ class SpotNotifications {
 	} # ctor
 
 	function register() {
-		$notificationHandling = new Notifications_Factory();
-
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			$notifProviders = $notificationHandling::getActiveServices();
+			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled']) {
 					if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
-						$this->_notificationServices[$notifProvider] = $notificationHandling::build('Spotweb', $notifProvider, $this->_currentSession['user']['prefs']['notifications'][$notifProvider]);
+						$this->_notificationServices[$notifProvider] = Notifications_Factory::build('Spotweb', $notifProvider, $this->_currentSession['user']['prefs']['notifications'][$notifProvider]);
 					} # if
 				} # if
 			} # foreach
@@ -62,8 +60,6 @@ class SpotNotifications {
 	} # sendUserAdded
 
 	function newSingleMessage($user, $objectId, $type, $title, $body) {
-		$notificationHandling = new Notifications_Factory();
-
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
 		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
@@ -71,7 +67,7 @@ class SpotNotifications {
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			$notifProviders = $notificationHandling::getActiveServices();
+			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				if ($tmpUser['user']['prefs']['notifications'][$notifProvider]['enabled'] && $tmpUser['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
 					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, '') &&
@@ -106,8 +102,6 @@ class SpotNotifications {
 	} # sendNowOrLater
 
 	function sendMessages($userId) {
-		$notificationHandling = new Notifications_Factory();
-
 		if ($userId == 0) {
 			$userList = $this->_db->listUsers("", 0, 9999999);
 		} else {
@@ -127,11 +121,11 @@ class SpotNotifications {
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
 
-				$notifProviders = $notificationHandling::getActiveServices();
+				$notifProviders = Notifications_Factory::getActiveServices();
 				foreach ($notifProviders as $notifProvider) {
 					if ($user['prefs']['notifications'][$notifProvider]['enabled'] && $user['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
 						if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
-							$this->_notificationServices[$notifProvider] = $notificationHandling::build('Spotweb', $notifProvider, $user['prefs']['notifications'][$notifProvider]);
+							$this->_notificationServices[$notifProvider] = Notifications_Factory::build('Spotweb', $notifProvider, $user['prefs']['notifications'][$notifProvider]);
 						} # if
 					} # if
 				} # foreach
