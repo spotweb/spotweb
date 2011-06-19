@@ -54,6 +54,7 @@ $req = new SpotReq();
 $req->initialize($settings);
 
 # We willen alleen uitgevoerd worden door een user die dat mag als
+# we via de browser aangeroepen worden. Via console halen we altijd
 # het admin-account op
 $spotUserSystem = new SpotUserSystem($db, $settings);
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -99,7 +100,7 @@ try {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
 
-	$retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
+	$newSpotCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 	$retriever->quit();
 	$db->setLastUpdate($settings_nntp_hdr['host']);
 } 
@@ -143,7 +144,7 @@ try {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
 
-		$retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
+		$newCommentCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 		$retriever->quit();
 	} # if
 }
@@ -199,7 +200,7 @@ try {
 
 # Verstuur notificaties
 $spotsNotifications = new SpotNotifications($db, $settings, $userSession);
-$spotsNotifications->sendRetrieverFinished();
+$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount);
 
 if ($req->getDef('output', '') == 'xml') {
 	echo "</xml>";

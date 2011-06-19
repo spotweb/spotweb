@@ -50,8 +50,12 @@ class SpotNotifications {
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
 	} # sendNzbHandled
 
-	function sendRetrieverFinished() {
-		$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
+	function sendRetrieverFinished($newSpotCount, $newCommentCount) {
+		if ($newSpotCount > 0) {
+			$body = ($newSpotCount == 1) ? "Er is 1 spot opgehaald." : "Er zijn " . $newSpotCount . " spots opgehaald.";
+			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Nieuwe spots opgehaald!', $body);
+		}
+>>>>>>> c8621a8... Zoeken op filesize via UI
 	} # sendRetrieverFinished
 
 	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
@@ -130,7 +134,7 @@ class SpotNotifications {
 					} # if
 				} # foreach
 
-				# Hier wordt het bericht pas echt verzonden
+				# nu wordt het bericht pas echt verzonden
 				foreach($this->_notificationServices as $notificationService) {
 					$notificationService->sendMessage($newMessage['type'], $newMessage['title'], $newMessage['body'], $spotweburl);
 				} # foreach
