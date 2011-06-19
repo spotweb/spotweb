@@ -305,7 +305,7 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
 <!-- Prowl -->
 			<fieldset>
-				<dt><label for="use_prowl">Prowl gebruiken? <?php if (version_compare(PHP_VERSION, '5.3.0') < 0) { echo "Werkt niet met de geïnstalleerde PHP versie."; } ?></label></dt>
+				<dt><label for="use_prowl">Prowl gebruiken?</label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][prowl][enabled]" id="use_prowl" <?php if ($edituserprefsform['notifications']['prowl']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
 				<fieldset id="content_use_prowl">

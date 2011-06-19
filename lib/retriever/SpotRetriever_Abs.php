@@ -137,6 +137,7 @@ abstract class SpotRetriever_Abs {
 			} # if
 	
 			$this->displayStatus("totalprocessed", $processed);
+			return $processed;
 		} # loopTillEnd()
 
 		function quit() {

@@ -34,11 +34,18 @@
 	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
 	$searchType = 'Titel'; $searchText = '';
 	if (isset($activefilter['filterValues'])) {
-		foreach(array_keys($activefilter['filterValues']) as $filterType) {
-			if (in_array($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
-				$searchType = $filterType;
+		foreach($activefilter['filterValues'] as $filterType) {
+			if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+				$searchType = $filterType['fieldname'];
 				$searchText = $activefilter['text'];
-			}
+			} # if
+			if (in_array($filterType['fieldname'], array('filesize'))) {
+				if ($filterType['operator'] == ">")  {
+					$minFilesize = $filterType['value'];
+				} elseif ($filterType['operator'] == "<")  {
+					$maxFilesize = $filterType['value'];
+				}
+			} # if
 		} # foreach
 	} # if
 	if (isset($activefilter['value'][0])) {
@@ -94,6 +101,12 @@
 								<option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>>1 jaar</option>
 							</select></li>
 						</ul>
+					
+						<h4>Omvang</h4>
+						<input type="hidden" name="search[value][]" id="min-filesize" />
+						<input type="hidden" name="search[value][]" id="max-filesize" />
+						<div id="human-filesize"></div>
+						<div id="slider-filesize"></div>
 
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
