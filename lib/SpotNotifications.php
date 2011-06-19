@@ -136,7 +136,7 @@ class SpotNotifications {
 				} # foreach
 
 				# Alle services resetten, deze mogen niet hergebruikt worden
-				$this->_notificationServices == array();
+				$this->_notificationServices = array();
 
 				$this->_db->markNotificationSent($newMessage['id']);
 			} # foreach message
