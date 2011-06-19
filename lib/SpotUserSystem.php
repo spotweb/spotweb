@@ -92,8 +92,10 @@ class SpotUserSystem {
 		if ($userSession === false) {
 			# als er nu nog geen sessie bestaat, creeer dan een nieuwe
 			# anonieme sessie
-			# userid 1 is altijd onze anonymous user
-			$userSession = $this->createNewSession(SPOTWEB_ANONYMOUS_USERID);
+			# userid 1 is altijd onze anonymous user. 
+			# In de settings.php kan de beheerder van Spotweb dit overriden maar
+			# als resultaat van de vele klachten.
+			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid') );
 		} # if
 		
 		# initialiseer het security systeem
@@ -362,16 +364,19 @@ class SpotUserSystem {
 		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
-		$prefs['notifications']['email']['enabled'] = (isset($prefs['notifications']['email']['enabled'])) ? true : false;
-		$prefs['notifications']['growl']['enabled'] = (isset($prefs['notifications']['growl']['enabled'])) ? true : false;
-		$prefs['notifications']['libnotify']['enabled'] = (isset($prefs['notifications']['libnotify']['enabled'])) ? true : false;
-		$prefs['notifications']['notifo']['enabled'] = (isset($prefs['notifications']['notifo']['enabled'])) ? true : false;
-		$prefs['notifications']['prowl']['enabled'] = (isset($prefs['notifications']['prowl']['enabled'])) ? true : false;
-		foreach (array('email', 'growl', 'libnotify', 'notifo', 'prowl') as $notifProvider) {
+		
+		$notifProviders = Notifications_Factory::getFutureServices();
+		foreach ($notifProviders as $notifProvider) {
+			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
+
+		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
+		if (strlen($prefs['customcss'] > 1024 * 10)) { 
+			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
+		} # if		
 		
 		# als men runcommand of save wil, moet er een local_dir opgegeven worden
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {

@@ -1,7 +1,4 @@
 <?php
-/* nog een externe library */
-require_once 'lib/linkify/linkify.php';
-
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
 class SpotTemplateHelper {	
@@ -422,8 +419,13 @@ class SpotTemplateHelper {
 		$tmp = utf8_decode($tmp);
 		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
 		
-		# Converteer urls naar links
-		# $tmp = linkify($tmp);
+		# Code gecopieerd vanaf 
+		#		http://codesnippets.joyent.com/posts/show/2104
+		# converteert linkjes naar bb code
+		$pattern = "@\b(https?://)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)" . 
+						"?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]" .
+						"{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*/?)@";
+		$tmp = preg_replace($pattern, '[url="\0"]\0[/url]', $tmp);
 		
 		# initialize ubb parser
 		$parser = new SpotUbb_parser($tmp);
@@ -437,6 +439,9 @@ class SpotTemplateHelper {
 		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
 		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
 		
+		# en encode de UTF8 content weer
+		$tmp = utf8_encode($tmp);
+
 		return $tmp;
 	} # formatContent
 	
@@ -814,6 +819,17 @@ class SpotTemplateHelper {
 		return $this->_db->getGroupList($userId);
 	}  # getGroupListForUser
 
+	/*
+	 * Geeft de users' custom CSS terug 
+	 */
+	function getUserCustomCss() {
+		if (!$this->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) {
+			return '';
+		} # if
+		
+		return $this->_currentSession['user']['prefs']['customcss'];
+	} # if 
+	
 	/*
 	 * Geeft alle permissies in een bepaalde securitygroup terug
 	 */
