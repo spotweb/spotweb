@@ -210,7 +210,7 @@ class SpotsOverview {
 				$search['text'] = '';
 			} # if
 			
-			$search['value'][] = $search['type'] . ':' . $search['text'];
+			$search['value'][] = $search['type'] . ':=:' . $search['text'];
 			unset($search['type']);
 		} # if
 		
@@ -221,8 +221,23 @@ class SpotsOverview {
 		# en we converteren het nieuwe type (field:value) naar een array zodat we er makkelijk door kunnen lopen
 		$filterValueList = array();
 		foreach($search['value'] as $value) {
-			$tmpFilter = explode(':', $value);
-			$filterValueList[$tmpFilter[0]] = join(":", array_slice($tmpFilter, 1));
+			if (!empty($value)) {
+				$tmpFilter = explode(':', $value);
+				
+				# als er geen comparison operator is opgegeven, dan
+				# betekent dat een '=' opreator, dus fix de array op
+				# die manier.
+				if (count($tmpFilter) < 3) {
+					$tmpFilter = array($tmpFilter[0],
+									   '=',
+									   $tmpFilter[1]);
+				} # if
+				
+				# en creeer een filtervaluelist
+				$filterValueList[] = Array('fieldname' => $tmpFilter[0],
+										   'operator' => $tmpFilter[1],
+										   'value' => join(":", array_slice($tmpFilter, 2)));
+			} # if
 		} # for
 		$search['filterValues'] = $filterValueList;
 		
@@ -358,22 +373,24 @@ class SpotsOverview {
 		# Add a list of possible text searches
 		$textSearch = array();
 
-		foreach($search['filterValues'] as $searchType => $searchValue) {
-			$searchType = strtolower($searchType);
+		foreach($search['filterValues'] as $filterRecord) {
+			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
+			$tmpFilterOperator = $filterRecord['operator'];
+			$tmpFilterValue = $filterRecord['value'];
 
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# voer dan dit pad uit
-			if (in_array($searchType, array('tag', 'poster', 'titel'))) {
+			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
 				$field = '';
 
-				switch($searchType) {
+				switch($tmpFilterFieldname) {
 					case 'poster'	: $field = 's.poster'; break;
 					case 'titel'	: $field = 's.title'; break;
 					case 'tag'		: $field = 's.tag'; break;
 				} # switch
 				
-				if (!empty($field) && !empty($searchValue)) {
-					$parsedTextQueryResult = $this->_db->createTextQuery($field, $searchValue);
+				if (!empty($field) && !empty($tmpFilterValue)) {
+					$parsedTextQueryResult = $this->_db->createTextQuery($field, $tmpFilterValue);
 					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
 
 					# We voegen deze extended textqueryies toe aan de filterlist als
@@ -389,68 +406,51 @@ class SpotsOverview {
 											  'direction' => 'DESC');
 					} # if
 				} # if
-			} else if (!empty($searchValue)) {
+			} else if (!empty($tmpFilterValue)) {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
 				#
 				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
 				#   filesize:>=:4000000
-				$tmpFilter = explode(":", $searchValue);
-				if (empty($tmpFilter)) {
-					$tmpFilter = $searchValue;
+				#
+				# valideer eerst de operatoren
+				if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
+					break;
 				} # if
 
-				if (count($tmpFilter) >= 1) {
-					# Als we een filter in de vorm name:value krijgen, gaan we altijd 
-					# uit van een gelijkheids filter
-					
-					if (count($tmpFilter) == 1) {
-						$filterOperator = '=';
-						$searchValue = join(":", $tmpFilter);
-					} else {
-						$filterOperator = $tmpFilter[0];
-						$searchValue = join(":", array_slice($tmpFilter, 1));
-					} # else
-					
-					# valideer eerst de operatoren
-					if (!in_array($filterOperator, array('>', '<', '>=', '<=', '='))) {
-						break;
-					} # if
-
-					# en valideer dan de zoekvelden
-					$filterFieldMapping = array('filesize' => 's.filesize',
-										  'date' => 's.stamp',
-										  'userid' => 'f.userid',
-										  'moderated' => 's.moderated');
-					if (!isset($filterFieldMapping[$searchType])) {
-						break;
-					} # if
-
-					if ($searchType == 'date') {
-						$searchValue = date("U",  strtotime($searchValue));
-					} elseif ($searchType == 'filesize' && is_numeric($searchValue) === false) {
-						# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
-						# platform te omzeilen.
-						$val = (float) trim(substr($searchValue, 0, -1));
-						$last = strtolower($searchValue[strlen($searchValue) - 1]);
-						switch($last) {
-							case 'g': $val *= (float) 1024;
-							case 'm': $val *= (float) 1024;
-							case 'k': $val *= (float) 1024;
-						} # switch
-						$searchValue = round($val, 0);
-					} # if
-					
-					# als het niet numeriek is, zet er dan een quote by
-					if (!is_numeric($searchValue)) {
-						$searchValue = "'" . $this->_db->safe($searchValue) . "'";
-					} else {
-						$searchValue = $this->_db->safe($searchValue);
-					} # if
-
-					# en creeer de query string
-					$textSearch[] = ' (' . $filterFieldMapping[$searchType] . ' ' . $filterOperator . ' '  . $searchValue . ') ';
+				# en valideer dan de zoekvelden
+				$filterFieldMapping = array('filesize' => 's.filesize',
+									  'date' => 's.stamp',
+									  'userid' => 'f.userid',
+									  'moderated' => 's.moderated');
+				if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
+					break;
 				} # if
+
+				if ($tmpFilterFieldname == 'date') {
+					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
+				} elseif ($tmpFilterFieldname == 'filesize' && is_numeric($tmpFilterValue) === false) {
+					# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
+					# platform te omzeilen.
+					$val = (float) trim(substr($tmpFilterValue, 0, -1));
+					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
+					switch($last) {
+						case 'g': $val *= (float) 1024;
+						case 'm': $val *= (float) 1024;
+						case 'k': $val *= (float) 1024;
+					} # switch
+					$tmpFilterValue = round($val, 0);
+				} # if
+					
+				# als het niet numeriek is, zet er dan een quote by
+				if (!is_numeric($tmpFilterValue)) {
+					$tmpFilterValue = "'" . $this->_db->safe($tmpFilterValue) . "'";
+				} else {
+					$tmpFilterValue = $this->_db->safe($tmpFilterValue);
+				} # if
+
+				# en creeer de query string
+				$textSearch[] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
 			} # if
 		} # foreach
 
@@ -495,7 +495,7 @@ class SpotsOverview {
 		} # if
 
 		# New spots
-		if (isset($search['filterValues']['New'])) {
+		if (in_array(array('fieldname' => 'New', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
 			if ($currentSession['user']['prefs']['auto_markasread']) {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
 			} else {
@@ -507,11 +507,11 @@ class SpotsOverview {
 
 		# Spots in SpotStateList
 		$listFilter = array();
-		if (isset($search['filterValues']['Downloaded'])) {
+		if (in_array(array('fieldname' => 'Downloaded', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
 			$listFilter[] = ' (l.download IS NOT NULL)';
-		} elseif (isset($search['filterValues']['Watch'])) {
+		} elseif (in_array(array('fieldname' => 'Watch', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
 			$listFilter[] = ' (l.watch IS NOT NULL)';
-		} elseif (isset($search['filterValues']['Seen'])) {
+		} elseif (in_array(array('fieldname' => 'Seen', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
 			$listFilter[] = ' (l.seen IS NOT NULL)';
 		} # if
 
