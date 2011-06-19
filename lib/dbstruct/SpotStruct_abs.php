@@ -200,7 +200,7 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		# Opschonen data #############################################################################
 		##############################################################################################
-		if ($this instanceof SpotStruct_mysql) {
+		if (($this instanceof SpotStruct_mysql) && (false)) {
 			echo "Cleaning up old data..." . PHP_EOL;
 			if ($this->tableExists('usersettings') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
