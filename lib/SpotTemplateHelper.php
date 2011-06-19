@@ -437,6 +437,9 @@ class SpotTemplateHelper {
 		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
 		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
 		
+		# en encode de UTF8 content weer
+		$tmp = utf8_encode($tmp);
+
 		return $tmp;
 	} # formatContent
 	
