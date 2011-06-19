@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.34');
+define('SPOTDB_SCHEMA_VERSION', '0.35');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -874,6 +874,10 @@ class SpotDb {
 	 */
 	function addCommentsFull($commentList) {
 		foreach($commentList as $comment) {
+			# Kap de verschillende strings af op een maximum van 
+			# de datastructuur, de unique keys kappen we expres niet af
+			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
+			
 			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
 					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],

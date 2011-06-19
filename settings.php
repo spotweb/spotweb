@@ -200,6 +200,13 @@ $settings['sabnzbd']['categories'] = Array(
 # je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
 $settings['enable_stacktrace'] = true;
 
+# Als een user niet expliciet geauthenticeerd is, dan wordt deze user standaard ingelogged
+# met een userid van 1 -- dit is de builtin anonymous user. Als je je Spotweb installatie
+# helemaal alleen gebruikt, kan je dit eventueel laten herleiden naar een andere user zodat
+# je Spotweb volledig kan gebruiken (inclusief posten van comments en dergelijke) zonder
+# dat je ooit hoeft in te loggen.
+$settings['nonauthenticated_userid'] = 1;
+
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
 $settings['index_filter'] = array();

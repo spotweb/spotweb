@@ -14,6 +14,11 @@
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 		<script src='?page=statics&amp;type=js&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
+		<style type="text/css" media="screen,handheld,projection">
+			<?php echo $tplHelper->getUserCustomCss(); ?>
+		</style>		
+<?php } ?>
 		<script type='text/javascript'>
 			// Define some global variables showing or hiding specific parts of the UI
 			// based on users' security rights

@@ -84,8 +84,12 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		echo "\t\t\t\t\t\t\t";
-		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
-			 "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
+		echo "<tr class='" . $tplHelper->cat2color($spot);
+		if ($spot['hasbeendownloaded']) {
+			echo " downloadedspot";
+		} # if
+		echo "'>";
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
@@ -153,30 +157,30 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		echo "</tr>\r\n";
 	}
 ?>
-				</tbody>
-			</table>
+					</tbody>
+				</table>
 <?php if ($prevPage >= 0 || $nextPage > 0) { ?>
-			<table class="footer" summary="Footer">
-				<tbody>
-					<tr>
+				<table class="footer" summary="Footer">
+					<tbody>
+						<tr>
 <?php if ($prevPage >= 0) { ?> 
-						<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
+							<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
 <?php }?> 
-						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
+							<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
 <?php if ($nextPage > 0) { ?> 
-						<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
+							<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
 <?php } ?>
-					</tr>
-				</tbody>
-			</table>
+						</tr>
+					</tbody>
+				</table>
 			<?php if ($show_multinzb_checkbox) { echo "</form>"; } ?>
-			<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
-			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
-			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
+				<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
+				<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
+				<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
 <?php } ?>
 			
-		</div>
-		<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
 
 <?php 
 	/* Render de header en filter templates */
