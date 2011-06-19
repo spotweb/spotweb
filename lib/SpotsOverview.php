@@ -196,14 +196,22 @@ class SpotsOverview {
 					 'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC')));
 		} # if
 
-		# We hebben twee soorten filters:
+		# We hebben drie soorten filters:
 		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
 		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
 		#
-		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:value, dus
-		#		  bijvoorbeeld new:0 (nieuwe posts) of tag:spotweb. 
+		# 		  We converteren oude type zoekopdrachten automatisch naar het nieuwe type.
 		#
-		# We converteren oude type zoekopdrachten automatisch naar het nieuwe type.
+		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:operator:value, dus
+		#		  bijvoorbeeld tag:=:spotweb. Er is ook een shorthand beschikbaar, als je de operator weglaat (dus: tag:spotweb),
+		#		  nemen we aan dat de EQ operator bedoelt is.
+		#
+		#		- Speciale soorten lijsten - er zijn een aantal types welke een speciale betekenis hebben:
+		#				New:0 			(nieuwe posts)
+		#				Downloaded:0 	(spots welke gedownload zijn door deze account)
+		#				Watch:0 		(spots die op de watchlist staan van deze account)
+		#				Seen:0 			(spots die al geopend zijn door deze account)
+		#				
 		#
 		if (isset($search['type'])) {
 			if (!isset($search['text'])) {
@@ -225,7 +233,7 @@ class SpotsOverview {
 				$tmpFilter = explode(':', $value);
 				
 				# als er geen comparison operator is opgegeven, dan
-				# betekent dat een '=' opreator, dus fix de array op
+				# betekent dat een '=' operator, dus fix de array op
 				# die manier.
 				if (count($tmpFilter) < 3) {
 					$tmpFilter = array($tmpFilter[0],
@@ -393,7 +401,7 @@ class SpotsOverview {
 					$parsedTextQueryResult = $this->_db->createTextQuery($field, $tmpFilterValue);
 					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
 
-					# We voegen deze extended textqueryies toe aan de filterlist als
+					# We voegen deze extended textqueries toe aan de filterlist als
 					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
 					# wat het net wat interessanter maakt
 					if ($parsedTextQueryResult['sortable']) {
