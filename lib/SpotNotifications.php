@@ -25,11 +25,11 @@ class SpotNotifications {
 		$notificationHandling = new Notifications_Factory();
 
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			$notifProviders = $notificationHandling->activeServices();
+			$notifProviders = $notificationHandling::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled']) {
 					if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
-						$this->_notificationServices[$notifProvider] = $notificationHandling->build('Spotweb', $notifProvider, $this->_currentSession['user']['prefs']['notifications'][$notifProvider]);
+						$this->_notificationServices[$notifProvider] = $notificationHandling::build('Spotweb', $notifProvider, $this->_currentSession['user']['prefs']['notifications'][$notifProvider]);
 					} # if
 				} # if
 			} # foreach
@@ -41,30 +41,24 @@ class SpotNotifications {
 	} # register
 
 	function sendNzbHandled($action, $fullSpot) {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_nzb_handled)) {
-			switch ($action) {
-				case 'save'	  			: $title = 'NZB opgeslagen!';		$body = $fullSpot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir']; break;
-				case 'runcommand'		: $title = 'Programma gestart!';	$body = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $fullSpot['title']; break;
-				case 'push-sabnzbd' 	: 
-				case 'client-sabnzbd' 	: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar SABnzbd+'; break;
-				case 'nzbget'			: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar NZBGet'; break;
-				default					: return;
-			} # switch
-			$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
-		} # if
+		switch ($action) {
+			case 'save'	  			: $title = 'NZB opgeslagen!';		$body = $fullSpot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir']; break;
+			case 'runcommand'		: $title = 'Programma gestart!';	$body = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $fullSpot['title']; break;
+			case 'push-sabnzbd' 	: 
+			case 'client-sabnzbd' 	: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar SABnzbd+'; break;
+			case 'nzbget'			: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar NZBGet'; break;
+			default					: return;
+		} # switch
+		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
 	} # sendNzbHandled
 
 	function sendRetrieverFinished() {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_retriever_finished)) {
-			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
-		} # if
+		$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Spots opgehaald!', 'Nieuwe spots zijn met succes opgehaald.');
 	} # sendRetrieverFinished
 
 	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
 	function sendUserAdded($username) {
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, '') && $this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_types, SpotNotifications::notifytype_user_added)) {
-			$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' is toegevoegd.');
-		} # if
+		$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' is toegevoegd.');
 	} # sendUserAdded
 
 	function newSingleMessage($user, $objectId, $type, $title, $body) {
@@ -77,10 +71,13 @@ class SpotNotifications {
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			$notifProviders = $notificationHandling->activeServices();
+			$notifProviders = $notificationHandling::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				if ($tmpUser['user']['prefs']['notifications'][$notifProvider]['enabled'] && $tmpUser['user']['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
-					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
+					if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, '') &&
+						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, $objectId) &&
+						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)
+					) {
 						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $title, $body);
 						break;
 					} # if
@@ -130,12 +127,11 @@ class SpotNotifications {
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
 
-				# TODO email & libnotify-library toevoegen en aanspreken
-				$notifProviders = $notificationHandling->activeServices();
+				$notifProviders = $notificationHandling::getActiveServices();
 				foreach ($notifProviders as $notifProvider) {
 					if ($user['prefs']['notifications'][$notifProvider]['enabled'] && $user['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
 						if ($security->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)) {
-							$this->_notificationServices[$notifProvider] = $notificationHandling->build('Spotweb', $notifProvider, $user['prefs']['notifications'][$notifProvider]);
+							$this->_notificationServices[$notifProvider] = $notificationHandling::build('Spotweb', $notifProvider, $user['prefs']['notifications'][$notifProvider]);
 						} # if
 					} # if
 				} # foreach

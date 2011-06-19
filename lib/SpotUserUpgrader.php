@@ -148,18 +148,14 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
 
-			$this->setSettingIfNot($user['prefs']['notifications']['email'], 'enabled', false);
-			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
-			$this->setSettingIfNot($user['prefs']['notifications']['libnotify'], 'enabled', false);
-			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
-			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'enabled', false);
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
-			$notifProviders = $notificationHandling->futureServices();
+			$notifProviders = $notificationHandling::getFutureServices();
 			foreach ($notifProviders as $notifProvider) {
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		

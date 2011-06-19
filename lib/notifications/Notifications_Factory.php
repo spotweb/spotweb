@@ -14,7 +14,7 @@ class Notifications_Factory {
 		return $handler;
 	} # build()
 	
-	public static function activeServices() {
+	public static function getActiveServices() {
 		return array('growl',
 					 'notifo',
 					 'prowl'
@@ -23,7 +23,7 @@ class Notifications_Factory {
 
 	# Deze functie hebben we tijdelijk nodig totdat we alles actief hebben, daarna
 	# wordt deze niet meer aangesproken en kan verwijderd worden
-	public static function futureServices() {
+	public static function getFutureServices() {
 		return array('email',
 					 'growl',
 					 'libnotify',
