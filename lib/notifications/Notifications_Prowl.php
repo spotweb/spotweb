@@ -1,5 +1,5 @@
 <?php
-class Notifications_Prowl extends Notifications_Abs {
+class Notifications_Prowl extends Notifications_abs {
 	private $_apikey;
 	private $_appName;
 	var $prowlObj;
@@ -28,7 +28,6 @@ class Notifications_Prowl extends Notifications_Abs {
 
 		$this->_appName = $appName;
 		$this->_apikey = $dataArray['apikey'];
->>>>>>> e944b22... Factory gebouwd voor Notifications:lib/notifications/Notifications_Prowl.php
 	} # ctor
 
 	function register() {
