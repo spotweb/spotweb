@@ -231,6 +231,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$q = $q[0];
 			$q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
+			# MySQL's boolean type is stiekem een tinyint, maar wij verwachten
+			# binnen spotweb een echte boolean. Dus we converteren dat stiekem
+			if (strtolower($q['COLUMN_TYPE']) == 'tinyint(1)') {
+				if (is_numeric($q['COLUMN_DEFAULT'])) {
+					if ($q['COLUMN_DEFAULT']) {
+						$q['COLUMN_DEFAULT'] = 'true';
+					} else {
+						$q['COLUMN_DEFAULT'] = 'false';
+					} # if
+				} # if
+			} # if
+			
 			# converteer het default waarde naar iets anders
 			if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {	
 				$q['COLUMN_DEFAULT'] = "''";
