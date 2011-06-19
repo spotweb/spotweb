@@ -147,31 +147,11 @@ class SpotsOverview {
 	 * alles bevat waarmee SpotWeb kan filteren. De hierin sorteringen worden
 	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
 	 */
-	function loadSpots($ourUserId, $start, $limit, $parsedSearch, $sort) {
+	function loadSpots($ourUserId, $start, $limit, $parsedSearch) {
 		SpotTiming::start(__FUNCTION__);
-		# als er geen sorteer veld opgegeven is, dan sorteren we niet
-		if ($sort['field'] == '') {
-			$sort = array();
-		} # if
-		
-		# welke manier willen we sorteren?
-		$sortFields = array('category', 'poster', 'title', 'stamp', 'subcata', 'spotrating', 'commentcount');
-		if ((!isset($sort['field'])) || (array_search($sort['field'], $sortFields) === false)) {
-			# We sorteren standaard op stamp, maar alleen als er vanuit de query
-			# geen expliciete sorteermethode is meegegeven
-			if (empty($parsedSearch['sortFields'])) {
-				$sort = array();
-				$sort['field'] = 'stamp';
-				$sort['direction'] = 'DESC';
-			} # if
-		} else {
-			if ($sort['direction'] != 'DESC') {
-				$sort['direction'] = 'ASC';
-			} # if
-		} # else
 		
 		# en haal de daadwerkelijke spots op
-		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, $sort, false);
+		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, false);
 		$spotCnt = count($spotResults['list']);
 
 		for ($i = 0; $i < $spotCnt; $i++) {
@@ -198,7 +178,9 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search, $currentSession) {
+	function filterToQuery($search, $sort, $currentSession) {
+		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
+
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
 		$strongNotList = array();
@@ -211,7 +193,7 @@ class SpotsOverview {
 			return array('filter' => '',
 					 'search' => array(),
 					 'additionalFields' => array(),
-					 'sortFields' => array());
+					 'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC')));
 		} # if
 
 		# We hebben twee soorten filters:
@@ -394,7 +376,6 @@ class SpotsOverview {
 					$parsedTextQueryResult = $this->_db->createTextQuery($field, $searchValue);
 					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
 
-					
 					# We voegen deze extended textqueryies toe aan de filterlist als
 					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
 					# wat het net wat interessanter maakt
@@ -473,7 +454,23 @@ class SpotsOverview {
 			} # if
 		} # foreach
 
-		$sortFields[] = array('field' => 'stamp', 'direction' => 'DESC');
+		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
+		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
+			# We sorteren standaard op stamp, maar alleen als er vanuit de query
+			# geen expliciete sorteermethode is meegegeven
+			if (empty($sortFields)) {
+				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC');
+			} # if
+		} else {
+			if (strtoupper($sort['direction']) != 'ASC') {
+				$sort['direction'] = 'DESC';
+			} # if
+			
+			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
+			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
+			# van de sorteer lijst.
+			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
+		} # else
 
 		# strong nots
 		$notSearch = '';
