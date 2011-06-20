@@ -65,11 +65,11 @@ class SpotPage_rss extends SpotPage_Abs {
 			try {
 				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
 				# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
-				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 140
+				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
 				# wat een onbruikbare RSS oplevert
 				$spot = @$this->_tplHelper->formatSpot($spot);
 
-				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
+				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
 				$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
 
 				$guid = $doc->createElement('guid', $spot['messageid']);

@@ -416,8 +416,8 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
-		$tmp = utf8_decode($tmp);
-		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
+		$tmp = htmlentities($tmp);
+		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
 		#		http://codesnippets.joyent.com/posts/show/2104
@@ -435,12 +435,9 @@ class SpotTemplateHelper {
 		$tmp = $tmp[0];
 	
 		# en replace eventuele misvormde br tags
-		$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
-		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
-		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
-		
-		# en encode de UTF8 content weer
-		$tmp = utf8_encode($tmp);
+		$tmp = str_ireplace('&lt;br&gt;', '<br />', $tmp);
+		$tmp = str_ireplace('&lt;br /&gt;', '<br />', $tmp);
+		$tmp = str_ireplace('&amp;lt;br />', '<br />', $tmp);
 
 		return $tmp;
 	} # formatContent
@@ -518,8 +515,8 @@ class SpotTemplateHelper {
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 
 		// title escapen
-		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
-		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
+		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
+		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		
 		// we zetten de short description van de category bij
 		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
@@ -546,7 +543,7 @@ class SpotTemplateHelper {
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
 			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
-			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, "UTF-8");
+			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, 'UTF-8');
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
 			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
