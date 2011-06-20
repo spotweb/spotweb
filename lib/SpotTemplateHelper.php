@@ -425,7 +425,7 @@ class SpotTemplateHelper {
 		$pattern = "@\b(https?://)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)" . 
 						"?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]" .
 						"{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*/?)@";
-		$tmp = preg_replace($pattern, '[url="\0"]\0[/url]', $tmp);
+		$tmp = preg_replace($pattern, '[url=\0]\0[/url]', $tmp);
 		
 		# initialize ubb parser
 		$parser = new SpotUbb_parser($tmp);
