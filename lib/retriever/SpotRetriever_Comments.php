@@ -125,7 +125,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
 			
-			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
+			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 		
 } # class SpotRetriever_Comments

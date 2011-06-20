@@ -52,10 +52,15 @@ class SpotNotifications {
 
 	function sendRetrieverFinished($newSpotCount, $newCommentCount) {
 		if ($newSpotCount > 0) {
-			$body = ($newSpotCount == 1) ? "Er is 1 spot opgehaald." : "Er zijn " . $newSpotCount . " spots opgehaald.";
+			$body = ($newSpotCount == 1) ? "Er is " . $newSpotCount . " spot" : "Er zijn " . $newSpotCount . " spots";
+			if ($this->_settings->get('retrieve_comments')) {
+				$body .= " en " . $newCommentCount;
+				$body .= ($newCommentCount == 1) ? " comment" : " comments";
+			} # if
+			$body .= " opgehaald.";
+
 			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, 'Nieuwe spots opgehaald!', $body);
-		}
->>>>>>> c8621a8... Zoeken op filesize via UI
+		} # if
 	} # sendRetrieverFinished
 
 	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
