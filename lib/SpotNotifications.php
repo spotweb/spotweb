@@ -53,9 +53,9 @@ class SpotNotifications {
 	function sendRetrieverFinished($newSpotCount, $newCommentCount) {
 		if ($newSpotCount > 0) {
 			$body = ($newSpotCount == 1) ? "Er is " . $newSpotCount . " spot" : "Er zijn " . $newSpotCount . " spots";
-			if ($this->_settings->get('retrieve_comments')) {
+			if ($newCommentCount > 0) {
 				$body .= " en " . $newCommentCount;
-				$body .= ($newCommentCount == 1) ? " comment" : " comments";
+				$body .= ($newCommentCount == 1) ? " reactie" : " reacties";
 			} # if
 			$body .= " opgehaald.";
 
