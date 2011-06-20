@@ -132,6 +132,7 @@ catch(Exception $x) {
 
 ## Comments
 try {
+	$newCommentCount = 0;
 	if ($settings->get('retrieve_comments')) {
 		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
 												$db,
