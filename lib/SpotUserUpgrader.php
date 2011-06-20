@@ -137,8 +137,8 @@ class SpotUserUpgrader {
 
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
-			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'prepare_action', 'zip');
-			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', 'zip');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'prepare_action', 'merge');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'url', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'apikey', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'host', '');
