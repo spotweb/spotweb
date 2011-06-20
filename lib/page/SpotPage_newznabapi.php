@@ -159,7 +159,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$channel->appendChild($newznabResponse);
 
 			foreach($spots['list'] as $spot) {
-				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
+				$spot = $this->_tplHelper->formatSpotHeader($spot);
+				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
 
 				$guid = $doc->createElement('guid', $spot['messageid']);
 				$guid->setAttribute('isPermaLink', 'false');
