@@ -679,7 +679,7 @@ class SpotDb {
 	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
 	 * 
 	 */
-	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
@@ -690,21 +690,9 @@ class SpotDb {
 			$criteriaFilter = ' WHERE ' . $criteriaFilter;
 		} # if 
 
-		# de optie getFull geeft aan of we de volledige fieldlist moeten 
-		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
-		# het geheugen gebruik, dus liefst niet.
-		if ($getFull) {
-			$extendedFieldList = ',
-							f.usersignature AS "user-signature",
-							f.userkey AS "user-key",
-							f.xmlsignature AS "xml-signature",
-							f.fullxml AS fullxml';
-		} else {
-			$extendedFieldList = '';
-		} # else
-
 		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
 		# als dat zo is, voeg die dan ook toe
+		$extendedFieldList = '';
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
@@ -767,7 +755,7 @@ class SpotDb {
 			array_pop($tmpResult);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $getFull));
+		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 
