@@ -463,6 +463,7 @@ abstract class SpotStruct_abs {
 
 		# ---- Indexen op commentsposted ----
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
+		$this->validateIndex("idx_commentspostedrel_1", "", "commentsposted", array("ouruserid"));
 
 		# ---- Indexen op settings ----
 		$this->validateIndex("idx_settings_1", "UNIQUE", "settings", array("name"));
@@ -509,6 +510,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('grouppermissions', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsfull', 'messageid', 'commentsxover', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Hier droppen we kolommen ###################################################################
