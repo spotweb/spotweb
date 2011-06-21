@@ -63,9 +63,8 @@ class SpotNotifications {
 		} # if
 	} # sendRetrieverFinished
 
-	# TODO: deze functie opvragen vanaf betreffende actie en melding goed zetten
-	function sendUserAdded($username) {
-		$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' is toegevoegd.');
+	function sendUserAdded($username, $password) {
+		$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' met wachtwoord ' . $password . ' is toegevoegd.');
 	} # sendUserAdded
 
 	function newSingleMessage($user, $objectId, $type, $title, $body) {
