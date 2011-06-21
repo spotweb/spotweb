@@ -150,9 +150,13 @@ class SpotNotifications {
 			$user = $this->_db->getUser($user['userid']);
 			$security = new SpotSecurity($this->_db, $this->_settings, $user);
 
+			# Om e-mail te kunnen versturen hebben we iets meer data nodig
+			$adminUsr = $this->_db->getUser(SPOTWEB_ADMIN_USERID);
+			$user['prefs']['notifications']['email']['sender'] = $adminUsr['mail'];
+			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
+
 			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
-				
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
 

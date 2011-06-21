@@ -224,7 +224,11 @@ include "includes/form-messages.inc.php";
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
 				<fieldset id="content_use_email">
+<<<<<<< HEAD
 					<?php showNotificationOptions('email', $edituserprefsform, $tplHelper); ?>
+=======
+					<?php $tplHelper->showNotificationOptions('email', $edituserprefsform); ?>
+>>>>>>> 35edaf1... E-mail toegevoegd aan Notificatie-systeem
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -241,8 +245,26 @@ include "includes/form-messages.inc.php";
 
 					<dt><label for="edituserprefsform[notifications][growl][password]">Growl wachtwoord?</label></dt>
 					<dd><input type="password" name="edituserprefsform[notifications][growl][password]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['growl']['password']); ?>"></dd>
+<<<<<<< HEAD
 
 					<?php showNotificationOptions('growl', $edituserprefsform, $tplHelper); ?>
+=======
+
+					<?php $tplHelper->showNotificationOptions('growl', $edituserprefsform); ?>
+				</fieldset>
+			</fieldset>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'libnotify')) { ?>
+<!-- libnotify -->
+
+			<fieldset>
+				<dt><label for="use_libnotify">libnotify gebruiken?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][libnotify][enabled]" id="use_libnotify" <?php if ($edituserprefsform['notifications']['libnotify']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+			
+				<fieldset id="content_use_libnotify">
+					<?php $tplHelper->showNotificationOptions('libnotify', $edituserprefsform); ?>
+>>>>>>> 35edaf1... E-mail toegevoegd aan Notificatie-systeem
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -260,7 +282,11 @@ include "includes/form-messages.inc.php";
 					<dt><label for="edituserprefsform[notifications][notifo][api]">Notifo <a href="http://notifo.com/user/settings">API secret</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][notifo][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['notifo']['api']); ?>"></dd>
 
+<<<<<<< HEAD
 					<?php showNotificationOptions('notifo', $edituserprefsform, $tplHelper); ?>
+=======
+					<?php $tplHelper->showNotificationOptions('notifo', $edituserprefsform); ?>
+>>>>>>> 35edaf1... E-mail toegevoegd aan Notificatie-systeem
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -275,7 +301,11 @@ include "includes/form-messages.inc.php";
 					<dt><label for="edituserprefsform[notifications][prowl][apikey]">Prowl <a href="https://www.prowlapp.com/api_settings.php">API key</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][prowl][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['prowl']['apikey']); ?>"></dd>
 
+<<<<<<< HEAD
 					<?php showNotificationOptions('prowl', $edituserprefsform, $tplHelper); ?>
+=======
+					<?php $tplHelper->showNotificationOptions('prowl', $edituserprefsform); ?>
+>>>>>>> 35edaf1... E-mail toegevoegd aan Notificatie-systeem
 				</fieldset>
 			</fieldset>
 <?php } ?>
