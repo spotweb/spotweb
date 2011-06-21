@@ -32,7 +32,7 @@
 							  
 
 						  'img' =>
-							Array('closetags' => Array('img', NULL),
+							Array('closetags' => Array(NULL),
 								  'allowedchildren' => Array(''),
 								  'handler' => Array('TagHandler', 'handle_img') )
 							  
