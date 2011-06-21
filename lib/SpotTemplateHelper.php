@@ -546,7 +546,7 @@ class SpotTemplateHelper {
 			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, 'UTF-8');
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
-			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
+			# en tags over meerdere lijnen toch nog werkt. We voegen een extra \n toe
 			# om zeker te zijn dat we altijd een array terugkrijgen
 			$tmpBody = implode("\n", $comments[$i]['body']);
 			$tmpBody = $this->formatContent($tmpBody);
