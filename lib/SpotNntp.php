@@ -172,7 +172,7 @@ class SpotNntp {
 					if ($tmpAr['verified']) {
 						$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
 					} # if
-					
+
 					# encode de body voor UTF8
 					$tmpAr['body'] = array_map('utf8_encode', $tmpAr['body']);
 
