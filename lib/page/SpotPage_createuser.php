@@ -19,7 +19,8 @@ class SpotPage_createuser extends SpotPage_Abs {
 		$spotUser = array('username' => '',
 						  'firstname' => '',
 						  'lastname' => '',
-						  'mail' => '');
+						  'mail' => '',
+						  'sendmail' => '');
 		
 		# createuser resultaat is standaard niet geprobeerd
 		$createResult = array();
@@ -60,7 +61,10 @@ class SpotPage_createuser extends SpotPage_Abs {
 				$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
 				$spotUser['publickey'] = $userKey['public'];
 				$spotUser['privatekey'] = $userKey['private'];
-				
+
+				# Notificatiesysteem initialiseren
+				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+
 				# voeg de user toe
 				$spotUserSystem->addUser($spotUser);
 				
@@ -69,8 +73,12 @@ class SpotPage_createuser extends SpotPage_Abs {
 									  'user' => $spotUser['username'],
 									  'password' => $spotUser['newpassword1']);
 
+				# verstuur een e-mail naar de nieuwe gebruiker als daar om is gevraagd
+				if ($spotUser['sendmail'] == "true") {
+					$spotsNotifications->sendNewUserMail($spotUser);
+				}
+
 				# en verstuur een notificatie
-				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $userSession);
 				$spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
 			} else {
 				$createResult = array('result' => 'failure');
