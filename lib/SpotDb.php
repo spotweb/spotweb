@@ -561,7 +561,6 @@ class SpotDb {
 	function removeExtraComments($messageId) {
 		# vraag eerst het id op
 		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
-		$fullCommentId = $this->_conn->singleQuery("SELECT id FROM commentsfull WHERE messageid = '%s'", Array($messageId));
 		
 		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($commentId)) {
@@ -570,7 +569,6 @@ class SpotDb {
 
 		# en wis nu alles wat 'jonger' is dan deze spot
 		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
-		$this->_conn->modify("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
 	} # removeExtraComments
 
 	/*
