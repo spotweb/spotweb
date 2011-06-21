@@ -68,6 +68,10 @@ class SpotPage_createuser extends SpotPage_Abs {
 				$createResult = array('result' => 'success',
 									  'user' => $spotUser['username'],
 									  'password' => $spotUser['newpassword1']);
+
+				# en verstuur een notificatie
+				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $userSession);
+				$spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
 			} else {
 				$createResult = array('result' => 'failure');
 			} # else

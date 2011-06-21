@@ -24,9 +24,6 @@ class CustomTplHelper extends SpotTemplateHelper {
 			return "red";
 		} # else
 	} # filter2cat
-	
-	function getSmileyList() {
-		return array('biggrin' => 'templates/we1rdo/smileys/biggrin.gif',
 				'bloos' => 'templates/we1rdo/smileys/bloos.gif',
 				'buigen' => 'templates/we1rdo/smileys/buigen.gif',
 				'censored' => 'templates/we1rdo/smileys/censored.gif',
