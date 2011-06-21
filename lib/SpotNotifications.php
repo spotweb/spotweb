@@ -67,6 +67,25 @@ class SpotNotifications {
 		$this->newMultiMessage(SpotNotifications::notifytype_user_added, 'Gebruiker toegevoegd!', 'Gebruiker ' . $username . ' met wachtwoord ' . $password . ' is toegevoegd.');
 	} # sendUserAdded
 
+	function sendNewUserMail($user) {
+		# Omdat het versturen van dit bericht expliciet is opgegeven, worden er
+		# geen security-checks gedaan voor de ontvanger.
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) {
+			$title = "Spotweb registratie";
+			$body = "Hallo " . $user['firstname'] . " " . $user['lastname'] . "," . PHP_EOL . PHP_EOL;
+			$body .= "Er is zojuist een account voor je aangemaakt op " . $this->_settings->get('spotweburl') . "." . PHP_EOL;
+			$body .= "Je kunt inloggen met de volgende gegevens:" . PHP_EOL . PHP_EOL;
+			$body .= "Gebruikersnaam:\t\t" . $user['username'] . PHP_EOL;
+			$body .= "Wachtwoord:\t\t" . $user['newpassword1'] . PHP_EOL . PHP_EOL;
+			$body .= "Met vriendelijke groet," . PHP_EOL . $this->_currentSession['user']['firstname'] . " " . $this->_currentSession['user']['lastname'];
+
+			$user['prefs']['notifications']['email']['sender'] = $this->_currentSession['user']['mail'];
+			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
+			$this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
+			$this->_notificationServices['email']->sendMessage('Single', $title, $body, $this->_settings->get('spotweburl'));
+		} # if
+	} # sendNewUserMail
+
 	function newSingleMessage($user, $objectId, $type, $title, $body) {
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
