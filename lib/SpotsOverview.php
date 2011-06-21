@@ -152,8 +152,8 @@ class SpotsOverview {
 		
 		# en haal de daadwerkelijke spots op
 		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, false);
-		$spotCnt = count($spotResults['list']);
 
+		$spotCnt = count($spotResults['list']);
 		for ($i = 0; $i < $spotCnt; $i++) {
 			# We forceren category naar een integer, sqlite kan namelijk een lege
 			# string terug ipv een category nummer
