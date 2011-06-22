@@ -1276,12 +1276,12 @@ class SpotDb {
 	} # getUnsentNotifications
 
 	/* 
-	 * markeer een bepaalde notificatioe als verzonden
+	 * Een notificatie updaten
 	 */
-	function markNotificationSent($id) {
-		// we sturen de 1 (true) als een string waardoor PostgreSQL hem automaticsh kan casten
-		$this->_conn->modify("UPDATE notifications SET sent = '1' WHERE id = %d;", Array($id));
-	} // markNotificationSrnt
+	function updateNotification($msg) {
+		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
+					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
+	} // updateNotification
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
