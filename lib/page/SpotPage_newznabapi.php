@@ -293,9 +293,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$cat->setAttribute('name', $category['name']);
 			$categories->appendChild($cat);
 
-			foreach($category['subcata'] as $name => $subcat) {
+			foreach($category['subcata'] as $name => $subcata) {
 				$subCat = $doc->createElement('subcat');
-				$subCat->setAttribute('id', $subcat);
+				$subCat->setAttribute('id', $subcata);
 				$subCat->setAttribute('name', $name);
 				$cat->appendChild($subCat);
 			} # foreach
@@ -360,7 +360,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		return array(
 				array('name'		=> 'Console',
 					  'cat'			=> '1000',
-					  'subcat'		=> array('NDS'		=> '1010',
+					  'subcata'		=> array('NDS'		=> '1010',
 											 'PSP'		=> '1020',
 											 'Wii'		=> '1030',
 											 'Xbox'		=> '1040',
@@ -368,33 +368,33 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											 'PS3'		=> '1080')
 				), array('name'		=> 'Movies',
 						 'cat'		=> '2000',
-						 'subcat'	=> array('SD'		=> '2030',
+						 'subcata'	=> array('SD'		=> '2030',
 											 'HD'		=> '2040',
 											 'Sport'	=> '2060')
 				), array('name'		=> 'Audio',
 						 'cat'		=> '3000',
-						 'subcat'	=> array('MP3'		=> '3010',
+						 'subcata'	=> array('MP3'		=> '3010',
 											 'Video'	=> '3020',
 											 'Lossless'	=> '3040')
 				), array('name'		=> 'PC',
 						 'cat'		=> '4000',
-						 'subcat'	=> array('Mac'		=> '4030',
+						 'subcata'	=> array('Mac'		=> '4030',
 											 'Phone'	=> '4040',
 											 'Games'	=> '4050')
 				), array('name'		=> 'TV',
 						 'cat'		=> '5000',
-						 'subcat'	=> array('SD'		=> '5030',
+						 'subcata'	=> array('SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Sport'	=> '5060')
 				), array('name'		=> 'XXX',
 						 'cat'		=> '6000',
-						 'subcat'	=> array('DVD'		=> '6010',
+						 'subcata'	=> array('DVD'		=> '6010',
 											 'WMV'		=> '6020',
 											 'XviD'		=> '6030',
 											 'x264'		=> '6040')
 				), array('name'		=> 'Other',
 						 'cat'		=> '7000',
-						 'subcat'	=> array('Ebook'	=> '7020')
+						 'subcata'	=> array('Ebook'	=> '7020')
 				)
 		);
 	} # categories
