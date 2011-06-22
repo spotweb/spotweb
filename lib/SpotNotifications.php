@@ -175,7 +175,16 @@ class SpotNotifications {
 				# Alle services resetten, deze mogen niet hergebruikt worden
 				$this->_notificationServices = array();
 
-				$this->_db->markNotificationSent($newMessage['id']);
+				# Als dit bericht ging over het aanmaken van een nieuwe user, verwijderen we
+				# het plaintext wachtwoord uit de database uit veiligheidsoverwegingen.
+				if ($objectId == SpotNotifications::notifytype_user_added) {
+					$body = explode(" ", $newMessage['body']);
+					$body[4] = '[deleted]';
+					$newMessage['body'] = implode(" ", $body);
+				} # if
+
+				$newMessage['sent'] = 1;
+				$this->_db->updateNotification($newMessage);
 			} # foreach message
 		} # foreach user
 	} # sendMessages
