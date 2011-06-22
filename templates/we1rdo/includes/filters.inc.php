@@ -37,22 +37,13 @@
 		foreach($activefilter['filterValues'] as $filterType) {
 			if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 				$searchType = $filterType['fieldname'];
-				$searchText = $activefilter['text'];
-			} # if
-			if (in_array($filterType['fieldname'], array('filesize'))) {
-				if ($filterType['operator'] == ">")  {
-					$minFilesize = $filterType['value'];
-				} elseif ($filterType['operator'] == "<")  {
-					$maxFilesize = $filterType['value'];
-				}
+				$searchText = $filterType['value'];
+			} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
+				$minFilesize = $filterType['value'];
+			} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
+				$maxFilesize = $filterType['value'];
 			} # if
 		} # foreach
-	} # if
-	if (isset($activefilter['value'][0])) {
-		$tmpSearch = explode(":", $activefilter['value'][0]);
-		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag', 'UserID'))) {
-			$searchText = $tmpSearch[1];
-		} # if
 	} # if
 ?>
 					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
