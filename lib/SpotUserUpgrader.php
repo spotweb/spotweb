@@ -155,6 +155,7 @@ class SpotUserUpgrader {
 			$notifProviders = Notifications_Factory::getFutureServices();
 			foreach ($notifProviders as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'watchlist_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
@@ -279,6 +280,11 @@ class SpotUserUpgrader {
 		# We voegen nog extra security toe voor custom stylesheets
 		if ($this->_settings->get('securityversion') < 0.09) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_allow_custom_stylesheet . ")");
+		} # if
+
+		# We voegen nog extra security toe voor watchlist notificaties
+		if ($this->_settings->get('securityversion') < 0.10) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
 		} # if
 	} # updateSecurityGroups
 	

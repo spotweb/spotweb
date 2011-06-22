@@ -302,7 +302,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, 'false', '');
+		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
@@ -381,7 +381,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
-		$this->validateColumn('body', 'notifications', 'TEXT', "''", true, 'utf8');
+		$this->validateColumn('body', 'notifications', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('sent', 'notifications', 'BOOLEAN', 'false', true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
