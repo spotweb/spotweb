@@ -11,6 +11,7 @@ class SpotNotifications {
 	 * Constants used for securing the system
 	 */
 	const notifytype_nzb_handled			= 'nzb_handled';
+	const notifytype_watchlist_handled		= 'watchlist_handled';
 	const notifytype_retriever_finished		= 'retriever_finished';
 	const notifytype_user_added				= 'user_added';
 
@@ -38,13 +39,22 @@ class SpotNotifications {
 		} # foreach
 	} # register
 
-	function sendNzbHandled($action, $fullSpot) {
+	function sendWatchlistHandled($action, $messageid) {
+		$spot = $this->_db->getSpotHeader($messageid);
 		switch ($action) {
-			case 'save'	  			: $title = 'NZB opgeslagen!';		$body = $fullSpot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir']; break;
-			case 'runcommand'		: $title = 'Programma gestart!';	$body = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $fullSpot['title']; break;
+			case 'remove'	: $title = 'Spot verwijderd van watchlist'; $body = $spot['title'] . ' is verwijderd van de watchlist.'; break;
+			case 'add'		: $title = 'Spot toegevoegd aan watchlist'; $body = $spot['title'] . ' is toegevoegd aan de watchlist.'; break;
+		} # switch
+		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_watchlist_handled, 'Single', $title, $body);
+	} # sendWatchlistHandled
+
+	function sendNzbHandled($action, $spot) {
+		switch ($action) {
+			case 'save'	  			: $title = 'NZB opgeslagen!';		$body = $spot['title'] . ' opgeslagen in ' . $this->_currentSession['user']['prefs']['nzbhandling']['local_dir'] . '.'; break;
+			case 'runcommand'		: $title = 'Programma gestart!';	$body = $this->_currentSession['user']['prefs']['nzbhandling']['command'] . ' gestart voor ' . $spot['title'] . '.'; break;
 			case 'push-sabnzbd' 	: 
-			case 'client-sabnzbd' 	: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar SABnzbd+'; break;
-			case 'nzbget'			: $title = 'NZB verstuurd!';		$body = $fullSpot['title'] . ' verstuurd naar NZBGet'; break;
+			case 'client-sabnzbd' 	: $title = 'NZB verstuurd!';		$body = $spot['title'] . ' verstuurd naar SABnzbd+.'; break;
+			case 'nzbget'			: $title = 'NZB verstuurd!';		$body = $spot['title'] . ' verstuurd naar NZBGet.'; break;
 			default					: return;
 		} # switch
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
