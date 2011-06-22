@@ -61,19 +61,18 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$epSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
-				$epSearch = (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
+				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 			} # if
 
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
-				$episode = (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
-				$epSearch .= (!empty($epSearch)) ? $episode : ' AND ' . $episode;
+				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = "Titel:" . trim($tvSearch) . $epSearch;
+			$search['value'][] = "Titel:" . trim($tvSearch) . " " . $epSearch;
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
@@ -95,7 +94,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
 			$search['value'][] = "date:>:-" . $this->_params['maxage'] . "days";
 
-		$search['tree'] = $this->nabcat2spotcat($this->_params['cat']);
+		$tmpCat = array();
+		foreach (explode(",", $this->_params['cat']) as $category) {
+			$tmpCat[] = $this->nabcat2spotcat($category);
+		} # foreach
+		$search['tree'] = implode(",", $tmpCat);
 
 		# Spots met een filesize 0 niet opvragen
 		$search['value'][] = "filesize:>:0";
