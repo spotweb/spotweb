@@ -282,9 +282,10 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_allow_custom_stylesheet . ")");
 		} # if
 
-		# We voegen nog extra security toe voor watchlist notificaties
+		# We voegen nog extra security toe voor watchlist notificaties en een vergeten NZB download
 		if ($this->_settings->get('securityversion') < 0.10) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
 		} # if
 	} # updateSecurityGroups
 	
