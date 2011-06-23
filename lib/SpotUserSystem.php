@@ -365,7 +365,7 @@ class SpotUserSystem {
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
-		$notifProviders = Notifications_Factory::getFutureServices();
+		$notifProviders = Notifications_Factory::getActiveServices();
 		foreach ($notifProviders as $notifProvider) {
 			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
