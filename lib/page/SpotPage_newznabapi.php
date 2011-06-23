@@ -17,7 +17,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			die();
 		} # if
 
-		# we willen niet dat de RSS output gecached wordt
+		# we willen niet dat de API output gecached wordt
 		$this->sendExpireHeaders(true);
 		
 		# Controleer de users' rechten
@@ -31,6 +31,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "s"		:
 			case "tvsearch"	:
 			case "t"		:
+			case "music"	:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
 			case "g"		:
@@ -73,6 +74,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			$search['value'][] = "Titel:" . trim($tvSearch) . " " . $epSearch;
+		} elseif ($this->_params['t'] == "music") {
+			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
+				$this->_params['cat'] = 3000;
+			} else {
+				$search['value'][] = "Titel:\"" . $this->_params['artist'] . "\"";
+			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
