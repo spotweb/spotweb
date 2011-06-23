@@ -16,6 +16,11 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
 
+		# als het niet display is, check of we ook download integratie rechten hebben
+		if ($this->_action != 'display') {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
+		} # if
+
 		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
 		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
@@ -24,6 +29,9 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 		} else {
 			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
 		} # else
+
+		# NZB files mogen liever niet gecached worden op de client
+		$this->sendExpireHeaders(true);
 
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
