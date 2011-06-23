@@ -88,7 +88,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			preg_match('/<title>(.*?) \(.*?<\/title>/ms', $imdb_content, $movieTitle);
 			$search['value'][] = "Titel:\"" . trim($movieTitle[1]) . "\"";
 		} elseif (!empty($this->_params['q'])) {
-			$search['value'][] = "Titel:" . $this->_params['q'];
+			$searchTerm = str_replace(" ", " +", $this->_params['q']);
+			$search['value'][] = "Titel:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
@@ -415,7 +416,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 2060: return 'cat0_d18';
 
 			case 3000: return 'cat1_a';
-			case 3010: return 'cat1_a0,cat1_a3,cat1_a5,cat1_a6';
+			case 3010: return 'cat1_a0';
 			case 3020: return 'cat0_d13';
 			case 3040: return 'cat1_a2,cat1_a4,cat1_a7,cat1_a8';
 
