@@ -1,6 +1,7 @@
 <?php
 	require "includes/header.inc.php";
-	
+	require "includes/form-notification-options.inc.php";
+
 if (!empty($edituserprefsresult)) {
 	//include 'includes/form-xmlresult.inc.php';
 	//echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
@@ -217,6 +218,21 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 		<div id="edituserpreftab-4">
 		
+<<<<<<< HEAD
+=======
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) { ?>
+<!-- E-mail -->
+			<fieldset>
+				<dt><label for="use_email">E-mail versturen naar <?php echo $currentSession['user']['mail']; ?>?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+				<fieldset id="content_use_email">
+					<?php showNotificationOptions('email', $tplHelper); ?>
+				</fieldset>
+			</fieldset>
+<?php } ?>
+
+>>>>>>> 5a9d885... Wat codeschuiven
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'growl')) { ?>
 <!-- Growl -->
 			<fieldset>
@@ -229,6 +245,7 @@ include "includes/form-messages.inc.php";
 
 					<dt><label for="edituserprefsform[notifications][growl][password]">Growl wachtwoord?</label></dt>
 					<dd><input type="password" name="edituserprefsform[notifications][growl][password]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['growl']['password']); ?>"></dd>
+<<<<<<< HEAD
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
 					<dt><label for="edituserprefsform[notifications][growl][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[notifications][growl][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['growl']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
@@ -243,6 +260,10 @@ include "includes/form-messages.inc.php";
 					<dd><input type="checkbox" name="edituserprefsform[notifications][growl][events][user_added]" <?php if ($edituserprefsform['notifications']['growl']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
 	<?php } ?>
 -->
+=======
+
+					<?php showNotificationOptions('growl', $tplHelper); ?>
+>>>>>>> 5a9d885... Wat codeschuiven
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -254,6 +275,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_libnotify">libnotify gebruiken?</label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][libnotify][enabled]" id="use_libnotify" <?php if ($edituserprefsform['notifications']['libnotify']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 			
+<<<<<<< HEAD
 			<fieldset id="content_use_libnotify">
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
 					<dt><label for="edituserprefsform[notifications][libnotify][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
@@ -267,6 +289,10 @@ include "includes/form-messages.inc.php";
 					<dt><label for="edituserprefsform[notifications][libnotify][events][user_added]">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[notifications][libnotify][events][user_added]" <?php if ($edituserprefsform['notifications']['libnotify']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
 	<?php } ?>
+=======
+				<fieldset id="content_use_libnotify">
+					<?php showNotificationOptions('libnotify', $tplHelper); ?>
+>>>>>>> 5a9d885... Wat codeschuiven
 				</fieldset>
 			</fieldset>
 -->
@@ -284,6 +310,7 @@ include "includes/form-messages.inc.php";
 
 					<dt><label for="edituserprefsform[notifications][notifo][api]">Notifo <a href="http://notifo.com/user/settings">API secret</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][notifo][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['notifo']['api']); ?>"></dd>
+<<<<<<< HEAD
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
 					<dt><label for="edituserprefsform[notifications][notifo][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[notifications][notifo][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['notifo']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
@@ -298,6 +325,10 @@ include "includes/form-messages.inc.php";
 					<dd><input type="checkbox" name="edituserprefsform[notifications][notifo][events][user_added]" <?php if ($edituserprefsform['notifications']['notifo']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
 	<?php } ?>
 -->
+=======
+
+					<?php showNotificationOptions('notifo', $tplHelper); ?>
+>>>>>>> 5a9d885... Wat codeschuiven
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -311,6 +342,7 @@ include "includes/form-messages.inc.php";
 				<fieldset id="content_use_prowl">
 					<dt><label for="edituserprefsform[notifications][prowl][apikey]">Prowl <a href="https://www.prowlapp.com/api_settings.php">API key</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][prowl][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['prowl']['apikey']); ?>"></dd>
+<<<<<<< HEAD
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
 					<dt><label for="edituserprefsform[notifications][prowl][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[notifications][prowl][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['prowl']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
@@ -325,6 +357,10 @@ include "includes/form-messages.inc.php";
 					<dd><input type="checkbox" name="edituserprefsform[notifications][prowl][events][user_added]" <?php if ($edituserprefsform['notifications']['prowl']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
 	<?php } ?>
 -->
+=======
+
+					<?php showNotificationOptions('prowl', $tplHelper); ?>
+>>>>>>> 5a9d885... Wat codeschuiven
 				</fieldset>
 			</fieldset>
 <?php } ?>
