@@ -152,7 +152,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
-			$notifProviders = Notifications_Factory::getFutureServices();
+			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'watchlist_handled', false);
@@ -163,6 +163,7 @@ class SpotUserUpgrader {
 
 			# oude settings verwijderen
 			$this->unsetSetting($user['prefs'], 'search_url');
+			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');
 
 			# update the user record in the database			
 			$this->_db->setUser($user);
@@ -268,7 +269,6 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'email')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'growl')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'libnotify')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'notifo')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'prowl')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ")");
@@ -284,6 +284,7 @@ class SpotUserUpgrader {
 
 		# We voegen nog extra security toe voor watchlist notificaties en een vergeten NZB download
 		if ($this->_settings->get('securityversion') < 0.10) {
+			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_send_notifications_services . " AND objectid = 'libnotify'");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
 		} # if

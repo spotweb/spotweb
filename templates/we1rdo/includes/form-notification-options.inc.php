@@ -1,5 +1,5 @@
 <?php
-	function showNotificationOptions($provider, $tplHelper) {
+	function showNotificationOptions($provider, $edituserprefsform, $tplHelper) {
 		echo "<fieldset>" . PHP_EOL;
 
 		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'watchlist_handled')) {

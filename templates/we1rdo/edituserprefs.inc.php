@@ -227,7 +227,7 @@ include "includes/form-messages.inc.php";
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
 				<fieldset id="content_use_email">
-					<?php showNotificationOptions('email', $tplHelper); ?>
+					<?php showNotificationOptions('email', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -262,12 +262,17 @@ include "includes/form-messages.inc.php";
 -->
 =======
 
+<<<<<<< HEAD
 					<?php showNotificationOptions('growl', $tplHelper); ?>
 >>>>>>> 5a9d885... Wat codeschuiven
+=======
+					<?php showNotificationOptions('growl', $edituserprefsform, $tplHelper); ?>
+>>>>>>> 4940a23... libnotify verwijderd uit Notificatie-systeem, aangezien het op dit moment niet haalbaar is dit in te bouwen
 				</fieldset>
 			</fieldset>
 <?php } ?>
 
+<<<<<<< HEAD
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'libnotify')) { ?>
 <!-- libnotify -->
 <!--
@@ -298,6 +303,8 @@ include "includes/form-messages.inc.php";
 -->
 <?php } ?>
 
+=======
+>>>>>>> 4940a23... libnotify verwijderd uit Notificatie-systeem, aangezien het op dit moment niet haalbaar is dit in te bouwen
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'notifo')) { ?>
 <!-- Notifo -->
 			<fieldset>
@@ -327,8 +334,12 @@ include "includes/form-messages.inc.php";
 -->
 =======
 
+<<<<<<< HEAD
 					<?php showNotificationOptions('notifo', $tplHelper); ?>
 >>>>>>> 5a9d885... Wat codeschuiven
+=======
+					<?php showNotificationOptions('notifo', $edituserprefsform, $tplHelper); ?>
+>>>>>>> 4940a23... libnotify verwijderd uit Notificatie-systeem, aangezien het op dit moment niet haalbaar is dit in te bouwen
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -359,8 +370,12 @@ include "includes/form-messages.inc.php";
 -->
 =======
 
+<<<<<<< HEAD
 					<?php showNotificationOptions('prowl', $tplHelper); ?>
 >>>>>>> 5a9d885... Wat codeschuiven
+=======
+					<?php showNotificationOptions('prowl', $edituserprefsform, $tplHelper); ?>
+>>>>>>> 4940a23... libnotify verwijderd uit Notificatie-systeem, aangezien het op dit moment niet haalbaar is dit in te bouwen
 				</fieldset>
 			</fieldset>
 <?php } ?>

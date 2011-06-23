@@ -21,15 +21,4 @@ class Notifications_Factory {
 					);
 	}
 
-	# Deze functie hebben we tijdelijk nodig totdat we alles actief hebben, daarna
-	# wordt deze niet meer aangesproken en kan verwijderd worden
-	public static function getFutureServices() {
-		return array('email',
-					 'growl',
-					 'libnotify',
-					 'notifo',
-					 'prowl'
-					);
-	}
-
 } # class Notifications_Factory
