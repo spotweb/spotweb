@@ -160,7 +160,8 @@ try {
 						  'o' => $req->getDef('o', ''),
 						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
-						  'offset' => $req->getDef('offset', '')
+						  'offset' => $req->getDef('offset', ''),
+						  'del' => $req->getDef('del', '')
 					)
 			);
 			$page->render();
