@@ -34,7 +34,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "music"	:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
-			case "details"	: $this->spotDetails($this->_params['messageid'], $outputtype); break;
+			case "details"	: $this->spotDetails($outputtype); break;
 			case "g"		:
 			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
@@ -176,6 +176,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$spot = $this->_tplHelper->formatSpotHeader($spot);
 				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+				$nzbUrl = $this->_tplHelper->makeNzbUrl($spot);
+				if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
+					$nzbUrl .= '&amp;del=1';
+				} # if
 
 				$guid = $doc->createElement('guid', $spot['messageid']);
 				$guid->setAttribute('isPermaLink', 'false');
@@ -183,13 +187,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$item = $doc->createElement('item');
 				$item->appendChild($doc->createElement('title', $title));
 				$item->appendChild($guid);
-				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
 				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 				$channel->appendChild($item);
 
 				$enclosure = $doc->createElement('enclosure');
-				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+				$enclosure->setAttribute('url', html_entity_decode($nzbUrl));
 				$enclosure->setAttribute('length', $spot['filesize']);
 				switch ($nzbhandling['prepare_action']) {
 					case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
@@ -241,8 +245,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 	} # showResults
 
-	function spotDetails($messageid, $outputtype) {
-		if (empty($messageid)) {
+	function spotDetails($outputtype) {
+		if (empty($this->_params['messageid'])) {
 			$this->showApiError(200);
 		} # if
 
@@ -251,7 +255,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		# spot ophalen
 		try {
-			$fullSpot = $this->_tplHelper->getFullSpot($messageid, $this->_currentSession['user']['userid']);
+			$fullSpot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
 		}
 		catch(Exception $x) {
 			$this->showApiError(300);
@@ -363,7 +367,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # spotDetails
 
 	function getNzb() {
-		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . '&apikey=' . $this->_params['apikey']);
+		if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
+			$spot = $this->_db->getFullSpot($this->_params['messageid'], $this->_currentSession['user']['userid']);
+			if ($spot['watchstamp'] !== NULL) {
+				$this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']);
+				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+				$spotsNotifications->sendWatchlistHandled('remove', $this->_params['messageid']);
+			} # if
+		} # if
+
+		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . $this->_tplHelper->makeApiRequestString());
 	} # getNzb
 
 	function caps() {
@@ -391,7 +404,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$ret = $doc->createElement('retention');
 			$ret->setAttribute('days', $this->_settings->get('retention'));
 			$caps->appendChild($ret);
-		}
+		} # if
 
 		$reg = $doc->createElement('registration');
 		$reg->setAttribute('available', 'no');
@@ -446,13 +459,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		if (!empty($cat[0])) {
 			switch ($cat[0]) {
-				case "a"	: $newznabcat = $this->spotAcat2nabcat(); $result = $newznabcat[$hcat][$nr]; break;
-				case "b"	: $newznabcat = $this->spotBcat2nabcat(); $result = $newznabcat[$nr]; break;
-			}
-		}
-
-		return $result;
-	}
+				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return $newznabcat[$hcat][$nr]; break;
+				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return $newznabcat[$nr]; break;
+			} # switch
+		} # if
+	} # Cat2NewznabCat
 
 	function showApiError($errcode=42) {
 		switch ($errcode) {
