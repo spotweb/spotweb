@@ -26,7 +26,7 @@ if (empty($createresult)) {
 			<dt><label for="createuserform[mail]">E-mailadres</label></dt>
 			<dd><input type="text" name="createuserform[mail]" value="<?php echo htmlspecialchars($createuserform['mail']); ?>"></dd>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) { ?>			
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email') && !$this->_settings->get('sendwelcomemail')) { ?>
 			<dt><label for="createuserform[sendmail]">E-mail versturen naar nieuwe gebruiker?</label></dt>
 			<dd><input type="checkbox" name="createuserform[sendmail]"></dd>
 <?php } ?>
