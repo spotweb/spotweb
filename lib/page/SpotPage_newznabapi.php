@@ -9,6 +9,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # __construct
 
 	function render() {
+		# we willen niet dat de API output gecached wordt
+		$this->sendExpireHeaders(true);
+
 		# CAPS function is used to query the server for supported features and the protocol version and other 
 		# meta data relevant to the implementation. This function doesn't require the client to provide any
 		# login information but can be executed out of "login session".
@@ -16,9 +19,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$this->caps();
 			die();
 		} # if
-
-		# we willen niet dat de API output gecached wordt
-		$this->sendExpireHeaders(true);
 		
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
@@ -34,6 +34,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "music"	:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
+			case "details"	: $this->spotDetails($this->_params['messageid'], $outputtype); break;
 			case "g"		:
 			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
@@ -41,6 +42,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # render()
 
 	function search($outputtype) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
+
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
@@ -212,7 +216,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('name', 'category');
 					$attr->setAttribute('value', $nabCat[0]);
 					$item->appendChild($attr);
-				}
+				} # if
 
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'size');
@@ -236,6 +240,127 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			echo $doc->saveXML();
 		}
 	} # showResults
+
+	function spotDetails($messageid, $outputtype) {
+		if (empty($messageid)) {
+			$this->showApiError(200);
+		} # if
+
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
+
+		# spot ophalen
+		try {
+			$fullSpot = $this->_tplHelper->getFullSpot($messageid, $this->_currentSession['user']['userid']);
+		}
+		catch(Exception $x) {
+			$this->showApiError(300);
+		} # catch
+
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
+		# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
+		# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
+		# wat een onbruikbaar resultaat oplevert
+		$spot = @$this->_tplHelper->formatSpot($fullSpot);
+
+		if ($outputtype == "json") {
+			echo json_encode($spot); //TODO:make that a more specific array of data to return rather than resultset
+		} else {
+			# Opbouwen XML
+			$doc = new DOMDocument('1.0', 'utf-8');
+			$doc->formatOutput = true;
+
+			$rss = $doc->createElement('rss');
+			$rss->setAttribute('version', '2.0');
+			$rss->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+			$rss->setAttribute('xmlns:newznab', 'http://www.newznab.com/DTD/2010/feeds/attributes/');
+			$rss->setAttribute('encoding', 'utf-8');
+			$doc->appendChild($rss);
+
+			$channel = $doc->createElement('channel');
+			$channel->appendChild($doc->createElement('title', 'Spotweb'));
+			$channel->appendChild($doc->createElement('language', 'nl'));
+			$channel->appendChild($doc->createElement('description', 'Spotweb Index Api Detail'));
+			$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')'));
+			$channel->appendChild($doc->createElement('category', ''));
+			$rss->appendChild($channel);
+
+			$image = $doc->createElement('image');
+			$image->appendChild($doc->createElement('url', $this->_tplHelper->makeImageUrl($spot, 300, 300)));
+			$image->appendChild($doc->createElement('title', 'Spotweb Index'));
+			$image->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
+			$channel->appendChild($image);
+
+			$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+			$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
+
+			$guid = $doc->createElement('guid', $spot['messageid']);
+			$guid->setAttribute('isPermaLink', 'false');
+
+			$description = $doc->createElement('description');
+			$descriptionCdata = $doc->createCDATASection($spot['description'] . '<br /><font color="#ca0000">Door: ' . $poster . '</font>');
+			$description->appendChild($descriptionCdata);
+
+			$item = $doc->createElement('item');
+			$item->appendChild($doc->createElement('title', $title));
+			$item->appendChild($guid);
+			$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
+			$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
+			$item->appendChild($description);
+			$channel->appendChild($item);
+
+			$enclosure = $doc->createElement('enclosure');
+			$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+			$enclosure->setAttribute('length', $spot['filesize']);
+			switch ($nzbhandling['prepare_action']) {
+				case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
+				default		: $enclosure->setAttribute('type', 'application/x-nzb');
+			} # switch
+			$item->appendChild($enclosure);
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[0]);
+				$item->appendChild($attr);
+
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[1]);
+				$item->appendChild($attr);
+			} # if
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[0]);
+				$item->appendChild($attr);
+			} # if
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'size');
+			$attr->setAttribute('value', $spot['filesize']);
+			$item->appendChild($attr);
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'poster');
+			$attr->setAttribute('value', $spot['poster'] . '@spot.net (' . $spot['poster'] . ')');
+			$item->appendChild($attr);
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'comments');
+			$attr->setAttribute('value', $spot['commentcount']);
+			$item->appendChild($attr);
+
+			header('Content-Type: text/xml; charset=UTF-8');
+			echo $doc->saveXML();
+		} # if
+	} # spotDetails
 
 	function getNzb() {
 		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . '&apikey=' . $this->_params['apikey']);

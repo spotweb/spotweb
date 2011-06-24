@@ -161,7 +161,7 @@ try {
 						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', '')
-						  )
+					)
 			);
 			$page->render();
 			break;
