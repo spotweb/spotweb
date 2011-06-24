@@ -93,6 +93,7 @@ class SpotNotifications {
 			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 			$this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
 			$this->_notificationServices['email']->sendMessage('Single', $title, $body, $this->_settings->get('spotweburl'));
+			$this->_notificationServices = array();
 		} # if
 	} # sendNewUserMail
 

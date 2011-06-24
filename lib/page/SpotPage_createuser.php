@@ -19,8 +19,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 		$spotUser = array('username' => '',
 						  'firstname' => '',
 						  'lastname' => '',
-						  'mail' => '',
-						  'sendmail' => '');
+						  'mail' => '');
 		
 		# createuser resultaat is standaard niet geprobeerd
 		$createResult = array();
@@ -74,7 +73,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 									  'password' => $spotUser['newpassword1']);
 
 				# verstuur een e-mail naar de nieuwe gebruiker als daar om is gevraagd
-				if ($spotUser['sendmail'] == "true") {
+				if ($this->_createUserForm['sendmail'] == "true" || $this->_createUserForm['sendmail'] == "on") {
 					$spotsNotifications->sendNewUserMail($spotUser);
 				}
 
