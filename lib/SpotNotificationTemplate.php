@@ -1,6 +1,6 @@
 <?php
 
-class SpotNotificationTemplates {
+class SpotNotificationTemplate {
 	protected $_db;
 	protected $_settings;
 	protected $_currentSession;
