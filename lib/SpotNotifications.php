@@ -1,5 +1,6 @@
 <?php
 class SpotNotifications {
+	private $_notificationTemplate = array();
 	private $_notificationServices = array();
 	private $_spotSecTmp;
 	private $_spotSec;
@@ -81,18 +82,14 @@ class SpotNotifications {
 		# Omdat het versturen van dit bericht expliciet is opgegeven, worden er
 		# geen security-checks gedaan voor de ontvanger.
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) {
-			$title = "Spotweb registratie";
-			$body = "Hallo " . $user['firstname'] . " " . $user['lastname'] . "," . PHP_EOL . PHP_EOL;
-			$body .= "Er is zojuist een account voor je aangemaakt op " . $this->_settings->get('spotweburl') . "." . PHP_EOL;
-			$body .= "Je kunt inloggen met de volgende gegevens:" . PHP_EOL . PHP_EOL;
-			$body .= "Gebruikersnaam:\t\t" . $user['username'] . PHP_EOL;
-			$body .= "Wachtwoord:\t\t" . $user['newpassword1'] . PHP_EOL . PHP_EOL;
-			$body .= "Met vriendelijke groet," . PHP_EOL . $this->_currentSession['user']['firstname'] . " " . $this->_currentSession['user']['lastname'];
+			$this->_notificationTemplate = new SpotNotificationTemplate($this->_db, $this->_settings, $this->_currentSession);
+			$email = $this->_notificationTemplate->template('user_added', array('user' => $user, 'adminUser' => $this->_currentSession['user']));
+			$body = implode(PHP_EOL, $email['body']);
 
 			$user['prefs']['notifications']['email']['sender'] = $this->_currentSession['user']['mail'];
 			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 			$this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
-			$this->_notificationServices['email']->sendMessage('Single', $title, $body, $this->_settings->get('spotweburl'));
+			$this->_notificationServices['email']->sendMessage('Single', $email['title'], $body, $this->_settings->get('spotweburl'));
 			$this->_notificationServices = array();
 		} # if
 	} # sendNewUserMail
