@@ -175,7 +175,7 @@ class SpotsOverview {
 	 * Bereid een string met daarin categorieen voor en 'expand' 
 	 * die naar een complete string met alle subcategorieen daarin
 	 */
-	function prepareCategorySelection($dynaList) {
+	private function prepareCategorySelection($dynaList) {
 		$strongNotList = array();
 		$categoryList = array();
 		
@@ -303,7 +303,7 @@ class SpotsOverview {
 	 * Converteert een lijst met subcategorieen 
 	 * naar een lijst met daarin SQL where filters
 	 */
-	function categoryListToSql($tmpCategoryList) {
+	private function categoryListToSql($tmpCategoryList) {
 		$categoryList = array();
 
 		# controleer of de lijst geldig is
