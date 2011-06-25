@@ -141,11 +141,10 @@ class SpotsOverview {
 	} # getNzb
 
 	/*
-	 * Laad de spots van af positie $stat, maximaal $limit spots.
+	 * Laad de spots van af positie $start, maximaal $limit spots.
 	 *
 	 * $parsedSearch is een array met velden, filters en sorteringen die 
-	 * alles bevat waarmee SpotWeb kan filteren. De hierin sorteringen worden
-	 * eerst uitgevoerd waarna de user-defined sortering wordt bijgeplakt
+	 * alles bevat waarmee SpotWeb kan filteren. 
 	 */
 	function loadSpots($ourUserId, $start, $limit, $parsedSearch) {
 		SpotTiming::start(__FUNCTION__);
