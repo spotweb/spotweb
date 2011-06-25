@@ -171,7 +171,133 @@ class SpotsOverview {
 		return $spotResults;
 	} # loadSpots()
 
-	
+	/*
+	 *
+	 */
+	function prepareCategorySelection($dynaList) {
+		$strongNotList = array();
+		$dyn2search = array();
+		
+		# 
+		# De Dynatree jquery widget die we gebruiken haalt zijn data uit ?page=catsjson,
+		# voor elke node in de boom geven wij een key mee.
+		# Stel je de boom als volgt voor, met tussen haakjes de unieke key:
+		#
+		# - Beeld (cat0)
+		# +-- Formaat (cat0_a)
+		# +---- DivX (cat0_a0)
+		# +---- WMV (cat0_a1)
+		# +-- Bron (cat0_b)
+		# - Geluid (cat1)
+		# +-- Formaat (cat1_a)
+		# 
+		# Oftewel - je hebt een hoofdcategory nummer, daaronder heb je een subcategory type (a,b,c etc),
+		# en daaronder heb je dan weer een nummer welke subcategory het is.
+		#
+		# Als je in bovenstaand voorbeeld dus DivX wilt selecteren, dan is de keywaarde simpelweg cat0_a0, 
+		# wil je echter heel 'Beeld' selecteren dan is 'cat0' al genoeg. Als je echter in de Dynatree boom
+		# zelf het item 'Beeld' zou selecteren, dan zal Dynatree de verschillende items doorsturen als
+		# individuele keys, oftewel: cat0_a0,cat0_a1, etc etc.
+		#
+		# Als we gebruikers handmatig de category willen laten opgeven (bv. door een entry in settings.php)
+		# dan is het bijzonder onhandig als ze al die categorieen individueel moeten opgeven. Om dit op te
+		# lossen hebben we een aantal shorthands toegevoegd aan de filter taal welke dan door Spotweb zelf
+		# weer 'uitgepakt' worden naar een volledige zoekopdracht.
+		#
+		# In een 'settings-zoekopdracht' zijn de volgende shortcuts toegestaan voor het automatisch uitvouwen van
+		# de boom:
+		#
+		# cat0						- Zal uitgebreid worden naar alle subcategorieen van category 0
+		# cat0_a					- Zal uitgebreid worden naar alle subcategorieen 'A' van category 0.
+		# !cat0_a1					- Zal cat0_a1 verwijderen uit de lijst (volgorde van opgeven is belangrijk)
+		# ~cat0_a1					- 'Verbied' dat een spot in cat0_a1 zit
+		#
+		# Intern werken we dus alleen met de gehele lijst van subcategorieen.
+		#
+		# In deze functie herbouwen we de categorylijst naar een nieuwe lijst met alle categorieen welke mogelijk
+		# zijn.
+		$newTreeQuery = '';
+		
+		# We lopen nu door elk item in de lijst heen, en expanden die eventueel naar
+		# een volledige category met subcategorieen indien nodig.
+		$dynaListCount = count($dynaList);
+		for($i = 0; $i < $dynaListCount; $i++) {
+			# De opgegeven category kan in twee soorten voorkomen:
+			#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
+			#	  cat1				==> Heel cat1 selecteren
+			#
+			# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
+			if ((strlen($dynaList[$i]) == 6) || (strlen($dynaList[$i]) == 4)) {
+				$hCat = (int) substr($dynaList[$i], 3, 1);
+				
+				# was een subcategory gespecificeerd?
+				if (strlen($dynaList[$i]) == 6) {
+					$subCatSelected = substr($dynaList[$i], 5);
+				} else {
+					$subCatSelected = '*';
+				} # else
+
+				#
+				# creeer een string die alle subcategories bevat
+				#
+				# we loopen altijd door alle subcategorieen heen zodat we zowel voor complete category selectie
+				# als voor enkel subcategory selectie dezelfde code kunnen gebruiken.
+				#
+				$tmpStr = '';
+				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
+				
+					if (($subCat == $subCatSelected) || ($subCatSelected == '*')) {
+						foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
+							$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
+						} # foreach
+					} # if
+				} # foreach
+
+				$newTreeQuery .= $tmpStr;
+			} elseif (substr($dynaList[$i], 0, 1) == '!') {
+				# als het een NOT is, haal hem dan uit de lijst
+				$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+			} elseif (substr($dynaList[$i], 0, 1) == '~') {
+				# als het een STRONG NOT is, zorg dat hij in de lijst blijft omdat we die moeten
+				# meegeven aan de nextpage urls en dergelijke.
+				$newTreeQuery .= "," . $dynaList[$i];
+				
+				# en voeg hem toe aan een strong NOT list (~cat0_d12)
+				$strongNotTmp = explode("_", $dynaList[$i]);
+				$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
+			} else {
+				$newTreeQuery .= "," . $dynaList[$i];
+			} # else
+		} # for
+		if ($newTreeQuery[0] == ",") { $newTreeQuery = substr($newTreeQuery, 1); }
+
+		#
+		# Vanaf hier hebben we de geprepareerde lijst - oftewel de lijst met categorieen 
+		# die al helemaal in het formaat is zoals Dynatree hem ons ook zou aanleveren.
+		# 
+		# We vertalen de string met subcategorieen hier netjes naar een array met alle
+		# individuele subcategorieen zodat we die later naar SQL kunnen omzetten.
+		$dynaList = explode(',', $newTreeQuery);
+
+		foreach($dynaList as $val) {
+			if (substr($val, 0, 3) == 'cat') {
+				# 0e element is hoofdcategory
+				# 1e element is category
+				$val = explode('_', (substr($val, 3) . '_'));
+
+				$catVal = $val[0];
+				$subCatIdx = substr($val[1], 0, 1);
+				$subCatVal = substr($val[1], 1);
+
+				if (count($val) >= 3) {
+					$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
+				} # if
+			} # if
+		} # foreach
+		
+		return array('categories' => $dyn2search,
+					 'strongnot' => $strongNotList);
+	} # prepareCategorySelection
 	
 	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
@@ -182,8 +308,6 @@ class SpotsOverview {
 
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
-		$strongNotList = array();
-		$dyn2search = array();
 		$additionalFields = array();
 		$sortFields = array();
 
@@ -253,85 +377,14 @@ class SpotsOverview {
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search = array_merge($search, $this->_settings->get('index_filter'));
 		} # if
-		
-		# convert the dynatree list to a list 
+
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
+			$tmp = $this->prepareCategorySelection($dynaList);
 			
-			# fix de tree variable zodat we dezelfde parameters ondersteunen als de JS
-			$newTreeQuery = '';
-			$dynaListCount = count($dynaList);
-			for($i = 0; $i < $dynaListCount; $i++) {
-				# De opgegeven category kan in twee soorten voorkomen:
-				#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
-				#	  cat1				==> Heel cat1 selecteren
-				#
-				# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
-				if ((strlen($dynaList[$i]) == 6) || (strlen($dynaList[$i]) == 4)) {
-					$hCat = (int) substr($dynaList[$i], 3, 1);
-					
-					# was een subcategory gespecificeerd?
-					if (strlen($dynaList[$i]) == 6) {
-						$subCatSelected = substr($dynaList[$i], 5);
-					} else {
-						$subCatSelected = '*';
-					} # else
-
-					#
-					# creeer een string die alle subcategories bevat
-					#
-					# we loopen altijd door alle subcategorieen heen zodat we zowel voor complete category selectie
-					# als voor enkel subcategory selectie dezelfde code kunnen gebruiken.
-					#
-					$tmpStr = '';
-					foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
-					
-						if (($subCat == $subCatSelected) || ($subCatSelected == '*')) {
-							foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-								$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
-							} # foreach
-						} # if
-					} # foreach
-
-					$newTreeQuery .= $tmpStr;
-				} elseif (substr($dynaList[$i], 0, 1) == '!') {
-					# als het een NOT is, haal hem dan uit de lijst
-					$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
-				} elseif (substr($dynaList[$i], 0, 1) == '~') {
-					# als het een STRONG NOT is, zorg dat hij in de lijst blijft omdat we die moeten
-					# meegeven aan de nextpage urls en dergelijke.
-					$newTreeQuery .= "," . $dynaList[$i];
-					
-					# en voeg hem toe aan een strong NOT list (~cat0_d12)
-					$strongNotTmp = explode("_", $dynaList[$i]);
-					$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
-				} else {
-					$newTreeQuery .= "," . $dynaList[$i];
-				} # else
-			} # foreach
-			if ($newTreeQuery[0] == ",") { $newTreeQuery = substr($newTreeQuery, 1); }
-
-			# explode the dynaList
-			$search['tree'] = $newTreeQuery;
-			$dynaList = explode(',', $search['tree']);
-
-			# en fix the list
-			foreach($dynaList as $val) {
-				if (substr($val, 0, 3) == 'cat') {
-					# 0e element is hoofdcategory
-					# 1e element is category
-					$val = explode('_', (substr($val, 3) . '_'));
-
-					$catVal = $val[0];
-					$subCatIdx = substr($val[1], 0, 1);
-					$subCatVal = substr($val[1], 1);
-
-					if (count($val) >= 3) {
-						$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
-					} # if
-				} # if
-			} # foreach
+			$dyn2search = $tmp['categories'];
+			$strongNotList = $tmp['strongnot'];
 		} # if
 
 		# Add a list of possible head categories
