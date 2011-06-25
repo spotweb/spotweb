@@ -306,7 +306,6 @@ class SpotsOverview {
 		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
 
 		SpotTiming::start(__FUNCTION__);
-		$filterList = array();
 		$categoryList = array();
 		$strongNotList = array();
 		$additionalFields = array();
@@ -386,15 +385,15 @@ class SpotsOverview {
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
-			list($categoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
+			list($tmpCategoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
 		} # if
 
 		# 
 		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
 		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
 		# 
-		if ((isset($categoryList['cat'])) && (is_array($categoryList['cat']))) {
-			foreach($categoryList['cat'] as $catid => $cat) {
+		if ((isset($tmpCategoryList['cat'])) && (is_array($tmpCategoryList['cat']))) {
+			foreach($tmpCategoryList['cat'] as $catid => $cat) {
 				$catid = (int) $catid;
 				$tmpStr = "((category = " . (int) $catid . ")";
 
@@ -448,7 +447,7 @@ class SpotsOverview {
 				
 				# Sluit het haakje af
 				$tmpStr .= ")";
-				$filterList[] = $tmpStr;
+				$categoryList[] = $tmpStr;
 			} # foreach
 		} # if
 
@@ -602,8 +601,8 @@ class SpotsOverview {
 		} # if
 
 		$endFilter = array();
-		if (!empty($filterList)) {
-			$endFilter[] = '(' . join(' OR ', $filterList) . ') ';
+		if (!empty($categoryList)) {
+			$endFilter[] = '(' . join(' OR ', $categoryList) . ') ';
 		} # if
 		if (!empty($textSearch)) {
 			$endFilter[] = join(' AND ', $textSearch);
