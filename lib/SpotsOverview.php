@@ -389,18 +389,22 @@ class SpotsOverview {
 			list($categoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
 		} # if
 
-		# Add a list of possible head categories
+		# 
+		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
+		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
+		# 
 		if ((isset($categoryList['cat'])) && (is_array($categoryList['cat']))) {
-			$filterList = array();
-
 			foreach($categoryList['cat'] as $catid => $cat) {
 				$catid = (int) $catid;
 				$tmpStr = "((category = " . (int) $catid . ")";
-				
-				# Now start adding the sub categories
+
+				#
+				# Voor welke category die we hebben, gaan we alle subcategorieen 
+				# af en proberen die vervolgens te verwerken.
+				#
 				if ((is_array($cat)) && (!empty($cat))) {
 					#
-					# uiteraard is een LIKE query voor category search niet super schaalbaar
+					# Uiteraard is een LIKE query voor category search niet super schaalbaar
 					# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
 					# moet het meer dan genoeg zijn
 					#
@@ -409,8 +413,10 @@ class SpotsOverview {
 						$subcatValues = array();
 						
 						foreach($subcatItem as $subcatValue) {
+							#
 							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
 							# equality ipv like doen
+							#
 							if (in_array($subcat, array('a', 'z'))) {
 								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
 							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
@@ -418,15 +424,29 @@ class SpotsOverview {
 							} # if
 						} # foreach
 						
-						# voeg de subfilter values (bv. alle formaten films) samen met een OR
+						# 
+						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
+						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
+						#
 						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
 					} # foreach subcat
 
-					# voeg de category samen met de diverse subcategory filters met een OR, bv. genre: actie, type: divx.
+					#
+					# Hierna voegen we binnen de hoofdcategory (Beeld,Geluid), de subcategorieen filters die hierboven
+					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
+					#
+					# Je krijgt dus een filter als volgt:
+					#
+					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+					# 
+					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
+					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
+					# op filterde.
+					#
 					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
 				} # if
 				
-				# close the opening parenthesis from this category filter
+				# Sluit het haakje af
 				$tmpStr .= ")";
 				$filterList[] = $tmpStr;
 			} # foreach
