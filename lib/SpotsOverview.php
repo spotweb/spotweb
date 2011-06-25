@@ -172,7 +172,8 @@ class SpotsOverview {
 	} # loadSpots()
 
 	/*
-	 *
+	 * Bereid een string met daarin categorieen voor en 'expand' 
+	 * die naar een complete string met alle subcategorieen daarin
 	 */
 	function prepareCategorySelection($dynaList) {
 		$strongNotList = array();
@@ -297,6 +298,82 @@ class SpotsOverview {
 		
 		return array($categoryList, $strongNotList);
 	} # prepareCategorySelection
+
+	/*
+	 * Converteert een lijst met subcategorieen 
+	 * naar een lijst met daarin SQL where filters
+	 */
+	function categoryListToSql($tmpCategoryList) {
+		$categoryList = array();
+
+		# controleer of de lijst geldig is
+		if ((!isset($tmpCategoryList['cat'])) || (!is_array($tmpCategoryList['cat']))) {
+			return $categoryList;
+		} # if
+		
+		# 
+		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
+		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
+		# 
+		foreach($tmpCategoryList['cat'] as $catid => $cat) {
+			$catid = (int) $catid;
+			$tmpStr = "((category = " . (int) $catid . ")";
+
+			#
+			# Voor welke category die we hebben, gaan we alle subcategorieen 
+			# af en proberen die vervolgens te verwerken.
+			#
+			if ((is_array($cat)) && (!empty($cat))) {
+				#
+				# Uiteraard is een LIKE query voor category search niet super schaalbaar
+				# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
+				# moet het meer dan genoeg zijn
+				#
+				$subcatItems = array();
+				foreach($cat as $subcat => $subcatItem) {
+					$subcatValues = array();
+					
+					foreach($subcatItem as $subcatValue) {
+						#
+						# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+						# equality ipv like doen
+						#
+						if (in_array($subcat, array('a', 'z'))) {
+							$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
+						} elseif (in_array($subcat, array('b', 'c', 'd'))) {
+							$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+						} # if
+					} # foreach
+					
+					# 
+					# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
+					# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
+					#
+					$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
+				} # foreach subcat
+
+				#
+				# Hierna voegen we binnen de hoofdcategory (Beeld,Geluid), de subcategorieen filters die hierboven
+				# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
+				#
+				# Je krijgt dus een filter als volgt:
+				#
+				# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+				# 
+				# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
+				# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
+				# op filterde.
+				#
+				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+			} # if
+			
+			# Sluit het haakje af
+			$tmpStr .= ")";
+			$categoryList[] = $tmpStr;
+		} # foreach
+		
+		return $categoryList;
+	} # categoryListToSql 
 	
 	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
@@ -370,7 +447,6 @@ class SpotsOverview {
 										   'value' => join(":", array_slice($tmpFilter, 2)));
 			} # if
 		} # for
-		$search['filterValues'] = $filterValueList;
 		
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
@@ -386,75 +462,14 @@ class SpotsOverview {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
 			list($tmpCategoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
-		} # if
-
-		# 
-		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
-		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
-		# 
-		if ((isset($tmpCategoryList['cat'])) && (is_array($tmpCategoryList['cat']))) {
-			foreach($tmpCategoryList['cat'] as $catid => $cat) {
-				$catid = (int) $catid;
-				$tmpStr = "((category = " . (int) $catid . ")";
-
-				#
-				# Voor welke category die we hebben, gaan we alle subcategorieen 
-				# af en proberen die vervolgens te verwerken.
-				#
-				if ((is_array($cat)) && (!empty($cat))) {
-					#
-					# Uiteraard is een LIKE query voor category search niet super schaalbaar
-					# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
-					# moet het meer dan genoeg zijn
-					#
-					$subcatItems = array();
-					foreach($cat as $subcat => $subcatItem) {
-						$subcatValues = array();
-						
-						foreach($subcatItem as $subcatValue) {
-							#
-							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-							# equality ipv like doen
-							#
-							if (in_array($subcat, array('a', 'z'))) {
-								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
-							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
-								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
-							} # if
-						} # foreach
-						
-						# 
-						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
-						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
-						#
-						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
-					} # foreach subcat
-
-					#
-					# Hierna voegen we binnen de hoofdcategory (Beeld,Geluid), de subcategorieen filters die hierboven
-					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
-					#
-					# Je krijgt dus een filter als volgt:
-					#
-					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
-					# 
-					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
-					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
-					# op filterde.
-					#
-					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
-				} # if
-				
-				# Sluit het haakje af
-				$tmpStr .= ")";
-				$categoryList[] = $tmpStr;
-			} # foreach
+			
+			$categoryList = $this->categoryListToSql($tmpCategoryList);
 		} # if
 
 		# Add a list of possible text searches
 		$textSearch = array();
 
-		foreach($search['filterValues'] as $filterRecord) {
+		foreach($filterValueList as $filterRecord) {
 			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
 			$tmpFilterOperator = $filterRecord['operator'];
 			$tmpFilterValue = $filterRecord['value'];
@@ -580,7 +595,7 @@ class SpotsOverview {
 		} # if
 
 		# New spots
-		if (in_array(array('fieldname' => 'New', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
+		if (in_array(array('fieldname' => 'New', 'operator' => '=', 'value' => '0'), $filterValueList)) {
 			if ($currentSession['user']['prefs']['auto_markasread']) {
 				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
 			} else {
@@ -592,11 +607,11 @@ class SpotsOverview {
 
 		# Spots in SpotStateList
 		$listFilter = array();
-		if (in_array(array('fieldname' => 'Downloaded', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
+		if (in_array(array('fieldname' => 'Downloaded', 'operator' => '=', 'value' => '0'), $filterValueList)) {
 			$listFilter[] = ' (l.download IS NOT NULL)';
-		} elseif (in_array(array('fieldname' => 'Watch', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
+		} elseif (in_array(array('fieldname' => 'Watch', 'operator' => '=', 'value' => '0'), $filterValueList)) {
 			$listFilter[] = ' (l.watch IS NOT NULL)';
-		} elseif (in_array(array('fieldname' => 'Seen', 'operator' => '=', 'value' => '0'), $search['filterValues'])) {
+		} elseif (in_array(array('fieldname' => 'Seen', 'operator' => '=', 'value' => '0'), $filterValueList)) {
 			$listFilter[] = ' (l.seen IS NOT NULL)';
 		} # if
 
