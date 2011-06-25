@@ -408,7 +408,7 @@ class SpotsOverview {
 	/*
 	 * Converteert meerdere user opgegeven 'text' filters naar SQL statements
 	 */
-	function filterValuesToSql($filterValueList) {
+	private function filterValuesToSql($filterValueList, $currentSession) {
 		# Add a list of possible text searches
 		$filterValueSql = array();
 		$additionalFields = array();
@@ -429,7 +429,11 @@ class SpotsOverview {
 									  'moderated' => 's.moderated',
 									  'poster' => 's.poster',
 									  'titel' => 's.title',
-									  'tag' => 's.tag');
+									  'tag' => 's.tag',
+									  'new' => 'new',
+									  'downloaded' => 'downloaded', 
+									  'watch' => 'watch', 
+									  'seen' => 'seen');
 			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
 				break;
 			} # if
@@ -439,11 +443,13 @@ class SpotsOverview {
 				break;
 			} # if
 
-			# een lege zoekopdracht negeren we gewoon
-			if (empty($tmpFilterValue)) {
+			# een lege zoekopdracht negeren we gewoon, 'empty' kunnen we niet
+			# gebruiken omdat empty(0) ook true geeft, en 0 is wel een waarde
+			# die we willen testen
+			if (strlen($tmpFilterValue) == 0) {
 				continue;
 			} # if
-			
+
 			#
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
 			# met een fulltext search (engine), voer dan dit pad uit zodat we de 
@@ -465,6 +471,41 @@ class SpotsOverview {
 					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 										  'direction' => 'DESC');
 				} # if
+			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen'))) {
+				# 
+				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
+				# met de spotstatelist. Deze veldnamen behandelen we hier
+				#
+				switch($tmpFilterFieldname) {
+					case 'new' : {
+							if ($currentSession['user']['prefs']['auto_markasread']) {
+								$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
+							} else {
+								$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
+							} # else
+							$tmpFilterValue .= ' AND (l.seen IS NULL))';
+							
+							break;
+					} # case 'new' 
+
+					case 'downloaded' : {
+							$tmpFilterValue = ' (l.download IS NULL)';
+							break;
+					} # case 'downloaded' 
+					
+					case 'watch' : {
+							$tmpFilterValue = ' (l.watch IS NULL)';
+							break;
+					} # case 'watch' 
+
+					case 'seen' : {
+							$tmpFilterValue = ' (l.seen IS NULL)';
+							break;
+					} # case 'seen' 
+				} # switch
+				
+				# en creeer de query string
+				$filterValueSql[] = $tmpFilterValue;
 			} else {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
@@ -474,7 +515,7 @@ class SpotsOverview {
 				#
 				if ($tmpFilterFieldname == 'date') {
 					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
-				} elseif ($tmpFilterFieldname == 'filesize' && is_numeric($tmpFilterValue) === false) {
+				} elseif (($tmpFilterFieldname == 'filesize') && (is_numeric($tmpFilterValue) === false)) {
 					# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
 					# platform te omzeilen.
 					$val = (float) trim(substr($tmpFilterValue, 0, -1));
@@ -512,6 +553,7 @@ class SpotsOverview {
 		SpotTiming::start(__FUNCTION__);
 		$categoryList = array();
 		$strongNotList = array();
+		$filterValueList = array();
 		$additionalFields = array();
 		$sortFields = array();
 		$notSearch = '';
@@ -555,7 +597,6 @@ class SpotsOverview {
 		} # if
 
 		# en we converteren het nieuwe type (field:operator:value) naar een array zodat we er makkelijk door kunnen lopen
-		$filterValueList = array();
 		foreach($search['value'] as $value) {
 			if (!empty($value)) {
 				$tmpFilter = explode(':', $value);
@@ -569,10 +610,18 @@ class SpotsOverview {
 									   $tmpFilter[1]);
 				} # if
 				
-				# en creeer een filtervaluelist
-				$filterValueList[] = Array('fieldname' => $tmpFilter[0],
-										   'operator' => $tmpFilter[1],
-										   'value' => join(":", array_slice($tmpFilter, 2)));
+				# maak de daadwerkelijke filter
+				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
+										 'operator' => $tmpFilter[1],
+										 'value' => join(":", array_slice($tmpFilter, 2)));
+										 
+				# en creeer een filtervaluelist, we checken eeerst
+				# of een gelijkaardig item niet al voorkomt in de lijst
+				# met filters - als je namelijk twee keer dezelfde filter
+				# toevoegt wil MySQL wel eens onverklaarbaar traag worden
+				if (!in_array($filterValueTemp, $filterValueList)) {
+					$filterValueList[] = $filterValueTemp;
+				} # if
 			} # if
 		} # for
 		
@@ -600,7 +649,7 @@ class SpotsOverview {
 		#
 		# Converteert de text searches naar SQL where filters
 		#
-		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList);
+		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
 		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
 		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
@@ -620,37 +669,12 @@ class SpotsOverview {
 			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
 		} # else
 
-
-		# New spots
-		if (in_array(array('fieldname' => 'New', 'operator' => '=', 'value' => '0'), $filterValueList)) {
-			if ($currentSession['user']['prefs']['auto_markasread']) {
-				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
-			} else {
-				$newSpotsSearchTmp[] = '(s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
-			} # else
-			$newSpotsSearchTmp[] = '(l.seen IS NULL)';
-			$newSpotsSearch = join(' AND ', $newSpotsSearchTmp);
-		} # if
-
-		# Spots in SpotStateList
-		$listFilter = array();
-		if (in_array(array('fieldname' => 'Downloaded', 'operator' => '=', 'value' => '0'), $filterValueList)) {
-			$listFilter[] = ' (l.download IS NOT NULL)';
-		} elseif (in_array(array('fieldname' => 'Watch', 'operator' => '=', 'value' => '0'), $filterValueList)) {
-			$listFilter[] = ' (l.watch IS NOT NULL)';
-		} elseif (in_array(array('fieldname' => 'Seen', 'operator' => '=', 'value' => '0'), $filterValueList)) {
-			$listFilter[] = ' (l.seen IS NOT NULL)';
-		} # if
-
 		$endFilter = array();
 		if (!empty($categoryList)) {
 			$endFilter[] = '(' . join(' OR ', $categoryList) . ') ';
 		} # if
 		if (!empty($filterValueSql)) {
 			$endFilter[] = join(' AND ', $filterValueSql);
-		} # if
-		if (!empty($listFilter)) {
-			$endFilter[] = join(' AND ', $listFilter);
 		} # if
 		if (!empty($notSearch)) {
 			$endFilter[] = $notSearch;
