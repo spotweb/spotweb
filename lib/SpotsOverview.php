@@ -376,6 +376,36 @@ class SpotsOverview {
 	} # categoryListToSql 
 	
 	/*
+	 * Zet een lijst met "strong nots" om naar de daarbij
+	 * behorende SQL where statements
+	 */
+	private function strongNotListToSql($strongNotList) {
+		# strong nots
+		$notSearch = '';
+		if (!empty($strongNotList)) {
+			$notSearchTmp = array();
+			
+			foreach(array_keys($strongNotList) as $strongNotCat) {
+				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
+					$subcat = $strongNotSubcat[0];
+
+					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+					# equality ipv like doen
+					if (in_array($subcat, array('a', 'z'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
+					} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
+						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+					} # if
+				} # foreach				
+			} # forEach
+
+			$notSearch = join(' AND ', $notSearchTmp);
+		} # if
+		
+		return $notSearch;
+	} # strongNotListToSql
+	
+	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
@@ -387,6 +417,7 @@ class SpotsOverview {
 		$strongNotList = array();
 		$additionalFields = array();
 		$sortFields = array();
+		$notSearch = '';
 
 		# dont filter anything
 		if (empty($search)) {
@@ -462,8 +493,11 @@ class SpotsOverview {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
 			list($tmpCategoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
-			
+
+			# en converteer de lijst met subcategorieen naar een lijst met SQL
+			# filters
 			$categoryList = $this->categoryListToSql($tmpCategoryList);
+			$notSearch = $this->strongNotListToSql($strongNotList);
 		} # if
 
 		# Add a list of possible text searches
@@ -572,27 +606,6 @@ class SpotsOverview {
 			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
 		} # else
 
-		# strong nots
-		$notSearch = '';
-		if (!empty($strongNotList)) {
-			$notSearchTmp = array();
-			
-			foreach(array_keys($strongNotList) as $strongNotCat) {
-				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-					$subcat = $strongNotSubcat[0];
-
-					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-					# equality ipv like doen
-					if (in_array($subcat, array('a', 'z'))) { 
-						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
-					} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
-						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
-					} # if
-				} # foreach				
-			} # forEach
-
-			$notSearch = join(' AND ', $notSearchTmp);
-		} # if
 
 		# New spots
 		if (in_array(array('fieldname' => 'New', 'operator' => '=', 'value' => '0'), $filterValueList)) {
