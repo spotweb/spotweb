@@ -460,55 +460,59 @@ class SpotsOverview {
 			$tmpFilterOperator = $filterRecord['operator'];
 			$tmpFilterValue = $filterRecord['value'];
 
+			# We proberen nu het opgegeven veldnaam te mappen naar de database
+			# kolomnaam. Als dat niet kan, gaan we er van uit dat het een 
+			# ongeldige zoekopdracht is, en dan interesseert ons heel de zoek
+			# opdracht niet meer.
+			$filterFieldMapping = array('filesize' => 's.filesize',
+									  'date' => 's.stamp',
+									  'userid' => 'f.userid',
+									  'moderated' => 's.moderated',
+									  'poster' => 's.poster',
+									  'titel' => 's.title',
+									  'tag' => 's.tag');
+			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
+				break;
+			} # if
+
+			# valideer eerst de operatoren
+			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
+				break;
+			} # if
+
+			# een lege zoekopdracht negeren we gewoon
+			if (empty($tmpFilterValue)) {
+				continue;
+			} # if
+			
+			#
 			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
-			# voer dan dit pad uit
+			# met een fulltext search (engine), voer dan dit pad uit zodat we de 
+			# winst er mee nemen.
+			#
 			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
-				$field = '';
+				$parsedTextQueryResult = $this->_db->createTextQuery($filterFieldMapping[$tmpFilterFieldname], $tmpFilterValue);
+				$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
 
-				switch($tmpFilterFieldname) {
-					case 'poster'	: $field = 's.poster'; break;
-					case 'titel'	: $field = 's.title'; break;
-					case 'tag'		: $field = 's.tag'; break;
-				} # switch
-				
-				if (!empty($field) && !empty($tmpFilterValue)) {
-					$parsedTextQueryResult = $this->_db->createTextQuery($field, $tmpFilterValue);
-					$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
-
-					# We voegen deze extended textqueries toe aan de filterlist als
-					# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
-					# wat het net wat interessanter maakt
-					if ($parsedTextQueryResult['sortable']) {
-						# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
-						# sorteren we ze in de volgorde waarop ze binnenkwamen 
-						$tmpSortCounter = count($additionalFields);
-						
-						$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
-						$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
-											  'direction' => 'DESC');
-					} # if
+				# We voegen deze extended textqueries toe aan de filterlist als
+				# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
+				# wat het net wat interessanter maakt
+				if ($parsedTextQueryResult['sortable']) {
+					# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
+					# sorteren we ze in de volgorde waarop ze binnenkwamen 
+					$tmpSortCounter = count($additionalFields);
+					
+					$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
+					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
+										  'direction' => 'DESC');
 				} # if
-			} else if (!empty($tmpFilterValue)) {
+			} else {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
 				#
 				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
 				#   filesize:>=:4000000
 				#
-				# valideer eerst de operatoren
-				if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
-					break;
-				} # if
-
-				# en valideer dan de zoekvelden
-				$filterFieldMapping = array('filesize' => 's.filesize',
-									  'date' => 's.stamp',
-									  'userid' => 'f.userid',
-									  'moderated' => 's.moderated');
-				if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
-					break;
-				} # if
-
 				if ($tmpFilterFieldname == 'date') {
 					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
 				} elseif ($tmpFilterFieldname == 'filesize' && is_numeric($tmpFilterValue) === false) {
