@@ -176,7 +176,7 @@ class SpotsOverview {
 	 */
 	function prepareCategorySelection($dynaList) {
 		$strongNotList = array();
-		$dyn2search = array();
+		$categoryList = array();
 		
 		# 
 		# De Dynatree jquery widget die we gebruiken haalt zijn data uit ?page=catsjson,
@@ -290,13 +290,12 @@ class SpotsOverview {
 				$subCatVal = substr($val[1], 1);
 
 				if (count($val) >= 3) {
-					$dyn2search['cat'][$catVal][$subCatIdx][] = $subCatVal;
+					$categoryList['cat'][$catVal][$subCatIdx][] = $subCatVal;
 				} # if
 			} # if
 		} # foreach
 		
-		return array('categories' => $dyn2search,
-					 'strongnot' => $strongNotList);
+		return array($categoryList, $strongNotList);
 	} # prepareCategorySelection
 	
 	/*
@@ -308,6 +307,8 @@ class SpotsOverview {
 
 		SpotTiming::start(__FUNCTION__);
 		$filterList = array();
+		$categoryList = array();
+		$strongNotList = array();
 		$additionalFields = array();
 		$sortFields = array();
 
@@ -323,7 +324,7 @@ class SpotsOverview {
 		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
 		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
 		#
-		# 		  We converteren oude type zoekopdrachten automatisch naar het nieuwe type.
+		# 		  We converteren deze oude type zoekopdrachten automatisch naar het nieuwe type.
 		#
 		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:operator:value, dus
 		#		  bijvoorbeeld tag:=:spotweb. Er is ook een shorthand beschikbaar, als je de operator weglaat (dus: tag:spotweb),
@@ -349,7 +350,7 @@ class SpotsOverview {
 			$search['value'] = array();
 		} # if
 
-		# en we converteren het nieuwe type (field:value) naar een array zodat we er makkelijk door kunnen lopen
+		# en we converteren het nieuwe type (field:operator:value) naar een array zodat we er makkelijk door kunnen lopen
 		$filterValueList = array();
 		foreach($search['value'] as $value) {
 			if (!empty($value)) {
@@ -378,20 +379,21 @@ class SpotsOverview {
 			$search = array_merge($search, $this->_settings->get('index_filter'));
 		} # if
 
+		# 
+		# Vertaal nu een eventueel opgegeven boom naar daadwerkelijke subcategorieen
+		# en dergelijke
+		#
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
-			$tmp = $this->prepareCategorySelection($dynaList);
-			
-			$dyn2search = $tmp['categories'];
-			$strongNotList = $tmp['strongnot'];
+			list($categoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
 		} # if
 
 		# Add a list of possible head categories
-		if ((isset($dyn2search['cat'])) && (is_array($dyn2search['cat']))) {
+		if ((isset($categoryList['cat'])) && (is_array($categoryList['cat']))) {
 			$filterList = array();
 
-			foreach($dyn2search['cat'] as $catid => $cat) {
+			foreach($categoryList['cat'] as $catid => $cat) {
 				$catid = (int) $catid;
 				$tmpStr = "((category = " . (int) $catid . ")";
 				
