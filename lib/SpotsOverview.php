@@ -404,6 +404,103 @@ class SpotsOverview {
 		
 		return $notSearch;
 	} # strongNotListToSql
+
+	/*
+	 * Converteert meerdere user opgegeven 'text' filters naar SQL statements
+	 */
+	function filterValuesToSql($filterValueList) {
+		# Add a list of possible text searches
+		$filterValueSql = array();
+		$additionalFields = array();
+		$sortFields = array();
+
+		foreach($filterValueList as $filterRecord) {
+			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
+			$tmpFilterOperator = $filterRecord['operator'];
+			$tmpFilterValue = $filterRecord['value'];
+
+			# We proberen nu het opgegeven veldnaam te mappen naar de database
+			# kolomnaam. Als dat niet kan, gaan we er van uit dat het een 
+			# ongeldige zoekopdracht is, en dan interesseert ons heel de zoek
+			# opdracht niet meer.
+			$filterFieldMapping = array('filesize' => 's.filesize',
+									  'date' => 's.stamp',
+									  'userid' => 'f.userid',
+									  'moderated' => 's.moderated',
+									  'poster' => 's.poster',
+									  'titel' => 's.title',
+									  'tag' => 's.tag');
+			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
+				break;
+			} # if
+
+			# valideer eerst de operatoren
+			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
+				break;
+			} # if
+
+			# een lege zoekopdracht negeren we gewoon
+			if (empty($tmpFilterValue)) {
+				continue;
+			} # if
+			
+			#
+			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
+			# met een fulltext search (engine), voer dan dit pad uit zodat we de 
+			# winst er mee nemen.
+			#
+			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
+				$parsedTextQueryResult = $this->_db->createTextQuery($filterFieldMapping[$tmpFilterFieldname], $tmpFilterValue);
+				$filterValueSql[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
+
+				# We voegen deze extended textqueries toe aan de filterlist als
+				# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
+				# wat het net wat interessanter maakt
+				if ($parsedTextQueryResult['sortable']) {
+					# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
+					# sorteren we ze in de volgorde waarop ze binnenkwamen 
+					$tmpSortCounter = count($additionalFields);
+					
+					$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
+					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
+										  'direction' => 'DESC');
+				} # if
+			} else {
+				# Anders is het geen textsearch maar een vergelijkings operator, 
+				# eerst willen we de vergelijking eruit halen.
+				#
+				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
+				#   filesize:>=:4000000
+				#
+				if ($tmpFilterFieldname == 'date') {
+					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
+				} elseif ($tmpFilterFieldname == 'filesize' && is_numeric($tmpFilterValue) === false) {
+					# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
+					# platform te omzeilen.
+					$val = (float) trim(substr($tmpFilterValue, 0, -1));
+					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
+					switch($last) {
+						case 'g': $val *= (float) 1024;
+						case 'm': $val *= (float) 1024;
+						case 'k': $val *= (float) 1024;
+					} # switch
+					$tmpFilterValue = round($val, 0);
+				} # if
+					
+				# als het niet numeriek is, zet er dan een quote by
+				if (!is_numeric($tmpFilterValue)) {
+					$tmpFilterValue = "'" . $this->_db->safe($tmpFilterValue) . "'";
+				} else {
+					$tmpFilterValue = $this->_db->safe($tmpFilterValue);
+				} # if
+
+				# en creeer de query string
+				$filterValueSql[] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
+			} # if
+		} # foreach
+		
+		return array($filterValueSql, $additionalFields, $sortFields);
+	} # filterValuesToSql
 	
 	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
@@ -500,93 +597,10 @@ class SpotsOverview {
 			$notSearch = $this->strongNotListToSql($strongNotList);
 		} # if
 
-		# Add a list of possible text searches
-		$textSearch = array();
-
-		foreach($filterValueList as $filterRecord) {
-			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
-			$tmpFilterOperator = $filterRecord['operator'];
-			$tmpFilterValue = $filterRecord['value'];
-
-			# We proberen nu het opgegeven veldnaam te mappen naar de database
-			# kolomnaam. Als dat niet kan, gaan we er van uit dat het een 
-			# ongeldige zoekopdracht is, en dan interesseert ons heel de zoek
-			# opdracht niet meer.
-			$filterFieldMapping = array('filesize' => 's.filesize',
-									  'date' => 's.stamp',
-									  'userid' => 'f.userid',
-									  'moderated' => 's.moderated',
-									  'poster' => 's.poster',
-									  'titel' => 's.title',
-									  'tag' => 's.tag');
-			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
-				break;
-			} # if
-
-			# valideer eerst de operatoren
-			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
-				break;
-			} # if
-
-			# een lege zoekopdracht negeren we gewoon
-			if (empty($tmpFilterValue)) {
-				continue;
-			} # if
-			
-			#
-			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
-			# met een fulltext search (engine), voer dan dit pad uit zodat we de 
-			# winst er mee nemen.
-			#
-			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
-				$parsedTextQueryResult = $this->_db->createTextQuery($filterFieldMapping[$tmpFilterFieldname], $tmpFilterValue);
-				$textSearch[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
-
-				# We voegen deze extended textqueries toe aan de filterlist als
-				# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
-				# wat het net wat interessanter maakt
-				if ($parsedTextQueryResult['sortable']) {
-					# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
-					# sorteren we ze in de volgorde waarop ze binnenkwamen 
-					$tmpSortCounter = count($additionalFields);
-					
-					$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
-					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
-										  'direction' => 'DESC');
-				} # if
-			} else {
-				# Anders is het geen textsearch maar een vergelijkings operator, 
-				# eerst willen we de vergelijking eruit halen.
-				#
-				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
-				#   filesize:>=:4000000
-				#
-				if ($tmpFilterFieldname == 'date') {
-					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
-				} elseif ($tmpFilterFieldname == 'filesize' && is_numeric($tmpFilterValue) === false) {
-					# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
-					# platform te omzeilen.
-					$val = (float) trim(substr($tmpFilterValue, 0, -1));
-					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
-					switch($last) {
-						case 'g': $val *= (float) 1024;
-						case 'm': $val *= (float) 1024;
-						case 'k': $val *= (float) 1024;
-					} # switch
-					$tmpFilterValue = round($val, 0);
-				} # if
-					
-				# als het niet numeriek is, zet er dan een quote by
-				if (!is_numeric($tmpFilterValue)) {
-					$tmpFilterValue = "'" . $this->_db->safe($tmpFilterValue) . "'";
-				} else {
-					$tmpFilterValue = $this->_db->safe($tmpFilterValue);
-				} # if
-
-				# en creeer de query string
-				$textSearch[] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
-			} # if
-		} # foreach
+		#
+		# Converteert de text searches naar SQL where filters
+		#
+		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList);
 
 		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
 		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
@@ -632,8 +646,8 @@ class SpotsOverview {
 		if (!empty($categoryList)) {
 			$endFilter[] = '(' . join(' OR ', $categoryList) . ') ';
 		} # if
-		if (!empty($textSearch)) {
-			$endFilter[] = join(' AND ', $textSearch);
+		if (!empty($filterValueSql)) {
+			$endFilter[] = join(' AND ', $filterValueSql);
 		} # if
 		if (!empty($listFilter)) {
 			$endFilter[] = join(' AND ', $listFilter);
