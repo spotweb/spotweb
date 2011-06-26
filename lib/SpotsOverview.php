@@ -543,7 +543,8 @@ class SpotsOverview {
 					
 					$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
 					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
-										  'direction' => 'DESC');
+										  'direction' => 'DESC',
+										  'autoadded' => true);
 				} # if
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen'))) {
 				# 
@@ -616,7 +617,7 @@ class SpotsOverview {
 			# We sorteren standaard op stamp, maar alleen als er vanuit de query
 			# geen expliciete sorteermethode is meegegeven
 			if (empty($sortFields)) {
-				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC');
+				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true);
 			} # if
 		} else {
 			if (strtoupper($sort['direction']) != 'ASC') {
@@ -626,7 +627,7 @@ class SpotsOverview {
 			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
 			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
 			# van de sorteer lijst.
-			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
+			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction'], 'autoadded' => false));
 		} # else
 		
 		return $sortFields;
@@ -726,6 +727,9 @@ TODO:
 
 
 		SpotTiming::start(__FUNCTION__);
+		
+		$isUnfiltered = false;
+		
 		$categoryList = array();
 		$categorySql = array();
 		
@@ -743,7 +747,8 @@ TODO:
 			return array('filter' => '',
 						 'search' => array(),
 					     'additionalFields' => array(),
-					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC')));
+						 'unfiltered' => false,
+					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true)));
 		} # if
 
 		
@@ -758,6 +763,7 @@ TODO:
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search = array_merge($search, $this->_settings->get('index_filter'));
+			$isUnfiltered = true;
 		} # if
 		
 		# 
@@ -788,7 +794,10 @@ TODO:
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
-					 'search' => $search,
+					 'categoryList' => $categoryList,
+					 'unfiltered' => $isUnfiltered,
+					 'strongNotList' => $strongNotList,
+					 'filterValueList' => $filterValueList,
 					 'additionalFields' => $additionalFields,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
