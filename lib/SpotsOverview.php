@@ -703,15 +703,12 @@ TODO:
 		$sortFields = $this->prepareSortFields($sort, $sortFields);
 
 		$endFilter = array();
-		if (!empty($categorySql)) {
+		if (!empty($categorySql)) { 
 			$endFilter[] = '(' . join(' OR ', $categorySql) . ') ';
 		} # if
-		if (!empty($filterValueSql)) {
-			$endFilter[] = join(' AND ', $filterValueSql);
-		} # if
-		if (!empty($strongNotSql)) {
-			$endFilter[] = join(' AND ', $strongNotSql);
-		} # if
+		$endFilter[] = join(' AND ', $filterValueSql);
+		$endFilter[] = join(' AND ', $strongNotSql);
+		$endFilter = array_filter($endFilter);
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
