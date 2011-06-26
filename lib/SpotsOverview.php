@@ -406,6 +406,76 @@ class SpotsOverview {
 	} # strongNotListToSql
 
 	/*
+	 * Prepareert de filter values naar een altijd juist formaat 
+	 */
+	private function prepareFilterValues($search) {
+		$filterValueList = array();
+		
+		# We hebben drie soorten filters:
+		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
+		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
+		#
+		# 		  We converteren deze oude type zoekopdrachten automatisch naar het nieuwe type.
+		#
+		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:operator:value, dus
+		#		  bijvoorbeeld tag:=:spotweb. Er is ook een shorthand beschikbaar, als je de operator weglaat (dus: tag:spotweb),
+		#		  nemen we aan dat de EQ operator bedoelt is.
+		#
+		#		- Speciale soorten lijsten - er zijn een aantal types welke een speciale betekenis hebben:
+		#				New:0 			(nieuwe posts)
+		#				Downloaded:0 	(spots welke gedownload zijn door deze account)
+		#				Watch:0 		(spots die op de watchlist staan van deze account)
+		#				Seen:0 			(spots die al geopend zijn door deze account)
+		#				
+		#
+		if (isset($search['type'])) {
+			if (!isset($search['text'])) {
+				$search['text'] = '';
+			} # if
+			
+			$search['value'] = array();
+			$search['value'][] = $search['type'] . ':=:' . $search['text'];
+			unset($search['type']);
+		} # if
+
+		# Zorg er voor dat we altijd een array hebben waar we door kunnen lopen
+		if ((!isset($search['value'])) || (!is_array($search['value']))) {
+			$search['value'] = array();
+		} # if
+
+		# en we converteren het nieuwe type (field:operator:value) naar een array zodat we er makkelijk door kunnen lopen
+		foreach($search['value'] as $value) {
+			if (!empty($value)) {
+				$tmpFilter = explode(':', $value);
+				
+				# als er geen comparison operator is opgegeven, dan
+				# betekent dat een '=' operator, dus fix de array op
+				# die manier.
+				if (count($tmpFilter) < 3) {
+					$tmpFilter = array($tmpFilter[0],
+									   '=',
+									   $tmpFilter[1]);
+				} # if
+				
+				# maak de daadwerkelijke filter
+				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
+										 'operator' => $tmpFilter[1],
+										 'value' => join(":", array_slice($tmpFilter, 2)));
+										 
+				# en creeer een filtervaluelist, we checken eeerst
+				# of een gelijkaardig item niet al voorkomt in de lijst
+				# met filters - als je namelijk twee keer dezelfde filter
+				# toevoegt wil MySQL wel eens onverklaarbaar traag worden
+				if (!in_array($filterValueTemp, $filterValueList)) {
+					$filterValueList[] = $filterValueTemp;
+				} # if
+			} # if
+		} # for
+		
+		return $filterValueList;
+	} # prepareFilterValues
+	
+	/*
 	 * Converteert meerdere user opgegeven 'text' filters naar SQL statements
 	 */
 	private function filterValuesToSql($filterValueList, $currentSession) {
@@ -413,6 +483,19 @@ class SpotsOverview {
 		$filterValueSql = array();
 		$additionalFields = array();
 		$sortFields = array();
+		
+		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
+		$filterFieldMapping = array('filesize' => 's.filesize',
+								  'date' => 's.stamp',
+								  'userid' => 'f.userid',
+								  'moderated' => 's.moderated',
+								  'poster' => 's.poster',
+								  'titel' => 's.title',
+								  'tag' => 's.tag',
+								  'new' => 'new',
+								  'downloaded' => 'downloaded', 
+								  'watch' => 'watch', 
+								  'seen' => 'seen');
 
 		foreach($filterValueList as $filterRecord) {
 			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
@@ -423,17 +506,6 @@ class SpotsOverview {
 			# kolomnaam. Als dat niet kan, gaan we er van uit dat het een 
 			# ongeldige zoekopdracht is, en dan interesseert ons heel de zoek
 			# opdracht niet meer.
-			$filterFieldMapping = array('filesize' => 's.filesize',
-									  'date' => 's.stamp',
-									  'userid' => 'f.userid',
-									  'moderated' => 's.moderated',
-									  'poster' => 's.poster',
-									  'titel' => 's.title',
-									  'tag' => 's.tag',
-									  'new' => 'new',
-									  'downloaded' => 'downloaded', 
-									  'watch' => 'watch', 
-									  'seen' => 'seen');
 			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
 				break;
 			} # if
@@ -488,20 +560,9 @@ class SpotsOverview {
 							break;
 					} # case 'new' 
 
-					case 'downloaded' : {
-							$tmpFilterValue = ' (l.download IS NULL)';
-							break;
-					} # case 'downloaded' 
-					
-					case 'watch' : {
-							$tmpFilterValue = ' (l.watch IS NULL)';
-							break;
-					} # case 'watch' 
-
-					case 'seen' : {
-							$tmpFilterValue = ' (l.seen IS NULL)';
-							break;
-					} # case 'seen' 
+					case 'downloaded' : $tmpFilterValue = ' (l.download IS NULL)'; 	break;
+					case 'watch' 	  : $tmpFilterValue = ' (l.watch IS NULL)'; break;
+					case 'seen' 	  : $tmpFilterValue = ' (l.seen IS NULL)'; 	break;
 				} # switch
 				
 				# en creeer de query string
@@ -550,6 +611,21 @@ class SpotsOverview {
 	function filterToQuery($search, $sort, $currentSession) {
 		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
 
+
+/*
+TODO:
+
+* Alle verdere code hieruit opsplitsen tussen het bouwen van informatie
+  en aparte functie voor omzetten naar SQL.
+* Variabele namen duidelijker maken en eventueel samenvoegen van 
+  verschillende namen indien mogelijk
+* Een 'compress tree' functie bouwen die als een hele subcategory
+  gekozen wordt deze samenvat in onze eigen samenvat taal.
+* De links die we genereren voeden met onze eigen searchtree ipv die uit de 
+  GEt parameters!
+*/
+
+
 		SpotTiming::start(__FUNCTION__);
 		$categoryList = array();
 		$strongNotList = array();
@@ -558,72 +634,20 @@ class SpotsOverview {
 		$sortFields = array();
 		$notSearch = '';
 
-		# dont filter anything
+		# Als er geen enkele filter opgegeven is, filteren we niets
 		if (empty($search)) {
 			return array('filter' => '',
-					 'search' => array(),
-					 'additionalFields' => array(),
-					 'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC')));
+						 'search' => array(),
+					     'additionalFields' => array(),
+					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC')));
 		} # if
 
-		# We hebben drie soorten filters:
-		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
-		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
-		#
-		# 		  We converteren deze oude type zoekopdrachten automatisch naar het nieuwe type.
-		#
-		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:operator:value, dus
-		#		  bijvoorbeeld tag:=:spotweb. Er is ook een shorthand beschikbaar, als je de operator weglaat (dus: tag:spotweb),
-		#		  nemen we aan dat de EQ operator bedoelt is.
-		#
-		#		- Speciale soorten lijsten - er zijn een aantal types welke een speciale betekenis hebben:
-		#				New:0 			(nieuwe posts)
-		#				Downloaded:0 	(spots welke gedownload zijn door deze account)
-		#				Watch:0 		(spots die op de watchlist staan van deze account)
-		#				Seen:0 			(spots die al geopend zijn door deze account)
-		#				
-		#
-		if (isset($search['type'])) {
-			if (!isset($search['text'])) {
-				$search['text'] = '';
-			} # if
-			
-			$search['value'][] = $search['type'] . ':=:' . $search['text'];
-			unset($search['type']);
-		} # if
 		
-		if ((!isset($search['value'])) || (!is_array($search['value']))) {
-			$search['value'] = array();
-		} # if
-
-		# en we converteren het nieuwe type (field:operator:value) naar een array zodat we er makkelijk door kunnen lopen
-		foreach($search['value'] as $value) {
-			if (!empty($value)) {
-				$tmpFilter = explode(':', $value);
-				
-				# als er geen comparison operator is opgegeven, dan
-				# betekent dat een '=' operator, dus fix de array op
-				# die manier.
-				if (count($tmpFilter) < 3) {
-					$tmpFilter = array($tmpFilter[0],
-									   '=',
-									   $tmpFilter[1]);
-				} # if
-				
-				# maak de daadwerkelijke filter
-				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
-										 'operator' => $tmpFilter[1],
-										 'value' => join(":", array_slice($tmpFilter, 2)));
-										 
-				# en creeer een filtervaluelist, we checken eeerst
-				# of een gelijkaardig item niet al voorkomt in de lijst
-				# met filters - als je namelijk twee keer dezelfde filter
-				# toevoegt wil MySQL wel eens onverklaarbaar traag worden
-				if (!in_array($filterValueTemp, $filterValueList)) {
-					$filterValueList[] = $filterValueTemp;
-				} # if
-			} # if
-		} # for
+		#
+		# Verwerk de parameters in $search (zowel legacy parameters, als de nieuwe 
+		# type filter waardes), naar een array met filter waarden
+		#
+		$filterValueList = $this->prepareFilterValues($search);
 		
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
