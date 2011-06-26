@@ -609,7 +609,7 @@ class SpotsOverview {
 	/*
 	 * Genereert de lijst met te sorteren velden
 	 */
-	function prepareSortFields($sort, $sortFields) {
+	private function prepareSortFields($sort, $sortFields) {
 		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
 
 		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
@@ -631,6 +631,84 @@ class SpotsOverview {
 		
 		return $sortFields;
 	} # prepareSortFields
+	
+	
+	/*
+	 * Comprimeert een expanded category list naar een gecomprimeerd formaat.
+	 * Zie de comments bij prepareCategorySelection() voor uitleg wat dit
+	 * precies betekent
+	 */
+	function compressCategorySelection($categoryList) {
+		$compressedList = '';
+		
+		# controleer of de lijst geldig is
+		if ((!isset($categoryList['cat'])) || (!is_array($categoryList['cat']))) {
+			return $compressedList;
+		} # if
+		
+		#
+		# Nu, we gaan feitelijk elke category die we hebben en elke subcategory daaronder
+		# aflopen om te zien of alle vereiste elementen er zijn. Als die er zijn, dan unsetten we
+		# die in $categoryList en voegen de compressede manier toe.
+		#
+		foreach(SpotCategories::$_head_categories as $headCatNumber => $headCatValue) {
+			$subcatsMissing = array();
+			
+			# loop door elke subcategorie heen 
+			if (isset($categoryList['cat'][$headCatNumber])) {
+				$subcatsMissing[$headCatNumber] = array();
+				
+				foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
+				
+					if (isset($categoryList['cat'][$headCatNumber][$subCat])) {
+						# en loop door de subcategorie waardes heen om te zien of er daar missen
+						foreach(SpotCategories::$_categories[$headCatNumber][$subCat] as $subcatValue => $subcatDescription) {
+						
+							# Is de category item in deze hoofdcategory's subcategory beschikbaar
+							if (array_search($subcatValue, $categoryList['cat'][$headCatNumber][$subCat]) === false) {
+								$subcatsMissing[$headCatNumber][$subCat][$subcatValue] = 1;
+							} # if
+						} # foreach
+					} else {
+						$subcatsMissing[$headCatNumber][$subCat] = array();
+					} # if
+					
+				} # foreach
+
+				# Niet de hele hoofdgroep is geselecteerd, dan selecteren we met de hand
+				# handmatig de verschillende subcategorieen.
+				#
+				if (!empty($subcatsMissing[$headCatNumber])) {
+					# Er kunnen drie situaties zijn:
+					# - de subcategorie bestaat helemaal niet, dan selecteren we heel de subcategorie.
+					# - de subcategorie bestaat maar is leeg, dan willen we er niets uit hebben
+					# - de subcategorie bestaat, maar is niet leeg. Dan bevat het de items die we NIET willen hebben
+					foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
+
+						if (!isset($subcatsMissing[$headCatNumber][$subCatKey])) {
+							$compressedList .= 'cat' . $headCatNumber . '_' . $subCatKey . ',';
+						} elseif (empty($subcatsMissing[$headCatNumber][$subCatKey])) {
+							# Als de subcategorie helemaal leeg is, dan wil de 
+							# gebruiker er niets uit hebben
+						} else {
+							# De subcategorie bestaat, maar bevat enkele items die de
+							# gebruiker niet wil hebben. Die pikken we er hier uit
+							foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
+								if (!isset($subcatsMissing[$headCatNumber][$subCatKey][$subCatValue])) {
+									$compressedList .= 'cat' . $headCatNumber . '_' . $subCatKey . $subCatValue . ',';
+								} # if
+							} # foreach
+						} # else
+						
+					} # if
+				} else {
+					$compressedList .= 'cat' . $headCatNumber . ',';
+				} # else
+			} # if
+		} # foreach
+		
+		return $compressedList;
+	} # compressCategorySelection
 
 	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
@@ -642,8 +720,6 @@ class SpotsOverview {
 /*
 TODO:
 
-* Een 'compress tree' functie bouwen die als een hele subcategory
-  gekozen wordt deze samenvat in onze eigen samenvat taal.
 * De links die we genereren voeden met onze eigen searchtree ipv die uit de 
   GEt parameters!
 */
