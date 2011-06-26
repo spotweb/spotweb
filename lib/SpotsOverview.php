@@ -303,19 +303,19 @@ class SpotsOverview {
 	 * Converteert een lijst met subcategorieen 
 	 * naar een lijst met daarin SQL where filters
 	 */
-	private function categoryListToSql($tmpCategoryList) {
-		$categoryList = array();
+	private function categoryListToSql($categoryList) {
+		$categorySql = array();
 
 		# controleer of de lijst geldig is
-		if ((!isset($tmpCategoryList['cat'])) || (!is_array($tmpCategoryList['cat']))) {
-			return $categoryList;
+		if ((!isset($categoryList['cat'])) || (!is_array($categoryList['cat']))) {
+			return $categorySql;
 		} # if
 		
 		# 
 		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
 		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
 		# 
-		foreach($tmpCategoryList['cat'] as $catid => $cat) {
+		foreach($categoryList['cat'] as $catid => $cat) {
 			$catid = (int) $catid;
 			$tmpStr = "((category = " . (int) $catid . ")";
 
@@ -369,10 +369,10 @@ class SpotsOverview {
 			
 			# Sluit het haakje af
 			$tmpStr .= ")";
-			$categoryList[] = $tmpStr;
+			$categorySql[] = $tmpStr;
 		} # foreach
 		
-		return $categoryList;
+		return $categorySql;
 	} # categoryListToSql 
 	
 	/*
@@ -380,29 +380,31 @@ class SpotsOverview {
 	 * behorende SQL where statements
 	 */
 	private function strongNotListToSql($strongNotList) {
-		# strong nots
-		$notSearch = '';
-		if (!empty($strongNotList)) {
-			$notSearchTmp = array();
-			
-			foreach(array_keys($strongNotList) as $strongNotCat) {
-				foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-					$subcat = $strongNotSubcat[0];
-
-					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-					# equality ipv like doen
-					if (in_array($subcat, array('a', 'z'))) { 
-						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
-					} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
-						$notSearchTmp[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
-					} # if
-				} # foreach				
-			} # forEach
-
-			$notSearch = join(' AND ', $notSearchTmp);
-		} # if
+		$strongNotSql = array();
 		
-		return $notSearch;
+		if (empty($strongNotList)) {
+			return array();
+		} # if
+
+		#
+		# Voor elke strong not die we te zien krijgen, creer de daarbij
+		# behorende SQL WHERE filter
+		#
+		foreach(array_keys($strongNotList) as $strongNotCat) {
+			foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
+				$subcat = $strongNotSubcat[0];
+
+				# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+				# equality ipv like doen
+				if (in_array($subcat, array('a', 'z'))) { 
+					$strongNotSql[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
+				} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
+					$strongNotSql[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
+				} # if
+			} # foreach				
+		} # forEach
+
+		return $strongNotSql;
 	} # strongNotListToSql
 
 	/*
@@ -560,9 +562,9 @@ class SpotsOverview {
 							break;
 					} # case 'new' 
 
-					case 'downloaded' : $tmpFilterValue = ' (l.download IS NULL)'; 	break;
-					case 'watch' 	  : $tmpFilterValue = ' (l.watch IS NULL)'; break;
-					case 'seen' 	  : $tmpFilterValue = ' (l.seen IS NULL)'; 	break;
+					case 'downloaded' : $tmpFilterValue = ' (l.download IS NOT NULL)'; 	break;
+					case 'watch' 	  : $tmpFilterValue = ' (l.watch IS NOT NULL)'; break;
+					case 'seen' 	  : $tmpFilterValue = ' (l.seen IS NOT NULL)'; 	break;
 				} # switch
 				
 				# en creeer de query string
@@ -640,10 +642,6 @@ class SpotsOverview {
 /*
 TODO:
 
-* Alle verdere code hieruit opsplitsen tussen het bouwen van informatie
-  en aparte functie voor omzetten naar SQL.
-* Variabele namen duidelijker maken en eventueel samenvoegen van 
-  verschillende namen indien mogelijk
 * Een 'compress tree' functie bouwen die als een hele subcategory
   gekozen wordt deze samenvat in onze eigen samenvat taal.
 * De links die we genereren voeden met onze eigen searchtree ipv die uit de 
@@ -653,12 +651,17 @@ TODO:
 
 		SpotTiming::start(__FUNCTION__);
 		$categoryList = array();
+		$categorySql = array();
+		
 		$strongNotList = array();
+		$strongNotSql = array();
+		
 		$filterValueList = array();
+		$filterValueSql = array();
+		
 		$additionalFields = array();
 		$sortFields = array();
-		$notSearch = '';
-
+		
 		# Als er geen enkele filter opgegeven is, filteren we niets
 		if (empty($search)) {
 			return array('filter' => '',
@@ -673,13 +676,14 @@ TODO:
 		# type filter waardes), naar een array met filter waarden
 		#
 		$filterValueList = $this->prepareFilterValues($search);
-		
+		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
+
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search = array_merge($search, $this->_settings->get('index_filter'));
 		} # if
-
+		
 		# 
 		# Vertaal nu een eventueel opgegeven boom naar daadwerkelijke subcategorieen
 		# en dergelijke
@@ -687,34 +691,26 @@ TODO:
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
-			list($tmpCategoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
+			list($categoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
 
 			# en converteer de lijst met subcategorieen naar een lijst met SQL
 			# filters
-			$categoryList = $this->categoryListToSql($tmpCategoryList);
-			$notSearch = $this->strongNotListToSql($strongNotList);
+			$categorySql = $this->categoryListToSql($categoryList);
+			$strongNotSql = $this->strongNotListToSql($strongNotList);
 		} # if
-
-		#
-		# Converteert de text searches naar SQL where filters
-		#
-		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
 		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
 		$sortFields = $this->prepareSortFields($sort, $sortFields);
 
 		$endFilter = array();
-		if (!empty($categoryList)) {
-			$endFilter[] = '(' . join(' OR ', $categoryList) . ') ';
+		if (!empty($categorySql)) {
+			$endFilter[] = '(' . join(' OR ', $categorySql) . ') ';
 		} # if
 		if (!empty($filterValueSql)) {
 			$endFilter[] = join(' AND ', $filterValueSql);
 		} # if
-		if (!empty($notSearch)) {
-			$endFilter[] = $notSearch;
-		} # if
-		if (!empty($newSpotsSearch)) {
-			$endFilter[] = $newSpotsSearch;
+		if (!empty($strongNotSql)) {
+			$endFilter[] = join(' AND ', $strongNotSql);
 		} # if
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
