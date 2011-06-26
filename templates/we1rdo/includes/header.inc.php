@@ -7,7 +7,7 @@
 <?php if ($settings->get('deny_robots')) { echo "\t\t<meta name=\"robots\" content=\"noindex, nofollow\">\r\n"; } ?>
 		<base href='<?php echo $tplHelper->makeBaseUrl("full"); ?>'>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_rssfeed, '')) { ?>
-		<link rel='alternate' type='application/rss+xml' href='<?php echo $tplHelper->getPageUrl('rss', true) . $tplHelper->makeApiRequestString(); ?>'>
+		<link rel='alternate' type='application/rss+xml' href='<?php echo $tplHelper->makeRssUrl(); ?>'>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_statics, '')) { ?>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
