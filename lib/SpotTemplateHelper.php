@@ -375,17 +375,19 @@ class SpotTemplateHelper {
 			return '';
 		} # else
 	} # makeApiRequestString
+
+	/* 
+	 * Creert een RSS url
+	 */
+	function makeRssUrl() {
+		return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->getQueryParams("filterValues");
+	} # makeRssUrl
 	
 	/*
 	 * Creert een basis navigatie pagina
 	 */
-	function getPageUrl($page, $includeParams = false) {
-		$url = $this->makeBaseUrl("path") . '?page=' . $page;
-		if ($includeParams) {
-			$url .= $this->getQueryParams("filterValues");
-		} # if
-		
-		return $url;
+	function getPageUrl($page) {
+		return $this->makeBaseUrl("path") . '?page=' . $page;
 	} # getPageUrl
 	
 	/*
