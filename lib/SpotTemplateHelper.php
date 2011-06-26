@@ -5,6 +5,7 @@ class SpotTemplateHelper {
 	protected $_settings;
 	protected $_db;
 	protected $_spotnzb;
+	protected $_spotsOverview;
 	protected $_currentSession;
 	protected $_params;
 	protected $_nzbhandler;
@@ -21,6 +22,10 @@ class SpotTemplateHelper {
 		# voor het maken van de sabnzbd categorieen nodig hebben.
 		# Door die hier aan te maken verplaatsen we een boel allocaties
 		$this->_spotnzb = new SpotNzb($db, $settings);
+
+		# We hebben SpotsOverview altijd nodig omdat we die ook voor het
+		# maken van de sorturl nodig hebben, dus maken we deze hier aan
+		$this->_spotsOverview = new SpotsOverview($db, $settings);
 
 		# We initialiseren hier een NzbHandler object om te voorkomen
 		# dat we voor iedere spot een nieuw object initialiseren, een property
@@ -72,8 +77,7 @@ class SpotTemplateHelper {
 
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
+		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
 
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
@@ -87,13 +91,13 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 
-		$filterStr .= "&search[value][]=New:0";
+		$filterStr .= "&search[value][]=New:=:0";
 		$newCount = $this->getFilteredSpotCount($filterStr);
 
 		# en geef het aantal terug dat we willen hebben. Inclusief extragratis
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
 		# zijn, SpotWeb niet ontzettend traag wordt. 
-		if ($newCount > 5000) {
+		if ($newCount > 500) {
 			$skipNewCount = true;
 			return '';
 		} elseif ($newCount > 0) {
@@ -112,8 +116,7 @@ class SpotTemplateHelper {
 
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
+		return $this->_spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
 	/* 
@@ -132,8 +135,7 @@ class SpotTemplateHelper {
 		
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
+		$fullSpot = $this->_spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
 
 		# seen list
 		if ($markAsRead) {
@@ -319,7 +321,7 @@ class SpotTemplateHelper {
 	 * Creert een sorteer url
 	 */
 	function makeSortUrl($page, $sortby, $sortdir) {
-		return $this->makeBaseUrl("path") . '?page=' . $page . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+		return $this->makeBaseUrl("path") . '?page=' . $page . $this->convertFilterToQueryParams() . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
 	} # makeSortUrl
 
 	/*
@@ -343,21 +345,21 @@ class SpotTemplateHelper {
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:=:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makePosterUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op userid
 	 */
 	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeUserIdUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op tag
 	 */
 	function makeTagUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:' . urlencode($spot['tag']);
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:=:' . urlencode($spot['tag']);
 	} # makeUserIdUrl
 
 	/*
@@ -380,7 +382,7 @@ class SpotTemplateHelper {
 	 * Creert een RSS url
 	 */
 	function makeRssUrl() {
-		return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->getQueryParams("filterValues");
+		return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
 	} # makeRssUrl
 	
 	/*
@@ -443,50 +445,94 @@ class SpotTemplateHelper {
 
 		return $tmp;
 	} # formatContent
+
+	/*
+	 * Geeft de huidige lijst met categoryselectie terug
+	 * als een comma seperated lijst voor de dynatree initialisatie
+	 */
+	function categoryListToDynatree() {
+		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList']);
+	} # categoryListToDynatree
 	
-	function getQueryParams($dontInclude = array()) {
-		$getUrl = '';
+	/*
+	 * Converteert de aanwezige filters naar een nieuwe, eventueel
+	 * geoptimaliserde GET (query) parameters 
+	 */
+	function convertFilterToQueryParams() {
+		#var_dump($this->_params['parsedsearch']['categoryList']);
+		#var_dump($this->_params['parsedsearch']['strongNotList']);
+		#var_dump($this->_params['parsedsearch']['filterValueList']);
+		#var_dump($this->_params['parsedsearch']['sortFields']);
 
-		if (!is_array($dontInclude)) {
-			$dontInclude = array($dontInclude);
+		# als we niet aan het zoeken zijn, doen we niets
+		if (!isset($this->_params['parsedsearch'])) {
+			return '';;
 		} # if
-
-		if (isset($this->_params['activefilter'])) {
-			foreach($this->_params['activefilter'] as $key => $val) {
-				if (array_search($key, array_merge($dontInclude, array('filterValues', 'type', 'text'))) === false) {
-					if (!is_array($val)) {
-						if (!empty($val)) {
-							$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
-						} # if
-					} else {
-						foreach($val as $valVal) {
-							if (!empty($valVal)) {
-								$getUrl .= '&amp;search[' .  $key . '][]=' . urlencode($valVal);
-							} # if
-						} # foreach
-					} # else
-				}
+		
+		# Eerst bouwen de search[tree] value op
+		$searchTreeStr = '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList']);
+		foreach($this->_params['parsedsearch']['strongNotList'] as $headCat => $subcatList) {
+			foreach($subcatList as $subcatValue) {
+				$searchTreeStr .= '~cat' . $headCat . '_' . $subcatValue . ',';
 			} # foreach
+		} # foreach
+		
+		# Vervolgens bouwen we de filtervalues op
+		$filterStr = '';
+		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . $value['value'];
+		} # foreach
+		
+		# en eventueel als de huidige list unfiltered is, geef
+		# dat ook mee
+		$unfilteredStr = '';
+		if ($this->_params['parsedsearch']['unfiltered']) {
+			$unfilteredStr = '&amp;search[unfiltered]=true';
 		} # if
 
-		# zijn er sorteer opties meegestuurd?
-		if (array_search('sortdir', $dontInclude) === false) {
-			if (!empty($this->_params['sortdir'])) {
-				$getUrl .= '&amp;sortdir=' . urlencode($this->_params['sortdir']);
+		return $unfilteredStr . $searchTreeStr . $filterStr;
+	} # convertFilterToQueryParams
+	
+
+	/*
+	 * Geeft de huidige actieve sortering terug
+	 */
+	function getActiveSorting() {
+		$activeSort = array('field' => '',
+							'direction' => '');
+		
+		# als we niet aan het sorteren zijn, doen we niets
+		if (!isset($this->_params['parsedsearch'])) {
+			return $activeSort;
+		} # if
+		
+		# we voegen alleen sorteringen toe die ook door
+		# de gebruiker expliciet zijn toegevoegd
+		foreach($this->_params['parsedsearch']['sortFields'] as $value) {
+			if (!$value['autoadded']) {
+				$activeSort['field'] = $value['field'];
+				$activeSort['direction'] = $value['direction'];
+				break;
 			} # if
+		} # foreach
+		
+		return $activeSort;
+	} # getActiveSorting
+	
+	/*
+	 * Converteert de huidige actieve sorteer parameters
+	 * naar GET parameters voor in de URL
+	 */
+	function convertSortToQueryParams() {
+		$sortStr = '';
+		$activeSort = $this->getActiveSorting();
+		
+		if (!empty($activeSort['field'])) {
+			return '&amp;sortby=' . $activeSort['field'] . '&amp;sortdir=' . $activeSort['direction'];
 		} # if
-		if (array_search('sortby', $dontInclude) === false) {
-			if (!empty($this->_params['sortby'])) {
-				$getUrl .= '&amp;sortby=' . urlencode($this->_params['sortby']);
-			} # if
-		} # if
-
-		# Deze vreemde uitzonderingen maken het iets gemakkelijker filters te maken aan de hand van zoekacties
-		$getUrl = str_ireplace("%3a", ":", $getUrl);
-		$getUrl = str_ireplace("%3d", "=", $getUrl);
-
-		return $getUrl;
-	} # getQueryParams
+		
+		return '';
+	} # convertSortToQueryParams
 
 	/* 
 	 * Safely escape de velden en vul wat velden in

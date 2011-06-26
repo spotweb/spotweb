@@ -26,27 +26,34 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="">
 <?php
-	$activefilter = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $activefilter);
-	
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
 	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
-	$searchType = 'Titel'; $searchText = '';
-	if (isset($activefilter['filterValues'])) {
-		foreach($activefilter['filterValues'] as $filterType) {
-			if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
-				$searchType = $filterType['fieldname'];
-				$searchText = $filterType['value'];
-			} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
-				$minFilesize = $filterType['value'];
-			} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
-				$maxFilesize = $filterType['value'];
-			} # if
-		} # foreach
-	} # if
+	$searchType = 'Titel'; 
+	$searchText = '';
+	$sortType = 'stamp';
+	$sortOrder = 'DESC';
+	
+	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			$searchType = $filterType['fieldname'];
+			$searchText = $filterType['value'];
+		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
+			$minFilesize = $filterType['value'];
+		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
+			$maxFilesize = $filterType['value'];
+		} # if
+	} # foreach
+
+	# Als er een sortering is die we kunnen gebruiken, dan willen we ook dat
+	# in de UI weergeven
+	$tmpSort = $tplHelper->getActiveSorting();
+	$sortType = strtolower($tmpSort['field']);
+	$sortOrder = strtolower($tmpSort['direction']);
 ?>
-					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
+					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
 	$filterColCount = 3;
 	if ($settings->get('retrieve_full')) {
@@ -67,14 +74,14 @@
 						</ul>
 
 						<h4>Sorteren op:</h4>
-						<input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
+						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
-							<li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
-							<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
-							<li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
-							<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
-							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
-							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
+							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
+							<li> <input type="radio" name="sortby" value="title" <?php echo $sortType == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
+							<li> <input type="radio" name="sortby" value="poster" <?php echo $sortType == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
+							<li> <input type="radio" name="sortby" value="stamp" <?php echo $sortType == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $sortType == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
+							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $sortType == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
 						</ul>
 
 						<h4>Leeftijd limiteren</h4>
@@ -102,8 +109,8 @@
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
 						<ul class="search clearCategories onecol">
-							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
-							<label>Categori&euml;n <?php echo $activefilter['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
+							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
+							<label>Categori&euml;n <?php echo $parsedsearch['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
 					</div>
 				</form>

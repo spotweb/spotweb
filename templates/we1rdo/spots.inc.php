@@ -5,8 +5,6 @@
 		require_once "includes/filters.inc.php";
 	} # if
 
-	$getUrl = $tplHelper->getQueryParams(); 
-	
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
@@ -164,19 +162,19 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 					<tbody>
 						<tr>
 <?php if ($prevPage >= 0) { ?> 
-							<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
+							<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">&lt;&lt;</a></td>
 <?php }?> 
 							<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
 <?php if ($nextPage > 0) { ?> 
-							<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
+							<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">&gt;&gt;</a></td>
 <?php } ?>
 						</tr>
 					</tbody>
 				</table>
 			<?php if ($show_multinzb_checkbox) { echo "</form>"; } ?>
 				<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
-				<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
-				<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
+				<input type="hidden" id="nextPage" value="<?php echo $nextPage; ?>">
+				<input type="hidden" id="getURL" value="<?php echo $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">
 <?php } ?>
 			
 			</div>
