@@ -603,13 +603,38 @@ class SpotsOverview {
 		
 		return array($filterValueSql, $additionalFields, $sortFields);
 	} # filterValuesToSql
-	
+
+	/*
+	 * Genereert de lijst met te sorteren velden
+	 */
+	function prepareSortFields($sort, $sortFields) {
+		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
+
+		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
+			# We sorteren standaard op stamp, maar alleen als er vanuit de query
+			# geen expliciete sorteermethode is meegegeven
+			if (empty($sortFields)) {
+				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC');
+			} # if
+		} else {
+			if (strtoupper($sort['direction']) != 'ASC') {
+				$sort['direction'] = 'DESC';
+			} # if
+			
+			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
+			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
+			# van de sorteer lijst.
+			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
+		} # else
+		
+		return $sortFields;
+	} # prepareSortFields
+
 	/*
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
 	function filterToQuery($search, $sort, $currentSession) {
-		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
 
 
 /*
@@ -676,22 +701,7 @@ TODO:
 		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
 		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
-		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
-			# We sorteren standaard op stamp, maar alleen als er vanuit de query
-			# geen expliciete sorteermethode is meegegeven
-			if (empty($sortFields)) {
-				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC');
-			} # if
-		} else {
-			if (strtoupper($sort['direction']) != 'ASC') {
-				$sort['direction'] = 'DESC';
-			} # if
-			
-			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
-			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
-			# van de sorteer lijst.
-			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction']));
-		} # else
+		$sortFields = $this->prepareSortFields($sort, $sortFields);
 
 		$endFilter = array();
 		if (!empty($categoryList)) {
