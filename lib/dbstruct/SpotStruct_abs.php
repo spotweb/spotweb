@@ -46,7 +46,19 @@ abstract class SpotStruct_abs {
 
 	/* controleert of een tabel bestaat */
 	abstract function tableExists($tablename);
-
+	
+	/* controleert of een full text index bestaat */
+	abstract function ftsExists($ftsname, $tablename);
+	
+	/* maakt een full text index aan */
+	abstract function createFts($ftsname, $tablename, $colname);
+	
+	/* dropt en fulltext index */
+	abstract function dropFts($ftsname, $tablename);
+	
+	/* geeft FTS info terug */
+	abstract function getFtsInfo($ftsname, $tablename, $colname);
+	
 	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
 	abstract function createTable($tablename, $collation);
 
@@ -89,6 +101,24 @@ abstract class SpotStruct_abs {
 		} # if
 	} # validateIndex
 
+	/* controleert of de fulltext structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
+	function validateFts($ftsname, $tablename, $colName) {
+		echo "\tValidating FTS " . $ftsname . PHP_EOL;
+		
+		if (!$this->compareFts($ftsname, $tablename, $colName)) {
+			# Drop de FTS
+			if ($this->ftsExists($ftsname, $tablename)) {
+				echo "\t\tDropping FTS " . $ftsname . PHP_EOL;
+				$this->dropFts($ftsname, $tablename);
+			} # if
+			
+			echo "\t\tAdding FTS " . $ftsname . PHP_EOL;
+			
+			# en creeer hem opnieuw
+			$this->createFts($ftsname, $tablename, $colName);
+		} # if
+	} # validateFts
+
 	/* controleert of de index structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
 	function validateColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		echo "\tValidating " . $tablename . "(" . $colName . ")" . PHP_EOL;
@@ -103,7 +133,7 @@ abstract class SpotStruct_abs {
 				$this->addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation);
 			} # else
 		} # if
-	} # validateIndex
+	} # validateColumn
 	
 	/* vergelijkt een column met de gewenste structuur */
 	function compareColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
@@ -182,6 +212,23 @@ abstract class SpotStruct_abs {
 		return true;
 	} # compareIndex
 	
+	/* vergelijkt een FTS met de gewenste structuur */
+	function compareFts($ftsname, $tablename, $colName) {
+		# Vraag nu de FTS informatie op
+		$q = $this->getFtsInfo($ftsname, $tablename, $colName);
+
+		# Als het aantal kolommen niet gelijk is
+		if (empty($q)) { 
+			return false;
+		} # if
+		
+		# we controleren vervolgens of de kolomnaam hetzelfde is
+		if ($colName != $q['column_name']) {
+			return false;
+		} # if
+		
+		return true;
+	} # compareFts
 
 	function updateSchema() {
 		# drop eventueel FTS indexes op de spotsfull tabel
@@ -443,9 +490,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
-		$this->validateIndex("idx_fts_spots_1", "FULLTEXT", "spots", array("poster"));
-		$this->validateIndex("idx_fts_spots_2", "FULLTEXT", "spots", array("title"));
-		$this->validateIndex("idx_fts_spots_3", "FULLTEXT", "spots", array("tag"));
+		$this->validateFts("idx_fts_spots_1", "spots", "poster");
+		$this->validateFts("idx_fts_spots_2", "spots", "title");
+		$this->validateFts("idx_fts_spots_3", "spots", "tag");
 
 		# ---- Indexen op nntp ----
 		$this->validateIndex("idx_nntp_1", "UNIQUE", "nntp", array("server"));

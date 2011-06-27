@@ -65,6 +65,31 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addIndex
 
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename) {
+		return $this->indexExists($ftsname, $tablename);
+	} # ftsExists
+	
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colname) {
+		return $this->addIndex($ftsname, 'FULLTEXT', $tablename, array($colname));
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename) {
+		$this->dropIndex($ftsname, $tablename);
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colname) {
+		$tmpIndex = $this->getIndexInfo($ftsname, $tablename);
+		if (strtolower($tmpIndex[0]['index_type']) != 'fulltext') {
+			return array();
+		} else {
+			return $tmpIndex[0];
+		} # if
+	} # getFtsInfo
+	
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
 		# Check eerst of de tabel bestaat, anders kan
