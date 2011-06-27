@@ -747,6 +747,9 @@ TODO:
 			return array('filter' => '',
 						 'search' => array(),
 					     'additionalFields' => array(),
+						 'categoryList' => array(),
+						 'strongNotList' => array(),
+					     'filterValueList' => array(),
 						 'unfiltered' => false,
 					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true)));
 		} # if
