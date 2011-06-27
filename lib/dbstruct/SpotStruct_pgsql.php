@@ -54,6 +54,30 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		return !empty($q);
 	} # columnExists
 
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename) {
+		return $this->indexExists($ftsname, $tablename);
+	} # ftsExists
+	
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colname) {
+		return $this->addIndex($ftsname, 'FULLTEXT', $tablename, array($colname));
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename) {
+		$this->dropIndex($ftsname, $tablename);
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colname) {
+		$tmpIndex = $this->getIndexInfo($ftsname, $tablename);
+		if (strtolower($tmpIndex[0]['index_type']) != 'fulltext') {
+			return array();
+		} else {
+			return $tmpIndex[0];
+		} # if
+	} # getFtsInfo
 
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
