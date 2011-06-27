@@ -435,7 +435,12 @@ class SpotsOverview {
 				$search['text'] = '';
 			} # if
 			
-			$search['value'] = array();
+			# Een combinatie van oude filters en nieuwe kan voorkomen, we 
+			# willen dan niet met deze conversie de normaal soorten filters
+			# overschrijven.
+			if (!is_array($search['value'])) {
+				$search['value'] = array();
+			} # if
 			$search['value'][] = $search['type'] . ':=:' . $search['text'];
 			unset($search['type']);
 		} # if
@@ -783,6 +788,7 @@ class SpotsOverview {
 		$endFilter[] = join(' AND ', $filterValueSql);
 		$endFilter[] = join(' AND ', $strongNotSql);
 		$endFilter = array_filter($endFilter);
+
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
