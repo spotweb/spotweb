@@ -130,14 +130,14 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		# converteer het kolom type naar het type dat wij gebruiken
 		$colType = $this->swDtToNative($colType);
 
-			# Enkel pgsql 9.1 (op dit moment beta) ondersteunt per column collation,
-			# dus daar doen we voor nu niks mee.
-			switch(strtolower($collation)) {
-				case 'utf8'		: 
-				case 'ascii'	: 
-				case ''			: $colSetting = ''; break;
-				default			: throw new Exception("Invalid collation setting");
-			} # switch
+		# Enkel pgsql 9.1 (op dit moment beta) ondersteunt per column collation,
+		# dus daar doen we voor nu niks mee.
+		switch(strtolower($collation)) {
+			case 'utf8'		: 
+			case 'ascii'	: 
+			case ''			: $colSetting = ''; break;
+			default			: throw new Exception("Invalid collation setting");
+		} # switch
 		
 		# en zet de 'NOT NULL' om naar een string
 		switch($notNull) {

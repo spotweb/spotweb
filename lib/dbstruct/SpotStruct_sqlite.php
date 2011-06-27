@@ -156,6 +156,11 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			return ;
 		} # if
 		
+		# sqlite kent niet echt types, dus ook dat vinden we niet erg
+		if ($what == 'type') {
+			return ;
+		} # if
+		
 		throw new Exception("sqlite ondersteund het wijzigen van kolommen niet");
 	} # modifyColumn
 	
