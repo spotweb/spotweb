@@ -716,16 +716,6 @@ class SpotsOverview {
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
 	function filterToQuery($search, $sort, $currentSession) {
-
-
-/*
-TODO:
-
-* De links die we genereren voeden met onze eigen searchtree ipv die uit de 
-  GEt parameters!
-*/
-
-
 		SpotTiming::start(__FUNCTION__);
 		
 		$isUnfiltered = false;
@@ -754,7 +744,6 @@ TODO:
 					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true)));
 		} # if
 
-		
 		#
 		# Verwerk de parameters in $search (zowel legacy parameters, als de nieuwe 
 		# type filter waardes), naar een array met filter waarden
