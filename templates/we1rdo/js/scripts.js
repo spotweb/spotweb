@@ -1,8 +1,11 @@
-jQuery.address.init(function() {
+$.address.init(function() {
 	jQuery('.spotlink').address();
 }).change( function( event ) {
-  if(jQuery.address.value()=="/") $("a.closeDetails").click();
-  else openSpot(this,jQuery.address.value());
+	if(jQuery.address.value()=="/") {
+		$("a.closeDetails").click()
+	} else {
+		$(this).click();
+	} // else
 });
 
 $(function(){
