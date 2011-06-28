@@ -55,28 +55,50 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 	} # columnExists
 
 	/* controleert of een full text index bestaat */
-	function ftsExists($ftsname, $tablename) {
-		return $this->indexExists($ftsname, $tablename);
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				return false;
+			} # if
+		} # foreach
+		
+		return true;
 	} # ftsExists
-	
+			
 	/* maakt een full text index aan */
-	function createFts($ftsname, $tablename, $colname) {
-		return $this->addIndex($ftsname, 'FULLTEXT', $tablename, array($colname));
+	function createFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				$this->dropIndex($ftsname . '_' . $num, $tablename);
+				$this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
+			} # if
+		} # foreach
 	} # createFts
 	
 	/* dropt en fulltext index */
-	function dropFts($ftsname, $tablename) {
-		$this->dropIndex($ftsname, $tablename);
+	function dropFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$this->dropIndex($ftsname . '_' . $num, $tablename);
+		} # foreach
 	} # dropFts
 	
 	/* geeft FTS info terug */
-	function getFtsInfo($ftsname, $tablename, $colname) {
-		$tmpIndex = $this->getIndexInfo($ftsname, $tablename);
-		if (strtolower($tmpIndex[0]['index_type']) != 'fulltext') {
-			return array();
-		} else {
-			return $tmpIndex[0];
-		} # if
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpIndex = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if (!empty($tmpIndex)) {
+				$ftsList[] = $tmpIndex[0];
+			} # if
+		} # foreach
+		
+		return $ftsList;
 	} # getFtsInfo
 
 	/* Add an index, kijkt eerst wel of deze index al bestaat */

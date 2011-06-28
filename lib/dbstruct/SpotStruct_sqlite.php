@@ -51,43 +51,54 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	} # columnExists
 	
 	/* controleert of een full text index bestaat */
-	function ftsExists($ftsname, $tablename) {
-		return $this->tableExists($ftsname);
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $colName) {
+			$colInfo = $this->getColumnInfo($ftsname, $colName);
+			
+			if (empty($colInfo)) {
+				return false;
+			} # if
+		} # foreach
 	} # ftsExists
-	
+			
 	/* maakt een full text index aan */
-	function createFts($ftsname, $tablename, $colName) {
-		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS3(" . $colName . ", tokenize=porter)");
-		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . $colName . ") SELECT rowid," . $colName . " FROM " . $tablename);
+	function createFts($ftsname, $tablename, $colList) {
+		# Drop eerst eventuele tabellen en dergelijke mochten die
+		# al bestaan maar niet aan de voorwaarden voldoen
+		$this->dropTable($ftsname);
+		$this->_dbcon->rawExec("DROP TRIGGER IF EXISTS " . $ftsname . "_insert");
+		
+		# en create de tabel opneiuw
+		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS3(" . implode(',', $colList) . ", tokenize=porter)");
+
+		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . implode(',', $colList) . ") SELECT rowid," . implode(',', $colList) . " FROM " . $tablename);
 		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " FOR EACH ROW
 								BEGIN
-								   INSERT INTO " . $ftsname . "(rowid," . $colName . ") VALUES (new.rowid, new." . $colName . ");
+								   INSERT INTO " . $ftsname . "(rowid," . implode(',', $colList) . ") VALUES (new.rowid, new." . implode(', new.', $colList) . ");
 								END");
 	} # createFts
 	
 	/* dropt en fulltext index */
-	function dropFts($ftsname, $tablename) {
+	function dropFts($ftsname, $tablename, $colList) {
 		$this->dropTable($ftsname);
 	} # dropFts
 	
 	/* geeft FTS info terug */
-	function getFtsInfo($ftsname, $tablename, $colname) {
-		/* 
-		 * Full text searches zijn virtuele tables in sqlite,
-		 * we vragen dus de tabel definitie op
-		 */
-		$columnInfo = $this->getColumnInfo($ftsname, $colname);
-
-		# lowercase de column_name array name omdat dat verwacht 
-		# wordt door de aanroeper
-		if (!empty($columnInfo)) {
-			$columnInfo['column_name'] = $columnInfo['COLUMN_NAME'];
-			return $columnInfo;
-		} else {
-			return array();
-		} # else 
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpColInfo = $this->getColumnInfo($ftsname, $col);
+			
+			if (!empty($tmpColInfo)) {
+				$tmpColInfo['column_name'] = $tmpColInfo['COLUMN_NAME'];
+				$ftsList[] = $tmpColInfo;
+			} # if
+		} # foreach
+		
+		return $ftsList;
 	} # getFtsInfo
-
+	
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($idxname, $tablename)) {
