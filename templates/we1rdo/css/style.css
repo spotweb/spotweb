@@ -101,6 +101,9 @@ div.notifications p.multinzb {margin:0 0 0 3px; line-height:18px;}
 div.notifications p.multinzb a.clear {float:left; display:block; width:20px; height:18px; line-height:18px; background:none; cursor:pointer; font-size:12px; color:#fff; font-weight:bold;}
 div.notifications p.multinzb a.button {cursor:pointer; margin:0 5px 0 0; color:#fff;}
 
+/* VOORKEUREN */
+div.testNotification {border: 1px dotted #CCCCCC; padding: 5px; margin-bottom: 10px; line-height:20px;}
+
 /* ZOEKEN */
 a.viewState {cursor:pointer;}
 h4 span.info,

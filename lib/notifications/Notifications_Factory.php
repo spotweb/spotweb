@@ -9,6 +9,7 @@ class Notifications_Factory {
 			case 'growl'			: $handler = new Notifications_Growl($appName, $dataArray); break;
 			case 'notifo'	  		: $handler = new Notifications_Notifo($appName, $dataArray); break;
 			case 'prowl'			: $handler = new Notifications_Prowl($appName, $dataArray); break;
+			case 'twitter'			: $handler = new Notifications_Twitter($appName, $dataArray); break;
 			default					: $handler = false; break;
 		} # switch
 
@@ -19,7 +20,8 @@ class Notifications_Factory {
 		return array('email',
 					 'growl',
 					 'notifo',
-					 'prowl'
+					 'prowl',
+					 'twitter'
 					);
 	}
 
