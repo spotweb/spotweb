@@ -94,6 +94,7 @@ abstract class dbeng_abs {
 	 */
 	function createTextQuery($field, $value) {
 		return array('filter' => " " . $field . " LIKE '%" . $this->safe($value) . "%'",
+					 'additionalTables' => array(),
 					 'sortable' => false);
 	} # createTextQuery
 

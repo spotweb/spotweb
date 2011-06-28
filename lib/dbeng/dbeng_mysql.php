@@ -265,6 +265,7 @@ class dbeng_mysql extends dbeng_abs {
 		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
 		
 		return array('filter' => $queryPart,
+					 'additionalTables' => array(),
 					 'sortable' => ($searchMode != 'normal') );
 	} # createTextQuery()
 	

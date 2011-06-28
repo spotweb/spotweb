@@ -22,20 +22,26 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
-/*
 	function createTextQuery($field, $searchValue) {
 		SpotTiming::start(__FUNCTION__);
 
 		//
 		// FIXME 
-		// Sorteeren op rank, zie http://www.postgresql.org/docs/8.3/static/textsearch-controls.html
+		// 	Sorteren op rank
 		//
-		$queryPart = " to_tsvector('Dutch', " . $field . ") @@ '" . $this->safe(strtolower($searchValue)) . "' ";
+		
+		# omdat we de fieldname in tabel.fieldname krijgen, maar sqlite dat niet
+		# snapt, halen we de tabelnaam weg
+		$tmpField = implode('.', $field);
+		$field = $tmpField[1];
+		
+		# en voeg de query daadwerkelijk uit
+		$queryPart = " idx_fts_spots MATCH '" . $tmpField . ":" . $this->safe(strtolower($searchValue)) . "' AND (idx_fts_spots.rowid = s.rowid) ";
 
 		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
 		
 		return array('filter' => $queryPart,
-					 'sortable' => false); 
+					 'additionalTables' => array('idx_fts_spots'),
+					 'sortable' => false);
 	} # createTextQuery()
-*/
 } # class

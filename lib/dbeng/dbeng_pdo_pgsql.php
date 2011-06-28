@@ -54,6 +54,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
 		
 		return array('filter' => $queryPart,
+					 'additionalTables' => array(),
 					 'sortable' => false); 
 	} # createTextQuery()
 
