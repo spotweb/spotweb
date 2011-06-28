@@ -100,6 +100,7 @@ echo "</th>";
 				<pre><?php echo $spot['description']; ?></pre>
 			</div>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_comments, '')) { ?>
 			<div class="comments" id="comments">
 				<h4>Comments <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
@@ -114,6 +115,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 } ?>
 				</ul>
 			</div>
+<?php } ?>
 		</div>
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
