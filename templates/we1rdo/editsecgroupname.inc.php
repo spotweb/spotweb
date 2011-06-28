@@ -5,7 +5,9 @@
 	# vraag de opgegeven securitygroup op
 	if (!$isNew) {
 		$securitygroup = $tplHelper->getSecGroup($data['groupid']);
-	} # if
+	} else {
+		$securitygroup = array('name' => '');
+	}# if
 
 	# bereid alvast een UL voor voor de errors e.d., worden er later
 	# via AJAX ingegooid

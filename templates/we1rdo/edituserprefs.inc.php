@@ -1,6 +1,6 @@
 <?php
 	require "includes/header.inc.php";
-	
+
 if (!empty($edituserprefsresult)) {
 	//include 'includes/form-xmlresult.inc.php';
 	//echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
@@ -217,6 +217,18 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 		<div id="edituserpreftab-4">
 		
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) { ?>
+<!-- E-mail -->
+			<fieldset>
+				<dt><label for="use_email">E-mail versturen naar <?php echo $currentSession['user']['mail']; ?>?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+				<fieldset id="content_use_email">
+					<?php showNotificationOptions('email', $edituserprefsform, $tplHelper); ?>
+				</fieldset>
+			</fieldset>
+<?php } ?>
+
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'growl')) { ?>
 <!-- Growl -->
 			<fieldset>
@@ -229,47 +241,10 @@ include "includes/form-messages.inc.php";
 
 					<dt><label for="edituserprefsform[notifications][growl][password]">Growl wachtwoord?</label></dt>
 					<dd><input type="password" name="edituserprefsform[notifications][growl][password]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['growl']['password']); ?>"></dd>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
-					<dt><label for="edituserprefsform[notifications][growl][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][growl][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['growl']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) { ?>
-					<dt><label for="edituserprefsform[notifications][growl][events][retriever_finished]">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][growl][events][retriever_finished]" <?php if ($edituserprefsform['notifications']['growl']['events']['retriever_finished']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-<!--
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) { ?>
-					<dt><label for="edituserprefsform[notifications][growl][events][user_added]">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][growl][events][user_added]" <?php if ($edituserprefsform['notifications']['growl']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
--->
-				</fieldset>
-			</fieldset>
-<?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'libnotify')) { ?>
-<!-- libnotify -->
-<!--
-			<fieldset>
-				<dt><label for="use_libnotify">libnotify gebruiken?</label></dt>
-				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][libnotify][enabled]" id="use_libnotify" <?php if ($edituserprefsform['notifications']['libnotify']['enabled']) { echo 'checked="checked"'; } ?>></dd>
-			
-			<fieldset id="content_use_libnotify">
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
-					<dt><label for="edituserprefsform[notifications][libnotify][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][libnotify][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['libnotify']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) { ?>
-					<dt><label for="edituserprefsform[notifications][libnotify][events][retriever_finished]">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][libnotify][events][retriever_finished]" <?php if ($edituserprefsform['notifications']['libnotify']['events']['retriever_finished']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) { ?>
-					<dt><label for="edituserprefsform[notifications][libnotify][events][user_added]">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][libnotify][events][user_added]" <?php if ($edituserprefsform['notifications']['libnotify']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
+					<?php showNotificationOptions('growl', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
--->
 <?php } ?>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'notifo')) { ?>
@@ -284,20 +259,8 @@ include "includes/form-messages.inc.php";
 
 					<dt><label for="edituserprefsform[notifications][notifo][api]">Notifo <a href="http://notifo.com/user/settings">API secret</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][notifo][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['notifo']['api']); ?>"></dd>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
-					<dt><label for="edituserprefsform[notifications][notifo][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][notifo][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['notifo']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) { ?>
-					<dt><label for="edituserprefsform[notifications][notifo][events][retriever_finished]">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][notifo][events][retriever_finished]" <?php if ($edituserprefsform['notifications']['notifo']['events']['retriever_finished']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-<!--
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) { ?>
-					<dt><label for="edituserprefsform[notifications][notifo][events][user_added]">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][notifo][events][user_added]" <?php if ($edituserprefsform['notifications']['notifo']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
--->
+
+					<?php showNotificationOptions('notifo', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -311,20 +274,8 @@ include "includes/form-messages.inc.php";
 				<fieldset id="content_use_prowl">
 					<dt><label for="edituserprefsform[notifications][prowl][apikey]">Prowl <a href="https://www.prowlapp.com/api_settings.php">API key</a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][prowl][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['prowl']['apikey']); ?>"></dd>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) { ?>
-					<dt><label for="edituserprefsform[notifications][prowl][events][nzb_handled]">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][prowl][events][nzb_handled]" <?php if ($edituserprefsform['notifications']['prowl']['events']['nzb_handled']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) { ?>
-					<dt><label for="edituserprefsform[notifications][prowl][events][retriever_finished]">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][prowl][events][retriever_finished]" <?php if ($edituserprefsform['notifications']['prowl']['events']['retriever_finished']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
-<!--
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) { ?>
-					<dt><label for="edituserprefsform[notifications][prowl][events][user_added]">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>
-					<dd><input type="checkbox" name="edituserprefsform[notifications][prowl][events][user_added]" <?php if ($edituserprefsform['notifications']['prowl']['events']['user_added']) { echo 'checked="checked"'; } ?>></dd>
-	<?php } ?>
--->
+
+					<?php showNotificationOptions('prowl', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
 <?php } ?>
@@ -356,4 +307,46 @@ include "includes/form-messages.inc.php";
 </form>
 
 <?php
+	function showNotificationOptions($provider, $edituserprefsform, $tplHelper) {
+		echo "<fieldset>" . PHP_EOL;
+
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'watchlist_handled')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][watchlist_handled]\">Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de watchlist?</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][watchlist_handled]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['watchlist_handled']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][nzb_handled]\">Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd.</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][nzb_handled]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['nzb_handled']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'retriever_finished')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][retriever_finished]\">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][retriever_finished]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['retriever_finished']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'user_added')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][user_added]\">Bericht versturen wanneer een gebruiker is toegevoegd?</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][user_added]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['user_added']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
+		echo "</fieldset>" . PHP_EOL;
+	} # notificationOptions
+
 	require_once "includes/footer.inc.php";

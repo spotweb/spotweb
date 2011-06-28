@@ -1,3 +1,10 @@
+jQuery.address.init(function() {
+	jQuery('.spotlink').address();
+}).change( function( event ) {
+  if(jQuery.address.value()=="/") $("a.closeDetails").click();
+  else openSpot(this,jQuery.address.value());
+});
+
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 
@@ -758,9 +765,10 @@ function toggleCreateUser() {
 				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
 				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
 				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
+				var sendmail = $("form.createuserform input[name='createuserform[sendmail]']").is(':checked');
 
 				var url = $("form.createuserform").attr("action");
-				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
+				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[sendmail]=' + sendmail + '&createuserform[submit]=true';
 
 				$.ajax({
 					type: "POST",
