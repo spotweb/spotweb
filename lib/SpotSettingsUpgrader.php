@@ -22,6 +22,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('cookie_expires', 30);
 		$this->remove('sabnzbdurltpl');
 		$this->remove('sabnzbdurl');
+		$this->setIfNot('sendwelcomemail', true);
 		$this->updateSettingsVersion();
 	} # update()
 	

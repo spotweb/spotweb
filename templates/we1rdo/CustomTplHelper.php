@@ -24,7 +24,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 			return "red";
 		} # else
 	} # filter2cat
-	
+
 	function getSmileyList() {
 		return array('biggrin' => 'templates/we1rdo/smileys/biggrin.gif',
 				'bloos' => 'templates/we1rdo/smileys/bloos.gif',
@@ -69,6 +69,7 @@ class CustomTplHelper extends SpotTemplateHelper {
 								'js/sha1/jquery.sha1.js',
 								'js/posting/posting.js',
 								'js/dynatree/jquery.dynatree.min.js',
+								'templates/we1rdo/js/jquery.address-1.4.min.js',
 								'templates/we1rdo/js/scripts.js',
 								'templates/we1rdo/js/we1rdopost.js',
 								'templates/we1rdo/js/treehelper.js'

@@ -65,6 +65,53 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addIndex
 
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				return false;
+			} # if
+		} # foreach
+		
+		return true;
+	} # ftsExists
+			
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				$this->dropIndex($ftsname . '_' . $num, $tablename);
+				$this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
+			} # if
+		} # foreach
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$this->dropIndex($ftsname . '_' . $num, $tablename);
+		} # foreach
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpIndex = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if (!empty($tmpIndex)) {
+				$ftsList[] = $tmpIndex[0];
+			} # if
+		} # foreach
+		
+		return $ftsList;
+	} # getFtsInfo
+	
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
 		# Check eerst of de tabel bestaat, anders kan

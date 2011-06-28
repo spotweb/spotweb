@@ -54,6 +54,52 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		return !empty($q);
 	} # columnExists
 
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				return false;
+			} # if
+		} # foreach
+		
+		return true;
+	} # ftsExists
+			
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				$this->dropIndex($ftsname . '_' . $num, $tablename);
+				$this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
+			} # if
+		} # foreach
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$this->dropIndex($ftsname . '_' . $num, $tablename);
+		} # foreach
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpIndex = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if (!empty($tmpIndex)) {
+				$ftsList[] = $tmpIndex[0];
+			} # if
+		} # foreach
+		
+		return $ftsList;
+	} # getFtsInfo
 
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
@@ -130,14 +176,14 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		# converteer het kolom type naar het type dat wij gebruiken
 		$colType = $this->swDtToNative($colType);
 
-			# Enkel pgsql 9.1 (op dit moment beta) ondersteunt per column collation,
-			# dus daar doen we voor nu niks mee.
-			switch(strtolower($collation)) {
-				case 'utf8'		: 
-				case 'ascii'	: 
-				case ''			: $colSetting = ''; break;
-				default			: throw new Exception("Invalid collation setting");
-			} # switch
+		# Enkel pgsql 9.1 (op dit moment beta) ondersteunt per column collation,
+		# dus daar doen we voor nu niks mee.
+		switch(strtolower($collation)) {
+			case 'utf8'		: 
+			case 'ascii'	: 
+			case ''			: $colSetting = ''; break;
+			default			: throw new Exception("Invalid collation setting");
+		} # switch
 		
 		# en zet de 'NOT NULL' om naar een string
 		switch($notNull) {

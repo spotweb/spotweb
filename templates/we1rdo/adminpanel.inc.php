@@ -2,6 +2,8 @@
 	require "includes/header.inc.php";
 ?>
 </div>
+
+	<h4><a href='<?php echo $tplHelper->makeBaseUrl('path');?>'>&lt;&lt;&lt; Terug naar overzichtspagina</a></h4>
 	<div id="adminpaneltabs" class="ui-tabs">
 		<ul>
 			<li><a href="#adminpaneltab-1" title="Instellingen"><span>Instellingen</span></a></li>

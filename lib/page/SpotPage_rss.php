@@ -26,7 +26,6 @@ class SpotPage_rss extends SpotPage_Abs {
 							array('field' => $this->_params['sortby'],
 								  'direction' => $this->_params['sortdir']),
 						    $this->_currentSession);
-		$this->_params['search'] = $parsedSearch['search'];
 
 		# laad de spots
 		$pageNr = $this->_params['page'];
