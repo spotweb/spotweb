@@ -489,6 +489,7 @@ class SpotsOverview {
 		# Add a list of possible text searches
 		$filterValueSql = array();
 		$additionalFields = array();
+		$additionalTables = array();
 		$sortFields = array();
 		
 		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
@@ -537,7 +538,8 @@ class SpotsOverview {
 			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
 				$parsedTextQueryResult = $this->_db->createTextQuery($filterFieldMapping[$tmpFilterFieldname], $tmpFilterValue);
 				$filterValueSql[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
-
+				$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
+				
 				# We voegen deze extended textqueries toe aan de filterlist als
 				# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
 				# wat het net wat interessanter maakt
@@ -609,7 +611,7 @@ class SpotsOverview {
 			} # if
 		} # foreach
 		
-		return array($filterValueSql, $additionalFields, $sortFields);
+		return array($filterValueSql, $additionalFields, $additionalTables, $sortFields);
 	} # filterValuesToSql
 
 	/*
@@ -735,6 +737,7 @@ class SpotsOverview {
 		$filterValueSql = array();
 		
 		$additionalFields = array();
+		$additionalTables = array();
 		$sortFields = array();
 		
 		# Als er geen enkele filter opgegeven is, filteren we niets
@@ -742,6 +745,7 @@ class SpotsOverview {
 			return array('filter' => '',
 						 'search' => array(),
 					     'additionalFields' => array(),
+						 'additionalTables' => array(),
 						 'categoryList' => array(),
 						 'strongNotList' => array(),
 					     'filterValueList' => array(),
@@ -754,7 +758,7 @@ class SpotsOverview {
 		# type filter waardes), naar een array met filter waarden
 		#
 		$filterValueList = $this->prepareFilterValues($search);
-		list($filterValueSql, $additionalFields, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
+		list($filterValueSql, $additionalFields, $additionalTables, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
@@ -788,7 +792,6 @@ class SpotsOverview {
 		$endFilter[] = join(' AND ', $filterValueSql);
 		$endFilter[] = join(' AND ', $strongNotSql);
 		$endFilter = array_filter($endFilter);
-
 		
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
@@ -797,6 +800,7 @@ class SpotsOverview {
 					 'strongNotList' => $strongNotList,
 					 'filterValueList' => $filterValueList,
 					 'additionalFields' => $additionalFields,
+					 'additionalTables' => $additionalTables,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
 	

@@ -696,6 +696,13 @@ class SpotDb {
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
+
+		# ook additionele tabellen kunnen gevraagd zijn door de filter parser, die 
+		# moeten we dan ook toevoegen
+		$additionalTableList = '';
+		foreach($parsedSearch['additionalTables'] as $additionalTable) {
+			$additionalTableList = ', ' . $additionalTable . $additionalTableList;
+		} # foreach
 		
 		# Nu prepareren we de sorterings lijst
 		$sortFields = $parsedSearch['sortFields'];
@@ -740,8 +747,9 @@ class SpotDb {
 												f.userid AS userid,
 												f.verified AS verified
 												" . $extendedFieldList . "
-									 FROM spots AS s 
-									 LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
+									 FROM spots AS s " . 
+									 $additionalTableList . 
+								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
