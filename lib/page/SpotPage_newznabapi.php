@@ -77,12 +77,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = "Titel:" . trim($tvSearch) . " " . $epSearch;
+			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
 			} else {
-				$search['value'][] = "Titel:\"" . $this->_params['artist'] . "\"";
+				$search['value'][] = "Titel:=:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
@@ -97,10 +97,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<title>(.*?) \(.*?<\/title>/ms', $imdb_content, $movieTitle);
-			$search['value'][] = "Titel:\"" . trim($movieTitle[1]) . "\"";
+			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
-			$search['value'][] = "Titel:+" . $searchTerm;
+			$search['value'][] = "Titel:=:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
