@@ -46,7 +46,7 @@ class SpotPage_index extends SpotPage_Abs {
 		} # else
 		
 		# afhankelijk van wat er gekozen is, voer het uit
-		if (isset($this->_params['filterValueList'][0]['fieldname']) && $this->_params['filterValueList'][0]['fieldname'] == "Watch") {
+		if (isset($parsedSearch['filterValueList'][0]['fieldname']) && $parsedSearch['filterValueList'][0]['fieldname'] == "Watch") {
 			# Controleer de users' rechten
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_watchlist, '');
 			
