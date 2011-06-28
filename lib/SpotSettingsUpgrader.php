@@ -23,6 +23,8 @@ class SpotSettingsUpgrader {
 		$this->remove('sabnzbdurltpl');
 		$this->remove('sabnzbdurl');
 		$this->setIfNot('sendwelcomemail', true);
+		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
+		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // Ook al heet deze secret, hij mag geshared worden
 		$this->updateSettingsVersion();
 	} # update()
 	

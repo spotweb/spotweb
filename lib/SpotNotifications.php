@@ -155,6 +155,10 @@ class SpotNotifications {
 			$user['prefs']['notifications']['email']['sender'] = $adminUsr['mail'];
 			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 
+			# Twitter heeft ook extra settings nodig
+			$user['prefs']['notifications']['twitter']['consumer_key'] = $this->_settings->get('twitter_consumer_key');
+			$user['prefs']['notifications']['twitter']['consumer_secret'] = $this->_settings->get('twitter_consumer_secret');
+
 			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
 				$objectId = $newMessage['objectid'];
