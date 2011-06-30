@@ -466,7 +466,7 @@ class SpotTemplateHelper {
 
 		# als we niet aan het zoeken zijn, doen we niets
 		if (!isset($this->_params['parsedsearch'])) {
-			return '';;
+			return '';
 		} # if
 		
 		# Eerst bouwen de search[tree] value op
@@ -480,7 +480,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . $value['value'];
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlentities($value['value'], ENT_QUOTES);
 		} # foreach
 		
 		# en eventueel als de huidige list unfiltered is, geef
