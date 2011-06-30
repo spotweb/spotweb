@@ -959,7 +959,7 @@ class SpotDb {
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
 				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
-				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+				$commentList[$i]['body'] = explode("\r\n", utf8_decode($commentList[$i]['body']));
 			} # if
 		} # foreach
 
