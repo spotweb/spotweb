@@ -1,11 +1,13 @@
 $.address.init(function() {
 	$('.spotlink').address();
-}).externalChange( function( event ) { 
-  if($.address.value()=="/"){
-   $("a.closeDetails").click();
-   if ($('table.spots tr.active').offset().top>$(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-  } else openSpot($("table.spots tr.active a.spotlink"),$.address.value());
-});
+}).externalChange(
+		function(event) {
+			basePATH = location.href.replace('#' + $.address.value(), '');
+			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
+				closeDetails(0);
+				if ($('table.spots tr.active').offset().top > $(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
+		});
 
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
@@ -62,6 +64,7 @@ function openSpot(id,url) {
 		}
 
 		$("a.closeDetails").click(function(){ 
+			history.back();
 			closeDetails(scrollLocation); 
 		});
 
@@ -383,8 +386,8 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
 	$(document).bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
-	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'i', toggleImageSize);
