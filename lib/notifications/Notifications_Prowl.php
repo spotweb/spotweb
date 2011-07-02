@@ -5,13 +5,7 @@ class Notifications_Prowl extends Notifications_abs {
 	var $prowlObj;
 
 	function __construct($appName, array $dataArray) {
-		if (version_compare(PHP_VERSION, '5.3.0') < 0) {
-			require_once "lib/notifications/prowl_classic/ProwlConnector.class.php";
-			require_once "lib/notifications/prowl_classic/ProwlMessage.class.php";
-			require_once "lib/notifications/prowl_classic/ProwlResponse.class.php";
-			
-			$this->prowlObj = new ProwlConnector();
-		} else {
+		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 			/*
 			 * We includen de libraries hier en in deze volgorde om te voorkomen
 			 * dat de autoclass loader triggered, die snapt namelijk op dit moment
@@ -24,7 +18,7 @@ class Notifications_Prowl extends Notifications_abs {
 			require_once "lib/notifications/prowl/Security/PassthroughFilterImpl.php";
 
 			$this->prowlObj = new \Prowl\Connector();
-		} # else
+		} # if
 
 		$this->_appName = $appName;
 		$this->_apikey = $dataArray['apikey'];
@@ -35,16 +29,7 @@ class Notifications_Prowl extends Notifications_abs {
 	} # register
 
 	function sendMessage($type, $title, $body, $sourceUrl) {
-		if (version_compare(PHP_VERSION, '5.3.0') < 0) {
-			$oMsg = new ProwlMessage();
-			$oMsg->addApiKey($this->_apikey);
-			$oMsg->setApplication($this->_appName);
-			$oMsg->setEvent($title);
-			$oMsg->setDescription($body);
-
-			$this->prowlObj->setIsPostRequest(true);
-			$oResponse = $this->prowlObj->push($oMsg);
-		} else {
+		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 			$oMsg = new \Prowl\Message();
 			$oMsg->addApiKey($this->_apikey);
 			$oMsg->setApplication($this->_appName);
@@ -55,7 +40,7 @@ class Notifications_Prowl extends Notifications_abs {
 			$this->prowlObj->setFilter($oFilter);
 			$this->prowlObj->setIsPostRequest(true);
 			$oResponse = $this->prowlObj->push($oMsg);
-		} # else
+		} # if
 	} # sendMessage
 
 } # Notifications_Prowl
