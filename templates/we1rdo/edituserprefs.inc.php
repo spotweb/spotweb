@@ -1,6 +1,4 @@
 <?php
-	require "includes/header.inc.php";
-
 if (!empty($edituserprefsresult)) {
 	//include 'includes/form-xmlresult.inc.php';
 	//echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
@@ -11,6 +9,7 @@ if (!empty($edituserprefsresult)) {
 	} # if
 } # if
 
+require "includes/header.inc.php";
 include "includes/form-messages.inc.php";
 ?>
 </div>
