@@ -64,7 +64,8 @@ function openSpot(id,url) {
 		}
 
 		$("a.closeDetails").click(function(){ 
-			history.back();
+			$.address.value("");
+			if ($('table.spots tr.active').offset().top > $(window).height())scrollLocation = $('table.spots tr.active').offset().top - 50;
 			closeDetails(scrollLocation); 
 		});
 
