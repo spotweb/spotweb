@@ -265,7 +265,8 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
+<?php if (version_compare(PHP_VERSION, '5.3.0') >= 0) { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
 <!-- Prowl -->
 			<fieldset>
 				<dt><label for="use_prowl">Prowl gebruiken?</label></dt>
@@ -278,6 +279,7 @@ include "includes/form-messages.inc.php";
 					<?php showNotificationOptions('prowl', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
+	<?php } ?>
 <?php } ?>
 		</div>
 <?php } ?>
