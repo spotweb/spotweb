@@ -486,8 +486,8 @@ class SpotDb {
 	/*
 	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
 	 */
-	function createTextQuery($field, $value) {
-		return $this->_conn->createTextQuery($field, $value);
+	function createTextQuery($fieldList) {
+		return $this->_conn->createTextQuery($fieldList);
 	} # createTextQuery()
 
 	/*

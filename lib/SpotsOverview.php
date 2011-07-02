@@ -491,6 +491,7 @@ class SpotsOverview {
 		$additionalFields = array();
 		$additionalTables = array();
 		$sortFields = array();
+		$textSearchFields = array();
 		
 		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
 		$filterFieldMapping = array('filesize' => 's.filesize',
@@ -536,23 +537,12 @@ class SpotsOverview {
 			# winst er mee nemen.
 			#
 			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
-				$parsedTextQueryResult = $this->_db->createTextQuery($filterFieldMapping[$tmpFilterFieldname], $tmpFilterValue);
-				$filterValueSql[] = ' (' . $parsedTextQueryResult['filter'] . ') ';
-				$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
-				
-				# We voegen deze extended textqueries toe aan de filterlist als
-				# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
-				# wat het net wat interessanter maakt
-				if ($parsedTextQueryResult['sortable']) {
-					# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
-					# sorteren we ze in de volgorde waarop ze binnenkwamen 
-					$tmpSortCounter = count($additionalFields);
-					
-					$additionalFields[] = $parsedTextQueryResult['filter'] . ' AS searchrelevancy' . $tmpSortCounter;
-					$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
-										  'direction' => 'DESC',
-										  'autoadded' => true);
-				} # if
+				#
+				# Sommige databases (sqlite bv.) willen al hun fulltext searches in een
+				# function aanroep. We zoeken hier dus alle fulltext searchable velden samen
+				# en creeeren de textfilter later in 1 keer.
+				#
+				$textSearchFields[] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen'))) {
 				# 
 				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
@@ -610,6 +600,22 @@ class SpotsOverview {
 				$filterValueSql[] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
 			} # if
 		} # foreach
+
+		# 
+		# Nu controleren we of we een of meer $textSearchFields hebben waarop we 
+		# eventueel een fulltext search zouden kunnen loslaten. Als we die hebben
+		# vragen we aan de specifiek database engine om deze zoekopdracht te 
+		# optimaliseren.
+		#
+		if (!empty($textSearchFields)) {
+			$parsedTextQueryResult = $this->_db->createTextQuery($textSearchFields);
+
+			$filterValueSql = array_merge($filterValueSql, $parsedTextQueryResult['filterValueSql']);
+			$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
+			$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);
+			$sortFields = array_merge($sortFields, $parsedTextQueryResult['sortFields']);
+		} # if
+
 		
 		return array($filterValueSql, $additionalFields, $additionalTables, $sortFields);
 	} # filterValuesToSql
