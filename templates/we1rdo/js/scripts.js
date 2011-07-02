@@ -412,7 +412,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$('table.spots tbody tr.active a.spotlink').click();
+			$('table.spots tbody tr.active .title a.spotlink').click();
 		}
 	} else if (direction == 'next' && next.size() == 1) {
 		current.removeClass('active');
@@ -420,7 +420,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$("table.spots tbody tr.active a.spotlink").click();
+			$("table.spots tbody tr.active .title a.spotlink").click();
 		}
 	}
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
