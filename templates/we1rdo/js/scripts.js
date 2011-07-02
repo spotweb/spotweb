@@ -1,11 +1,10 @@
 $.address.init(function() {
-	jQuery('.spotlink').address();
-}).change( function( event ) {
-	if(jQuery.address.value()=="/") {
-		$("a.closeDetails").click()
-	} else {
-		$(this).click();
-	} // else
+	$('.spotlink').address();
+}).externalChange( function( event ) { 
+  if($.address.value()=="/"){
+   $("a.closeDetails").click();
+   if ($('table.spots tr.active').offset().top>$(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+  } else openSpot($("table.spots tr.active a.spotlink"),$.address.value());
 });
 
 $(function(){
