@@ -1,5 +1,5 @@
 <?php
-require_once "lib/notifications/growl/class.growl.php";
+require_once "lib/notifications/growl/class.growl.php"; // https://github.com/tylerhall/php-growl
 
 class Notifications_Growl extends Notifications_abs {
 	var $growlObj;
