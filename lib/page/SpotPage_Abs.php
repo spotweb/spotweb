@@ -87,4 +87,4 @@ abstract class SpotPage_Abs {
 								  'http_referer' => $http_referer));
 	} # permissionDenied
 	
-} # SpotPage_Abs 
+} # SpotPage_Abs
