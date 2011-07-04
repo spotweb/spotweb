@@ -152,6 +152,11 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'screen_name', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'request_token', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'request_token_secret', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token_secret', '');
 			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
@@ -287,6 +292,11 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_send_notifications_services . " AND objectid = 'libnotify'");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
+		} # if
+
+		# Twitter toegevoegd
+		if ($this->_settings->get('securityversion') < 0.11) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'twitter')");
 		} # if
 	} # updateSecurityGroups
 	

@@ -429,6 +429,8 @@ function spotNav(direction) {
 
 // Edit user preference tabs
 $(document).ready(function() {
+	var BaseURL = createBaseURL();
+	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
 	$("#adminpaneltabs").tabs();
 	
@@ -454,6 +456,23 @@ $(document).ready(function() {
 			$('#content_'+$(this).attr('id')).show();
 		else
 			$('#content_'+$(this).attr('id')).hide();
+	});
+
+	$('#twitter_request_auth').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
+			$('#twitter_result').html('<b>Stap 2</b>:<br />Vul hieronder het PIN-nummer in die je van Twitter hebt gekregen en verifi&euml;er deze<br /><input type="text" name="twitter_pin" id="twitter_pin">');
+		});
+		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="Verifiëer PIN">');
+	});
+	$('#twitter_verify_pin').live('click', function(){
+		var pin = $("#twitter_pin").val();
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action':'verify', 'pin':pin}, function(data){ $('#twitter_result').html(data); });
+	});
+	$('#twitter_remove').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action': 'remove'}, function(data){ $('#twitter_result').html(data); });
 	});
 });
 
