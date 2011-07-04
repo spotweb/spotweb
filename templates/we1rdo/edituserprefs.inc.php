@@ -67,7 +67,7 @@ include "includes/form-messages.inc.php";
 						<select name="edituserprefsform[template]">
 							<option <?php if ($edituserprefsform['template'] == 'we1rdo') { echo 'selected="selected"'; } ?> value="we1rdo" selected>we1rdo (standaard)</option>
 <!--
-	Deze zijn uitgeocmmentarieerd omdat als je deze kiest, je niet meer terug kan aangezien beide
+	Deze zijn uitgecommentarieerd omdat als je deze kiest, je niet meer terug kan aangezien beide
 	templates geen edit-preferences geimplementeerd hebben
 	
 							<option value="splendid">Splendid</option>
@@ -264,7 +264,8 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
+<?php if (version_compare(PHP_VERSION, '5.3.0') >= 0) { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
 <!-- Prowl -->
 			<fieldset>
 				<dt><label for="use_prowl">Prowl gebruiken?</label></dt>
@@ -275,6 +276,24 @@ include "includes/form-messages.inc.php";
 					<dd><input type="text" name="edituserprefsform[notifications][prowl][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['prowl']['apikey']); ?>"></dd>
 
 					<?php showNotificationOptions('prowl', $edituserprefsform, $tplHelper); ?>
+				</fieldset>
+			</fieldset>
+	<?php } ?>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'twitter')) { ?>
+<!-- Twitter -->
+			<fieldset>
+				<dt><label for="use_twitter">Twitter gebruiken?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][twitter][enabled]" id="use_twitter" <?php if ($edituserprefsform['notifications']['twitter']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+				<fieldset id="content_use_twitter">
+					<div class="testNotification" id="twitter_result"><b>Stap 1</b>:<br />Klik op de knop "Toestemming Vragen". Dit opent een nieuwe pagina met een PIN nummer.<br />Let op: als er niets gebeurt, controleer je pop-up blocker.</div>
+					<input type="button" value="Toestemming Vragen" id="twitter_request_auth" />
+	<?php if (!empty($edituserprefsform['notifications']['twitter']['screen_name'])) { ?>
+					<input type="button" id="twitter_remove" value="Account <?php echo $edituserprefsform['notifications']['twitter']['screen_name']; ?> verwijderen" />
+	<?php } ?>
+					<?php showNotificationOptions('twitter', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
 <?php } ?>

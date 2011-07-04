@@ -252,6 +252,14 @@ try {
 			break;
 		} # sabapi
 
+		case 'twitteroauth' : {
+			$page = new SpotPage_twitteroauth($db, $settings, $currentSession,
+					Array('action' => $req->getDef('action', ''),
+						  'pin' => $req->getDef('pin', '')));
+			$page->render();
+			break;
+		} # twitteroauth
+
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
 					$page = new SpotPage_speeddial($db, $settings, $currentSession);
