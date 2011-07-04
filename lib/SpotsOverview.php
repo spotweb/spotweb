@@ -270,7 +270,9 @@ class SpotsOverview {
 				$newTreeQuery .= "," . $dynaList[$i];
 			} # else
 		} # for
-		if ($newTreeQuery[0] == ",") { $newTreeQuery = substr($newTreeQuery, 1); }
+		if ((!empty($newTreeQuery)) && ($newTreeQuery[0] == ",")) { 
+			$newTreeQuery = substr($newTreeQuery, 1); 
+		} # if
 
 		#
 		# Vanaf hier hebben we de geprepareerde lijst - oftewel de lijst met categorieen 
