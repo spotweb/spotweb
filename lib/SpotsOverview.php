@@ -438,7 +438,7 @@ class SpotsOverview {
 			# Een combinatie van oude filters en nieuwe kan voorkomen, we 
 			# willen dan niet met deze conversie de normaal soorten filters
 			# overschrijven.
-			if (!is_array($search['value'])) {
+			if ((!isset($search['value'])) || (!is_array($search['value']))) {
 				$search['value'] = array();
 			} # if
 			$search['value'][] = $search['type'] . ':=:' . $search['text'];
