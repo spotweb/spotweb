@@ -101,7 +101,7 @@ abstract class dbeng_abs {
 			$searchValue = trim($searchItem['value']);
 			$field = $searchItem['fieldname'];
 			
-			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE '%"  . $this->safe($value) . "%') ";
+			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE '%"  . $this->safe($searchValue) . "%') ";
 		} # foreach
 
 		return array('filterValueSql' => $filterValueSql,
