@@ -11,7 +11,7 @@ $.address.init(function() {
 
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-
+	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 });
 
@@ -47,6 +47,12 @@ function openSpot(id,url) {
 	$(id).parent().parent().addClass('active');
 	$("table.spots tr.active td.title").removeClass("new");
 
+	if ($(id).attr('rel') ) {
+		openNewWindow();
+		setTimeout("$('a.spotlink').removeAttr('rel');",1);   
+		return false;
+	} //chrome
+	
 	var messageid = url.split("=")[2];
 
 	$("#overlay").addClass('loading');
