@@ -153,14 +153,16 @@ try {
 						  'limit' => $req->getDef('limit', ''),
 						  'cat' => $req->getDef('cat', ''),
 						  'imdbid' => $req->getDef('imdbid', ''),
+						  'artist' => $req->getDef('artist', ''),
 						  'rid' => $req->getDef('rid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
 						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
-						  'offset' => $req->getDef('offset', '')
-						  )
+						  'offset' => $req->getDef('offset', ''),
+						  'del' => $req->getDef('del', '')
+					)
 			);
 			$page->render();
 			break;
@@ -249,6 +251,14 @@ try {
 			$page->render();
 			break;
 		} # sabapi
+
+		case 'twitteroauth' : {
+			$page = new SpotPage_twitteroauth($db, $settings, $currentSession,
+					Array('action' => $req->getDef('action', ''),
+						  'pin' => $req->getDef('pin', '')));
+			$page->render();
+			break;
+		} # twitteroauth
 
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
