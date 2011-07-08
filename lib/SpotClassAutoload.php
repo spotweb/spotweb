@@ -2,6 +2,7 @@
 
 function __autoload($class_name) {
 	$classType = substr($class_name, 0, stripos($class_name, '_'));
+	
 	switch($classType) {
 		case 'SpotPage'		: require_once 'lib/page/' . $class_name . '.php'; break;
 		case 'SpotStruct'	: require_once 'lib/dbstruct/' . $class_name . '.php'; break;
@@ -15,6 +16,15 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
-		default				: require_once 'lib/' . $class_name . '.php';
+		default				: {
+			# Exceptions beginnen niet met Exception, dus maken we daar een apart gevalletje van
+			$isException = substr($class_name, -1 * strlen('Exception')) == 'Exception';
+			if ($isException) {
+				require_once "lib/exceptions/" . $class_name . ".php";
+				return ;
+			} # if
+
+			require_once 'lib/' . $class_name . '.php';
+		} # default
 	} # switch
 } # __autoload

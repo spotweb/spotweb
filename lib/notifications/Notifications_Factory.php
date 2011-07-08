@@ -5,9 +5,11 @@ class Notifications_Factory {
 		# Nieuwe handlers voegen we expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
 		switch ($provider) {
+			case 'email'			: $handler = new Notifications_Email($appName, $dataArray); break;
 			case 'growl'			: $handler = new Notifications_Growl($appName, $dataArray); break;
 			case 'notifo'	  		: $handler = new Notifications_Notifo($appName, $dataArray); break;
 			case 'prowl'			: $handler = new Notifications_Prowl($appName, $dataArray); break;
+			case 'twitter'			: $handler = new Notifications_Twitter($appName, $dataArray); break;
 			default					: $handler = false; break;
 		} # switch
 
@@ -15,20 +17,11 @@ class Notifications_Factory {
 	} # build()
 	
 	public static function getActiveServices() {
-		return array('growl',
-					 'notifo',
-					 'prowl'
-					);
-	}
-
-	# Deze functie hebben we tijdelijk nodig totdat we alles actief hebben, daarna
-	# wordt deze niet meer aangesproken en kan verwijderd worden
-	public static function getFutureServices() {
 		return array('email',
 					 'growl',
-					 'libnotify',
 					 'notifo',
-					 'prowl'
+					 'prowl',
+					 'twitter'
 					);
 	}
 

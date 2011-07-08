@@ -1,3 +1,14 @@
+$.address.init(function() {
+	$('.spotlink').address();
+}).externalChange(
+		function(event) {
+			basePATH = location.href.replace('#' + $.address.value(), '');
+			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
+				closeDetails(0);
+				if ($('table.spots tr.active').offset().top > $(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
+		});
+
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 
@@ -53,6 +64,8 @@ function openSpot(id,url) {
 		}
 
 		$("a.closeDetails").click(function(){ 
+			$.address.value("");
+			if ($('table.spots tr.active').offset().top > $(window).height())scrollLocation = $('table.spots tr.active').offset().top - 50;
 			closeDetails(scrollLocation); 
 		});
 
@@ -374,8 +387,8 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
 	$(document).bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
-	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'i', toggleImageSize);
@@ -400,7 +413,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$('table.spots tbody tr.active a.spotlink').click();
+			$('table.spots tbody tr.active .title a.spotlink').click();
 		}
 	} else if (direction == 'next' && next.size() == 1) {
 		current.removeClass('active');
@@ -408,7 +421,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$("table.spots tbody tr.active a.spotlink").click();
+			$("table.spots tbody tr.active .title a.spotlink").click();
 		}
 	}
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
@@ -416,6 +429,8 @@ function spotNav(direction) {
 
 // Edit user preference tabs
 $(document).ready(function() {
+	var BaseURL = createBaseURL();
+	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
 	$("#adminpaneltabs").tabs();
 	
@@ -441,6 +456,23 @@ $(document).ready(function() {
 			$('#content_'+$(this).attr('id')).show();
 		else
 			$('#content_'+$(this).attr('id')).hide();
+	});
+
+	$('#twitter_request_auth').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
+			$('#twitter_result').html('<b>Stap 2</b>:<br />Vul hieronder het PIN-nummer in die je van Twitter hebt gekregen en verifi&euml;er deze<br /><input type="text" name="twitter_pin" id="twitter_pin">');
+		});
+		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="Verifiëer PIN">');
+	});
+	$('#twitter_verify_pin').live('click', function(){
+		var pin = $("#twitter_pin").val();
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action':'verify', 'pin':pin}, function(data){ $('#twitter_result').html(data); });
+	});
+	$('#twitter_remove').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action': 'remove'}, function(data){ $('#twitter_result').html(data); });
 	});
 });
 
@@ -758,9 +790,10 @@ function toggleCreateUser() {
 				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
 				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
 				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
+				var sendmail = $("form.createuserform input[name='createuserform[sendmail]']").is(':checked');
 
 				var url = $("form.createuserform").attr("action");
-				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
+				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[sendmail]=' + sendmail + '&createuserform[submit]=true';
 
 				$.ajax({
 					type: "POST",
@@ -1170,4 +1203,14 @@ function updateSabPanel(start,limit) {
 			}
 		}, interval);
 	});
+}
+
+function format_size(size) {
+	var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	var i = 0;
+	while(size >= 1024) {
+		size /= 1024;
+		++i;
+	}
+	return size.toFixed(1) + ' ' + sizes[i];
 }

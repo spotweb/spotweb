@@ -42,19 +42,40 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
-	function createTextQuery($field, $searchValue) {
+	function createTextQuery($searchFields) {
 		SpotTiming::start(__FUNCTION__);
 
-		//
-		// FIXME 
-		// Sorteeren op rank, zie http://www.postgresql.org/docs/8.3/static/textsearch-controls.html
-		//
-		$queryPart = " to_tsvector('Dutch', " . $field . ") @@ '" . $this->safe(strtolower($searchValue)) . "' ";
+		# Initialiseer een aantal arrays welke we terug moeten geven aan
+		# aanroeper
+		$filterValueSql = array();
+		$additionalFields = array();
+		$sortFields = array();
 
-		SpotTiming::stop(__FUNCTION__, array($field,$searchValue));
+		foreach($searchFields as $searchItem) {
+			$searchValue = trim($searchItem['value']);
+			$field = $searchItem['fieldname'];
+
+			# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
+			# sorteren we ze in de volgorde waarop ze binnenkwamen 
+			$tmpSortCounter = count($additionalFields);
+			
+			# prepareer de to_tsvector en de to_tsquery strings
+			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
+			$ts_query = "to_tsquery('" . $this->safe(strtolower($searchValue)) . "')";
+			
+			$filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
+			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+			$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
+								  'direction' => 'DESC',
+								  'autoadded' => true);
+		} # foreach
+
+		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 		
-		return array('filter' => $queryPart,
-					 'sortable' => false); 
+		return array('filterValueSql' => $filterValueSql,
+					 'additionalTables' => array(),
+					 'additionalFields' => $additionalFields,
+					 'sortFields' => $sortFields);
 	} # createTextQuery()
 
 } # class

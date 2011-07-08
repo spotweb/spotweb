@@ -8,20 +8,28 @@ class SpotSettings {
 	private static $_instance = null;
 	
 	private $_db;
+	/* Gemergede array met alle settings */
 	private static $_settings;
+	/* Settings die uit PHP komen */
+	private static $_phpSettings;
+	/* Settings die uit de database komen */
+	private static $_dbSettings;
 	
 	/* 
 	 * Instantieert een nieuwe settings klasse
 	 */
-	public static function singleton(SpotDb $db, array $settings) {
+	public static function singleton(SpotDb $db, array $phpSettings) {
 		if (self::$_instance === null) {
 			self::$_instance = new SpotSettings($db);
 			
+			# maak de array met PHP settings beschikbaar in de klasse
+			self::$_phpSettings = $phpSettings;
+			
 			# haal alle settings op, en prepareer die 
-			$dbSettings = $db->getAllSettings();
+			self::$_dbSettings = $db->getAllSettings();
 
 			# en merge de settings met degene die we door krijgen 
-			self::$_settings = array_merge($settings, $dbSettings);
+			self::$_settings = array_merge(self::$_phpSettings, self::$_dbSettings);
 		} # if
 		
 		return self::$_instance;
@@ -44,10 +52,29 @@ class SpotSettings {
 	} # remove
 	
 	/*
+	 * Geeft terug of een bepaalde setting uit de database
+	 * komt of uit de settings.php file. De settings-file
+	 * heeft altijd prioriteit 
+	 */
+	function getOrigin($name) {
+		if (isset(self::$_phpSettings[$name])) {
+			return "php";
+		} else {
+			return "db";
+		} # if
+	} # getOrigin
+	
+	/*
 	 * Set de waarde van de setting, maakt hem ook
 	 * meteen persistent dus mee oppassen
 	 */
 	function set($name, $value) {
+		# Als de setting uit PHP komt, dan mag die niet geupdate worden
+		# hier omdat we dan niet meer weten wat er gebeurt.
+		if (isset(self::$_phpSettings[$name])) {
+			throw new InvalidSettingsUpdateException();
+		} # if
+		
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
 		self::$_settings[$name] = $value;
 		

@@ -30,8 +30,9 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
-		$this->_params['search'] = $parsedSearch['search'];
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
+							array('field' => $this->_params['sortby'], 'direction' => $this->_params['sortdir']),
+							$this->_currentSession);
 		
 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
@@ -45,24 +46,28 @@ class SpotPage_index extends SpotPage_Abs {
 		} # else
 		
 		# afhankelijk van wat er gekozen is, voer het uit
-		if (isset($this->_params['search']['filterValues']['Watch'])) {
+		if (isset($parsedSearch['filterValueList'][0]['fieldname']) && $parsedSearch['filterValueList'][0]['fieldname'] == "Watch") {
 			# Controleer de users' rechten
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_watchlist, '');
 			
 			switch($this->_action) {
-				case 'remove'	: $this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']); break;
-				case 'add'		: $this->_db->addToSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid'], ''); break;
+				case 'remove'	: $this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']);
+								  $spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+								  $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
+								  break;
+				case 'add'		: $this->_db->addToSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid'], '');
+								  $spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+								  $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
+								  break;
 				default			: ;
 			} # switch 
 		} # if
 		
 		# laad de spots
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
-							$pageNr, $this->_currentSession['user']['prefs']['perpage'],
-							$parsedSearch,
-							array('field' => $this->_params['sortby'], 
-								  'direction' => $this->_params['sortdir']));
-
+							$pageNr, 
+							$this->_currentSession['user']['prefs']['perpage'],
+							$parsedSearch);
 							
 		# als er geen volgende pagina is, ook niet tonen
 		if (!$spotsTmp['hasmore']) {
@@ -79,10 +84,8 @@ class SpotPage_index extends SpotPage_Abs {
 								'filters' => $this->_settings->get('filters'),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
-								'activefilter' => $this->_params['search'],
-								'data' => $this->_params['data'],
-								'sortby' => $this->_params['sortby'],
-								'sortdir' => $this->_params['sortdir']));
+								'parsedsearch' => $parsedSearch,
+								'data' => $this->_params['data']));
 		SpotTiming::stop(__FUNCTION__);
 	} # render()
 	

@@ -16,7 +16,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		if (empty($p)) {
             return $this->_conn->prepare($s);
         } # if
-        
+
 		$pattern = '/(\'?\%[ds]\'?)/';
         $matches = array();
         preg_match_all($pattern, $s, $matches);

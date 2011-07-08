@@ -94,6 +94,7 @@ abstract class SpotRetriever_Abs {
 		 */
 		function loopTillEnd($curMsg, $increment = 1000) {
 			$processed = 0;
+			$headersProcessed = 0;
 			$highestMessageId = '';
 			
 			# make sure we handle articlenumber wrap arounds
@@ -123,6 +124,7 @@ abstract class SpotRetriever_Abs {
 				# run the processing method
 				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg);
 				$processed += $processOutput['count'];
+				$headersProcessed += $processOutput['headercount'];
 				$highestMessageId = $processOutput['lastmsgid'];
 				
 				# reset the start time to prevent a another retriever from starting
@@ -137,6 +139,7 @@ abstract class SpotRetriever_Abs {
 			} # if
 	
 			$this->displayStatus("totalprocessed", $processed);
+			return $headersProcessed;
 		} # loopTillEnd()
 
 		function quit() {

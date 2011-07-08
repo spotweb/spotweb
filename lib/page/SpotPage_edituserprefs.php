@@ -55,7 +55,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
 
 					# controleer en repareer alle preferences 
-					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
+					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $this->_currentSession['user']['prefs']);
 
 					if (empty($formMessages['errors'])) {
 						# bewerkt de user

@@ -9,7 +9,7 @@ if (!empty($loginresult)) {
 	} # if
 } # if
 
-if (($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) && (empty($loginresult))) {
+if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) {
 	include "includes/form-messages.inc.php"; 
 
 ?>

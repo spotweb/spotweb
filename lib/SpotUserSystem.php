@@ -320,7 +320,7 @@ class SpotUserSystem {
 	/*
 	 * Valideer de user preferences
 	 */
-	function validateUserPreferences($prefs) {
+	function validateUserPreferences($prefs, $currentPrefs) {
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
@@ -365,13 +365,21 @@ class SpotUserSystem {
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
-		$notifProviders = Notifications_Factory::getFutureServices();
+		$notifProviders = Notifications_Factory::getActiveServices();
 		foreach ($notifProviders as $notifProvider) {
 			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
+
+		# Twitter tokens komen niet binnen via het form, maar mogen perse niet weggegooid worden.
+		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
+		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];
+		$prefs['notifications']['twitter']['access_token_secret'] = $currentPrefs['notifications']['twitter']['access_token_secret'];
+		$prefs['notifications']['twitter']['request_token'] = $currentPrefs['notifications']['twitter']['request_token'];
+		$prefs['notifications']['twitter']['request_token_secret'] = $currentPrefs['notifications']['twitter']['request_token_secret'];
 
 		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
@@ -406,6 +414,13 @@ class SpotUserSystem {
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {
 				$errorList[] = array('validateuser_invalidpreference', array('prowl apikey'));
+			} # if
+		} # if
+
+		# als men Twitter wil gebruiken, moet er er een account zijn geverifieerd
+		if ($prefs['notifications']['twitter']['enabled']) {
+			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('Er is geen account geverifi&euml;erd voor Twitter notificaties.'));
 			} # if
 		} # if
 
