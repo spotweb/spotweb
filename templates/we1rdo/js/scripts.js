@@ -11,7 +11,7 @@ $.address.init(function() {
 
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2){$(this).attr('rel','address:');}});
+	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 });
 
