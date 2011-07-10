@@ -474,7 +474,8 @@ class SpotUserSystem {
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
-		if ($this->_db->userEmailExists($user['mail']) !== $user['userid']) {
+		$emailExistResult = $this->_db->userEmailExists($user['mail']);
+		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
 			$errorList[] = array('validateuser_mailalreadyexist', array());
 		} # if
 		
