@@ -1248,11 +1248,22 @@ function submitFilterBtn(searchform) {
 	// en vewijder de oude manier
 	$('form#filterform').find('input[name=search\\[text\\]]').remove();
 	$('form#filterform').find('input[name=search\\[type\\]]').remove();
+
+	// nu selecteren we alle huidige search values, als de include filters
+	// knop is ingedrukt dan doen we er niks mee, anders filteren we die
+	if ($('#searchfilter-includeprevfilter-toggle').val() != 'true') {
+		$('form#filterform [data-currentfilter="true"]').each(function(index, value) { 
+			$(value).remove();
+		});	
+	} // if
 	
 	// eventueel lege values die gesubmit worden door de age dropdown
 	// ook filteren
-	$('form#filterform').find('input[value=""]').remove();
-
+	$('form#filterform').find('select[name=search\\[value\\]\\[\\]]').filter(':input[value=""]').remove(); 
+	
+	// de checkbox die aangeeft of we willen filteren of niet moeten we ook niet submitten
+	$('#searchfilter-includeprevfilter-toggle').remove();
+	
 	// als de slider niet gewijzigd is van de default waardes, dan submitten
 	// we heel de slider niet
 	if ($('#min-filesize').val() == 'filesize:>:0') { 

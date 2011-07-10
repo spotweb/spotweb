@@ -25,6 +25,7 @@
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
+				<input type="hidden" id="searchfilter-includeprevfilter-toggle" name="search[includeinfilter]" value="true" />
 <?php
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
@@ -58,9 +59,16 @@
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst
 	if (count($parsedsearch['filterValueList']) > 1) {
 		$searchText = '';
-		$searchType = 'Titel'; 
+		$searchType = 'Titel';
 	} # if
 
+	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . $filterType['value'] . '">';
+		} # if
+	} # foreach
+	
 ?>
 					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
@@ -69,7 +77,7 @@
 		$filterColCount++;
 	} # if
 ?>
-					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' title='Zoeken in huidige filters'><input type='submit' class="filtersubmit" onclick='$("#searchfilter-includeprevfilter-toggle").val("");' value='>>' title='Zoeken'></div>
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
@@ -83,7 +91,7 @@
 						</ul>
 
 <?php
-	if (count($parsedsearch['filterValueList']) > 1) {
+	if (count($parsedsearch['filterValueList']) > 0) {
 ?>
 						<h4>Actieve filters:</h4>
 						<table class='search currentfilterlist'>

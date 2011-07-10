@@ -27,6 +27,10 @@
 				} // for
 				
 				formField[0].value = tmp;
+				
+				if (formField[0].value.length == 0) {
+					$(formField[0]).remove();
+				} // if
 
 				return true;
 			});
