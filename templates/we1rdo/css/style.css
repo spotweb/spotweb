@@ -451,3 +451,7 @@ div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; wid
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
 div.userpanel form input.withicon {width:200px;}
 
+/* Dynatree - strong not selectbox */
+span.strongnotnode-active a,
+span.strongnotnode a { background-color: maroon !important; color: white !important; }
+span.strongnotnode a:hover { background-color: white !important; color: maroon !important; }
