@@ -29,13 +29,15 @@
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
-	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
+	// Voor uitgebreide filters tonen we een lijst met op dat moment actieve filters
 	$searchType = 'Titel'; 
 	$searchText = '';
 	$sortType = 'stamp';
 	$sortOrder = 'DESC';
 	
-	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die
+	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
+	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
+	# niet juist zetten
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 			$searchType = $filterType['fieldname'];
@@ -52,6 +54,13 @@
 	$tmpSort = $tplHelper->getActiveSorting();
 	$sortType = strtolower($tmpSort['field']);
 	$sortOrder = strtolower($tmpSort['direction']);
+
+	# als er meer dan 1 filter is, dan tonen we dat als een lijst
+	if (count($parsedsearch['filterValueList']) > 1) {
+		$searchText = '';
+		$searchType = 'Titel'; 
+	} # if
+
 ?>
 					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
@@ -73,6 +82,24 @@
 <?php } ?>
 						</ul>
 
+<?php
+	if (count($parsedsearch['filterValueList']) > 1) {
+?>
+						<h4>Actieve filters:</h4>
+						<table class='search currentfilterlist'>
+<?php
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+?>
+							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo $tplHelper->convertFilterToQueryParams(); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['value']; ?>');">x</a> </td> </tr>
+<?php
+		} # if
+	} # foreach
+?>
+						</table>
+<?php						
+	}
+?>
 						<h4>Sorteren op:</h4>
 						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">

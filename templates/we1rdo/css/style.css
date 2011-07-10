@@ -54,6 +54,13 @@ form#filterform ul.search.threecol li:nth-child(n+4) input+label {background-ima
 form#filterform ul.search.threecol li:nth-child(n+4) input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 form#filterform ul.search.fourcol li {width:25%;}
 
+form#filterform table.search { border-collapse: collapse; clear:both; width:100%; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px; outline:none; overflow: hidden; }
+form#filterform table.search tr {background-color: #ddd; color:#000; border-top:1px solid #bbb; }
+form#filterform table.search tr:last-child  {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+form#filterform table.search th {font-weight: bold; text-align: left; padding-left: 4px; }
+form#filterform table.search td {text-align: left; }
+form#filterform table.search td a {color: #bbb; }
+
 ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none;}
 ul.dynatree-container a {display:inline-block; font:11px Arial, Helvetica, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
 

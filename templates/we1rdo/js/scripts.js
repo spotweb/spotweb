@@ -1211,6 +1211,10 @@ function updateSabPanel(start,limit) {
 	});
 }
 
+function removeFilter(href, fieldname, operator, value) {
+	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
+} // removeFilter	
+	
 function format_size(size) {
 	var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	var i = 0;

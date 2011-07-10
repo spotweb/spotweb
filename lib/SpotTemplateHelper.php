@@ -323,7 +323,7 @@ class SpotTemplateHelper {
 	function makeSortUrl($page, $sortby, $sortdir) {
 		return $this->makeBaseUrl("path") . '?page=' . $page . $this->convertFilterToQueryParams() . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
 	} # makeSortUrl
-
+	
 	/*
 	 * Creert een category url
 	 */
