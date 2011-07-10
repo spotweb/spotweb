@@ -24,7 +24,7 @@
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
-				<form id="filterform" action="">
+				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
 <?php
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
