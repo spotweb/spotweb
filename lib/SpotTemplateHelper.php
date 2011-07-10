@@ -451,7 +451,7 @@ class SpotTemplateHelper {
 	 * als een comma seperated lijst voor de dynatree initialisatie
 	 */
 	function categoryListToDynatree() {
-		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList']);
+		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
 	} # categoryListToDynatree
 	
 	/*
@@ -470,12 +470,8 @@ class SpotTemplateHelper {
 		} # if
 		
 		# Eerst bouwen de search[tree] value op
-		$searchTreeStr = '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList']);
-		foreach($this->_params['parsedsearch']['strongNotList'] as $headCat => $subcatList) {
-			foreach($subcatList as $subcatValue) {
-				$searchTreeStr .= '~cat' . $headCat . '_' . $subcatValue . ',';
-			} # foreach
-		} # foreach
+		$searchTreeStr = '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+														$this->_params['parsedsearch']['strongNotList']);
 		
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
