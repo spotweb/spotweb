@@ -1232,18 +1232,36 @@ function submitFilterBtn(searchform) {
 		} // if
 	} // for
 	
+	//
 	// we voegen nu onze input veld als hidden waarde toe zodat we 
-	// altijd op dezelfde manier de query parameters opbouwen
-	$('<input>').attr({
-		type: 'hidden',
-		name: 'search[value][]',
-		value: rad_val + ':=:' + searchform.elements['search[text]'].value
-	}).appendTo('form#filterform');
+	// altijd op dezelfde manier de query parameters opbouwen.
+	//
+	// Als er geen textfilter waarde is, submitten we hem ook niet
+	if (searchform.elements['search[text]'].value.trim().length > 0)  {
+		$('<input>').attr({
+			type: 'hidden',
+			name: 'search[value][]',
+			value: rad_val + ':=:' + searchform.elements['search[text]'].value
+		}).appendTo('form#filterform');
+	} // if
 	
 	// en vewijder de oude manier
 	$('form#filterform').find('input[name=search\\[text\\]]').remove();
 	$('form#filterform').find('input[name=search\\[type\\]]').remove();
 	
+	// eventueel lege values die gesubmit worden door de age dropdown
+	// ook filteren
+	$('form#filterform').find('input[value=""]').remove();
+
+	// als de slider niet gewijzigd is van de default waardes, dan submitten
+	// we heel de slider niet
+	if ($('#min-filesize').val() == 'filesize:>:0') { 
+		$('form#filterform').find('#min-filesize').remove();
+	} // if
+	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
+		$('form#filterform').find('#max-filesize').remove();
+	} // if
+
 	return true;
 } // submitFilterBtn
 	
