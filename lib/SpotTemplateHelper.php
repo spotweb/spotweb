@@ -464,21 +464,14 @@ class SpotTemplateHelper {
 		#var_dump($this->_params['parsedsearch']['filterValueList']);
 		#var_dump($this->_params['parsedsearch']['sortFields']);
 
-		# als we niet aan het zoeken zijn, doen we niets
-		if (!isset($this->_params['parsedsearch'])) {
-			return '';
-		} # if
-		
-		# Eerst bouwen de search[tree] value op
-		$searchTreeStr = '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
-														$this->_params['parsedsearch']['strongNotList']);
-		
-		# Vervolgens bouwen we de filtervalues op
-		$filterStr = '';
-		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlentities($value['value'], ENT_QUOTES);
-		} # foreach
-		
+		return $this->convertUnfilteredToQueryParams() . $this->convertTreeFilterToQueryParams() . $this->convertTextFilterToQueryParams();
+	} # convertFilterToQueryParams
+
+	/*
+	 * Converteer de huidige unfiltered setting
+	 * naar een nieuwe GET query
+	 */
+	function convertUnfilteredToQueryParams() {
 		# en eventueel als de huidige list unfiltered is, geef
 		# dat ook mee
 		$unfilteredStr = '';
@@ -486,9 +479,32 @@ class SpotTemplateHelper {
 			$unfilteredStr = '&amp;search[unfiltered]=true';
 		} # if
 
-		return $unfilteredStr . $searchTreeStr . $filterStr;
-	} # convertFilterToQueryParams
+		return $unfilteredStr;
+	} # convertUnfilteredToQueryParams()
 	
+	/*
+	 * Converteert de aanwezige filter boom naar een
+	 * nieuwe GET query
+	 */
+	function convertTreeFilterToQueryParams() {
+		# Bouwen de search[tree] value op
+		return '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+														$this->_params['parsedsearch']['strongNotList']);
+	} # convertTreeFilterToQueryParams
+
+	/*
+	 * Converteert de aanwezige filter velden (behalve de boom)
+	 * naar een nieuwe GET query
+	 */
+	function convertTextFilterToQueryParams() {
+		# Vervolgens bouwen we de filtervalues op
+		$filterStr = '';
+		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlentities($value['value'], ENT_QUOTES);
+		} # foreach
+
+		return $filterStr;
+	} # convertTextFilterToQueryParams
 
 	/*
 	 * Geeft de huidige actieve sortering terug
