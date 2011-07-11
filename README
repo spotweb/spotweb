@@ -1,7 +1,7 @@
 SpotWeb
 =======
 
-SpotWeb is een versie van Spotnet (http://twitter.com/spotned) voor het web. 
+SpotWeb is een versie van Spotnet (http://github.com/spotnet) voor het web. 
 Het gebruikt PHP5 om de meeste functies te implementeren en wordt wel eens getest op Linux en FreeBSD.
 
 Contributing
