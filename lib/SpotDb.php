@@ -632,9 +632,9 @@ class SpotDb {
 
 		# geef hier een array terug die kant en klaar is voor array_search
 		foreach($rs as $msgids) {
-			$idList[] = $msgids['messageid'];
+			$idList[$msgids['messageid']] = 1;
 		} # foreach
-
+		
 		return $idList;
 	} # matchCommentMessageIds
 
