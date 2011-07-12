@@ -80,7 +80,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 
 				# als we de comment nog niet in de database hebben, haal hem dan op
-				if (!in_array($commentId, $dbIdList)) {
+				if (!isset($dbIdList[$commentId])) {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));

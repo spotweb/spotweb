@@ -654,14 +654,9 @@ class SpotsOverview {
 	 * Zie de comments bij prepareCategorySelection() voor uitleg wat dit
 	 * precies betekent
 	 */
-	function compressCategorySelection($categoryList) {
+	function compressCategorySelection($categoryList, $strongNotList) {
 		$compressedList = '';
-		
-		# controleer of de lijst geldig is
-		if ((!isset($categoryList['cat'])) || (!is_array($categoryList['cat']))) {
-			return $compressedList;
-		} # if
-		
+
 		#
 		# Nu, we gaan feitelijk elke category die we hebben en elke subcategory daaronder
 		# aflopen om te zien of alle vereiste elementen er zijn. Als die er zijn, dan unsetten we
@@ -722,7 +717,14 @@ class SpotsOverview {
 				} # else
 			} # if
 		} # foreach
-		
+
+		# en voeg de strong not lijst toe
+		foreach($strongNotList as $headCat => $subcatList) {
+			foreach($subcatList as $subcatValue) {
+				$compressedList .= '~cat' . $headCat . '_' . $subcatValue . ',';
+			} # foreach
+		} # foreach
+
 		return $compressedList;
 	} # compressCategorySelection
 

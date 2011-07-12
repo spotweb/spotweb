@@ -11,7 +11,7 @@ $.address.init(function() {
 
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-
+	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 });
 
@@ -47,6 +47,12 @@ function openSpot(id,url) {
 	$(id).parent().parent().addClass('active');
 	$("table.spots tr.active td.title").removeClass("new");
 
+	if ($(id).attr('rel') ) {
+		openNewWindow();
+		setTimeout("$('a.spotlink').removeAttr('rel');",1);   
+		return false;
+	} //chrome
+	
 	var messageid = url.split("=")[2];
 
 	$("#overlay").addClass('loading');
@@ -1205,6 +1211,71 @@ function updateSabPanel(start,limit) {
 	});
 }
 
+/*
+ * Haalt uit een bestaande filter URL de opgegeven filter via
+ * string replacement
+ */
+function removeFilter(href, fieldname, operator, value) {
+	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
+} // removeFilter	
+
+/*
+ * Submit het zoek formulier
+ */
+function submitFilterBtn(searchform) {
+	var valelems = searchform.elements['search[value][]'];
+	
+	// We zetten nu de filter om naar een moderner soort filter
+	for (var i=0; i < searchform.elements['search[type]'].length; i++) {
+		if (searchform.elements['search[type]'][i].checked) {
+			var rad_val = searchform.elements['search[type]'][i].value;
+		} // if
+	} // for
+	
+	//
+	// we voegen nu onze input veld als hidden waarde toe zodat we 
+	// altijd op dezelfde manier de query parameters opbouwen.
+	//
+	// Als er geen textfilter waarde is, submitten we hem ook niet
+	if (searchform.elements['search[text]'].value.trim().length > 0)  {
+		$('<input>').attr({
+			type: 'hidden',
+			name: 'search[value][]',
+			value: rad_val + ':=:' + searchform.elements['search[text]'].value
+		}).appendTo('form#filterform');
+	} // if
+	
+	// en vewijder de oude manier
+	$('form#filterform').find('input[name=search\\[text\\]]').remove();
+	$('form#filterform').find('input[name=search\\[type\\]]').remove();
+
+	// nu selecteren we alle huidige search values, als de include filters
+	// knop is ingedrukt dan doen we er niks mee, anders filteren we die
+	if ($('#searchfilter-includeprevfilter-toggle').val() != 'true') {
+		$('form#filterform [data-currentfilter="true"]').each(function(index, value) { 
+			$(value).remove();
+		});	
+	} // if
+	
+	// eventueel lege values die gesubmit worden door de age dropdown
+	// ook filteren
+	$('form#filterform').find('select[name=search\\[value\\]\\[\\]]').filter(':input[value=""]').remove(); 
+	
+	// de checkbox die aangeeft of we willen filteren of niet moeten we ook niet submitten
+	$('#searchfilter-includeprevfilter-toggle').remove();
+	
+	// als de slider niet gewijzigd is van de default waardes, dan submitten
+	// we heel de slider niet
+	if ($('#min-filesize').val() == 'filesize:>:0') { 
+		$('form#filterform').find('#min-filesize').remove();
+	} // if
+	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
+		$('form#filterform').find('#max-filesize').remove();
+	} // if
+
+	return true;
+} // submitFilterBtn
+	
 function format_size(size) {
 	var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	var i = 0;
