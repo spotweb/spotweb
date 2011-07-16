@@ -268,25 +268,29 @@ class SpotsOverview {
 		# We creeeren een soort fake url zodat we de logica die al
 		# bestaat in het systeem simpel kunnen hergebruiken.
 		$xml = @(new SimpleXMLElement($xmlStr));
-		if (isset($xml->tree)) {
-			foreach($xml->tree->item as $item) {
+		if (isset($xml->spotwebfilter->tree)) {
+			foreach($xml->spotwebfilter->tree->item as $item) {
+				#FIXME type attribute wordt genegeerd!
 				$search['tree'] .= $item . ',';
 			} # foreach
 		} # if
 		
-		if (isset($xml->filter)) {
-			foreach($xml->filter->item as $item) {
+		if (isset($xml->spotwebfilter->filter)) {
+			foreach($xml->spotwebfilter->filter->item as $item) {
 				$search['value'][] = $item->fieldname . ':' . $item->operator . ':' . $item->value;
 			} # foreach
 		} # if
 		
-		if (isset($xml->sort)) {
-			foreach($xml->sort->item as $item) {
+		if (isset($xml->spotwebfilter->sort)) {
+			foreach($xml->spotwebfilter->sort->item as $item) {
 				$sortArray = array('field' => (string) $item->fieldname, 'direction' => (string) $item->direction);
 			} # foreach
 		} # if
 
-		return $this->filterToQuery($search, $sortArray, $currentSession);
+		$parsedSearch = $this->filterToQuery($search, $sortArray, $currentSession);
+		return array('title' => $xml->title,
+					 'icon' => $xml->icon,
+					 'parsedSearch' => $parsedSearch);
 	} # xmlToParsedSearch 
 	
 	/*
