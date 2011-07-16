@@ -175,7 +175,7 @@ class SpotsOverview {
 	 * Converteert een 'parsedSearch' structure naar een XML formaat
 	 * welke uitwisselbaar is
 	 */
-	public function parsedSearchToXml($parsedSearch) {
+	public function parsedSearchToXml($parsedSearch, $title, $icon) {
 		# Opbouwen XML
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
@@ -183,6 +183,8 @@ class SpotsOverview {
 		$mainElm = $doc->createElement('spotwebfilter');
 		$mainElm->setAttribute('version', '1.0');
 		$mainElm->setAttribute('generator', 'SpotWeb v' . SPOTWEB_VERSION);
+		$mainElm->appendChild($doc->createElement('title', $title));
+		$mainElm->appendChild($doc->createElement('icon', $icon));
 		$doc->appendChild($mainElm);
 
 		/* 
