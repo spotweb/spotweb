@@ -83,6 +83,9 @@ $settings['filters'] = array(
     )
 );
 
+unset($settings['filters']);
+
+
 #
 # SpotNet ondersteund moderatie van de gepostte spots en reacties, dit gebeurt
 # door middel van moderatie berichten in de nieuwsgroup waar ook de spots worden
