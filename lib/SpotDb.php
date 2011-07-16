@@ -1290,6 +1290,41 @@ class SpotDb {
 		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
 					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
 	} // updateNotification
+	
+	/*
+	 * Voegt een filter en de children toe (recursive)
+	 */
+	function addFilter($userId, $filter) {
+		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder)
+								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s')",
+							Array($userId,
+								  $filter['filtertype'],
+								  $filter['title'],
+								  $filter['icon'],
+								  $filter['torder'],
+								  $filter['tparent'],
+								  $filter['tree'],
+								  implode('&', $filter['valuelist']),
+								  $filter['sorton'],
+								  $filter['sortorder']));
+		$parentId = $this->_conn->lastInsertId('filters');
+
+		foreach($filter['children'] as $tmpFilter) {
+			$tmpFilter['tparent'] = $parentId;
+			$this->addFilter($userId, $tmpFilter);
+		} # foreach
+	} # addFilter
+	
+	/*
+	 * Copieert de filterlijst van een user naar een andere user
+	 */
+	function copyFilterList($srcId, $dstId) {
+		$filterList = $this->getFilterList($srcId);
+		
+		foreach($filterList as $filterItems) {
+			$this->addFilter($dstId, $filterItems);
+		} # foreach
+	} # copyFilterList
 
 	/*
 	 * Haalt de filter lijst op en formatteert die in een boom
@@ -1297,8 +1332,11 @@ class SpotDb {
 	function getFilterList($userId) {
 		/* Haal de lijst met filter values op */
 		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
 													  title,
 													  icon,
+													  torder,
 													  tparent,
 													  tree,
 													  valuelist,
