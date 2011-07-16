@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.35');
+define('SPOTDB_SCHEMA_VERSION', '0.36');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1290,6 +1290,49 @@ class SpotDb {
 		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
 					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
 	} // updateNotification
+
+	/*
+	 * Haalt de filter lijst op en formatteert die in een boom
+	 */
+	function getFilterList($userId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  title,
+													  icon,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND filtertype = 'filter' 
+												ORDER BY tparent,torder",
+					Array($userId));
+
+		/* Hier zetten we het om naar een daadwerkelijke boom */
+		$idMapping = array();
+		$tree = array();
+		foreach($tmpResult as &$filter) {
+			if (!isset($filter['children'])) {
+				$filter['children'] = array();
+			} # if
+			
+			# de filter waardes zijn URL encoded opgeslagen 
+			# en we gebruiken de & om individuele filterwaardes
+			# te onderscheiden
+			$filter['valuelist'] = explode('&', $filter['valuelist']);
+			
+			# en hier kijken we waar het in de lijst past
+			$idMapping[$filter['id']] =& $filter; // & $filterItem;
+			if ($filter['tparent'] == 0) {
+				$tree[$filter['id']] =& $filter;
+			} else {
+				$idMapping[$filter['tparent']]['children'][] =& $filter;
+			} # else
+		} # foreach
+		
+		return $tree;
+	} # getFilterList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

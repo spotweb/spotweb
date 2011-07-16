@@ -33,8 +33,8 @@ class SpotPage_index extends SpotPage_Abs {
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
 							array('field' => $this->_params['sortby'], 'direction' => $this->_params['sortdir']),
 							$this->_currentSession);
-		
-		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
+
+ 		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer
 		# dat de index pagina wordt aangeroepen
 		$pageNr = $this->_params['pagenr'];
@@ -81,7 +81,8 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->template('spots', array(
 								'spots' => $spotsTmp['list'],
 								'quicklinks' => $this->_settings->get('quicklinks'),
-								'filters' => $this->_settings->get('filters'),
+//								'filters' => $this->_settings->get('filters'),
+								'filters' => $this->_db->getFilterList(2),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'parsedsearch' => $parsedSearch,
