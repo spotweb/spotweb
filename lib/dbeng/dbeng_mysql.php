@@ -194,6 +194,10 @@ class dbeng_mysql extends dbeng_abs {
 		return $rows['rows_matched'];
 	} # rows()
 	
+	function lastInsertId($tableName) {
+		return mysql_insert_id($this->_conn);
+	} # lastInsertId
+
 	/*
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db

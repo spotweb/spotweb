@@ -59,6 +59,11 @@ abstract class dbeng_abs {
 	 */
 	abstract function rollback();
 	
+	/* 
+	 * Returns the last insertid
+	 */
+	abstract function lastInsertId($tableName);
+	
 
 	/*
 	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
