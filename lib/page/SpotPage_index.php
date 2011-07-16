@@ -81,7 +81,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->template('spots', array(
 								'spots' => $spotsTmp['list'],
 								'quicklinks' => $this->_settings->get('quicklinks'),
-								'filters' => $this->_db->getFilterList(2),
+								'filters' => $this->_db->getFilterList($this->_currentSession['user']['userid']),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'parsedsearch' => $parsedSearch,
