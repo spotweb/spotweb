@@ -275,6 +275,9 @@ class SpotUserSystem {
 		
 		# en geef de gebruiker de nodige groepen
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
+		
+		# en de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $tmpUser['userid']);
 	} # addUser()
 
 	/*
