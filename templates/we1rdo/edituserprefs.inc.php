@@ -28,7 +28,7 @@ include "includes/form-messages.inc.php";
 			<li><a href="#edituserpreftab-2"><span>NZB afhandeling</span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
-			<li><a href="#edituserpreftab-3"><span>Filters</span></a></li>
+			<li><a href="?page=render&tplname=listfilters" title="Filters"><span>Filters</span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span>Notificaties</span></a></li>
@@ -201,69 +201,6 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 		</div>
 <?php } ?>
-
-		<div id="edituserpreftab-3">
-			<div class='filter'>
-				<ul id='filterlist' class='filterlist'>
-<?php			
-	function processFilters($tplHelper, $filterList) {
-		foreach($filterList as $filter) {
-			# Output de HTML
-			echo '<li class="sortable-element-class ' . $tplHelper->filter2cat($filter['tree']) . '" id="orderfilterslist_' . $filter['id'];
-			echo '"><div><a href="" onclick="return openDialog(\'editdialogdiv\', \'Bewerk een filter\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', true, function() { refreshTab(\'edituserpreferencetabs\')});">';
-			echo '<img src="images/icons/' . $filter['icon'] . '" alt="' . $filter['title'] . '">' . $filter['title'] . ' (' . $filter['id'] . ')' . '</a></div>';
-			
-			# Als er children zijn, output die ool
-			if (!empty($filter['children'])) {
-				echo '<ul>';
-				processFilters($tplHelper, $filter['children']);
-				echo '</ul>';
-			} # if
-			
-			echo '</li>' . PHP_EOL;
-		} # foreach
-	} # processFilters
-	
-	processFilters($tplHelper, $tplHelper->getUserFilterList());
-?>
-			</ul>
-	
-<script type='text/javascript'>	
-	var $filterlist = $('#filterlist');
-	$filterlist.nestedSortable({
-		opacity: .6,
-		tabSize: 15,
-        forcePlaceholderSize: true,
-		forceHelperSize: true,
-		maxLevels: 4,
-		helper:	'clone',
-		items: 'li',
-		tabSize: 25,
-		listType: 'ul',
-		handle: 'div',
-		placeholder: 'placeholder',
-		revert: 250,
-		tolerance: 'pointer',
-		update: function() {
-			var serialized = $filterlist.nestedSortable('serialize');
-			var csrfcookie = '<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>';
-			var formdata = 'editfilterform[xsrfid]=' + csrfcookie + '&editfilterform[submitreorder]=true&' + serialized;
-			
-			// post de data
-			$.ajax({
-				type: "POST",
-				url: '?page=editfilter',
-				dataType: "html",
-				data: formdata,
-				success: function(xml) {
-					//alert(xml);
-				} // success
-			}); // ajax call om de form te submitten
-		} 
-	});				
-</script>
-			</div>
-		</div>
 
 <!-- Notificaties -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
