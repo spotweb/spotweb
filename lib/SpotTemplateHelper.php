@@ -215,11 +215,19 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 	
 	/*
-	 * Creeert de action url voor het wissen van een permissie 
+	 * Creeert de action url voor het beweken van een security group 
 	 */
 	function makeEditSecGroupAction() {
 		return $this->makeBaseUrl("path") . "?page=editsecgroup";
 	} # makeEditSecGroupAction
+
+	/*
+	 * Creeert de action url voor het wijzigen van een filter
+	 */
+	function makeEditFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeEditFilterAction
+
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
@@ -382,7 +390,11 @@ class SpotTemplateHelper {
 	 * Creert een RSS url
 	 */
 	function makeRssUrl() {
-		return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
+		if (isset($this->_params['parsedsearch'])) {
+			return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
+		} else {
+			return '';
+		} # if
 	} # makeRssUrl
 	
 	/*
@@ -808,6 +820,8 @@ class SpotTemplateHelper {
 		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
 		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
 		
+		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 
@@ -924,6 +938,22 @@ class SpotTemplateHelper {
 	function redirect($url) {
 		Header("Location: " . $url); 
 	} # redirect()
+	
+	/*
+	 * Get users' filter list
+	 */
+	function getUserFilterList() {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilterList($this->_currentSession['user']['userid']);
+	} # getUserFilterList
+
+	/*
+	 * Get specific filter
+	 */
+	function getUserFilter($filterId) {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
+	} # getUserFilter
 	
 	/*
 	 * Genereert een random string

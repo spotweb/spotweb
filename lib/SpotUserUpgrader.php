@@ -299,6 +299,11 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.11) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'twitter')");
 		} # if
+
+		# Zelf filters kunnen wijzigen
+		if ($this->_settings->get('securityversion') < 0.12) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_keep_own_filters . ")");
+		} # if
 	} # updateSecurityGroups
 
 	/*
