@@ -3,12 +3,14 @@ class SpotPage_editfilter extends SpotPage_Abs {
 	private $_editFilterForm;
 	private $_filterId;
 	private $_orderList;
+	private $_search;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_editFilterForm = $params['editfilterform'];
 		$this->_filterId = $params['filterid'];
 		$this->_orderList = $params['orderfilterslist'];
+		$this->_search = $params['search'];
 	} # ctor
 
 	function render() {
@@ -64,7 +66,18 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'removefilter'
 				
 				case 'addfilter'	: {
-					//$formMessages['errors'] = $spotUserSystem->addPermToSecGroup($this->_groupId, $this->_editFilterForm);
+					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
+					$filter = $this->_editFilterForm;
+					$filter['filtertype'] = 'filter';
+					$filter['valuelist'] = explode('&', $filter['valuelist']) ;
+					$filter['torder'] = 999;
+					$filter['tparent'] = 0;
+					$filter['children'] = array();
+					$filter['sorton'] = '';
+					$filter['sortorder'] = '';
+
+					# en probeer de filter toe te voegen
+					$formMessages['errors'] = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
 					
 					if (!empty($formMessages['errors'])) {
 						$editResult = array('result' => 'failure');

@@ -3,6 +3,10 @@
 <?php			
 	function processFilters($tplHelper, $filterList) {
 		foreach($filterList as $filter) {
+			# escape the filter vlaues
+			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
+			
 			# Output de HTML
 			echo '<li class="sortable-element-class ' . $tplHelper->filter2cat($filter['tree']) . '" id="orderfilterslist_' . $filter['id'];
 			echo '"><div><a href="" onclick="return openDialog(\'editdialogdiv\', \'Bewerk een filter\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', true, function() { refreshTab(\'edituserpreferencetabs\')});">';

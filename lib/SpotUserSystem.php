@@ -626,6 +626,40 @@ class SpotUserSystem {
 	function changeFilter($userId, $filterForm) {
 		return $this->_db->updateFilter($userId, $filterForm);
 	} # getFilter
+
+
+	/*
+	 * Checkt of een filter geldig is
+	 */
+	function validateFilter($filter) {
+		$errorList = array();
+
+		# Verwijder overbodige spaties e.d.
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		
+		// controleer dat deze specifieke permissie niet al in de security groep zit
+		if (strlen($filter['title']) < 3) {
+			$errorList[] = array('validatefilter_invalidtitle', array('name'));
+		} # if
+		
+		return array($filter, $errorList);
+	} # validateFilter
+	
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function addFilter($userId, $filter) {
+		$errorList = array();
+		list($filter, $errorList) = $this->validateFilter($filter);
+		
+		/* Geen fouten gevonden? voeg de filter dan toe */
+		if (empty($errorList)) {
+			$this->_db->addFilter($userId, $filter);
+		} # if
+		
+		return $errorList;
+	} # addFilter
 	
 	/*
 	 * Update een user record

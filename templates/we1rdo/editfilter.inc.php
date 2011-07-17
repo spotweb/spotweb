@@ -9,11 +9,11 @@ if (empty($editresult)) {
 	# is form voor het toevoegen van een groep ipv wijzigen van een
 	$isNew = (isset($data['isnew']));
 	
-	# vraag de opgegeven securitygroup op
+	# vraag de opgegeven filter op
 	if (!$isNew) {
 		$filter = $tplHelper->getUserFilter($data['filterid']);
 	} else {
-		$filter = array('name' => '');
+		$filter = array('title' => '', 'icon' => '');
 	}# if
 
 	# bereid alvast een UL voor voor de errors e.d., worden er later
@@ -29,7 +29,9 @@ if (empty($editresult)) {
 <?php if (!$isNew) { ?>			
 			<input type="hidden" name="filterid" value="<?php echo $filter['id']; ?>">
 <?php } else {  ?>
-			<input type="hidden" name="groupid" value="9999">
+			<input type="hidden" name="filterid" value="9999">
+			<input type="hidden" name="editfilterform[tree]" value="<?php echo htmlspecialchars($search['tree']); ?>"></input>
+			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo implode('&', array_map('urlencode', $search['value'])); ?>"></input>
 <?php } ?>
 			
 			<dt><label for="editfilterform[title]">Naam</label></dt>

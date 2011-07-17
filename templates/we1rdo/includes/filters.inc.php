@@ -147,6 +147,9 @@
 							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
 							<label>Categori&euml;n <?php echo $parsedsearch['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
+
+						<br>
+						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla huidige filter op</a>
 					</div>
 				</form>
 <?php } # if perform search ?>
@@ -258,6 +261,10 @@
 				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
 			} # if
 			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+
+			# escape the filter vlaues
+			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 			
 			# Output de HTML
 			echo '<li class="'. $tplHelper->filter2cat($filter['tree']) .'">';

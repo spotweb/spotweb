@@ -3,8 +3,6 @@
 	$grouplist = $tplHelper->getGroupList();
 ?>
 
-	<div id='editdialogdiv'></div>
-	
 	<table id="spotslistgroups" class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header">

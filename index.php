@@ -214,6 +214,7 @@ try {
 				$page = new SpotPage_editfilter($db, $settings, $currentSession,
 							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder')),
 								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
+								  'search' => $req->getDef('search', array()),
 							      'filterid' => $req->getDef('filterid', 0)));
 				$page->render();
 				break;
