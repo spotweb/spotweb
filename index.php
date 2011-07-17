@@ -210,6 +210,15 @@ try {
 				break;
 		} # editsecgroup
 
+		case 'editfilter' : {
+				$page = new SpotPage_editfilter($db, $settings, $currentSession,
+							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder')),
+								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
+							      'filterid' => $req->getDef('filterid', 0)));
+				$page->render();
+				break;
+		} # editfilter
+
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
 							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'removeallsessions')),

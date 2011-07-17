@@ -598,6 +598,34 @@ class SpotUserSystem {
 		
 		return $tmpUser;
 	} # getUser()
+
+	/*
+	 * Vraagt een filter list op
+	 */
+	function getFilterList($userId) {
+		return $this->_db->getFilterList($userId);
+	} # getFilterList
+	
+	/*
+	 * Vraag een specifieke filter op
+	 */
+	function getFilter($userId, $filterId) {
+		return $this->_db->getFilter($userId, $filterId);
+	} # getFilter
+
+	/*
+	 * Wijzigt de filter waardes.
+	 *
+	 * Op dit moment ondersteunen we enkel om de volgende waardes
+	 * te wijzigen
+	 *
+	 *   * Title
+	 *   * Order
+	 *   * Parent
+	 */
+	function changeFilter($userId, $filterForm) {
+		return $this->_db->updateFilter($userId, $filterForm);
+	} # getFilter
 	
 	/*
 	 * Update een user record

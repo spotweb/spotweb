@@ -1327,6 +1327,51 @@ class SpotDb {
 	} # copyFilterList
 
 	/*
+	 * Get a specific filter
+	 */
+	function getFilter($userId, $filterId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
+					Array((int) $userId, (int) $filterId));
+		if (!empty($tmpResult)) {
+			return $tmpResult[0];
+		} else {
+			return false;
+		} # else
+	} # getFilter
+
+	/*
+	 * Get a specific filter
+	 */
+	function updateFilter($userId, $filter) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("UPDATE filters 
+												SET title = '%s',
+												    icon = '%s',
+													torder = %d,
+													tparent = %d
+												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
+					Array($filter['title'], 
+						  $filter['icon'], 
+						  (int) $filter['torder'], 
+						  (int) $filter['tparent'], 
+						  (int) $userId, 
+						  (int) $filter['id']));
+	} # updateFilter
+
+	/*
 	 * Haalt de filter lijst op en formatteert die in een boom
 	 */
 	function getFilterList($userId) {
@@ -1344,11 +1389,14 @@ class SpotDb {
 													  sortorder 
 												FROM filters 
 												WHERE userid = %d AND filtertype = 'filter' 
-												ORDER BY tparent,torder",
+												ORDER BY id,tparent,torder",
 					Array($userId));
-
-		/* Hier zetten we het om naar een daadwerkelijke boom */
 		$idMapping = array();
+		foreach($tmpResult as &$tmp) {
+			$idMapping[$tmp['id']] =& $tmp;
+		} # foreach
+		
+		/* Hier zetten we het om naar een daadwerkelijke boom */
 		$tree = array();
 		foreach($tmpResult as &$filter) {
 			if (!isset($filter['children'])) {
@@ -1360,15 +1408,13 @@ class SpotDb {
 			# te onderscheiden
 			$filter['valuelist'] = explode('&', $filter['valuelist']);
 			
-			# en hier kijken we waar het in de lijst past
-			$idMapping[$filter['id']] =& $filter; // & $filterItem;
 			if ($filter['tparent'] == 0) {
 				$tree[$filter['id']] =& $filter;
 			} else {
 				$idMapping[$filter['tparent']]['children'][] =& $filter;
 			} # else
 		} # foreach
-		
+
 		return $tree;
 	} # getFilterList
 
