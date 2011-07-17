@@ -518,7 +518,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlentities($value['value'], ENT_QUOTES);
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . urlencode($value['value']);
 		} # foreach
 
 		return $filterStr;
@@ -821,6 +821,7 @@ class SpotTemplateHelper {
 		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
 		
 		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
+		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
