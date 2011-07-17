@@ -13,8 +13,6 @@ require "includes/header.inc.php";
 include "includes/form-messages.inc.php";
 ?>
 </div>
-<div id='editdialogdiv'></div>
-
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
