@@ -5,7 +5,13 @@ $.address.init(function() {
 			basePATH = location.href.replace('#' + $.address.value(), '');
 			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
 				closeDetails(0);
-				if ($('table.spots tr.active').offset().top > $(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+				
+				var currentSpot = $('table.spots tr.active');
+				if (currentSpot) {
+					if (currentSpot.offset().top > $(window).height()) {
+						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+					} // if
+				} // if
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
 		});
 
