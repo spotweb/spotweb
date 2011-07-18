@@ -76,6 +76,7 @@ if (empty($editresult)) {
 				<input class="smallGreyButton" type="submit" name="editfilterform[submitaddfilter]" value="Voeg toe">
 <?php } else { ?>
 				<input class="smallGreyButton" type="submit" name="editfilterform[submitchangefilter]" value="Wijzig">
+				<input class="smallGreyButton" type="submit" name="editfilterform[submitremovefilter]" value="Verwijder">
 <?php } ?>
 			</dd>
 		</form>

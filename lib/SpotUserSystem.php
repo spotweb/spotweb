@@ -660,6 +660,13 @@ class SpotUserSystem {
 		
 		return $errorList;
 	} # addFilter
+
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function removeFilter($userId, $filterId) {
+		$this->_db->deleteFilter($userId, $filterId);
+	} # removeFilter
 	
 	/*
 	 * Update een user record

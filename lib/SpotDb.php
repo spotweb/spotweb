@@ -1290,6 +1290,24 @@ class SpotDb {
 		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
 					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
 	} // updateNotification
+
+	/*
+	 * Verwijder een filter en de children toe (recursive)
+	 */
+	function deleteFilter($userId, $filterId) {
+		$filterList = $this->getFilterList($userId);
+		foreach($filterList as $filter) {
+		
+			if ($filter['id'] == $filterId) {
+				foreach($filter['children'] as $child) {
+					$this->deleteFilter($userId, $child['id']);
+				} # foreach
+			} # if
+			
+			$this->_conn->modify("DELETE FROM filters WHERE userid = %d AND id = %d", 
+					Array($userId, $filterId));
+		} # foreach
+	} # deleteFilter
 	
 	/*
 	 * Voegt een filter en de children toe (recursive)
