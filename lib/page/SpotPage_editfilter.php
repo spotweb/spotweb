@@ -59,7 +59,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'removefilter' : {
-					//$spotUserSystem->removeSecGroup($secGroup);
+					$spotUserSystem->removeFilter($this->_currentSession['user']['userid'], $this->_filterId);
 					$editResult = array('result' => 'success');
 					
 					break;

@@ -228,6 +228,12 @@ class SpotTemplateHelper {
 		return $this->makeBaseUrl("path") . "?page=editfilter";
 	} # makeEditFilterAction
 
+	/*
+	 * Creeert de action url voor het wissen van een filter
+	 */
+	function makeDeleteFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeDeleteFilterAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
