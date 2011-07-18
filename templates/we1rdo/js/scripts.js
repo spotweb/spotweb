@@ -439,6 +439,12 @@ $(document).ready(function() {
 	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
 	$("#adminpaneltabs").tabs();
+
+	/* VOor de user preferences willen we de filter list sorteerbaar maken
+	   op het moment dat die tab klaar is met laden */
+	$('#edituserpreferencetabs').bind('tabsload', function(event, ui) {
+		bindSelectedSortableFilter();
+	});	
 	
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
@@ -480,42 +486,6 @@ $(document).ready(function() {
 		$('#twitter_result').html(loading);
 		$.get(BaseURL+"?page=twitteroauth", {'action': 'remove'}, function(data){ $('#twitter_result').html(data); });
 	});
-
-	/* Koppel de nestedSortable aan de sortablefilterlist */
-	var $sortablefilterlist = $('#sortablefilterlist');
-	if ($sortablefilterlist) {
-		$sortablefilterlist.nestedSortable({
-			opacity: .6,
-			tabSize: 15,
-			forcePlaceholderSize: true,
-			forceHelperSize: true,
-			maxLevels: 4,
-			helper:	'clone',
-			items: 'li',
-			tabSize: 25,
-			listType: 'ul',
-			handle: 'div',
-			placeholder: 'placeholder',
-			revert: 250,
-			tolerance: 'pointer',
-			update: function() {
-				var serialized = $sortablefilterlist.nestedSortable('serialize');
-				var formdata = 'editfilterform[xsrfid]=' + editfilterformcsrfcookie + '&editfilterform[submitreorder]=true&' + serialized;
-				
-				// post de data
-				$.ajax({
-					type: "POST",
-					url: '?page=editfilter',
-					dataType: "html",
-					data: formdata,
-					success: function(xml) {
-						//alert(xml);
-					} // success
-				}); // ajax call om de form te submitten
-			}
-		});
-	} // if
-	
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)
@@ -1321,3 +1291,40 @@ function format_size(size) {
 	}
 	return size.toFixed(1) + ' ' + sizes[i];
 }
+
+function bindSelectedSortableFilter() {
+	/* Koppel de nestedSortable aan de sortablefilterlist */
+	var $sortablefilterlist = $('#sortablefilterlist');
+	if ($sortablefilterlist) {
+		$sortablefilterlist.nestedSortable({
+			opacity: .6,
+			tabSize: 15,
+			forcePlaceholderSize: true,
+			forceHelperSize: true,
+			maxLevels: 4,
+			helper:	'clone',
+			items: 'li',
+			tabSize: 25,
+			listType: 'ul',
+			handle: 'div',
+			placeholder: 'placeholder',
+			revert: 250,
+			tolerance: 'pointer',
+			update: function() {
+				var serialized = $sortablefilterlist.nestedSortable('serialize');
+				var formdata = 'editfilterform[xsrfid]=' + editfilterformcsrfcookie + '&editfilterform[submitreorder]=true&' + serialized;
+				
+				// post de data
+				$.ajax({
+					type: "POST",
+					url: '?page=editfilter',
+					dataType: "html",
+					data: formdata,
+					success: function(xml) {
+						//alert(xml);
+					} // success
+				}); // ajax call om de form te submitten
+			}
+		});
+	} // if
+} // bindSelectedSortableFilter
