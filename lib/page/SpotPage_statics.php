@@ -63,7 +63,9 @@ class SpotPage_statics extends SpotPage_Abs {
 
 		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
-			case 'css'		: Header('Content-Type: text/css'); break;
+			case 'css'		: Header('Content-Type: text/css'); 
+							  Header('Vary: Accept-Encoding'); // sta toe dat proxy servers dit cachen
+							  break;
 			case 'js'		: Header('Content-Type: application/javascript; charset=utf-8'); break;
 			case 'ico'		: Header('Content-Type: image/x-icon'); break;
 		} # switch
