@@ -72,6 +72,9 @@ class SpotPage_statics extends SpotPage_Abs {
 		
 		# stuur de expiration headers
 		$this->sendExpireHeaders(false);
+		
+		# stuur de last-modified header
+		Header("Last-Modified: " . gmdate("D, d M Y H:i:s", $tplHelper->getStaticModTime($this->_params['type'])) . " GMT"); 
 
 		echo $mergedInfo['body'];
 	} # render
