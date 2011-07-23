@@ -32,6 +32,15 @@ abstract class SpotPage_Abs {
 		} # if
 	} # sendExpireHeaders
 	
+	/*
+	 * Stuur een content header, dit zorgt er voor dat de browser
+	 * eventuele content sneller kan parsen
+	 */
+	function sendContentTypeHeader() {
+		Header("Content-Type: text/html; charset=utf-8");
+	} # sendContentTypeHeader
+
+	
 	# Geef the tpl helper terug
 	function getTplHelper($params) {
 		if (file_exists('templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php')) {
@@ -65,6 +74,7 @@ abstract class SpotPage_Abs {
 
 		# stuur de expire headers
 		$this->sendExpireHeaders(true);
+		$this->sendContentTypeHeader();
 		
 		# en we spelen de template af
 		require_once('templates/' . $settings->get('tpl_name') . '/' . $tpl . '.inc.php');
