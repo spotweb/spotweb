@@ -535,7 +535,8 @@ class SpotTemplateHelper {
 	 */
 	function getActiveSorting() {
 		$activeSort = array('field' => '',
-							'direction' => '');
+							'direction' => '',
+							'friendlyname' => '');
 		
 		# als we niet aan het sorteren zijn, doen we niets
 		if (!isset($this->_params['parsedsearch'])) {
@@ -548,6 +549,7 @@ class SpotTemplateHelper {
 			if (!$value['autoadded']) {
 				$activeSort['field'] = $value['field'];
 				$activeSort['direction'] = $value['direction'];
+				$activeSort['friendlyname'] = $value['friendlyname'];
 				break;
 			} # if
 		} # foreach
@@ -564,7 +566,7 @@ class SpotTemplateHelper {
 		$activeSort = $this->getActiveSorting();
 		
 		if (!empty($activeSort['field'])) {
-			return '&amp;sortby=' . $activeSort['field'] . '&amp;sortdir=' . $activeSort['direction'];
+			return '&amp;sortby=' . $activeSort['friendlyname'] . '&amp;sortdir=' . $activeSort['direction'];
 		} # if
 		
 		return '';

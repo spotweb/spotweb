@@ -237,15 +237,9 @@ class SpotsOverview {
 		 */
 		$sort = $doc->createElement('sort');
 		foreach($parsedSearch['sortFields'] as $sortItem) {
-			# Het sortitem een fully qualified sortname - dat willen we niet
-			$fieldName = explode('.', $sortItem['field']);
-			if (is_array($fieldName)) {
-				$fieldName = $fieldName[count($fieldName) - 1];
-			} # if
-			
 			# Creer nu een tree item
 			$sortElm = $doc->createElement('item');
-			$sortElm->appendChild($doc->createElement('fieldname', $fieldName));
+			$sortElm->appendChild($doc->createElement('fieldname', $sortItem['frielyname']));
 			$sortElm->appendChild($doc->createElement('direction', $sortItem['direction']));
 
 			if (!$sortItem['autoadded']) {
@@ -748,13 +742,20 @@ class SpotsOverview {
 	 * Genereert de lijst met te sorteren velden
 	 */
 	private function prepareSortFields($sort, $sortFields) {
-		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
+		$VALID_SORT_FIELDS = array('category' => 1, 
+								   'poster' => 1, 
+								   'title' => 1, 
+								   'filesize' => 1, 
+								   'stamp' => 1, 
+								   'subcata' => 1, 
+								   'spotrating' => 1, 
+								   'commentcount' => 1);
 
-		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
+		if ((!isset($sort['field'])) || (!isset($VALID_SORT_FIELDS[$sort['field']]))) {
 			# We sorteren standaard op stamp, maar alleen als er vanuit de query
 			# geen expliciete sorteermethode is meegegeven
 			if (empty($sortFields)) {
-				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true);
+				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null);
 			} # if
 		} else {
 			if (strtoupper($sort['direction']) != 'ASC') {
@@ -764,7 +765,10 @@ class SpotsOverview {
 			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
 			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
 			# van de sorteer lijst.
-			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction'], 'autoadded' => false));
+			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 
+											 'direction' => $sort['direction'], 
+											 'autoadded' => false, 
+											 'friendlyname' => $sort['field']));
 		} # else
 		
 		return $sortFields;
@@ -882,7 +886,7 @@ class SpotsOverview {
 						 'strongNotList' => array(),
 					     'filterValueList' => array(),
 						 'unfiltered' => false,
-					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true)));
+					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null)));
 		} # if
 
 		#

@@ -53,7 +53,7 @@
 	# Als er een sortering is die we kunnen gebruiken, dan willen we ook dat
 	# in de UI weergeven
 	$tmpSort = $tplHelper->getActiveSorting();
-	$sortType = strtolower($tmpSort['field']);
+	$sortType = strtolower($tmpSort['friendlyname']);
 	$sortOrder = strtolower($tmpSort['direction']);
 
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst

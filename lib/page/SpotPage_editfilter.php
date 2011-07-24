@@ -4,6 +4,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 	private $_filterId;
 	private $_orderList;
 	private $_search;
+	private $_sorton;
+	private $_sortorder;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
@@ -11,6 +13,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		$this->_filterId = $params['filterid'];
 		$this->_orderList = $params['orderfilterslist'];
 		$this->_search = $params['search'];
+		$this->_sorton = $params['sorton'];
+		$this->_sortorder = $params['sortorder'];
 	} # ctor
 
 	function render() {
@@ -73,8 +77,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					$filter['torder'] = 999;
 					$filter['tparent'] = 0;
 					$filter['children'] = array();
-					$filter['sorton'] = '';
-					$filter['sortorder'] = '';
+					$filter['sorton'] = $filter['sorton'];
+					$filter['sortorder'] = $filter['sortorder'];
 
 					# en probeer de filter toe te voegen
 					$formMessages['errors'] = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
@@ -122,6 +126,10 @@ class SpotPage_editfilter extends SpotPage_Abs {
 
 		#- display stuff -#
 		$this->template('editfilter', array('filter' => $spotFilter,
+											'sorton' => $this->_sorton,
+											'sortorder' => $this->_sortorder,
+											'sortby' => $this->_sorton,
+											'sortdir' => $this->_sortorder,
 										    'formmessages' => $formMessages,
 											'http_referer' => $this->_editFilterForm['http_referer'],
 											'editresult' => $editResult));
