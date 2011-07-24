@@ -289,7 +289,8 @@ class dbeng_mysql extends dbeng_abs {
 			
 				$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 									  'direction' => 'DESC',
-									  'autoadded' => true);
+									  'autoadded' => true,
+									  'friendlyname' => null);
 			} # if
 		} # foreach
 

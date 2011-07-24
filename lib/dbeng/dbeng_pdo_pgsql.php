@@ -67,7 +67,8 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
 			$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 								  'direction' => 'DESC',
-								  'autoadded' => true);
+								  'autoadded' => true,
+								  'friendlyname' => null);
 		} # foreach
 
 		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));

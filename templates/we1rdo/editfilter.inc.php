@@ -32,6 +32,8 @@ if (empty($editresult)) {
 			<input type="hidden" name="filterid" value="9999">
 			<input type="hidden" name="editfilterform[tree]" value="<?php echo htmlspecialchars($search['tree']); ?>"></input>
 			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo implode('&', array_map('urlencode', $search['value'])); ?>"></input>
+			<input type="hidden" name="editfilterform[sorton]" value="<?php echo htmlspecialchars($sortby); ?>"></input>
+			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir); ?>"></input>
 <?php } ?>
 			
 			<dt><label for="editfilterform[title]">Naam</label></dt>
