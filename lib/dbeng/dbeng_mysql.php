@@ -229,7 +229,8 @@ class dbeng_mysql extends dbeng_abs {
 			$termList = explode(' ', $tempSearchValue);
 			foreach($termList as $term) {
 				if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-					$searchValue = $tempSearchValue;
+					// Wis dubbele spaties anders vinden we nooit iets
+					$searchValue = str_replace('  ', ' ', $tempSearchValue);
 					$searchMode = "normal";
 					break;
 				} # if
