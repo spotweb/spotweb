@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.07');
+define('SPOTWEB_SECURITY_VERSION', '0.12');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 
@@ -23,37 +23,41 @@ class SpotSecurity {
 	 /*
 	 * Constants used for securing the system
 	 */
-	const spotsec_view_spots_index			= 0;	//
-	const spotsec_perform_login				= 1;	//
-	const spotsec_perform_search			= 2;	//
-	const spotsec_view_spotdetail			= 3; 	//
-	const spotsec_retrieve_nzb				= 4;	//
-	const spotsec_download_integration		= 5;
-	const spotsec_mark_spots_asread			= 6;	//
-	const spotsec_view_spotimage			= 7;	//
-	const spotsec_view_rssfeed				= 8;	//
-	const spotsec_view_statics				= 9;	//
-	const spotsec_create_new_user			= 10;	//
-	const spotsec_edit_own_userprefs 		= 11;	//
-	const spotsec_edit_own_user				= 12;	//
-	const spotsec_list_all_users			= 13;	//
-	const spotsec_post_comment				= 14;	//
-	const spotsec_perform_logout			= 15;	//
-	const spotsec_use_sabapi				= 16;	//
-	const spotsec_keep_own_watchlist		= 17;	//
-	const spotsec_keep_own_downloadlist 	= 18;	//
-	const spotsec_keep_own_seenlist			= 19;	//
-	const spotsec_view_spotcount_filtered	= 20;	//
-	const spotsec_retrieve_spots			= 21;
-	const spotsec_view_comments				= 22;	//
-	const spotsec_select_template			= 23;
-	const spotsec_consume_api				= 24;	//
-	const spotsec_edit_other_users			= 25;	//
-	const spotsec_view_spotcount_total		= 26;	//
-	const spotsec_delete_user				= 27;
-	const spotsec_edit_groupmembership		= 28;
-	const spotsec_display_groupmembership	= 29;
-	const spotsec_edit_securitygroups		= 30;
+	const spotsec_view_spots_index				= 0;	//
+	const spotsec_perform_login					= 1;	//
+	const spotsec_perform_search				= 2;	//
+	const spotsec_view_spotdetail				= 3; 	//
+	const spotsec_retrieve_nzb					= 4;	//
+	const spotsec_download_integration			= 5;
+	const spotsec_mark_spots_asread				= 6;	//
+	const spotsec_view_spotimage				= 7;	//
+	const spotsec_view_rssfeed					= 8;	//
+	const spotsec_view_statics					= 9;	//
+	const spotsec_create_new_user				= 10;	//
+	const spotsec_edit_own_userprefs 			= 11;	//
+	const spotsec_edit_own_user					= 12;	//
+	const spotsec_list_all_users				= 13;	//
+	const spotsec_post_comment					= 14;	//
+	const spotsec_perform_logout				= 15;	//
+	const spotsec_use_sabapi					= 16;	//
+	const spotsec_keep_own_watchlist			= 17;	//
+	const spotsec_keep_own_downloadlist 		= 18;	//
+	const spotsec_keep_own_seenlist				= 19;	//
+	const spotsec_view_spotcount_filtered		= 20;	//
+	const spotsec_retrieve_spots				= 21;
+	const spotsec_view_comments					= 22;	//
+	const spotsec_select_template				= 23;
+	const spotsec_consume_api					= 24;	//
+	const spotsec_edit_other_users				= 25;	//
+	const spotsec_view_spotcount_total			= 26;	//
+	const spotsec_delete_user					= 27;
+	const spotsec_edit_groupmembership			= 28;
+	const spotsec_display_groupmembership		= 29;
+	const spotsec_edit_securitygroups			= 30;
+	const spotsec_send_notifications_services	= 31;
+	const spotsec_send_notifications_types		= 32;
+	const spotsec_allow_custom_stylesheet		= 33;
+	const spotsec_keep_own_filters				= 34;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -73,7 +77,7 @@ class SpotSecurity {
 		13		=> "Alle gebruikers oplijsten",
 		14		=> "Commentaar op een spot posten",
 		15		=> "Uitloggen",
-		16		=> "sabnzbd API gebruiken (niet download manager integratie)",
+		16		=> "SABnzbd+ API gebruiken (niet download manager integratie)",
 		17		=> "Watchlist bijhouden",
 		18		=> "Downloadlist bijhouden",
 		19		=> "Seenlist bijhouden",
@@ -87,7 +91,11 @@ class SpotSecurity {
 		27		=> "Gebruikers wissen",
 		28		=> "Groupen waar een user lid van is wijzigen",
 		29		=> "Groupen waar een user lid van is tonen",
-		30 		=> "Security groupen kunnen wijzigen"
+		30 		=> "Security groupen kunnen wijzigen",
+		31 		=> "Notificaties versturen (per service)",
+		32 		=> "Notificaties versturen (per type)",
+		33		=> "Eigen CSS stylesheet toestaan per gebruiker",
+		34		=> "Zelf spotfilters kunnen bewerken"
 	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {

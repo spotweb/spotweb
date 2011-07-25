@@ -80,7 +80,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 
 				# als we de comment nog niet in de database hebben, haal hem dan op
-				if (!in_array($commentId, $dbIdList)) {
+				if (!isset($dbIdList[$commentId])) {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
@@ -90,7 +90,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					if (count($msgIdParts) == 5) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
 						
-						# Sommige oudere comments bevatten een niet-numreieke
+						# Sommige oudere comments bevatten een niet-numerieke
 						# string op deze positie, dus we controleren nog even
 						# of het puur een getal is wat er staat.
 						if (!is_numeric($msgIdParts[1])) {
@@ -103,6 +103,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 
 					# voeg spot aan db toe
 					$this->_db->addCommentRef($commentId, $msgheader['References'], $msgheader['rating']);
+
+					# we moeten ook de msgid lijst updaten omdat 
+					# soms een messageid meerdere keren per xover mee komt
+					$dbIdList[$commentId] = 1;
 				} # if
 			} # foreach
 
@@ -121,7 +125,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
 			
-			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
+			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 		
 } # class SpotRetriever_Comments

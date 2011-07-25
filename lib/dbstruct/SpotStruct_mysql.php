@@ -10,7 +10,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
-		$this->_dbcon->rawExec("ANALYZE TABLE spottexts");
+		$this->_dbcon->rawExec("ANALYZE TABLE spots");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotsfull");
+		$this->_dbcon->rawExec("ANALYZE TABLE commentsxover");
 	} # analyze
 	
 	/* converteert een "spotweb" datatype naar een mysql datatype */
@@ -63,6 +65,53 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addIndex
 
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				return false;
+			} # if
+		} # foreach
+		
+		return true;
+	} # ftsExists
+			
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+				$this->dropIndex($ftsname . '_' . $num, $tablename);
+				$this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
+			} # if
+		} # foreach
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename, $colList) {
+		foreach($colList as $num => $col) {
+			$this->dropIndex($ftsname . '_' . $num, $tablename);
+		} # foreach
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpIndex = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
+			
+			if (!empty($tmpIndex)) {
+				$ftsList[] = $tmpIndex[0];
+			} # if
+		} # foreach
+		
+		return $ftsList;
+	} # getFtsInfo
+	
 	/* dropt een index als deze bestaat */
 	function dropIndex($idxname, $tablename) {
 		# Check eerst of de tabel bestaat, anders kan
@@ -229,6 +278,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$q = $q[0];
 			$q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
+			# MySQL's boolean type is stiekem een tinyint, maar wij verwachten
+			# binnen spotweb een echte boolean. Dus we converteren dat stiekem
+			if (strtolower($q['COLUMN_TYPE']) == 'tinyint(1)') {
+				if (is_numeric($q['COLUMN_DEFAULT'])) {
+					if ($q['COLUMN_DEFAULT']) {
+						$q['COLUMN_DEFAULT'] = 'true';
+					} else {
+						$q['COLUMN_DEFAULT'] = 'false';
+					} # if
+				} # if
+			} # if
+			
 			# converteer het default waarde naar iets anders
 			if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {	
 				$q['COLUMN_DEFAULT'] = "''";
@@ -240,7 +301,10 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	
 	/* Geeft, in een afgesproken formaat, de index informatie terug */
 	function getIndexInfo($idxname, $tablename) {
-		$q = $this->_dbcon->arrayQuery("SELECT index_name, seq_in_index, column_name, non_unique, lower(index_type) as index_type
+		$q = $this->_dbcon->arrayQuery("SELECT 
+											column_name, 
+											non_unique, 
+											lower(index_type) as index_type
 										FROM information_schema.STATISTICS 
 										WHERE TABLE_SCHEMA = DATABASE() 
 										  AND table_name = '" . $tablename . "' 

@@ -1,16 +1,23 @@
 <?php
 if (!empty($loginresult)) {
-	include 'includes/form-xmlresult.inc.php';
-	
-	echo formResult2Xml($loginresult, $formmessages, $tplHelper);
+	if ((!isset($data['performredirect'])) || ($loginresult['result'] != 'success')) {
+		include 'includes/form-xmlresult.inc.php';
+		
+		echo formResult2Xml($loginresult, $formmessages, $tplHelper);
+	} else {
+		$tplHelper->redirect($loginform['http_referer']);
+	} # if
 } # if
 
-if (($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) && (empty($loginresult))) {
+if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) {
 	include "includes/form-messages.inc.php"; 
 
 ?>
 <form class="loginform" name="loginform" action="<?php echo $tplHelper->makeLoginAction(); ?>" method="post">
 	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
+	<?php if (isset($data['performredirect'])) {?>
+		<input type="hidden" name="data[performredirect]" value="<?php echo $data['performredirect']; ?>">
+	<?php } ?>
 	<fieldset>
 		<dl>
 			<dt><label for="loginform[username]">Gebruikersnaam</label></dt>

@@ -24,40 +24,60 @@
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
-				<form id="filterform" action="">
+				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
+				<input type="hidden" id="searchfilter-includeprevfilter-toggle" name="search[includeinfilter]" value="true" />
 <?php
-	$activefilter = array_merge(array('type' => 'Titel', 'text' => '', 'tree' => '', 'unfiltered' => '', 'sortby' => $sortby, 'sortdir' => $sortdir), $activefilter);
-	
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
-	// Voor voor-gedefinieerde filters en dergelijke zal dit maar half juist zijn
-	$searchType = 'Titel'; $searchText = '';
-	if (isset($activefilter['filterValues'])) {
-		foreach(array_keys($activefilter['filterValues']) as $filterType) {
-			if (in_array($filterType, array('Titel', 'Poster', 'Tag', 'UserID'))) {
-				$searchType = $filterType;
-				$searchText = $activefilter['text'];
-			}
-		} # foreach
-	} # if
-	if (isset($activefilter['value'][0])) {
-		$tmpSearch = explode(":", $activefilter['value'][0]);
-		if (in_array($tmpSearch[0], array('Titel', 'Poster', 'Tag'))) {
-			$searchText = $tmpSearch[1];
-		} elseif (in_array($tmpSearch[0], array('UserID'))) {
-			$searchText = $tmpSearch[2];
+	// Voor uitgebreide filters tonen we een lijst met op dat moment actieve filters
+	$searchType = 'Titel'; 
+	$searchText = '';
+	$sortType = 'stamp';
+	$sortOrder = 'DESC';
+	
+	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
+	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
+	# niet juist zetten
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			$searchType = $filterType['fieldname'];
+			$searchText = $filterType['value'];
+		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
+			$minFilesize = $filterType['value'];
+		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
+			$maxFilesize = $filterType['value'];
 		} # if
+	} # foreach
+
+	# Als er een sortering is die we kunnen gebruiken, dan willen we ook dat
+	# in de UI weergeven
+	$tmpSort = $tplHelper->getActiveSorting();
+	$sortType = strtolower($tmpSort['friendlyname']);
+	$sortOrder = strtolower($tmpSort['direction']);
+
+	# als er meer dan 1 filter is, dan tonen we dat als een lijst
+	if (count($parsedsearch['filterValueList']) > 1) {
+		$searchText = '';
+		$searchType = 'Titel';
 	} # if
+
+	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . $filterType['value'] . '">';
+		} # if
+	} # foreach
+	
 ?>
-					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $activefilter['tree']; ?>"></div>
+					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
 	$filterColCount = 3;
 	if ($settings->get('retrieve_full')) {
 		$filterColCount++;
 	} # if
 ?>
-					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='>>' title='Zoeken'></div>
+					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' title='Zoeken in huidige filters'><input type='submit' class="filtersubmit" onclick='$("#searchfilter-includeprevfilter-toggle").val("");' value='>>' title='Zoeken'></div>
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>
@@ -70,15 +90,33 @@
 <?php } ?>
 						</ul>
 
+<?php
+	if (count($parsedsearch['filterValueList']) > 0) {
+?>
+						<h4>Actieve filters:</h4>
+						<table class='search currentfilterlist'>
+<?php
+	foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+?>
+							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo $tplHelper->convertFilterToQueryParams(); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['value']; ?>');">x</a> </td> </tr>
+<?php
+		} # if
+	} # foreach
+?>
+						</table>
+<?php						
+	}
+?>
 						<h4>Sorteren op:</h4>
-						<input type="hidden" name="sortdir" value="<?php if($activefilter['sortby'] == "stamp" || $activefilter['sortby'] == "spotrating" || $activefilter['sortby'] == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
+						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
-							<li> <input type="radio" name="sortby" value="" <?php echo $activefilter['sortby'] == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
-							<li> <input type="radio" name="sortby" value="title" <?php echo $activefilter['sortby'] == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
-							<li> <input type="radio" name="sortby" value="poster" <?php echo $activefilter['sortby'] == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
-							<li> <input type="radio" name="sortby" value="stamp" <?php echo $activefilter['sortby'] == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
-							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $activefilter['sortby'] == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
-							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $activefilter['sortby'] == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
+							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label>Relevantie</label> </li>
+							<li> <input type="radio" name="sortby" value="title" <?php echo $sortType == "title" ? 'checked="checked"' : "" ?>><label>Titel</label> </li>
+							<li> <input type="radio" name="sortby" value="poster" <?php echo $sortType == "poster" ? 'checked="checked"' : "" ?>><label>Poster</label> </li>
+							<li> <input type="radio" name="sortby" value="stamp" <?php echo $sortType == "stamp" ? 'checked="checked"' : "" ?>><label>Datum</label> </li>
+							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $sortType == "commentcount" ? 'checked="checked"' : "" ?>><label>Comments</label> </li>
+							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $sortType == "spotrating" ? 'checked="checked"' : "" ?>><label>Rating</label> </li>
 						</ul>
 
 						<h4>Leeftijd limiteren</h4>
@@ -96,13 +134,22 @@
 								<option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>>1 jaar</option>
 							</select></li>
 						</ul>
+					
+						<h4>Omvang</h4>
+						<input type="hidden" name="search[value][]" id="min-filesize" />
+						<input type="hidden" name="search[value][]" id="max-filesize" />
+						<div id="human-filesize"></div>
+						<div id="slider-filesize"></div>
 
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
 						<ul class="search clearCategories onecol">
-							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $activefilter['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
-							<label>Categori&euml;n <?php echo $activefilter['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
+							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
+							<label>Categori&euml;n <?php echo $parsedsearch['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
+
+						<br>
+						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla huidige filter op</a>
 					</div>
 				</form>
 <?php } # if perform search ?>
@@ -141,7 +188,7 @@
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
 		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=render&tplname=adminpanel">Admin panel</a></h4>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=adminpanel">Admin panel</a></h4>
 					<div class="listUsers"></div>
 <?php } ?>
 					
@@ -190,6 +237,7 @@
 			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 					<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
+					<a class="filter <?php if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
 <?php 	}
 	} ?>
@@ -199,40 +247,58 @@
 					<ul class="filterlist filters">
 
 <?php
-	foreach($filters as $filter) {
-		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
-		$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-?>
-						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>>
-						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter[0]."&quot; zien'>$newCount</span>"; } ?><span class='toggle' title='Filter inklappen' onclick='toggleFilter(this)'>&nbsp;</span></a>
-<?php
-		if (!empty($filter[4])) {
-			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
-			foreach($filter[4] as $subFilter) {
-				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
-				$newSubCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-?>
-						<li> <a class="filter<?php echo " " . $subFilter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; if ($newSubCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$subFilter[0]."&quot; zien'>$newSubCount</span>"; } ?></a>
-<?php
-				if (!empty($subFilter[4])) {
-					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
-					foreach($subFilter[4] as $sub2Filter) {
-						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
-						$newSub2Count = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-		?>
-						<li> <a class="filter<?php echo " " . $sub2Filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $sub2Filter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $sub2Filter[0]; if ($newSub2Count) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$sub2Filter[0]."&quot; zien'>$newSub2Count</span>"; } ?></a>
-		<?php
-					} # foreach 
-					echo "\t\t\t\t\t\t\t</ul>\r\n";
-				} # is_array
+	function processFilters($tplHelper, $count_newspots, $filterList) {
+		$selfUrl = $tplHelper->makeSelfUrl("path");
+
+		foreach($filterList as $filter) {
+			$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter['tree'];
+			if (!empty($filter['valuelist'])) {
+				foreach($filter['valuelist'] as $value) {
+					$strFilter .= '&amp;search[value][]=' . $value;
+				} # foreach
+			} # if
+			if (!empty($filter['sorton'])) {
+				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
+			} # if
+			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+
+			# escape the filter vlaues
+			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 			
-			} # foreach 
-			echo "\t\t\t\t\t\t\t</ul>\r\n";
-		} # is_array
-	} # foreach
+			# Output de HTML
+			echo '<li class="'. $tplHelper->filter2cat($filter['tree']) .'">';
+			echo '	<a class="filter ' . $filter['title']; 
+			
+			if ($selfUrl == $strFilter) { 
+				echo ' selected';
+			} # if
+			
+			echo '" href="' . $strFilter . '">';
+			echo '<img src="images/icons/' . $filter['icon'] . '" alt="' . $filter['title'] . '">' . $filter['title'];
+			if ($newCount) { 
+				echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter['title']."&quot; zien'>$newCount</span>"; 
+			} # if 
+
+			# als er children zijn, moeten we de category kunnen inklappen
+			if (!empty($filter['children'])) {
+				echo '<span class="toggle" title="Filter inklappen" onclick="toggleFilter(this)">&nbsp;</span>';
+			} # if
+			
+			echo '</a>';
+			
+			# Als er children zijn, output die ool
+			if (!empty($filter['children'])) {
+				echo '<ul class="filterlist subfilterlist">';
+				processFilters($tplHelper, $count_newspots, $filter['children']);
+				echo '</ul>';
+			} # if
+			
+			echo '</li>' . PHP_EOL;
+		} # foreach
+	} # processFilters
+	
+	processFilters($tplHelper, $count_newspots, $filters);
 ?>
 					</ul>
 
@@ -242,9 +308,12 @@
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) { ?>
-						<li><a href="retrieve.php?output=xml" onclick="retrieveSpots()" class="greyButton retrievespots">Update Spots</a></li>
-<?php } ?>
+<?php 
+		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
+			if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
+						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots()" class="greyButton retrievespots">Update Spots</a></li>
+<?php 		}
+		} ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads">Verwijder downloadgeschiedenis</a></li>
 <?php } ?>
@@ -253,3 +322,23 @@
 <?php } ?>
 					</ul>
 				</div>
+
+	<script>
+	$(function() {
+		$( "#slider-filesize" ).slider({
+			range: true,
+			min: 0,
+			max: 375809638400,
+			step: 1048576,
+			values: [ <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>, <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?> ],
+			slide: function( event, ui ) {
+				$( "#min-filesize" ).val( "filesize:>:" + ui.values[ 0 ] );
+				$( "#max-filesize" ).val( "filesize:<:" + ui.values[ 1 ] );
+				$( "#human-filesize" ).text( "Tussen " + format_size( ui.values[ 0 ] ) + " en " + format_size( ui.values[ 1 ] ) );
+			}
+		});
+		$( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
+		$( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
+		$( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
+	});
+	</script>

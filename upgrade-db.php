@@ -25,7 +25,9 @@ try {
 	$spotUpgrader->settings($settings);
 	echo "Settings update done" . PHP_EOL;
 	$spotUpgrader->users($settings);
+	echo "Updating users" . PHP_EOL;
 	echo "Users' update done" . PHP_EOL;
+	echo "Performing basic analysis of database tables" . PHP_EOL;
 	$spotUpgrader->analyze($settings);
 	echo "Basic database optimalisation done" . PHP_EOL;
 

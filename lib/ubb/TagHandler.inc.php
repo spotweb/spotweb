@@ -32,7 +32,7 @@
 							  
 
 						  'img' =>
-							Array('closetags' => Array('img'),
+							Array('closetags' => Array(NULL),
 								  'allowedchildren' => Array(''),
 								  'handler' => Array('TagHandler', 'handle_img') )
 							  
@@ -135,18 +135,21 @@
 		
 		/* handle the img tag */
 		static function handle_img($params, $contents) {
+				$origAppend = '';
+				
 				# are only specific images allowed?
 				if (isset(TagHandler::$tagconfig['i']['img']['allowedimgs'])) {
 					if (!isset(TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) { 
 						return TagHandler::handle_empty($params, $contents);
 					} else {
+						$origAppend = $contents;
 						$contents = TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
 					} # if
 				} # if
 				
-				return Array('prepend' => '<img src="',
-							 'content' => $contents,
-							 'append' => '">');
+				return Array('prepend' => '<img src="' . $contents . '">',
+							 'content' => $origAppend,
+							 'append' => '');
 		} // handle_img
 
 		/* handle the img tag */

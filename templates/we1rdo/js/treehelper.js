@@ -10,6 +10,22 @@
 			    ajaxDefaults: { // Used by initAjax option
 					cache: true // false: Append random '_' argument to the request url to prevent caching.
 				},
+				onQuerySelect: function(flag, node) {
+					if (!flag) {
+						if (!node.data.strongnot) {
+							node.data.strongnot = true;
+							node.data.addClass = 'strongnotnode';
+						} else {
+							node.data.strongnot = false;
+							node.data.addClass = node.data.addClass.replace('strongnotnode', '');
+						} // else
+						
+						node.render(true);
+						return (!node.data.strongnot);
+					} else {
+						return true;
+					} // else					
+				},
 				onPostInit: function(isReloading, isError) {
 					var formField = $("#search-tree");
 					matchTree(formField[0].value, false);
@@ -20,13 +36,20 @@
 				var formField = $("#search-tree");
 				
 				// then append Dynatree selected 'checkboxes':
-				var tree = $("#tree").dynatree("getTree").serializeArray();
-				var tmp = '';
-				for(var i = 0; i < tree.length; i++) {
-					tmp += tree[i].value + ",";
-				} // for
+				var selectedNodes = $("#tree").dynatree("getTree").getSelectedNodes();
+				var tmp = $.map(selectedNodes, function(node){
+					if (node.data.strongnot) {
+						return '~' + node.data .key;
+					} else {
+						return node.data.key;
+					} // else
+				}); // map
+            	
+				formField[0].value = tmp.join(',');
 				
-				formField[0].value = tmp;
+				if (formField[0].value.length == 0) {
+					$(formField[0]).remove();
+				} // if
 
 				return true;
 			});
@@ -44,11 +67,21 @@
 			var tree = $("#tree").dynatree("getTree");
 			var keyList = s.split(",");
 			var i;
-			
+
 			for(i = 0; i < keyList.length; i++) {
 				if (keyList[i][0] == '!') {
 					var node = tree.getNodeByKey(keyList[i].substr(1));
-					if (node) node.select(false);
+					if (node) {
+						node.select(false);
+						node.data.strongnot = false;
+					} // if
+				} else if (keyList[i][0] == '~') {
+					var node = tree.getNodeByKey(keyList[i].substr(1));
+					if (node) {
+						node.data.strongnot = true;
+						node.data.addClass = 'strongnotnode';
+						node.select(true);
+					} // if
 				} else {
 					var node = tree.getNodeByKey(keyList[i]);
 					if (node) node.select(true);

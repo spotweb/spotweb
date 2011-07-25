@@ -39,50 +39,6 @@ $settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
 # robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
 $settings['deny_robots'] = true;
 
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Filters =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Default set gemaakt door 'Nakebod'
-$settings['filters'] = array(    
-    Array("Beeld", "images/icons/film.png", "cat0_z0", "",
-        Array(
-            Array("DivX", "images/icons/divx.png", "cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3", ""),
-            Array("WMV", "images/icons/wmv.png", "cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3", ""),
-            Array("MPEG", "images/icons/mpg.png", "cat0_a2,~cat0_z1,~cat0_z2,~cat0_z3", ""),
-            Array("DVD", "images/icons/dvd.png", "cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3", ""),
-            Array("HD", "images/icons/hd.png", "cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3", ""),
-            Array("Series", "images/icons/tv.png", "cat0_z1", ""),
-            Array("Boeken", "images/icons/book.png", "cat0_z2", ""),
-            Array("Erotiek", "images/icons/female.png", "cat0_z3", "")
-        )
-    ),
-    Array("Muziek", "images/icons/music.png", "cat1_a", "", 
-        Array(
-            Array("Compressed", "images/icons/music.png", "cat1_a0,cat1_a3,cat1_a5,cat1_a6", ""),
-            Array("Lossless", "images/icons/music.png", "cat1_a2,cat1_a4,cat1_a7,cat1_a8", "")
-        )
-    ),
-    Array("Spellen", "images/icons/controller.png", "cat2_a", "", 
-        Array(
-            Array("Windows", "images/icons/windows.png", "cat2_a0", ""),
-            Array("Mac / Linux", "images/icons/linux.png", "cat2_a1,cat2_a2", ""),
-            Array("Playstation", "images/icons/playstation.png", "cat2_a3,cat2_a4,cat2_a5,cat2_a12", ""),
-            Array("XBox", "images/icons/xbox.png", "cat2_a6,cat2_a7", ""),
-            Array("Nintendo", "images/icons/nintendo_ds.png", "cat2_a8,cat2_a9,cat2_a10,cat2_a11", ""),
-            Array("Smartphone / PDA", "images/icons/pda.png", "cat2_a13,cat2_a14,cat2_a15", "")
-        )
-    ),
-    Array("Applicaties", "images/icons/application.png", "cat3_a", "", 
-        Array(
-            Array("Windows", "images/icons/vista.png", "cat3_a0", ""),
-            Array("Mac / Linux / OS2", "images/icons/linux.png", "cat3_a1,cat3_a2,cat3_a3", ""),
-            Array("PDA / Navigatie", "images/icons/pda.png", "cat3_a4,cat3_a5,cat3_a6,cat3_a7", "")
-        )
-    )
-);
-
 #
 # SpotNet ondersteund moderatie van de gepostte spots en reacties, dit gebeurt
 # door middel van moderatie berichten in de nieuwsgroup waar ook de spots worden
@@ -115,14 +71,14 @@ $settings['retention'] = 0;
 $settings['retrieve_newer_than'] = 0;
 
 # db
-$settings['db']['engine'] = 'mysql';
+$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
 $settings['db']['host'] = 'localhost';
 $settings['db']['dbname'] = 'spotweb';
 $settings['db']['user'] = 'spotweb';
 $settings['db']['pass'] = 'spotweb';
 
 # Als je sqlite wilt gebruiken, vul dan onderstaande in
-#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, mysql en pdo_mysql
+#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
 #$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # waar moeten we de templates vinden?
@@ -199,6 +155,13 @@ $settings['sabnzbd']['categories'] = Array(
 # ze kunnen echter ook gevoelige informatie (bv. je usenet account!) bevatten. Als je
 # je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
 $settings['enable_stacktrace'] = true;
+
+# Als een user niet expliciet geauthenticeerd is, dan wordt deze user standaard ingelogged
+# met een userid van 1 -- dit is de builtin anonymous user. Als je je Spotweb installatie
+# helemaal alleen gebruikt, kan je dit eventueel laten herleiden naar een andere user zodat
+# je Spotweb volledig kan gebruiken (inclusief posten van comments en dergelijke) zonder
+# dat je ooit hoeft in te loggen.
+$settings['nonauthenticated_userid'] = 1;
 
 # de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
 # zorg dat deze wel gedefinieerd is.
@@ -331,6 +294,10 @@ if (isset($settings['show_multinzb'])) {
 
 if (isset($settings['nzbhandling'])) {
 	die("nzbhandling is een user preference geworden. Haal dit aub weg uit je ownsettings.php (vergeet de settings niet te noteren in het userpreferences scherm!)" . PHP_EOL);
+} # if
+
+if (isset($settings['filters'])) {
+	die("filters zijn een user preference geworden. Haal de filters aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
 # Controleer op oud type quicklinks (zonder security)

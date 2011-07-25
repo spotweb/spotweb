@@ -1,5 +1,8 @@
-	<div id='editdialogdiv'></div>
-	
+<?php
+	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
+	$grouplist = $tplHelper->getGroupList();
+?>
+
 	<table id="spotslistgroups" class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header">
@@ -12,8 +15,6 @@
 		<tbody id="grouplist">
 				
 <?php
-	$grouplist = $tplHelper->getGroupList();
-
 	foreach($grouplist as $group) {
 ?>
 			<tr> 
@@ -37,7 +38,7 @@
 ?>
 		<tr>
 			<td colspan='4'>
-				<a href="" onclick="return openDialog('editdialogdiv', 'Nieuwe groep toevoegen', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', true);"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
+				<a href="" onclick="return openDialog('editdialogdiv', 'Nieuwe groep toevoegen', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', true, function() { refreshTab('adminpaneltabs')});"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
 			</td>
 		</tr>
 		

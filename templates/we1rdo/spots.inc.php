@@ -1,17 +1,17 @@
 	<?php 
 	/* Render de header en filter templates */
-	require_once "includes/header.inc.php";
-	
-	require_once "includes/filters.inc.php";
+	if (!isset($data['spotsonly'])) {
+		require_once "includes/header.inc.php";	
+		require_once "includes/filters.inc.php";
+	} # if
 
-	$getUrl = $tplHelper->getQueryParams(); 
-	
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
+	
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -27,9 +27,9 @@
 							} # if ?>
 							<th class='genre'> Genre </th> 
 							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
-							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> Datum </th> 
+							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? "Leeftijd" : "Datum"; ?> </th> 
 <?php if ($show_filesize) { ?>
-							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="Sorteren op Bestandsgrootte [aflopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="Sorteren op Bestandsgrootte [oplopend]"> </a></span> Size </th> 
+							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="Sorteren op Omvang [aflopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="Sorteren op Omvang [oplopend]"> </a></span> Size </th> 
 <?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
@@ -82,9 +82,13 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		echo "\t\t\t\t\t\t\t";
-		echo "<tr class='" . $tplHelper->cat2color($spot) . "'>" . 
-			 "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $tplHelper->remove_extensive_dots($spot['title']) . "' class='spotlink'>" . $rating . $markSpot . $tplHelper->remove_extensive_dots($spot['title']) . "</a></td>";
+		echo "<tr class='" . $tplHelper->cat2color($spot);
+		if ($spot['hasbeendownloaded']) {
+			echo " downloadedspot";
+		} # if
+		echo "'>";
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
+			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
@@ -134,48 +138,51 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			} # if
 		} else {
 			if ($show_nzb_button) {
-				echo "<td> &nbsp; </td>";
+				echo "<td class='nzb'> &nbsp; </td>";
 			} # if
 			
 			# display (empty) MultiNZB td
 			if ($show_multinzb_checkbox) { 
-				echo "<td> &nbsp; </td>";
+				echo "<td class='multinzb'> &nbsp; </td>";
 			}
 
 			# display the sabnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
-				echo "<td> &nbsp; </td>";
+				echo "<td class='sabnzbd'> &nbsp; </td>";
 			} # if
 		} # else
 		
 		echo "</tr>\r\n";
 	}
 ?>
-				</tbody>
-			</table>
+					</tbody>
+				</table>
 <?php if ($prevPage >= 0 || $nextPage > 0) { ?>
-			<table class="footer" summary="Footer">
-				<tbody>
-					<tr>
+				<table class="footer" summary="Footer">
+					<tbody>
+						<tr>
 <?php if ($prevPage >= 0) { ?> 
-						<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $getUrl; ?>">&lt;&lt;</a></td>
+							<td class="prev"><a href="?direction=prev&amp;pagenr=<?php echo $prevPage . $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">&lt;&lt;</a></td>
 <?php }?> 
-						<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
+							<td class="button<?php if ($nextPage <= 0) {echo " last";} ?>"></td>
 <?php if ($nextPage > 0) { ?> 
-						<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $getUrl; ?>">&gt;&gt;</a></td>
+							<td class="next"><a href="?direction=next&amp;pagenr=<?php echo $nextPage . $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">&gt;&gt;</a></td>
 <?php } ?>
-					</tr>
-				</tbody>
-			</table>
+						</tr>
+					</tbody>
+				</table>
 			<?php if ($show_multinzb_checkbox) { echo "</form>"; } ?>
-			<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
-			<input type="hidden" id="nextPage" value="<?php echo $nextPage ?>">
-			<input type="hidden" id="getURL" value="<?php echo $getUrl ?>">
+				<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
+				<input type="hidden" id="nextPage" value="<?php echo $nextPage; ?>">
+				<input type="hidden" id="getURL" value="<?php echo $tplHelper->convertSortToQueryParams() . $tplHelper->convertFilterToQueryParams(); ?>">
 <?php } ?>
 			
-		</div>
-		<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
 
 <?php 
-	/* Render de footer template */
-	require_once "includes/footer.inc.php";
+	/* Render de header en filter templates */
+	if (!isset($data['spotsonly'])) {
+		/* Render de footer template */
+		require_once "includes/footer.inc.php";
+	} # if

@@ -42,6 +42,8 @@ class SpotUpgrader {
 		switch($this->_dbEngine) {	
 			case 'mysql'			:
 			case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($this->_db); break;
+
+			case 'pdo_pgsql'		: $dbStruct = new SpotStruct_pgsql($this->_db); break;
 			
 			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
 			
@@ -59,6 +61,8 @@ class SpotUpgrader {
 		switch($this->_dbEngine) {	
 			case 'mysql'			:
 			case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($this->_db); break;
+			
+			case 'pdo_pgsql'		: $dbStruct = new SpotStruct_pgsql($this->_db); break;
 			
 			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
 			

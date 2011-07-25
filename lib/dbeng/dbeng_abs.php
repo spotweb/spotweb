@@ -59,6 +59,11 @@ abstract class dbeng_abs {
 	 */
 	abstract function rollback();
 	
+	/* 
+	 * Returns the last insertid
+	 */
+	abstract function lastInsertId($tableName);
+	
 
 	/*
 	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
@@ -92,9 +97,22 @@ abstract class dbeng_abs {
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
 	 */
-	function createTextQuery($field, $value) {
-		return array('filter' => " " . $field . " LIKE '%" . $this->safe($value) . "%'",
-					 'sortable' => false);
+	function createTextQuery($searchFields) {
+		# Initialiseer een aantal arrays welke we terug moeten geven aan
+		# aanroeper
+		$filterValueSql = array();
+
+		foreach($searchFields as $searchItem) {
+			$searchValue = trim($searchItem['value']);
+			$field = $searchItem['fieldname'];
+			
+			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE '%"  . $this->safe($searchValue) . "%') ";
+		} # foreach
+
+		return array('filterValueSql' => $filterValueSql,
+					 'additionalTables' => array(),
+					 'additionalFields' => array(),
+					 'sortFields' => array());
 	} # createTextQuery
 
-}
+} # dbeng_abs

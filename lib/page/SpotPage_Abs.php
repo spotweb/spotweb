@@ -14,6 +14,32 @@ abstract class SpotPage_Abs {
 		$this->_spotSec = $currentSession['security'];
 		$this->_tplHelper = $this->getTplHelper(array());
 	} # ctor
+
+	/* 
+	 * Standaard mogen paginas niet gecached worden 
+	 * om invalid cached informatie te voorkomen. Kan overriden worden
+	 * per pagina
+	 */
+	function sendExpireHeaders($preventCaching) {
+		if ($preventCaching) {
+			Header("Cache-Control: private, post-check=1, pre-check=2, max-age=1, must-revalidate");
+			Header("Expires: Mon, 12 Jul 2000 01:00:00 GMT");
+		} else {
+			# stuur een expires header zodat dit een jaar of 10 geldig is
+			Header("Cache-Control: public");
+			Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
+			Header("Pragma: ");
+		} # if
+	} # sendExpireHeaders
+	
+	/*
+	 * Stuur een content header, dit zorgt er voor dat de browser
+	 * eventuele content sneller kan parsen
+	 */
+	function sendContentTypeHeader() {
+		Header("Content-Type: text/html; charset=utf-8");
+	} # sendContentTypeHeader
+
 	
 	# Geef the tpl helper terug
 	function getTplHelper($params) {
@@ -46,6 +72,10 @@ abstract class SpotPage_Abs {
 		$currentSession = $this->_currentSession;
 		$spotSec = $this->_currentSession['security'];
 
+		# stuur de expire headers
+		$this->sendExpireHeaders(true);
+		$this->sendContentTypeHeader();
+		
 		# en we spelen de template af
 		require_once('templates/' . $settings->get('tpl_name') . '/' . $tpl . '.inc.php');
 		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
@@ -56,4 +86,15 @@ abstract class SpotPage_Abs {
 	 */
 	abstract function render();
 	
-} # SpotPage_Abs 
+	/*
+	 * Renderen van een permission denied pagina, kan overridden worden door een implementatie
+	 * specifieke renderer
+	 */
+	function permissionDenied($exception, $page, $http_referer) {
+		$this->template('permdenied',
+							array('exception' => $exception,
+								  'page' => $page,
+								  'http_referer' => $http_referer));
+	} # permissionDenied
+	
+} # SpotPage_Abs

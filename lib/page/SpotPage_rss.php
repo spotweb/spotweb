@@ -17,19 +17,22 @@ class SpotPage_rss extends SpotPage_Abs {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
+		# we willen niet dat de RSS feed gecached wordt
+		$this->sendExpireHeaders(true);
+		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], $this->_currentSession);
-		$this->_params['search'] = $parsedSearch['search'];
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'],
+							array('field' => $this->_params['sortby'],
+								  'direction' => $this->_params['sortdir']),
+						    $this->_currentSession);
 
 		# laad de spots
 		$pageNr = $this->_params['page'];
 		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 							$pageNr,
 							$this->_currentSession['user']['prefs']['perpage'],
-							$parsedSearch,
-							array('field' => $this->_params['sortby'],
-								  'direction' => $this->_params['sortdir']));
+							$parsedSearch);
 
 		# Opbouwen XML
 		$doc = new DOMDocument('1.0', 'utf-8');
@@ -61,11 +64,11 @@ class SpotPage_rss extends SpotPage_Abs {
 			try {
 				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
 				# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
-				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 140
+				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
 				# wat een onbruikbare RSS oplevert
 				$spot = @$this->_tplHelper->formatSpot($spot);
 
-				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
+				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
 				$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
 
 				$guid = $doc->createElement('guid', $spot['messageid']);

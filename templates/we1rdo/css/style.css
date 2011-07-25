@@ -26,7 +26,7 @@ span.scroll:not(.foo) input#filterscroll:checked + label {background:url(../img/
 
 form#filterform {margin:0 0 0 30px; padding:2px 0; width:205px;}
 form#filterform div.search {background:url(../img/sprite_x.png) repeat-x 0 -105px; border:1px solid #b5b5b5; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; width:203px; float:left;}
-form#filterform div.search input.searchbox {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; padding:2px 0 2px 4px; width:176px; height:14px; text-shadow:1px 1px #000;}
+form#filterform div.search input.searchbox {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; padding:2px 0 2px 4px; width:150px; height:14px; text-shadow:1px 1px #000;}
 form#filterform div.search input.filtersubmit {font:11px Arial, Helvetica, sans-serif; background:none; border:0; color:#fff; font-weight:bold; padding:0 3px 0 0; margin:0; cursor:pointer; float:right; min-width:20px; height:18px; display:block;}
 
 div.sidebarPanel {display:none; position:absolute; left:0; top:25px; bottom:0; width:235px; background:#fff; z-index:1;}
@@ -53,6 +53,13 @@ form#filterform ul.search.threecol li {width:33.33%;}
 form#filterform ul.search.threecol li:nth-child(n+4) input+label {background-image:none; background-color:#ddd; border-top:1px solid #bbb;}
 form#filterform ul.search.threecol li:nth-child(n+4) input:checked +label {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 form#filterform ul.search.fourcol li {width:25%;}
+
+form#filterform table.search { border-collapse: collapse; clear:both; width:100%; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px; outline:none; overflow: hidden; }
+form#filterform table.search tr {background-color: #ddd; color:#000; border-top:1px solid #bbb; }
+form#filterform table.search tr:last-child  {-moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+form#filterform table.search th {font-weight: bold; text-align: left; padding-left: 4px; }
+form#filterform table.search td {text-align: left; }
+form#filterform table.search td a {color: #bbb; }
 
 ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none;}
 ul.dynatree-container a {display:inline-block; font:11px Arial, Helvetica, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
@@ -101,6 +108,9 @@ div.notifications p.multinzb {margin:0 0 0 3px; line-height:18px;}
 div.notifications p.multinzb a.clear {float:left; display:block; width:20px; height:18px; line-height:18px; background:none; cursor:pointer; font-size:12px; color:#fff; font-weight:bold;}
 div.notifications p.multinzb a.button {cursor:pointer; margin:0 5px 0 0; color:#fff;}
 
+/* VOORKEUREN */
+div.testNotification {border: 1px dotted #CCCCCC; padding: 5px; margin-bottom: 10px; line-height:20px;}
+
 /* ZOEKEN */
 a.viewState {cursor:pointer;}
 h4 span.info,
@@ -118,9 +128,8 @@ div.filter ul {margin:0 0 5px; padding:0 0 0 5px;}
 div.filter ul ul {margin:0 0 0 10px; padding:0;}
 div.filter li {list-style:none; margin:0 0 5px 0;}
 div.filter li li {margin:2px 0 0;}
-
 div.filter ul a {
-	display:block;
+	display:block; 
 	width:100%;
 	background-color:#ececec;
 	line-height:20px;
@@ -441,3 +450,7 @@ div.userPanel form input[type=text] {font:11px Arial, Helvetica, sans-serif; wid
 div.userPanel form input.greyButton {margin:5px 7px 10px 7px;}
 div.userpanel form input.withicon {width:200px;}
 
+/* Dynatree - strong not selectbox */
+span.strongnotnode-active a,
+span.strongnotnode a { background-color: maroon !important; color: white !important; }
+span.strongnotnode a:hover { background-color: white !important; color: maroon !important; }

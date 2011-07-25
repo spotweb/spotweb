@@ -46,7 +46,19 @@ abstract class SpotStruct_abs {
 
 	/* controleert of een tabel bestaat */
 	abstract function tableExists($tablename);
-
+	
+	/* controleert of een full text index bestaat */
+	abstract function ftsExists($ftsname, $tablename, $colList);
+	
+	/* maakt een full text index aan */
+	abstract function createFts($ftsname, $tablename, $colList);
+	
+	/* dropt en fulltext index */
+	abstract function dropFts($ftsname, $tablename, $colList);
+	
+	/* geeft FTS info terug */
+	abstract function getFtsInfo($ftsname, $tablename, $colList);
+	
 	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
 	abstract function createTable($tablename, $collation);
 
@@ -89,6 +101,24 @@ abstract class SpotStruct_abs {
 		} # if
 	} # validateIndex
 
+	/* controleert of de fulltext structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
+	function validateFts($ftsname, $tablename, $colList) {
+		echo "\tValidating FTS " . $ftsname . PHP_EOL;
+		
+		if (!$this->compareFts($ftsname, $tablename, $colList)) {
+			# Drop de FTS
+			if ($this->ftsExists($ftsname, $tablename, $colList)) {
+				echo "\t\tDropping FTS " . $ftsname . PHP_EOL;
+				$this->dropFts($ftsname, $tablename, $colList);
+			} # if
+			
+			echo "\t\tAdding FTS " . $ftsname . PHP_EOL;
+			
+			# en creeer hem opnieuw
+			$this->createFts($ftsname, $tablename, $colList);
+		} # if
+	} # validateFts
+
 	/* controleert of de index structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
 	function validateColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		echo "\tValidating " . $tablename . "(" . $colName . ")" . PHP_EOL;
@@ -103,7 +133,7 @@ abstract class SpotStruct_abs {
 				$this->addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation);
 			} # else
 		} # if
-	} # validateIndex
+	} # validateColumn
 	
 	/* vergelijkt een column met de gewenste structuur */
 	function compareColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
@@ -120,6 +150,7 @@ abstract class SpotStruct_abs {
 			#var_dump($q);
 			#var_dump($colType);
 			#var_dump($this->swDtToNative($colType));
+			#die();
 			return 'type';
 		} # if
 
@@ -134,7 +165,7 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# controleer NOT NULL setting
-		if (strtolower($q['CHARACTER_SET_NAME']) != $collation) {
+		if ((strtolower($q['CHARACTER_SET_NAME']) != $collation) && ($q['CHARACTER_SET_NAME'] != null)) {
 			return 'charset';
 		} # if
 		
@@ -163,13 +194,17 @@ abstract class SpotStruct_abs {
 
 			if ($same) {
 				switch(strtolower($type)) {
-					case 'fulltext'		: $same = ($q[$i]['index_type'] == 'fulltext'); break;
+					case 'fulltext'		: $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
 					case 'unique'		: $same = ($q[$i]['non_unique'] == 0); break;
-					case ''				: $same = ($q[$i]['index_type'] != 'fulltext') && ($q[$i]['non_unique'] == 1);
+					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['non_unique'] == 1);
 				} # switch
 			} # if
 			
 			if (!$same) {
+				#var_dump($q[$i]);
+				#var_dump($type);
+				#var_dump($colList);
+				#die();
 				return false;
 			} # if
 		} # for
@@ -177,29 +212,79 @@ abstract class SpotStruct_abs {
 		return true;
 	} # compareIndex
 	
+	/* vergelijkt een FTS met de gewenste structuur */
+	function compareFts($ftsname, $tablename, $colList) {
+		# Vraag nu de FTS informatie op
+		$q = $this->getFtsInfo($ftsname, $tablename, $colList);
+		
+		# Als het aantal kolommen niet gelijk is
+		if (count($q) != count($colList)) {
+			return false;
+		} # if
+
+		# we loopen vervolgens door elke index kolom heen, en vergelijken
+		# dan of ze in dezelfde volgorde staan en dezelfde eigenschappen hebben
+		for($i = 0; $i < count($colList); $i++) {
+			if ($colList[$i + 1] != $q[$i]['column_name']) {
+				return false;
+			} # if
+		} # for
+		
+		return true;
+	} # compareFts
 
 	function updateSchema() {
 		# drop eventueel FTS indexes op de spotsfull tabel
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+
+		# relaties wissen
+		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsxover', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Opschonen data #############################################################################
 		##############################################################################################
 		if (($this instanceof SpotStruct_mysql) && (false)) {
 			echo "Cleaning up old data..." . PHP_EOL;
-			$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL;");
-			$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL;");
+			if ($this->tableExists('usersettings') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('sessions') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE sessions FROM sessions LEFT JOIN users ON sessions.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('spotstatelist') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN users ON spotstatelist.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('usergroups') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN users ON usergroups.userid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('usergroups') && $this->tableExists('securitygroups')) {
+				$this->_dbcon->rawExec("DELETE usergroups FROM usergroups LEFT JOIN securitygroups ON usergroups.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			} # if
+			if ($this->tableExists('grouppermissions') && $this->tableExists('securitygroups')) {
+				$this->_dbcon->rawExec("DELETE grouppermissions FROM grouppermissions LEFT JOIN securitygroups ON grouppermissions.groupid=securitygroups.id WHERE securitygroups.id IS NULL");
+			} # if
+			if ($this->tableExists('commentsposted') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN users ON commentsposted.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('commentsposted') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE commentsposted FROM commentsposted LEFT JOIN spots ON commentsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
+			if ($this->tableExists('commentsfull') && $this->tableExists('commentsxover')) {
+				$this->_dbcon->rawExec("DELETE commentsfull FROM commentsfull LEFT JOIN commentsxover ON commentsfull.messageid=commentsxover.messageid WHERE commentsxover.messageid IS NULL");
+			} # if
+			if ($this->tableExists('spotsfull') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE spotsfull FROM spotsfull LEFT JOIN spots ON spotsfull.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
+			if ($this->tableExists('spotstatelist') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
 		} # if
 		
 		# ---- spots table ---- #
@@ -227,9 +312,9 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(128)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(200)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(128)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
@@ -239,7 +324,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('maxarticleid', 'nntp', 'INTEGER', NULL, false, '');
 		$this->validateColumn('nowrunning', 'nntp', 'INTEGER', "0", false, '');
 		$this->validateColumn('lastrun', 'nntp', 'INTEGER', "0", false, '');
-		$this->alterStorageEngine("spotsfull", "InnoDB");
+		$this->alterStorageEngine("nntp", "InnoDB");
 		
 		# ---- commentsxover table ---- #
 		$this->createTable('commentsxover', "ascii"); 
@@ -262,17 +347,17 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('messageid', 'commentsfull', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('fromhdr', 'commentsfull', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('stamp', 'commentsfull', 'INTEGER', NULL, false, '');
-		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(128)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(200)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(128)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
+		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
 		$this->createTable('settings', "ascii"); 
-		$this->validateColumn('name', 'settings', 'VARCHAR(128)', "''", true, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('name', 'settings', 'VARCHAR(128)', "''", true, 'ascii'); 
 		$this->validateColumn('value', 'settings', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('serialized', 'settings', 'boolean', NULL, false, '');
 		$this->alterStorageEngine("settings", "InnoDB");
@@ -308,7 +393,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('lastvisit', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastread', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastapiusage', 'users', "INTEGER", "0", true, '');
-		$this->validateColumn('deleted', 'users', "BOOLEAN", "0", true, '');
+		$this->validateColumn('deleted', 'users', "BOOLEAN", 'false', true, '');
 		$this->alterStorageEngine("users", "InnoDB");
 
 		# ---- sessions ---- #
@@ -322,31 +407,59 @@ abstract class SpotStruct_abs {
 		# ---- securitygroups ----
 		$this->createTable('securitygroups', "ascii"); 
 		$this->validateColumn('name', 'securitygroups', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->alterStorageEngine("securitygroups", "InnoDB");
 
 		# ---- grouppermissions ----
 		$this->createTable('grouppermissions', "ascii"); 
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", "0", true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", 'false', true, ''); 
+		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
 		$this->createTable('usergroups', "ascii"); 
 		$this->validateColumn('userid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('groupid', 'usergroups', 'INTEGER', "0", true, '');
 		$this->validateColumn('prio', 'usergroups', 'INTEGER', '1', true, '');
+		$this->alterStorageEngine("usergroups", "InnoDB");
+		
+		# ---- notifications ----
+		$this->createTable('notifications', "ascii"); 
+		$this->validateColumn('userid', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('body', 'notifications', 'TEXT', NULL, false, 'utf8');
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', 'false', true, ''); 
+		$this->alterStorageEngine("notifications", "InnoDB");
 
+		# ---- filters ----
+		$this->createTable('filters', "utf8"); 
+		$this->validateColumn('userid', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('filtertype', 'filters', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('title', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('icon', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('torder', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('tparent', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('tree', 'filters', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
+		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->alterStorageEngine("filters", "InnoDB");
+		
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
-			throw new Exception("Je hudige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-							    "Download een eerdere versie van spotweb (https://download.github.com/spotweb-spotweb-da6ba29.zip), " . PHP_EOL . 
-								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie");
+			throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
+								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
 		} # if
 
 
-		# Tabellen terug samenvoegen en naar MyISAM converteren samenvoegen
+		# Tabellen terug samenvoegen in een MyISAM tabel
 		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
 			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
 										messageid varchar(128) CHARACTER SET ascii NOT NULL,
@@ -380,14 +493,6 @@ abstract class SpotStruct_abs {
 											FROM spots s 
 											JOIN spottexts t ON (s.messageid = t.messageid))");
 
-			# relaties wissen
-			$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsxover', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-			$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-
 			# drop de 'oude' tabellen
 			$this->dropTable('spots');
 			$this->dropTable('spottexts');
@@ -402,9 +507,10 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
-		$this->validateIndex("idx_fts_spots_1", "FULLTEXT", "spots", array("poster"));
-		$this->validateIndex("idx_fts_spots_2", "FULLTEXT", "spots", array("title"));
-		$this->validateIndex("idx_fts_spots_3", "FULLTEXT", "spots", array("tag"));
+		$this->validateFts("idx_fts_spots", "spots", 
+					array(1 => "poster",
+					      2 => 'title',
+						  3 => 'tag'));
 
 		# ---- Indexen op nntp ----
 		$this->validateIndex("idx_nntp_1", "UNIQUE", "nntp", array("server"));
@@ -422,6 +528,7 @@ abstract class SpotStruct_abs {
 
 		# ---- Indexen op commentsposted ----
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
+		$this->validateIndex("idx_commentspostedrel_1", "", "commentsposted", array("ouruserid"));
 
 		# ---- Indexen op settings ----
 		$this->validateIndex("idx_settings_1", "UNIQUE", "settings", array("name"));
@@ -442,6 +549,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_sessionsrel_1", "", "sessions", array("userid"));
 
 		# ---- Indexen op spotstatelist ----
+		$this->validateIndex("idx_spotstatelist_1", "UNIQUE", "spotstatelist", array("messageid", "ouruserid"));
 		$this->validateIndex("idx_spotstatelistrel_1", "", "spotstatelist", array("ouruserid"));
 
 		# ---- Indexen op securitygroups ----
@@ -454,6 +562,13 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_usergroups_1", "UNIQUE", "usergroups", array("userid", "groupid"));
 		$this->validateIndex("idx_usergroupsrel_1", "", "usergroups", array("groupid"));
 
+		# ---- Indexen op notifications ----
+		$this->validateIndex("idx_notifications_1", "", "notifications", array("userid"));
+		$this->validateIndex("idx_notifications_2", "", "notifications", array("sent"));
+
+		# ---- Indexen op filters ----
+		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
+		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -462,6 +577,9 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('usergroups', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('grouppermissions', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsfull', 'messageid', 'commentsxover', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Hier droppen we kolommen ###################################################################

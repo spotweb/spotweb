@@ -1,10 +1,12 @@
 <?php
 class SpotPage_login extends SpotPage_Abs {
 	private $_loginForm;
+	private $_params;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_loginForm = $params['loginform'];
+		$this->_params = $params;
 	} # ctor
 
 	function render() {
@@ -40,7 +42,7 @@ class SpotPage_login extends SpotPage_Abs {
 			if (!$tryLogin) {
 				$loginResult = array('result' => 'failure');
 			} else {
-				$loginResult = array('result '=> 'success');
+				$loginResult = array('result' => 'success');
 				$this->_currentSession = $tryLogin;
 			} # else
 		} else {
@@ -53,7 +55,8 @@ class SpotPage_login extends SpotPage_Abs {
 		#- display stuff -#
 		$this->template('login', array('loginform' => $credentials,
 									   'formmessages' => $formMessages,
-									   'loginresult' => $loginResult));
+									   'loginresult' => $loginResult,
+									   'data' => $this->_params['data']));
 	} # render
 	
 } # class SpotPage_login
