@@ -1329,7 +1329,7 @@ function bindSelectedSortableFilter() {
 					dataType: "html",
 					data: formdata,
 					success: function(xml) {
-						//alert(xml);
+						// alert(xml);
 					} // success
 				}); // ajax call om de form te submitten
 			}
