@@ -1375,7 +1375,7 @@ class SpotDb {
 	 */
 	function updateFilter($userId, $filter) {
 		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->arrayQuery("UPDATE filters 
+		$tmpResult = $this->_conn->modify("UPDATE filters 
 												SET title = '%s',
 												    icon = '%s',
 													torder = %d,
