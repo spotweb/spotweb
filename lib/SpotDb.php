@@ -1407,7 +1407,7 @@ class SpotDb {
 													  sortorder 
 												FROM filters 
 												WHERE userid = %d AND filtertype = 'filter' 
-												ORDER BY id,tparent,torder",
+												ORDER BY tparent,torder", /* was: id, tparent, torder */
 					Array($userId));
 		$idMapping = array();
 		foreach($tmpResult as &$tmp) {
