@@ -1228,6 +1228,8 @@ function updateSabPanel(start,limit) {
  * string replacement
  */
 function removeFilter(href, fieldname, operator, value) {
+	href = unescape(href).replace(/\+/g, ' ');
+
 	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
 } // removeFilter	
 
