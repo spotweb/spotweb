@@ -243,6 +243,12 @@ class dbeng_mysql extends dbeng_abs {
 				# methode mag beinvloeden, bv. (<test) oid.
 				$strippedTerm = trim($term, "()'\"");
 			
+				# als na het strippen van de terms er niks over blijft, dan
+				# hoeven we ook niet te zoeken.
+				if (strlen($strippedTerm) < 1) {
+					continue;
+				} # if
+
 				# als er boolean phrases in zitten, is het een boolean search
 				if (strpos('+-~<>', $strippedTerm[0]) !== false) {
 					$searchMode = 'match-boolean';
