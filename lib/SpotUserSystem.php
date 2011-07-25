@@ -92,8 +92,10 @@ class SpotUserSystem {
 		if ($userSession === false) {
 			# als er nu nog geen sessie bestaat, creeer dan een nieuwe
 			# anonieme sessie
-			# userid 1 is altijd onze anonymous user
-			$userSession = $this->createNewSession(SPOTWEB_ANONYMOUS_USERID);
+			# userid 1 is altijd onze anonymous user. 
+			# In de settings.php kan de beheerder van Spotweb dit overriden maar
+			# als resultaat van de vele klachten.
+			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid') );
 		} # if
 		
 		# initialiseer het security systeem
@@ -149,7 +151,7 @@ class SpotUserSystem {
 	function verifyApi($apikey) {
 		# authenticeer de user?
 		$userId = $this->_db->authUser(false, $apikey);
-		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID) {
+		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID && $apikey != '') {
 			# Waar bij een normale login het aanmaken van
 			# een sessie belangrijk is, doen we het hier
 			# expliciet niet. Daarom halen we de gegevens
@@ -273,6 +275,9 @@ class SpotUserSystem {
 		
 		# en geef de gebruiker de nodige groepen
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
+		
+		# en de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $tmpUser['userid']);
 	} # addUser()
 
 	/*
@@ -318,7 +323,7 @@ class SpotUserSystem {
 	/*
 	 * Valideer de user preferences
 	 */
-	function validateUserPreferences($prefs) {
+	function validateUserPreferences($prefs, $currentPrefs) {
 		$errorList = array();
 		
 		# Definieer een aantal arrays met valid settings
@@ -326,6 +331,7 @@ class SpotUserSystem {
 		$validTemplates = array('we1rdo');
 		
 		# Controleer de per page setting
+		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
 			$errorList[] = array('validateuser_invalidpreference', array('perpage'));
 		} # if
@@ -352,14 +358,7 @@ class SpotUserSystem {
 				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
 			} # if
 		} # if
-		
-		# als men runcommand of save wil, moet er een local_dir opgegeven worden
-		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
-			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
-			} # if
-		} # if
-		
+
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
 		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
@@ -369,6 +368,65 @@ class SpotUserSystem {
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
+		$notifProviders = Notifications_Factory::getActiveServices();
+		foreach ($notifProviders as $notifProvider) {
+			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
+		}
+
+		# Twitter tokens komen niet binnen via het form, maar mogen perse niet weggegooid worden.
+		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
+		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];
+		$prefs['notifications']['twitter']['access_token_secret'] = $currentPrefs['notifications']['twitter']['access_token_secret'];
+		$prefs['notifications']['twitter']['request_token'] = $currentPrefs['notifications']['twitter']['request_token'];
+		$prefs['notifications']['twitter']['request_token_secret'] = $currentPrefs['notifications']['twitter']['request_token_secret'];
+
+		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
+		if (strlen($prefs['customcss'] > 1024 * 10)) { 
+			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
+		} # if		
+		
+		# als men runcommand of save wil, moet er een local_dir opgegeven worden
+		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
+			if (empty($prefs['nzbhandling']['local_dir'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
+			} # if
+		} # if
+
+		# als men Growl wil gebruiken, moet er een host opgegeven worden
+		if ($prefs['notifications']['growl']['enabled']) {
+			if (empty($prefs['notifications']['growl']['host'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('growl host'));
+			} # if
+		} # if
+
+		# als men Notifo wil gebruiken, moet er een username & apikey opgegeven worden
+		if ($prefs['notifications']['notifo']['enabled']) {
+			if (empty($prefs['notifications']['notifo']['username'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('notifo username'));
+			} # if
+			if (empty($prefs['notifications']['notifo']['api'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('notifo api'));
+			} # if
+		} # if
+
+		# als men Prowl wil gebruiken, moet er een apikey opgegeven worden
+		if ($prefs['notifications']['prowl']['enabled']) {
+			if (empty($prefs['notifications']['prowl']['apikey'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('prowl apikey'));
+			} # if
+		} # if
+
+		# als men Twitter wil gebruiken, moet er er een account zijn geverifieerd
+		if ($prefs['notifications']['twitter']['enabled']) {
+			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('Er is geen account geverifi&euml;erd voor Twitter notificaties.'));
+			} # if
+		} # if
+
 		return array($errorList, $prefs);
 	} # validateUserPreferences
 
@@ -419,7 +477,8 @@ class SpotUserSystem {
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
-		if ($this->_db->userEmailExists($user['mail']) !== $user['userid']) {
+		$emailExistResult = $this->_db->userEmailExists($user['mail']);
+		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
 			$errorList[] = array('validateuser_mailalreadyexist', array());
 		} # if
 		
@@ -539,6 +598,75 @@ class SpotUserSystem {
 		
 		return $tmpUser;
 	} # getUser()
+
+	/*
+	 * Vraagt een filter list op
+	 */
+	function getFilterList($userId) {
+		return $this->_db->getFilterList($userId);
+	} # getFilterList
+	
+	/*
+	 * Vraag een specifieke filter op
+	 */
+	function getFilter($userId, $filterId) {
+		return $this->_db->getFilter($userId, $filterId);
+	} # getFilter
+
+	/*
+	 * Wijzigt de filter waardes.
+	 *
+	 * Op dit moment ondersteunen we enkel om de volgende waardes
+	 * te wijzigen
+	 *
+	 *   * Title
+	 *   * Order
+	 *   * Parent
+	 */
+	function changeFilter($userId, $filterForm) {
+		return $this->_db->updateFilter($userId, $filterForm);
+	} # getFilter
+
+
+	/*
+	 * Checkt of een filter geldig is
+	 */
+	function validateFilter($filter) {
+		$errorList = array();
+
+		# Verwijder overbodige spaties e.d.
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		
+		// controleer dat deze specifieke permissie niet al in de security groep zit
+		if (strlen($filter['title']) < 3) {
+			$errorList[] = array('validatefilter_invalidtitle', array('name'));
+		} # if
+		
+		return array($filter, $errorList);
+	} # validateFilter
+	
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function addFilter($userId, $filter) {
+		$errorList = array();
+		list($filter, $errorList) = $this->validateFilter($filter);
+		
+		/* Geen fouten gevonden? voeg de filter dan toe */
+		if (empty($errorList)) {
+			$this->_db->addFilter($userId, $filter);
+		} # if
+		
+		return $errorList;
+	} # addFilter
+
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function removeFilter($userId, $filterId) {
+		$this->_db->deleteFilter($userId, $filterId);
+	} # removeFilter
 	
 	/*
 	 * Update een user record

@@ -2,9 +2,9 @@
 Script is getest met onderstaande configuratie, als het op andere systemen werkt laat het even weten:
 * Script is enkel getest op een unix-achtige
 * Apache webserver
-* PHP v5.3 (modules vereist: SQLite of MySQL, gmp, ctype, xml, zlib, gd)
+* PHP v5.3 (modules vereist: MySQL of PostgreSQL, gmp, ctype, xml, zlib, gd)
 * PEAR's Net/NNTP module
-* Moet kunnen lezen en schrijven in de directory waar de SQLite database staat, of moet een MySQL database hebben
+* Moet kunnen lezen en schrijven in de directory waar de SQLite database staat, of moet een MySQL/PostgreSQL database hebben
 
 Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controleren.
 

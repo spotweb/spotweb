@@ -29,11 +29,12 @@
 	<tr> <th colspan="2"> PHP extension </th> <th> Info </th> <th> Result </th> </tr>
 	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
 	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
+	<tr> <td colspan="2"> curl </td> <td> Notifo & Prowl </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
+	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
 	<tr> <td colspan="2"> zip </td> <td> NZB files comprimeren </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial</td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
 	$spotSigning = new SpotSigning();
@@ -49,7 +50,7 @@
 	<tr> <th> Server type </th> <th> Setting </th> </tr>
 	<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
 	<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, $settings['db']['path'], "No path entered"); ?> </td> </tr>
-	<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql") { ?>
+	<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql" || $settings['db']['engine'] == "pdo_pgsql" ) { ?>
 	<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, $settings['db']['host'], "No server entered"); ?> </td> </tr>
 	<?php } else { ?>
 	<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>

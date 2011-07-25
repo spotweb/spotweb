@@ -30,6 +30,9 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
 		} # else
 
+		# NZB files mogen liever niet gecached worden op de client
+		$this->sendExpireHeaders(true);
+
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
 			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,

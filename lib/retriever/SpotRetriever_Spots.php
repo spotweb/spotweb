@@ -231,7 +231,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_db->setMaxArticleid($this->_server['host'], $curMsg);
 			$this->_db->commitTransaction();				
 
-			return array('count' => count($hdrList), 'lastmsgid' => $lastProcessedId);
+			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
 	
 } # class SpotRetriever_Spots

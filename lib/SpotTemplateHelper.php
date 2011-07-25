@@ -1,13 +1,11 @@
 <?php
-/* nog een externe library */
-require_once 'lib/linkify/linkify.php';
-
 # Utility class voor template functies, kan eventueel 
 # door custom templates extended worden
 class SpotTemplateHelper {	
 	protected $_settings;
 	protected $_db;
 	protected $_spotnzb;
+	protected $_spotsOverview;
 	protected $_currentSession;
 	protected $_params;
 	protected $_nzbhandler;
@@ -24,6 +22,10 @@ class SpotTemplateHelper {
 		# voor het maken van de sabnzbd categorieen nodig hebben.
 		# Door die hier aan te maken verplaatsen we een boel allocaties
 		$this->_spotnzb = new SpotNzb($db, $settings);
+
+		# We hebben SpotsOverview altijd nodig omdat we die ook voor het
+		# maken van de sorturl nodig hebben, dus maken we deze hier aan
+		$this->_spotsOverview = new SpotsOverview($db, $settings);
 
 		# We initialiseren hier een NzbHandler object om te voorkomen
 		# dat we voor iedere spot een nieuw object initialiseren, een property
@@ -75,8 +77,7 @@ class SpotTemplateHelper {
 
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($query_params['search'], $this->_currentSession);
+		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
 
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
@@ -90,13 +91,13 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 
-		$filterStr .= "&search[value][]=New:0";
+		$filterStr .= "&search[value][]=New:=:0";
 		$newCount = $this->getFilteredSpotCount($filterStr);
 
 		# en geef het aantal terug dat we willen hebben. Inclusief extragratis
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
 		# zijn, SpotWeb niet ontzettend traag wordt. 
-		if ($newCount > 5000) {
+		if ($newCount > 500) {
 			$skipNewCount = true;
 			return '';
 		} elseif ($newCount > 0) {
@@ -115,8 +116,7 @@ class SpotTemplateHelper {
 
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		return $spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
+		return $this->_spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
 	/* 
@@ -135,8 +135,7 @@ class SpotTemplateHelper {
 		
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
+		$fullSpot = $this->_spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
 
 		# seen list
 		if ($markAsRead) {
@@ -160,6 +159,7 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
+		
 		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
@@ -215,11 +215,25 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 	
 	/*
-	 * Creeert de action url voor het wissen van een permissie 
+	 * Creeert de action url voor het beweken van een security group 
 	 */
 	function makeEditSecGroupAction() {
 		return $this->makeBaseUrl("path") . "?page=editsecgroup";
 	} # makeEditSecGroupAction
+
+	/*
+	 * Creeert de action url voor het wijzigen van een filter
+	 */
+	function makeEditFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeEditFilterAction
+
+	/*
+	 * Creeert de action url voor het wissen van een filter
+	 */
+	function makeDeleteFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeDeleteFilterAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
@@ -294,6 +308,18 @@ class SpotTemplateHelper {
 	} # makeNzbUrl
 
 	/*
+	 * Creeert een linkje naar retrieve.php
+	 */
+	function makeRetrieveUrl() {
+		# Controleer de users' rechten
+		if ((!$this->_spotSec->allowed(SpotSecurity::spotsec_retrieve_spots, '')) || (!$this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, ''))) {
+			return '';
+		} # if
+		
+		return $this->makeBaseUrl("full") . 'retrieve.php?output=xml' . $this->makeApiRequestString();
+	} # makeRetrieveUrl
+
+	/*
 	 * Geef het pad op naar de image
 	 */
 	function makeImageUrl($spot, $height, $width) {
@@ -309,15 +335,16 @@ class SpotTemplateHelper {
 	 * Creert een sorteer url
 	 */
 	function makeSortUrl($page, $sortby, $sortdir) {
-		return $this->makeBaseUrl("path") . '?page=' . $page . $this->getQueryParams(array('sortby', 'sortdir')) . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+		return $this->makeBaseUrl("path") . '?page=' . $page . $this->convertFilterToQueryParams() . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
 	} # makeSortUrl
-
+	
 	/*
 	 * Creert een category url
 	 */
 	function makeCatUrl($spot) {
-		$catSpot = explode("|", $spot['subcata']);
-		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+		# subcata mag altijd maar 1 category hebben, dus exploden we niet
+		$catSpot = substr($spot['subcata'], 0, -1);
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeCatUrl
 
 	/*
@@ -332,7 +359,7 @@ class SpotTemplateHelper {
 	 * Creert een Poster url
 	 */
 	function makePosterUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:=:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makePosterUrl
 
 	/*
@@ -346,7 +373,7 @@ class SpotTemplateHelper {
 	 * Creeert een linkje naar een zoekopdracht op tag
 	 */
 	function makeTagUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:' . urlencode($spot['tag']);
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:=:' . urlencode($spot['tag']);
 	} # makeUserIdUrl
 
 	/*
@@ -364,17 +391,23 @@ class SpotTemplateHelper {
 			return '';
 		} # else
 	} # makeApiRequestString
+
+	/* 
+	 * Creert een RSS url
+	 */
+	function makeRssUrl() {
+		if (isset($this->_params['parsedsearch'])) {
+			return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
+		} else {
+			return '';
+		} # if
+	} # makeRssUrl
 	
 	/*
 	 * Creert een basis navigatie pagina
 	 */
-	function getPageUrl($page, $includeParams = false) {
-		$url = $this->makeBaseUrl("path") . '?page=' . $page;
-		if ($includeParams) {
-			$url .= $this->getQueryParams("filterValues");
-		} # if
-		
-		return $url;
+	function getPageUrl($page) {
+		return $this->makeBaseUrl("path") . '?page=' . $page;
 	} # getPageUrl
 	
 	/*
@@ -391,6 +424,12 @@ class SpotTemplateHelper {
 			return('n/a'); 
 		} else {
 			return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]); 
+
+			// test (n.a.v. http://gathering.tweakers.net/forum/list_message/36208481#36208481) om altijd op 
+			// 3 getallen te eindigen, maar maakt het niet rustiger.
+			//
+			//		$roundedSize = round($size/pow(1024, ($i = floor(log($size, 1024)))),99);
+			//		return number_format($roundedSize, 3 - strlen(round($roundedSize))) . $sizes[$i];
 		} # else
 	} # format_size
 
@@ -399,11 +438,16 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
-		$tmp = utf8_decode($tmp);
-		$tmp = htmlspecialchars(html_entity_decode($tmp, ENT_COMPAT, 'UTF-8'));
+		$tmp = htmlentities($tmp);
+		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
 		
-		# Converteer urls naar links
-		# $tmp = linkify($tmp);
+		# Code gecopieerd vanaf 
+		#		http://codesnippets.joyent.com/posts/show/2104
+		# converteert linkjes naar bb code
+		$pattern = "@\b(https?://)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)" . 
+						"?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]" .
+						"{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*/?)@";
+		$tmp = preg_replace($pattern, '[url=\0]\0[/url]', $tmp);
 		
 		# initialize ubb parser
 		$parser = new SpotUbb_parser($tmp);
@@ -413,60 +457,141 @@ class SpotTemplateHelper {
 		$tmp = $tmp[0];
 	
 		# en replace eventuele misvormde br tags
-		$tmp = str_ireplace('&lt;br&gt;', '<br>', $tmp);
-		$tmp = str_ireplace('&lt;br /&gt;', '<br>', $tmp);
-		$tmp = str_ireplace('&amp;lt;br />', '<br>', $tmp);
-		
+		$tmp = str_ireplace('&lt;br&gt;', '<br />', $tmp);
+		$tmp = str_ireplace('&lt;br /&gt;', '<br />', $tmp);
+		$tmp = str_ireplace('&amp;lt;br />', '<br />', $tmp);
+
 		return $tmp;
 	} # formatContent
+
+	/*
+	 * Geeft de huidige lijst met categoryselectie terug
+	 * als een comma seperated lijst voor de dynatree initialisatie
+	 */
+	function categoryListToDynatree() {
+		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
+	} # categoryListToDynatree
 	
-	function getQueryParams($dontInclude = array()) {
-		$getUrl = '';
+	/*
+	 * Converteert de aanwezige filters naar een nieuwe, eventueel
+	 * geoptimaliserde GET (query) parameters 
+	 */
+	function convertFilterToQueryParams() {
+		#var_dump($this->_params['parsedsearch']['categoryList']);
+		#var_dump($this->_params['parsedsearch']['strongNotList']);
+		#var_dump($this->_params['parsedsearch']['filterValueList']);
+		#var_dump($this->_params['parsedsearch']['sortFields']);
 
-		if (!is_array($dontInclude)) {
-			$dontInclude = array($dontInclude);
+		
+		//$xml = $this->_spotsOverview->parsedSearchToXml($this->_params['parsedsearch']);
+		//$parsed = $this->_spotsOverview->xmlToParsedSearch($xml, $this->_currentSession);
+		//var_dump($parsed);
+		//die();
+		
+		return $this->convertUnfilteredToQueryParams() . $this->convertTreeFilterToQueryParams() . $this->convertTextFilterToQueryParams();
+	} # convertFilterToQueryParams
+
+	/*
+	 * Converteer de huidige unfiltered setting
+	 * naar een nieuwe GET query
+	 */
+	function convertUnfilteredToQueryParams() {
+		# en eventueel als de huidige list unfiltered is, geef
+		# dat ook mee
+		$unfilteredStr = '';
+		if ($this->_params['parsedsearch']['unfiltered']) {
+			$unfilteredStr = '&amp;search[unfiltered]=true';
 		} # if
 
-		if (isset($this->_params['activefilter'])) {
-			foreach($this->_params['activefilter'] as $key => $val) {
-				if (array_search($key, array_merge($dontInclude, array('filterValues', 'type', 'text'))) === false) {
-					if (!is_array($val)) {
-						if (!empty($val)) {
-							$getUrl .= '&amp;search[' .  $key . ']=' . urlencode($val);
-						} # if
-					} else {
-						foreach($val as $valVal) {
-							if (!empty($valVal)) {
-								$getUrl .= '&amp;search[' .  $key . '][]=' . urlencode($valVal);
-							} # if
-						} # foreach
-					} # else
-				}
-			} # foreach
-		} # if
+		return $unfilteredStr;
+	} # convertUnfilteredToQueryParams()
+	
+	/*
+	 * Converteert de aanwezige filter boom naar een
+	 * nieuwe GET query
+	 */
+	function convertTreeFilterToQueryParams() {
+		# Bouwen de search[tree] value op
+		return '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+														$this->_params['parsedsearch']['strongNotList']);
+	} # convertTreeFilterToQueryParams
 
-		# zijn er sorteer opties meegestuurd?
-		if (array_search('sortdir', $dontInclude) === false) {
-			if (!empty($this->_params['sortdir'])) {
-				$getUrl .= '&amp;sortdir=' . urlencode($this->_params['sortdir']);
+	/*
+	 * Converteert de aanwezige filter velden (behalve de boom)
+	 * naar een nieuwe GET query
+	 */
+	function convertTextFilterToQueryParams() {
+		# Vervolgens bouwen we de filtervalues op
+		$filterStr = '';
+		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . urlencode($value['value']);
+		} # foreach
+
+		return $filterStr;
+	} # convertTextFilterToQueryParams
+
+	/*
+	 * Geeft de huidige actieve sortering terug
+	 */
+	function getActiveSorting() {
+		$activeSort = array('field' => '',
+							'direction' => '',
+							'friendlyname' => '');
+		
+		# als we niet aan het sorteren zijn, doen we niets
+		if (!isset($this->_params['parsedsearch'])) {
+			return $activeSort;
+		} # if
+		
+		# we voegen alleen sorteringen toe die ook door
+		# de gebruiker expliciet zijn toegevoegd
+		foreach($this->_params['parsedsearch']['sortFields'] as $value) {
+			if (!$value['autoadded']) {
+				$activeSort['field'] = $value['field'];
+				$activeSort['direction'] = $value['direction'];
+				$activeSort['friendlyname'] = $value['friendlyname'];
+				break;
 			} # if
+		} # foreach
+		
+		return $activeSort;
+	} # getActiveSorting
+	
+	/*
+	 * Converteert de huidige actieve sorteer parameters
+	 * naar GET parameters voor in de URL
+	 */
+	function convertSortToQueryParams() {
+		$sortStr = '';
+		$activeSort = $this->getActiveSorting();
+		
+		if (!empty($activeSort['field'])) {
+			return '&amp;sortby=' . $activeSort['friendlyname'] . '&amp;sortdir=' . $activeSort['direction'];
 		} # if
-		if (array_search('sortby', $dontInclude) === false) {
-			if (!empty($this->_params['sortby'])) {
-				$getUrl .= '&amp;sortby=' . urlencode($this->_params['sortby']);
-			} # if
-		} # if
-
-		# Deze vreemde uitzondering maakt het iets gemakkelijker filters te maken aan de hand van zoekacties
-		$getUrl = str_ireplace("%3a", ":", $getUrl);
-
-		return $getUrl;
-	} # getQueryParams
+		
+		return '';
+	} # convertSortToQueryParams
 
 	/* 
 	 * Safely escape de velden en vul wat velden in
 	 */
 	function formatSpotHeader($spot) {
+	/*
+		$spot['sabnzbdurl'] = '';
+		$spot['searchurl'] = '';
+		$spot['spoturl'] = '';
+		$spot['caturl'] = '';
+		$spot['subcaturl'] = '';
+		$spot['posterurl'] = '';
+		$spot['title'] = '';
+		$spot['poster'] = '';
+		$spot['catshortdesc'] = '';
+		$spot['catdesc'] = '';
+		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
+		return $spot;
+	*/
+		
 		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
@@ -474,10 +599,10 @@ class SpotTemplateHelper {
 		$spot['caturl'] = $this->makeCatUrl($spot);
 		$spot['subcaturl'] = $this->makeSubCatUrl($spot, $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['posterurl'] = $this->makePosterUrl($spot);
-		
+
 		// title escapen
-		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES);
-		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES);
+		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
+		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		
 		// we zetten de short description van de category bij
 		$spot['catshortdesc'] = SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
@@ -504,10 +629,10 @@ class SpotTemplateHelper {
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
 			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
-			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, "UTF-8");
+			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, 'UTF-8');
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
-			# en tags over meerdere lijnen toch nog ewrkt. We voegen een extra \n toe
+			# en tags over meerdere lijnen toch nog werkt. We voegen een extra \n toe
 			# om zeker te zijn dat we altijd een array terugkrijgen
 			$tmpBody = implode("\n", $comments[$i]['body']);
 			$tmpBody = $this->formatContent($tmpBody);
@@ -703,6 +828,9 @@ class SpotTemplateHelper {
 		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
 		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
 		
+		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
+		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 
@@ -778,6 +906,17 @@ class SpotTemplateHelper {
 	}  # getGroupListForUser
 
 	/*
+	 * Geeft de users' custom CSS terug 
+	 */
+	function getUserCustomCss() {
+		if (!$this->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) {
+			return '';
+		} # if
+		
+		return $this->_currentSession['user']['prefs']['customcss'];
+	} # if 
+	
+	/*
 	 * Geeft alle permissies in een bepaalde securitygroup terug
 	 */
 	function getSecGroup($groupId) {
@@ -808,6 +947,22 @@ class SpotTemplateHelper {
 	function redirect($url) {
 		Header("Location: " . $url); 
 	} # redirect()
+	
+	/*
+	 * Get users' filter list
+	 */
+	function getUserFilterList() {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilterList($this->_currentSession['user']['userid']);
+	} # getUserFilterList
+
+	/*
+	 * Get specific filter
+	 */
+	function getUserFilter($filterId) {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
+	} # getUserFilter
 	
 	/*
 	 * Genereert een random string

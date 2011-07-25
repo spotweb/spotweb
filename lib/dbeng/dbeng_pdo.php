@@ -16,7 +16,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		if (empty($p)) {
             return $this->_conn->prepare($s);
         } # if
-        
+
 		$pattern = '/(\'?\%[ds]\'?)/';
         $matches = array();
         preg_match_all($pattern, $s, $matches);
@@ -51,7 +51,9 @@ abstract class dbeng_pdo extends dbeng_abs {
         return $stmt;
 	}
 	public function rawExec($s) {
+		SpotTiming::start(__FUNCTION__);
 		$stmt = $this->_conn->query($s);
+		SpotTiming::stop(__FUNCTION__,array($s));
 		
 		return $stmt;
 	}
@@ -65,9 +67,11 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return PDOStatement
      */
     public function exec($s, $p = array()) {
+		SpotTiming::start(__FUNCTION__);
         $stmt = $this->prepareSql($s, $p);
         $stmt->execute();
         $this->_rows_changed = $stmt->rowCount();
+		SpotTiming::stop(__FUNCTION__, array($s, $p));
  
     	return $stmt;
     }
@@ -109,7 +113,11 @@ abstract class dbeng_pdo extends dbeng_abs {
     function rows() {
 		return $this->_rows_changed;
 	} # rows()
-	 
+
+	function lastInsertId($tableName) {
+		return $this->_conn->lastInsertId($tableName . "_id_seq");
+	} # lastInsertId
+	
 	 /**
      * Fetch alleen het eerste resultaat
      * @param array $s
@@ -117,10 +125,12 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function singleQuery($s, $p = array()) {
+		SpotTiming::start(__FUNCTION__);
 		$stmt = $this->exec($s, $p);
         $row = $stmt->fetch();
         $stmt->closeCursor();
 		unset($stmt);
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
         
 		return $row[0];
 	} # singleQuery
@@ -132,14 +142,15 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function arrayQuery($s, $p = array()) {
+		SpotTiming::start(__FUNCTION__);
 		$stmt = $this->exec($s, $p);
 		$tmpArray = $stmt->fetchAll();
 		
         $stmt->closeCursor();
 		unset($stmt);
+		SpotTiming::stop(__FUNCTION__, array($s,$p));
 
 		return $tmpArray;
 	} # arrayQuery
 
-	
 } # class

@@ -50,7 +50,55 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return $foundCol;
 	} # columnExists
 	
+	/* controleert of een full text index bestaat */
+	function ftsExists($ftsname, $tablename, $colList) {
+		foreach($colList as $colName) {
+			$colInfo = $this->getColumnInfo($ftsname, $colName);
+			
+			if (empty($colInfo)) {
+				return false;
+			} # if
+		} # foreach
+	} # ftsExists
+			
+	/* maakt een full text index aan */
+	function createFts($ftsname, $tablename, $colList) {
+		# Drop eerst eventuele tabellen en dergelijke mochten die
+		# al bestaan maar niet aan de voorwaarden voldoen
+		$this->dropTable($ftsname);
+		$this->_dbcon->rawExec("DROP TRIGGER IF EXISTS " . $ftsname . "_insert");
+		
+		# en create de tabel opneiuw
+		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS3(" . implode(',', $colList) . ", tokenize=porter)");
 
+		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . implode(',', $colList) . ") SELECT rowid," . implode(',', $colList) . " FROM " . $tablename);
+		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " FOR EACH ROW
+								BEGIN
+								   INSERT INTO " . $ftsname . "(rowid," . implode(',', $colList) . ") VALUES (new.rowid, new." . implode(', new.', $colList) . ");
+								END");
+	} # createFts
+	
+	/* dropt en fulltext index */
+	function dropFts($ftsname, $tablename, $colList) {
+		$this->dropTable($ftsname);
+	} # dropFts
+	
+	/* geeft FTS info terug */
+	function getFtsInfo($ftsname, $tablename, $colList) {
+		$ftsList = array();
+		
+		foreach($colList as $num => $col) {
+			$tmpColInfo = $this->getColumnInfo($ftsname, $col);
+			
+			if (!empty($tmpColInfo)) {
+				$tmpColInfo['column_name'] = $tmpColInfo['COLUMN_NAME'];
+				$ftsList[] = $tmpColInfo;
+			} # if
+		} # foreach
+		
+		return $ftsList;
+	} # getFtsInfo
+	
 	/* Add an index, kijkt eerst wel of deze index al bestaat */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($idxname, $tablename)) {
@@ -156,6 +204,11 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			return ;
 		} # if
 		
+		# sqlite kent niet echt types, dus ook dat vinden we niet erg
+		if ($what == 'type') {
+			return ;
+		} # if
+		
 		throw new Exception("sqlite ondersteund het wijzigen van kolommen niet");
 	} # modifyColumn
 	
@@ -218,9 +271,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		# en nu bouwen we een array aan het formaat wat er verwacht wordt
 		$idxInfo = array();
 		for($i = 0; $i < count($colList); $i++) {
-			$idxInfo[] = array('index_name' => $idxname,
-			                   'seq_in_index' => $i + 1,
-							   'column_name' => $colList[$i],
+			$idxInfo[] = array('column_name' => $colList[$i],
 							   'non_unique' => (int) $isNotUnique,
 							   'index_type' => 'BTREE'
 						);

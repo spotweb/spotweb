@@ -1,12 +1,12 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.34');
+define('SPOTDB_SCHEMA_VERSION', '0.36');
 
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
 
 	/*
-	 * Constants used for updating the SpotStateList 
+	 * Constants used for updating the SpotStateList
 	 */
 	const spotstate_Down	= 0;
 	const spotstate_Watch	= 1;
@@ -35,6 +35,13 @@ class SpotDb {
 												$this->_dbsettings['pass'],
 												$this->_dbsettings['dbname']);
 							  break;
+							  
+			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
+												$this->_dbsettings['user'],
+												$this->_dbsettings['pass'],
+												$this->_dbsettings['dbname']);
+							  break;
+							
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 
@@ -116,13 +123,20 @@ class SpotDb {
 		} # if
 		
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%d' WHERE name = '%s'", Array($value, $serialized, $name));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%d')", Array($name, $value, $serialized));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
 										Array($name, $value, $serialized, $value, $serialized));
+					 break;
+			} # mysql
+			
+			default				: {
+					$this->_conn->exec("UPDATE settings SET value = '%s', serialized = %d WHERE name = '%s'", Array($value, (int) $serialized, $name));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', %d)", Array($name, $value, (int) $serialized));
+					} # if
+					break;
+			} # default
 		} # switch
 	} # updateSetting
 
@@ -273,7 +287,8 @@ class SpotDb {
 					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 		if (!empty($tmpResult)) {
 			# Other preferences worden serialized opgeslagen in de database
-			for($i = 0; $i < count($tmpResult); $i++) {
+			$tmpResultCount = count($tmpResult);
+			for($i = 0; $i < $tmpResultCount; $i++) {
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
 		} # if
@@ -317,8 +332,8 @@ class SpotDb {
 									lastvisit = %d,
 									lastread = %d,
 									lastapiusage = %d,
-									deleted = '%s'
-								WHERE id = '%s'", 
+									deleted = %d
+								WHERE id = %d", 
 				Array($user['firstname'],
 					  $user['lastname'],
 					  $user['mail'],
@@ -327,7 +342,7 @@ class SpotDb {
 					  (int) $user['lastvisit'],
 					  (int) $user['lastread'],
 					  (int) $user['lastapiusage'],
-					  $user['deleted'],
+					  (int) $user['deleted'],
 					  (int) $user['userid']));
 
 		# daarna updaten we zijn preferences
@@ -471,8 +486,8 @@ class SpotDb {
 	/*
 	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
 	 */
-	function createTextQuery($field, $value) {
-		return $this->_conn->createTextQuery($field, $value);
+	function createTextQuery($fieldList) {
+		return $this->_conn->createTextQuery($fieldList);
 	} # createTextQuery()
 
 	/*
@@ -494,13 +509,19 @@ class SpotDb {
 		} # if
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
-										Array($server, (int) $runTime, (int) $runTime));
+			case 'mysql'		:
+			case 'pdo_mysql' 	: {
+				$this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
+								Array($server, (int) $runTime, (int) $runTime));
+				break;
+			} # mysql
+			
+			default				: {
+				$this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
+				if ($this->_conn->rows() == 0) {
+					$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
+				} # if
+			} # default
 		} # switch
 	} # setRetrieverRunning
 
@@ -519,6 +540,7 @@ class SpotDb {
 		# en wis nu alles wat 'jonger' is dan deze spot
 		switch ($this->_dbsettings['engine']) {
 			# geen join delete omdat sqlite dat niet kan
+			case 'pdo_pgsql'  : 
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
 				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
@@ -539,7 +561,6 @@ class SpotDb {
 	function removeExtraComments($messageId) {
 		# vraag eerst het id op
 		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
-		$fullCommentId = $this->_conn->singleQuery("SELECT id FROM commentsfull WHERE messageid = '%s'", Array($messageId));
 		
 		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($commentId)) {
@@ -548,7 +569,6 @@ class SpotDb {
 
 		# en wis nu alles wat 'jonger' is dan deze spot
 		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
-		$this->_conn->modify("DELETE FROM commentsfull WHERE id > %d", Array((int) $fullCommentId));
 	} # removeExtraComments
 
 	/*
@@ -612,9 +632,9 @@ class SpotDb {
 
 		# geef hier een array terug die kant en klaar is voor array_search
 		foreach($rs as $msgids) {
-			$idList[] = $msgids['messageid'];
+			$idList[$msgids['messageid']] = 1;
 		} # foreach
-
+		
 		return $idList;
 	} # matchCommentMessageIds
 
@@ -659,7 +679,7 @@ class SpotDb {
 	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
 	 * 
 	 */
-	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch, $sort, $getFull) {
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
 		SpotTiming::start(__FUNCTION__);
 		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
@@ -670,43 +690,31 @@ class SpotDb {
 			$criteriaFilter = ' WHERE ' . $criteriaFilter;
 		} # if 
 
-		# de optie getFull geeft aan of we de volledige fieldlist moeten 
-		# hebben of niet. Het probleem met die volledige fieldlist is duidelijk
-		# het geheugen gebruik, dus liefst niet.
-		if ($getFull) {
-			$extendedFieldList = ',
-							f.usersignature AS "user-signature",
-							f.userkey AS "user-key",
-							f.xmlsignature AS "xml-signature",
-							f.fullxml AS fullxml';
-		} else {
-			$extendedFieldList = '';
-		} # else
-
 		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
 		# als dat zo is, voeg die dan ook toe
+		$extendedFieldList = '';
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
-		
-		if (!empty($sort)) {
-			# Omdat sort zelf op een ambigu veld kan komen, prefixen we dat met 's'
-			$sort['field'] = 's.' . $sort['field'];
-		} # if
 
-		# Nu prepareren we de sorterings lijst, we voegen hierbij de sortering die we
-		# expliciet hebben gekregen, samen met de sortering die voortkomt uit de filtering
-		# 
-		$sortFields = array_merge(array($sort), $parsedSearch['sortFields']);
+		# ook additionele tabellen kunnen gevraagd zijn door de filter parser, die 
+		# moeten we dan ook toevoegen
+		$additionalTableList = '';
+		foreach($parsedSearch['additionalTables'] as $additionalTable) {
+			$additionalTableList = ', ' . $additionalTable . $additionalTableList;
+		} # foreach
+		
+		# Nu prepareren we de sorterings lijst
+		$sortFields = $parsedSearch['sortFields'];
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
 			if (!empty($sortValue)) {
 				# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
 				# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
 				# het voor MySQL ISAM een stuk sneller
-				if ((strtolower($sortValue['field']) == 'stamp' || strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
+				if ((strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
 					$sortValue['field'] = 's.reversestamp';
-					$sortValue['direction'] = 'ASC';					
+					$sortValue['direction'] = 'ASC';
 				} # if
 				
 				$sortList[] = $sortValue['field'] . ' ' . $sortValue['direction'];
@@ -739,8 +747,9 @@ class SpotDb {
 												f.userid AS userid,
 												f.verified AS verified
 												" . $extendedFieldList . "
-									 FROM spots AS s 
-									 LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
+									 FROM spots AS s " . 
+									 $additionalTableList . 
+								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
@@ -754,7 +763,7 @@ class SpotDb {
 			array_pop($tmpResult);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter, $sort, $getFull));
+		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 
@@ -852,6 +861,10 @@ class SpotDb {
 	 */
 	function addCommentsFull($commentList) {
 		foreach($commentList as $comment) {
+			# Kap de verschillende strings af op een maximum van 
+			# de datastructuur, de unique keys kappen we expres niet af
+			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
+			
 			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
 					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
 					Array($comment['messageid'],
@@ -946,7 +959,7 @@ class SpotDb {
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
 				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
-				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
+				$commentList[$i]['body'] = explode("\r\n", utf8_decode($commentList[$i]['body']));
 			} # if
 		} # foreach
 
@@ -976,6 +989,7 @@ class SpotDb {
 	 */
 	function deleteSpot($msgId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'  : 
 			case 'pdo_sqlite' : {
 				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
@@ -984,6 +998,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
+			
 			default			: {
 				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
@@ -1008,6 +1023,7 @@ class SpotDb {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql' : 
  			case 'pdo_sqlite': {
 				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
 				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
@@ -1038,8 +1054,18 @@ class SpotDb {
 		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
 		# versies een verkeerde afronding geeft bij >32bits getallen.
 		if (!is_numeric($spot['filesize'])) {
-			$spot['fileSize'] = 0;
+			$spot['filesize'] = 0;
 		} # if
+		
+		# Kap de verschillende strings af op een maximum van 
+		# de datastructuur, de unique keys kappen we expres niet af
+		$spot['poster'] = substr($spot['poster'], 0, 127);
+		$spot['title'] = substr($spot['title'], 0, 127);
+		$spot['tag'] = substr($spot['tag'], 0, 127);
+		$spot['subcata'] = substr($spot['subcata'], 0, 63);
+		$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
+		$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
+		$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 
 		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
 				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -1056,7 +1082,7 @@ class SpotDb {
 					   $spot['stamp'],
 					   ($spot['stamp'] * -1),
 					   $spot['filesize']));
-
+		
 		if (!empty($fullSpot)) {
 			$this->addFullSpot($fullSpot);
 		} # if
@@ -1067,6 +1093,11 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpot($fullSpot) {
+		# Kap de verschillende strings af op een maximum van 
+		# de datastructuur, de unique keys en de RSA keys en dergeijke
+		# kappen we expres niet af
+		$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
+		
 		# en voeg het aan de database toe
 		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
 				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
@@ -1085,14 +1116,20 @@ class SpotDb {
 		if (empty($stamp)) { $stamp = time(); }
 
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite': $this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
-								if ($this->_conn->rows() == 0) {
-									$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
-										Array($messageId, (int) $ourUserId, $stamp));
-								} # if
-							break;
-			default			 : $this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
+			case 'pdo_mysql'	:
+			case 'mysql'		:  {
+				$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
 										Array($messageId, (int) $ourUserId, $stamp, $stamp));
+				break;
+			} # mysql
+			
+			default				:  {
+				$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+				if ($this->_conn->rows() == 0) {
+					$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
+						Array($messageId, (int) $ourUserId, $stamp));
+				} # if
+			} # default
 		} # switch
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
 	} # addToSpotStateList
@@ -1228,6 +1265,176 @@ class SpotDb {
 						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
 		} # foreach
 	} # setUserGroupList
+	
+	/*
+	 * Voegt een nieuwe notificatie toe
+	 */
+	function addNewNotification($userId, $objectId, $type, $title, $body) {
+		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', %d)",
+					Array($userId, (int) time(), $objectId, $type, $title, $body, 0));
+	} # addNewNotification
+	
+	/*
+	 * Haalt niet-verzonden notificaties op van een user
+	 */
+	function getUnsentNotifications($userId) {
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
+					Array($userId));
+		return $tmpResult;
+	} # getUnsentNotifications
+
+	/* 
+	 * Een notificatie updaten
+	 */
+	function updateNotification($msg) {
+		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
+					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
+	} // updateNotification
+
+	/*
+	 * Verwijder een filter en de children toe (recursive)
+	 */
+	function deleteFilter($userId, $filterId) {
+		$filterList = $this->getFilterList($userId);
+		foreach($filterList as $filter) {
+		
+			if ($filter['id'] == $filterId) {
+				foreach($filter['children'] as $child) {
+					$this->deleteFilter($userId, $child['id']);
+				} # foreach
+			} # if
+			
+			$this->_conn->modify("DELETE FROM filters WHERE userid = %d AND id = %d", 
+					Array($userId, $filterId));
+		} # foreach
+	} # deleteFilter
+	
+	/*
+	 * Voegt een filter en de children toe (recursive)
+	 */
+	function addFilter($userId, $filter) {
+		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder)
+								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s')",
+							Array($userId,
+								  $filter['filtertype'],
+								  $filter['title'],
+								  $filter['icon'],
+								  $filter['torder'],
+								  $filter['tparent'],
+								  $filter['tree'],
+								  implode('&', $filter['valuelist']),
+								  $filter['sorton'],
+								  $filter['sortorder']));
+		$parentId = $this->_conn->lastInsertId('filters');
+
+		foreach($filter['children'] as $tmpFilter) {
+			$tmpFilter['tparent'] = $parentId;
+			$this->addFilter($userId, $tmpFilter);
+		} # foreach
+	} # addFilter
+	
+	/*
+	 * Copieert de filterlijst van een user naar een andere user
+	 */
+	function copyFilterList($srcId, $dstId) {
+		$filterList = $this->getFilterList($srcId);
+		
+		foreach($filterList as $filterItems) {
+			$this->addFilter($dstId, $filterItems);
+		} # foreach
+	} # copyFilterList
+
+	/*
+	 * Get a specific filter
+	 */
+	function getFilter($userId, $filterId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
+					Array((int) $userId, (int) $filterId));
+		if (!empty($tmpResult)) {
+			return $tmpResult[0];
+		} else {
+			return false;
+		} # else
+	} # getFilter
+
+	/*
+	 * Get a specific filter
+	 */
+	function updateFilter($userId, $filter) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->modify("UPDATE filters 
+												SET title = '%s',
+												    icon = '%s',
+													torder = %d,
+													tparent = %d
+												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
+					Array($filter['title'], 
+						  $filter['icon'], 
+						  (int) $filter['torder'], 
+						  (int) $filter['tparent'], 
+						  (int) $userId, 
+						  (int) $filter['id']));
+	} # updateFilter
+
+	/*
+	 * Haalt de filter lijst op en formatteert die in een boom
+	 */
+	function getFilterList($userId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND filtertype = 'filter' 
+												ORDER BY tparent,torder", /* was: id, tparent, torder */
+					Array($userId));
+		$idMapping = array();
+		foreach($tmpResult as &$tmp) {
+			$idMapping[$tmp['id']] =& $tmp;
+		} # foreach
+		
+		/* Hier zetten we het om naar een daadwerkelijke boom */
+		$tree = array();
+		foreach($tmpResult as &$filter) {
+			if (!isset($filter['children'])) {
+				$filter['children'] = array();
+			} # if
+			
+			# de filter waardes zijn URL encoded opgeslagen 
+			# en we gebruiken de & om individuele filterwaardes
+			# te onderscheiden
+			$filter['valuelist'] = explode('&', $filter['valuelist']);
+			
+			if ($filter['tparent'] == 0) {
+				$tree[$filter['id']] =& $filter;
+			} else {
+				$idMapping[$filter['tparent']]['children'][] =& $filter;
+			} # else
+		} # foreach
+
+		return $tree;
+	} # getFilterList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

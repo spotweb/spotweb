@@ -25,7 +25,7 @@
 ?>
 					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><strong> <?php echo $rating; ?>Gepost door <span class="user"><?php echo $comment['fromhdr']; ?></span>
 					(<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='Zoek naar spots van "<?php echo $comment['fromhdr']; ?>"'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
-						<?php echo utf8_encode(join("<br>", $comment['body'])); ?>
+						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
 			} # if

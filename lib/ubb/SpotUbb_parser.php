@@ -282,7 +282,8 @@ class SpotUbb_parser {
 		$output = Array('');
 		$bodycount = 0;
 
-		for($i = 0; $i < sizeof($parseresult); $i++) {
+		$parseResultCount = sizeof($parseresult);
+		for($i = 0; $i < $parseResultCount; $i++) {
 			/* save the current allowedchildren */
 			$saveallowedchildren = $allowedchildren;
 

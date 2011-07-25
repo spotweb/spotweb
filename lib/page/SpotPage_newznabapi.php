@@ -9,6 +9,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # __construct
 
 	function render() {
+		# we willen niet dat de API output gecached wordt
+		$this->sendExpireHeaders(true);
+
 		# CAPS function is used to query the server for supported features and the protocol version and other 
 		# meta data relevant to the implementation. This function doesn't require the client to provide any
 		# login information but can be executed out of "login session".
@@ -16,7 +19,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$this->caps();
 			die();
 		} # if
-
+		
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
@@ -28,8 +31,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "s"		:
 			case "tvsearch"	:
 			case "t"		:
+			case "music"	:
 			case "movie"	:
 			case "m"		: $this->search($outputtype); break;
+			case "d"		:
+			case "details"	: $this->spotDetails($outputtype); break;
 			case "g"		:
 			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
@@ -37,6 +43,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # render()
 
 	function search($outputtype) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
+
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
@@ -58,19 +67,24 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$epSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
-				$epSearch = (is_numeric($this->_params['season'])) ? ' AND S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : ' AND ' . $this->_params['season'];
+				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 			} # if
 
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
-				$episode = (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
-				$epSearch .= (!empty($epSearch)) ? $episode : ' AND ' . $episode;
+				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 			} # if
 
-			$search['value'][] = "Titel:" . trim($tvSearch) . $epSearch;
+			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
+		} elseif ($this->_params['t'] == "music") {
+			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
+				$this->_params['cat'] = 3000;
+			} else {
+				$search['value'][] = "Titel:=:\"" . $this->_params['artist'] . "\"";
+			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
@@ -84,15 +98,23 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<title>(.*?) \(.*?<\/title>/ms', $imdb_content, $movieTitle);
-			$search['value'][] = "Titel:\"" . trim($movieTitle[1]) . "\"";
+			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
 		} elseif (!empty($this->_params['q'])) {
-			$search['value'][] = "Titel:" . $this->_params['q'];
+			$searchTerm = str_replace(" ", " +", $this->_params['q']);
+			$search['value'][] = "Titel:=:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
 			$search['value'][] = "date:>:-" . $this->_params['maxage'] . "days";
 
-		$search['tree'] = $this->nabcat2spotcat($this->_params['cat']);
+		$tmpCat = array();
+		foreach (explode(",", $this->_params['cat']) as $category) {
+			$tmpCat[] = $this->nabcat2spotcat($category);
+		} # foreach
+		$search['tree'] = implode(",", $tmpCat);
+
+		# Spots met een filesize 0 niet opvragen
+		$search['value'][] = "filesize:>:0";
 
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
 		if ($this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)
@@ -101,12 +123,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
 		$offset = $pageNr*$limit;
 
-		$parsedSearch = $spotsOverview->filterToQuery($search, $this->_currentSession);
+		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession);
 		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 						$pageNr,
 						$limit,
-						$parsedSearch,
-						array('field' => 'stamp', 'direction' => 'DESC'));
+						$parsedSearch);
 		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
@@ -114,7 +135,40 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
 		if ($outputtype == "json") {
-			echo json_encode($spots); //TODO:make that a more specific array of data to return rather than resultset
+			$doc = array();
+			foreach($spots['list'] as $spot) {
+				$data = array();
+				$data['ID']				= $spot['messageid'];
+				$data['name']			= $spot['title'];
+				$data['size']			= $spot['filesize'];
+				$data['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
+				$data['guid']			= $spot['messageid'];
+				$data['fromname']		= $spot['poster'];
+				$data['completion']		= 100;
+
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$data['categoryID'] = $nabCat[0];
+					$cat = implode(",", $nabCat);
+				} # if
+
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$cat .= "," . $nabCat[0];
+				} # if
+
+				$data['comments']		= $spot['commentcount'];
+				$data['category_name']	= SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
+				$data['category_ids']	= $cat;
+
+				if (empty($doc)) {
+					$data['_totalrows'] = count($spots['list']);
+				}
+				
+				$doc[] = $data;
+			} # foreach
+			
+			echo json_encode($doc);
 		} else {
 			# Opbouwen XML
 			$doc = new DOMDocument('1.0', 'utf-8');
@@ -154,7 +208,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$channel->appendChild($newznabResponse);
 
 			foreach($spots['list'] as $spot) {
-				$title = preg_replace(array('/</', '/>/', '/&/'), array('&#x3C;', '&#x3E;', '&#x26;'), $spot['title']);
+				$spot = $this->_tplHelper->formatSpotHeader($spot);
+				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+				$nzbUrl = $this->_tplHelper->makeNzbUrl($spot);
+				if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
+					$nzbUrl .= '&amp;del=1';
+				} # if
 
 				$guid = $doc->createElement('guid', $spot['messageid']);
 				$guid->setAttribute('isPermaLink', 'false');
@@ -162,13 +221,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$item = $doc->createElement('item');
 				$item->appendChild($doc->createElement('title', $title));
 				$item->appendChild($guid);
-				$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
 				$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 				$channel->appendChild($item);
 
 				$enclosure = $doc->createElement('enclosure');
-				$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+				$enclosure->setAttribute('url', html_entity_decode($nzbUrl));
 				$enclosure->setAttribute('length', $spot['filesize']);
 				switch ($nzbhandling['prepare_action']) {
 					case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
@@ -195,7 +254,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('name', 'category');
 					$attr->setAttribute('value', $nabCat[0]);
 					$item->appendChild($attr);
-				}
+				} # if
 
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'size');
@@ -220,8 +279,162 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 	} # showResults
 
+	function spotDetails($outputtype) {
+		if (empty($this->_params['messageid'])) {
+			$this->showApiError(200);
+		} # if
+
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
+
+		# spot ophalen
+		try {
+			$fullSpot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
+		}
+		catch(Exception $x) {
+			$this->showApiError(300);
+		} # catch
+
+		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
+		# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
+		# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
+		# wat een onbruikbaar resultaat oplevert
+		$spot = @$this->_tplHelper->formatSpot($fullSpot);
+
+		if ($outputtype == "json") {
+			$doc = array();
+			$doc['ID']				= $spot['id'];
+			$doc['name']			= $spot['title'];
+			$doc['size']			= $spot['filesize'];
+			$doc['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
+			$doc['guid']			= $spot['messageid'];
+			$doc['fromname']		= $spot['poster'];
+			$doc['completion']		= 100;
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$doc['categoryID'] = $nabCat[0];
+				$cat = implode(",", $nabCat);
+			} # if
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$cat .= "," . $nabCat[0];
+			} # if
+
+			$doc['comments']		= $spot['commentcount'];
+			$doc['category_name']	= SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
+			$doc['category_ids']	= $cat;
+			
+			echo json_encode($doc);
+		} else {
+			# Opbouwen XML
+			$doc = new DOMDocument('1.0', 'utf-8');
+			$doc->formatOutput = true;
+
+			$rss = $doc->createElement('rss');
+			$rss->setAttribute('version', '2.0');
+			$rss->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+			$rss->setAttribute('xmlns:newznab', 'http://www.newznab.com/DTD/2010/feeds/attributes/');
+			$rss->setAttribute('encoding', 'utf-8');
+			$doc->appendChild($rss);
+
+			$channel = $doc->createElement('channel');
+			$channel->appendChild($doc->createElement('title', 'Spotweb'));
+			$channel->appendChild($doc->createElement('language', 'nl'));
+			$channel->appendChild($doc->createElement('description', 'Spotweb Index Api Detail'));
+			$channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')'));
+			$channel->appendChild($doc->createElement('category', ''));
+			$rss->appendChild($channel);
+
+			$image = $doc->createElement('image');
+			$image->appendChild($doc->createElement('url', $this->_tplHelper->makeImageUrl($spot, 300, 300)));
+			$image->appendChild($doc->createElement('title', 'Spotweb Index'));
+			$image->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+			$image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
+			$channel->appendChild($image);
+
+			$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+			$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
+
+			$guid = $doc->createElement('guid', $spot['messageid']);
+			$guid->setAttribute('isPermaLink', 'false');
+
+			$description = $doc->createElement('description');
+			$descriptionCdata = $doc->createCDATASection($spot['description'] . '<br /><font color="#ca0000">Door: ' . $poster . '</font>');
+			$description->appendChild($descriptionCdata);
+
+			$item = $doc->createElement('item');
+			$item->appendChild($doc->createElement('title', $title));
+			$item->appendChild($guid);
+			$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
+			$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
+			$item->appendChild($description);
+			$channel->appendChild($item);
+
+			$enclosure = $doc->createElement('enclosure');
+			$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+			$enclosure->setAttribute('length', $spot['filesize']);
+			switch ($nzbhandling['prepare_action']) {
+				case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
+				default		: $enclosure->setAttribute('type', 'application/x-nzb');
+			} # switch
+			$item->appendChild($enclosure);
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[0]);
+				$item->appendChild($attr);
+
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[1]);
+				$item->appendChild($attr);
+			} # if
+
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+				$attr = $doc->createElement('newznab:attr');
+				$attr->setAttribute('name', 'category');
+				$attr->setAttribute('value', $nabCat[0]);
+				$item->appendChild($attr);
+			} # if
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'size');
+			$attr->setAttribute('value', $spot['filesize']);
+			$item->appendChild($attr);
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'poster');
+			$attr->setAttribute('value', $spot['poster'] . '@spot.net (' . $spot['poster'] . ')');
+			$item->appendChild($attr);
+
+			$attr = $doc->createElement('newznab:attr');
+			$attr->setAttribute('name', 'comments');
+			$attr->setAttribute('value', $spot['commentcount']);
+			$item->appendChild($attr);
+
+			header('Content-Type: text/xml; charset=UTF-8');
+			echo $doc->saveXML();
+		} # if
+	} # spotDetails
+
 	function getNzb() {
-		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . '&apikey=' . $this->_params['apikey']);
+		if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
+			$spot = $this->_db->getFullSpot($this->_params['messageid'], $this->_currentSession['user']['userid']);
+			if ($spot['watchstamp'] !== NULL) {
+				$this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']);
+				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+				$spotsNotifications->sendWatchlistHandled('remove', $this->_params['messageid']);
+			} # if
+		} # if
+
+		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . $this->_tplHelper->makeApiRequestString());
 	} # getNzb
 
 	function caps() {
@@ -249,7 +462,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$ret = $doc->createElement('retention');
 			$ret->setAttribute('days', $this->_settings->get('retention'));
 			$caps->appendChild($ret);
-		}
+		} # if
 
 		$reg = $doc->createElement('registration');
 		$reg->setAttribute('available', 'no');
@@ -284,9 +497,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$cat->setAttribute('name', $category['name']);
 			$categories->appendChild($cat);
 
-			foreach($category['subcata'] as $name => $subcat) {
+			foreach($category['subcata'] as $name => $subcata) {
 				$subCat = $doc->createElement('subcat');
-				$subCat->setAttribute('id', $subcat);
+				$subCat->setAttribute('id', $subcata);
 				$subCat->setAttribute('name', $name);
 				$cat->appendChild($subCat);
 			} # foreach
@@ -302,15 +515,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$cat = $catList[0];
 		$nr = substr($cat, 1);
 
+		# Als $nr niet gevonden kan worden is dat niet erg, het mag echter
+		# geen Notice veroorzaken.
 		if (!empty($cat[0])) {
 			switch ($cat[0]) {
-				case "a"	: $newznabcat = $this->spotAcat2nabcat(); $result = $newznabcat[$hcat][$nr]; break;
-				case "b"	: $newznabcat = $this->spotBcat2nabcat(); $result = $newznabcat[$nr]; break;
-			}
-		}
-
-		return $result;
-	}
+				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
+				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
+			} # switch
+		} # if
+	} # Cat2NewznabCat
 
 	function showApiError($errcode=42) {
 		switch ($errcode) {
@@ -351,7 +564,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		return array(
 				array('name'		=> 'Console',
 					  'cat'			=> '1000',
-					  'subcat'		=> array('NDS'		=> '1010',
+					  'subcata'		=> array('NDS'		=> '1010',
 											 'PSP'		=> '1020',
 											 'Wii'		=> '1030',
 											 'Xbox'		=> '1040',
@@ -359,33 +572,33 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											 'PS3'		=> '1080')
 				), array('name'		=> 'Movies',
 						 'cat'		=> '2000',
-						 'subcat'	=> array('SD'		=> '2030',
+						 'subcata'	=> array('SD'		=> '2030',
 											 'HD'		=> '2040',
 											 'Sport'	=> '2060')
 				), array('name'		=> 'Audio',
 						 'cat'		=> '3000',
-						 'subcat'	=> array('MP3'		=> '3010',
+						 'subcata'	=> array('MP3'		=> '3010',
 											 'Video'	=> '3020',
 											 'Lossless'	=> '3040')
 				), array('name'		=> 'PC',
 						 'cat'		=> '4000',
-						 'subcat'	=> array('Mac'		=> '4030',
+						 'subcata'	=> array('Mac'		=> '4030',
 											 'Phone'	=> '4040',
 											 'Games'	=> '4050')
 				), array('name'		=> 'TV',
 						 'cat'		=> '5000',
-						 'subcat'	=> array('SD'		=> '5030',
+						 'subcata'	=> array('SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Sport'	=> '5060')
 				), array('name'		=> 'XXX',
 						 'cat'		=> '6000',
-						 'subcat'	=> array('DVD'		=> '6010',
+						 'subcata'	=> array('DVD'		=> '6010',
 											 'WMV'		=> '6020',
 											 'XviD'		=> '6030',
 											 'x264'		=> '6040')
 				), array('name'		=> 'Other',
 						 'cat'		=> '7000',
-						 'subcat'	=> array('Ebook'	=> '7020')
+						 'subcata'	=> array('Ebook'	=> '7020')
 				)
 		);
 	} # categories
@@ -406,7 +619,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 2060: return 'cat0_d18';
 
 			case 3000: return 'cat1_a';
-			case 3010: return 'cat1_a0,cat1_a3,cat1_a5,cat1_a6';
+			case 3010: return 'cat1_a0';
 			case 3020: return 'cat0_d13';
 			case 3040: return 'cat1_a2,cat1_a4,cat1_a7,cat1_a8';
 

@@ -31,7 +31,7 @@ class SpotReq {
 				if ($form[$submitName]) {
 				
 					/* Als er een ongeldige XSRF value is gegeven, moeten we 
-					   alle submit butotns verwijderen */
+					   alle submit buttons verwijderen */
 					if (!$this->isXsrfValid($formName)) {
 						foreach($submitNames as $tmpName) {
 							unset($form[$tmpName]);

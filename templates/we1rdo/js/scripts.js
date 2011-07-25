@@ -1,6 +1,23 @@
+$.address.init(function() {
+	$('.spotlink').address();
+}).externalChange(
+		function(event) {
+			basePATH = location.href.replace('#' + $.address.value(), '');
+			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
+				closeDetails(0);
+				
+				var currentSpot = $('table.spots tr.active');
+				if (currentSpot) {
+					if (currentSpot.offset().top > $(window).height()) {
+						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+					} // if
+				} // if
+			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
+		});
+
 $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-
+	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 });
 
@@ -36,6 +53,12 @@ function openSpot(id,url) {
 	$(id).parent().parent().addClass('active');
 	$("table.spots tr.active td.title").removeClass("new");
 
+	if ($(id).attr('rel') ) {
+		openNewWindow();
+		setTimeout("$('a.spotlink').removeAttr('rel');",1);   
+		return false;
+	} //chrome
+	
 	var messageid = url.split("=")[2];
 
 	$("#overlay").addClass('loading');
@@ -53,6 +76,8 @@ function openSpot(id,url) {
 		}
 
 		$("a.closeDetails").click(function(){ 
+			$.address.value("");
+			if ($('table.spots tr.active').offset().top > $(window).height())scrollLocation = $('table.spots tr.active').offset().top - 50;
 			closeDetails(scrollLocation); 
 		});
 
@@ -105,6 +130,11 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 			modal: true
 		} );
 	} // if
+
+	// Update de dialogs' title, de tweede manier is er omdat het niet altijd goed
+	// werkt met de 1e methode
+	$dialdiv.dialog("option", 'title', title);
+	$("span.ui-dialog-title").text(title);
 	
 	/* submit button handler */
 	var buttonClick = function() {
@@ -117,6 +147,7 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 		$.ajax({
 			type: "POST",
 			url: this.form.action,
+			dataType: "xml",
 			data: formdata,
 			success: function(xml) {
 				var $dialdiv = $("#"+divid)
@@ -190,7 +221,8 @@ function openDialog(divid, title, url, formname, autoClose, closeCb) {
 			} // success function
 		}); // ajax call
 	} // loadDialogContent
-	
+
+	// en laad de content
 	loadDialogContent(true);
 	return false;
 } // openDialog
@@ -219,7 +251,7 @@ function closeDetails(scrollLocation) {
 $(function(){
 	var pagenr = $('#nextPage').val();
 	$(window).scroll(function() {
-		var url = '?direction=next&pagenr='+pagenr+$('#getURL').val()+' #spots';
+		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
 
 		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
 			if(!($("div.spots").hasClass("full"))) {
@@ -367,8 +399,8 @@ $(function(){
 	$('table.spots tbody tr').first().addClass('active');
 	$(document).bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
 	$(document).bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
-	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active a.spotlink').click()}});
+	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
+	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
 	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
 	$(document).bind('keydown', 'i', toggleImageSize);
@@ -393,7 +425,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$('table.spots tbody tr.active a.spotlink').click();
+			$('table.spots tbody tr.active .title a.spotlink').click();
 		}
 	} else if (direction == 'next' && next.size() == 1) {
 		current.removeClass('active');
@@ -401,7 +433,7 @@ function spotNav(direction) {
 		if($("#overlay").is(':visible')) {
 			$("div.container").removeClass("hidden").addClass("visible");
 			$(document).scrollTop($('table.spots tr.active').offset().top - 50);
-			$("table.spots tbody tr.active a.spotlink").click();
+			$("table.spots tbody tr.active .title a.spotlink").click();
 		}
 	}
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
@@ -409,8 +441,16 @@ function spotNav(direction) {
 
 // Edit user preference tabs
 $(document).ready(function() {
+	var BaseURL = createBaseURL();
+	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
 	$("#adminpaneltabs").tabs();
+
+	/* VOor de user preferences willen we de filter list sorteerbaar maken
+	   op het moment dat die tab klaar is met laden */
+	$('#edituserpreferencetabs').bind('tabsload', function(event, ui) {
+		bindSelectedSortableFilter();
+	});	
 	
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
@@ -420,9 +460,38 @@ $(document).ready(function() {
 			$('#nzbhandling-fieldset-' + selOpt[index]).show();
 		}); // each
 	});	// change
-	
+
 	// roep de change handler aan zodat alles goed staat
 	$('#nzbhandlingselect').change();
+
+    $(".enabler").each(function(){
+        if (!$(this).prop('checked'))
+            $('#content_'+$(this).attr('id')).hide();
+    });
+
+	$(".enabler").click(function() {
+		if ($(this).prop('checked'))
+			$('#content_'+$(this).attr('id')).show();
+		else
+			$('#content_'+$(this).attr('id')).hide();
+	});
+
+	$('#twitter_request_auth').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
+			$('#twitter_result').html('<b>Stap 2</b>:<br />Vul hieronder het PIN-nummer in die je van Twitter hebt gekregen en verifi&euml;er deze<br /><input type="text" name="twitter_pin" id="twitter_pin">');
+		});
+		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="Verifiëer PIN">');
+	});
+	$('#twitter_verify_pin').live('click', function(){
+		var pin = $("#twitter_pin").val();
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action':'verify', 'pin':pin}, function(data){ $('#twitter_result').html(data); });
+	});
+	$('#twitter_remove').click(function(){
+		$('#twitter_result').html(loading);
+		$.get(BaseURL+"?page=twitteroauth", {'action': 'remove'}, function(data){ $('#twitter_result').html(data); });
+	});
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)
@@ -739,9 +808,10 @@ function toggleCreateUser() {
 				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
 				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
 				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
+				var sendmail = $("form.createuserform input[name='createuserform[sendmail]']").is(':checked');
 
 				var url = $("form.createuserform").attr("action");
-				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[submit]=true';
+				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[sendmail]=' + sendmail + '&createuserform[submit]=true';
 
 				$.ajax({
 					type: "POST",
@@ -803,7 +873,7 @@ function toggleEditUser(userid) {
 				$.ajax({
 					type: "POST",
 					url: url,
-					// dataType: "xml",
+					dataType: "xml",
 					data: dataString,
 					success: function(xml) {
 						var result = $(xml).find('result').text();
@@ -1152,3 +1222,117 @@ function updateSabPanel(start,limit) {
 		}, interval);
 	});
 }
+
+/*
+ * Haalt uit een bestaande filter URL de opgegeven filter via
+ * string replacement
+ */
+function removeFilter(href, fieldname, operator, value) {
+	href = unescape(href).replace(/\+/g, ' ');
+
+	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
+} // removeFilter	
+
+/*
+ * Submit het zoek formulier
+ */
+function submitFilterBtn(searchform) {
+	var valelems = searchform.elements['search[value][]'];
+	
+	// We zetten nu de filter om naar een moderner soort filter
+	for (var i=0; i < searchform.elements['search[type]'].length; i++) {
+		if (searchform.elements['search[type]'][i].checked) {
+			var rad_val = searchform.elements['search[type]'][i].value;
+		} // if
+	} // for
+	
+	//
+	// we voegen nu onze input veld als hidden waarde toe zodat we 
+	// altijd op dezelfde manier de query parameters opbouwen.
+	//
+	// Als er geen textfilter waarde is, submitten we hem ook niet
+	if (searchform.elements['search[text]'].value.trim().length > 0)  {
+		$('<input>').attr({
+			type: 'hidden',
+			name: 'search[value][]',
+			value: rad_val + ':=:' + searchform.elements['search[text]'].value
+		}).appendTo('form#filterform');
+	} // if
+	
+	// en vewijder de oude manier
+	$('form#filterform').find('input[name=search\\[text\\]]').remove();
+	$('form#filterform').find('input[name=search\\[type\\]]').remove();
+
+	// nu selecteren we alle huidige search values, als de include filters
+	// knop is ingedrukt dan doen we er niks mee, anders filteren we die
+	if ($('#searchfilter-includeprevfilter-toggle').val() != 'true') {
+		$('form#filterform [data-currentfilter="true"]').each(function(index, value) { 
+			$(value).remove();
+		});	
+	} // if
+	
+	// eventueel lege values die gesubmit worden door de age dropdown
+	// ook filteren
+	$('form#filterform').find('select[name=search\\[value\\]\\[\\]]').filter(':input[value=""]').remove(); 
+	
+	// de checkbox die aangeeft of we willen filteren of niet moeten we ook niet submitten
+	$('#searchfilter-includeprevfilter-toggle').remove();
+	
+	// als de slider niet gewijzigd is van de default waardes, dan submitten
+	// we heel de slider niet
+	if ($('#min-filesize').val() == 'filesize:>:0') { 
+		$('form#filterform').find('#min-filesize').remove();
+	} // if
+	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
+		$('form#filterform').find('#max-filesize').remove();
+	} // if
+
+	return true;
+} // submitFilterBtn
+	
+function format_size(size) {
+	var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	var i = 0;
+	while(size >= 1024) {
+		size /= 1024;
+		++i;
+	}
+	return size.toFixed(1) + ' ' + sizes[i];
+}
+
+function bindSelectedSortableFilter() {
+	/* Koppel de nestedSortable aan de sortablefilterlist */
+	var $sortablefilterlist = $('#sortablefilterlist');
+	if ($sortablefilterlist) {
+		$sortablefilterlist.nestedSortable({
+			opacity: .6,
+			tabSize: 15,
+			forcePlaceholderSize: true,
+			forceHelperSize: true,
+			maxLevels: 4,
+			helper:	'clone',
+			items: 'li',
+			tabSize: 25,
+			listType: 'ul',
+			handle: 'div',
+			placeholder: 'placeholder',
+			revert: 250,
+			tolerance: 'pointer',
+			update: function() {
+				var serialized = $sortablefilterlist.nestedSortable('serialize');
+				var formdata = 'editfilterform[xsrfid]=' + editfilterformcsrfcookie + '&editfilterform[submitreorder]=true&' + serialized;
+				
+				// post de data
+				$.ajax({
+					type: "POST",
+					url: '?page=editfilter',
+					dataType: "html",
+					data: formdata,
+					success: function(xml) {
+						// alert(xml);
+					} // success
+				}); // ajax call om de form te submitten
+			}
+		});
+	} // if
+} // bindSelectedSortableFilter

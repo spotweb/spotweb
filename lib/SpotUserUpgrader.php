@@ -9,11 +9,13 @@ class SpotUserUpgrader {
 	} # ctor
 
 	function update() {
+		$this->createSecurityGroups();
 		$this->createAnonymous();
 		$this->createAdmin();
 		
 		$this->updateUserPreferences();
-		$this->updateSecurityGroups();
+		$this->updateSecurityGroupMembership();
+		$this->updateUserFilters();
 		
 		$this->updateSecurityVersion();
 	} # update()
@@ -75,7 +77,7 @@ class SpotUserUpgrader {
 		$dbCon = $this->_db->getDbHandle();
 
 		# Vraag de password salt op 
-		$passSalt = $dbCon->singleQuery("SELECT value FROM settings WHERE name = 'pass_salt'");
+		$passSalt = $this->_settings->get('pass_salt');
 		
 		# Bereken het password van de dummy admin user
 		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
@@ -116,12 +118,12 @@ class SpotUserUpgrader {
 
 		# loop through every user and fix it 
 		foreach($userList['list'] as $user) {
-			# Omdat we vanuti listUsers() niet alle velden meekrijgen
+			# Omdat we vanuit listUsers() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
 			$user = $this->_db->getUser($user['userid']);
 
 			# set the users' preferences
-			$this->setSettingIfNot($user['prefs'], 'perpage', '25');
+			$this->setSettingIfNot($user['prefs'], 'perpage', 25);
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
 			$this->setSettingIfNot($user['prefs'], 'template', 'we1rdo');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
@@ -132,69 +134,77 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
 			$this->setSettingIfNot($user['prefs'], 'show_filesize', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
-			$this->unsetSetting($user['prefs'], 'search_url');
-			
-			# sabnzbd handling is nog iets speciaals, die settings lijst is
-			# dusdanig groot dat dat met individuele setjes niet ewrkt, we gaan
-			# dus uit van een template met alle settings, en die mergen we.
-			$nzbHandlingTpl = array('action' => 'disable',
-									'local_dir' => '/tmp',
-									'prepare_action' => 'zip',
-									'command' => '',
-									'sabnzbd' => array('url' => '',
-													   'apikey' => ''),
-									'nzbget' => array('host' => '',
-													  'port' => '',
-													  'username' => '',
-													  'password' => '',
-													  'timeout' => 15)
-									);
-			if ((!isset($user['prefs']['nzbhandling'])) || ($this->_settings->get('securityversion') < 0.04)) {
- 				$user['prefs']['nzbhandling'] = array('sabnzbd' => array(), 'nzbget' => array());
-			} # if
-			if ((!isset($user['prefs']['nzbhandling']['nzbget'])) || (!is_array($user['prefs']['nzbhandling']['nzbget']))) {
- 				$user['prefs']['nzbhandling']['nzbget'] = array();
-			} # if
-			if ((!isset($user['prefs']['nzbhandling']['sabnzbd'])) || (!is_array($user['prefs']['nzbhandling']['sabnzbd']))) {
- 				$user['prefs']['nzbhandling']['sabnzbd'] = array();
-			} # if
-			$nzbHandlingUsr = array_merge($nzbHandlingTpl, $user['prefs']['nzbhandling']);
-			$nzbHandlingUsr['sabnzbd'] = array_merge($nzbHandlingTpl['sabnzbd'], $user['prefs']['nzbhandling']['sabnzbd']);
-			$nzbHandlingUsr['nzbget'] = array_merge($nzbHandlingTpl['nzbget'], $user['prefs']['nzbhandling']['nzbget']);
-			
-			# en deze gemergede array zetten we /altijd/ omdat anders
-			# subkeys niet goed mee zouden kunnen
-			$user['prefs']['nzbhandling'] = $nzbHandlingUsr;
+			$this->setSettingIfNot($user['prefs'], 'customcss', '');
 
-			# Upgrade de sabnzbd api host setting
-			if ($this->_settings->get('securityversion') < 0.06) {
-				if (substr($user['prefs']['nzbhandling']['sabnzbd']['url'], -1 * strlen('/sabnzbd/')) == '/sabnzbd/') {
-					$user['prefs']['nzbhandling']['sabnzbd']['url'] = substr($user['prefs']['nzbhandling']['sabnzbd']['url'], 0, -1 * strlen('sabnzbd/'));
-				} # if				
-			} # if
-			
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'prepare_action', 'merge');
+			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'url', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'apikey', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'host', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'port', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'username', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
+
+			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'screen_name', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'request_token', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'request_token_secret', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token_secret', '');
+			$notifProviders = Notifications_Factory::getActiveServices();
+			foreach ($notifProviders as $notifProvider) {
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'watchlist_handled', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
+			} // foreach
+
+			# oude settings verwijderen
+			$this->unsetSetting($user['prefs'], 'search_url');
+			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');
+
 			# update the user record in the database			
 			$this->_db->setUser($user);
 		} # foreach
 	} # update()
 
-	/* 
-	 * Update de 'default' security groepen
+	/*
+	 * Creeer de default security groepen
 	 */
-	function updateSecurityGroups() {
+	function createSecurityGroups() {
+		# DB connectie
+		$dbCon = $this->_db->getDbHandle();
+		
+		if ($this->_settings->get('securityversion') < 0.01) {
+			/* Truncate de  huidige permissies */
+			$dbCon->rawExec("DELETE FROM securitygroups");
+
+			/* Creeer de security groepen */
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");			
+		} # if
+	} # createSecurityGroups
+	
+	/* 
+	 * Update de 'default' security groepen hun membership
+	 */
+	function updateSecurityGroupMembership() {
 		# DB connectie
 		$dbCon = $this->_db->getDbHandle();
 		
 		if ($this->_settings->get('securityversion') < 0.01) {
 			/* Truncate de  huidige permissies */
 			$dbCon->rawExec("DELETE FROM grouppermissions");
-			$dbCon->rawExec("DELETE FROM securitygroups");
 
-			/* Creeer de security groepen */
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");
-			
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
 							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
@@ -254,12 +264,98 @@ class SpotUserUpgrader {
 		} # if
 
 		# We voegen nog extra security toe voor de admin user, deze mag group membership van
-		# een user tonen, en securitygroepen inhoudleijk wijzigen
+		# een user tonen, en securitygroepen inhoudelijk wijzigen
 		if ($this->_settings->get('securityversion') < 0.07) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_display_groupmembership . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_securitygroups . ")");
 		} # if
+
+		# We voegen nog extra security toe voor notificaties
+		if ($this->_settings->get('securityversion') < 0.08) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'email')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'growl')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'notifo')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'prowl')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'nzb_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
+		} # if
+
+		# We voegen nog extra security toe voor custom stylesheets
+		if ($this->_settings->get('securityversion') < 0.09) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_allow_custom_stylesheet . ")");
+		} # if
+
+		# We voegen nog extra security toe voor watchlist notificaties en een vergeten NZB download
+		if ($this->_settings->get('securityversion') < 0.10) {
+			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_send_notifications_services . " AND objectid = 'libnotify'");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
+		} # if
+
+		# Twitter toegevoegd
+		if ($this->_settings->get('securityversion') < 0.11) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'twitter')");
+		} # if
+
+		# Zelf filters kunnen wijzigen
+		if ($this->_settings->get('securityversion') < 0.12) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_keep_own_filters . ")");
+		} # if
 	} # updateSecurityGroups
+
+	/*
+	 * Update user filters
+	 */
+	function updateUserFilters() {
+
+		if ($this->_settings->get('securityversion') < 0.12) {
+			# DB connectie
+			$dbCon = $this->_db->getDbHandle();
+
+			$userList = $this->_db->listUsers("", 0, 9999999);
+
+			# loop through every user and fix it 
+			foreach($userList['list'] as $user) {
+				/* Beeld */
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Beeld', 'film.png', 0, 0, 'cat0_z0')");
+				$beeldFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DivX', 'divx.png', 0, " . $beeldFilterId . ", 'cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'WMV', 'wmv.png', 1, " . $beeldFilterId . ", 'cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'MPEG', 'mpg.png', 2, " . $beeldFilterId . ", 'cat0_a2,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DVD', 'dvd.png', 3, " . $beeldFilterId . ", 'cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'HD', 'hd.png', 4, " . $beeldFilterId . ", 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Series', 'tv.png', 5, " . $beeldFilterId . ", 'cat0_z1')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Boeken', 'book.png', 6, " . $beeldFilterId . ", 'cat0_z2')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Erotiek', 'female.png', 7, " . $beeldFilterId . ", 'cat0_z3')");
+
+				/* Muziek */
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Muziek', 'music.png', 1, 0, 'cat1_a')");
+				$muziekFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Compressed', 'music.png', 0, " . $muziekFilterId . ", 'cat1_a0,cat1_a3,cat1_a5,cat1_a6')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Lossless', 'music.png', 1, " . $muziekFilterId . ", 'cat1_a2,cat1_a4,cat1_a7,cat1_a8')");
+
+				/* Spellen */
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Spellen', 'controller.png', 2, 0, 'cat2_a')");
+				$gameFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows', 'windows.png', 0, " . $gameFilterId . ", 'cat2_a0')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Mac / Linux', 'linux.png', 1, " . $gameFilterId . ", 'cat2_a1,cat2_a2')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Playstation', 'playstation.png', 2, " . $gameFilterId . ", 'cat2_a3,cat2_a4,cat2_a5,cat2_a12')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'XBox', 'xbox.png', 3, " . $gameFilterId . ", 'cat2_a6,cat2_a7')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Nintendo', 'nintendo_ds.png', 4, " . $gameFilterId . ", 'cat2_a8,cat2_a9,cat2_a10,cat2_a11')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Smartphone / PDA', 'pda.png', 5, " . $gameFilterId . ", 'cat2_a13,cat2_a14,cat2_a15')");
+
+				/* Applicaties */
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Applicaties', 'application.png', 3, 0, 'cat3_a')");
+				$appFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows', 'vista.png', 0, " . $appFilterId . ", 'cat3_a0')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Mac / Linux / OS2', 'linux.png', 1, " . $appFilterId . ", 'cat3_a1,cat3_a2,cat3_a3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'PDA / Navigatie', 'pda.png', 2, " . $appFilterId . ", 'cat3_a4,cat3_a5,cat3_a6,cat3_a7')");
+			} # foreach
+		} # if
+	} # updateUserFilters
 	
 	/*
 	 * Update de huidige versie van de settings

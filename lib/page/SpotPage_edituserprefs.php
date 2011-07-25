@@ -53,9 +53,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					# niet door), op true of false zou zetten naar gelang de default parameter en dus het formulier zou
 					# negeren.
 					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
-					
+
 					# controleer en repareer alle preferences 
-					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs']);
+					list ($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $this->_currentSession['user']['prefs']);
 
 					if (empty($formMessages['errors'])) {
 						# bewerkt de user
@@ -66,6 +66,12 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					} else {
 						$editResult = array('result' => 'failure');
 					} # else
+
+					# Spotweb registreren bij de notificatie-providers. Dit moet mininmaal 1 keer, dus de veiligste optie is om dit
+					# elke keer te doen als de voorkeuren worden opgeslagen
+					$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+					$spotsNotifications->register();
+					
 					break;
 				} # case 'edit' 
 				
