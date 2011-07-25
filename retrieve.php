@@ -97,7 +97,10 @@ try {
 	
 	$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
 	if ($curMsg != 0) {
-		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
+		$curMsgTemp = $retriever->searchMessageId($db->getMaxMessageId('headers'));
+		if ($curMsg > $curMsgTemp) {
+		$curMsg = $curMsgTemp;
+		} # if
 	} # if
 
 	$newSpotCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
