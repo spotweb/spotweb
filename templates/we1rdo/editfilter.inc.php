@@ -30,10 +30,10 @@ if (empty($editresult)) {
 			<input type="hidden" name="filterid" value="<?php echo $filter['id']; ?>">
 <?php } else {  ?>
 			<input type="hidden" name="filterid" value="9999">
-			<input type="hidden" name="editfilterform[tree]" value="<?php echo htmlspecialchars($search['tree']); ?>"></input>
-			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo implode('&', array_map('urlencode', $search['value'])); ?>"></input>
-			<input type="hidden" name="editfilterform[sorton]" value="<?php echo htmlspecialchars($sortby); ?>"></input>
-			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir); ?>"></input>
+			<input type="hidden" name="editfilterform[tree]" value="<?php echo (isset($search['tree']) ? htmlspecialchars($search['tree'], ENT_QUOTES, "UTF-8") : ""); ?>"></input>
+			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo htmlspecialchars(implode('&', array_map('urlencode', (isset($search['value']) ?$search['value'] : array()) )), ENT_QUOTES, "UTF-8"); ?>"></input>
+			<input type="hidden" name="editfilterform[sorton]" value="<?php echo htmlspecialchars($sortby, ENT_QUOTES, "UTF-8"); ?>"></input>
+			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir, ENT_QUOTES, "UTF-8"); ?>"></input>
 <?php } ?>
 			
 			<dt><label for="editfilterform[title]">Naam</label></dt>
