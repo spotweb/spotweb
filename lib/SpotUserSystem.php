@@ -345,6 +345,12 @@ class SpotUserSystem {
 			$errorList[] = array('validateuser_invalidpreference', array('template'));
 		} # if
 		
+		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
+		if (!isset($prefs['nzbhandling'])) {
+			$prefs['nzbhandling'] = array('action' => 'disable',
+										  'prepare_action' => 'merge');										  
+		} # if
+		
 		# als er een sabnzbd host opgegeven is, moet die geldig zijn
 		if ( ($prefs['nzbhandling']['action'] == 'client-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
