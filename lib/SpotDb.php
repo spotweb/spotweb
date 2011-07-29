@@ -1294,13 +1294,13 @@ class SpotDb {
 	/*
 	 * Verwijder een filter en de children toe (recursive)
 	 */
-	function deleteFilter($userId, $filterId) {
-		$filterList = $this->getFilterList($userId);
+	function deleteFilter($userId, $filterId, $filterType) {
+		$filterList = $this->getFilterList($userId, 'filter', $filterType);
 		foreach($filterList as $filter) {
 		
 			if ($filter['id'] == $filterId) {
 				foreach($filter['children'] as $child) {
-					$this->deleteFilter($userId, $child['id']);
+					$this->deleteFilter($userId, $child['id'], $filterType);
 				} # foreach
 			} # if
 			
@@ -1337,7 +1337,7 @@ class SpotDb {
 	 * Copieert de filterlijst van een user naar een andere user
 	 */
 	function copyFilterList($srcId, $dstId) {
-		$filterList = $this->getFilterList($srcId);
+		$filterList = $this->getFilterList($srcId, '');
 		
 		foreach($filterList as $filterItems) {
 			$this->addFilter($dstId, $filterItems);
@@ -1361,7 +1361,7 @@ class SpotDb {
 													  sorton,
 													  sortorder 
 												FROM filters 
-												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
+												WHERE userid = %d AND id = %d",
 					Array((int) $userId, (int) $filterId));
 		if (!empty($tmpResult)) {
 			return $tmpResult[0];
@@ -1371,28 +1371,9 @@ class SpotDb {
 	} # getFilter
 
 	/*
-	 * Get a specific filter
+	 * Get a specific index filter 
 	 */
-	function updateFilter($userId, $filter) {
-		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->modify("UPDATE filters 
-												SET title = '%s',
-												    icon = '%s',
-													torder = %d,
-													tparent = %d
-												WHERE userid = %d AND filtertype = 'filter' AND id = %d",
-					Array($filter['title'], 
-						  $filter['icon'], 
-						  (int) $filter['torder'], 
-						  (int) $filter['tparent'], 
-						  (int) $userId, 
-						  (int) $filter['id']));
-	} # updateFilter
-
-	/*
-	 * Haalt de filter lijst op en formatteert die in een boom
-	 */
-	function getFilterList($userId) {
+	function getUserIndexFilter($userId) {
 		/* Haal de lijst met filter values op */
 		$tmpResult = $this->_conn->arrayQuery("SELECT id,
 													  userid,
@@ -1406,7 +1387,60 @@ class SpotDb {
 													  sorton,
 													  sortorder 
 												FROM filters 
-												WHERE userid = %d AND filtertype = 'filter' 
+												WHERE userid = %d AND filtertype = 'index_filter'",
+					Array((int) $userId));
+		if (!empty($tmpResult)) {
+			return $tmpResult[0];
+		} else {
+			return false;
+		} # else
+	} # getUserIndexFilter
+	
+	
+	/*
+	 * Get a specific filter
+	 */
+	function updateFilter($userId, $filter) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->modify("UPDATE filters 
+												SET title = '%s',
+												    icon = '%s',
+													torder = %d,
+													tparent = %d
+												WHERE userid = %d AND id = %d",
+					Array($filter['title'], 
+						  $filter['icon'], 
+						  (int) $filter['torder'], 
+						  (int) $filter['tparent'], 
+						  (int) $userId, 
+						  (int) $filter['id']));
+	} # updateFilter
+
+	/*
+	 * Haalt de filter lijst op en formatteert die in een boom
+	 */
+	function getFilterList($userId, $filterType) {
+		/* willen we een specifiek soort filter hebben? */
+		if (empty($filterType)) {
+			$filterTypeFilter = '';
+		} else {
+			$filterTypeFilter = " AND filtertype = 'filter'"; 
+		} # else
+		
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d " . $filterTypeFilter . "
 												ORDER BY tparent,torder", /* was: id, tparent, torder */
 					Array($userId));
 		$idMapping = array();

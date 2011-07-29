@@ -72,14 +72,14 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				case 'addfilter'	: {
 					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
 					$filter = $this->_editFilterForm;
-					$filter['filtertype'] = 'filter';
 					$filter['valuelist'] = explode('&', $filter['valuelist']) ;
 					$filter['torder'] = 999;
 					$filter['tparent'] = 0;
 					$filter['children'] = array();
+					$filter['filtertype'] = 'filter';
 					$filter['sorton'] = $filter['sorton'];
 					$filter['sortorder'] = $filter['sortorder'];
-
+						
 					# en probeer de filter toe te voegen
 					$formMessages['errors'] = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
 					
@@ -90,7 +90,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					} # else
 					
 					break;
-				} # case 'removefilter' 
+				} # case 'addfilter' 
 
 				case 'reorder' : {
 					$orderCounter = 0;
