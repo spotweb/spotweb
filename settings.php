@@ -300,6 +300,10 @@ if (isset($settings['filters'])) {
 	die("filters zijn een user preference geworden. Haal de filters aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
+if (isset($settings['index_filter'])) {
+	die("index_filter is een user preference geworden. Haal de index_filter aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
 # Controleer op oud type quicklinks (zonder security)
 foreach($settings['quicklinks'] as $link) {
 	if (count($link) != 5) {
