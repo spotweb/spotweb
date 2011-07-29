@@ -77,7 +77,7 @@ class SpotTemplateHelper {
 
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
-		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
+		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession, array());
 
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
