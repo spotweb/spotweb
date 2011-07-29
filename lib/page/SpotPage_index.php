@@ -30,9 +30,11 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
+		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
 							array('field' => $this->_params['sortby'], 'direction' => $this->_params['sortdir']),
-							$this->_currentSession);
+							$this->_currentSession,
+							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
 
  		# Haal de offset uit de URL en zet deze als startid voor de volgende zoektocht
 		# Als de offset niet in de url staat, zet de waarde als 0, het is de eerste keer

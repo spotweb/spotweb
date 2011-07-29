@@ -671,7 +671,12 @@ class SpotUserSystem {
 	 * Get the users' index filter
 	 */
 	function getIndexFilter($userId) {
-		return $this->_db->getUserIndexFilter($userId);
+		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		if ($tmpFilter === false) {
+			return array('tree' => '');
+		} else {
+			return $tmpFilter;
+		} # else
 	} # getIndexFilter
 	
 	/*
