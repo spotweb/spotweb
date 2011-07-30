@@ -57,6 +57,9 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		} elseif (isset($this->_editFilterForm['submitdiscardfilters'])) {
 			$formAction = 'discardfilters';
 			unset($this->_editFilterForm['submitdiscardfilters']);
+		} elseif (isset($this->_editFilterForm['submitsetfiltersasdefault'])) {
+			$formAction = 'setfiltersasdefault';
+			unset($this->_editFilterForm['submitsetfiltersasdefault']);
 		} elseif (isset($this->_editFilterForm['submitreorder'])) {
 			$formAction = 'reorder';
 			unset($this->_editFilterForm['submitreorder']);
@@ -78,6 +81,13 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					
 					break;
 				} # case 'discardfilters'
+				
+				case 'setfiltersasdefault' : {
+					$spotUserSystem->setFiltersAsDefault($this->_currentSession['user']['userid']);
+					$editResult = array('result' => 'success');
+					
+					break;
+				} # case 'setfiltersasdefault'
 				
 				case 'addfilter'	: {
 					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
