@@ -778,6 +778,23 @@ function markAsRead() {
 	});
 }
 
+function ajaxSubmitFormWithCb(url, tbutton, cb) {
+	var formdata = $(tbutton).attr("name") + "=" + $(tbutton).val();  
+	formdata = $(tbutton.form).serialize() + "&" + formdata;
+	
+	// post de data
+	$.ajax({
+		type: "POST",
+		url: url, // '?page=editfilter',
+		dataType: "html",
+		data: formdata,
+		success: function(xml) {
+			// alert(xml);
+			cb();
+		} // success
+	}); // ajax call om de form te submitten
+} // ajaxSubmitFormWithCb
+
 // User systeem
 function userLogout() {
 	var url = '?page=logout';
@@ -1119,6 +1136,7 @@ function updateSabPanel(start,limit) {
 			if(timeOut) {clearTimeout(timeOut)}; 
 			sabActions(start,limit,state);
 		});
+		$("table.sabInfo td.diskspace").html("<strong title='Vrije ruimte (complete)'>"+queue.diskspace2+"</strong> / <strong title='Totale ruimte (complete)'>"+queue.diskspacetotal2+"</strong> GB");
 		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
 		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label>");
 		$("td.speedlimit input[name=speedLimit]").focus(function(){

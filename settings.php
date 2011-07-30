@@ -163,12 +163,6 @@ $settings['enable_stacktrace'] = true;
 # dat je ooit hoeft in te loggen.
 $settings['nonauthenticated_userid'] = 1;
 
-# de filter die standaard gebruikt wordt op de index pagina (als er geen filters oid opgegeven zijn), 
-# zorg dat deze wel gedefinieerd is.
-$settings['index_filter'] = array();
-
-# als je standaard geen erotiek wilt op de index, uncomment dan volgende filter, je kan wel erotiek vinden door te zoeken
-# $settings['index_filter'] = array('tree' => '~cat0_z3');
 
 #
 # Hoeveel verschillende headers (van danwel spots danwel comments) moeten er per keer opgehaald worden? 
@@ -298,6 +292,10 @@ if (isset($settings['nzbhandling'])) {
 
 if (isset($settings['filters'])) {
 	die("filters zijn een user preference geworden. Haal de filters aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['index_filter'])) {
+	die("index_filter is een user preference geworden. Haal de index_filter aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
 # Controleer op oud type quicklinks (zonder security)

@@ -281,7 +281,7 @@ class SpotsOverview {
 			} # foreach
 		} # if
 
-		$parsedSearch = $this->filterToQuery($search, $sortArray, $currentSession);
+		$parsedSearch = $this->filterToQuery($search, $sortArray, $currentSession, array());
 		return array('title' => $xml->title,
 					 'icon' => $xml->icon,
 					 'parsedSearch' => $parsedSearch);
@@ -858,7 +858,7 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search, $sort, $currentSession) {
+	function filterToQuery($search, $sort, $currentSession, $indexFilter) {
 		SpotTiming::start(__FUNCTION__);
 		
 		$isUnfiltered = false;
@@ -899,7 +899,7 @@ class SpotsOverview {
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
-			$search = array_merge($search, $this->_settings->get('index_filter'));
+			$search = array_merge($search, $indexFilter);
 			$isUnfiltered = true;
 		} # if
 		

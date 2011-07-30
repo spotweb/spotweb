@@ -149,9 +149,11 @@
 						</ul>
 
 						<br>
-						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla huidige filter op</a>
-					</div>
-				</form>
+						<h4>Filters</h4>
+						<br>
+						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla opdracht op als filter</a>
+				</div>
+			</form>
 <?php } # if perform search ?>
 
 				<div class="sidebarPanel userPanel">
@@ -215,6 +217,7 @@
 ?>
 					<table class="sabInfo" summary="SABnzbd infomatie">
 						<tr><td>Status:</td><td class="state"></td></tr>
+						<tr><td>Opslag (vrij):</td><td class="diskspace"></td></tr>
 						<tr><td>Snelheid:</td><td class="speed"></td></tr>
 						<tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
 						<tr><td>Te gaan:</td><td class="timeleft"></td></tr>

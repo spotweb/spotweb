@@ -48,25 +48,42 @@
 
 <ul data-role="listview" data-theme="c" data-dividertheme="b">
 <?php
-    foreach($filters as $filter) {
-?>
-			<li> 
-				<img src="<?php echo $filter[1]; ?>" class="ui-li-icon" />
-				<h3><a href="<?php echo $setpath;?>index.php?search[tree]=<?php echo $filter[2];?>#spots" rel="external"><?php echo $filter[0]; ?></a></h3>
-			</li>
-<?php
-        if (!empty($filter[4])) {
-            foreach($filter[4] as $subFilter) {
-?>
-            <li>
-               <img src="<?php echo $subFilter[1]; ?>" class="ui-li-icon" />
-               <h3><a href="<?php echo $setpath;?>index.php?search[tree]=<?php echo $subFilter[2];?>#spots" rel="external"> - <?php echo $subFilter[0]; ?></a></h3>
-             </li>
-<?php
-            } # foreach 
+	function processFilters($tplHelper, $count_newspots, $filterList) {
+		$selfUrl = $tplHelper->makeSelfUrl("path");
 
-        } # is_array
-    } # foreach
+		foreach($filterList as $filter) {
+			$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter['tree'];
+			if (!empty($filter['valuelist'])) {
+				foreach($filter['valuelist'] as $value) {
+					$strFilter .= '&amp;search[value][]=' . $value;
+				} # foreach
+			} # if
+			if (!empty($filter['sorton'])) {
+				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
+			} # if
+
+			# escape the filter vlaues
+			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
+			
+			# Output de HTML
+			echo '<li>';
+			echo '	<img src="images/icons/' . $filter['icon'] . '" class="ui-li-icon" />';
+			echo '	<h3><a href="' . $strFilter . '#spots" rel="external">' . $filter['title'] . '</a></h3>';
+			echo '</li>';
+			
+			# Als er children zijn, output die ool
+			if (!empty($filter['children'])) {
+				echo '<ul class="filterlist subfilterlist">';
+				processFilters($tplHelper, $count_newspots, $filter['children']);
+				echo '</ul>';
+			} # if
+			
+			echo '</li>' . PHP_EOL;
+		} # foreach
+	} # processFilters
+	
+	processFilters($tplHelper, false, $filters);
 ?>
 </ul>
 </div>
