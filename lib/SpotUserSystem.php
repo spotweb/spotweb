@@ -716,7 +716,18 @@ class SpotUserSystem {
 		# copieer de nodige filters
 		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $userId);
 	} # resetFilterList
-	
+
+	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 */
+	function setFiltersAsDefault($userId) {
+		# Wis de filters
+		$this->_db->removeAllFilters(SPOTWEB_ANONYMOUS_USERID);
+		
+		# copieer de nodige filters
+		$this->_db->copyFilterList($userId, SPOTWEB_ANONYMOUS_USERID);
+	} # setFiltersAsDefault
+
 	/*
 	 * Update een user record
 	 */

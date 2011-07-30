@@ -778,14 +778,14 @@ function markAsRead() {
 	});
 }
 
-function discardAllFilters(tbutton, cb) {
+function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	var formdata = $(tbutton).attr("name") + "=" + $(tbutton).val();  
 	formdata = $(tbutton.form).serialize() + "&" + formdata;
 	
 	// post de data
 	$.ajax({
 		type: "POST",
-		url: '?page=editfilter',
+		url: url, // '?page=editfilter',
 		dataType: "html",
 		data: formdata,
 		success: function(xml) {
@@ -793,7 +793,7 @@ function discardAllFilters(tbutton, cb) {
 			cb();
 		} // success
 	}); // ajax call om de form te submitten
-} // discardAllfilters
+} // ajaxSubmitFormWithCb
 
 // User systeem
 function userLogout() {
