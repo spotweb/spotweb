@@ -707,6 +707,17 @@ class SpotUserSystem {
 	} # removeFilter
 	
 	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 */
+	function resetFilterList($userId) {
+		# Wis de filters
+		$this->_db->removeAllFilters($userId);
+		
+		# copieer de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $userId);
+	} # resetFilterList
+	
+	/*
 	 * Update een user record
 	 */
 	function setUser($user) {

@@ -1343,6 +1343,13 @@ class SpotDb {
 			$this->addFilter($dstId, $filterItems);
 		} # foreach
 	} # copyFilterList
+	
+	/*
+	 * Verwijdert alle ingestelde filters voor een user
+	 */
+	function removeAllFilters($userId) {
+		$this->_conn->modify("DELETE FROM filters WHERE userid = %d", Array((int) $userId));
+	} # removeAllfilters
 
 	/*
 	 * Get a specific filter

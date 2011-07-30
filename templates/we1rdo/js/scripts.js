@@ -778,6 +778,23 @@ function markAsRead() {
 	});
 }
 
+function discardAllFilters(tbutton, cb) {
+	var formdata = $(tbutton).attr("name") + "=" + $(tbutton).val();  
+	formdata = $(tbutton.form).serialize() + "&" + formdata;
+	
+	// post de data
+	$.ajax({
+		type: "POST",
+		url: '?page=editfilter',
+		dataType: "html",
+		data: formdata,
+		success: function(xml) {
+			// alert(xml);
+			cb();
+		} // success
+	}); // ajax call om de form te submitten
+} // discardAllfilters
+
 // User systeem
 function userLogout() {
 	var url = '?page=logout';
