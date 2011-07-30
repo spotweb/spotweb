@@ -4,6 +4,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	function render() {
 		# stuur een expires header zodat dit een jaar of 10 geldig is
 		$this->sendExpireHeaders(false);
+		$this->sendContentTypeHeader();
 
 		$this->categoriesToJson();
 	} # render

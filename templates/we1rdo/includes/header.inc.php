@@ -28,5 +28,6 @@
 		</script>
 	</head>
 	<body>
+		<div id='editdialogdiv'></div>
 		<div id="overlay"></div>
 		<div class="container" id="container">

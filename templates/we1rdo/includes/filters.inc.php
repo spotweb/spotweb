@@ -53,7 +53,7 @@
 	# Als er een sortering is die we kunnen gebruiken, dan willen we ook dat
 	# in de UI weergeven
 	$tmpSort = $tplHelper->getActiveSorting();
-	$sortType = strtolower($tmpSort['field']);
+	$sortType = strtolower($tmpSort['friendlyname']);
 	$sortOrder = strtolower($tmpSort['direction']);
 
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst
@@ -147,8 +147,13 @@
 							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
 							<label>Categori&euml;n <?php echo $parsedsearch['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
-					</div>
-				</form>
+
+						<br>
+						<h4>Filters</h4>
+						<br>
+						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla opdracht op als filter</a>
+				</div>
+			</form>
 <?php } # if perform search ?>
 
 				<div class="sidebarPanel userPanel">
@@ -234,6 +239,7 @@
 			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 					<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
+					<a class="filter <?php if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<img src='<?php echo $quicklink[1]; ?>' alt='<?php echo $quicklink[0]; ?>'><?php echo $quicklink[0]; if ($newCount) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
 <?php 	}
 	} ?>
@@ -243,40 +249,58 @@
 					<ul class="filterlist filters">
 
 <?php
-	foreach($filters as $filter) {
-		$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter[2];
-		$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-?>
-						<li<?php if($filter[2]) { echo " class='". $tplHelper->filter2cat($filter[2]) ."'"; } ?>>
-						<a class="filter<?php echo " " . $filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $filter[1]; ?>' alt='<?php echo $filter[0]; ?>'><?php echo $filter[0]; if ($newCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter[0]."&quot; zien'>$newCount</span>"; } ?><span class='toggle' title='Filter inklappen' onclick='toggleFilter(this)'>&nbsp;</span></a>
-<?php
-		if (!empty($filter[4])) {
-			echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
-			foreach($filter[4] as $subFilter) {
-				$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $subFilter[2];
-				$newSubCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-?>
-						<li> <a class="filter<?php echo " " . $subFilter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $subFilter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $subFilter[0]; if ($newSubCount) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$subFilter[0]."&quot; zien'>$newSubCount</span>"; } ?></a>
-<?php
-				if (!empty($subFilter[4])) {
-					echo "\t\t\t\t\t\t\t<ul class='filterlist subfilterlist'>\r\n";
-					foreach($subFilter[4] as $sub2Filter) {
-						$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $sub2Filter[2];
-						$newSub2Count = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
-		?>
-						<li> <a class="filter<?php echo " " . $sub2Filter[3]; if ($tplHelper->makeSelfUrl("path") == $strFilter) { echo " selected"; } ?>" href="<?php echo $strFilter;?>">
-						<img src='<?php echo $sub2Filter[1]; ?>' alt='<?php echo $subFilter[0]; ?>'><?php echo $sub2Filter[0]; if ($newSub2Count) { echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$sub2Filter[0]."&quot; zien'>$newSub2Count</span>"; } ?></a>
-		<?php
-					} # foreach 
-					echo "\t\t\t\t\t\t\t</ul>\r\n";
-				} # is_array
+	function processFilters($tplHelper, $count_newspots, $filterList) {
+		$selfUrl = $tplHelper->makeSelfUrl("path");
+
+		foreach($filterList as $filter) {
+			$strFilter = $tplHelper->getPageUrl('index') . '&amp;search[tree]=' . $filter['tree'];
+			if (!empty($filter['valuelist'])) {
+				foreach($filter['valuelist'] as $value) {
+					$strFilter .= '&amp;search[value][]=' . $value;
+				} # foreach
+			} # if
+			if (!empty($filter['sorton'])) {
+				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
+			} # if
+			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
+
+			# escape the filter vlaues
+			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 			
-			} # foreach 
-			echo "\t\t\t\t\t\t\t</ul>\r\n";
-		} # is_array
-	} # foreach
+			# Output de HTML
+			echo '<li class="'. $tplHelper->filter2cat($filter['tree']) .'">';
+			echo '	<a class="filter ' . $filter['title']; 
+			
+			if ($selfUrl == $strFilter) { 
+				echo ' selected';
+			} # if
+			
+			echo '" href="' . $strFilter . '">';
+			echo '<img src="images/icons/' . $filter['icon'] . '" alt="' . $filter['title'] . '">' . $filter['title'];
+			if ($newCount) { 
+				echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter['title']."&quot; zien'>$newCount</span>"; 
+			} # if 
+
+			# als er children zijn, moeten we de category kunnen inklappen
+			if (!empty($filter['children'])) {
+				echo '<span class="toggle" title="Filter inklappen" onclick="toggleFilter(this)">&nbsp;</span>';
+			} # if
+			
+			echo '</a>';
+			
+			# Als er children zijn, output die ool
+			if (!empty($filter['children'])) {
+				echo '<ul class="filterlist subfilterlist">';
+				processFilters($tplHelper, $count_newspots, $filter['children']);
+				echo '</ul>';
+			} # if
+			
+			echo '</li>' . PHP_EOL;
+		} # foreach
+	} # processFilters
+	
+	processFilters($tplHelper, $count_newspots, $filters);
 ?>
 					</ul>
 

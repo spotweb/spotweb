@@ -5,7 +5,13 @@ $.address.init(function() {
 			basePATH = location.href.replace('#' + $.address.value(), '');
 			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
 				closeDetails(0);
-				if ($('table.spots tr.active').offset().top > $(window).height())$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+				
+				var currentSpot = $('table.spots tr.active');
+				if (currentSpot) {
+					if (currentSpot.offset().top > $(window).height()) {
+						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+					} // if
+				} // if
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
 		});
 
@@ -439,6 +445,12 @@ $(document).ready(function() {
 	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
 	$("#adminpaneltabs").tabs();
+
+	/* VOor de user preferences willen we de filter list sorteerbaar maken
+	   op het moment dat die tab klaar is met laden */
+	$('#edituserpreferencetabs').bind('tabsload', function(event, ui) {
+		bindSelectedSortableFilter();
+	});	
 	
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
@@ -765,6 +777,23 @@ function markAsRead() {
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
+
+function discardAllFilters(tbutton, cb) {
+	var formdata = $(tbutton).attr("name") + "=" + $(tbutton).val();  
+	formdata = $(tbutton.form).serialize() + "&" + formdata;
+	
+	// post de data
+	$.ajax({
+		type: "POST",
+		url: '?page=editfilter',
+		dataType: "html",
+		data: formdata,
+		success: function(xml) {
+			// alert(xml);
+			cb();
+		} // success
+	}); // ajax call om de form te submitten
+} // discardAllfilters
 
 // User systeem
 function userLogout() {
@@ -1216,6 +1245,8 @@ function updateSabPanel(start,limit) {
  * string replacement
  */
 function removeFilter(href, fieldname, operator, value) {
+	href = unescape(href).replace(/\+/g, ' ');
+
 	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
 } // removeFilter	
 
@@ -1285,3 +1316,40 @@ function format_size(size) {
 	}
 	return size.toFixed(1) + ' ' + sizes[i];
 }
+
+function bindSelectedSortableFilter() {
+	/* Koppel de nestedSortable aan de sortablefilterlist */
+	var $sortablefilterlist = $('#sortablefilterlist');
+	if ($sortablefilterlist) {
+		$sortablefilterlist.nestedSortable({
+			opacity: .6,
+			tabSize: 15,
+			forcePlaceholderSize: true,
+			forceHelperSize: true,
+			maxLevels: 4,
+			helper:	'clone',
+			items: 'li',
+			tabSize: 25,
+			listType: 'ul',
+			handle: 'div',
+			placeholder: 'placeholder',
+			revert: 250,
+			tolerance: 'pointer',
+			update: function() {
+				var serialized = $sortablefilterlist.nestedSortable('serialize');
+				var formdata = 'editfilterform[xsrfid]=' + editfilterformcsrfcookie + '&editfilterform[submitreorder]=true&' + serialized;
+				
+				// post de data
+				$.ajax({
+					type: "POST",
+					url: '?page=editfilter',
+					dataType: "html",
+					data: formdata,
+					success: function(xml) {
+						// alert(xml);
+					} // success
+				}); // ajax call om de form te submitten
+			}
+		});
+	} // if
+} // bindSelectedSortableFilter

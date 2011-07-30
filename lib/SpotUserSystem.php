@@ -275,6 +275,9 @@ class SpotUserSystem {
 		
 		# en geef de gebruiker de nodige groepen
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
+		
+		# en de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $tmpUser['userid']);
 	} # addUser()
 
 	/*
@@ -340,6 +343,12 @@ class SpotUserSystem {
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
 			$errorList[] = array('validateuser_invalidpreference', array('template'));
+		} # if
+		
+		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
+		if (!isset($prefs['nzbhandling'])) {
+			$prefs['nzbhandling'] = array('action' => 'disable',
+										  'prepare_action' => 'merge');										  
 		} # if
 		
 		# als er een sabnzbd host opgegeven is, moet die geldig zijn
@@ -595,6 +604,118 @@ class SpotUserSystem {
 		
 		return $tmpUser;
 	} # getUser()
+
+	/*
+	 * Vraagt een filter list op
+	 */
+	function getFilterList($userId, $filterType) {
+		return $this->_db->getFilterList($userId, $filterType);
+	} # getFilterList
+	
+	/*
+	 * Vraag een specifieke filter op
+	 */
+	function getFilter($userId, $filterId) {
+		return $this->_db->getFilter($userId, $filterId);
+	} # getFilter
+
+	/*
+	 * Wijzigt de filter waardes.
+	 *
+	 * Op dit moment ondersteunen we enkel om de volgende waardes
+	 * te wijzigen
+	 *
+	 *   * Title
+	 *   * Order
+	 *   * Parent
+	 */
+	function changeFilter($userId, $filterForm) {
+		return $this->_db->updateFilter($userId, $filterForm);
+	} # getFilter
+
+
+	/*
+	 * Checkt of een filter geldig is
+	 */
+	function validateFilter($filter) {
+		$errorList = array();
+
+		# Verwijder overbodige spaties e.d.
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		
+		// controleer dat deze specifieke permissie niet al in de security groep zit
+		if (strlen($filter['title']) < 3) {
+			$errorList[] = array('validatefilter_invalidtitle', array('name'));
+		} # if
+		
+		return array($filter, $errorList);
+	} # validateFilter
+	
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function addFilter($userId, $filter) {
+		$errorList = array();
+		list($filter, $errorList) = $this->validateFilter($filter);
+		
+		/* Geen fouten gevonden? voeg de filter dan toe */
+		if (empty($errorList)) {
+			$this->_db->addFilter($userId, $filter);
+		} # if
+		
+		return $errorList;
+	} # addFilter
+	
+	/*
+	 * Get the users' index filter
+	 */
+	function getIndexFilter($userId) {
+		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		if ($tmpFilter === false) {
+			return array('tree' => '');
+		} else {
+			return $tmpFilter;
+		} # else
+	} # getIndexFilter
+	
+	/*
+	 * Add user's index filter
+	 */
+	function setIndexFilter($userId, $filter) {
+		/* There can only be one */
+		$this->removeIndexFilter($userId);
+		
+		/* en voeg de index filter toe */
+		$filter['filtertype'] = 'index_filter';
+		$this->_db->addFilter($userId, $filter);
+	} # addIndexFilter
+	
+	/*
+	 * Remove an index filter
+	 */
+	function removeIndexFilter($userId) {
+		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		$this->_db->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
+	} # removeIndexFilter
+
+	/*
+	 * Voegt een userfilter toe
+	 */
+	function removeFilter($userId, $filterId) {
+		$this->_db->deleteFilter($userId, $filterId, 'filter');
+	} # removeFilter
+	
+	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 */
+	function resetFilterList($userId) {
+		# Wis de filters
+		$this->_db->removeAllFilters($userId);
+		
+		# copieer de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $userId);
+	} # resetFilterList
 	
 	/*
 	 * Update een user record

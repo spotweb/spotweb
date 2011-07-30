@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.35');
+define('SPOTDB_SCHEMA_VERSION', '0.36');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1290,6 +1290,192 @@ class SpotDb {
 		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
 					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
 	} // updateNotification
+
+	/*
+	 * Verwijder een filter en de children toe (recursive)
+	 */
+	function deleteFilter($userId, $filterId, $filterType) {
+		$filterList = $this->getFilterList($userId, 'filter', $filterType);
+		foreach($filterList as $filter) {
+		
+			if ($filter['id'] == $filterId) {
+				foreach($filter['children'] as $child) {
+					$this->deleteFilter($userId, $child['id'], $filterType);
+				} # foreach
+			} # if
+			
+			$this->_conn->modify("DELETE FROM filters WHERE userid = %d AND id = %d", 
+					Array($userId, $filterId));
+		} # foreach
+	} # deleteFilter
+	
+	/*
+	 * Voegt een filter en de children toe (recursive)
+	 */
+	function addFilter($userId, $filter) {
+		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder)
+								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s')",
+							Array($userId,
+								  $filter['filtertype'],
+								  $filter['title'],
+								  $filter['icon'],
+								  $filter['torder'],
+								  $filter['tparent'],
+								  $filter['tree'],
+								  implode('&', $filter['valuelist']),
+								  $filter['sorton'],
+								  $filter['sortorder']));
+		$parentId = $this->_conn->lastInsertId('filters');
+
+		foreach($filter['children'] as $tmpFilter) {
+			$tmpFilter['tparent'] = $parentId;
+			$this->addFilter($userId, $tmpFilter);
+		} # foreach
+	} # addFilter
+	
+	/*
+	 * Copieert de filterlijst van een user naar een andere user
+	 */
+	function copyFilterList($srcId, $dstId) {
+		$filterList = $this->getFilterList($srcId, '');
+		
+		foreach($filterList as $filterItems) {
+			$this->addFilter($dstId, $filterItems);
+		} # foreach
+	} # copyFilterList
+	
+	/*
+	 * Verwijdert alle ingestelde filters voor een user
+	 */
+	function removeAllFilters($userId) {
+		$this->_conn->modify("DELETE FROM filters WHERE userid = %d", Array((int) $userId));
+	} # removeAllfilters
+
+	/*
+	 * Get a specific filter
+	 */
+	function getFilter($userId, $filterId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND id = %d",
+					Array((int) $userId, (int) $filterId));
+		if (!empty($tmpResult)) {
+			return $tmpResult[0];
+		} else {
+			return false;
+		} # else
+	} # getFilter
+
+	/*
+	 * Get a specific index filter 
+	 */
+	function getUserIndexFilter($userId) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d AND filtertype = 'index_filter'",
+					Array((int) $userId));
+		if (!empty($tmpResult)) {
+			return $tmpResult[0];
+		} else {
+			return false;
+		} # else
+	} # getUserIndexFilter
+	
+	
+	/*
+	 * Get a specific filter
+	 */
+	function updateFilter($userId, $filter) {
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->modify("UPDATE filters 
+												SET title = '%s',
+												    icon = '%s',
+													torder = %d,
+													tparent = %d
+												WHERE userid = %d AND id = %d",
+					Array($filter['title'], 
+						  $filter['icon'], 
+						  (int) $filter['torder'], 
+						  (int) $filter['tparent'], 
+						  (int) $userId, 
+						  (int) $filter['id']));
+	} # updateFilter
+
+	/*
+	 * Haalt de filter lijst op en formatteert die in een boom
+	 */
+	function getFilterList($userId, $filterType) {
+		/* willen we een specifiek soort filter hebben? */
+		if (empty($filterType)) {
+			$filterTypeFilter = '';
+		} else {
+			$filterTypeFilter = " AND filtertype = 'filter'"; 
+		} # else
+		
+		/* Haal de lijst met filter values op */
+		$tmpResult = $this->_conn->arrayQuery("SELECT id,
+													  userid,
+													  filtertype,
+													  title,
+													  icon,
+													  torder,
+													  tparent,
+													  tree,
+													  valuelist,
+													  sorton,
+													  sortorder 
+												FROM filters 
+												WHERE userid = %d " . $filterTypeFilter . "
+												ORDER BY tparent,torder", /* was: id, tparent, torder */
+					Array($userId));
+		$idMapping = array();
+		foreach($tmpResult as &$tmp) {
+			$idMapping[$tmp['id']] =& $tmp;
+		} # foreach
+		
+		/* Hier zetten we het om naar een daadwerkelijke boom */
+		$tree = array();
+		foreach($tmpResult as &$filter) {
+			if (!isset($filter['children'])) {
+				$filter['children'] = array();
+			} # if
+			
+			# de filter waardes zijn URL encoded opgeslagen 
+			# en we gebruiken de & om individuele filterwaardes
+			# te onderscheiden
+			$filter['valuelist'] = explode('&', $filter['valuelist']);
+			
+			if ($filter['tparent'] == 0) {
+				$tree[$filter['id']] =& $filter;
+			} else {
+				$idMapping[$filter['tparent']]['children'][] =& $filter;
+			} # else
+		} # foreach
+
+		return $tree;
+	} # getFilterList
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

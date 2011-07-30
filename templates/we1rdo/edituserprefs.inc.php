@@ -25,21 +25,18 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, '')) { ?>
 			<li><a href="#edituserpreftab-2"><span>NZB afhandeling</span></a></li>
 <?php } ?>
-<!--
-			<li><a href="#edituserpreftab-3"><span>Filters</span></a></li>
--->
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
+			<li><a href="?page=render&tplname=listfilters" title="Filters"><span>Filters</span></a></li>
+<?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span>Notificaties</span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
-			<li><a href="#edituserpreftab-5"><span>Eigen CSS stylesheet</span></a></li>
+			<li><a href="#edituserpreftab-5"><span>Eigen CSS</span></a></li>
 <?php } ?>
 	
 		</ul>
 			
-		<!-- [ ] Index filter -->
-		<!-- [ ] Filters ? -->
-
 		<div id="edituserpreftab-1" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
@@ -105,6 +102,11 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) { ?>
 					<dt><label for="edituserprefsform[show_multinzb]">Toon een checkbox naast elke spot om meerdere NZB files in een keer te downloaden?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_multinzb]" <?php if ($edituserprefsform['show_multinzb']) { echo 'checked="checked"'; } ?>></dd>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
+					<dt><label for="edituserprefsform[_dummy_prevent_porn]">Erotica spots op de index verbergen?</label></dt>
+					<dd><input type="checkbox" name="edituserprefsform[_dummy_prevent_porn]" <?php $tmpIndexFilter = $tplHelper->getIndexFilter(); if (stripos($tmpIndexFilter['tree'], '~cat0_z3') !== false) { echo 'checked="checked"'; } ?>></dd>
 <?php } ?>
 					
 					<dt><label for="edituserprefsform[nzb_search_engine]">Welke zoekmachine moet er gebruikt worden?</label></dt>
@@ -203,15 +205,6 @@ include "includes/form-messages.inc.php";
 		</div>
 <?php } ?>
 
-<!--	
-		<div id="edituserpreftab-3">
-			<fieldset>
-				<dl>
-				</dl>
-			</fieldset>
-		</div>
--->
-
 <!-- Notificaties -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 		<div id="edituserpreftab-4">
@@ -307,7 +300,7 @@ include "includes/form-messages.inc.php";
 		<div id="edituserpreftab-5" class="ui-tabs-hide">
 			<fieldset>
 				<dt>
-					<label for="edituserprefsform[customcss]">Custom CSS stylesheet gebruiken</label>
+					<label for="edituserprefsform[customcss]">Custom CSS gebruiken</label>
 				</dt>
 				<dd>
 					<textarea name="edituserprefsform[customcss]" rows="15" cols="120"><?php echo $edituserprefsform['customcss']; ?></textarea>

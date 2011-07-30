@@ -435,6 +435,20 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('sent', 'notifications', 'BOOLEAN', 'false', true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
+		# ---- filters ----
+		$this->createTable('filters', "utf8"); 
+		$this->validateColumn('userid', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('filtertype', 'filters', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('title', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('icon', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('torder', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('tparent', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('tree', 'filters', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
+		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->alterStorageEngine("filters", "InnoDB");
+		
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
@@ -552,6 +566,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_notifications_1", "", "notifications", array("userid"));
 		$this->validateIndex("idx_notifications_2", "", "notifications", array("sent"));
 
+		# ---- Indexen op filters ----
+		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
+		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -562,6 +579,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('commentsfull', 'messageid', 'commentsxover', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Hier droppen we kolommen ###################################################################
