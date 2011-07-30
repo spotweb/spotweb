@@ -194,6 +194,10 @@ class dbeng_mysql extends dbeng_abs {
 		return $rows['rows_matched'];
 	} # rows()
 	
+	function lastInsertId($tableName) {
+		return mysql_insert_id($this->_conn);
+	} # lastInsertId
+
 	/*
 	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
 	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
@@ -225,7 +229,8 @@ class dbeng_mysql extends dbeng_abs {
 			$termList = explode(' ', $tempSearchValue);
 			foreach($termList as $term) {
 				if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-					$searchValue = $tempSearchValue;
+					// Wis dubbele spaties anders vinden we nooit iets
+					$searchValue = str_replace('  ', ' ', $tempSearchValue);
 					$searchMode = "normal";
 					break;
 				} # if
@@ -239,6 +244,12 @@ class dbeng_mysql extends dbeng_abs {
 				# methode mag beinvloeden, bv. (<test) oid.
 				$strippedTerm = trim($term, "()'\"");
 			
+				# als na het strippen van de terms er niks over blijft, dan
+				# hoeven we ook niet te zoeken.
+				if (strlen($strippedTerm) < 1) {
+					continue;
+				} # if
+
 				# als er boolean phrases in zitten, is het een boolean search
 				if (strpos('+-~<>', $strippedTerm[0]) !== false) {
 					$searchMode = 'match-boolean';
@@ -285,7 +296,8 @@ class dbeng_mysql extends dbeng_abs {
 			
 				$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 									  'direction' => 'DESC',
-									  'autoadded' => true);
+									  'autoadded' => true,
+									  'friendlyname' => null);
 			} # if
 		} # foreach
 

@@ -72,7 +72,8 @@ class CustomTplHelper extends SpotTemplateHelper {
 								'templates/we1rdo/js/jquery.address-1.4.min.js',
 								'templates/we1rdo/js/scripts.js',
 								'templates/we1rdo/js/we1rdopost.js',
-								'templates/we1rdo/js/treehelper.js'
+								'templates/we1rdo/js/treehelper.js',
+								'templates/we1rdo/js/jquery.ui.nestedSortable.js'
 								);
 				break;
 			} # case js

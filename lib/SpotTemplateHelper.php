@@ -77,7 +77,7 @@ class SpotTemplateHelper {
 
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
-		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
+		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession, array());
 
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
@@ -215,11 +215,25 @@ class SpotTemplateHelper {
 	} # makeCreateUserAction
 	
 	/*
-	 * Creeert de action url voor het wissen van een permissie 
+	 * Creeert de action url voor het beweken van een security group 
 	 */
 	function makeEditSecGroupAction() {
 		return $this->makeBaseUrl("path") . "?page=editsecgroup";
 	} # makeEditSecGroupAction
+
+	/*
+	 * Creeert de action url voor het wijzigen van een filter
+	 */
+	function makeEditFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeEditFilterAction
+
+	/*
+	 * Creeert de action url voor het wissen van een filter
+	 */
+	function makeDeleteFilterAction() {
+		return $this->makeBaseUrl("path") . "?page=editfilter";
+	} # makeDeleteFilterAction
 
 	/*
 	 * Creeert de action url voor het wijzigen van de user (gebruikt in form post actions)
@@ -382,7 +396,11 @@ class SpotTemplateHelper {
 	 * Creert een RSS url
 	 */
 	function makeRssUrl() {
-		return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
+		if (isset($this->_params['parsedsearch'])) {
+			return $this->makeBaseUrl("path") . '?page=rss&amp;' . $this->convertFilterToQueryParams() . '&amp;' . $this->convertSortToQueryParams();
+		} else {
+			return '';
+		} # if
 	} # makeRssUrl
 	
 	/*
@@ -464,6 +482,12 @@ class SpotTemplateHelper {
 		#var_dump($this->_params['parsedsearch']['filterValueList']);
 		#var_dump($this->_params['parsedsearch']['sortFields']);
 
+		
+		//$xml = $this->_spotsOverview->parsedSearchToXml($this->_params['parsedsearch']);
+		//$parsed = $this->_spotsOverview->xmlToParsedSearch($xml, $this->_currentSession);
+		//var_dump($parsed);
+		//die();
+		
 		return $this->convertUnfilteredToQueryParams() . $this->convertTreeFilterToQueryParams() . $this->convertTextFilterToQueryParams();
 	} # convertFilterToQueryParams
 
@@ -500,7 +524,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlentities($value['value'], ENT_QUOTES);
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . urlencode($value['value']);
 		} # foreach
 
 		return $filterStr;
@@ -511,7 +535,8 @@ class SpotTemplateHelper {
 	 */
 	function getActiveSorting() {
 		$activeSort = array('field' => '',
-							'direction' => '');
+							'direction' => '',
+							'friendlyname' => '');
 		
 		# als we niet aan het sorteren zijn, doen we niets
 		if (!isset($this->_params['parsedsearch'])) {
@@ -524,6 +549,7 @@ class SpotTemplateHelper {
 			if (!$value['autoadded']) {
 				$activeSort['field'] = $value['field'];
 				$activeSort['direction'] = $value['direction'];
+				$activeSort['friendlyname'] = $value['friendlyname'];
 				break;
 			} # if
 		} # foreach
@@ -540,7 +566,7 @@ class SpotTemplateHelper {
 		$activeSort = $this->getActiveSorting();
 		
 		if (!empty($activeSort['field'])) {
-			return '&amp;sortby=' . $activeSort['field'] . '&amp;sortdir=' . $activeSort['direction'];
+			return '&amp;sortby=' . $activeSort['friendlyname'] . '&amp;sortdir=' . $activeSort['direction'];
 		} # if
 		
 		return '';
@@ -802,6 +828,9 @@ class SpotTemplateHelper {
 		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
 		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
 		
+		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
+		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 
@@ -918,6 +947,30 @@ class SpotTemplateHelper {
 	function redirect($url) {
 		Header("Location: " . $url); 
 	} # redirect()
+	
+	/*
+	 * Get users' filter list
+	 */
+	function getUserFilterList() {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilterList($this->_currentSession['user']['userid'], 'filter');
+	} # getUserFilterList
+
+	/*
+	 * Get specific filter
+	 */
+	function getUserFilter($filterId) {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
+	} # getUserFilter
+
+	/*
+	 * Get index filter
+	 */
+	function getIndexFilter() {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
+	} # getIndexFilter
 	
 	/*
 	 * Genereert een random string

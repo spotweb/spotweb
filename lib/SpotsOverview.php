@@ -175,7 +175,7 @@ class SpotsOverview {
 	 * Converteert een 'parsedSearch' structure naar een XML formaat
 	 * welke uitwisselbaar is
 	 */
-	public function parsedSearchToXml($parsedSearch) {
+	public function parsedSearchToXml($parsedSearch, $title, $icon) {
 		# Opbouwen XML
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
@@ -183,6 +183,8 @@ class SpotsOverview {
 		$mainElm = $doc->createElement('spotwebfilter');
 		$mainElm->setAttribute('version', '1.0');
 		$mainElm->setAttribute('generator', 'SpotWeb v' . SPOTWEB_VERSION);
+		$mainElm->appendChild($doc->createElement('title', $title));
+		$mainElm->appendChild($doc->createElement('icon', $icon));
 		$doc->appendChild($mainElm);
 
 		/* 
@@ -235,15 +237,9 @@ class SpotsOverview {
 		 */
 		$sort = $doc->createElement('sort');
 		foreach($parsedSearch['sortFields'] as $sortItem) {
-			# Het sortitem een fully qualified sortname - dat willen we niet
-			$fieldName = explode('.', $sortItem['field']);
-			if (is_array($fieldName)) {
-				$fieldName = $fieldName[count($fieldName) - 1];
-			} # if
-			
 			# Creer nu een tree item
 			$sortElm = $doc->createElement('item');
-			$sortElm->appendChild($doc->createElement('fieldname', $fieldName));
+			$sortElm->appendChild($doc->createElement('fieldname', $sortItem['frielyname']));
 			$sortElm->appendChild($doc->createElement('direction', $sortItem['direction']));
 
 			if (!$sortItem['autoadded']) {
@@ -266,25 +262,29 @@ class SpotsOverview {
 		# We creeeren een soort fake url zodat we de logica die al
 		# bestaat in het systeem simpel kunnen hergebruiken.
 		$xml = @(new SimpleXMLElement($xmlStr));
-		if (isset($xml->tree)) {
-			foreach($xml->tree->item as $item) {
+		if (isset($xml->spotwebfilter->tree)) {
+			foreach($xml->spotwebfilter->tree->item as $item) {
+				#FIXME type attribute wordt genegeerd!
 				$search['tree'] .= $item . ',';
 			} # foreach
 		} # if
 		
-		if (isset($xml->filter)) {
-			foreach($xml->filter->item as $item) {
+		if (isset($xml->spotwebfilter->filter)) {
+			foreach($xml->spotwebfilter->filter->item as $item) {
 				$search['value'][] = $item->fieldname . ':' . $item->operator . ':' . $item->value;
 			} # foreach
 		} # if
 		
-		if (isset($xml->sort)) {
-			foreach($xml->sort->item as $item) {
+		if (isset($xml->spotwebfilter->sort)) {
+			foreach($xml->spotwebfilter->sort->item as $item) {
 				$sortArray = array('field' => (string) $item->fieldname, 'direction' => (string) $item->direction);
 			} # foreach
 		} # if
 
-		return $this->filterToQuery($search, $sortArray, $currentSession);
+		$parsedSearch = $this->filterToQuery($search, $sortArray, $currentSession, array());
+		return array('title' => $xml->title,
+					 'icon' => $xml->icon,
+					 'parsedSearch' => $parsedSearch);
 	} # xmlToParsedSearch 
 	
 	/*
@@ -742,13 +742,20 @@ class SpotsOverview {
 	 * Genereert de lijst met te sorteren velden
 	 */
 	private function prepareSortFields($sort, $sortFields) {
-		$VALID_SORT_FIELDS = array('category', 'poster', 'title', 'filesize', 'stamp', 'subcata', 'spotrating', 'commentcount');
+		$VALID_SORT_FIELDS = array('category' => 1, 
+								   'poster' => 1, 
+								   'title' => 1, 
+								   'filesize' => 1, 
+								   'stamp' => 1, 
+								   'subcata' => 1, 
+								   'spotrating' => 1, 
+								   'commentcount' => 1);
 
-		if ((!isset($sort['field'])) || (in_array($sort['field'], $VALID_SORT_FIELDS) === false)) {
+		if ((!isset($sort['field'])) || (!isset($VALID_SORT_FIELDS[$sort['field']]))) {
 			# We sorteren standaard op stamp, maar alleen als er vanuit de query
 			# geen expliciete sorteermethode is meegegeven
 			if (empty($sortFields)) {
-				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true);
+				$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null);
 			} # if
 		} else {
 			if (strtoupper($sort['direction']) != 'ASC') {
@@ -758,7 +765,10 @@ class SpotsOverview {
 			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
 			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
 			# van de sorteer lijst.
-			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 'direction' => $sort['direction'], 'autoadded' => false));
+			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 
+											 'direction' => $sort['direction'], 
+											 'autoadded' => false, 
+											 'friendlyname' => $sort['field']));
 		} # else
 		
 		return $sortFields;
@@ -848,7 +858,7 @@ class SpotsOverview {
 	 * Converteer een array met search termen (tree, type en value) naar een SQL
 	 * statement dat achter een WHERE geplakt kan worden.
 	 */
-	function filterToQuery($search, $sort, $currentSession) {
+	function filterToQuery($search, $sort, $currentSession, $indexFilter) {
 		SpotTiming::start(__FUNCTION__);
 		
 		$isUnfiltered = false;
@@ -876,7 +886,7 @@ class SpotsOverview {
 						 'strongNotList' => array(),
 					     'filterValueList' => array(),
 						 'unfiltered' => false,
-					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true)));
+					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null)));
 		} # if
 
 		#
@@ -889,7 +899,7 @@ class SpotsOverview {
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
-			$search = array_merge($search, $this->_settings->get('index_filter'));
+			$search = array_merge($search, $indexFilter);
 			$isUnfiltered = true;
 		} # if
 		

@@ -76,7 +76,7 @@ try {
 	switch($page) {
 		case 'render' : {
 				$page = new SpotPage_render($db, $settings, $currentSession, $req->getDef('tplname', ''),
-							Array('search' => $req->getDef('search', $settings->get('index_filter')),
+							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -170,7 +170,7 @@ try {
 
 		case 'rss' : {
 			$page = new SpotPage_rss($db, $settings, $currentSession,
-					Array('search' => $req->getDef('search', $settings->get('index_filter')),
+					Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
 						  'sortdir' => $req->getDef('sortdir', ''),
@@ -209,6 +209,18 @@ try {
 				$page->render();
 				break;
 		} # editsecgroup
+
+		case 'editfilter' : {
+				$page = new SpotPage_editfilter($db, $settings, $currentSession,
+							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder')),
+								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
+								  'search' => $req->getDef('search', array()),
+								  'sorton' => $req->getDef('sortby', ''),
+								  'sortorder' => $req->getDef('sortdir', ''),
+							      'filterid' => $req->getDef('filterid', 0)));
+				$page->render();
+				break;
+		} # editfilter
 
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
@@ -265,7 +277,7 @@ try {
 					$page = new SpotPage_speeddial($db, $settings, $currentSession);
 				} else {
 					$page = new SpotPage_index($db, $settings, $currentSession,
-							Array('search' => $req->getDef('search', $settings->get('index_filter')),
+							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),

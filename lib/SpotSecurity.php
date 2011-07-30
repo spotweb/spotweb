@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.11');
+define('SPOTWEB_SECURITY_VERSION', '0.12');
 
 require_once "lib/exceptions/PermissionDeniedException.php";
 
@@ -57,6 +57,7 @@ class SpotSecurity {
 	const spotsec_send_notifications_services	= 31;
 	const spotsec_send_notifications_types		= 32;
 	const spotsec_allow_custom_stylesheet		= 33;
+	const spotsec_keep_own_filters				= 34;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -93,7 +94,8 @@ class SpotSecurity {
 		30 		=> "Security groupen kunnen wijzigen",
 		31 		=> "Notificaties versturen (per service)",
 		32 		=> "Notificaties versturen (per type)",
-		33		=> "Eigen CSS stylesheet toestaan per gebruiker"
+		33		=> "Eigen CSS stylesheet toestaan per gebruiker",
+		34		=> "Zelf spotfilters kunnen bewerken"
 	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
