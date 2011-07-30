@@ -608,8 +608,8 @@ class SpotUserSystem {
 	/*
 	 * Vraagt een filter list op
 	 */
-	function getFilterList($userId) {
-		return $this->_db->getFilterList($userId);
+	function getFilterList($userId, $filterType) {
+		return $this->_db->getFilterList($userId, $filterType);
 	} # getFilterList
 	
 	/*
@@ -666,14 +666,68 @@ class SpotUserSystem {
 		
 		return $errorList;
 	} # addFilter
+	
+	/*
+	 * Get the users' index filter
+	 */
+	function getIndexFilter($userId) {
+		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		if ($tmpFilter === false) {
+			return array('tree' => '');
+		} else {
+			return $tmpFilter;
+		} # else
+	} # getIndexFilter
+	
+	/*
+	 * Add user's index filter
+	 */
+	function setIndexFilter($userId, $filter) {
+		/* There can only be one */
+		$this->removeIndexFilter($userId);
+		
+		/* en voeg de index filter toe */
+		$filter['filtertype'] = 'index_filter';
+		$this->_db->addFilter($userId, $filter);
+	} # addIndexFilter
+	
+	/*
+	 * Remove an index filter
+	 */
+	function removeIndexFilter($userId) {
+		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		$this->_db->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
+	} # removeIndexFilter
 
 	/*
 	 * Voegt een userfilter toe
 	 */
 	function removeFilter($userId, $filterId) {
-		$this->_db->deleteFilter($userId, $filterId);
+		$this->_db->deleteFilter($userId, $filterId, 'filter');
 	} # removeFilter
 	
+	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 */
+	function resetFilterList($userId) {
+		# Wis de filters
+		$this->_db->removeAllFilters($userId);
+		
+		# copieer de nodige filters
+		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $userId);
+	} # resetFilterList
+
+	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 */
+	function setFiltersAsDefault($userId) {
+		# Wis de filters
+		$this->_db->removeAllFilters(SPOTWEB_ANONYMOUS_USERID);
+		
+		# copieer de nodige filters
+		$this->_db->copyFilterList($userId, SPOTWEB_ANONYMOUS_USERID);
+	} # setFiltersAsDefault
+
 	/*
 	 * Update een user record
 	 */

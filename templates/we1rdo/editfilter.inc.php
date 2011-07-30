@@ -84,7 +84,4 @@ if (empty($editresult)) {
 		</form>
 	</fieldset>
 <?php
-	require_once "includes/footer.inc.php";
-
 	} # if not only  xml
-	

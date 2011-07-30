@@ -77,7 +77,7 @@ class SpotTemplateHelper {
 
 		parse_str(html_entity_decode($filterStr), $query_params);
 		
-		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession);
+		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession, array());
 
 		return $this->getSpotCount($parsedSearch['filter']);
 	} # getFilteredSpotCount
@@ -953,7 +953,7 @@ class SpotTemplateHelper {
 	 */
 	function getUserFilterList() {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->getFilterList($this->_currentSession['user']['userid']);
+		return $spotUser->getFilterList($this->_currentSession['user']['userid'], 'filter');
 	} # getUserFilterList
 
 	/*
@@ -963,6 +963,14 @@ class SpotTemplateHelper {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
 	} # getUserFilter
+
+	/*
+	 * Get index filter
+	 */
+	function getIndexFilter() {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
+	} # getIndexFilter
 	
 	/*
 	 * Genereert een random string

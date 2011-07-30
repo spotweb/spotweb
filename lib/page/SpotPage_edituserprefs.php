@@ -48,6 +48,25 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'edit'	: {
+					# We hebben een aantal dummy preferences welke een speciale actie heeft voor ons, we nemen er hier
+					# actie over. In de functie cleaseUserPreferences() worden ze automatisch gestripped.
+					if (isset($this->_editUserPrefsForm['_dummy_prevent_porn'])) {
+						$spotUserSystem->setIndexFilter(
+							$spotUser['userid'],
+							array('valuelist' => array(),
+								  'title' => 'Index filter',
+								  'torder' => 999,
+								  'tparent' => 0,
+								  'children' => array(),
+								  'filtertype' => 'index_filter',
+								  'sorton' => '',
+								  'sortorder' => '',
+								  'icon' => 'spotweb.png',
+								  'tree' => '~cat0_z3'));
+					} else {
+						$spotUserSystem->removeIndexFilter($spotUser['userid']);
+					} # if
+
 					# Er mogen geen user preferences doorgegeven worden, welke niet in de anonuser preferences staan,
 					# een merge met de anonuser preferences kan niet, omdat dat niet opgegeven checkboxes (die komen gewoon
 					# niet door), op true of false zou zetten naar gelang de default parameter en dus het formulier zou

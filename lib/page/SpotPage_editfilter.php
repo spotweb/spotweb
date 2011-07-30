@@ -54,6 +54,12 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		} elseif (isset($this->_editFilterForm['submitchangefilter'])) {
 			$formAction = 'changefilter';
 			unset($this->_editFilterForm['submitchangefilter']);
+		} elseif (isset($this->_editFilterForm['submitdiscardfilters'])) {
+			$formAction = 'discardfilters';
+			unset($this->_editFilterForm['submitdiscardfilters']);
+		} elseif (isset($this->_editFilterForm['submitsetfiltersasdefault'])) {
+			$formAction = 'setfiltersasdefault';
+			unset($this->_editFilterForm['submitsetfiltersasdefault']);
 		} elseif (isset($this->_editFilterForm['submitreorder'])) {
 			$formAction = 'reorder';
 			unset($this->_editFilterForm['submitreorder']);
@@ -69,17 +75,31 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					break;
 				} # case 'removefilter'
 				
+				case 'discardfilters' : {
+					$spotUserSystem->resetFilterList($this->_currentSession['user']['userid']);
+					$editResult = array('result' => 'success');
+					
+					break;
+				} # case 'discardfilters'
+				
+				case 'setfiltersasdefault' : {
+					$spotUserSystem->setFiltersAsDefault($this->_currentSession['user']['userid']);
+					$editResult = array('result' => 'success');
+					
+					break;
+				} # case 'setfiltersasdefault'
+				
 				case 'addfilter'	: {
 					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
 					$filter = $this->_editFilterForm;
-					$filter['filtertype'] = 'filter';
 					$filter['valuelist'] = explode('&', $filter['valuelist']) ;
 					$filter['torder'] = 999;
 					$filter['tparent'] = 0;
 					$filter['children'] = array();
+					$filter['filtertype'] = 'filter';
 					$filter['sorton'] = $filter['sorton'];
 					$filter['sortorder'] = $filter['sortorder'];
-
+						
 					# en probeer de filter toe te voegen
 					$formMessages['errors'] = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
 					
@@ -90,7 +110,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					} # else
 					
 					break;
-				} # case 'removefilter' 
+				} # case 'addfilter' 
 
 				case 'reorder' : {
 					$orderCounter = 0;

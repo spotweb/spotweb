@@ -3,7 +3,6 @@
 	$userlist = $tplHelper->getUserList('');
 	$userlist = $userlist['list'];
 ?>
-	<div id='editdialogdiv'></div>
 	<table  class="ui-widget ui-widget-content" summary="Users">
 		<thead>
 			<tr class="ui-widget-header">
@@ -62,3 +61,5 @@
 ?>
 		</tbody>
 	</table>
+
+	
