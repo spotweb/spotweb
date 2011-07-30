@@ -217,6 +217,7 @@
 ?>
 					<table class="sabInfo" summary="SABnzbd infomatie">
 						<tr><td>Status:</td><td class="state"></td></tr>
+						<tr><td>Opslag (vrij):</td><td class="diskspace"></td></tr>
 						<tr><td>Snelheid:</td><td class="speed"></td></tr>
 						<tr><td>Max. snelheid:</td><td class="speedlimit"></td></tr>
 						<tr><td>Te gaan:</td><td class="timeleft"></td></tr>

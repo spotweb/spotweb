@@ -1136,6 +1136,7 @@ function updateSabPanel(start,limit) {
 			if(timeOut) {clearTimeout(timeOut)}; 
 			sabActions(start,limit,state);
 		});
+		$("table.sabInfo td.diskspace").html("<strong title='Vrije ruimte (complete)'>"+queue.diskspace2+"</strong> / <strong title='Totale ruimte (complete)'>"+queue.diskspacetotal2+"</strong> GB");
 		$("table.sabInfo td.speed").html("<strong>"+queue.kbpersec+"</strong> KB/s");
 		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+queue.speedlimit+"'><label>KB/s</label>");
 		$("td.speedlimit input[name=speedLimit]").focus(function(){
