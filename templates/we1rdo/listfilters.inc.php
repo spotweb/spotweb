@@ -27,8 +27,16 @@
 	processFilters($tplHelper, $tplHelper->getUserFilterList());
 ?>
 			</ul>
-	
+
+			<br>
+			
+			<form class="editfilterform" name="editfilterform" action="<?php echo $tplHelper->makeEditFilterAction(); ?>" method="post">
+				<input type="hidden" name="editfilterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>">
+				<input type="hidden" name="filterid" value="9999">
+				<input class="greyButton" onclick="discardAllFilters(this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="Herstel filters naar standaard">
+			</form>
+		</div>
+
 <script type='text/javascript'>	
 var editfilterformcsrfcookie = '<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>';
 </script>
-			</div>
