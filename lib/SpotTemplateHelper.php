@@ -442,11 +442,9 @@ class SpotTemplateHelper {
 		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
-		#		http://codesnippets.joyent.com/posts/show/2104
+		#		http://stackoverflow.com/questions/635844/php-how-to-grab-an-url-out-of-a-chunk-of-text
 		# converteert linkjes naar bb code
-		$pattern = "@\b(https?://)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)" . 
-						"?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]" .
-						"{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*/?)@";
+		$pattern = "((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)";
 		$tmp = preg_replace($pattern, '[url=\0]\0[/url]', $tmp);
 		
 		# initialize ubb parser
