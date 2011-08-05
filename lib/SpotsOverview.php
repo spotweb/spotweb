@@ -239,7 +239,7 @@ class SpotsOverview {
 		foreach($parsedSearch['sortFields'] as $sortItem) {
 			# Creer nu een tree item
 			$sortElm = $doc->createElement('item');
-			$sortElm->appendChild($doc->createElement('fieldname', $sortItem['frielyname']));
+			$sortElm->appendChild($doc->createElement('fieldname', $sortItem['friendlyname']));
 			$sortElm->appendChild($doc->createElement('direction', $sortItem['direction']));
 
 			if (!$sortItem['autoadded']) {
