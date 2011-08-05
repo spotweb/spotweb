@@ -161,7 +161,6 @@ class SpotPage_edituser extends SpotPage_Abs {
 				case 'resetapi' : {
 					$user = $spotUserSystem->resetUserApi($spotUser);
 					$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
-
 					break;
 				} # case resetapi
 			} # switch
