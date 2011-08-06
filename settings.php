@@ -26,7 +26,7 @@ $settings['nntp_post']['port'] = 119;
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
-    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
+    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
 } else {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
