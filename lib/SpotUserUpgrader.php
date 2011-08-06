@@ -304,6 +304,11 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.12) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_keep_own_filters . ")");
 		} # if
+
+		# Filters als default in kunnen stellen voor de anonymous user
+		if ($this->_settings->get('securityversion') < 0.13) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_set_filters_as_default . ")");
+		} # if
 	} # updateSecurityGroups
 
 	/*
