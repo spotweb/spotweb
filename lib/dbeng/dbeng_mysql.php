@@ -295,7 +295,7 @@ class dbeng_mysql extends dbeng_abs {
 */
 			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
 				$searchMode = 'both-' . $searchMode;
-			} elseif (($hasTooShortWords || $hasStopwords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
+			} elseif (($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
 				$searchMode = 'normal';
 			} # elseif
 
