@@ -219,22 +219,31 @@ class dbeng_mysql extends dbeng_abs {
 		$minWordLen = $serverSetting[0]['Value'];
 
 		foreach($searchFields as $searchItem) {
+			$hasTooShortWords = false;
+			$hasLongEnoughWords = false;
+			$hasStopWords = false;
+			$hasNoStopWords = false;
+			
 			$searchMode = "match-natural";
 			$searchValue = trim($searchItem['value']);
 			$field = $searchItem['fieldname'];
 			$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
 
-			# bekijk elk woord individueel, is het korter dan $minWordLen, gaan we terug naar normale 
-			# LIKE  modus
+			# bekijk elk woord individueel, is het korter dan $minWordLen, moeten we ook een LIKE 
+			# search doen
 			$termList = explode(' ', $tempSearchValue);
 			foreach($termList as $term) {
 				if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
-					// Wis dubbele spaties anders vinden we nooit iets
-					$searchValue = str_replace('  ', ' ', $tempSearchValue);
-					$searchMode = "normal";
-					break;
+					$hasTooShortWords = true;
+				} # if
+
+				if (strlen($term) >= $minWordLen) {
+					$hasLongEnoughWords = true;
 				} # if
 			} # foreach
+			
+			# Wis dubbele spaties anders vinden we nooit iets
+			$searchValue = str_replace('  ', ' ', $tempSearchValue);
 			
 			# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
 			# vinden, schakelen we over naar boolean match
@@ -253,36 +262,59 @@ class dbeng_mysql extends dbeng_abs {
 				# als er boolean phrases in zitten, is het een boolean search
 				if (strpos('+-~<>', $strippedTerm[0]) !== false) {
 					$searchMode = 'match-boolean';
-					break;
 				} # if
 				
 				if (strpos('*', substr($strippedTerm, -1)) !== false) {
 					$searchMode = 'match-boolean';
-					break;
 				} # if
 
 				if (strpos('"', substr($term, -1)) !== false) {
 					$searchMode = 'match-boolean';
-					break;
 				} # if
 
 				# als het een stop word is, dan vallen we ook terug naar de like search
 				if (in_array($strippedTerm, $this->stop_words) !== false) {
-					$searchMode = 'normal';
-					break;
-				} # if
+					$hasStopWords = true;
+				} else {
+					# Deze zekerheid is nodig om ervoor te zorgen dat als men enkel op
+					# stopwoorden of te korte woorden zoekt ("The Top") dat we toch
+					# naar de like search terugvallen
+					if (strlen($term) >= $minWordLen) {
+						$hasNoStopWords = true;
+					} # if
+				} # else
 			} # foreach
 			
-			switch($searchMode) {
-				case 'normal'			: $queryPart = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'"; break;
-				
-				/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
-				case 'match-natural'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; break;
-				case 'match-boolean'	: $queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)"; break;
-			} # else
+			# Bepaal nu de searchmode
+/*
+			var_dump($hasTooShortWords);
+			var_dump($hasStopWords);
+			var_dump($hasLongEnoughWords);
+			var_dump($hasNoStopWords);
+			die();
+*/
+			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
+				$searchMode = 'both-' . $searchMode;
+			} elseif (($hasTooShortWords || $hasStopwords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
+				$searchMode = 'normal';
+			} # elseif
+
+			# en bouw de query op
+			$queryPart = '';
+			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') || ($searchMode == 'both-match-boolean')) {
+				$filterValueSql[] = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'";
+			} # if
 			
-			# Voeg de daadwerkelijke sql filter toe 
-			$filterValueSql[] = ' (' . $queryPart . ')';
+			if (($searchMode == 'match-natural') || ($searchMode == 'both-match-natural')) {
+				/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
+				$queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; 
+				$filterValueSql[] = $queryPart;
+			} # if 
+			
+			if (($searchMode == 'match-boolean') || ($searchMode == 'both-match-boolean')) {
+				$queryParty = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)";
+				$filterValueSql[] = $queryPart;
+			} # if
 			
 			# We voegen deze extended textqueries toe aan de filterlist als
 			# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
