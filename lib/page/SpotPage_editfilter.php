@@ -60,6 +60,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		} elseif (isset($this->_editFilterForm['submitsetfiltersasdefault'])) {
 			$formAction = 'setfiltersasdefault';
 			unset($this->_editFilterForm['submitsetfiltersasdefault']);
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
 		} elseif (isset($this->_editFilterForm['submitreorder'])) {
 			$formAction = 'reorder';
 			unset($this->_editFilterForm['submitreorder']);
