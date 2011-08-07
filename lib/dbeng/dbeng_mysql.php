@@ -286,18 +286,19 @@ class dbeng_mysql extends dbeng_abs {
 			} # foreach
 			
 			# Bepaal nu de searchmode
-/*
+/*			
 			var_dump($hasTooShortWords);
 			var_dump($hasStopWords);
 			var_dump($hasLongEnoughWords);
 			var_dump($hasNoStopWords);
+			var_dump($searchMode);
 			die();
-*/
+*/			
 			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
 				$searchMode = 'both-' . $searchMode;
 			} elseif (($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
 				$searchMode = 'normal';
-			} # elseif
+			} # else
 
 			# en bouw de query op
 			$queryPart = '';
@@ -312,7 +313,7 @@ class dbeng_mysql extends dbeng_abs {
 			} # if 
 			
 			if (($searchMode == 'match-boolean') || ($searchMode == 'both-match-boolean')) {
-				$queryParty = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)";
+				$queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)";
 				$filterValueSql[] = $queryPart;
 			} # if
 			
