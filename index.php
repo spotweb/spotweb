@@ -9,7 +9,7 @@ try {
 	SpotTiming::start('settings');
 	require_once "settings.php";
 	SpotTiming::stop('settings');
-
+	
 	# database object
 	$db = new SpotDb($settings['db']);
 	$db->connect();
@@ -32,6 +32,12 @@ try {
 		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 
+	# Controleer dat er nergens iets mis staat in de ownsettings.php oid dat output
+	# genereerd
+	if (headers_sent()) {
+		die("ownsettings.php geeft al output, zorg dat je ownsettings.php niet afgesloten is met ?> en dat er niets staat voor de <?");
+	} # if
+	
 	# helper functions for passed variables
 	$req = new SpotReq();
 	$req->initialize($settings);
@@ -212,7 +218,7 @@ try {
 
 		case 'editfilter' : {
 				$page = new SpotPage_editfilter($db, $settings, $currentSession,
-							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder', 'submitdiscardfilters', 'setfiltersasdefault')),
+							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder', 'submitdiscardfilters', 'setfiltersasdefault', 'submitexportfilters')),
 								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
 								  'search' => $req->getDef('search', array()),
 								  'sorton' => $req->getDef('sortby', ''),
