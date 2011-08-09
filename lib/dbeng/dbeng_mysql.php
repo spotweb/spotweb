@@ -302,7 +302,7 @@ class dbeng_mysql extends dbeng_abs {
 
 			# en bouw de query op
 			$queryPart = '';
-			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') || ($searchMode == 'both-match-boolean')) {
+			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') /* || ($searchMode == 'both-match-boolean')*/) {
 				$filterValueSql[] = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'";
 			} # if
 			
