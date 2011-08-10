@@ -286,7 +286,20 @@ class dbeng_mysql extends dbeng_abs {
 			} # foreach
 			
 			# Bepaal nu de searchmode
-/*			
+			/* 
+			 * Test cases:
+			 *
+			 * 		9th Company
+			 *		Ubuntu 9
+			 *		Top 40
+			 *		South Park
+			 *		Sex and the city 
+			 *		Rio
+			 *		"sex and the city 2"
+ 			 *		Just Go With It (fallback naar like, enkel stopwoorden of te kort)
+			 *		"Just Go With It" (fallback naar like, en quotes gestripped)
+			 */
+/*
 			var_dump($hasTooShortWords);
 			var_dump($hasStopWords);
 			var_dump($hasLongEnoughWords);
@@ -294,8 +307,13 @@ class dbeng_mysql extends dbeng_abs {
 			var_dump($searchMode);
 			die();
 */			
+			
 			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
-				$searchMode = 'both-' . $searchMode;
+				if ($hasStopWords && !$hasNoStopWords) {
+					$searchMode = 'normal';
+				} else {
+					$searchMode = 'both-' . $searchMode;
+				} # else
 			} elseif (($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
 				$searchMode = 'normal';
 			} # else
@@ -303,7 +321,7 @@ class dbeng_mysql extends dbeng_abs {
 			# en bouw de query op
 			$queryPart = '';
 			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') /* || ($searchMode == 'both-match-boolean')*/) {
-				$filterValueSql[] = ' ' . $field . " LIKE '%" . $this->safe($searchValue) . "%'";
+				$filterValueSql[] = ' ' . $field . " LIKE '%" . $this->safe(trim($searchValue, "\"'")) . "%'";
 			} # if
 			
 			if (($searchMode == 'match-natural') || ($searchMode == 'both-match-natural')) {
