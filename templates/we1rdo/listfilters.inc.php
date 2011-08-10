@@ -37,6 +37,9 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_set_filters_as_default, ''))  { ?>
 				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitsetfiltersasdefault]" value="Deze filters gebruiken als standaard">
 <?php } ?>
+<!--
+				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="Download je filters">
+-->
 			</form>
 		</div>
 

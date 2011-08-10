@@ -172,86 +172,6 @@ class SpotsOverview {
 	} # loadSpots()
 
 	/*
-	 * Converteert een 'parsedSearch' structure naar een XML formaat
-	 * welke uitwisselbaar is
-	 */
-	public function parsedSearchToXml($parsedSearch, $title, $icon) {
-		# Opbouwen XML
-		$doc = new DOMDocument('1.0', 'utf-8');
-		$doc->formatOutput = true;
-
-		$mainElm = $doc->createElement('spotwebfilter');
-		$mainElm->setAttribute('version', '1.0');
-		$mainElm->setAttribute('generator', 'SpotWeb v' . SPOTWEB_VERSION);
-		$mainElm->appendChild($doc->createElement('title', $title));
-		$mainElm->appendChild($doc->createElement('icon', $icon));
-		$doc->appendChild($mainElm);
-
-		/* 
-		 * Voeg nu de boom toe - we krijgen dat als tree aangeleverd maar
-		 * we willen die boom graag een beetje klein houden. We comprimeren
-		 * dus de boom
-		 */
-		$treeList = explode(',', $this->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']));
-		$tree = $doc->createElement('tree');
-		foreach($treeList as $treeItem) { 
-			if (!empty($treeItem)) {
-				# Bepaal wat voor type tree element dit is
-				$treeType = 'include';
-				if ($treeItem[0] == '~') {
-					$treeType = 'strongnot';
-					$treeItem = substr($treeItem, 1);
-				} elseif ($treeItem[1] == '~') {
-					$treeType = 'exclude';
-					$treeItem = substr($treeItem, 1);
-				} # else
-				
-				# Creer nu een tree item
-				$treeElm = $doc->createElement('item', $treeItem);
-				$treeElm->setAttribute('type', $treeType);
-
-				if (!empty($treeItem)) {
-					$tree->appendChild($treeElm);
-				} # if
-			} # if
-		} # treeItems
-		$mainElm->appendChild($tree);
-
-		/* 
-		 * Voeg nu de filter items (text searches e.d. toe)
-		 */
-		 $filter = $doc->createElement('filter');
-		 foreach($parsedSearch['filterValueList'] as $filterValue) {
-			# Creer nu een tree item
-			$filterElm = $doc->createElement('item');
-			$filterElm->appendChild($doc->createElement('fieldname', $filterValue['fieldname']));
-			$filterElm->appendChild($doc->createElement('operator', $filterValue['operator']));
-			$filterElm->appendChild($doc->createElement('value', $filterValue['value']));
-
-			$filter->appendChild($filterElm);
-		 } # foreach
-		$mainElm->appendChild($filter);
-		 
-		/* 
-		 * Voeg nu de sort items
-		 */
-		$sort = $doc->createElement('sort');
-		foreach($parsedSearch['sortFields'] as $sortItem) {
-			# Creer nu een tree item
-			$sortElm = $doc->createElement('item');
-			$sortElm->appendChild($doc->createElement('fieldname', $sortItem['friendlyname']));
-			$sortElm->appendChild($doc->createElement('direction', $sortItem['direction']));
-
-			if (!$sortItem['autoadded']) {
-				$sort->appendChild($sortElm);
-			} # if
-		} #foreach
-		$mainElm->appendChild($sort);
-
-		return $doc->saveXML();
-	} # parsedSearchToXml 
-
-	/*
 	 * Converteert een XML string naar een parsedSearch structure 
 	 */
 	public function xmlToParsedSearch($xmlStr, $currentSession) {
@@ -291,7 +211,7 @@ class SpotsOverview {
 	 * Bereid een string met daarin categorieen voor en 'expand' 
 	 * die naar een complete string met alle subcategorieen daarin
 	 */
-	private function prepareCategorySelection($dynaList) {
+	public function prepareCategorySelection($dynaList) {
 		$strongNotList = array();
 		$categoryList = array();
 		
