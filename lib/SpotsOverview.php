@@ -558,7 +558,7 @@ class SpotsOverview {
 			} # if
 
 			# valideer eerst de operatoren
-			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '='))) {
+			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '=', '!='))) {
 				break;
 			} # if
 
