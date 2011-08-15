@@ -34,7 +34,12 @@
 				<input type="hidden" name="editfilterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>">
 				<input type="hidden" name="filterid" value="9999">
 				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="Herstel filters naar standaard">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_set_filters_as_default, ''))  { ?>
 				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitsetfiltersasdefault]" value="Deze filters gebruiken als standaard">
+<?php } ?>
+<!--
+				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="Download je filters">
+-->
 			</form>
 		</div>
 

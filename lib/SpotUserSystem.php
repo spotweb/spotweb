@@ -606,6 +606,13 @@ class SpotUserSystem {
 	} # getUser()
 
 	/*
+	 * Vraagt een ongeformatteerde filterlist op
+	 */
+	function getPlainFilterList($userId, $filterType) {
+		return $this->_db->getPlainFilterList($userId, $filterType);
+	} # get PlainFilterList
+	
+	/*
 	 * Vraagt een filter list op
 	 */
 	function getFilterList($userId, $filterType) {
@@ -743,5 +750,123 @@ class SpotUserSystem {
 	function removeUser($userid) {
 		$this->_db->deleteUser($userid);
 	} # removeUser()
+
+	/*
+	 * Converteert een lijst met filters naar een XML record
+	 * welke uitwisselbaar is
+	 */
+	public function filtersToXml($filterList) {
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+
+		# Opbouwen XML
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
+
+		$mainElm = $doc->createElement('spotwebfilter');
+		$mainElm->setAttribute('version', '1.0');
+		$mainElm->setAttribute('generator', 'SpotWeb v' . SPOTWEB_VERSION);
+		$doc->appendChild($mainElm);
+
+		$filterListElm = $doc->createElement('filters');
+
+		foreach($filterList as $filter) {
+			$filterElm = $doc->createElement('filter');
+			
+			$filterElm->appendChild($doc->createElement('id', $filter['id']));
+			$filterElm->appendChild($doc->createElement('title', $filter['title']));
+			$filterElm->appendChild($doc->createElement('icon', $filter['icon']));
+			$filterElm->appendChild($doc->createElement('parent', $filter['tparent']));
+			$filterElm->appendChild($doc->createElement('order', $filter['torder']));
+
+			/* 
+			 * Voeg nu de boom toe - we krijgen dat als tree aangeleverd maar
+			 * we willen die boom graag een beetje klein houden. We comprimeren
+			 * dus de boom
+			 *
+			 * Maar eerst moeten we de tree parseren naar een aparte lijst
+			 * categorieen en strongnots
+			 */
+			$dynaList = explode(',', $filter['tree']);
+			list($categoryList, $strongNotList) = $spotsOverview->prepareCategorySelection($dynaList);
+			$treeList = explode(',', $spotsOverview->compressCategorySelection($categoryList, $strongNotList));
+			$tree = $doc->createElement('tree');
+			foreach($treeList as $treeItem) { 
+				if (!empty($treeItem)) {
+					# Bepaal wat voor type tree element dit is
+					$treeType = 'include';
+					if ($treeItem[0] == '~') {
+						$treeType = 'strongnot';
+						$treeItem = substr($treeItem, 1);
+					} elseif ($treeItem[1] == '~') {
+						$treeType = 'exclude';
+						$treeItem = substr($treeItem, 1);
+					} # else
+					
+					# Creer nu een tree item
+					$treeElm = $doc->createElement('item', $treeItem);
+					$treeElm->setAttribute('type', $treeType);
+
+					if (!empty($treeItem)) {
+						$tree->appendChild($treeElm);
+					} # if
+				} # if
+			} # treeItems
+			$filterElm->appendChild($tree);
+
+			/* 
+			 * Prepareer de filtervalue list zodat hij bruikbaar is 
+			 * in de XML hieronder
+			 */
+			$tmpFilterValues = explode('&', $filter['valuelist']);
+			$filterValueList = array();
+			foreach($tmpFilterValues as $filterValue) {
+				$tmpFilter = explode(':', urldecode($filterValue));
+				
+				# maak de daadwerkelijke filter
+				if (count($tmpFilter) >= 3) {
+					$filterValueList[] = Array('fieldname' => $tmpFilter[0],
+											 'operator' => $tmpFilter[1],
+											 'value' => join(":", array_slice($tmpFilter, 2)));
+				} # if
+			} # foreach
+
+			/* 
+			 * Voeg nu de filter items (text searches e.d. toe)
+			 */
+			 if (!empty($filterValueList)) {
+				 $valuesElm = $doc->createElement('values');
+				 foreach($filterValueList as $filterValue) {
+					# Creer nu een tree item
+					$itemElm = $doc->createElement('item');
+					$itemElm->appendChild($doc->createElement('fieldname', $filterValue['fieldname']));
+					$itemElm->appendChild($doc->createElement('operator', $filterValue['operator']));
+					$itemElm->appendChild($doc->createElement('value', $filterValue['value']));
+
+					$valuesElm->appendChild($itemElm);
+				 } # foreach
+				$filterElm->appendChild($valuesElm);
+			} # if
+			 
+			/* 
+			 * Voeg nu de sort items
+			 */
+			if (!empty($filter['sorton'])) {
+				$sortElm = $doc->createElement('sort');
+				# Creer nu een tree item
+				$itemElm = $doc->createElement('item');
+				$itemElm->appendChild($doc->createElement('fieldname', $filter['sorton']));
+				$itemElm->appendChild($doc->createElement('direction', $filter['sortorder']));
+
+				$sortElm->appendChild($itemElm);
+				$filterElm->appendChild($sortElm);
+			} # if
+
+			$filterListElm->appendChild($filterElm);
+		} # foreach
+		
+		$doc->appendChild($filterListElm);
+
+		return $doc->saveXML();
+	} # filtersToXml 
 	
 } # class SpotUserSystem

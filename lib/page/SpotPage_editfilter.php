@@ -60,6 +60,10 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		} elseif (isset($this->_editFilterForm['submitsetfiltersasdefault'])) {
 			$formAction = 'setfiltersasdefault';
 			unset($this->_editFilterForm['submitsetfiltersasdefault']);
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
+		} elseif (isset($this->_editFilterForm['submitexportfilters'])) {
+			$formAction = 'exportfilters';
+			unset($this->_editFilterForm['submitexportfilters']);
 		} elseif (isset($this->_editFilterForm['submitreorder'])) {
 			$formAction = 'reorder';
 			unset($this->_editFilterForm['submitreorder']);
@@ -88,6 +92,12 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					
 					break;
 				} # case 'setfiltersasdefault'
+
+				case 'exportfilters': {
+					echo($spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter')));
+					die();
+					break ;
+				} # case 'exportfilters' 
 				
 				case 'addfilter'	: {
 					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe

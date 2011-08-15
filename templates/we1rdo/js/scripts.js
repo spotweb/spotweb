@@ -873,6 +873,9 @@ function toggleEditUser(userid) {
 			$(".greyButton").click(function(){
 				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
 			});
+			$(".resetApiSubmit").click(function(){
+				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
+			});
 
 			$('form.edituserform').submit(function(){
 				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
@@ -899,6 +902,10 @@ function toggleEditUser(userid) {
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
 							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
+							
+							if (buttonPressed == 'edituserform[submitresetuserapi]') {
+								$(".apikeyinputfield")[0].value = $(xml).find('newapikey').text();
+							} // if
 						} else {
 							$('errors', xml).each(function() {
 								$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
