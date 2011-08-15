@@ -13,7 +13,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 			die ('SABzndb is not configured on this node.');
 		} elseif (!isset($request['sabapikey'])) {
 			die ('API Key Required');
-		} elseif ($this->_tplHelper->apiToHash($sabnzbd['apikey']) != $request['sabapikey']) {
+		} elseif ($this->_tplHelper->apiToHash($this->_currentSession['user']['apikey']) != $request['sabapikey']) {
 			die ('API Key Incorrect');
 		} # else
 
@@ -35,6 +35,7 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		$request = implode('&amp;', $apicall);
 		
 		$output = @file_get_contents($sabnzbd['url'] . 'sabnzbd/api?' . $request . '&apikey=' . $sabnzbd['apikey']);
+		
 		echo $output;
 	} # render
 
