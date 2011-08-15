@@ -1423,10 +1423,10 @@ class SpotDb {
 						  (int) $filter['id']));
 	} # updateFilter
 
-	/*
-	 * Haalt de filter lijst op en formatteert die in een boom
+	/* 
+	 * Haalt de filterlijst op als een platte lijst
 	 */
-	function getFilterList($userId, $filterType) {
+	function getPlainFilterList($userId, $filterType) {
 		/* willen we een specifiek soort filter hebben? */
 		if (empty($filterType)) {
 			$filterTypeFilter = '';
@@ -1435,21 +1435,28 @@ class SpotDb {
 		} # else
 		
 		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->arrayQuery("SELECT id,
-													  userid,
-													  filtertype,
-													  title,
-													  icon,
-													  torder,
-													  tparent,
-													  tree,
-													  valuelist,
-													  sorton,
-													  sortorder 
-												FROM filters 
-												WHERE userid = %d " . $filterTypeFilter . "
-												ORDER BY tparent,torder", /* was: id, tparent, torder */
-					Array($userId));
+		return $this->_conn->arrayQuery("SELECT id,
+											  userid,
+											  filtertype,
+											  title,
+											  icon,
+											  torder,
+											  tparent,
+											  tree,
+											  valuelist,
+											  sorton,
+											  sortorder 
+										FROM filters 
+										WHERE userid = %d " . $filterTypeFilter . "
+										ORDER BY tparent,torder", /* was: id, tparent, torder */
+				Array($userId));
+	} # getPlainFilterList
+	
+	/*
+	 * Haalt de filter lijst op en formatteert die in een boom
+	 */
+	function getFilterList($userId, $filterType) {
+		$tmpResult = $this->getPlainFilterList($userId, $filterType);
 		$idMapping = array();
 		foreach($tmpResult as &$tmp) {
 			$idMapping[$tmp['id']] =& $tmp;
