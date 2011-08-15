@@ -208,11 +208,10 @@
 
 				<div class="sidebarPanel sabnzbdPanel">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "SabNZBd paneel"'>[x]</a>SabNZBd</h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "<?php echo $tplHelper->getNzbHandlerName(); ?> paneel"'>[x]</a><?php echo $tplHelper->getNzbHandlerName(); ?></h4>
 <?php 
 	$nzbHandling = $currentSession['user']['prefs']['nzbhandling'];
-	$sabnzbd = $nzbHandling['sabnzbd']; 
-	$apikey = $tplHelper->apiToHash($sabnzbd['apikey']);
+	$apikey = $tplHelper->apiToHash($currentSession['user']['apikey']);
 	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
 ?>
 					<table class="sabInfo" summary="SABnzbd infomatie">

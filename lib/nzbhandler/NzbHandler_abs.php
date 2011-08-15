@@ -219,5 +219,131 @@ abstract class NzbHandler_abs
 		return $zipFile;
 	} # zipNzbList	
 
+	# NzbHandler API functions
+	public function hasApiSupport()
+	{
+		return false;
+	} # hasApiSupport
+	
+	public function getStatus()
+	{
+		# do nothing
+		return false;
+	} # getStatus
+
+	public function pauseQueue()
+	{
+		# do nothing
+		return false;
+	} #pauseQueue
+	
+	public function resumeQueue()
+	{
+		# do nothing
+		return false;
+	} # resumeQueue
+
+	public function setSpeedLimit(int $limit)
+	{
+		# do nothing
+		return false;
+	} # setSpeedLimit
+
+	public function moveDown($id)
+	{
+		# do nothing
+		return false;
+	} # moveDown
+	
+	public function moveUp($id)
+	{
+		# do nothing
+		return false;
+	} # moveUp
+	
+	public function moveTop($id)
+	{
+		# do nothing
+		return false;
+	} # moveTop
+
+	public function moveBottom($id)
+	{
+		# do nothing
+		return false;
+	} # moveBottom
+	
+	public function setCategory($id, $category)
+	{
+		# do nothing
+		return false;
+	} # setCategory
+	
+	public function setPriority($id, $priority)
+	{
+		# do nothing
+		return false;
+	} # setPriority
+
+	public function setPassword($id, $password)
+	{
+		# do nothing
+		return false;
+	} # setPassword	
+	
+	public function delete($id)
+	{
+		# do nothing
+		return false;
+	} # delete
+	
+	public function rename($id, $name)
+	{
+		# do nothing
+		return false;
+	} # rename
+	
+	public function pause($id)
+	{
+		# do nothing
+		return false;
+	} # pause
+	
+	public function resume($id)
+	{
+		# do nothing
+		return false;
+	} # resume
+
+	public function getCategories()
+	{
+		# For NzbHandlers that do not use configurable categories, but simply create
+		# category directories on demand (e.g. NZBGet) we'll just use the categories
+		# that are configured in SpotWeb.
+		
+		$sabnzbd = $this->_settings->get('sabnzbd');
+
+		$allcategories = array();
+		foreach($sabnzbd['categories'] as $categories)
+		{
+			$allcategories = array_merge($allcategories, array_values($categories));
+		}
+		
+		$allcategories = array_unique($allcategories);
+		
+		$result = array();
+		$result['readonly'] = true;	// inform the GUI to not allow adding of adhoc categories
+		$result['categories'] = $allcategories;
+		
+		return $result;
+	} # getCategories
+	
+	
+	public function getVersion()
+	{
+		# do nothing
+		return false;
+	} # getVersion
+	
 } # class NzbHandler_abs
 
