@@ -104,6 +104,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	 * queue.totaldiskspace
 	 * queue.bytepersec
 	 * queue.secondsremaining
+	 * queue.mbsize
 	 * queue.mbremaining
 	 * queue.nrofdownloads
 	 * download[].paused
@@ -131,7 +132,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		}
 		
 		$result['queue']['paused'] = $status['ServerPaused'];
-		$result['queue']['speedlimit'] = $status['DownloadLimit'];
+		$result['queue']['speedlimit'] = round($status['DownloadLimit']/1024);
 		$result['queue']['freediskspace'] = "-";
 		$result['queue']['totaldiskspace'] = "-";
 		$result['queue']['bytepersec'] = $status['DownloadRate'];

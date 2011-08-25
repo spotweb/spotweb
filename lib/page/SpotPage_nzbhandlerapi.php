@@ -115,8 +115,6 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 		}
 		$result = json_encode($result);
 		
-		error_log("Result: " . $result);
-		
 		echo $result;
 	} # render
 
