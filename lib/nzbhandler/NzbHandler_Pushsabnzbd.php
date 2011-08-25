@@ -116,6 +116,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		$result['queue']['freediskspace'] = $status['diskspace2'];
 		$result['queue']['totaldiskspace'] = $status['diskspacetotal2'];
 		$result['queue']['bytepersec'] = (int)($status['kbpersec'] * 1024);
+		$result['queue']['mbsize'] = $status['mb'];
 		$result['queue']['mbremaining'] = $status['mbleft'];
 		
 		$timeleft = explode(":", $status['timeleft']);
@@ -161,7 +162,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	{
 		$output = $this->querySabnzbd("mode=resume&output=json");
 		$response = json_decode($output, true);
-
+		
 		return ($response['status'] == true);
 	} # resumeQueue
 
@@ -249,8 +250,8 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	{
 		$output = $this->querySabnzbd("mode=switch&value=" . $id . "&value2=0");
 		$response = json_decode($output, true);
-
-		return ($response['status'] == true);		
+		
+		return ($response['result']['position'] == 0);		
 	} # moveTop
 
 	/*
@@ -261,8 +262,12 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	{
 		$output = $this->querySabnzbd("mode=switch&value=" . $id . "&value2=-1");
 		$response = json_decode($output, true);
-
-		return ($response['status'] == true);		
+		
+		# Sabnzbd returns the new position. So to verify wether or not the call was successful
+		# we'd need to first query the number of items that are in the queue. This seems to be
+		# a bit over overkill so we'll just asume that the call was successful
+		
+		return true;		
 	} # moveBottom
 
 	/*
@@ -271,6 +276,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	 */
 	public function setCategory($id, $category)
 	{
+		$category = encodeurl($category);
 		$output = $this->querySabnzbd("mode=change_cat&value=" .$id . "&value2=" . $category);
 		$response = json_decode($output, true);
 
@@ -280,13 +286,20 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	/*
 	 * SABnzbd API method: queue
 	 * Set the priority for a download
+	 * Low Priority: -1
+	 * Normal Priority: 0
+	 * High Priority: 1
 	 */
 	public function setPriority($id, $priority)
 	{
-		$output = $this->queurySabnzbd("mode=queue&name=priority&value=" . $id . "&value2=" . $priority);
+		if (($priority < -1) || ($priority > 1)) return false;
+		
+		$output = $this->querySabnzbd("mode=queue&name=priority&value=" . $id . "&value2=" . $priority);
 		$response = json_decode($output, true);
 
-		return ($response['status'] == true);
+		# Sabnzbd returns the new position, so we simply return true.
+		
+		return true;
 		
 	} # setPriority
 
@@ -317,7 +330,8 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	 */
 	public function rename($id, $name)
 	{
-		$output = $this->querySabnzbd("mode=queue&name=rename&value=" . $id . "&value2=THENEWNAME" . $name);
+		$name = urlencode($name);
+		$output = $this->querySabnzbd("mode=queue&name=rename&value=" . $id . "&value2=" . $name);
 		$response = json_decode($output, true);
 
 		return ($response['status'] == true);
@@ -342,9 +356,6 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	public function resume($id)
 	{
 		$output = $this->querySabnzbd("mode=queue&name=resume&value=" . $id);
-
-		var_dump($output);
-		
 		$response = json_decode($output, true);
 
 		return ($response['status'] == true);

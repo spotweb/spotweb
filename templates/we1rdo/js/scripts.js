@@ -338,7 +338,7 @@ function postCommentsForm() {
 			sterStatus($(this).index(), rating);
 		});
 		$("li.addComment input[name='postcommentform[rating]']").val(rating);
-	})
+	});
 
 	function sterStatus(id, rating) {
 		if (id == 1) { ster = 'ster'; } else { ster = 'sterren'; }
@@ -628,7 +628,7 @@ function toggleSidebarPanel(id) {
 		}
 		
 		if(id == ".sabnzbdPanel") {
-			updateSabPanel(0,5);
+			updateSabPanel(1,5);
 		}
 	}
 }
@@ -922,12 +922,11 @@ function toggleEditUser(userid) {
 // SabNZBd actions
 function sabBaseURL() {
 	var apikey = $("div.sabnzbdPanel input.apikey").val();
-//	var sabBaseURL = createBaseURL()+'?page=sabapi&sabapikey='+apikey;
 	var sabBaseURL = createBaseURL()+'?page=nzbhandlerapi&nzbhandlerapikey='+apikey;
 	return sabBaseURL;
 }
 
-function sabActions(start,limit,action,slot,value) {
+function sabActions(start,limit,action,slot) {
 	var baseURL = sabBaseURL();
 	
 	if(action == 'pause') {
@@ -947,13 +946,11 @@ function sabActions(start,limit,action,slot,value) {
 			updateSabPanel(start,limit);
 		});
 	} else if(action == 'up') {
-		var newIndex = value-1;
 		var url = baseURL+'&action=moveup&id='+slot;
 		$.get(url, function(){
 			updateSabPanel(start,limit);
 		});
 	} else if(action == 'down') {
-		var newIndex = value+1;
 		var url = baseURL+'&action=movedown&id='+slot;
 		$.get(url, function(){
 			updateSabPanel(start,limit);
@@ -1143,13 +1140,12 @@ function drawGraph(currentSpeed,interval) {
 
 function updateSabPanel(start,limit) {
 	var baseURL = sabBaseURL();
-//	var url = baseURL+'&mode=queue&start='+start+'&limit='+limit+'&output=json';
 	var url = baseURL+'&action=getstatus';
 
 	$.getJSON(url, function(json){
 		var queue = json.queue;
 
-		if(queue.paused) {var state = "resume"} else {var state = "pause"}
+		if(queue.paused) {var state = "resume";} else {var state = "pause";}
 		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
 		$("table.sabInfo td.state a.state").click(function(){
 			if(timeOut) {clearTimeout(timeOut)};
@@ -1157,7 +1153,7 @@ function updateSabPanel(start,limit) {
 		});
 		$("table.sabInfo td.diskspace").html("<strong title='Vrije ruimte (complete)'>"+queue.freediskspace+"</strong> / <strong title='Totale ruimte (complete)'>"+queue.totaldiskspace+"</strong> GB");
 		$("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1024).toFixed(2)+"</strong> KB/s");
-		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit/1024)+"'><label>KB/s</label>");
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label>KB/s</label>");
 		$("td.speedlimit input[name=speedLimit]").focus(function(){
 			$(this).addClass("hasFocus");
 		});
@@ -1189,6 +1185,13 @@ function updateSabPanel(start,limit) {
 		$("table.sabInfo td.eta").html("<strong>"+eta+"</strong>");
 		$("table.sabInfo td.mb").html("<strong>"+queue.mbremaining+"</strong> / <strong>"+queue.mbsize+"</strong> MB");
 
+		// make sure we don't try to show more items than available in the queue
+		while (start > queue.nrofdownloads)	{start -= limit;}
+		// a start value lower than one is invalid
+		if (start < 1) {start = 1;}
+		
+		var end = start+limit-1;
+		
 		$("table.sabQueue").empty();
 		if(queue.nrofdownloads == 0) {
 			$("table.sabQueue").html("<tr><td class='info'>Geen items in de wachtrij</td></tr>");
@@ -1198,7 +1201,7 @@ function updateSabPanel(start,limit) {
 				var slot = this;
 				
 				index++;
-				if ((index >= start) && (index < limit+1))
+				if ((index >= start) && (index <= end))
 				{
 					if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
 					
@@ -1207,11 +1210,11 @@ function updateSabPanel(start,limit) {
 					
 					$("table.sabQueue tr."+index+" a.up").click(function(){
 						if(timeOut) {clearTimeout(timeOut)}; 
-						sabActions(start,limit,'up', slot.id, index);
+						sabActions(start,limit,'up', slot.id);
 					});
 					$("table.sabQueue tr."+index+" a.down").click(function(){
 						if(timeOut) {clearTimeout(timeOut)}; 
-						sabActions(start,limit,'down', slot.id, index);
+						sabActions(start,limit,'down', slot.id);
 					});
 					$("table.sabQueue tr."+index+" span.delete a").click(function(){
 						if(timeOut) {clearTimeout(timeOut)}; 
@@ -1225,38 +1228,42 @@ function updateSabPanel(start,limit) {
 			});
 		}
 
-		if(queue.nrofdownloads != 0 && queue.nrofdownloads > limit) {
-			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.nrofdownloads+" resultaten</td></tr>");
-		} else if(queue.nrofdownloads != 0 && limit > queue.nrofdownloads) {
+		if(queue.nrofdownloads != 0 && queue.nrofdownloads > end) {
+			$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+end+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+		} else if(queue.nrofdownloads != 0 && end > queue.nrofdownloads) {
 			if(queue.nrofdownloads == 1) {
-				$("table.sabQueue").append("<tr class='nav'><td>Toon "+queue.nrofdownloads+" resultaat</td></tr>");
+				$("table.sabQueue").append("<tr class='nav'><td>Toon 1 resultaat</td></tr>");
 			} else {
-				$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+queue.nrofdownloads+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+				$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+queue.nrofdownloads+" van "+queue.nrofdownloads+" resultaten</td></tr>");
 			}
-		} else if(queue.nrofdownloads != 0 && limit == queue.nrofdownloads) {
-			$("table.sabQueue").append("<tr class='nav'><td>Toon "+(start+1)+" t/m "+limit+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+		} else if(queue.nrofdownloads != 0 && end == queue.nrofdownloads) {
+			$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+end+" van "+queue.nrofdownloads+" resultaten</td></tr>");
 		}
 
-		if($("table.sabQueue tr.title td span.move").size() == 1) {
+		if(queue.nrofdownloads == 1) {
 			$("table.sabQueue tr.title td span.move").hide();
 		} else {
-			$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
-			$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+			if (start == 1){
+				$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
+			}
+			if (end >= queue.nrofdownloads){
+				$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
+			}
 		}
 
 		if(start > 1) {
 			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='Vorige'>&lt;&lt;</a> ");
 		}
-		if(queue.nrofdownloads > limit) {
+		if(queue.nrofdownloads > end) {
 			$("table.sabQueue tr.nav td").append(" <a class='next' title='Volgende'>&gt;&gt;</a>");
 		}
 
 		$("table.sabQueue tr.nav a").click(function(){
 			if(timeOut) {clearTimeout(timeOut)}
 			if($(this).hasClass("prev")) {
-				updateSabPanel(start-(limit-start),limit-(limit-start));
+				updateSabPanel(start-limit,limit);
 			} else if($(this).hasClass("next")) {
-				updateSabPanel(start+limit,limit+limit);
+				updateSabPanel(start+limit,limit);
 			}
 		});
 
@@ -1268,7 +1275,7 @@ function updateSabPanel(start,limit) {
 				$(this).removeClass("hover");
 				updateSabPanel(start,limit);
 			}
-		})
+		});
 
 		var interval = 5000;
 		drawGraph(queue.bytepersec/1024, interval);
