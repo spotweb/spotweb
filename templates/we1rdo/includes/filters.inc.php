@@ -99,7 +99,7 @@
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 ?>
-							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo $tplHelper->convertFilterToQueryParams(); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['value']; ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo urlencode(addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "'")); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo urlencode(addcslashes($filterType['value'], "'")); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
