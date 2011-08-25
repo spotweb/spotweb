@@ -210,11 +210,17 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='Sluit "<?php echo $tplHelper->getNzbHandlerName(); ?> paneel"'>[x]</a><?php echo $tplHelper->getNzbHandlerName(); ?></h4>
 <?php 
-	$nzbHandling = $currentSession['user']['prefs']['nzbhandling'];
-	$apikey = $tplHelper->apiToHash($currentSession['user']['apikey']);
-	echo "<input class='apikey' type='hidden' value='".$apikey."'>";
-?>
+		$apikey = $tplHelper->apiToHash($currentSession['user']['apikey']);
+		echo "<input class='apikey' type='hidden' value='".$apikey."'>";
+		if ($tplHelper->getNzbHandlerApiSupport() === false)
+		{?>
 					<table class="sabInfo" summary="SABnzbd infomatie">
+						<tr><td>De geselecteerde methode om NZB's te downloaden heeft geen panel support.</td></tr>
+					</table>			
+<?php	}
+		else
+		{
+?>					<table class="sabInfo" summary="SABnzbd infomatie">
 						<tr><td>Status:</td><td class="state"></td></tr>
 						<tr><td>Opslag (vrij):</td><td class="diskspace"></td></tr>
 						<tr><td>Snelheid:</td><td class="speed"></td></tr>
@@ -227,7 +233,8 @@
 					<table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
 					<h4>Wachtrij</h4>
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
-<?php } ?>
+<?php 	}
+	  } ?>
 				</div>
 			</div>
 

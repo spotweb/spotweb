@@ -986,4 +986,12 @@ class SpotTemplateHelper {
 		return $this->_nzbHandler->getName();
 	} # getNzbHandlerName
 	
+	/*
+	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
+	 * voor de geselecteerde NzbHandler
+	 */
+	function getNzbHandlerApiSupport(){
+		return $this->_nzbHandler->hasApiSupport();
+	} # getNzbHandlerApiSupport
+	
 } # class SpotTemplateHelper
