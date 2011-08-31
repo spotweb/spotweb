@@ -763,8 +763,8 @@ class SpotUserSystem {
 		$doc->formatOutput = true;
 
 		$mainElm = $doc->createElement('spotwebfilter');
-		$mainElm->setAttribute('version', '1.0');
-		$mainElm->setAttribute('generator', 'SpotWeb v' . SPOTWEB_VERSION);
+		$mainElm->appendChild($doc->createElement('version', '1.0'));
+		$mainElm->appendChild($doc->createElement('generator', 'SpotWeb v' . SPOTWEB_VERSION));
 		$doc->appendChild($mainElm);
 
 		$filterListElm = $doc->createElement('filters');
@@ -864,9 +864,96 @@ class SpotUserSystem {
 			$filterListElm->appendChild($filterElm);
 		} # foreach
 		
-		$doc->appendChild($filterListElm);
+		$mainElm->appendChild($filterListElm);
 
 		return $doc->saveXML();
 	} # filtersToXml 
+
+	/*
+	 * Converteert XML string naar een lijst met filters 
+	 */
+	public function xmlToFilters($xmlStr) {
+		$filterList = array();
+		$idMapping = array();
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+
+		/*
+		 * Parse de XML file
+		 */		
+		$xml = @(new SimpleXMLElement($xmlStr));
+		
+		# Op dit moment kunnen we maar 1 versie van filters parsen
+		if ( (string) $xml->version != '1.0') {
+			return $filterList;
+		} # if
+
+		# en loop door alle filters heen
+		foreach($xml->xpath('/spotwebfilter/filters/filter') as $filterItem) {
+			$filter['id'] = (string) $filterItem->id;
+			$filter['title'] = (string) $filterItem->title;
+			$filter['icon'] = (string) $filterItem->icon;
+			$filter['tparent'] = (string) $filterItem->parent;
+			$filter['torder'] = (string) $filterItem->order;
+			$filter['children'] = array();
+
+			/*
+			 * Parseer de items waarin de tree filters staan
+			 */
+			$treeStr = "";
+			foreach($filterItem->xpath('tree/item') as $treeItem) {
+				$treeType = (string) $treeItem->attributes()->type;
+				if ($treeType == 'exclude') {
+					$treeStr .= ',~' . $treeItem[0];
+				} elseif ($treeType == 'include') {
+					$treeStr .= ',' . $treeItem[0];
+				} # if
+			} # foreach
+			
+			if (strlen($treeStr) > 1) {
+				$treeStr = substr($treeStr, 1);
+			} # if
+
+			/*
+			 * Parseer de items waarin de tree filters staan
+			 */
+			$filterValues = array();
+			foreach($filterItem->xpath('values/item') as $valueItem) {
+				$value = array();
+
+				$filterValues[] = urlencode(
+								   (string) $valueItem->fieldname . 
+									':' . 
+								   (string) $valueItem->operator . 
+									':' . 
+								   (string) $valueItem->value
+								  );
+			} # foreach
+			$filter['valuelist'] = implode('&', $filterValues);
+
+			/* 
+			 * Sorteer elementen zijn optioneel, kijk of ze bestaan
+			 */
+			if ($filterItem->sort) {
+				$filter['sorton'] = (string) $filterItem->sort->item->fieldname;
+				$filter['sortorder'] = (string) $filterItem->sort->item->direction;
+			} # if
+			
+			$filterList[$filter['id']] = $filter;
+		} # foreach
+		
+		/*
+		 * Nu gaan we er en boom van maken, we kunnen dit niet op dezelfde
+		 * manier doen als in SpotDb omdat de xpath() functie geen reference
+		 * toestaat 
+		 */
+		 foreach($filterList as $idx => &$filter) {
+			if ($filter['tparent'] != 0) {
+				$filterList[$filter['tparent']]['children'][] =& $filter;
+				unset($filterList[$filter['id']]);
+			} # if
+		} # for
+		
+		return $filterList;
+	} # xmlToFilters
 	
 } # class SpotUserSystem
