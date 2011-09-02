@@ -328,7 +328,15 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
-		return $this->makeBaseUrl("path") . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width;
+		# Volgens issue 941 wil men soms vanuit de RSS of Newznab feed rechtstreeks
+		# images kunnen laden. We checken of het 'getimage' recht rechtstreeks via de
+		# API aan te roepen is, en zo ja, creeren we API urls.
+		$apiKey = '';
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, 'getimage')) {
+			$apiKey = $this->makeApiRequestString();
+		} # if
+		
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;messageid=' . urlencode($spot['messageid']) . '&amp;image[height]=' . $height . '&amp;image[width]=' . $width . $apiKey;
 	} # makeImageUrl
 
 	/*
