@@ -218,7 +218,7 @@ try {
 
 		case 'editfilter' : {
 				$page = new SpotPage_editfilter($db, $settings, $currentSession,
-							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder', 'submitdiscardfilters', 'setfiltersasdefault', 'submitexportfilters')),
+							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder', 'submitdiscardfilters', 'setfiltersasdefault', 'submitexportfilters', 'submitimportfilters')),
 								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
 								  'search' => $req->getDef('search', array()),
 								  'sorton' => $req->getDef('sortby', ''),

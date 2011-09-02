@@ -64,6 +64,9 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		} elseif (isset($this->_editFilterForm['submitexportfilters'])) {
 			$formAction = 'exportfilters';
 			unset($this->_editFilterForm['submitexportfilters']);
+		} elseif (isset($this->_editFilterForm['submitimportfilters'])) {
+			$formAction = 'importfilters';
+			unset($this->_editFilterForm['submitimportfilters']);
 		} elseif (isset($this->_editFilterForm['submitreorder'])) {
 			$formAction = 'reorder';
 			unset($this->_editFilterForm['submitreorder']);
@@ -94,10 +97,42 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'setfiltersasdefault'
 
 				case 'exportfilters': {
-					echo($spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter')));
-					die();
-					break ;
+					$editResult = $spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
+					
+					break;
 				} # case 'exportfilters' 
+
+				case 'importfilters': {
+					if (isset($_FILES['filterimport'])) {
+						
+						if ($_FILES['filterimport']['error'] == UPLOAD_ERR_OK) {
+							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
+							try {
+								var_dump( $spotUserSystem->xmlToFilters($xml));
+							} catch(Exception $x) {
+								$editResult = array('result' => 'failure');
+								$formMessages['errors'][] = array('validatefilter_invaliduploadxml', array());
+							} # catch
+							
+							var_dump($formMessages);
+							
+							die();
+						} else {
+							$editResult = array('result' => 'failure');
+							$formMessages['errors'][] = array('validatefilter_fileuploaderr', array($_FILES['filterimport']['error']));
+						} # if
+					
+					} else {
+						$editResult = array('result' => 'failure');
+						$formMessages['errors'][] = array('validatefilter_nofileupload', array());
+					} # else
+					
+					var_dump($_FILES);
+					die();
+					$editResult = $spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
+					
+					break;
+				} # case 'importfilters' 
 				
 				case 'addfilter'	: {
 					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
@@ -160,6 +195,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 											'sortorder' => $this->_sortorder,
 											'sortby' => $this->_sorton,
 											'sortdir' => $this->_sortorder,
+											'lastformaction' => $formAction,
 										    'formmessages' => $formMessages,
 											'http_referer' => $this->_editFilterForm['http_referer'],
 											'editresult' => $editResult));
