@@ -25,7 +25,7 @@
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
-				<input type="hidden" id="searchfilter-includeprevfilter-toggle" name="search[includeinfilter]" value="true" />
+				<input type="hidden" id="searchfilter-includeprevfilter-toggle" name="search[includeinfilter]" value="false" />
 <?php
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
@@ -77,7 +77,7 @@
 		$filterColCount++;
 	} # if
 ?>
-					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' title='Zoeken in huidige filters'><input type='submit' class="filtersubmit" onclick='$("#searchfilter-includeprevfilter-toggle").val("");' value='>>' title='Zoeken'></div>
+					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='Zoeken in huidige filters'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='Zoeken'></div>
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='Sluit "Advanced Search"'>[x]</a>Zoeken op:</h4>

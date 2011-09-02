@@ -19,6 +19,15 @@ $(function(){
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
+	
+    $("#filterform input").keypress(function (e) {
+		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+			$('form#filterform').find('input[type=submit].default').click();
+			return false;
+		} else {
+			return true;
+		}
+    });	
 });
 
 // createBaseURL
