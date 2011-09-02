@@ -109,16 +109,11 @@ class SpotPage_editfilter extends SpotPage_Abs {
 							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 							try {
 								$filterList = $spotUserSystem->xmlToFilters($xml);
-								var_dump($filterList);
 								$spotUserSystem->setFilterList($this->_currentSession['user']['userid'], $filterList);
 							} catch(Exception $x) {
 								$editResult = array('result' => 'failure');
 								$formMessages['errors'][] = array('validatefilter_invaliduploadxml', array());
 							} # catch
-							
-							var_dump($formMessages);
-							
-							die();
 						} else {
 							$editResult = array('result' => 'failure');
 							$formMessages['errors'][] = array('validatefilter_fileuploaderr', array($_FILES['filterimport']['error']));
@@ -128,10 +123,6 @@ class SpotPage_editfilter extends SpotPage_Abs {
 						$editResult = array('result' => 'failure');
 						$formMessages['errors'][] = array('validatefilter_nofileupload', array());
 					} # else
-					
-					var_dump($_FILES);
-					die();
-					$editResult = $spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
 					
 					break;
 				} # case 'importfilters' 
