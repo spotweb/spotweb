@@ -725,6 +725,19 @@ class SpotUserSystem {
 	} # resetFilterList
 
 	/*
+	 * Wist alle bestaande filters, en reset ze naar de opgegeven filterlist
+	 */
+	function setFilterList($userId, $filterList) {
+		# Wis de filters
+		$this->_db->removeAllFilters($userId);
+		
+		# copieer de nodige filters
+		foreach($filterList as $filter) {
+			$this->_db->addFilter($userId, $filter);
+		} # foreach
+	} # setFilterList
+	
+	/*
 	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
 	 */
 	function setFiltersAsDefault($userId) {
@@ -894,6 +907,10 @@ class SpotUserSystem {
 			$filter['icon'] = (string) $filterItem->icon;
 			$filter['tparent'] = (string) $filterItem->parent;
 			$filter['torder'] = (string) $filterItem->order;
+			$filter['filtertype'] = 'filter';
+			$filter['sorton'] = '';
+			$filter['sortorder'] = '';
+			$filter['tree'] = '';
 			$filter['children'] = array();
 
 			/*
@@ -912,6 +929,8 @@ class SpotUserSystem {
 			if (strlen($treeStr) > 1) {
 				$treeStr = substr($treeStr, 1);
 			} # if
+			
+			$filter['tree'] = $treeStr;
 
 			/*
 			 * Parseer de items waarin de tree filters staan
@@ -928,7 +947,7 @@ class SpotUserSystem {
 								   (string) $valueItem->value
 								  );
 			} # foreach
-			$filter['valuelist'] = implode('&', $filterValues);
+			$filter['valuelist'] = $filterValues;
 
 			/* 
 			 * Sorteer elementen zijn optioneel, kijk of ze bestaan
