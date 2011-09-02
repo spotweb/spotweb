@@ -108,7 +108,9 @@ class SpotPage_editfilter extends SpotPage_Abs {
 						if ($_FILES['filterimport']['error'] == UPLOAD_ERR_OK) {
 							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 							try {
-								var_dump( $spotUserSystem->xmlToFilters($xml));
+								$filterList = $spotUserSystem->xmlToFilters($xml);
+								var_dump($filterList);
+								$spotUserSystem->setFilterList($this->_currentSession['user']['userid'], $filterList);
 							} catch(Exception $x) {
 								$editResult = array('result' => 'failure');
 								$formMessages['errors'][] = array('validatefilter_invaliduploadxml', array());
