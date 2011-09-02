@@ -26,7 +26,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
+					case 'start'			: echo strftime("Last retrieve at %c") . PHP_EOL .  "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
 					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
 					case 'dbcount'			: echo "Spots in database:	" . $txt . "" . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
