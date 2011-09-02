@@ -65,7 +65,7 @@
 	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
-			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . $filterType['value'] . '">';
+			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
 		} # if
 	} # foreach
 	
@@ -99,7 +99,7 @@
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 ?>
-							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo urlencode(addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "'")); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo urlencode(addcslashes($filterType['value'], "'")); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo $filterType['fieldname']; ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
