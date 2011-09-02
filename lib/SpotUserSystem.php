@@ -703,7 +703,10 @@ class SpotUserSystem {
 	 */
 	function removeIndexFilter($userId) {
 		$tmpFilter = $this->_db->getUserIndexFilter($userId);
-		$this->_db->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
+		
+		if (!empty($tmpFilter)) {
+			$this->_db->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
+		} # if
 	} # removeIndexFilter
 
 	/*

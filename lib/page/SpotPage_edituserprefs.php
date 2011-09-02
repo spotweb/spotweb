@@ -49,7 +49,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					# We hebben een aantal dummy preferences welke een speciale actie heeft voor ons, we nemen er hier
-					# actie over. In de functie cleaseUserPreferences() worden ze automatisch gestripped.
+					# actie over. In de functie cleanseUserPreferences() worden ze automatisch gestripped.
 					if (isset($this->_editUserPrefsForm['_dummy_prevent_porn'])) {
 						$spotUserSystem->setIndexFilter(
 							$spotUser['userid'],
