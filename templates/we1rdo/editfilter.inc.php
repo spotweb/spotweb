@@ -1,9 +1,18 @@
 <?php
+if ($lastformaction == 'exportfilters') {
+	Header('Content-Type: text/xml; charset=UTF-8');
+	Header('Content-Disposition: attachment; filename="spotwebfilters.xml"');
+	
+	echo $editresult;
+	return ;
+} # if
+
 if (!empty($editresult)) {
 	include 'includes/form-xmlresult.inc.php';
 
 	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
+
 
 if (empty($editresult)) {
 	# is form voor het toevoegen van een groep ipv wijzigen van een
