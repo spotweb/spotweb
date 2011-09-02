@@ -530,7 +530,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . urlencode($value['value']);
+			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlspecialchars($value['value'], ENT_QUOTES, "utf-8");
 		} # foreach
 
 		return $filterStr;
