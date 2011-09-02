@@ -828,6 +828,9 @@ class SpotTemplateHelper {
 		
 		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
 		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
+		$strings['validatefilter_nofileupload'] = 'Filter is niet geupload';
+		$strings['validatefilter_fileuploaderr'] = 'Fout tijdens uploaden van filter (%d)';
+		$strings['validatefilter_invaliduploadxml'] = 'Geuploade Spotweb filter file is ongeldig';
 		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
