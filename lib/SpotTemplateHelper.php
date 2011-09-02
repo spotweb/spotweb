@@ -982,4 +982,19 @@ class SpotTemplateHelper {
 		return substr($spotParser->specialString(base64_encode($spotSigning->makeRandomStr($len))), 0, $len);
 	} # getRandomStr
 	
+	/*
+	 * Geeft de naam van de nzbhandler terug
+	 */
+	function getNzbHandlerName(){
+		return $this->_nzbHandler->getName();
+	} # getNzbHandlerName
+	
+	/*
+	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
+	 * voor de geselecteerde NzbHandler
+	 */
+	function getNzbHandlerApiSupport(){
+		return $this->_nzbHandler->hasApiSupport();
+	} # getNzbHandlerApiSupport
+	
 } # class SpotTemplateHelper

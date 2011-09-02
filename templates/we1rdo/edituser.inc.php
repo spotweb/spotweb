@@ -48,7 +48,7 @@ if (empty($editresult)) {
 <?php
 	foreach($groupMembership as $secGroup) {
 ?>
-					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input <?php if (!$tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { echo "readonly='readonly'"; } ?> type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>]" value="<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> </td> </tr>
+					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input <?php if (!$tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { echo "readonly='readonly'"; } ?> type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>]" value="<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> /></td> </tr>
 <?php } ?>
 
 				</tbody>

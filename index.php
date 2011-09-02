@@ -270,6 +270,12 @@ try {
 			break;
 		} # sabapi
 
+		case 'nzbhandlerapi' : {
+			$page = new SpotPage_nzbhandlerapi($db, $settings, $currentSession);
+			$page->render();
+			break;
+		} # nzbhandlerapi
+		
 		case 'twitteroauth' : {
 			$page = new SpotPage_twitteroauth($db, $settings, $currentSession,
 					Array('action' => $req->getDef('action', ''),
