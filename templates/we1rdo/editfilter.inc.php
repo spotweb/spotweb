@@ -7,6 +7,10 @@ if ($lastformaction == 'exportfilters') {
 	return ;
 } # if
 
+if ($lastformaction == 'importfilters') {
+	$tplHelper->redirect($http_referer);
+} # if
+
 if (!empty($editresult)) {
 	include 'includes/form-xmlresult.inc.php';
 
