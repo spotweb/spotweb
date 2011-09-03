@@ -309,6 +309,11 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.13) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_set_filters_as_default . ")");
 		} # if
+
+		# Downloads kunnen wissen is een apart recht geworden (issue #935)
+		if ($this->_settings->get('securityversion') < 0.14) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(3, " . SpotSecurity::spotsec_keep_own_downloadlist . ", 'erasedls')");
+		} # if
 	} # updateSecurityGroups
 
 	/*
