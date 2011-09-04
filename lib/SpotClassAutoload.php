@@ -23,6 +23,14 @@ function __autoload($class_name) {
 				require_once "lib/exceptions/" . $class_name . ".php";
 				return ;
 			} # if
+			
+			# 
+			# FIXME
+			# Hack om tijdelijk om issue 967 te werken
+			#
+			if (is_numeric(substr($class_name, 3))) {
+				return ;
+			} # if
 
 			require_once 'lib/' . $class_name . '.php';
 		} # default
