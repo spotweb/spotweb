@@ -1,5 +1,5 @@
 <?php
-if ($lastformaction == 'exportfilters') {
+if ((isset($lastformaction) && ($lastformaction == 'exportfilters'))) {
 	Header('Content-Type: text/xml; charset=UTF-8');
 	Header('Content-Disposition: attachment; filename="spotwebfilters.xml"');
 	
@@ -7,7 +7,7 @@ if ($lastformaction == 'exportfilters') {
 	return ;
 } # if
 
-if ($lastformaction == 'importfilters') {
+if ((isset($lastformaction) && ($lastformaction == 'importfilters'))) {
 	$tplHelper->redirect($http_referer);
 } # if
 
