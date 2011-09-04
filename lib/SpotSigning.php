@@ -143,7 +143,7 @@ class SpotSigning {
 		} # if
 		
 		return $verified;
-	} # verifySpotHeader()
+	} # verifyFullSpot()
 	
 	/*
 	 * Helper functie om een comment header te verifieeren
