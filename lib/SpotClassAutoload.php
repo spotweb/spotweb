@@ -28,7 +28,7 @@ function __autoload($class_name) {
 			# FIXME
 			# Hack om tijdelijk om issue 967 te werken
 			#
-			if (is_numeric(substr($class_name, 0, 3))) {
+			if ((is_numeric(substr($class_name, 0, 3))) || (strlen(trim($class_name)) == 0)) {
 				return ;
 			} # if
 
