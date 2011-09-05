@@ -813,7 +813,7 @@ class SpotUserSystem {
 					if ($treeItem[0] == '~') {
 						$treeType = 'strongnot';
 						$treeItem = substr($treeItem, 1);
-					} elseif ($treeItem[1] == '~') {
+					} elseif ($treeItem[1] == '!') {
 						$treeType = 'exclude';
 						$treeItem = substr($treeItem, 1);
 					} # else
@@ -923,6 +923,8 @@ class SpotUserSystem {
 			foreach($filterItem->xpath('tree/item') as $treeItem) {
 				$treeType = (string) $treeItem->attributes()->type;
 				if ($treeType == 'exclude') {
+					$treeStr .= ',!' . $treeItem[0];
+				} elseif ($treeType == 'strongnot') {
 					$treeStr .= ',~' . $treeItem[0];
 				} elseif ($treeType == 'include') {
 					$treeStr .= ',' . $treeItem[0];
