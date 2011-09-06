@@ -3,7 +3,6 @@ Script is getest met onderstaande configuratie, als het op andere systemen werkt
 * Script is enkel getest op een unix-achtige
 * Apache webserver
 * PHP v5.3 (modules vereist: MySQL of PostgreSQL, gmp, ctype, xml, zlib, gd)
-* PEAR's Net/NNTP module
 * Moet kunnen lezen en schrijven in de directory waar de SQLite database staat, of moet een MySQL/PostgreSQL database hebben
 
 Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controleren.
@@ -12,18 +11,15 @@ Je kan 'testinstall.php' in je browser oproepen om de PHP vereisten te controler
 	FreeBSD 8.0
 	Apache 2.2.17 met PHP via mod_fcgid(mod_suexec)
 	PHP 5.3.5
-	PEAR Version: 1.9.1
 	5.1.54 
 
 	:: https://github.com/spotweb/spotweb/issues#issue/12
 	lighttpd/1.4.19 met support voor PHP via fastcgi
 	PHP Version 5.2.6-3ubuntu4
 	Mysql: 5.0.75
-	Pear PEAR Version: 1.7.1 met Net_NNTP geinstalleerd
 
 	:: https://github.com/spotweb/spotweb/issues#issue/12/comment/812695
 	PHP 5.2.16 with Suhosin-Patch 0.9.7 (cgi-fcgi) (built: Jan 2 2011 10:34:33)
-	PEAR Version: 1.9.1 (met Net_NNTP)
 	MySQL 5.1.47
 	
 	
@@ -56,9 +52,3 @@ Omdat settings.php gewoon een "echte" PHP file is, moet deze foutloos zijn ander
 * php5-xml
 * php5-zlib
 * php5-gd
-* pear
-
-Vervolgens installeer je dmv 'pear install Net_NNTP' de pear package 'Net/NNTP'.
-
-== Debian hints ==
-Pear package heet 'php-pear', vrevolgens installeer je met 'pear install Net_NNTP' de pear Net/NNTP package.

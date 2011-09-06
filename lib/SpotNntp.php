@@ -1,6 +1,5 @@
 <?php
 /* Externe library */
-require_once "Net/NNTP/Client.php";
 require_once "lib/exceptions/NntpException.php";
 
 class SpotNntp {
@@ -24,8 +23,6 @@ class SpotNntp {
 			$this->_user = $server['user'];
 			$this->_pass = $server['pass'];
 
-			# Set pear error handling to be used by exceptions
-			PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);			
 			$this->_nntp = new Net_NNTP_Client();
 		} # ctor
 		
