@@ -16,6 +16,16 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
+		case 'Net'			: { 
+			$class_name = substr($class_name, 4);
+			
+			if ($class_name == 'NNTP_Client') {
+				require_once "NNTP/Client.php";
+			} elseif ($class_name == 'NNTP_Protocol_Client') {
+				require_once "NNTP/Protocol/Client.php";
+			} # else			
+			break;
+		} # net
 		default				: {
 			# Exceptions beginnen niet met Exception, dus maken we daar een apart gevalletje van
 			$isException = substr($class_name, -1 * strlen('Exception')) == 'Exception';
@@ -28,7 +38,7 @@ function __autoload($class_name) {
 			# FIXME
 			# Hack om tijdelijk om issue 967 te werken
 			#
-			if ((is_numeric(substr($class_name, 0, 3))) || (strlen(trim($class_name)) == 0)) {
+			if ((is_numeric(substr($class_name, 0, 3))) || (strlen(trim($class_name, " \t\n\r\0\x0b.")) == 0)) {
 				return ;
 			} # if
 

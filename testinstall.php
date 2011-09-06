@@ -69,8 +69,6 @@
 	<tr> <th> Include files  </th> <th> Result </th> </tr>
 	<tr> <td> Settings file </td> <td> <?php $result=testInclude("settings.php"); echo showResult($result, $result); ?> </td> </tr>
 	<tr> <td> Own settings file </td> <td> <?php $result=testInclude("ownsettings.php"); echo showResult($result, $result, "optioneel"); ?> </td> </tr>
-	<tr> <td> <a href="http://pear.php.net/">PEAR</a> </td> <td> <?php $result=testInclude("System.php"); echo showResult($result, $result); ?> </td> </tr>
-	<tr> <td> <a href="http://pear.php.net/package/Net_NNTP">Net_NNTP</a> </td> <td> <?php $result=testInclude("Net".DIRECTORY_SEPARATOR."NNTP".DIRECTORY_SEPARATOR."Client.php"); echo showResult($result, $result); ?> </td> </tr>
 </table>
 <br />
 
