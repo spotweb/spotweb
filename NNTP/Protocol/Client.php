@@ -2025,7 +2025,7 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 	
-	function throwError($detail, $code, $response) {
+	function throwError($detail, $code = -1, $response = "") {
 		throw new NntpException($detail, $code, $response);
 	} # throwError
 
