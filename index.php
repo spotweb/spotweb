@@ -237,7 +237,7 @@ try {
 		} # edituser
 
 		case 'listusers' : {
-				$page = new SpotPage_listusers($db, $settings, $currentSession, array());
+				$page = new SpotPage_listusers($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # listusers
