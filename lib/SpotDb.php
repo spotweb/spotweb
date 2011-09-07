@@ -1270,7 +1270,7 @@ class SpotDb {
 	 * Verwijder een filter en de children toe (recursive)
 	 */
 	function deleteFilter($userId, $filterId, $filterType) {
-		$filterList = $this->getFilterList($userId, 'filter', $filterType);
+		$filterList = $this->getFilterList($userId, $filterType);
 		foreach($filterList as $filter) {
 		
 			if ($filter['id'] == $filterId) {
