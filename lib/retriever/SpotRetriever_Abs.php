@@ -26,6 +26,11 @@ abstract class SpotRetriever_Abs {
 		abstract function updateLastRetrieved($highestMessageId);
 		
 		/*
+		 * Update eventuele statistieken
+		 */
+		abstract function updateStatistics($startedMessageId);
+		
+		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
 		function __construct($server, $db, $settings) {
@@ -96,6 +101,7 @@ abstract class SpotRetriever_Abs {
 			$processed = 0;
 			$headersProcessed = 0;
 			$highestMessageId = '';
+			$startMsg = $curMsg;
 			
 			# make sure we handle articlenumber wrap arounds
 			if ($curMsg < $this->_msgdata['first']) {
@@ -137,11 +143,14 @@ abstract class SpotRetriever_Abs {
 			if ($highestMessageId != '') {
 				$this->updateLastRetrieved($highestMessageId);
 			} # if
-	
+
+			# Update nu de statistieken
+			$this->updateStatistics($startMsg);
+			
 			$this->displayStatus("totalprocessed", $processed);
 			return $headersProcessed;
 		} # loopTillEnd()
-
+		
 		function quit() {
 			# anders melden we onszelf af dat we al draaien
 			$this->_db->setRetrieverRunning($this->_server['host'], false);
