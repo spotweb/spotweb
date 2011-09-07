@@ -44,8 +44,8 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		if ($output === false)
 		{
-			error_log("ERROR: Could not decode json-data for NZBGet method '" . $apiCall ."'");
-			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $apiCall ."'");
+			error_log("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
+			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
 		}
 
 		$response = json_decode($output, true);
