@@ -233,5 +233,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
+		
+		/*
+		 * Update eventuele statistieken
+		 */
+		function updateStatistics($startedMessgeId) {
+		} # updateStatistics
+
+		
 	
 } # class SpotRetriever_Spots
