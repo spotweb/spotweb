@@ -57,7 +57,7 @@ class SpotSettingsUpgrader {
 	 * Creeer de server private en public keys
 	 */
 	function createServerKeys($openSslCnfPath) {
-		$spotSigning = new SpotSigning(true);
+		$spotSigning = new SpotSigning();
 		$x = $spotSigning->createPrivateKey($openSslCnfPath);
 		
 		$this->setIfNot('publickey', $x['public']);
