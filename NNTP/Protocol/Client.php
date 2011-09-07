@@ -76,7 +76,7 @@ if (version_compare(PHP_VERSION, '5.2.11') === 1) {
  *
  */
 //require_once 'Net/NNTP/Error.php';
-require_once 'Net/NNTP/Protocol/Responsecode.php';
+require_once './NNTP/Protocol/Responsecode.php';
 
 
 // {{{ constants
