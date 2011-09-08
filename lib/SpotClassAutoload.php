@@ -26,6 +26,13 @@ function __autoload($class_name) {
 			} # else			
 			break;
 		} # net
+		case 'Math'			: {
+			if ($class_name == 'Math_BigInteger') {
+				require_once "Math/BigInteger";
+			} # if
+			
+			break;
+		} # Math
 		default				: {
 			# Exceptions beginnen niet met Exception, dus maken we daar een apart gevalletje van
 			$isException = substr($class_name, -1 * strlen('Exception')) == 'Exception';
@@ -34,14 +41,6 @@ function __autoload($class_name) {
 				return ;
 			} # if
 			
-			# 
-			# FIXME
-			# Hack om tijdelijk om issue 967 te werken
-			#
-			if ((is_numeric(substr($class_name, 0, 3))) || (strlen(trim($class_name, " \t\n\r\0\x0b.")) == 0)) {
-				return ;
-			} # if
-
 			require_once 'lib/' . $class_name . '.php';
 		} # default
 	} # switch
