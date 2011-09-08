@@ -28,7 +28,7 @@ function __autoload($class_name) {
 		} # net
 		case 'Math'			: {
 			if ($class_name == 'Math_BigInteger') {
-				require_once "Math/BigInteger";
+				require_once "Math/BigInteger.php";
 			} # if
 			
 			break;
