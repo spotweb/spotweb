@@ -101,6 +101,8 @@
 				echo ' (' . $nokMsg . ')';
 			} 
 		} # else
+		
+		return null;
 	} # showResult
 
 	function ownWarning($errno, $errstr) {
