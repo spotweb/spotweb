@@ -1229,7 +1229,7 @@ class Net_NNTP_Protocol_Client
 
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND: // 335
-    	    	true;
+    	    	return true;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED: // 435
     	    	return $this->throwError('Article not wanted', $response, $this->_currentStatusResponse());
@@ -1398,7 +1398,7 @@ class Net_NNTP_Protocol_Client
         if (is_null($distribution)) {
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';
     	} else {
-    	    if (is_array()) {
+    	    if (is_array($distribution)) {
     		$distribution = implode(',', $distribution);
     	    }
 
