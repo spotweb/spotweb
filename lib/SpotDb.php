@@ -881,7 +881,19 @@ class SpotDb {
 	/*
 	 * Update een lijst van messageid's met de gemiddelde spotrating
 	 */
-	function updateSpotRating($startMsgNum) {
+	function updateSpotRating($spotMsgIdList) {
+		# Geen message id's gegeven? Doe niets!
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
 		# en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET spotrating = 
@@ -891,13 +903,25 @@ class SpotDb {
 										spots.messageid = commentsxover.nntpref 
 										AND spotrating BETWEEN 1 AND 10
 									 GROUP BY nntpref)
-							WHERE spots.id >= %d", Array($startMsgNum));
+							WHERE spots.messageid IN (" . $msgIdList . ")
+						");
 	} # updateSpotRating
 
 	/*
 	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
 	 */
-	function updateSpotCommentCount($startMsgNum) {
+	function updateSpotCommentCount($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
 		# en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET commentcount = 
@@ -906,7 +930,8 @@ class SpotDb {
 									 WHERE 
 										spots.messageid = commentsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.id >= %d", Array($startMsgNum));
+							WHERE spots.messageid IN (" . $msgIdList . ")
+						");
 	} # updateSpotCommentCount
 
 	/*
