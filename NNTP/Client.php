@@ -392,7 +392,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     {
         $response = $this->cmdStat($article);
 
-    	switch ($ret) {
+    	switch ($_ret) {
     	    case -1:
     	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
     	    	break;
