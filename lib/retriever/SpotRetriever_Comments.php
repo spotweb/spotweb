@@ -116,21 +116,16 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
+			# herbereken de gemiddelde spotrating, en update het 
+			# aantal niet geverifieerde comments
+			$this->_db->updateSpotRating($spotMsgIdList);
+			$this->_db->updateSpotCommentCount($spotMsgIdList);
+			
 			# update the last retrieved article			
 			$this->_db->setMaxArticleid('comments', $curMsg);
 			$this->_db->commitTransaction();
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
-
-		/*
-		 * Update eventuele statistieken
-		 */
-		function updateStatistics($startedMessgeId) {
-			# herbereken de gemiddelde spotrating, en update het 
-			# aantal niet geverifieerde comments
-			$this->_db->updateSpotRating($startedMessgeId);
-			$this->_db->updateSpotCommentCount($startedMessgeId);
-		} # updateStatistics
-
+		
 } # class SpotRetriever_Comments
