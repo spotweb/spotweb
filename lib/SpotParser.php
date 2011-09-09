@@ -329,7 +329,7 @@ class SpotParser {
 					switch($ch2) {
 						case '=': {
 							if ($startIndex >= (strlen($inputStr) - 2)) {
-								$chArray = substr($strInput, $startIndex + 1, 2);
+								$chArray = substr($inputStr, $startIndex + 1, 2);
 							} # if
 
 							if ($chArray == null) {
