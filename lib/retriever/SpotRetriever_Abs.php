@@ -28,7 +28,7 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType) {
+		function __construct($server, SpotDb $db, SpotSettings $settings) {
 			$this->_server = $server;
 			$this->_db = $db;
 			$this->_settings = $settings;
