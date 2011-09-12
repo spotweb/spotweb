@@ -1,6 +1,4 @@
 <?php
-require_once('lib/exceptions/InvalidLocalDirException.php');
-
 class NzbHandler_Save extends NzbHandler_abs
 {
 	private $_localDir = null;

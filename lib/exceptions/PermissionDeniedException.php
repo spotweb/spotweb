@@ -1,6 +1,4 @@
 <?php
-require_once "lib/exceptions/CustomException.php";
-
 class PermissionDeniedException extends CustomException {
 	private $_permId = -1;
 	private $_object = '';

@@ -1,7 +1,4 @@
 <?php
-require_once "lib/exceptions/InvalidLocalDirException.php";
-
-# NZB Utility functies
 class SpotNzb {
 	private $_settings;
 	private $_db;

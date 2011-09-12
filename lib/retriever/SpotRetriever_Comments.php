@@ -1,6 +1,4 @@
 <?php
-require_once "SpotRetriever_Abs.php";
-
 class SpotRetriever_Comments extends SpotRetriever_Abs {
 		private $_outputType;
 

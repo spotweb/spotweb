@@ -1,8 +1,4 @@
 <?php
-/* Externe library */
-require_once "Math/BigInteger.php";
-require_once "Crypt/RSA.php";
-
 /*
  * Utility classe om RSA signatures te laten verifieeren door OpenSSL ipv
  * Crypt/RSA, dit is een keer of 100 sneller
