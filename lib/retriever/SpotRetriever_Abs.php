@@ -1,6 +1,4 @@
 <?php
-require_once "lib/exceptions/RetrieverRunningException.php";
-
 abstract class SpotRetriever_Abs {
 		protected $_server;
 		protected $_spotnntp;

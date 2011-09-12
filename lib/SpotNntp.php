@@ -1,7 +1,4 @@
 <?php
-/* Externe library */
-require_once "lib/exceptions/NntpException.php";
-
 class SpotNntp {
 		private $_server;
 		private $_user;

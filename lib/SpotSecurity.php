@@ -1,8 +1,6 @@
 <?php
 define('SPOTWEB_SECURITY_VERSION', '0.14');
 
-require_once "lib/exceptions/PermissionDeniedException.php";
-
 class SpotSecurity {
 	private $_db;
 	private $_user;

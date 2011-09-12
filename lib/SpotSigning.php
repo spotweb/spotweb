@@ -1,7 +1,4 @@
 <?php
-require_once "Math/BigInteger.php";
-require_once "Crypt/RSA.php";
-
 class SpotSigning {
 
 	public function __construct() {
