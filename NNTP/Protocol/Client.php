@@ -291,7 +291,7 @@ class Net_NNTP_Protocol_Client
     function _getStatusResponse()
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
-    	$response = @fgets($this->_socket, 256);
+    	$response = @fgets($this->_socket);
         if ($response === false) {
             return $this->throwError('Failed to read from socket...!');
         }
