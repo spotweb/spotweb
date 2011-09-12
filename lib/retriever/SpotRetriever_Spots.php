@@ -111,7 +111,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-
 													
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
