@@ -5,7 +5,7 @@ class SpotParser {
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
-						  'subcatc' => '', 'subcatd' => '', 'imageid' => '', 'subcatz' => '');
+						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
 
 		/* 
 		 * Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
