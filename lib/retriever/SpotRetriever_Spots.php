@@ -193,8 +193,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} 
 						catch(Exception $x) {
 							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
+# dit is de "No such article" error
 							# swallow the error
-							if ($x->getMessage() == 'No such article found') {
+							if ($x->getCode() == 430) {
 								;
 							} 
 							# als de XML niet te parsen is, niets aan te doen
