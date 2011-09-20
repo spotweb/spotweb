@@ -33,9 +33,11 @@ try {
 	} # if
 
 	# Controleer dat er nergens iets mis staat in de ownsettings.php oid dat output
-	# genereerd
-	if (headers_sent()) {
-		die("ownsettings.php geeft al output, zorg dat je ownsettings.php niet afgesloten is met ?> en dat er niets staat voor de <?");
+	# genereerd. Als er output buffering toegepast wordt door PHP dan is deze check niet
+	# voldoende. ob_get_length() geeft false terug als er geen outputbuffering actief is,
+	# of anders 0 als er nog geen headers verstuurd zijn.
+	if ((headers_sent()) || ((int) ob_get_length() > 0)) {
+		die("ownsettings.php geeft al output, zorg dat je ownsettings.php niet afgesloten is met ?> en dat er niets staat voor de openingstag." . PHP_EOL);
 	} # if
 	
 	# helper functions for passed variables
