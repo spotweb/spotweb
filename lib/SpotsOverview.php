@@ -562,9 +562,28 @@ class SpotsOverview {
 							break;
 					} # case 'new' 
 
-					case 'downloaded' : $tmpFilterValue = ' (l.download IS NOT NULL)'; 	break;
-					case 'watch' 	  : $tmpFilterValue = ' (l.watch IS NOT NULL)'; break;
-					case 'seen' 	  : $tmpFilterValue = ' (l.seen IS NOT NULL)'; 	break;
+					case 'downloaded' : { 
+						$tmpFilterValue = ' (l.download IS NOT NULL)'; 	
+						$sortFields[] = array('field' => 'downloadstamp',
+											  'direction' => 'DESC',
+											  'autoadded' => true,
+											  'friendlyname' => null);
+						break;
+					} # case 'downloaded'
+					case 'watch' 	  : { 
+						$tmpFilterValue = ' (l.watch IS NOT NULL)'; break;
+						$sortFields[] = array('field' => 'watchstamp',
+											  'direction' => 'DESC',
+											  'autoadded' => true,
+											  'friendlyname' => null);
+					} # case 'watch'
+					case 'seen' 	  : {
+						$tmpFilterValue = ' (l.seen IS NOT NULL)'; 	break;
+						$sortFields[] = array('field' => 'seenstamp',
+											  'direction' => 'DESC',
+											  'autoadded' => true,
+											  'friendlyname' => null);
+					} # case 'seen'
 				} # switch
 				
 				# en creeer de query string
