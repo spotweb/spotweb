@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.36');
+define('SPOTDB_SCHEMA_VERSION', '0.37');
 
 class SpotDb {
 	private $_dbsettings = null;

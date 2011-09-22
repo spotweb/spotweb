@@ -324,6 +324,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('maxarticleid', 'nntp', 'INTEGER', NULL, false, '');
 		$this->validateColumn('nowrunning', 'nntp', 'INTEGER', "0", false, '');
 		$this->validateColumn('lastrun', 'nntp', 'INTEGER', "0", false, '');
+		$this->validateColumn('serverdatelastrun', 'nntp', 'VARCHAR(14)', "00000000000000", false, 'ascii');
 		$this->alterStorageEngine("nntp", "InnoDB");
 		
 		# ---- commentsxover table ---- #
