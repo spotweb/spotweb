@@ -313,7 +313,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
-		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
 		$this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
@@ -349,7 +349,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('fromhdr', 'commentsfull', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('stamp', 'commentsfull', 'INTEGER', NULL, false, '');
 		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
-		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
 		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
