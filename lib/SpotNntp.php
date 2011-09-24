@@ -238,6 +238,54 @@ class SpotNntp {
 			$spotParser = new SpotParser();
 			return gzinflate( $spotParser->unspecialZipStr($nzb) );
 		} # getNzb
+		
+		/*
+		 * Post an NZB file. First we gzip the contents and then
+		 * process special characters with it. After that is done, we
+		 * split the file in 10K segments and actually post it to the 
+		 * usenet server
+		 *
+		 * Returns a list of messageids
+		 */
+		function postNzbFile($user, $newsgroup, $nzbContents) {
+			$chunkLen = 1024 * 10;
+			$segmentList = array();
+			
+			$spotParser = new SpotParser();
+			$spotSigning = new SpotSigning();
+			$nzbZipped = $spotParser->specialZipstr(gzdeflate($nzbContents));
+			
+			/*
+			 * Now start posting chunks of the NZB files
+			 */
+			while(strlen($nzbZipped) > 0) {
+				/*
+				 * Cut of the first piece of the NZB file, and remove it
+				 * from the source string
+				 */
+				$chunk = substr($nzbZipped, 0, $chunkLen - 1);
+				$nzbZipped = substr($nzbZipped, $chunkLen - 1);
+				
+				/*
+				 * Create an unique segmentid and store it so we can return it
+				 * for the actual Spot creation
+				 */
+				$messageid = $spotSigning->makeRandomStr(15) . '@spot.net';
+				$segmentList[] = $messageid;
+
+				/* 
+				 * Now we create the NNTP header 
+				 */
+				$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+				$header .= 'Subject: ' . md5($chunk) . "\r\n";
+				$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
+				$header .= 'Message-ID: <' . $messageId .  ">\r\n";
+				$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
+				$header .= "X-No-Archive: yes\r\n";
+			
+				$this->post(array($header, $comment['body']));		
+			} # while
+		} # postNzbFile
 
 		
 		function getFullSpot($msgId) {
