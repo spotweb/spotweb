@@ -240,6 +240,35 @@ class SpotNntp {
 		} # getNzb
 		
 		/*
+		 * Post an image (contents of the image file should be passed)
+		 */
+		function postImageFile($user, $newsgroup, $imgContents) {
+			$spotParser = new SpotParser();
+			$spotSigning = new SpotSigning();
+			$imgProcessed = $spotParser->specialZipstr($imgContents);
+			
+			/*
+			 * Create an unique messageid and store it so we can return it
+			 * for the actual Spot creation
+			 */
+			$messageid = $spotSigning->makeRandomStr(15) . '@spot.net';
+
+			/* 
+			 * Now we create the NNTP header 
+			 */
+			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+			$header .= 'Subject: ' . md5($imgContents) . "\r\n";
+			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
+			$header .= 'Message-ID: <' . $messageId .  ">\r\n";
+			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
+			$header .= "X-No-Archive: yes\r\n";
+		
+			$this->post(array($header, $imgProcessed));		
+			
+			return $messageid;
+		} # postImageFile
+		
+		/*
 		 * Post an NZB file. First we gzip the contents and then
 		 * process special characters with it. After that is done, we
 		 * split the file in 10K segments and actually post it to the 
@@ -283,9 +312,52 @@ class SpotNntp {
 				$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 				$header .= "X-No-Archive: yes\r\n";
 			
-				$this->post(array($header, $comment['body']));		
+				$this->post(array($header, $chunk));
 			} # while
+			
+			return $segmentList;
 		} # postNzbFile
+		
+		/*
+		 * Posts a spot file and its corresponding image and NZB file (actually done by
+		 * helper functions)
+		 */
+		function postFullSpot($user, $serverPrivKey, $newsgrup, $spot, $nzbContents, $imageContents) {
+			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
+
+			# instantieer de benodigde objecten
+			$spotSigning = new SpotSigning();
+			$spotParser = new SpotParser();
+
+			# sign het messageid
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
+			
+			# ook door de php server 
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $comment['newmessageid']);
+
+			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+			$header .= 'Subject: Re: ' . $title . "\r\n";
+			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
+			$header .= 'Message-ID: <' . $comment['newmessageid'] . ">\r\n";
+			$header .= 'References: <' . $comment['inreplyto']. ">\r\n";
+			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+			$header .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
+			
+			# $header .= 'X-User-Avatar: ' 
+			# Message-ID van een avatar
+
+			# $header .= 'X-User-Gravatar: ' 
+			# Hashcode van een Gravatar
+
+			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
+			$header .= "X-No-Archive: yes\r\n";
+			
+			return $this->post(array($header, $comment['body']));
+		} # postFullSpot
+		
 
 		
 		function getFullSpot($msgId) {
