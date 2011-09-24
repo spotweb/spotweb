@@ -80,13 +80,19 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$skipCount = 0;
 			$lastProcessedId = '';
 
+			# Bepaal onze retention stamp
+			if ($this->_settings->get('retention') > 0) {
+				$retentionStamp = time() - ($this->_settings->get('retention') * 24 * 60 * 60);
+			} else {	
+				$retentionStamp = 0;
+			} # else
+			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
-#var_dump($hdrList);
 
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
-			
+		
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);
@@ -109,7 +115,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-													
+												
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
@@ -136,7 +142,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} else {
 						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
-						if ($this->_settings->get('retention') > 0 && $spot['stamp'] < time()-($this->_settings->get('retention') * 24 * 60 * 60)) {
+						if ($retentionStamp > 0 && $spot['stamp'] < $retentionStamp) {
 							$skipCount++;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
 							$skipCount++;
@@ -180,7 +186,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
-					
+
 							# en voeg hem aan de database toe
 							$this->_db->addFullSpot($fullSpot);
 							$fullspot_isInDb = true;
@@ -193,7 +199,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} 
 						catch(Exception $x) {
 							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
-# dit is de "No such article" error
+							# dit is de "No such article" error
 							# swallow the error
 							if ($x->getCode() == 430) {
 								;
