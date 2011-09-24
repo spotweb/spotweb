@@ -4,11 +4,31 @@
  * Crypt/RSA, dit is een keer of 100 sneller
  */
 class SpotSeclibToOpenSsl {
+	/*
+	 * Geinitialiseerde public key cache gebruiken? Is enkel beschikbaar voor
+	 * de OpenSSL library
+	 */
+	private $_pubKeyCache = array();
 
-	function verify($pubKey, $toCheck, $signature) {
-		$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($pubKey));
-		$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
-		openssl_free_key($openSslPubKey);
+	function verify($rsaKey, $toCheck, $signature, $useCache) {
+		if (isset($this->_pubKeyCache[$rsaKey['modulo'] . $rsaKey['exponent']])) {
+			$openSslPubKey = $this->_pubKeyCache[$rsaKey['modulo'] . $rsaKey['exponent']];
+			$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
+		} else {
+			# Initialize the public key to verify with
+			$pubKey['n'] = base64_decode($rsaKey['modulo']);
+			$pubKey['e'] = base64_decode($rsaKey['exponent']);
+
+			$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($pubKey));
+			$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
+			
+			# Moeten we de resource cachen ipv vrijgeven?
+			if ($useCache) {
+				$this->_pubKeyCache[$rsaKey['modulo'] . $rsaKey['exponent']] = $openSslPubKey;
+			} else {
+				openssl_free_key($openSslPubKey);
+			} # else
+		} # else
 		
 		return $verified;
 	} # verify
@@ -29,7 +49,8 @@ class SpotSeclibToOpenSsl {
 		$return = array();
 		
 		$return[] = 40 * $vals[0] + $vals[1];
-		for($i = 2; $i < count($vals); $i++) {
+		$valCount = count($vals);
+		for($i = 2; $i < $valCount; $i++) {
 			# Code copied from
 			#   http://chaosinmotion.com/wiki/index.php?title=ASN.1_Library
 			$v = $vals[$i];
@@ -86,35 +107,44 @@ class SpotSeclibToOpenSsl {
 		
 		/*
 		 * Nu creeeren we de type header
+		 *
+		 * We kunnen de rsaIdentifier berekenen, maar omdat dat toch nooit verandert, 
+		 * zetten we de berekening klaar. 
+		 * Code om te berekenen:
+		 *      $rsaIdentifier = $this->_encodeObjectId(array(1,2,840,113549,1,1,1)); 	// Magic value of RSA
+		 *
+		 *		$encryptionType = pack('Ca*',
+		 *				0x06,		# ASN.1 OBJECT IDENTIFIER
+		 *				$this->_encodeLength(count($rsaIdentifier))
+		 *		);
+		 *		$rsaIdentifierCount = count($rsaIdentifier);
+		 *		for($i = 0; $i < $rsaIdentifierCount; $i++) {	
+		 *			$encryptionType .= chr($rsaIdentifier[$i]);
+		 *		} # foreach
+		 *
+		 *
+		 *		# de encryption type header wordt geappend met een ASN.1 NULL
+		 * 		$encryptionType .= pack('CC',
+		 *					0x05,			# ASN.1 NULL
+		 *					0
+		 *		);
+		 *
+		 *		# en de encryptiontype pakken we in in een sequence
+		 *		$encryptionType = pack('Ca*a*',
+		 *			CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
+		 *			$this->_encodeLength(strlen($encryptionType)),
+		 *			$encryptionType
+		 *		);
 		 */
-		$rsaIdentifier = $this->_encodeObjectId(array(1,2,840,113549,1,1,1)); 	/* Magic value of RSA */
-		$encryptionType = pack('Ca*',
-				0x06,		# ASN.1 OBJECT IDENTIFIER
-				$this->_encodeLength(count($rsaIdentifier))
-		);
-		for($i = 0; $i < count($rsaIdentifier); $i++) {	
-			$encryptionType .= chr($rsaIdentifier[$i]);
-		} # foreach
-		
-		# de encryption type header wordt geappend met een ASN.1 NULL
-		$encryptionType .= pack('CC',
-					0x05,			# ASN.1 NULL
-					0
-		);
-		
-		# en de encryptiontype pakken we in in een sequence
-		$encryptionType = pack('Ca*a*',
-					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
-					$this->_encodeLength(strlen($encryptionType)),
-					$encryptionType
-		);
+		$encryptionType = "\x30\xd\x6\x9\x2a\x86\x48\x86\xf7\xd\x1\x1\x1\x5\x0";
 		
 		# en ook dit alles pakken we in een sequence in
 		$endResult = pack('Ca*a*',
 					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
-					$this->_encodeLength(strlen($encryptionType . $encodedKeys)),
+					$this->_encodeLength(15 + strlen($encodedKeys)), # 15 == strlen($encryptionType)
 					$encryptionType . $encodedKeys
 		);
+		
 		return "-----BEGIN PUBLIC KEY-----\n" . 
 				chunk_split(base64_encode($endResult), 64) .
 				"-----END PUBLIC KEY-----\n";
