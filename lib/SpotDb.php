@@ -1315,12 +1315,12 @@ class SpotDb {
 	function addFilter($userId, $filter) {
 		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder)
 								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s')",
-							Array($userId,
+							Array((int) $userId,
 								  $filter['filtertype'],
 								  $filter['title'],
 								  $filter['icon'],
-								  $filter['torder'],
-								  $filter['tparent'],
+								  (int) $filter['torder'],
+								  (int) $filter['tparent'],
 								  $filter['tree'],
 								  implode('&', $filter['valuelist']),
 								  $filter['sorton'],
