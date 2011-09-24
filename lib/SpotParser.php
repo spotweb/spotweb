@@ -296,6 +296,15 @@ class SpotParser {
 		return $strInput;
 	} # unspecialZipstr
 
+	/*private */function specialZipStr($strInput) {
+		$strInput = str_replace("=", '=D', $strInput);
+		$strInput = str_replace("\0", '=A', $strInput);
+		$strInput = str_replace("\r", '=B', $strInput);
+		$strInput = str_replace("\n", '=C', $strInput);
+
+		return $strInput;
+	} # specialZipstr
+	
 	private function splitBySizEx($strInput, $iSize) {
 		$length = strlen($strInput);
 		$index = 0;
