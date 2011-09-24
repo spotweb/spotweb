@@ -2,7 +2,8 @@
 require_once "Crypt/RSA.php";
 
 class SpotSigning {
-
+	private $_nativeVerify = null;
+	
 	public function __construct() {
 		if (!defined('CRYPT_RSA_MODE')) {
 			if (extension_loaded("openssl")) {
@@ -11,10 +12,14 @@ class SpotSigning {
 				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL);
  			} # else
 		} # if not defined
+
+		if (CRYPT_RSA_MODE == CRYPT_RSA_MODE_OPENSSL) {
+			$this->_nativeVerify = new SpotSeclibToOpenSsl();
+		} # if
 	} # ctor
 
 
-	private function checkRsaSignature($toCheck, $signature, $rsaKey) {
+	private function checkRsaSignature($toCheck, $signature, $rsaKey, $useCache) {
 		# de signature is base64 encoded, eerst decoden
 		$signature = base64_decode($signature);
 
@@ -35,12 +40,7 @@ class SpotSigning {
 			$tmpSave = $rsa->verify($toCheck, $signature);
 			error_reporting($saveErrorReporting);
 		} else {
-			# Initialize the public key to verify with
-			$pubKey['n'] = base64_decode($rsaKey['modulo']);
-			$pubKey['e'] = base64_decode($rsaKey['exponent']);
-
-			$nativeVerify = new SpotSeclibToOpenSsl();
-			$tmpSave = $nativeVerify->verify($pubKey, $toCheck, $signature);
+			$tmpSave = $this->_nativeVerify->verify($rsaKey, $toCheck, $signature, $useCache);
 		} # else
 
 		return $tmpSave;
@@ -90,7 +90,7 @@ class SpotSigning {
 		 * $spotSigning = new SpotSigning();
 		 * $x = $spotSigning->signMessage($privatekey, 'testmessage');
 		 * var_dump($x);
-		 * var_dump($spotSigning->checkRsaSignature('testmessage', $x['signature'], $x['publickey']));
+		 * var_dump($spotSigning->checkRsaSignature('testmessage', $x['signature'], $x['publickey'], false));
 		 *
 		 */
 		 
@@ -120,12 +120,12 @@ class SpotSigning {
 	/*
 	 * Helper functie om een spot header (resultaat uit een xover of getHeader()) te verifieeren
 	 */
-	public function verifySpotHeader($spot, $signature, $rsakeys) {
+	public function verifySpotHeader($spot, $signature, $rsaKeys) {
 		# This is the string to verify
 		$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
 		
 		# Check the RSA signature on the spot
-		return $this->checkRsaSignature($toCheck, $signature, $rsakeys[$spot['keyid']]);
+		return $this->checkRsaSignature($toCheck, $signature, $rsaKeys[$spot['keyid']], true);
 	} # verifySpotHeader()
 
 	/*
@@ -136,9 +136,9 @@ class SpotSigning {
 			return false;
 		} # if
 		
-		$verified = $this->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
+		$verified = $this->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key'], false);
 		if (!$verified) {
-			$verified = $this->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key']);
+			$verified = $this->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key'], false);
 		} # if
 		
 		return $verified;
@@ -151,13 +151,14 @@ class SpotSigning {
 		$verified = false;
 
 		if ((!empty($comment['usersignature'])) && (!empty($comment['user-key']))) {
-			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key']);
+			$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['usersignature'], $comment['user-key'], false);
 			if (!$verified) {
 				$verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>' . 
 																implode("\r\n", $comment['body']) . "\r\n" . 
 																$comment['fromhdr'], 
 													$comment['usersignature'], 
-													$comment['user-key']);
+													$comment['user-key'],
+													false);
 			} # if
 		} # if
 		
