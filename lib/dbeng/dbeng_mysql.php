@@ -243,7 +243,7 @@ class dbeng_mysql extends dbeng_abs {
 			} # foreach
 			
 			# Wis dubbele spaties anders vinden we nooit iets
-			$searchValue = str_replace('  ', ' ', $tempSearchValue);
+			$searchValue = str_replace('  ', ' ', $searchValue);
 			
 			# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
 			# vinden, schakelen we over naar boolean match
@@ -273,7 +273,7 @@ class dbeng_mysql extends dbeng_abs {
 				} # if
 
 				# als het een stop word is, dan vallen we ook terug naar de like search
-				if (in_array($strippedTerm, $this->stop_words) !== false) {
+				if (in_array(strtolower($strippedTerm), $this->stop_words) !== false) {
 					$hasStopWords = true;
 				} else {
 					# Deze zekerheid is nodig om ervoor te zorgen dat als men enkel op
@@ -298,7 +298,9 @@ class dbeng_mysql extends dbeng_abs {
 			 *		"sex and the city 2"
  			 *		Just Go With It (fallback naar like, enkel stopwoorden of te kort)
 			 *		"Just Go With It" (fallback naar like, en quotes gestripped)
+			 *		+empire +sun
 			 */
+
 /*
 			var_dump($hasTooShortWords);
 			var_dump($hasStopWords);
@@ -306,7 +308,7 @@ class dbeng_mysql extends dbeng_abs {
 			var_dump($hasNoStopWords);
 			var_dump($searchMode);
 			die();
-*/			
+*/
 			
 			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
 				if ($hasStopWords && !$hasNoStopWords) {
