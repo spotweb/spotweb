@@ -1,5 +1,12 @@
 <?php
 class SpotParser {
+	private $_spotSigning = null;
+	
+	function __construct() {
+		$this->_spotSigning = new SpotSigning();
+	} # ctor
+	
+	
 	function parseFull($xmlStr) {
 		# Gebruik een spot template zodat we altijd de velden hebben die we willen
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
@@ -88,14 +95,19 @@ class SpotParser {
 		return $tpl_spot;
 	} # parseFull()
 
-	function parseXover($subj, $from, $date, $messageid, $rsakeys) {
-		$_CAT = 0;
-		$_FSIZE = 1;
-
+	function parseXover($subj, $from, $date, $messageid, $rsaKeys) {
 		// initialiseer wat variabelen
 		$spot = array();
 
-		// Eerst splitsen we de header string op in enkel de category info e.d.
+
+		/*
+		 * De "From" header is als volgt opgebouwd:
+		 *
+		 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+		 *
+		 * We willen nu alles extracten wat achter de '@' staat, maar omdat een nickname theoretisch ook een @ kan bevatten
+		 * doen we eerst wat meer moeite 
+		 */
 		$fromInfoPos = strpos($from, '<');
 		if ($fromInfoPos === false) {
 			return false;
@@ -108,152 +120,155 @@ class SpotParser {
 			$spot['header'] = $fromAddress[1];
 		} # if
 
+		/* 
+		 * Initialiseer wat basis variabelen, doordat we verified op false zetten
+		 * zal de spot altijd nog genegeerd worden ook al geven we nu de spot array
+		 * terug 
+		 */
 		$spot['verified'] = false;
 		$spot['filesize'] = 0;
 		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
+		$spot['stamp'] = strtotime($date);
 
-		# als de spot in de toekomst ligt, dan corrigeren we dat naar nu
-		if (time() < strtotime($date)) {
-			$spot['stamp'] = time();
-		} else {
-			$spot['stamp'] = strtotime($date);
-		} # if
+		/*
+		 * Breek de .-delimited velden op in een array zodat we er makkelijker wat
+		 * mee kunnen doen. We hebben tenminste 6 velden nodig, anders is de spot
+		 * sowieso ongeldig. Meer velden kan (zie spec)
+		 */		
 		$fields = explode('.', $spot['header']);
+		if (count($fields) < 6) {
+			return false;
+		} # if
 
-		if (count($fields) >= 6) {
-			$spot['filesize'] = $fields[$_FSIZE];
-			$spot['category'] = (substr($fields[$_CAT], 0, 1)) - 1.0;
+		/*
+		 * De velden die voor het oprapen liggen, halen we nu ook op
+		 */
+		$spot['poster'] = substr($from, 0, $fromInfoPos -1);
+		$spot['category'] = (substr($fields[0], 0, 1)) - 1.0;
+		$spot['keyid'] = (int) substr($fields[0], 1, 1);
+		$spot['filesize'] = $fields[1];
+		$spot['subcata'] = '';
+		$spot['subcatb'] = '';
+		$spot['subcatc'] = '';
+		$spot['subcatd'] = '';
+		$spot['subcatz'] = '';
+		$isRecentKey = $spot['keyid'] <> 1;
 
-			// extract de posters name
-			$spot['poster'] = substr($from, 0, $fromInfoPos -1);
+		/* 
+		 * Als er sowieso geen geldige keyid is, is de spot ook ongeldig
+		 */
+		if ($spot['keyid'] < 0) {
+			return false;
+		} # if
 
-			// key id
-			$spot['keyid'] = (int) substr($fields[$_CAT], 1, 1);
+		/*
+		 * De lijst met subcategorieen is opgebouwd afhankelijk van hoe recent de spot is.
+		 *
+		 * FTD spots zetten alle subcategorieen gewoon achter elkaar, dus bv: a9b4c0d5d15d11
+		 * nieuwere spots reserveren steeds 3 karakters voor elke categorie, dus: a09b04c00d05d15d11.
+		 *
+		 * Omdat beide feitelijk dezelfde karakteristieken hebben, parseren we die op dezelfde
+		 * manier. We voegen aan de $strCatLis een extra token toe zodat de laatste categorie ook geparsd
+		 * kan worden. We voegen drie karakters toe zodat een eventuele sanitycheck (strlen() % 3 = 0) nog
+		 * zou valideren.
+		 */
+		$strCatList = strtolower(substr($fields[0], 2)) . '!!!';
+		$strCatListLen = strlen($strCatList);
 
-			if ($spot['keyid'] >= 0) {
+		/*
+		 * We initialiseren wat tijdelijke variables zodat we hier de sanity checking
+		 * kunnen doen
+		 */
+		$validSubcats = array('a' => true, 'b' => true, 'c' => true, 'd' => true, 'z' => true);
+		$tmpCatBuild = '';
+		
 
-				$expression = '';
-				$strInput = substr($fields[$_CAT], 2);
-				$recentKey = $spot['keyid'] <> 1;
-
-				if ($recentKey) {	
-					if ((strlen($strInput) == 0) || ((strlen($strInput) % 3) != 0)) {
-						return;
-					} # if
-
-					$subcatAr = $this->splitBySizEx($strInput, 3);
-					foreach($subcatAr as $str) {
-						if (strlen($str) > 0) {
-							$expression .= strtolower(substr($str, 0, 1)) . ((int) substr($str, 1)) . '|';
-						} # if
-					} # foeeach
-				} else {
-					$list = array();
-					for($i = 0; $i < strlen($strInput); $i++) {
-						if (($strInput[$i] == 0) && (!is_numeric($strInput[$i])) && (strlen($expression) > 0)) {
-							$list[] = $expression;
-							$expression = '';
-						} # if
-
-						$expression .= $strInput[$i];
-					} # for
-
-					$list[] = $expression;
-					$expression = '';
-					foreach($list as $str) {
-						$expression .= strtolower(substr($str, 0, 1)) . substr($str, 1) . '|';
-					} # foreach
-				} # else if $recentKey 
-
-				# Break up the subcategories per subcat-type
-				if (strlen($expression) > 0) {
-					$subcats = explode('|', $expression);
-					$spot['subcata'] = '';
-					$spot['subcatb'] = '';
-					$spot['subcatc'] = '';
-					$spot['subcatd'] = '';
-					$spot['subcatz'] = '';
-
-					foreach($subcats as $subcat) {
-						if (in_array(strtolower(substr($subcat, 0, 1)), array('a','b','c','d','z')) !== false) {
-							$spot['subcat' . strtolower(substr($subcat, 0, 1))] .= $subcat . '|';
-						} # if
-					} # foreach
-					
-					# We vullen hier de z categorieen alvast op in het geval er geen Z category gegeven is
-					if (empty($spot['subcatz'])) {
-						$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
-					} # if
-
+		/* Probeer nu alle subcategorieen te extracten */
+		for($i = 0; $i < $strCatListLen; $i++) {
+			# Als het huidige karakter geen getal is, dan hebben we de volgende
+			# categorie gevonden, voeg die toe aan de lijst met categorieen
+			if ((!is_numeric($strCatList[$i])) && (!empty($tmpCatBuild))) {
+				if (isset($validSubcats[$tmpCatBuild[0]])) {
+					$spot['subcat' . $tmpCatBuild[0]] .= $tmpCatBuild[0] . (int) substr($tmpCatBuild, 1) . '|';
 				} # if
-
-				if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
-					# Make sure its as simple as possible
-					$subj = str_replace('?= =?', '?==?', $subj);
-					$subj = str_replace('\r', '', trim($this->oldEncodingParse($subj)));
-					$subj = str_replace('\n', '', $subj);
-				} # if
-
-				if ($recentKey) {
-					$tmp = explode('|', $subj);
-
-					$spot['title'] = trim($tmp[0]);
-					if (count($tmp) > 1) {
-						$spot['tag'] = trim($tmp[1]);
-					} else {
-						$spot['tag'] = '';
-					} # else
-				} else {
-					$tmp = explode('|', $subj);
-					if (count($tmp) <= 1) {
-						$tmp = array($subj);
-					} # if
-
-					$spot['tag'] = trim($tmp[count($tmp) - 1]);
-
-					# remove the tags from the array
-					array_pop($tmp);
-					array_pop($tmp);
-
-					$spot['title'] = trim(implode('|', $tmp));
-
-					if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
-						$spot['title'] = trim($this->oldEncodingParse($spot['title']));
-					} # if
-				} # if recentKey
-
-				if (((strlen($spot['title']) != 0) && (strlen($spot['poster']) != 0))) {
-	
-					# Als er een recentkey is (key <> 1), OF de spot is na 2010 geplaatst, dan moet
-					# de spot gesigned zijn.
-					$mustbeSigned = $recentKey | ($spot['stamp'] > 1293870080);
-					if ($mustbeSigned) {
-						$spot['headersign'] = $fields[count($fields) - 1];
-
-						if (strlen($spot['headersign']) != 0) {
-
-							$spot['wassigned'] = true;
-
-							# KeyID 7 betekent dat alleen een hashcash vereist is
-							if ($spot['keyid'] == 7) {
-								$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-								$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
-							} else {
-								# the signature this header is signed with
-								$signature = $this->unspecialString($spot['headersign']);
-
-								$spotSigning = new SpotSigning();
-								$spot['verified'] = $spotSigning->verifySpotHeader($spot, $signature, $rsakeys);
-							} # else
-						} # if
-					} # if must be signed
-					else {
-						$spot['verified'] = true;
-						$spot['wassigned'] = false;
-					} # if doesnt need to be signed, pretend that it is
-				} # if
+				
+				$tmpCatBuild = '';
 			} # if
-		} # if 
+
+			$tmpCatBuild .= $strCatList[$i];
+		} # for
+
+		# We vullen hier de z categorieen alvast op in het geval er geen Z category gegeven is
+		if (empty($spot['subcatz'])) {
+			$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
+		} # if
+
+		if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
+			# Make sure its as simple as possible
+			$subj = str_replace('?= =?', '?==?', $subj);
+			$subj = str_replace('\r', '', trim($this->oldEncodingParse($subj)));
+			$subj = str_replace('\n', '', $subj);
+		} # if
+
+		if ($isRecentKey) {
+			$tmp = explode('|', $subj);
+
+			$spot['title'] = trim($tmp[0]);
+			if (count($tmp) > 1) {
+				$spot['tag'] = trim($tmp[1]);
+			} else {
+				$spot['tag'] = '';
+			} # else
+		} else {
+			$tmp = explode('|', $subj);
+			if (count($tmp) <= 1) {
+				$tmp = array($subj);
+			} # if
+
+			$spot['tag'] = trim($tmp[count($tmp) - 1]);
+
+			# remove the tags from the array
+			array_pop($tmp);
+			array_pop($tmp);
+
+			$spot['title'] = trim(implode('|', $tmp));
+
+			if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
+				$spot['title'] = trim($this->oldEncodingParse($spot['title']));
+			} # if
+		} # if recentKey
+
+		# Een title en poster zijn verplicht, anders kan de signature niet gechecked worden
+		if (((strlen($spot['title']) == 0) || (strlen($spot['poster']) == 0))) {
+			return $spot;
+		} # if
+		
+		# Als er een recentkey is (key <> 1), OF de spot is na 2010 geplaatst, dan moet
+		# de spot gesigned zijn.
+		$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
+		if ($mustbeSigned) {
+			$spot['headersign'] = $fields[count($fields) - 1];
+
+			if (strlen($spot['headersign']) != 0) {
+
+				$spot['wassigned'] = true;
+
+				# KeyID 7 betekent dat alleen een hashcash vereist is
+				if ($spot['keyid'] == 7) {
+					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+				} else {
+					# the signature this header is signed with
+					$signature = $this->unspecialString($spot['headersign']);
+
+					$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+				} # else
+			} # if
+		} # if must be signed
+		else {
+			$spot['verified'] = true;
+			$spot['wassigned'] = false;
+		} # if doesnt need to be signed, pretend that it is
 
 		# Nu zetten we de titel en dergelijke om naar utf8, we kunnen
 		# dat niet eerder doen omdat anders de RSA signature niet meer
@@ -262,19 +277,15 @@ class SpotParser {
 			$spot['title'] = utf8_encode($spot['title']);
 			$spot['poster'] = utf8_encode($spot['poster']);
 			$spot['tag'] = utf8_encode($spot['tag']);
-		} # f
+			
+			# als de spot in de toekomst ligt, dan corrigeren we dat naar nu
+			if (time() < $spot['stamp']) {
+				$spot['stamp'] = time();
+			} # if
+		} # if
 
 		return $spot;
 	} # parseXover
-
-	private function fixPadding($strInput) {
-		while ((strlen($strInput) % 4) != 0) {
-			$strInput .= '=';
-		} # while
-
-		return $strInput;
-	} # fixPadding
-
 
 	/*private */function unspecialZipStr($strInput) {
 		$strInput = str_replace('=C', "\n", $strInput);
@@ -431,10 +442,12 @@ class SpotParser {
 	} # specialString
 
 	/*private */function unspecialString($strInput) {
-		$strInput = $this->fixPadding($strInput);
-		$strInput = str_replace('-s', '/', $strInput);
-		$strInput = str_replace('-p', '+', $strInput);
-
-		return $strInput;
+		/* Zorg dat de input string gepad wordt naar een multiple of 4 */
+		$paddingLen = strlen($strInput) % 4;
+		if ($paddingLen > 0) {
+			$strInput .= str_repeat('=', (4 - $paddingLen));
+		} # if
+		
+		return str_replace(array('-s', '-p'), array('/', '+'), $strInput);
 	} # unspecialString
 } # class Spot
