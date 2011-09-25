@@ -84,10 +84,19 @@ class SpotNntp {
 			} # if
 			$this->_connected = true;
 
+			/* 
+			 * Erase username/password so it won't show up in any stacktrace
+			 */
+			$tmpUser = $this->_user;
+			$tmpPass = $this->_pass;
+			$this->_user = '*FILTERED*';
+			$this->_pass = '*FILTERED*';
+			
 			try{
 				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
 				if (!empty($this->_user)) {
-					$authed = $this->_nntp->authenticate($this->_user, $this->_pass);
+					$authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
+					
 				} # if
 			}catch(Exception $x){
 				throw new NntpException($x->getMessage(), $x->getCode());
@@ -317,48 +326,90 @@ class SpotNntp {
 			
 			return $segmentList;
 		} # postNzbFile
+
+		/*
+		 * Creates XML out of the Spot information array
+		 */
+		function convertSpotToXml($spot) {
+			# Opbouwen XML
+			$doc = new DOMDocument('1.0', 'utf-8');
+			$doc->formatOutput = false;
+
+			$mainElm = $doc->createElement('SpotNet');
+			$postingElm = $mainElm->createElement('Posting');
+			$postingElm->appendChild($doc->createElement('Category', $spot['category'] + 1));
+			$postingElm->appendChild($doc->createElement('Website', $spot['website']));
+			# FIXME: nl2[br]
+			$postingElm->appendChild($doc->createElement('Description')->appendChild($doc->createCDATASection($spot['body'])));
+			$postingElm->appendChild($doc->createElement('Size', $spot['filesize']));
+			$postingElm->appendChild($doc->createElement('Poster', $spot['Poster']));
+			$postingElm->appendChild($doc->createElement('Tag', $spot['Tag']));
+			$postingElm->appendChild($doc->createElement('Title')->appendChild($doc->createCDATASection($spot['title'])));
+			$postingElm->appendChild($doc->createElement('Created', time()));
+			
+			/* <Category>01<Sub>01a09</Sub><Sub>01b04</Sub><Sub>01c00</Sub><Sub>01d11</Sub></Category> */
+			/* Image */
+			/* NZB */
+			
+			$doc->appendChild($mainElm);
+
+			$filterListElm = $doc->createElement('filters');
+		} # spotToXml
 		
 		/*
 		 * Posts a spot file and its corresponding image and NZB file (actually done by
 		 * helper functions)
 		 */
 		function postFullSpot($user, $serverPrivKey, $newsgrup, $spot, $nzbContents, $imageContents) {
-			# FIXME: Het aantal nullen (minimaal 4) instelbaar maken via settings.php
-
 			# instantieer de benodigde objecten
 			$spotSigning = new SpotSigning();
 			$spotParser = new SpotParser();
 
-			# sign het messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
+			/*
+			 * Create the spotnet from header part accrdoing to the following structure:
+			 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+			 */
+			$spotnetFrom = $user['username'] . ' <' . $spotSigning->makeRandomStr(8) . '@';
+			$spotHeader = $spot['category'] . $spot['key']; // Append the category and keyid
 			
-			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, $comment['newmessageid']);
+			/*
+			 * Process each subcategory and add them to the from header
+			 */
+			foreach($spot['subcatlist'] as $subcat) {
+				$spotHeader .= $subcat[0] . pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
+			} # foreach
+			
+			$spotHeader .= '.' . $spot['filesize'];
+			$spotHeader .= '.' . $spotSigning->makeRandomStr(6);
+			$spotHeader .= '.' . time();
+			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
+			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
+			
+			# sign the header by using the users' key
+			$user_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
+			
+			# also by the server
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $spot['title'] . $spotHeader . $spot['poster']);
+			
+			# convert the current Spotnet info, to an XML structure
+			$spotXml = $this->convertSpotToXml($spot);
 
-			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
-			$header .= 'Subject: Re: ' . $title . "\r\n";
+			# and finally create the NNTP header
+			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . '>';
+			# FIXME: Als er geen ta is, ook geen opgeven
+			$header .= 'Subject: ' . $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
-			$header .= 'Message-ID: <' . $comment['newmessageid'] . ">\r\n";
-			$header .= 'References: <' . $comment['inreplyto']. ">\r\n";
+			# FIXME: Hashcash
+			$header .= 'Message-ID: <' . $spot['newmessageid'] . ">\r\n";
 			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
-			$header .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
-			
-			# $header .= 'X-User-Avatar: ' 
-			# Message-ID van een avatar
-
-			# $header .= 'X-User-Gravatar: ' 
-			# Hashcode van een Gravatar
-
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 			
-			return $this->post(array($header, $comment['body']));
+			return $this->post(array($header, $spot['body']));
 		} # postFullSpot
-		
-
 		
 		function getFullSpot($msgId) {
 			# initialize some variables
