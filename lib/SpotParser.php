@@ -43,10 +43,14 @@ class SpotParser {
 			$tpl_spot['image'] = (string) $xml->Image;
  		} else {
 			$tpl_spot['image'] = Array(
-				'segment' => (string) $xml->Image->Segment,
 				'height' => (string) $xml->Image['Height'],
 				'width' => (string) $xml->Image['Width']
 			);
+			
+			foreach($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
+				$tpl_spot['image']['segment'][] = (string) $seg;
+			} # foreach
+			
 		} # else
 
 		# NZB segmenten plakken we gewoon aan elkaar
