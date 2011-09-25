@@ -108,7 +108,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
 				# die wel in de header zitten, zitten niet in de database (denk aan 'keyid')
-				if ((!$header_isInDb) || (!$fullspot_isInDb)) {
+				if ((!$header_isInDb) || ((!$fullspot_isInDb) && ($this->_retrieveFull))) {
 					$hdrsRetrieved++;
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
