@@ -231,10 +231,19 @@ class SpotNntp {
 			return $this->post(array($header, $comment['body']));
 		} # postComment
 		
-		function getImage($segment) {
-			$nzb = implode('', $this->getBody('<' . $segment . '>'));
+		function getImage($segmentList) {
 			$spotParser = new SpotParser();
-			return $spotParser->unspecialZipStr($nzb);
+			$imageContent = '';
+			
+			/*
+			 * Retrieve all image segments 
+			 */
+			foreach($segmentList as $seg) {
+				$imgTmp = implode('', $this->getBody('<' . $seg . '>'));
+				$imageContent .= $spotParser->unspecialZipStr($imgTmp);
+			} # foreach
+			
+			return $imageContent;
 		} # getImage
 		
 		function getNzb($segList) {
@@ -330,7 +339,7 @@ class SpotNntp {
 		/*
 		 * Creates XML out of the Spot information array
 		 */
-		function convertSpotToXml($spot) {
+		function convertSpotToXml($spot, $imageInfo, $nzbSegments) {
 			# Opbouwen XML
 			$doc = new DOMDocument('1.0', 'utf-8');
 			$doc->formatOutput = false;
@@ -338,8 +347,10 @@ class SpotNntp {
 			$mainElm = $doc->createElement('SpotNet');
 			$postingElm = $doc->createElement('Posting');
 			$postingElm->appendChild($doc->createElement('Category', $spot['category'] + 1));
-			$postingElm->appendChild($doc->createElement('Website', $spot['website']));
-			# FIXME: nl2[br]
+
+			$websiteElm = $doc->createElement('Website');
+			$websiteElm->appendChild($doc->createCDATASection($spot['website']));
+			$postingElm->appendChild($websiteElm);
 			
 			/* 
 			 * Description element is enclosed in CDATA
@@ -379,7 +390,17 @@ class SpotNntp {
 				} # if
 			} # foreach
 			$postingElm->appendChild($categoryElm);
-			/*  */
+
+			/*
+			 * We only support embedding the image on usenet, so 
+			 * we always use that route
+			 *
+			 * 		<Image Width='1500' Height='1500'><Segment>4lnDJqptSMMifJpTgAc52@spot.net</Segment><Segment>mZgAC888A6EkfJpTgAJEX@spot.net</Segment></Image>
+			 */
+			$imgElm = $doc->createElement('Image');
+			$imgElm->setAttribute('Width', 120);
+			$imgElm->setAttribute('Height', 120);
+			
 			/* Image */
 			/* NZB */
 			

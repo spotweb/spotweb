@@ -32,6 +32,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		#
 		if (is_array($fullSpot['image'])) {
 			Header("Content-Type: image/jpeg");
+			
 			echo $spotnntp_img->getImage($fullSpot['image']['segment']);
 		} else {
 			$x = file_get_contents($fullSpot['image']);
