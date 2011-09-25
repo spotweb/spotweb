@@ -336,24 +336,39 @@ class SpotNntp {
 			$doc->formatOutput = false;
 
 			$mainElm = $doc->createElement('SpotNet');
-			$postingElm = $mainElm->createElement('Posting');
+			$postingElm = $doc->createElement('Posting');
 			$postingElm->appendChild($doc->createElement('Category', $spot['category'] + 1));
 			$postingElm->appendChild($doc->createElement('Website', $spot['website']));
 			# FIXME: nl2[br]
-			$postingElm->appendChild($doc->createElement('Description')->appendChild($doc->createCDATASection($spot['body'])));
+			
+			/* 
+			 * Description element is enclosed in CDATA
+			 */
+			$descrElm = $doc->createElement('Description');
+			$descrElm->appendChild($doc->createCDATASection( str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['body'])));
+			$postingElm->appendChild($descrElm);
+			
 			$postingElm->appendChild($doc->createElement('Size', $spot['filesize']));
-			$postingElm->appendChild($doc->createElement('Poster', $spot['Poster']));
-			$postingElm->appendChild($doc->createElement('Tag', $spot['Tag']));
-			$postingElm->appendChild($doc->createElement('Title')->appendChild($doc->createCDATASection($spot['title'])));
+			$postingElm->appendChild($doc->createElement('Poster', $spot['poster']));
+			$postingElm->appendChild($doc->createElement('Tag', $spot['tag']));
+
+			/* 
+			 * Title element is enclosed in CDATA
+			 */
+			$titleElm = $doc->createElement('Title');
+			$titleElm->appendChild($doc->createCDATASection($spot['title']));
+			$postingElm->appendChild($titleElm);
+			
 			$postingElm->appendChild($doc->createElement('Created', time()));
 			
 			/* <Category>01<Sub>01a09</Sub><Sub>01b04</Sub><Sub>01c00</Sub><Sub>01d11</Sub></Category> */
 			/* Image */
 			/* NZB */
 			
+			$mainElm->appendChild($postingElm);
 			$doc->appendChild($mainElm);
 
-			$filterListElm = $doc->createElement('filters');
+			return $doc->saveXML();			
 		} # spotToXml
 		
 		/*
@@ -396,7 +411,7 @@ class SpotNntp {
 
 			# and finally create the NNTP header
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . '>';
-			# FIXME: Als er geen ta is, ook geen opgeven
+			# FIXME: Als er geen tag is, ook geen opgeven
 			$header .= 'Subject: ' . $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			# FIXME: Hashcash
