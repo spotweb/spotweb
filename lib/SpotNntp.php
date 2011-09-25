@@ -360,8 +360,26 @@ class SpotNntp {
 			$postingElm->appendChild($titleElm);
 			
 			$postingElm->appendChild($doc->createElement('Created', time()));
+
+			/*
+			 * Category contains both an textelement as nested elements, so
+			 * we do it somewhat different
+			 *   <Category>01<Sub>01a09</Sub><Sub>01b04</Sub><Sub>01c00</Sub><Sub>01d11</Sub></Category>
+			 */
+			$categoryElm = $doc->createElement('Category');
+			$categoryElm->appendChild($doc->createTextNode( str_pad($spot['category'] + 1, 2, '0', STR_PAD_LEFT) ));
 			
-			/* <Category>01<Sub>01a09</Sub><Sub>01b04</Sub><Sub>01c00</Sub><Sub>01d11</Sub></Category> */
+			$subcatList = explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']);
+			foreach($subcatList as $subcat) {
+				if (!empty($subcat)) {
+					$categoryElm->appendChild($doc->createElement('Sub', 
+							str_pad($spot['category'] + 1, 2, '0', STR_PAD_LEFT) . 
+							$subcat[0] . 
+							str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT)));
+				} # if
+			} # foreach
+			$postingElm->appendChild($categoryElm);
+			/*  */
 			/* Image */
 			/* NZB */
 			
