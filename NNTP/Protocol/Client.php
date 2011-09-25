@@ -396,6 +396,8 @@ class Net_NNTP_Protocol_Client
     	    $this->_logger->warning('Broke out of reception loop! This souldn\'t happen unless connection has been lost?');
     	}
 
+
+
     	//
     	return $this->throwError('End of stream! Connection lost?', null);
     }
