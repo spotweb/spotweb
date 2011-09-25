@@ -23,22 +23,30 @@ class SpotDb {
 	function connect() {
 		SpotTiming::start(__FUNCTION__);
 
+		/* 
+		 * Erase username/password so it won't show up in any stacktrace
+		 */
+		$tmpUser = $this->_dbsettings['user'];
+		$tmpPass = $this->_dbsettings['pass'];
+		$this->_dbsettings['user'] = '*FILTERED*';
+		$this->_dbsettings['pass'] = '*FILTERED*';
+
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'	: $this->_conn = new dbeng_mysql($this->_dbsettings['host'],
-												$this->_dbsettings['user'],
-												$this->_dbsettings['pass'],
+												$tmpUser,
+												$tmpPass,
 												$this->_dbsettings['dbname']); 
 							  break;
 
 			case 'pdo_mysql': $this->_conn = new dbeng_pdo_mysql($this->_dbsettings['host'],
-												$this->_dbsettings['user'],
-												$this->_dbsettings['pass'],
+												$tmpUser,
+												$tmpPass,
 												$this->_dbsettings['dbname']);
 							  break;
 							  
 			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
-												$this->_dbsettings['user'],
-												$this->_dbsettings['pass'],
+												$tmpUser,
+												$tmpPass,
 												$this->_dbsettings['dbname']);
 							  break;
 							
