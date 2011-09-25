@@ -393,16 +393,26 @@ class SpotNntp {
 
 			/*
 			 * We only support embedding the image on usenet, so 
-			 * we always use that route
+			 * we always use that
 			 *
 			 * 		<Image Width='1500' Height='1500'><Segment>4lnDJqptSMMifJpTgAc52@spot.net</Segment><Segment>mZgAC888A6EkfJpTgAJEX@spot.net</Segment></Image>
 			 */
 			$imgElm = $doc->createElement('Image');
-			$imgElm->setAttribute('Width', 120);
-			$imgElm->setAttribute('Height', 120);
+			$imgElm->setAttribute('Width', $imageInfo['width']);
+			$imgElm->setAttribute('Height', $imageInfo['height']);
+			foreach($imageInfo['segments'] as $segment) {
+				$imgElm->appendChild($doc->createElement('Segment', $segment));
+			} # foreach
+			$postingElm->appendChild($imgElm);
 			
-			/* Image */
-			/* NZB */
+			/*
+			 * Add the segments to the nzb file
+			 */
+			$nzbElm = $doc->createElement('NZB');
+			foreach($nzbSegments as $segment) {
+				$nzbElm->appendChild($doc->createElement('Segment', $segment));
+			} # foreach
+			$postingElm->appendChild($nzbElm);
 			
 			$mainElm->appendChild($postingElm);
 			$doc->appendChild($mainElm);
