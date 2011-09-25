@@ -94,7 +94,7 @@ class SpotNntp {
 			
 			try{
 				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
-				if (!empty($this->_user)) {
+				if (!empty($tmpUser)) {
 					$authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
 					
 				} # if
