@@ -372,6 +372,7 @@ class SpotUserSystem {
 		$prefs['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
 		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
+		$prefs['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
 		
 		$notifProviders = Notifications_Factory::getActiveServices();
