@@ -63,6 +63,9 @@ $settings['retrieve_full'] = true;
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
+# moeten wij (spamm) repors ophalen?
+$settings['retrieve_reports'] = true;
+
 # Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen
 $settings['retention'] = 0;
 
@@ -165,7 +168,7 @@ $settings['nonauthenticated_userid'] = 1;
 
 
 #
-# Hoeveel verschillende headers (van danwel spots danwel comments) moeten er per keer opgehaald worden? 
+# Hoeveel verschillende headers (van danwel spots, reports danwel comments) moeten er per keer opgehaald worden? 
 # Als je regelmatig timeouts krijgt van retrieve.php, vrelaag dan dit aantal
 #
 $settings['retrieve_increment'] = 1000;

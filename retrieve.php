@@ -171,6 +171,47 @@ catch(Exception $x) {
 	die();
 } # catch
 
+## Comments
+try {
+	$newCommentCount = 0;
+	if ($settings->get('retrieve_reports')) {
+		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
+												$db,
+												$settings,
+												$req->getDef('output', ''));
+		$msgdata = $retriever->connect($settings->get('report_group'));
+
+		$curMsg = $db->getMaxArticleId('reports');
+		if ($curMsg != 0) {
+			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('reports'));
+		} # if
+
+		$newCommentCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
+		$retriever->quit();
+	} # if
+}
+catch(NntpException $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
+	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+
+	if (isset($retriever)){
+		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
+		$retriever->quit();
+	}
+	die();
+}
+catch(Exception $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured retrieving reports:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
+	die();
+} # catch
+
 ## SpotStateList cleanup
 try {
 	$db->cleanSpotStateList();

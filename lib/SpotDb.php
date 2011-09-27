@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.37');
+define('SPOTDB_SCHEMA_VERSION', '0.38');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -579,6 +579,23 @@ class SpotDb {
 		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
 	} # removeExtraComments
 
+
+	/*
+	 * Remove extra comments
+	 */
+	function removeExtraReports($messageId) {
+		# vraag eerst het id op
+		$reportId = $this->_conn->singleQuery("SELECT id FROM reportsxover WHERE messageid = '%s'", Array($messageId));
+		
+		# als deze report leeg is, is er iets raars aan de hand
+		if (empty($reportId)) {
+			throw new Exception("Our highest report is not in the database!?");
+		} # if
+
+		# en wis nu alles wat 'jonger' is dan deze spot
+		$this->_conn->modify("DELETE FROM reportsxover WHERE id > %d", Array($reportId));
+	} # removeExtraReports
+	
 	/*
 	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
 	 */
@@ -646,6 +663,35 @@ class SpotDb {
 		return $idList;
 	} # matchCommentMessageIds
 
+	/*
+	 * Match set of reports
+	 */
+	function matchReportMessageIds($hdrList) {
+		$idList = array();
+
+		# geen message id's gegeven? vraag het niet eens aan de db
+		if (count($hdrList) == 0) {
+			return $idList;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($hdrList as $hdr) {
+			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		# en vraag alle comments op die we kennen
+		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $msgIdList . ")");
+
+		# geef hier een array terug die kant en klaar is voor array_search
+		foreach($rs as $msgids) {
+			$idList[$msgids['messageid']] = 1;
+		} # foreach
+		
+		return $idList;
+	} # matchReportMessageIds
+	
 	/*
 	 * Match set of spots
 	 */
@@ -752,6 +798,7 @@ class SpotDb {
 												s.filesize AS filesize,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
+												s.reportcount AS reportcount,
 												f.userid AS userid,
 												f.verified AS verified
 												" . $extendedFieldList . "
@@ -794,6 +841,7 @@ class SpotDb {
 												s.stamp AS stamp,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
+												s.reportcount AS reportcount,
 												s.moderated AS moderated
 											  FROM spots AS s
 											  WHERE s.messageid = '%s'", Array($msgId));
@@ -825,6 +873,7 @@ class SpotDb {
 												s.moderated AS moderated,
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
+												s.reportcount AS reportcount,
 												s.filesize AS filesize,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
@@ -855,7 +904,7 @@ class SpotDb {
 	} # getFullSpot()
 
 	/*
-	 * Insert commentreg, 
+	 * Insert commentref, 
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
@@ -863,6 +912,16 @@ class SpotDb {
 		$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
 								Array($messageid, $nntpref, $rating));
 	} # addCommentRef
+
+	/*
+	 * Insert addReportRef, 
+	 *   messageid is het werkelijke commentaar id
+	 *   nntpref is de id van de spot
+	 */
+	function addReportRef($messageid, $fromhdr, $keyword, $nntpref) {
+		$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES('%s', '%s', '%s', '%s')",
+								Array($messageid, $fromhdr, $keyword, $nntpref));
+	} # addReportRef
 
 	/*
 	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
@@ -943,6 +1002,33 @@ class SpotDb {
 	} # updateSpotCommentCount
 
 	/*
+	 * Update een lijst van messageid's met het aantal niet geverifieerde reports
+	 */
+	function updateSpotReportCount($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+		
+		# en update de spotrating
+		$this->_conn->modify("UPDATE spots 
+								SET reportcount = 
+									(SELECT COUNT(1) as reportcount 
+									 FROM reportsxover
+									 WHERE 
+										spots.messageid = reportsxover.nntpref 
+									 GROUP BY nntpref)
+							WHERE spots.messageid IN (" . $msgIdList . ")
+						");
+	} # updateSpotReportCount
+
+	/*
 	 * Vraag de volledige commentaar lijst op, gaat er van uit dat er al een commentsxover entry is
 	 */
 	function getCommentsFull($nntpRef) {
@@ -1004,6 +1090,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref= '%s')", Array($msgId));
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			
@@ -1011,6 +1098,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
@@ -1041,6 +1129,8 @@ class SpotDb {
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM reportsxover WHERE reporsxover.nntpref not in 
+									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
 									(SELECT messageid FROM spots)") ;
 				break;
@@ -1049,6 +1139,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
+					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
