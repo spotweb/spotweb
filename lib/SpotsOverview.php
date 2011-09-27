@@ -504,6 +504,7 @@ class SpotsOverview {
 								  'titel' => 's.title',
 								  'tag' => 's.tag',
 								  'new' => 'new',
+								  'reportcount' => 's.reportcount',
 								  'downloaded' => 'downloaded', 
 								  'watch' => 'watch', 
 								  'seen' => 'seen');
