@@ -90,6 +90,11 @@ echo "</th>";
 <?php if ($show_nzb_button) { ?>		
 								<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
+
+<?php if ($spot['reportcount'] > 0) { ?>
+								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
+								<tr> <th> Aantal spam reports </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
+<?php } ?>
 							</tbody>
 						</table>
 					</td>
