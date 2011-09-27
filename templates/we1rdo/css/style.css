@@ -195,6 +195,8 @@ table.spots th.category {text-align:center; min-width:55px; width:55px; padding:
 table.spots th.title {width:100%;}
 table.spots td.watch,
 table.spots th.watch {min-width:20px; width:20px;}
+table.spots td.spamreports,
+table.spots th.spamreports,
 table.spots td.comments,
 table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots td.genre,
@@ -269,13 +271,21 @@ table.spots tr.orange.active td.title a.spotlink:before {background:#f2d87c; bor
 table.spots tr.green.active td.title a.spotlink:before {background:#84f484; border:1px solid #00ab00; color:#00ab00;}
 table.spots tr.red.active td.title a.spotlink:before {background:#f99797; border:1px solid #ab1c00; color:#ab1c00;}
 
+table.spots tr td.spamreports,
 table.spots tr td.comments {text-align:center; padding:0; background-image:url(../img/sprite_y.png); background-repeat:repeat-y;}
+table.spots tr td.spamreports a,
 table.spots tr td.comments a {font-weight:bold; color:#fff;}
+table.spots tr:hover td.spamreports a, 
 table.spots tr:hover td.comments a {color:#000;}
+table.spots tr:hover td.spamreports,
 table.spots tr:hover td.comments {background-image:none !important;}
+table.spots tr.blue td.spamreports,
 table.spots tr.blue td.comments {background-position:0 0;}
+table.spots tr.orange td.spamreports,
 table.spots tr.orange td.comments {background-position:-34px 0;}
+table.spots tr.green td.spamreports,
 table.spots tr.green td.comments {background-position:-68px 0;}
+table.spots tr.red td.spamreports,
 table.spots tr.red td.comments {background-position:-102px 0;}
 
 table.spots a.nzb {font-weight:bold;}
