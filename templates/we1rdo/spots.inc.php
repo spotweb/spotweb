@@ -10,6 +10,7 @@
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
+	$show_spamreports = true;
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	
 ?>
@@ -30,6 +31,9 @@
 							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="Sorteren op Leeftijd [oplopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="Sorteren op Leeftijd [aflopend]"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? "Leeftijd" : "Datum"; ?> </th> 
 <?php if ($show_filesize) { ?>
 							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="Sorteren op Omvang [aflopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="Sorteren op Omvang [oplopend]"> </a></span> Size </th> 
+<?php } ?>
+<?php if ($show_spamreports) { ?>
+							<th class='spamreports'> <a title='Aantal spam reports'>#</a> </th>
 <?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
@@ -55,6 +59,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
 		if ($show_filesize) { $colSpan++; }
+		if ($show_spamreports) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
@@ -109,6 +114,10 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo "<td class='filesize'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
 		} 
 
+		if ($show_spamreports) {
+			echo "<td class='spamreports'><a title='Er zijn " . $spot['reportcount'] . " spam reports gevonden op deze spot'>" . $spot['reportcount'] . "</a></td>";
+		} 
+		
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($show_nzb_button) {
