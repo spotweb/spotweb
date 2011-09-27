@@ -10,7 +10,7 @@
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
-	$show_spamreports = true;
+	$show_spamreports = $currentSession['user']['prefs']['show_reportcount'];
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	
 ?>

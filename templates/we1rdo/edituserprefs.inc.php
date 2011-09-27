@@ -99,6 +99,9 @@ include "includes/form-messages.inc.php";
 					<dt><label for="edituserprefsform[show_filesize]">Toon bestandsgrootte in spotoverzicht?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_filesize]" <?php if ($edituserprefsform['show_filesize']) { echo 'checked="checked"'; } ?>></dd>
 
+					<dt><label for="edituserprefsform[show_reportcount]">Toon aantal spamreports in spotoverzicht?</label></dt>
+					<dd><input type="checkbox" name="edituserprefsform[show_reportcount]" <?php if ($edituserprefsform['show_reportcount']) { echo 'checked="checked"'; } ?>></dd>
+					
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) { ?>
 					<dt><label for="edituserprefsform[show_multinzb]">Toon een checkbox naast elke spot om meerdere NZB files in een keer te downloaden?</label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_multinzb]" <?php if ($edituserprefsform['show_multinzb']) { echo 'checked="checked"'; } ?>></dd>
