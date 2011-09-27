@@ -38,7 +38,7 @@
 	
 	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
 	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
-	# niet juist zetten
+	# en reportcount niet juist zetten
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
 			$searchType = $filterType['fieldname'];
@@ -47,6 +47,8 @@
 			$minFilesize = $filterType['value'];
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
 			$maxFilesize = $filterType['value'];
+		} elseif ($filterType['fieldname'] == 'reportcount' && $filterType['operator'] == "<=") {
+			$maxReportCount = $filterType['value'];
 		} # if
 	} # foreach
 
@@ -140,6 +142,11 @@
 						<input type="hidden" name="search[value][]" id="max-filesize" />
 						<div id="human-filesize"></div>
 						<div id="slider-filesize"></div>
+
+						<h4>Aantal reports</h4>
+						<input type="hidden" name="search[value][]" id="max-reportcount" />
+						<div id="human-reportcount"></div>
+						<div id="slider-reportcount"></div>
 
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
@@ -346,8 +353,37 @@
 				$( "#human-filesize" ).text( "Tussen " + format_size( ui.values[ 0 ] ) + " en " + format_size( ui.values[ 1 ] ) );
 			}
 		});
+		
+		$( "#slider-reportcount" ).slider({
+			range: 'max',
+			min: 0,
+			max: 21,
+			step: 1,
+			values: [ <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?> ],
+			slide: function( event, ui ) {
+				$( "#max-reportcount" ).val( "reportcount:<=:" + ui.values[0]);
+
+				if (ui.values[0] == 21) {
+					/* In de submit handler wordt 21 gefiltered */
+					$( "#human-reportcount" ).text( "Niet filteren op aantal reports" );
+				} else {
+					$( "#human-reportcount" ).text( "Maximaal " + ui.values[0] + " reports" );
+				} // if
+			}
+		});
+
+		/* Filesizes */
 		$( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
 		$( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
 		$( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
+		
+		/* Report counts */
+		var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
+		$( "#max-reportcount" ).val( "reportcount:<=:" + reportSlideValue);
+		if (reportSlideValue == 21) {
+			$( "#human-reportcount" ).text("Niet filteren op aantal reports");
+		} else {
+			$( "#human-reportcount" ).text( "Maximaal " + reportSlideValue + " reports " );
+		} // if
 	});
 	</script>
