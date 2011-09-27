@@ -143,17 +143,19 @@
 						<div id="human-filesize"></div>
 						<div id="slider-filesize"></div>
 
-						<h4>Aantal reports</h4>
-						<input type="hidden" name="search[value][]" id="max-reportcount" />
-						<div id="human-reportcount"></div>
-						<div id="slider-reportcount"></div>
-
 						<h4>Categori&euml;n</h4>
 						<div id="tree"></div>
 						<ul class="search clearCategories onecol">
 							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
 							<label>Categori&euml;n <?php echo $parsedsearch['unfiltered'] == "true" ? '' : 'niet ' ?>gebruiken</label> </li>
 						</ul>
+
+<?php if ($settings->get('retrieve_reports')) { ?>
+						<h4>Aantal reports</h4>
+						<input type="hidden" name="search[value][]" id="max-reportcount" />
+						<div id="human-reportcount"></div>
+						<div id="slider-reportcount"></div>
+<?php } ?>
 
 						<br>
 						<h4>Filters</h4>
