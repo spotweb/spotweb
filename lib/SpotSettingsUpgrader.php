@@ -109,6 +109,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('hdr_group', 'free.pt');
 		$this->setIfNot('nzb_group', 'alt.binaries.ftd');
 		$this->setIfNot('comment_group', 'free.usenet');
+		$this->setIfNot('report_group', 'free.willey');
 	} # setupNewsgroups()
 	
 } # SpotSettingsUpgrader

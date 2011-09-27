@@ -305,6 +305,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('moderated', 'spots', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
@@ -334,6 +335,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('spotrating', 'commentsxover', 'INTEGER', "0", false, '');
 		$this->alterStorageEngine("commentsxover", "InnoDB");
 
+		# ---- reportsxover table ---- #
+		$this->createTable('reportsxover', "ascii"); 
+		$this->validateColumn('messageid', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('fromhdr', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('keyword', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('nntpref', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->alterStorageEngine("reportsxover", "InnoDB");
+		
 		# ---- spotstatelist table ---- #
 		$this->createTable('spotstatelist', "ascii"); 
 		$this->validateColumn('messageid', 'spotstatelist', 'VARCHAR(128)', "''", true, 'ascii');
@@ -526,6 +535,10 @@ abstract class SpotStruct_abs {
 		# ---- Indexen op commentsxover ----
 		$this->validateIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", array("messageid"));
 		$this->validateIndex("idx_commentsxover_2", "", "commentsxover", array("nntpref"));
+
+		# ---- Indexen op repotrsxover ----
+		$this->validateIndex("idx_reportsxover_1", "UNIQUE", "reportsxover", array("messageid"));
+		$this->validateIndex("idx_reportsxover_2", "", "reportsxover", array("nntpref"));
 
 		# ---- Indexen op commentsposted ----
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
