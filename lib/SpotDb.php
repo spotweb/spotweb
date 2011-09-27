@@ -467,9 +467,14 @@ class SpotDb {
 	function getMaxMessageId($headers) {
 		if ($headers == 'headers') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 5000");
-		} else {
+		} elseif ($headers == 'comments') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover ORDER BY id DESC LIMIT 5000");
+		} elseif ($headers == 'reports') {
+			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover ORDER BY id DESC LIMIT 5000");
+		} else {
+			throw new Exception("getMaxMessageId() header-type value is unknown");
 		} # else
+		
 		if ($msgIds == null) {
 			return array();
 		} # if
