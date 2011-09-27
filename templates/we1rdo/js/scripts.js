@@ -1360,6 +1360,11 @@ function submitFilterBtn(searchform) {
 	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
 		$('form#filterform').find('#max-filesize').remove();
 	} // if
+	
+	// we use 21 reports as a magic value to say 'disable reporting'
+	if ($('#max-reportcount').val() == 'reportcount:<=:21') { 
+		$('form#filterform').find('#max-reportcount').remove();
+	} // if
 
 	return true;
 } // submitFilterBtn
