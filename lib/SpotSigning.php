@@ -101,7 +101,7 @@ class SpotSigning {
 		# extract de public key
 		$signature = $rsa->sign($message);
 		$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
-		
+
 		return array('signature' => base64_encode($signature),
 					 'publickey' => array('modulo' => base64_encode($publickey['n']->toBytes()), 'exponent' => base64_encode($publickey['e']->toBytes())),
 					 'message' => $message);
