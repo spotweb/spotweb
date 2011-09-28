@@ -8,6 +8,7 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$show_rem_spot = ($tplHelper->allowed(SpotSecurity::spotsec_rem_spot, ''));
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
@@ -16,6 +17,15 @@
 						<th class="back"> <a class="closeDetails" title="Ga terug naar het overzicht (esc / u)">&lt;&lt;</a> </th>
 						<th class="category"><span><?php echo $spot['formatname'];?></span></th>
 						<th class="title"><?php echo $spot['title'];?></th>
+						<th class="remSpot">
+							<?php 
+								if ($tplHelper->allowed(SpotSecurity::spotsec_rem_spot, '')) {
+								include "remspot.inc.php";
+								$msgId = $spot['messageid'];
+								?>
+								<a class="remSpot" onClick="remSpot('<?php echo htmlspecialchars($msgId); ?>')"> </a>
+							<?php } #if ?>
+						</th>
 						<th class="rating">
 <?php
 	if($spot['rating'] == 0) {
@@ -104,7 +114,15 @@ echo "</th>";
 				<h4>Post Description</h4>
 				<pre><?php echo $spot['description']; ?></pre>
 			</div>
-
+			
+			<div class="spam" id="spam">
+				<ul id="spamreport">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+				echo "<li class='reportAsSpam'>";
+				include "spamreport.inc.php";
+				echo "</li></ul></div>"; 
+		} # if ?>
+			
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_comments, '')) { ?>
 			<div class="comments" id="comments">
 				<h4>Comments <span class="commentcount"># 0</span></h4>

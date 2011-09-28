@@ -548,4 +548,32 @@ class SpotNntp {
 			return $spot;
 		} # getFullSpot 
 		
+		function reportSpotAsSpam($user, $serverPrivKey, $title, $report) {
+			# instantieer de benodigde objecten
+			$spotSigning = new SpotSigning();
+			$spotParser = new SpotParser();
+			
+			# sign het messageid
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $report['newmessageid'] . '>');
+			
+			# ook door de php server 
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $report['newmessageid']);
+			
+			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+			$header .= 'Subject: REPORT ' . $report['inreplyto'] . ' ' . $title . "\r\n";
+			$header .= 'Newsgroups: free.willey' . "\r\n";
+			$header .= 'Message-ID: <' . $report['newmessageid'] . '@spot.net>' . "\r\n";
+			$header .= 'References: <' . $report['inreplyto'] . ">\r\n";
+			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+			
+			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
+			$header .= "X-No-Archive: yes\r\n";
+			
+			return $this->post(array($header, $report['body']));
+			
+		} #reportSpotAsSpam
+		
 } # class SpotNntp

@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.38');
+define('SPOTDB_SCHEMA_VERSION', '0.39');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -110,6 +110,21 @@ class SpotDb {
 					  $comment['body'],
 					  (int) time()));
 	} # addPostedComment
+	
+	/*
+	 * Sla het gepostte report op van deze user
+	 */
+	function addPostedReport($userId, $report) {
+		$this->_conn->modify(
+				"INSERT INTO reportssposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
+					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
+				Array((int) $userId,
+					  $report['newmessageid'],
+					  $report['inreplyto'],
+					  $report['randomstr'],
+					  $report['body'],
+					  (int) time()));
+	} # addPostedReport
 
 	/*
 	 * Verwijder een setting
@@ -325,6 +340,30 @@ class SpotDb {
 								WHERE id = '%s'", 
 							Array( (int) $userid));
 	} # deleteUser
+	
+	/*
+	 * Verwijder spots en comments van een user uit de db
+	 */
+	function removeUser($userId) {
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'  : 
+			case 'pdo_sqlite' : {
+				$this->_conn->modify("DELETE FROM spots WHERE messageid IN (SELECT messageid FROM spotsfull WHERE userid = '%s')", Array($userId));
+				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref IN (SELECT messageid FROM spotsfull WHERE userid= '%s')", Array($userId));
+				$this->_conn->modify("DELETE FROM spotsfull WHERE userid = '%s')", Array($userId));
+				$this->_conn->modify("DELETE FROM commentsfull WHERE userid = '%s')", Array($userId));
+				break;
+			} # pdo_sqlite
+			
+			default			: {
+				$this->_conn->modify("DELETE FROM spotsfull, commentsfull, spots, commentsxover USING spotsfull
+										LEFT JOIN commentsfull ON spotsfull.userid=commentsfull.userid
+										LEFT JOIN spots ON spotsfull.messageid=spots.messageid
+										LEFT JOIN commentsxover ON spotsfull.messageid=commentsxover.messageid
+										WHERE spotsfull.userid = '%s'", Array($userId));
+			} # default
+		} # switch	
+	} # removeUser
 
 	/*
 	 * Update de informatie over een user behalve het password
@@ -1109,6 +1148,8 @@ class SpotDb {
 			} # default
 		} # switch
 	} # deleteSpot
+	
+	
 
 	/*
 	 * Markeer een spot in de db moderated
