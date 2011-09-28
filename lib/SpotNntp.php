@@ -457,7 +457,7 @@ class SpotNntp {
 			 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 			 */
 			$spotnetFrom = $user['username'] . ' <' . $spotSigning->makeRandomStr(8) . '@';
-			$spotHeader = $spot['category'] . $spot['key']; // Append the category and keyid
+			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 			
 			/*
 			 * Process each subcategory and add them to the from header
@@ -479,8 +479,9 @@ class SpotNntp {
 			$user_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 			
 			# Create the messageid
-			$spot['newmessageid'] = $spotSigning->makeRandomStr(15) . '@spot.net';
-
+			$spot['newmessageid'] = $spotSigning->makeExpensiveHash($spotSigning->makeRandomStr(15), '@spot.net');
+			
+			echo "Posted message with messageid: " . $spot['newmessageid'] . PHP_EOL;
 			
 			# and finally create the NNTP header
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . ">\r\n";
