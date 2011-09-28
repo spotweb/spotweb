@@ -212,7 +212,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$spot = $this->_tplHelper->formatSpotHeader($spot);
 				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
-				$nzbUrl = $this->_tplHelper->makeNzbUrl($spot);
+				$nzbUrl = $this->_tplHelper->makeBaseUrl("full") . 'api?t=g&amp;id=' . $spot['messageid'] . $this->_tplHelper->makeApiRequestString();
 				if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
 					$nzbUrl .= '&amp;del=1';
 				} # if
@@ -308,7 +308,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$doc['ID']				= $spot['id'];
 			$doc['name']			= $spot['title'];
 			$doc['size']			= $spot['filesize'];
-			$doc['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
+			$doc['adddate']			= date('Y-m-d H:i:s', $spot['stamp']);
 			$doc['guid']			= $spot['messageid'];
 			$doc['fromname']		= $spot['poster'];
 			$doc['completion']		= 100;
@@ -330,6 +330,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			
 			echo json_encode($doc);
 		} else {
+			$nzbUrl = $this->_tplHelper->makeBaseUrl("full") . 'api?t=g&amp;id=' . $spot['messageid'] . $this->_tplHelper->makeApiRequestString();
+
 			# Opbouwen XML
 			$doc = new DOMDocument('1.0', 'utf-8');
 			$doc->formatOutput = true;
@@ -370,14 +372,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$item = $doc->createElement('item');
 			$item->appendChild($doc->createElement('title', $title));
 			$item->appendChild($guid);
-			$item->appendChild($doc->createElement('link', $this->_tplHelper->makeNzbUrl($spot)));
+			$item->appendChild($doc->createElement('link', $nzbUrl));
 			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
 			$item->appendChild($doc->createElement('category', SpotCategories::HeadCat2Desc($spot['category']) . " > " . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata'])));
 			$item->appendChild($description);
 			$channel->appendChild($item);
 
 			$enclosure = $doc->createElement('enclosure');
-			$enclosure->setAttribute('url', html_entity_decode($this->_tplHelper->makeNzbUrl($spot)));
+			$enclosure->setAttribute('url', html_entity_decode($nzbUrl));
 			$enclosure->setAttribute('length', $spot['filesize']);
 			switch ($nzbhandling['prepare_action']) {
 				case 'zip'	: $enclosure->setAttribute('type', 'application/zip'); break;
@@ -436,7 +438,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 		} # if
 
-		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . $this->_tplHelper->makeApiRequestString());
+		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . html_entity_decode($this->_tplHelper->makeApiRequestString()));
 	} # getNzb
 
 	function caps() {
