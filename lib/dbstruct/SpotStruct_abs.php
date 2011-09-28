@@ -536,7 +536,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", array("messageid"));
 		$this->validateIndex("idx_commentsxover_2", "", "commentsxover", array("nntpref"));
 
-		# ---- Indexen op repotrsxover ----
+		# ---- Indexen op reportsxover ----
 		$this->validateIndex("idx_reportsxover_1", "UNIQUE", "reportsxover", array("messageid"));
 		$this->validateIndex("idx_reportsxover_2", "", "reportsxover", array("nntpref"));
 
