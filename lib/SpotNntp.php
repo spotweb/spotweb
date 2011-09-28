@@ -269,7 +269,7 @@ class SpotNntp {
 			 * Create an unique messageid and store it so we can return it
 			 * for the actual Spot creation
 			 */
-			$messageid = $spotSigning->makeRandomStr(15) . '@spot.net';
+			$messageId = $spotSigning->makeRandomStr(15) . '@spot.net';
 
 			/* 
 			 * Now we create the NNTP header 
@@ -283,7 +283,7 @@ class SpotNntp {
 		
 			$this->post(array($header, $imgProcessed));		
 			
-			return $messageid;
+			return array($messageId);
 		} # postImageFile
 		
 		/*
@@ -317,8 +317,8 @@ class SpotNntp {
 				 * Create an unique segmentid and store it so we can return it
 				 * for the actual Spot creation
 				 */
-				$messageid = $spotSigning->makeRandomStr(15) . '@spot.net';
-				$segmentList[] = $messageid;
+				$messageId = $spotSigning->makeRandomStr(15) . '@spot.net';
+				$segmentList[] = $messageId;
 
 				/* 
 				 * Now we create the NNTP header 
@@ -380,8 +380,7 @@ class SpotNntp {
 			$categoryElm = $doc->createElement('Category');
 			$categoryElm->appendChild($doc->createTextNode( str_pad($spot['category'] + 1, 2, '0', STR_PAD_LEFT) ));
 			
-			$subcatList = explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']);
-			foreach($subcatList as $subcat) {
+			foreach($spot['subcatlist'] as $subcat) {
 				if (!empty($subcat)) {
 					$categoryElm->appendChild($doc->createElement('Sub', 
 							str_pad($spot['category'] + 1, 2, '0', STR_PAD_LEFT) . 
@@ -424,11 +423,35 @@ class SpotNntp {
 		 * Posts a spot file and its corresponding image and NZB file (actually done by
 		 * helper functions)
 		 */
-		function postFullSpot($user, $serverPrivKey, $newsgrup, $spot, $nzbContents, $imageContents) {
+		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot, $nzbFilename, $imageFilename) {
 			# instantieer de benodigde objecten
 			$spotSigning = new SpotSigning();
 			$spotParser = new SpotParser();
 
+			/* 
+			 * Create one list of all subcategories
+			 */
+			$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
+
+			/*
+			 * Retrieve the image information and post the image to 
+			 * the appropriate newsgroup so we have the messageid list of 
+			 * images
+			 */
+			$imgSegmentList = $this->postImageFile($user, $newsgroup, file_get_contents($imageFilename));
+			$tmpGdImageSize = getimagesize($imageFilename);
+			$imageInfo = array('width' => $tmpGdImageSize[0],
+							   'height' => $tmpGdImageSize[1],
+							   'segments' => $imgSegmentList);
+				
+			/*
+			 * Post the NZB file to the appropriate newsgroups
+			 */
+			 $nzbSegmentList = $this->postNzbFile($user, $newsgroup, file_get_contents($nzbFilename));
+			
+			# convert the current Spotnet info, to an XML structure
+			$spotXml = $this->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
+			
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
 			 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
@@ -440,7 +463,7 @@ class SpotNntp {
 			 * Process each subcategory and add them to the from header
 			 */
 			foreach($spot['subcatlist'] as $subcat) {
-				$spotHeader .= $subcat[0] . pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
+				$spotHeader .= $subcat[0] . str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
 			} # foreach
 			
 			$spotHeader .= '.' . $spot['filesize'];
@@ -448,18 +471,19 @@ class SpotNntp {
 			$spotHeader .= '.' . time();
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
+
+			# also by the server
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $spot['title'] . $spotHeader . $spot['poster']);
 			
 			# sign the header by using the users' key
 			$user_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 			
-			# also by the server
-			$server_signature = $spotSigning->signMessage($serverPrivKey, $spot['title'] . $spotHeader . $spot['poster']);
-			
-			# convert the current Spotnet info, to an XML structure
-			$spotXml = $this->convertSpotToXml($spot);
+			# Create the messageid
+			$spot['newmessageid'] = $spotSigning->makeRandomStr(15) . '@spot.net';
 
+			
 			# and finally create the NNTP header
-			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . '>';
+			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . ">\r\n";
 			# FIXME: Als er geen tag is, ook geen opgeven
 			$header .= 'Subject: ' . $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
