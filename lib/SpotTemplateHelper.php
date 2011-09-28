@@ -296,6 +296,17 @@ class SpotTemplateHelper {
 	} # makePostCommentAction
 	
 	/*
+	* Creeert de action url voor het spam reporten van een spot
+	*/
+	function makeReportAction() {
+		if(!$this->_spotSec->allowed(SpotSecurity::spotsec_report_spam, '')) {
+			return '';
+		}
+		
+		return $this->makeBaseUrl("path") . "?page=reportpost";
+	} #reportSpotAsSpam
+	
+	/*
 	 * Creeert een linkje naar een specifieke nzb
 	 */
 	function makeNzbUrl($spot) {

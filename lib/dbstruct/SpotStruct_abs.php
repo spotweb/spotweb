@@ -246,6 +246,8 @@ abstract class SpotStruct_abs {
 		$this->dropForeignKey('commentsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('commentsxover', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('reportsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->dropForeignKey('reportsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Opschonen data #############################################################################
@@ -284,6 +286,12 @@ abstract class SpotStruct_abs {
 			} # if
 			if ($this->tableExists('spotstatelist') && $this->tableExists('spots')) {
 				$this->_dbcon->rawExec("DELETE spotstatelist FROM spotstatelist LEFT JOIN spots ON spotstatelist.messageid=spots.messageid WHERE spots.messageid IS NULL");
+			} # if
+			if ($this->tableExists('reportsposted') && $this->tableExists('users')) {
+				$this->_dbcon->rawExec("DELETE reportsposted FROM reportsposted LEFT JOIN users ON reportsposted.ouruserid=users.id WHERE users.id IS NULL");
+			} # if
+			if ($this->tableExists('reportsposted') && $this->tableExists('spots')) {
+				$this->_dbcon->rawExec("DELETE reportsposted FROM reportsposted LEFT JOIN spots ON reportsposted.inreplyto=spots.messageid WHERE spots.messageid IS NULL");
 			} # if
 		} # if
 		
@@ -382,6 +390,16 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('body', 'commentsposted', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('stamp', 'commentsposted', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("commentsposted", "InnoDB");
+		
+		# ---- reportsposted table ---- #
+		$this->createTable('reportsposted', "ascii"); 
+		$this->validateColumn('ouruserid', 'reportsposted', 'INTEGER', "0", true, '');
+		$this->validateColumn('messageid', 'reportsposted', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('inreplyto', 'reportsposted', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('randompart', 'reportsposted', 'VARCHAR(32)', "''", true, 'ascii');
+		$this->validateColumn('body', 'reportsposted', 'TEXT', NULL, false, 'utf8');
+		$this->validateColumn('stamp', 'reportsposted', 'INTEGER', "0", true, '');
+		$this->alterStorageEngine("reportsposted", "InnoDB");
 		
 		# ---- usersettings table ---- #
 		$this->createTable('usersettings', "utf8"); 
@@ -540,6 +558,10 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_reportsxover_1", "UNIQUE", "reportsxover", array("messageid"));
 		$this->validateIndex("idx_reportsxover_2", "", "reportsxover", array("nntpref"));
 
+		# ---- Indexen op reportsposted ----
+		$this->validateIndex("idx_reportsposted_1", "UNIQUE", "reportsposted", array("messageid"));
+		$this->validateIndex("idx_reportspostedrel_1", "", "reportsposted", array("ouruserid"));
+		
 		# ---- Indexen op commentsposted ----
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
 		$this->validateIndex("idx_commentspostedrel_1", "", "commentsposted", array("ouruserid"));
@@ -593,6 +615,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('commentsfull', 'messageid', 'commentsxover', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('reportsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
