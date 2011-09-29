@@ -98,7 +98,7 @@ class SpotSecurity {
 		32 		=> "Notificaties versturen (per type)",
 		33		=> "Eigen CSS stylesheet toestaan per gebruiker",
 		34		=> "Zelf spotfilters kunnen bewerken",
-		35		=> "Filters als standaard in kunnen stellen voor nieuwe gebruikers"
+		35		=> "Filters als standaard in kunnen stellen voor nieuwe gebruikers",
 		36		=> "Rapporteer spot of gebruiker als spam",
 		37		=> "Toegang tot moderatorpaneel",
 		38		=> "Spots verwijderen"
