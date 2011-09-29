@@ -416,7 +416,7 @@ class SpotNntp {
 			$mainElm->appendChild($postingElm);
 			$doc->appendChild($mainElm);
 
-			return $doc->saveXML();			
+			return $doc->saveXML($mainElm);
 		} # spotToXml
 		
 		/*
@@ -467,7 +467,7 @@ class SpotNntp {
 			} # foreach
 			
 			$spotHeader .= '.' . $spot['filesize'];
-			$spotHeader .= '.' . $spotSigning->makeRandomStr(6);
+			$spotHeader .= '.' . 10; // some kind of magic number?
 			$spotHeader .= '.' . time();
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
@@ -479,7 +479,7 @@ class SpotNntp {
 			$user_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 			
 			# Create the messageid
-			$spot['newmessageid'] = $spotSigning->makeExpensiveHash($spotSigning->makeRandomStr(15), '@spot.net');
+			$spot['newmessageid'] = substr($spotSigning->makeExpensiveHash('<' . $spotSigning->makeRandomStr(15), '@spot.net>'), 1, -1);
 			
 			echo "Posted message with messageid: " . $spot['newmessageid'] . PHP_EOL;
 			
@@ -496,6 +496,19 @@ class SpotNntp {
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
+			
+			$tmpXml = $spotXml;
+			while (strlen($tmpXml) > 0) {
+				$header .= 'X-XML: ' . substr($tmpXml, 0, 256) . "\r\n";
+				
+				if (strlen($tmpXml) >= 256) {
+					$tmpXml = substr($tmpXml, 256);
+				} else {
+					$tmpXml = '';
+				} # else
+			} # while
+			
+			var_dump($header);
 			
 			return $this->post(array($header, $spot['body']));
 		} # postFullSpot
