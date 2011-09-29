@@ -323,6 +323,7 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_use_modpanel . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(4, " . SpotSecurity::spotsec_use_modpanel . ")");
+			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 4)");
 		} # if
 	} # updateSecurityGroups
 
