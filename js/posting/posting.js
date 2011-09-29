@@ -62,7 +62,7 @@ function spotPosting() {
 
 		/* Nu vragen we om, asynchroon, een hashcash te berekenen. Zie comments van calculateCommentHashCash()
 		   waarom dit asynhcroon verloopt */
-		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr, '@spot.net>', 0, this.cbHashcashCalculated);
+		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr + '.', '@spot.net>', 0, this.cbHashcashCalculated);
 	} // postComment
 
 	//
@@ -83,12 +83,12 @@ function spotPosting() {
 				uniquePart += possibleChars.charAt(irand);
 			} // for
 
-			hash = $.sha1(prefix + '.' + uniquePart + suffix);
+			hash = $.sha1(prefix + uniquePart + suffix);
 			validHash = (hash.substr(0, 4) == '0000');
 		} while ((!validHash) && ((runCount % 500) != 0));
 
 		if (validHash) {
-			cbWhenFound(this, prefix + '.' + uniquePart + suffix);
+			cbWhenFound(this, prefix + uniquePart + suffix);
 		} else {
 			if (runCount > 400000) {
 				alert("Unable to calculate SHA1 hash: " + runCount);
