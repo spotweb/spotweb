@@ -357,7 +357,6 @@ class SpotDb {
 			
 			default			: {
 				$this->_conn->modify("DELETE FROM spotsfull, commentsfull, spots, commentsxover USING spotsfull
-										LEFT JOIN commentsfull ON spotsfull.userid=commentsfull.userid
 										LEFT JOIN spots ON spotsfull.messageid=spots.messageid
 										LEFT JOIN commentsxover ON spotsfull.messageid=commentsxover.messageid
 										WHERE spotsfull.userid = '%s'", Array($userId));
