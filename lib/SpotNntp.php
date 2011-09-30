@@ -234,7 +234,7 @@ class SpotNntp {
 		function getImage($segmentList) {
 			$spotParser = new SpotParser();
 			$imageContent = '';
-			
+
 			/*
 			 * Retrieve all image segments 
 			 */
@@ -263,13 +263,13 @@ class SpotNntp {
 		function postImageFile($user, $newsgroup, $imgContents) {
 			$spotParser = new SpotParser();
 			$spotSigning = new SpotSigning();
-			$imgProcessed = $spotParser->specialZipstr($imgContents);
+			$imgProcessed = chunk_split($spotParser->specialZipstr($imgContents), 900);
 			
 			/*
 			 * Create an unique messageid and store it so we can return it
 			 * for the actual Spot creation
 			 */
-			$messageId = $spotSigning->makeRandomStr(15) . '@spot.net';
+			$messageId = $spotSigning->makeRandomStr(25) . '@spot.net';
 
 			/* 
 			 * Now we create the NNTP header 
@@ -278,11 +278,12 @@ class SpotNntp {
 			$header .= 'Subject: ' . md5($imgContents) . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: <' . $messageId .  ">\r\n";
+			$header .= 'Content-Type: text/plain; charset=ISO-8859-1' . "\r\n";
+			$header .= 'Content-Transfer-Encoding: 8bit' . "\r\n";
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 		
 			$this->post(array($header, $imgProcessed));		
-			
 			return array($messageId);
 		} # postImageFile
 		
@@ -317,7 +318,7 @@ class SpotNntp {
 				 * Create an unique segmentid and store it so we can return it
 				 * for the actual Spot creation
 				 */
-				$messageId = $spotSigning->makeRandomStr(15) . '@spot.net';
+				$messageId = $spotSigning->makeRandomStr(25) . '@spot.net';
 				$segmentList[] = $messageId;
 
 				/* 
@@ -330,7 +331,7 @@ class SpotNntp {
 				$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 				$header .= "X-No-Archive: yes\r\n";
 			
-				$this->post(array($header, $chunk));
+				$this->post(array($header, chunk_split($chunk, 900)));
 			} # while
 			
 			return $segmentList;
@@ -344,24 +345,16 @@ class SpotNntp {
 			$doc = new DOMDocument('1.0', 'utf-8');
 			$doc->formatOutput = false;
 
-			$mainElm = $doc->createElement('SpotNet');
+			$mainElm = $doc->createElement('Spotnet');
 			$postingElm = $doc->createElement('Posting');
-			$postingElm->appendChild($doc->createElement('Category', $spot['category'] + 1));
-
-			$websiteElm = $doc->createElement('Website');
-			$websiteElm->appendChild($doc->createCDATASection($spot['website']));
-			$postingElm->appendChild($websiteElm);
-			
-			/* 
-			 * Description element is enclosed in CDATA
-			 */
-			$descrElm = $doc->createElement('Description');
-			$descrElm->appendChild($doc->createCDATASection( str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['body'])));
-			$postingElm->appendChild($descrElm);
-			
-			$postingElm->appendChild($doc->createElement('Size', $spot['filesize']));
+			$postingElm->appendChild($doc->createElement('Key', $spot['key']));
+			$postingElm->appendChild($doc->createElement('Created', time()));
 			$postingElm->appendChild($doc->createElement('Poster', $spot['poster']));
-			$postingElm->appendChild($doc->createElement('Tag', $spot['tag']));
+			$postingElm->appendChild($doc->createElement('Size', $spot['filesize']));
+
+			if (strlen($spot['tag']) > 0) {
+				$postingElm->appendChild($doc->createElement('Tag', $spot['tag']));
+			} # if
 
 			/* 
 			 * Title element is enclosed in CDATA
@@ -370,8 +363,20 @@ class SpotNntp {
 			$titleElm->appendChild($doc->createCDATASection($spot['title']));
 			$postingElm->appendChild($titleElm);
 			
-			$postingElm->appendChild($doc->createElement('Created', time()));
+			/* 
+			 * Description element is enclosed in CDATA
+			 */
+			$descrElm = $doc->createElement('Description');
+			$descrElm->appendChild($doc->createCDATASection( str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['body'])));
+			$postingElm->appendChild($descrElm);
 
+			/*
+			 * Website element ins enclosed in cdata section
+			 */
+			$websiteElm = $doc->createElement('Website');
+			$websiteElm->appendChild($doc->createCDATASection($spot['website']));
+			$postingElm->appendChild($websiteElm);
+			
 			/*
 			 * Category contains both an textelement as nested elements, so
 			 * we do it somewhat different
@@ -472,40 +477,41 @@ class SpotNntp {
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
 
-			# also by the server
+			# Create the messageid
+			$spot['newmessageid'] = substr($spotSigning->makeExpensiveHash('<' . $spotSigning->makeRandomStr(15), '@spot.net>'), 1, -1);
+			
+			# sign the header with the servers' key
 			$server_signature = $spotSigning->signMessage($serverPrivKey, $spot['title'] . $spotHeader . $spot['poster']);
 			
 			# sign the header by using the users' key
-			$user_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
+			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
+
+			# sign the messageid by using the users' key
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
 			
-			# Create the messageid
-			$spot['newmessageid'] = substr($spotSigning->makeExpensiveHash('<' . $spotSigning->makeRandomStr(15), '@spot.net>'), 1, -1);
+			# sign the XML with the users' key
+			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spotXml);
 			
 			echo "Posted message with messageid: " . $spot['newmessageid'] . PHP_EOL;
 			
 			# and finally create the NNTP header
-			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($user_signature['signature']) . ">\r\n";
+			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($header_signature['signature']) . ">\r\n";
 			# FIXME: Als er geen tag is, ook geen opgeven
 			$header .= 'Subject: ' . $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			# FIXME: Hashcash
 			$header .= 'Message-ID: <' . $spot['newmessageid'] . ">\r\n";
 			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
-			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+			$header .= 'X-XML-Signature: ' . $spotParser->specialString($xml_signature['signature']) . "\r\n";
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 			
-			$tmpXml = $spotXml;
-			while (strlen($tmpXml) > 0) {
-				$header .= 'X-XML: ' . substr($tmpXml, 0, 256) . "\r\n";
-				
-				if (strlen($tmpXml) >= 256) {
-					$tmpXml = substr($tmpXml, 256);
-				} else {
-					$tmpXml = '';
-				} # else
+			$tmpXml = explode("\r\n", chunk_split($spotXml, 900));
+			foreach($tmpXml as $xmlChunk) {
+				$header .= 'X-XML: ' . $xmlChunk . "\r\n";
 			} # while
 			
 			var_dump($header);

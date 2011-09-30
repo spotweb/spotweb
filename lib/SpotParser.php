@@ -302,9 +302,9 @@ class SpotParser {
 
 	/*private */function specialZipStr($strInput) {
 		$strInput = str_replace("=", '=D', $strInput);
-		$strInput = str_replace("\0", '=A', $strInput);
-		$strInput = str_replace("\r", '=B', $strInput);
 		$strInput = str_replace("\n", '=C', $strInput);
+		$strInput = str_replace("\r", '=B', $strInput);
+		$strInput = str_replace("\0", '=A', $strInput);
 
 		return $strInput;
 	} # specialZipstr
