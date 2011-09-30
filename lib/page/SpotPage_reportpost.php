@@ -58,6 +58,10 @@ class SpotPage_reportpost extends SpotPage_Abs {
 			$this->_currentSession['user']['privatekey'] = 
 				$this->_db->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
 			
+			# het messageid krijgen we met <>'s, maar we werken 
+			# in spotweb altijd zonder, dus die strippen we
+			$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
+			
 			# valideer of we dit report kunnen posten, en zo ja, doe dat dan
 			$spotPosting = new SpotPosting($this->_db, $this->_settings);
 			$formMessages['errors'] = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
