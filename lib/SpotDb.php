@@ -94,6 +94,17 @@ class SpotDb {
 		
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
+	
+	/* 
+	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
+	 * te posten
+	 */
+	function isReportMessageIdUnique($messageid) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
+						Array($messageid));
+		
+		return (empty($tmpResult));
+	} # isReportMessageIdUnique
 
 	/*
 	 * Sla het gepostte comment op van deze user
