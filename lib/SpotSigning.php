@@ -194,10 +194,10 @@ class SpotSigning {
 			
 			$uniquePart = $this->makeRandomStr(15);
 			
-			$hash = sha1($prefix . '.' . $uniquePart . $suffix, false);			
+			$hash = sha1($prefix . $uniquePart . $suffix, false);			
 		} # while
 		
-		return $prefix . '.' . $uniquePart . $suffix;
+		return $prefix . $uniquePart . $suffix;
 	} # makeExpensiveHash
 
 	/*
