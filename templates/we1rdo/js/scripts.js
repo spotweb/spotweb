@@ -93,8 +93,8 @@ function openSpot(id,url) {
 		$("a[href^='http']").attr('target','_blank');
 		$(window).bind("resize", detectScrollbar);
 
-		postReportForm();
 		postCommentsForm();
+		postReportForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
@@ -317,7 +317,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 function postReportForm() {
 	$("form.postreportform").submit(function(){ 
-		new spotPosting().postReport(this); 
+		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
 		return false;
 	});	
 }
