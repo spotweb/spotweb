@@ -41,8 +41,9 @@ function spotPosting() {
 				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 			}
 		});
+	} // cbHashcashCalculated
 		
-		this.rpHashcashCalculated = function (self, hash) {
+	this.rpHashcashCalculated = function (self, hash) {
 			self.reportForm['postreportform[newmessageid]'].value = hash;
 			self.reportForm['postreportform[submit]'].value = 'Post';
 			self.uiDone();
@@ -55,21 +56,22 @@ function spotPosting() {
 				dataType: "xml",
 				data: dataString2,  
 				success: function(xml) {
+			alert(((new XMLSerializer()).serializeToString(xml)));
 					var result = $(xml).find('result').text();
 					if(result == 'success') {
 						var user = $(xml).find('user').text();
 						var userid = $(xml).find('userid').text();
 						var text = $(xml).find('body').text();
 						var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
-					}
+					} else {
+					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+					} // else					
 				},
 				error: function(xml) {
 					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 				}
 			});
-		
-		
-	} // callback
+	} // callback rpHashcashCalculated
 
 	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
@@ -78,7 +80,7 @@ function spotPosting() {
 		
 		// update the UI 
 		this.uiStart();
-		
+
 		// First retrieve some values from the form we are submitting
 		var randomstr = commentForm['postcommentform[randomstr]'].value;
 		var rating = commentForm['postcommentform[rating]'].value;
@@ -90,10 +92,10 @@ function spotPosting() {
 
 		/* Nu vragen we om, asynchroon, een hashcash te berekenen. Zie comments van calculateCommentHashCash()
 		   waarom dit asynhcroon verloopt */
-		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr, '@spot.net>', 0, this.cbHashcashCalculated);
+		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr + '.', '@spot.net>', 0, this.cbHashcashCalculated);
 	} // postComment
 	
-	this.postReport = function(reportForm) {
+	this.postReport = function(reportForm, uiStart, uiDone) {
 		this.reportForm = reportForm;
 		this.uiStart = uiStart;
 		this.uiDone = uiDone;
@@ -105,7 +107,7 @@ function spotPosting() {
 		var inreplyto = reportForm['postreportform[inreplyto]'].value;
 		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'));
 		
-		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr, '@spot.net>', 0, this.rpHashcashCalculated);
+		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr + '.', '@spot.net>', 0, this.rpHashcashCalculated);
 	} // postReport
 	
 	//
@@ -126,12 +128,12 @@ function spotPosting() {
 				uniquePart += possibleChars.charAt(irand);
 			} // for
 
-			hash = $.sha1(prefix + '.' + uniquePart + suffix);
+			hash = $.sha1(prefix + uniquePart + suffix);
 			validHash = (hash.substr(0, 4) == '0000');
 		} while ((!validHash) && ((runCount % 500) != 0));
 
 		if (validHash) {
-			cbWhenFound(this, prefix + '.' + uniquePart + suffix);
+			cbWhenFound(this, prefix + uniquePart + suffix);
 		} else {
 			if (runCount > 400000) {
 				alert("Unable to calculate SHA1 hash: " + runCount);
