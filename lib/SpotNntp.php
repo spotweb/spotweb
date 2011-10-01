@@ -415,9 +415,8 @@ class SpotNntp {
 			
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
-			 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+			 *   From: [Nickname] <[USER PUBLIC KEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 			 */
-			$spotnetFrom = $user['username'] . ' <' . $spotSigning->makeRandomStr(8) . '@';
 			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 			
 			/*
@@ -447,6 +446,9 @@ class SpotNntp {
 			
 			# sign the XML with the users' key
 			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spotXml);
+
+			# Now create the spotnetFrom part -- we need the publickey of the user for this
+			$spotnetFrom = $user['username'] . ' <' . $this->_spotParser->specialString($user_signature['publickey']['modulo']) . '@';
 			
 			echo "Posted message with messageid: " . $spot['newmessageid'] . PHP_EOL;
 			
