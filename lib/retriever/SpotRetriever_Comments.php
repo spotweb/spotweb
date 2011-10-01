@@ -58,10 +58,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
-			$this->_db->beginTransaction();
 			$signedCount = 0;
 			$lastProcessedId = '';
-			
+			$commentDbList = array();
+	
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
 			
@@ -100,7 +100,9 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					$lastProcessedId = $commentId;
 
 					# voeg spot aan db toe
-					$this->_db->addCommentRef($commentId, $msgheader['References'], $msgheader['rating']);
+					$commentDbList[] = array('messageid' => $commentId,
+											 'nntpref' => $msgheader['References'],
+											 'rating' => $msgheader['rating']);
 
 					# we moeten ook de msgid lijst updaten omdat 
 					# soms een messageid meerdere keren per xover mee komt
@@ -114,14 +116,17 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
+			/* 
+			 * Add the comments to the database and update the last article
+			 * number found
+			 */
+			$this->_db->setMaxArticleid('comments', $curMsg);
+			$this->_db->addCommentRefs($commentDbList);
+			
 			# herbereken de gemiddelde spotrating, en update het 
 			# aantal niet geverifieerde comments
 			$this->_db->updateSpotRating($spotMsgIdList);
 			$this->_db->updateSpotCommentCount($spotMsgIdList);
-			
-			# update the last retrieved article			
-			$this->_db->setMaxArticleid('comments', $curMsg);
-			$this->_db->commitTransaction();
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
