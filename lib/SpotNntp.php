@@ -10,6 +10,8 @@ class SpotNntp {
 		private $_nntp;
 		private $_connected;
 		
+		private $_spotParser;
+		
 		function __construct($server) { 
 			$error = '';
 			
@@ -21,6 +23,7 @@ class SpotNntp {
 			$this->_pass = $server['pass'];
 
 			$this->_nntp = new Net_NNTP_Client();
+			$this->_spotParser = new SpotParser();
 		} # ctor
 		
 		/*
@@ -163,8 +166,6 @@ class SpotNntp {
 		 * from it
 		 */
 		function parseHeader($headerList, $tmpAr) {
-			$spotParser = new SpotParser();
-		
 			# extract de velden we die we willen hebben
 			foreach($headerList as $hdr) {
 				$keys = explode(':', $hdr);
@@ -173,8 +174,8 @@ class SpotNntp {
 					case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
 					case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
 					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
-					case 'X-User-Signature'	: $tmpAr['user-signature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
-					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $spotParser->unspecialString(substr($hdr, 17)); break;
+					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParser->unspecialString(substr($hdr, 18)); break;
+					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParser->unspecialString(substr($hdr, 17)); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($hdr, 12)); 
 							if ($xml !== false) {
@@ -248,7 +249,6 @@ class SpotNntp {
 
 			# instantieer de benodigde objecten
 			$spotSigning = new SpotSigning();
-			$spotParser = new SpotParser();
 
 			# sign het messageid
 			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
@@ -261,8 +261,8 @@ class SpotNntp {
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: <' . $comment['newmessageid'] . ">\r\n";
 			$header .= 'References: <' . $comment['inreplyto']. ">\r\n";
-			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
-			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
+			$header .= 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $this->_spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$header .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
@@ -280,7 +280,6 @@ class SpotNntp {
 		} # postComment
 		
 		function getImage($segmentList) {
-			$spotParser = new SpotParser();
 			$imageContent = '';
 
 			/*
@@ -288,7 +287,7 @@ class SpotNntp {
 			 */
 			foreach($segmentList as $seg) {
 				$imgTmp = implode('', $this->getBody('<' . $seg . '>'));
-				$imageContent .= $spotParser->unspecialZipStr($imgTmp);
+				$imageContent .= $this->_spotParser->unspecialZipStr($imgTmp);
 			} # foreach
 			
 			return $imageContent;
@@ -301,17 +300,15 @@ class SpotNntp {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
 
-			$spotParser = new SpotParser();
-			return gzinflate( $spotParser->unspecialZipStr($nzb) );
+			return gzinflate( $this->_spotParser->unspecialZipStr($nzb) );
 		} # getNzb
 		
 		/*
 		 * Post an image (contents of the image file should be passed)
 		 */
 		function postImageFile($user, $newsgroup, $imgContents) {
-			$spotParser = new SpotParser();
 			$spotSigning = new SpotSigning();
-			$imgProcessed = chunk_split($spotParser->specialZipstr($imgContents), 900);
+			$imgProcessed = chunk_split($this->_spotParser->specialZipstr($imgContents), 900);
 			
 			/*
 			 * Create an unique messageid and store it so we can return it
@@ -347,9 +344,8 @@ class SpotNntp {
 			$chunkLen = 1024 * 10;
 			$segmentList = array();
 			
-			$spotParser = new SpotParser();
 			$spotSigning = new SpotSigning();
-			$nzbZipped = $spotParser->specialZipstr(gzdeflate($nzbContents));
+			$nzbZipped = $this->_spotParser->specialZipstr(gzdeflate($nzbContents));
 			
 			/*
 			 * Now start posting chunks of the NZB files
@@ -392,7 +388,6 @@ class SpotNntp {
 		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot, $nzbFilename, $imageFilename) {
 			# instantieer de benodigde objecten
 			$spotSigning = new SpotSigning();
-			$spotParser = new SpotParser();
 
 			/* 
 			 * Create one list of all subcategories
@@ -416,7 +411,7 @@ class SpotNntp {
 			 $nzbSegmentList = $this->postNzbFile($user, $newsgroup, file_get_contents($nzbFilename));
 			
 			# convert the current Spotnet info, to an XML structure
-			$spotXml = $spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
+			$spotXml = $this->_spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
 			
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
@@ -442,7 +437,7 @@ class SpotNntp {
 			$spot['newmessageid'] = substr($spotSigning->makeExpensiveHash('<' . $spotSigning->makeRandomStr(15), '@spot.net>'), 1, -1);
 			
 			# sign the header with the servers' key
-			$server_signature = $spotSigning->signMessage($serverPrivKey, $spot['title'] . $spotHeader . $spot['poster']);
+			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $spot['newmessageid'] . '>');
 			
 			# sign the header by using the users' key
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
@@ -456,17 +451,17 @@ class SpotNntp {
 			echo "Posted message with messageid: " . $spot['newmessageid'] . PHP_EOL;
 			
 			# and finally create the NNTP header
-			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $spotParser->specialString($header_signature['signature']) . ">\r\n";
+			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
 			# FIXME: Als er geen tag is, ook geen opgeven
 			$header .= 'Subject: ' . $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			# FIXME: Hashcash
 			$header .= 'Message-ID: <' . $spot['newmessageid'] . ">\r\n";
-			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
-			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
+			$header .= 'X-Server-Signature: ' . $this->_spotParser->specialString($server_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
-			$header .= 'X-XML-Signature: ' . $spotParser->specialString($xml_signature['signature']) . "\r\n";
+			$header .= 'X-XML-Signature: ' . $this->_spotParser->specialString($xml_signature['signature']) . "\r\n";
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
 			$header .= "X-No-Archive: yes\r\n";
 			
@@ -483,7 +478,6 @@ class SpotNntp {
 		function getFullSpot($msgId) {
 			# initialize some variables
 			$spotSigning = new SpotSigning();
-			$spotParser = new SpotParser();
 			
 			$spot = array('fullxml' => '',
 						  'user-signature' => '',
@@ -508,7 +502,7 @@ class SpotNntp {
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
-			$spot = array_merge($spotParser->parseFull($spot['fullxml']), $spot);
+			$spot = array_merge($this->_spotParser->parseFull($spot['fullxml']), $spot);
 			
 			return $spot;
 		} # getFullSpot 
