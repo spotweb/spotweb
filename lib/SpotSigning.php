@@ -106,7 +106,20 @@ class SpotSigning {
 					 'publickey' => array('modulo' => base64_encode($publickey['n']->toBytes()), 'exponent' => base64_encode($publickey['e']->toBytes())),
 					 'message' => $message);
 	} # signMessage
-		
+
+	/*
+	 * Returns a public key
+	 */
+	function getPublicKey($privateKey) {
+		$rsa = new Crypt_RSA();
+		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa->loadKey($privateKey);
+
+		# extract de public key
+		$publicKey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
+
+		return array('publickey' => array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes())));
+	} # getPublicKey
 
 	/*
 	 * Converteer een voor ons bruikbare publickey, naar een publickey
