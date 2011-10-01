@@ -54,17 +54,19 @@ class SpotPosting {
 			$errorList[] = array('postcomment_replayattack', array());
 		} # if
 
+		# Add the title as a comment property
+		$comment['title'] = 'Re: ' . $fullSpot['title'];
+		
 		# Body komt vanuit het form als UTF-8, maar moet verzonden worden als ISO-8859-1
 		# De database wil echter alleen UTF-8, dus moeten we dat even opsplitsen
 		$dbComment = $comment;
 		$comment['body'] = utf8_decode($comment['body']);
-
+		
 		# en post daadwerkelijk de comment
 		if (empty($errorList)) {
 			$this->_nntp_post->postComment($user,
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $this->_settings->get('comment_group'),
-										   $fullSpot['title'], 
 										   $comment);
 			$this->_db->addPostedComment($user['userid'], $dbComment);
 		} # if
