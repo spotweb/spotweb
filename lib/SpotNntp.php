@@ -23,24 +23,35 @@ class SpotNntp {
 			$this->_nntp = new Net_NNTP_Client();
 		} # ctor
 		
+		/*
+		 * Select a group as active group
+		 */
 		function selectGroup($group) {
 			$this->connect();
 			return $this->_nntp->selectGroup($group);
 		} # selectGroup()
 		
+		/*
+		 * Returns an overview (XOVER) from first id to lastid
+		 */
 		function getOverview($first, $last) {
 			$this->connect();
-			$hdrList = $this->_nntp->getOverview($first . '-' . $last);
-			
-			return $hdrList;
+			return $this->_nntp->getOverview($first . '-' . $last);
 		} # getOverview()
 
+		/*
+		 * Get a list of messageid's within a range, same as XOVER
+		 * but only for messageids
+		 */
 		function getMessageIdList($first, $last) {
 			$this->connect();
 			$hdrList = $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
 			return $hdrList;
 		} # getMessageIdList()
 		
+		/*
+		 * Disconnect from the server if we are connected
+		 */
 		function quit() {
 			if (!$this->_connected) {
 				return ;
@@ -48,12 +59,17 @@ class SpotNntp {
 			
 			try {
 				$this->_nntp->quit();
+				$this->_connected = false;
 			} 
 			catch(Exception $x) {
 				// dummy, we dont care about exceptions during quitting time
 			} # catch
 		} # quit()
 
+		/*
+		 * Post an article to the server, $article should be an 2-element 
+		 * array with head and body as elements
+		 */
 		function post($article) {
 			$this->connect();
 
@@ -67,16 +83,26 @@ class SpotNntp {
 			} # else
 		} # post()
 		
+		/*
+		 * Returns the header of an messageid
+		 */
 		function getHeader($msgid) {
 			$this->connect();
 			return $this->_nntp->getHeader($msgid);
 		} # getHeader()
 
+		/*
+		 * Returns the body of an messageid
+		 */
 		function getBody($msgid) {
 			$this->connect();
 			return $this->_nntp->getBody($msgid);
 		} # getBody	()
 		
+		/*
+		 * Connect to the newsserver and authenticate
+		 * if necessary
+		 */
 		function connect() {
 			# dummy operation
 			if ($this->_connected) {
@@ -103,6 +129,10 @@ class SpotNntp {
 			}
 		} # connect()
 		
+		/*
+		 * Returns a full article dividded between an
+		 * header and body part
+		 */
 		function getArticle($msgId) {
 			$this->connect();
 	
@@ -127,7 +157,41 @@ class SpotNntp {
 			
 			return $result;
 		} # getArticle
+
+		/*
+		 * Parse an header and extract specific fields
+		 * from it
+		 */
+		function parseHeader($headerList, $tmpAr) {
+			$spotParser = new SpotParser();
 		
+			# extract de velden we die we willen hebben
+			foreach($headerList as $hdr) {
+				$keys = explode(':', $hdr);
+
+				switch($keys[0]) {
+					case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
+					case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
+					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
+					case 'X-User-Signature'	: $tmpAr['user-signature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
+					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $spotParser->unspecialString(substr($hdr, 17)); break;
+					case 'X-User-Key'		: {
+							$xml = simplexml_load_string(substr($hdr, 12)); 
+							if ($xml !== false) {
+								$tmpAr['user-key']['exponent'] = (string) $xml->Exponent;
+								$tmpAr['user-key']['modulo'] = (string) $xml->Modulus;
+							} # if
+							break;
+					} # x-user-key
+				} # switch
+			} # foreach
+			
+			return $tmpAr;
+		} # parseHeader
+
+		/*
+		 * Callback function for sorting of comments on date
+		 */
 		function cbCommentDateSort($a, $b) {
 			if ($a['stamp'] == $b['stamp']) {
 				return 0;
@@ -136,39 +200,23 @@ class SpotNntp {
 			return ($a['stamp'] < $b['stamp']) ? -1 : 1;
 		} # cbCommentDateSort
 		
+		/*
+		 * Returns a list of comments
+		 */
 		function getComments($commentList) {
 			$comments = array();
 			$spotSigning = new SpotSigning();
-			$spotParser = new SpotParser();
 			
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
 			# als comment text zelf.
 			foreach($commentList as $comment) {
 				try {
-					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'usersignature' => '', 
+					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
 										'user-key' => '', 'userid' => '', 'verified' => false);
 										
 					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
 					$tmpAr['messageid'] = $comment['messageid'];
-
-					# extract de velden we die we willen hebben
-					foreach($tmpAr['header'] as $hdr) {
-						$keys = explode(':', $hdr);
-						
-						switch($keys[0]) {
-							case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
-							case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
-							case 'X-User-Signature'	: $tmpAr['usersignature'] = $spotParser->unspecialString(substr($hdr, 18)); break;
-							case 'X-User-Key'		: {
-									$xml = simplexml_load_string(substr($hdr, 12)); 
-									if ($xml !== false) {
-										$tmpAr['user-key']['exponent'] = (string) $xml->Exponent;
-										$tmpAr['user-key']['modulo'] = (string) $xml->Modulus;
-									} # if
-									break;
-							} # x-user-key
-						} # switch
-					} # foreach
+					$tmpAr = array_merge($tmpAr, $this->parseHeader($tmpAr['header'], $tmpAr));
 
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
 					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
@@ -206,7 +254,7 @@ class SpotNntp {
 			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $comment['newmessageid'] . '>');
 			
 			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, $comment['newmessageid']);
+			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $comment['newmessageid'] . '>');
 
 			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: Re: ' . $title . "\r\n";
@@ -368,7 +416,7 @@ class SpotNntp {
 			 $nzbSegmentList = $this->postNzbFile($user, $newsgroup, file_get_contents($nzbFilename));
 			
 			# convert the current Spotnet info, to an XML structure
-			$spotXml = $this->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
+			$spotXml = $spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
 			
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
@@ -448,24 +496,8 @@ class SpotNntp {
 			# Vraag de volledige article header van de spot op
 			$header = $this->getHeader('<' . $msgId . '>');
 
-			# Parse de header			  
-			foreach($header as $str) {
-				$keys = explode(':', $str);
-				
-				switch($keys[0]) {
-					case 'X-XML' 			: $spot['fullxml'] .= substr($str, 7); break;
-					case 'X-User-Signature'	: $spot['user-signature'] = $spotParser->unspecialString(substr($str, 18)); break;
-					case 'X-XML-Signature'	: $spot['xml-signature'] = substr($str, 17); break;
-					case 'X-User-Key'		: {
-							$xml = simplexml_load_string(substr($str, 12)); 
-							if ($xml !== false) {
-								$spot['user-key']['exponent'] = (string) $xml->Exponent;
-								$spot['user-key']['modulo'] = (string) $xml->Modulus;
-							} # if
-							break;
-					} # x-user-key
-				} # switch
-			} # foreach
+			# Parse de header
+			$spot = array_merge($spot, $this->parseHeader($header, $spot));
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
