@@ -1,5 +1,6 @@
 function spotPosting() {
 	this.commentForm = null;
+	this.reportForm = null;
 	this.uiStart = null;
 	this.uiDone = null;
 
