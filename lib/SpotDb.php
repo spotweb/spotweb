@@ -1204,7 +1204,7 @@ class SpotDb {
 	 */
 	function addFullSpots($fullSpots) {
 		# en voeg het aan de database toe
-		foreach($spots as $spot) {
+		foreach($fullSpots as $fullSpot) {
 			# Kap de verschillende strings af op een maximum van 
 			# de datastructuur, de unique keys en de RSA keys en dergeijke
 			# kappen we expres niet af

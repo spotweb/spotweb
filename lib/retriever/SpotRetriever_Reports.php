@@ -88,7 +88,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 						$spotMsgIdList[] = $msgheader['References'];
 
 						# voeg spot aan db toe
-						$addReportRefs[] = array('messageid' => $reportId,
+						$reportDbList[] = array('messageid' => $reportId,
 												 'fromhdr' => $msgheader['From'],
 												 'keyword' => $msgheader['keyword'],
 												 'nntpref' => $msgheader['References']);
@@ -110,7 +110,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			$this->_db->updateSpotReportCount($spotMsgIdList);
 			
 			# update the last retrieved article			
-			$this->_db->addReportRefs($commentDbList);
+			$this->_db->addReportRefs($reportDbList);
 			$this->_db->setMaxArticleid('reports', $curMsg);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
