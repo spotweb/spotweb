@@ -72,18 +72,19 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
-			$this->_db->beginTransaction();
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
 			$modCount = 0;
 			$skipCount = 0;
 			$lastProcessedId = '';
+			$fullSpotDbList = array();
+			$spotDbList = array();
 
 			# Bepaal onze retention stamp
 			if ($this->_settings->get('retention') > 0) {
 				$retentionStamp = time() - ($this->_settings->get('retention') * 24 * 60 * 60);
-			} else {	
+			} else {
 				$retentionStamp = 0;
 			} # else
 			
@@ -149,7 +150,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						} else {
 							# Hier kijken we alleen of de spotheader niet bestaat
 							if (!$header_isInDb) {
-								$this->_db->addSpot($spot);
+								$spotDbList[] = $spot;
 
 								# definieer de header als al ontvangen, we moeten ook de 
 								# msgid lijst updaten omdat soms een messageid meerdere 
@@ -188,7 +189,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
 
 							# en voeg hem aan de database toe
-							$this->_db->addFullSpot($fullSpot);
+							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
 							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
 							# keren per xover mee komt ...
@@ -232,9 +233,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
+			/* 
+			 * Add the spots to the database and update the last article
+			 * number found
+			 */
+			$this->_db->addSpots($spotDbList, $fullSpotDbList);
 			$this->_db->setMaxArticleid($this->_server['host'], $curMsg);
-			$this->_db->commitTransaction();				
-
+			
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
 	

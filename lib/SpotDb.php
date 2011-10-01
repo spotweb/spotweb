@@ -913,20 +913,24 @@ class SpotDb {
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
-	function addCommentRef($messageid, $nntpref, $rating) {
-		$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
-								Array($messageid, $nntpref, $rating));
-	} # addCommentRef
+	function addCommentRefs($commentList) { 
+		foreach($commentList as $comment) {
+			$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
+									Array($comment['messageid'], $comment['nntpref'], $comment['rating']));
+		} # foreach
+	} # addCommentRefs
 
 	/*
 	 * Insert addReportRef, 
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
-	function addReportRef($messageid, $fromhdr, $keyword, $nntpref) {
-		$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES('%s', '%s', '%s', '%s')",
-								Array($messageid, $fromhdr, $keyword, $nntpref));
-	} # addReportRef
+	function addReportRefs($reportList) { 
+		foreach($reportList as $report) {
+			$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES('%s', '%s', '%s', '%s')",
+									Array($report['messageid'], $report['fromhdr'], $report['keyword'], $report['nntpref']));
+		} # foreach
+	} # addReportRefs
 
 	/*
 	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
@@ -1152,43 +1156,45 @@ class SpotDb {
 	} # deleteSpotsRetention
 
 	/*
-	 * Voeg een spot toe aan de database
+	 * Voeg een reeks met spots toe aan de database
 	 */
-	function addSpot($spot, $fullSpot = array()) {
-		# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
-		# versies een verkeerde afronding geeft bij >32bits getallen.
-		if (!is_numeric($spot['filesize'])) {
-			$spot['filesize'] = 0;
-		} # if
-		
-		# Kap de verschillende strings af op een maximum van 
-		# de datastructuur, de unique keys kappen we expres niet af
-		$spot['poster'] = substr($spot['poster'], 0, 127);
-		$spot['title'] = substr($spot['title'], 0, 127);
-		$spot['tag'] = substr($spot['tag'], 0, 127);
-		$spot['subcata'] = substr($spot['subcata'], 0, 63);
-		$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
-		$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
-		$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
+	function addSpots($spots, $fullSpots = array()) {
+		foreach($spots as $spot) {
+			# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
+			# versies een verkeerde afronding geeft bij >32bits getallen.
+			if (!is_numeric($spot['filesize'])) {
+				$spot['filesize'] = 0;
+			} # if
+			
+			# Kap de verschillende strings af op een maximum van 
+			# de datastructuur, de unique keys kappen we expres niet af
+			$spot['poster'] = substr($spot['poster'], 0, 127);
+			$spot['title'] = substr($spot['title'], 0, 127);
+			$spot['tag'] = substr($spot['tag'], 0, 127);
+			$spot['subcata'] = substr($spot['subcata'], 0, 63);
+			$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
+			$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
+			$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 
-		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-				VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-				 Array($spot['messageid'],
-					   $spot['poster'],
-					   $spot['title'],
-					   $spot['tag'],
-					   (int) $spot['category'],
-					   $spot['subcata'],
-					   $spot['subcatb'],
-					   $spot['subcatc'],
-					   $spot['subcatd'],
-					   $spot['subcatz'],
-					   $spot['stamp'],
-					   ($spot['stamp'] * -1),
-					   $spot['filesize']));
+			$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+					VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+					 Array($spot['messageid'],
+						   $spot['poster'],
+						   $spot['title'],
+						   $spot['tag'],
+						   (int) $spot['category'],
+						   $spot['subcata'],
+						   $spot['subcatb'],
+						   $spot['subcatc'],
+						   $spot['subcatd'],
+						   $spot['subcatz'],
+						   $spot['stamp'],
+						   ($spot['stamp'] * -1),
+						   $spot['filesize']));
+		} # foreach
 		
-		if (!empty($fullSpot)) {
-			$this->addFullSpot($fullSpot);
+		if (!empty($fullSpots)) {
+			$this->addFullSpots($fullSpots);
 		} # if
 	} # addSpot()
 
@@ -1196,22 +1202,24 @@ class SpotDb {
 	 * Voeg enkel de full spot toe aan de database, niet gebruiken zonder dat er een entry in 'spots' staat
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
-	function addFullSpot($fullSpot) {
-		# Kap de verschillende strings af op een maximum van 
-		# de datastructuur, de unique keys en de RSA keys en dergeijke
-		# kappen we expres niet af
-		$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
-		
+	function addFullSpots($fullSpots) {
 		# en voeg het aan de database toe
-		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
-				VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-				Array($fullSpot['messageid'],
-					  $fullSpot['userid'],
-					  (int) $fullSpot['verified'],
-					  $fullSpot['user-signature'],
-					  base64_encode(serialize($fullSpot['user-key'])),
-					  $fullSpot['xml-signature'],
-					  $fullSpot['fullxml']));
+		foreach($spots as $spot) {
+			# Kap de verschillende strings af op een maximum van 
+			# de datastructuur, de unique keys en de RSA keys en dergeijke
+			# kappen we expres niet af
+			$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
+			
+			$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
+					VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+					Array($fullSpot['messageid'],
+						  $fullSpot['userid'],
+						  (int) $fullSpot['verified'],
+						  $fullSpot['user-signature'],
+						  base64_encode(serialize($fullSpot['user-key'])),
+						  $fullSpot['xml-signature'],
+						  $fullSpot['fullxml']));
+		} # foreach
 	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {

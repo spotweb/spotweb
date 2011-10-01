@@ -22,7 +22,7 @@ class SpotsOverview {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
 			$fullSpot = $nntp->getFullSpot($msgId);
-			$this->_db->addFullSpot($fullSpot);
+			$this->_db->addFullSpots( array($fullSpot) );
 			
 			# we halen de fullspot opnieuw op zodat we de 'xover' informatie en de 
 			# niet xover informatie in 1 hebben

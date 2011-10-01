@@ -109,7 +109,7 @@ abstract class SpotRetriever_Abs {
 			while ($curMsg < $this->_msgdata['last']) {
 				# get the list of headers (XOVER)
 				$hdrList = $this->_spotnntp->getOverview($curMsg, ($curMsg + $increment));
-				
+
 				$saveCurMsg = $curMsg;
 				# If no spots were found, just manually increase the
 				# messagenumber with the increment to make sure we advance

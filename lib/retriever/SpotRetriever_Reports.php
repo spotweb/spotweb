@@ -57,9 +57,9 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
-			$this->_db->beginTransaction();
 			$signedCount = 0;
 			$lastProcessedId = '';
+			$reportDbList = array();
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchReportMessageIds($hdrList);
@@ -88,7 +88,10 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 						$spotMsgIdList[] = $msgheader['References'];
 
 						# voeg spot aan db toe
-						$this->_db->addReportRef($reportId, $msgheader['From'], $msgheader['keyword'], $msgheader['References']);
+						$addReportRefs[] = array('messageid' => $reportId,
+												 'fromhdr' => $msgheader['From'],
+												 'keyword' => $msgheader['keyword'],
+												 'nntpref' => $msgheader['References']);
 					} # if
 
 					# we moeten ook de msgid lijst updaten omdat 
@@ -107,8 +110,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			$this->_db->updateSpotReportCount($spotMsgIdList);
 			
 			# update the last retrieved article			
+			$this->_db->addReportRefs($commentDbList);
 			$this->_db->setMaxArticleid('reports', $curMsg);
-			$this->_db->commitTransaction();
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
