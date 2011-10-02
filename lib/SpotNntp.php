@@ -399,7 +399,7 @@ class SpotNntp {
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 
 			# sign the XML with the users' key
-			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spotXml);
+			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spot['spotxml']);
 
 			# Extract the users' publickey
 			$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
@@ -409,7 +409,7 @@ class SpotNntp {
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
 			
 			# Add the Spotnet XML file, but split it in chunks of 900 characters
-			$tmpXml = explode("\r\n", chunk_split($spotXml, 900));
+			$tmpXml = explode("\r\n", chunk_split($spot['spotxml'], 900));
 			foreach($tmpXml as $xmlChunk) {
 				if (strlen(trim($xmlChunk)) > 0) {
 					$header .= 'X-XML: ' . $xmlChunk . "\r\n";

@@ -386,7 +386,7 @@ abstract class SpotStruct_abs {
 		# ---- spotsposted table ---- #
 		$this->createTable('spotsposted', "utf8"); 
 		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('ouruserid', 'commentsposted', 'INTEGER', "0", true, '');
+		$this->validateColumn('ouruserid', 'spotsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
