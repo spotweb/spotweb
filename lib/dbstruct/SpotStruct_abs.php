@@ -382,6 +382,19 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('body', 'commentsposted', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('stamp', 'commentsposted', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("commentsposted", "InnoDB");
+
+		# ---- spotsposted table ---- #
+		$this->createTable('spotsposted', "utf8"); 
+		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('ouruserid', 'commentsposted', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('category', 'spotsposted', 'INTEGER', NULL, false, '');
+		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('filesize', 'spotsposted', 'UNSIGNED BIGINTEGER', "0", true, '');
+		$this->validateColumn('fullxml', 'spotsposted', 'TEXT', NULL, false, 'utf8');
+		$this->alterStorageEngine("spotsposted", "InnoDB");
 		
 		# ---- usersettings table ---- #
 		$this->createTable('usersettings', "utf8"); 
@@ -544,6 +557,10 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
 		$this->validateIndex("idx_commentspostedrel_1", "", "commentsposted", array("ouruserid"));
 
+		# ---- Indexen op spotsposted ----
+		$this->validateIndex("idx_spotsposted_1", "UNIQUE", "spotsposted", array("messageid"));
+		$this->validateIndex("idx_spotspostedrel_1", "", "spotsposted", array("ouruserid"));
+
 		# ---- Indexen op settings ----
 		$this->validateIndex("idx_settings_1", "UNIQUE", "settings", array("name"));
 
@@ -594,6 +611,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('notifications', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('commentsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
 		# Hier droppen we kolommen ###################################################################

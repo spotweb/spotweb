@@ -107,7 +107,7 @@ class SpotParser {
 		/*
 		 * De "From" header is als volgt opgebouwd:
 		 *
-		 *   From: [Nickname] <[RANDOM]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+		 *   From: [Nickname] <[RANDOM or PUBLICKEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 		 *
 		 * We willen nu alles extracten wat achter de '@' staat, maar omdat een nickname theoretisch ook een @ kan bevatten
 		 * doen we eerst wat meer moeite 
@@ -121,6 +121,7 @@ class SpotParser {
 			if (count($fromAddress) < 2) {
 				return false;
 			} # if
+			$spot['selfsignedpubkey'] = $this->unSpecialString($fromAddress[0]);
 			$spot['header'] = $fromAddress[1];
 		} # if
 
@@ -257,10 +258,22 @@ class SpotParser {
 
 				$spot['wassigned'] = true;
 
-				# KeyID 7 betekent dat alleen een hashcash vereist is
+				# KeyID 7 betekent dat een hashcash vereist is
 				if ($spot['keyid'] == 7) {
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
 					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+					
+					/*
+					 * Create a fake RSA keyarray so we can validate it using our standard
+					 * infrastructure
+					 */
+					 if ($spot['verified']) {
+					 /* Not sure about this
+						$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
+													   'exponent' => 'AQAB'));
+						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey);
+					*/
+					} # if
 				} else {
 					# the signature this header is signed with
 					$signature = $this->unspecialString($spot['headersign']);

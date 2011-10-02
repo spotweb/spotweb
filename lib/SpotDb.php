@@ -88,6 +88,41 @@ class SpotDb {
 	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
 	 * te posten
 	 */
+	function isNewSpotMessageIdUnique($messageid) {
+		/* 
+		 * We use a union between our own messageids and the messageids we already
+		 * know to prevent a user from spamming the spotweb system by using existing
+		 * but valid spots
+		 */
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'
+												  UNION
+											    SELECT messageid FROM spots WHERE messageid = '%s'",
+						Array($messageid, $messageid));
+		
+		return (empty($tmpResult));
+	} # isNewSpotMessageIdUnique
+	
+	/*
+	 * Add the posted spot to the database
+	 */
+	function addPostedSpot($userId, $spot, $fullXml) {
+		$this->_conn->modify(
+				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
+					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
+				Array((int) $userId,
+					  $spot['newmessageid'],
+					  (int) time(),
+					  $spot['title'],
+					  $spot['tag'],
+					  (in) $spot['category'],
+					  $spot['subcats'],
+					  $fullXml));
+	} # addPostedSpot
+	
+	/* 
+	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
+	 * te posten
+	 */
 	function isCommentMessageIdUnique($messageid) {
 		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'",
 						Array($messageid));
