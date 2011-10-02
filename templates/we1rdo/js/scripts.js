@@ -317,7 +317,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 function postReportForm() {
 	$("form.postreportform").submit(function(){ 
-		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
+		new spotPosting().postReport(this,postCommentUiStart,postCommentUiDone); 
 		return false;
 	});	
 }
