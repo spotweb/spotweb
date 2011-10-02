@@ -77,8 +77,13 @@ class SpotPosting {
 	/*
 	 * Post a spot to the usenet server. 
 	 */
-	public function postSpot($user, $spot) {
+	public function postSpot($user, $spot, $imageFilename, $nzbFilename) {
 		$errorList = array();
+		$hdr_newsgroup = $this->_settings->get('hdr_group');
+		$bin_newsgroup = $this->_settings->get('nzb_group');
+		
+		$hdr_newsgroup = 'alt.test';
+		$bin_newsgroup = 'alt.test';
 
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
@@ -92,8 +97,8 @@ class SpotPosting {
 		} # if
 
 		# Title cannot be empty or very short
-		$comment['title'] = trim($comment['title']);
-		if (strlen($comment['title']) < 5) {
+		$spot['title'] = trim($spot['title']);
+		if (strlen($spot['title']) < 5) {
 			$errorList[] = array('postspot_titletooshort', array());
 		} # if
 		
@@ -117,48 +122,50 @@ class SpotPosting {
 
 		# Fix up some overly long spot properties and other minor issues
 		$spot['tag'] = substr(trim($spot['tag'], ' |;'), 0, 99);
-		$spot['http'] = substr($trim($spot['website']), 0, 449);
+		$spot['http'] = substr(trim($spot['website']), 0, 449);
 		
 		# en post daadwerkelijk de comment
 		if (empty($errorList)) {
 			/* 
 			 * We save the original spot because we mangle it a little
 			 * bit before posting / converting it, but we want the
-			 * original to be in the database
+			 * original to be in the database. 
 			 */
 			$dbSpot = $spot;
 			
+			# Create one list of all subcategories
+			$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
+
 			# If a tag is given, add it to the subject
 			if (strlen(trim($spot['tag'])) > 0) {
 				$spot['title'] = $spot['title'] . ' | ' . $spot['tag']. "\r\n";
 			} # if
 			
-			# Create one list of all subcategories
-			$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
-
 			/*
 			 * Retrieve the image information and post the image to 
 			 * the appropriate newsgroup so we have the messageid list of 
 			 * images
 			 */
-			$imgSegmentList = $this->_nntp_post->postBinaryMessage($user, $newsgroup, file_get_contents($imageFilename), '');
+			$imgSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, file_get_contents($imageFilename), '');
 			$tmpGdImageSize = getimagesize($imageFilename);
 			$imageInfo = array('width' => $tmpGdImageSize[0],
 							   'height' => $tmpGdImageSize[1],
 							   'segments' => $imgSegmentList);
 				
 			# Post the NZB file to the appropriate newsgroups
-			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
+			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
 			
 			# Convert the current Spotnet info, to an XML structure
-			$spotXml = $this->_spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
+			$spotParser = new SpotParser();
+			$spotXml = $spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
+			$spot['spotxml'] = $spotXml;
 			
 			# And actually post to the newsgroups
 			$this->_nntp_post->postFullSpot($user,
 										   $this->_settings->get('privatekey'),  # Server private key
-										   $this->_settings->get('hdr_group'),
+										   $hdr_newsgroup,
 										   $spot);
-			$this->_db->addPostedSpot($user['userid'], $spot, $spotXml);
+			$this->_db->addPostedSpot($user['userid'], $dbSpot, $spotXml);
 		} # if
 		
 		return $errorList;

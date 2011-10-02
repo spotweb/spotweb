@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.38');
+define('SPOTDB_SCHEMA_VERSION', '0.39');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -106,6 +106,8 @@ class SpotDb {
 	 * Add the posted spot to the database
 	 */
 	function addPostedSpot($userId, $spot, $fullXml) {
+		$spot['subcatlist'] = $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz'];
+		
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
 					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
@@ -114,8 +116,8 @@ class SpotDb {
 					  (int) time(),
 					  $spot['title'],
 					  $spot['tag'],
-					  (in) $spot['category'],
-					  $spot['subcats'],
+					  (int) $spot['category'],
+					  $spot['subcatlist'],
 					  $fullXml));
 	} # addPostedSpot
 	
