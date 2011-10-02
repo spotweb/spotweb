@@ -374,45 +374,17 @@ class SpotNntp {
 		 * Posts a spot file and its corresponding image and NZB file (actually done by
 		 * helper functions)
 		 */
-		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot, $nzbFilename, $imageFilename) {
+		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
 			# instantiate the necessary objects
 			$spotSigning = new SpotSigning();
 
-			/*
-			 * Retrieve the image information and post the image to 
-			 * the appropriate newsgroup so we have the messageid list of 
-			 * images
-			 */
-			$imgSegmentList = $this->postBinaryMessage($user, $newsgroup, file_get_contents($imageFilename), '');
-			$tmpGdImageSize = getimagesize($imageFilename);
-			$imageInfo = array('width' => $tmpGdImageSize[0],
-							   'height' => $tmpGdImageSize[1],
-							   'segments' => $imgSegmentList);
-				
-			/*
-			 * Post the NZB file to the appropriate newsgroups
-			 */
-			$nzbSegmentList = $this->postBinaryMessage($user, $newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
-			
-			/* 
-			 * Create one list of all subcategories
-			 */
-			$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
-
-			/*
-			 * Convert the current Spotnet info, to an XML structure
-			 */
-			$spotXml = $this->_spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
-			
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
 			 *   From: [Nickname] <[USER PUBLIC KEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 			 */
 			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 			
-			/*
-			 * Process each subcategory and add them to the from header
-			 */
+			# Process each subcategory and add them to the from header
 			foreach($spot['subcatlist'] as $subcat) {
 				$spotHeader .= $subcat[0] . str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
 			} # foreach
@@ -423,29 +395,20 @@ class SpotNntp {
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
 
-			# Create a new messageid FIXME
-			$spot['newmessageid'] = substr($spotSigning->makeExpensiveHash('<' . $spotSigning->makeRandomStr(15), '@spot.net>'), 1, -1);
-			
 			# sign the header by using the users' key
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 
 			# sign the XML with the users' key
 			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spotXml);
 
-			/*
-			 * Extract the users' publickey
-			 */
+			# Extract the users' publickey
 			$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
 			
-			/*
-			 * Create the From header
-			 */
+			# Create the From header
 			$spotnetFrom = $user['username'] . ' <' . $this->_spotParser->specialString($userPubKey['publickey']['modulo']) . '@';
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
 			
-			/*
-			 * Add the Spotnet XML file, but split it in chunks of 900 characters
-			 */
+			# Add the Spotnet XML file, but split it in chunks of 900 characters
 			$tmpXml = explode("\r\n", chunk_split($spotXml, 900));
 			foreach($tmpXml as $xmlChunk) {
 				if (strlen(trim($xmlChunk)) > 0) {
@@ -453,19 +416,14 @@ class SpotNntp {
 				} # if
 			} # foreach
 			$header .= 'X-XML-Signature: ' . $this->_spotParser->specialString($xml_signature['signature']) . "\r\n";
-			
-			/*
-			 * If a tag is given, add it to the subject
-			 */
-			if (strlen(trim($spot['tag'])) > 0) {
-				$spot['title'] = $spot['title'] . ' | ' . $spot['tag']. "\r\n";
-			} # if
 
-var_dump($spot);
-			
+			# post the message
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $spot, $header);
 		} # postFullSpot
-		
+
+		/*
+		 * Retrieve the fullspot from the NNTP server
+		 */
 		function getFullSpot($msgId) {
 			# initialize some variables
 			$spotSigning = new SpotSigning();

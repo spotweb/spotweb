@@ -827,6 +827,11 @@ class SpotTemplateHelper {
 		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
 		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
 		$strings['postcomment_replayattack'] = 'Replay attack';
+
+		$strings['postspot_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
+		$strings['postspot_bodytooshort'] = 'Geef een reactie';
+		$strings['postspot_titletooshort'] = 'Geef een titel';
+		$strings['postspot_replayattack'] = 'Replay attack';
 		
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
 		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
