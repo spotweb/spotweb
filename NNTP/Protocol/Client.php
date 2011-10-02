@@ -68,8 +68,8 @@
  */
 
 // Warn about PHP bugs
-if (version_compare(PHP_VERSION, '5.2.11') === 1) {
-    trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
+if (version_compare(PHP_VERSION, '5.2.11', 'eq') === 1) {
+    trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised: ' . PHP_VERSION, E_USER_WARNING);
 }
 
 /**
