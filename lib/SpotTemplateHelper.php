@@ -671,9 +671,7 @@ class SpotTemplateHelper {
 		// properly escape several  urls
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
-		} else {
-			$spot['image'] = '';
-		} # else
+		} # if
 		$spot['website'] = htmlspecialchars($spot['website']);
 		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 		

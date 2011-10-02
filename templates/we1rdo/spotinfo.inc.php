@@ -8,6 +8,12 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+
+	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
+	$imgMinWidth = 260;
+	if (is_array($spot['image'])) {
+		$imgMinWidth = min(260, $spot['image']['width']);
+	} # if
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
@@ -49,9 +55,9 @@ echo "</th>";
 			</table>
 			<table class="spotdetails">
 				<tr>
-					<td class="img">
-						<a onclick="toggleImageSize('<?php echo $spot['image']; ?>')" class="postimage">
-							<img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 300, 300); ?>" alt="<?php echo $spot['title'];?>">
+					<td class="img" style="min-width:<?php echo $imgMinWidth; ?>px;">
+						<a onclick="toggleImageSize()" class="postimage">
+							<img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 260, 260); ?>" alt="<?php echo $spot['title'];?>">
 						</a>
 					</td>
 					<td class="info">

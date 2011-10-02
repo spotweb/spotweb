@@ -388,7 +388,7 @@ function loadSpotImage() {
 	});
 }
 
-function toggleImageSize(url) {
+function toggleImageSize() {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
