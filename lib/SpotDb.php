@@ -360,29 +360,6 @@ class SpotDb {
 								WHERE id = '%s'", 
 							Array( (int) $userid));
 	} # deleteUser
-	
-	/*
-	 * Verwijder spots en comments van een user uit de db
-	 */
-	function removeUser($userId) {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'  : 
-			case 'pdo_sqlite' : {
-				$this->_conn->modify("DELETE FROM spots WHERE messageid IN (SELECT messageid FROM spotsfull WHERE userid = '%s')", Array($userId));
-				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref IN (SELECT messageid FROM spotsfull WHERE userid= '%s')", Array($userId));
-				$this->_conn->modify("DELETE FROM spotsfull WHERE userid = '%s')", Array($userId));
-				$this->_conn->modify("DELETE FROM commentsfull WHERE userid = '%s')", Array($userId));
-				break;
-			} # pdo_sqlite
-			
-			default			: {
-				$this->_conn->modify("DELETE FROM spotsfull, spots, commentsxover USING spotsfull
-										LEFT JOIN spots ON spotsfull.messageid=spots.messageid
-										LEFT JOIN commentsxover ON spotsfull.messageid=commentsxover.messageid
-										WHERE spotsfull.userid = '%s'", Array($userId));
-			} # default
-		} # switch	
-	} # removeUser
 
 	/*
 	 * Update de informatie over een user behalve het password
