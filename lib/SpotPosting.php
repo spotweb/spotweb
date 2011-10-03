@@ -217,12 +217,13 @@ class SpotPosting {
 		# De database wil echter alleen UTF-8, dus moeten we dat even opsplitsen
 		$dbReport = $report;
 		$report['body'] = utf8_decode($report['body']);
+		$report['title'] = 'REPORT <' . $report['inreplyto'] . '> ' . $fullSpot['title'];
 
 		# en post daadwerkelijk de report
 		if (empty($errorList)) {
 			$this->_nntp_post->reportSpotAsSpam($user,
 										   $this->_settings->get('privatekey'),  # Server private key
-										   $fullSpot['title'], 
+										   $this->_settings->get('report_group'),
 										   $report);
 			$this->_db->addPostedReport($user['userid'], $dbReport);
 		} # if
