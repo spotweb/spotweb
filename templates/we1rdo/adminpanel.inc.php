@@ -11,9 +11,6 @@
 			<li><a href="?page=render&tplname=listusers" title="Gebruikerslijst"><span>Gebruikerslijst</span></a></li>
 <?php } ?>
 			<li><a href="?page=render&tplname=listgroups" title="Groepenlijst"><span>Groepenlijst</span></a></li>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_modpanel, '')) { ?>
-			<li><a href="?page=render&tplname=modpage" title="Moderatorsectie"><span>Moderatorsectie</span></a></li>
-<?php } ?>	
 		</ul>
 
 		<div id="adminpaneltab-1" class="ui-tabs-hide">

@@ -58,8 +58,6 @@ class SpotSecurity {
 	const spotsec_keep_own_filters				= 34;
 	const spotsec_set_filters_as_default		= 35;
 	const spotsec_report_spam					= 36;
-	const spotsec_use_modpanel					= 37;
-	const spotsec_rem_spot						= 38;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(

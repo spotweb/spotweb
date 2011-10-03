@@ -108,7 +108,6 @@ class SpotUserUpgrader {
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 4)");
 	} # createAdmin
 
 	/*
@@ -333,9 +332,6 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.15) {
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(4, 'Moderators')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_use_modpanel . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(4, " . SpotSecurity::spotsec_use_modpanel . ")");
-			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 4)");
 		} # if
 	} # updateSecurityGroups
 
