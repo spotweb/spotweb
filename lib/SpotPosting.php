@@ -138,7 +138,7 @@ class SpotPosting {
 
 			# If a tag is given, add it to the subject
 			if (strlen(trim($spot['tag'])) > 0) {
-				$spot['title'] = $spot['title'] . ' | ' . $spot['tag']. "\r\n";
+				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
 			} # if
 			
 			/*
