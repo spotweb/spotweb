@@ -127,7 +127,7 @@ class SpotDb {
 	 */
 	function addPostedReport($userId, $report) {
 		$this->_conn->modify(
-				"INSERT INTO reportssposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
+				"INSERT INTO reportsposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
 					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
 				Array((int) $userId,
 					  $report['newmessageid'],
