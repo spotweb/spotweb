@@ -362,11 +362,11 @@ class SpotNntp {
 			/* 
 			 * Create the comment specific headers
 			 */
-			$addHeader = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
-			$addHeaders .= 'References: <' . $message['inreplyto']. ">\r\n";
+			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+			$addHeaders .= 'References: <' . $comment['inreplyto']. ">\r\n";
 			$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
 
-			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $addHeaders);
+			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $comment, $addHeaders);
 		} # postComment
 		
 	
