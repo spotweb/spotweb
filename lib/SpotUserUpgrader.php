@@ -171,6 +171,18 @@ class SpotUserUpgrader {
 			# oude settings verwijderen
 			$this->unsetSetting($user['prefs'], 'search_url');
 			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');
+			
+			# controleren dat de user een geldige RSA key heeft
+			if ($user['userid'] > 2) {
+				$rsaKey = $this->_db->getUserPrivateRsaKey($user['userid']);
+				if (empty($rsaKey)) {
+					# Creer een private en public key paar voor deze user
+					$spotSigning = new SpotSigning();
+					$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
+					
+					$this->_db->setUserRsaKeys($user['userid'], $userKey['public'], $userKey['private']);
+				} # if
+			} # if
 
 			# update the user record in the database			
 			$this->_db->setUser($user);
