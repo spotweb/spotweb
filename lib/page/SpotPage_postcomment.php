@@ -58,7 +58,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 
 			# vraag de users' privatekey op
 			$this->_currentSession['user']['privatekey'] = 
-				$this->_db->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
+				$spotUser->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
 				
 			# het messageid krijgen we met <>'s, maar we werken 
 			# in spotweb altijd zonder, dus die strippen we
