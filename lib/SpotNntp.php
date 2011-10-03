@@ -571,7 +571,7 @@ class SpotNntp {
 			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $report['newmessageid'] . '>');
 			
 			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $report['newmessageid'] . '>');
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $report['newmessageid']);
 			
 			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: REPORT <' . $report['inreplyto'] . '> ' . $title . "\r\n";
