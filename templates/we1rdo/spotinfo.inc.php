@@ -110,7 +110,15 @@ echo "</th>";
 				<h4>Post Description</h4>
 				<pre><?php echo $spot['description']; ?></pre>
 			</div>
-
+			
+			<div class="spam" id="spam">
+				<ul id="spamreport">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+				echo "<li class='reportAsSpam'>";
+				include "spamreport.inc.php";
+				echo "</li></ul></div>"; 
+		} # if ?>
+			
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_comments, '')) { ?>
 			<div class="comments" id="comments">
 				<h4>Comments <span class="commentcount"># 0</span></h4>

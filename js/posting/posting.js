@@ -1,5 +1,6 @@
 function spotPosting() {
 	this.commentForm = null;
+	this.reportForm = null;
 	this.uiStart = null;
 	this.uiDone = null;
 
@@ -41,7 +42,37 @@ function spotPosting() {
 				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 			}
 		});
-	} // callback
+	} // cbHashcashCalculated
+		
+	this.rpHashcashCalculated = function (self, hash) {
+			self.reportForm['postreportform[newmessageid]'].value = hash;
+			self.reportForm['postreportform[submit]'].value = 'Post';
+			self.uiDone();
+			
+			var dataString2 = $(self.reportForm).serialize()
+			
+			$.ajax({  
+				type: "POST",  
+				url: "?page=reportpost",  
+				dataType: "xml",
+				data: dataString2,  
+				success: function(xml) {
+			alert(((new XMLSerializer()).serializeToString(xml)));
+					var result = $(xml).find('result').text();
+					if(result == 'success') {
+						var user = $(xml).find('user').text();
+						var userid = $(xml).find('userid').text();
+						var text = $(xml).find('body').text();
+						var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
+					} else {
+					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+					} // else					
+				},
+				error: function(xml) {
+					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+				}
+			});
+	} // callback rpHashcashCalculated
 
 	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
@@ -50,7 +81,7 @@ function spotPosting() {
 		
 		// update the UI 
 		this.uiStart();
-		
+
 		// First retrieve some values from the form we are submitting
 		var randomstr = commentForm['postcommentform[randomstr]'].value;
 		var rating = commentForm['postcommentform[rating]'].value;
@@ -58,13 +89,28 @@ function spotPosting() {
 		// inreplyto is the whole messageid, we strip off the @ part to add
 		// our own stuff
 		var inreplyto = commentForm['postcommentform[inreplyto]'].value;
-		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'))
+		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'));
 
 		/* Nu vragen we om, asynchroon, een hashcash te berekenen. Zie comments van calculateCommentHashCash()
 		   waarom dit asynhcroon verloopt */
 		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr + '.', '@spot.net>', 0, this.cbHashcashCalculated);
 	} // postComment
-
+	
+	this.postReport = function(reportForm, uiStart, uiDone) {
+		this.reportForm = reportForm;
+		this.uiStart = uiStart;
+		this.uiDone = uiDone;
+		
+		this.uiStart();
+		
+		var randomstr = reportForm['postreportform[randomstr]'].value;
+		
+		var inreplyto = reportForm['postreportform[inreplyto]'].value;
+		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'));
+		
+		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr + '.', '@spot.net>', 0, this.rpHashcashCalculated);
+	} // postReport
+	
 	//
 	// We breken de make expensive hash op in stukken omdat 
 	// anders IE8 gaat zeuren over scripts die te lang lopen.

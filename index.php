@@ -259,6 +259,14 @@ try {
 				$page->render();
 				break;
 		} # postcomment
+		
+		case 'reportpost' : {
+				$page = new SpotPage_reportpost($db, $settings, $currentSession, 
+							Array ('reportform' => $req->getForm('postreportform', array('submit')),
+								   'inreplyto' => $req->getDef('inreplyto', '')));
+				$page->render();
+				break;
+		} # reportpost
 
 		case 'logout' : {
 				$page = new SpotPage_logout($db, $settings, $currentSession);
