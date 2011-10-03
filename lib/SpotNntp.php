@@ -568,15 +568,15 @@ class SpotNntp {
 			$spotParser = new SpotParser();
 			
 			# sign het messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $report['newmessageid'] . '>');
+			$user_signature = $spotSigning->signMessage($user['privatekey'], $report['newmessageid']);
 			
 			# ook door de php server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $report['newmessageid'] . '>');
+			$server_signature = $spotSigning->signMessage($serverPrivKey, $report['newmessageid']);
 			
 			$header = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$header .= 'Subject: REPORT <' . $report['inreplyto'] . '> ' . $title . "\r\n";
 			$header .= 'Newsgroups: free.willey' . "\r\n";
-			$header .= 'Message-ID: <' . $report['newmessageid'] . ">\r\n";
+			$header .= 'Message-ID: ' . $report['newmessageid'] . "\r\n";
 			$header .= 'References: <' . $report['inreplyto'] . ">\r\n";
 			$header .= 'X-User-Signature: ' . $spotParser->specialString($user_signature['signature']) . "\r\n";
 			$header .= 'X-Server-Signature: ' . $spotParser->specialString($server_signature['signature']) . "\r\n";
