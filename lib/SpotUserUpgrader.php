@@ -330,8 +330,7 @@ class SpotUserUpgrader {
 		
 		# Spam reporting en moderator panel toegevoegd
 		if ($this->_settings->get('securityversion') < 0.15) {
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(4, 'Moderators')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
+//			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
 		} # if
 	} # updateSecurityGroups
 
