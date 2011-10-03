@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.14');
+define('SPOTWEB_SECURITY_VERSION', '0.15');
 
 class SpotSecurity {
 	private $_db;
@@ -57,6 +57,9 @@ class SpotSecurity {
 	const spotsec_allow_custom_stylesheet		= 33;
 	const spotsec_keep_own_filters				= 34;
 	const spotsec_set_filters_as_default		= 35;
+	const spotsec_report_spam					= 36;
+	const spotsec_use_modpanel					= 37;
+	const spotsec_rem_spot						= 38;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -95,7 +98,10 @@ class SpotSecurity {
 		32 		=> "Notificaties versturen (per type)",
 		33		=> "Eigen CSS stylesheet toestaan per gebruiker",
 		34		=> "Zelf spotfilters kunnen bewerken",
-		35		=> "Filters als standaard in kunnen stellen voor nieuwe gebruikers"
+		35		=> "Filters als standaard in kunnen stellen voor nieuwe gebruikers",
+		36		=> "Rapporteer spot of gebruiker als spam",
+		37		=> "Toegang tot moderatorpaneel",
+		38		=> "Spots verwijderen"
 	);
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {

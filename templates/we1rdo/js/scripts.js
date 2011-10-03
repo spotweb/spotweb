@@ -94,6 +94,7 @@ function openSpot(id,url) {
 		$(window).bind("resize", detectScrollbar);
 
 		postCommentsForm();
+		postReportForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
@@ -312,6 +313,13 @@ function loadComments(messageid,perpage,pagenr) {
 		}
 	});
 	$("a.closeDetails").click(function() { xhr.abort() });
+}
+
+function postReportForm() {
+	$("form.postreportform").submit(function(){ 
+		new spotPosting().postReport(this,postCommentUiStart,postCommentUiDone); 
+		return false;
+	});	
 }
 
 // Load post comment form

@@ -108,6 +108,7 @@ class SpotUserUpgrader {
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
+		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 4)");
 	} # createAdmin
 
 	/*
@@ -203,7 +204,7 @@ class SpotUserUpgrader {
 			/* Creeer de security groepen */
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");			
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");				
 		} # if
 	} # createSecurityGroups
 	
@@ -326,6 +327,15 @@ class SpotUserUpgrader {
 		# Downloads kunnen wissen is een apart recht geworden (issue #935)
 		if ($this->_settings->get('securityversion') < 0.14) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(3, " . SpotSecurity::spotsec_keep_own_downloadlist . ", 'erasedls')");
+		} # if
+		
+		# Spam reporting en moderator panel toegevoegd
+		if ($this->_settings->get('securityversion') < 0.15) {
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(4, 'Moderators')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_use_modpanel . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(4, " . SpotSecurity::spotsec_use_modpanel . ")");
+			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 4)");
 		} # if
 	} # updateSecurityGroups
 

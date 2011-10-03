@@ -131,7 +131,27 @@ class SpotDb {
 		
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
+	
+	/* 
+	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
+	 * te posten
+	 */
+	function isReportMessageIdUnique($messageid) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
+						Array($messageid));
+		
+		return (empty($tmpResult));
+	} # isReportMessageIdUnique
 
+	/*
+	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
+	 */
+	function isReportPlaced($messageid, $userId) {
+		$tmpResult = $this->_conn->singleQuery("SELECT id FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = '%d'", Array($messageid, $userId));
+		
+		return (empty($tmpResult));
+	} #isReportPlaced
+	
 	/*
 	 * Sla het gepostte comment op van deze user
 	 */
@@ -147,6 +167,21 @@ class SpotDb {
 					  $comment['body'],
 					  (int) time()));
 	} # addPostedComment
+	
+	/*
+	 * Sla het gepostte report op van deze user
+	 */
+	function addPostedReport($userId, $report) {
+		$this->_conn->modify(
+				"INSERT INTO reportsposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
+					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
+				Array((int) $userId,
+					  $report['newmessageid'],
+					  $report['inreplyto'],
+					  $report['randomstr'],
+					  $report['body'],
+					  (int) time()));
+	} # addPostedReport
 
 	/*
 	 * Verwijder een setting
@@ -1150,6 +1185,8 @@ class SpotDb {
 			} # default
 		} # switch
 	} # deleteSpot
+	
+	
 
 	/*
 	 * Markeer een spot in de db moderated
