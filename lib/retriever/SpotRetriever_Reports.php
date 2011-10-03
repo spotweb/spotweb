@@ -106,12 +106,12 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
-			# herbereken het aantal reports in spotnet
-			$this->_db->updateSpotReportCount($spotMsgIdList);
-			
 			# update the last retrieved article			
 			$this->_db->addReportRefs($reportDbList);
 			$this->_db->setMaxArticleid('reports', $curMsg);
+			
+			# herbereken het aantal reports in spotnet
+			$this->_db->updateSpotReportCount($spotMsgIdList);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
