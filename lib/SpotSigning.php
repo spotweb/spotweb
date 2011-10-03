@@ -93,6 +93,9 @@ class SpotSigning {
 		 * var_dump($spotSigning->checkRsaSignature('testmessage', $x['signature'], $x['publickey'], false));
 		 *
 		 */
+		if (empty($privatekey)) {
+			throw new Exception("Given privatekey is invalid, please correct (eg: run upgrade-db.php when testinstall.php is without errors)");
+		} # if
 		 
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
