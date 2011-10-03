@@ -851,6 +851,8 @@ class SpotTemplateHelper {
 		$strings['validatefilter_fileuploaderr'] = 'Fout tijdens uploaden van filter (%d)';
 		$strings['validatefilter_invaliduploadxml'] = 'Geuploade Spotweb filter file is ongeldig';
 		
+		$strings['postreport_alreadyreported'] = 'Deze spot is al gemarkeerd als spam';
+		
 		return vsprintf($strings[$message[0]], $message[1]);
 	} # formMessageToString
 

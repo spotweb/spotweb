@@ -79,6 +79,11 @@ class SpotPosting {
 	public function reportSpotAsSpam($user, $report) {
 		$errorList = array();
 
+		#controleer eerst of de user al een report heeft aangemaakt, dan kunnen we gelijk stoppen.
+		if (!$this->_db->isReportPlaced($report['inreplyto'], $user['userid'])) {
+			$errorList[] = array('postreport_alreadyreported', array());
+		}
+		
 		# haal de spot op waar dit een reply op is
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$fullSpot = $spotsOverview->getFullSpot($report['inreplyto'], $user['userid'], $this->_nntp_post);

@@ -107,6 +107,15 @@ class SpotDb {
 	} # isReportMessageIdUnique
 
 	/*
+	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
+	 */
+	function isReportPlaced($messageid, $userId) {
+		$tmpResult = $this->_conn->singleQuery("SELECT id WHERE inreplyto = '%s' AND ouruserid = '%s'", Array($messageid, $userId));
+		
+		return (empty($tmpResult));
+	} #isReportPlaced
+	
+	/*
 	 * Sla het gepostte comment op van deze user
 	 */
 	function addPostedComment($userId, $comment) {
