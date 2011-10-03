@@ -769,6 +769,13 @@ class SpotUserSystem {
 	} # removeUser()
 
 	/*
+	 * Retrieves an RSA key from the users' record.
+	 */
+	function getUserPrivateRsaKey($userId) {
+		return $this->_db->getUserPrivateRsaKey($userId);
+	} # getUserPrivateRsaKey
+	
+	/*
 	 * Converteert een lijst met filters naar een XML record
 	 * welke uitwisselbaar is
 	 */
