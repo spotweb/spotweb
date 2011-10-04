@@ -102,6 +102,11 @@ class SpotPosting {
 			$errorList[] = array('postspot_titletooshort', array());
 		} # if
 		
+		# Subcategory should be valid
+		if (($spot['category'] < 0) || ($spot['category'] > count(SpotCategories::$_head_categories))) {
+			$errorList[] = array('postspot_invalidcategory', array($spot['category']));
+		} # if
+		
 		/*
 		 * To Check:
 		 *
@@ -123,8 +128,22 @@ class SpotPosting {
 		# Fix up some overly long spot properties and other minor issues
 		$spot['tag'] = substr(trim($spot['tag'], ' |;'), 0, 99);
 		$spot['http'] = substr(trim($spot['website']), 0, 449);
+
+		# Create one list of all subcategories
+		$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
+
+		# loop through all subcategories and check if they are valid in
+		# our list of subcategories
+		foreach($spot['subcatlist'] as $subCat) {
+			$subCatLetter = substr($subCat, 0, 1);
+			$subCatNumber = (int) substr($subCat, 1);
+			
+			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][$subCatNumber])) {
+				$errorList[] = array('postspot_invalidsubcat', array($subCat));
+			} # if
+		} # foreach	
 		
-		# en post daadwerkelijk de comment
+		# en post daadwerkelijk de spot
 		if (empty($errorList)) {
 			/* 
 			 * We save the original spot because we mangle it a little
@@ -133,9 +152,6 @@ class SpotPosting {
 			 */
 			$dbSpot = $spot;
 			
-			# Create one list of all subcategories
-			$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
-
 			# If a tag is given, add it to the subject
 			if (strlen(trim($spot['tag'])) > 0) {
 				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];

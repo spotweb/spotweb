@@ -841,6 +841,8 @@ class SpotTemplateHelper {
 		$strings['postspot_bodytooshort'] = 'Geef een reactie';
 		$strings['postspot_titletooshort'] = 'Geef een titel';
 		$strings['postspot_replayattack'] = 'Replay attack';
+		$strings['postspot_invalidcategory'] = 'Ongeldige hoofdcategory (%d)';
+		$strings['postspot_invalidsubcat'] = 'Ongeldige subcategory (%s)';
 		
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
 		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
