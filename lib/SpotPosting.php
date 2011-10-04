@@ -90,6 +90,27 @@ class SpotPosting {
 			$errorList[] = array('postspot_invalidhashcash', array());
 		} # if
 
+		# Read the contents of image so we can check it
+		$imageContents = file_get_contents($imageFilename);
+
+		# the image should be below 1MB
+		if (strlen($imageContents) > 1024*1024) {
+			$errorList[] = array('postspot_imagetoolarge', array());
+		} # if
+
+		/*
+		 * Get some image information, if it fails, this is an
+		 * error as well
+		 */
+		$tmpGdImageSize = getimagesize($imageFilename);
+		if ($imageInfo === false) {
+			$errorList[] = array('postspot_imageinvalid', array());
+		} else {
+			$imageInfo = array('width' => $tmpGdImageSize[0],
+							   'height' => $tmpGdImageSize[1],
+							   'segments' => $imgSegmentList);
+		} # else
+
 		# Body cannot be empty or very short
 		$spot['body'] = trim($spot['body']);
 		if (strlen($spot['body']) < 30) {
@@ -110,11 +131,8 @@ class SpotPosting {
 		/*
 		 * To Check:
 		 *
-		 * - Category
-		 * - SubCategory
 		 * - NZB
 		 * - Zelf de filesize invullen adhv de nzb
-		 * - Plaatje (verplicht + < 1MB)
 		 * - NZB file controleren
 		 */
 		 
@@ -132,8 +150,10 @@ class SpotPosting {
 		# Create one list of all subcategories
 		$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
 
-		# loop through all subcategories and check if they are valid in
-		# our list of subcategories
+		/*
+		 * Loop through all subcategories and check if they are valid in
+		 * our list of subcategories
+		 */
 		foreach($spot['subcatlist'] as $subCat) {
 			$subCatLetter = substr($subCat, 0, 1);
 			$subCatNumber = (int) substr($subCat, 1);
@@ -142,6 +162,11 @@ class SpotPosting {
 				$errorList[] = array('postspot_invalidsubcat', array($subCat));
 			} # if
 		} # foreach	
+		
+		# Make sure the spot isn't being posted for too many categories
+		if (count($spot['subcatlist']) > 10) {
+			$errorList[] = array('postspot_toomanycategories', count($spot['subcatlist']));
+		} # if
 		
 		# en post daadwerkelijk de spot
 		if (empty($errorList)) {
@@ -162,11 +187,7 @@ class SpotPosting {
 			 * the appropriate newsgroup so we have the messageid list of 
 			 * images
 			 */
-			$imgSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, file_get_contents($imageFilename), '');
-			$tmpGdImageSize = getimagesize($imageFilename);
-			$imageInfo = array('width' => $tmpGdImageSize[0],
-							   'height' => $tmpGdImageSize[1],
-							   'segments' => $imgSegmentList);
+			$imgSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, $imageContents, '');
 				
 			# Post the NZB file to the appropriate newsgroups
 			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
