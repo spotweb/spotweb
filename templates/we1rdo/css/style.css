@@ -248,6 +248,13 @@ table.spots tr td a.sabnzbd-button.loading {background:url(../img/loading.gif) n
 div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes,
 table.spots tr td a.sabnzbd-button.succes {background-position:-20px -94px;}
 
+div.details table.spotheader th.spamreport a.spamreport-button,
+table.spots tr td a.spamreport-button {display:block; width:20px; height:17px; cursor:pointer; margin:0 2px 1px 0; background:url(../img/alerticon.png) no-repeat;}
+div.details table.spotheader th.spamreport a.spamreport-button.loading,
+table.spots tr td a.spamreport-button.loading {background:url(../img/loading.gif) no-repeat center center; margin:0 2px 1px 0;}
+div.details table.spotheader th.spamreport a.spamreport-button.succes,
+table.spots tr td a.spamreport-button.succes {background-position:-20px -94px;}
+
 table.spots tr.blue td {background-color:#daecff;} 
 table.spots tr.orange td {background-color:#fffad3;}
 table.spots tr.green td {background-color:#cbffcb;}
@@ -420,13 +427,11 @@ div.details form.postcommentform dd.rating span {display:inline-block; width:16p
 div.details table.spotinfo td.rating span.active,
 div.details form.postcommentform dd.rating span.active {background-position:-56px -80px;}
 
-div.details div.spam li.reportAsSpam {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec; list-style:none;}
-div.details div.spam li.reportAsSpam div {display:none; background-color:#fff; margin:1px 3px 1px 3px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; position:relative;}
-div.details form.reportspamform fieldset {padding:0; margin:0; border:0;}
-div.details form.reportspamform fieldset dl {margin:0;}
-div.details form.reportspamform fieldset dd {margin:0;}
-div.details form.reportspamform fieldset textarea {width:204px; font:11px Arial, Helvetica, sans-serif;}
-div.details form.reportspamform input.greyButton {display:inline; margin: 2px 0 5px 0;}
+div.details form.postreportform fieldset {padding:0; margin:0; border:0;}
+div.details form.postreportform fieldset dl {margin:0;}
+div.details form.postreportform fieldset dd {margin:0;}
+div.details form.postreportform input.greyButton {display:inline; margin: 0;}
+
 
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}

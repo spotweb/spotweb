@@ -17,11 +17,13 @@ if (empty($postresult)) {
 	<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
 	<input type="hidden" name="postreportform[newmessageid]" value="">
 	<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
+<!--	
 	<fieldset>
 		<dl>
 			<dd><input class="greyButton" type="submit" name="dummysubmit" title="Markeer als spam" value="Markeer als spam"></dd>
 		</dl>
 	</fieldset>
+-->	
 </form>
 
 <?php

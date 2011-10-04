@@ -28,6 +28,9 @@ $(function(){
 			return true;
 		}
     });	
+	
+	postCommentsForm();
+	postReportForm();
 });
 
 // createBaseURL
@@ -317,7 +320,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 function postReportForm() {
 	$("form.postreportform").submit(function(){ 
-		new spotPosting().postReport(this,postCommentUiStart,postCommentUiDone); 
+		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
 		return false;
 	});	
 }

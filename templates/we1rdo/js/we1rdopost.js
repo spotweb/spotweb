@@ -10,3 +10,11 @@ function postCommentUiDone() {
 	$("li.addComment a.togglePostComment").click();
 	$("li.addComment > div div").removeClass("loading");
 } // postCommentUidone
+
+function postReportUiStart() {
+	$(".spamreport-button").addClass("loading");
+} // postReportUiStart
+
+function postReportUiDone() {
+	$(".spamreport-button").removeClass("loading");
+} // postReportUiDone
