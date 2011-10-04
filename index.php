@@ -259,6 +259,13 @@ try {
 				$page->render();
 				break;
 		} # postcomment
+
+		case 'postspot' : {
+				$page = new SpotPage_postspot($db, $settings, $currentSession,
+							Array('spotform' => $req->getForm('newspotform', array('submit'))));
+				$page->render();
+				break;
+		} # postspot
 		
 		case 'reportpost' : {
 				$page = new SpotPage_reportpost($db, $settings, $currentSession, 
