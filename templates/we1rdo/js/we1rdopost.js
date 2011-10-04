@@ -18,4 +18,5 @@ function postReportUiStart() {
 function postReportUiDone() {
 	$(".spamreport-button").removeClass("loading");
 	$(".spamreport-button").addClass("success");
+	$(".spamreport-button").attr("title", "Deze spot heb jij als spam gerapporteerd");
 } // postReportUiDone
