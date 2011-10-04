@@ -997,6 +997,13 @@ class SpotTemplateHelper {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
 	} # getIndexFilter
+
+	/*
+	 * Controleer  of de user al een report heeft aangemaakt
+	 */
+	function isReportPlaced($messageId) {
+		return $this->_db->isReportPlaced($messageId, $this->_currentSession['user']['userid']);
+	} # isReportPlaced
 	
 	/*
 	 * Genereert een random string

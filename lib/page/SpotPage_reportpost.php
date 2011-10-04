@@ -67,11 +67,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 			$formMessages['errors'] = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
 			
 			if (empty($formMessages['errors'])) {
-				$postResult = array('result' => 'success',
-									'user' => $this->_currentSession['user']['username'],
-									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
-									'body' => $report['body']
-									);
+				$postResult = array('result' => 'success');
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else
