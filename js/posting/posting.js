@@ -57,15 +57,14 @@ function spotPosting() {
 				dataType: "xml",
 				data: dataString2,  
 				success: function(xml) {
-			alert(((new XMLSerializer()).serializeToString(xml)));
 					var result = $(xml).find('result').text();
-					if(result == 'success') {
-						var user = $(xml).find('user').text();
-						var userid = $(xml).find('userid').text();
-						var text = $(xml).find('body').text();
-						var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
-					} else {
-					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+					var errors = $(xml).find('errors').text();
+					
+					if(result != 'success') {
+						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+						
+						$(".spamreport-button").attr('title', result + ': ' + errors);
+						alert('Markeren als spam is niet gelukt: ' + errors);
 					} // else					
 				},
 				error: function(xml) {
