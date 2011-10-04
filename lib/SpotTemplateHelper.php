@@ -843,6 +843,9 @@ class SpotTemplateHelper {
 		$strings['postspot_replayattack'] = 'Replay attack';
 		$strings['postspot_invalidcategory'] = 'Ongeldige hoofdcategory (%d)';
 		$strings['postspot_invalidsubcat'] = 'Ongeldige subcategory (%s)';
+		$strings['postspot_imagetoolarge'] = 'Opgegeven afbeelding is te groot';
+		$strings['postspot_imageinvalid'] = 'Opgegeven afbeelding is niet herkend als afbeelding';
+		$strings['postspot_toomanycategories'] = 'Teveel categorieen opgegeven';
 		
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
 		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
