@@ -17,18 +17,16 @@
 	
 ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
-<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
-	<input type="hidden" name="postreportform[submit]" value="Post">
-	<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
-	<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
-	<input type="hidden" name="postreportform[newmessageid]" value="">
-	<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
-</form>
-<?php } # if ?>
-	
-
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
+			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
+				<input type="hidden" name="postreportform[submit]" value="Post">
+				<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
+				<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
+				<input type="hidden" name="postreportform[newmessageid]" value="">
+				<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
+			</form>
+<?php } # if ?>
 			<table class="spotheader">
 				<tbody>
 					<tr>
