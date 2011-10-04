@@ -63,9 +63,11 @@ echo "</th>";
 <?php } else { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>
 <?php } } ?>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+		if (!$tplHelper->isReportPlaced($spot['messageid'])) {
+?>
 						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
-<?php } ?>
+<?php } } ?>
 					</tr>
 				</tbody>
 			</table>
