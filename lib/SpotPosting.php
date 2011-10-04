@@ -128,16 +128,31 @@ class SpotPosting {
 		} # if
 		
 		/*
-		 * To Check:
-		 *
-		 * - NZB
-		 * - Zelf de filesize invullen adhv de nzb
-		 * - NZB file controleren
+		 * Load the NZB file as an XML file so we can make sure 
+		 * it's a valid XML and NZB file and we can determine the
+		 * filesize
 		 */
-		 
-		# Make sure we didn't use this messageid recently or at all, this
-		# prevents people from not recalculating the hashcash in order to spam
-		# the system
+		$nzbFileContents = file_get_contents($nzbFilename);
+		$nzbXml = simplexml_load_string($nzbFileContents);
+
+		# Do some basic sanity checking for some required NZB elements
+		if (empty($nzbXml->file)) {
+			$errorList[] = array('postspot_invalidnzb', array());
+		} # if
+		
+		# and determine the total filesize
+		$spot['filesize'] = 0;
+		foreach($nzbXml->file as $file) {
+			foreach($file->segments->segment as $seg) {
+				$spot['filesize'] += (int) $seg['bytes'];
+			} # foreach
+		} # foreach
+		
+		/*
+		 * Make sure we didn't use this messageid recently or at all, this
+		 * prevents people from not recalculating the hashcash in order to spam
+		 * the system
+		 */
 		if (!$this->_db->isNewSpotMessageIdUnique($spot['newmessageid'])) {
 			$errorList[] = array('postspot_replayattack', array());
 		} # if
@@ -190,7 +205,7 @@ class SpotPosting {
 			$imageInfo['segments'] = $imgSegmentList;
 				
 			# Post the NZB file to the appropriate newsgroups
-			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
+			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate($nzbFileContents), '');
 			
 			# Convert the current Spotnet info, to an XML structure
 			$spotParser = new SpotParser();
