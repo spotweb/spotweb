@@ -103,13 +103,12 @@ class SpotPosting {
 		 * error as well
 		 */
 		$tmpGdImageSize = getimagesize($imageFilename);
-		if ($imageInfo === false) {
+		if ($tmpGdImageSize === false) {
 			$errorList[] = array('postspot_imageinvalid', array());
 		} else {
 			$imageInfo = array('width' => $tmpGdImageSize[0],
-							   'height' => $tmpGdImageSize[1],
-							   'segments' => $imgSegmentList);
-		} # else
+					  	       'height' => $tmpGdImageSize[1]);
+		} # if
 
 		# Body cannot be empty or very short
 		$spot['body'] = trim($spot['body']);
@@ -188,6 +187,7 @@ class SpotPosting {
 			 * images
 			 */
 			$imgSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, $imageContents, '');
+			$imageInfo['segments'] = $imgSegmentList;
 				
 			# Post the NZB file to the appropriate newsgroups
 			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate(file_get_contents($nzbFilename)), '');
