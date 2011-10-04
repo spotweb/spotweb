@@ -462,7 +462,7 @@ class SpotNntp {
 			 */
 			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$addHeaders .= 'References: <' . $report['inreplyto']. ">\r\n";
-			$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
+			$addHeaders .= 'X-User-Rating: ' . (int) $report['rating'] . "\r\n";
 
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
 		} # reportSpotAsSpam
