@@ -14,6 +14,11 @@
 	if (is_array($spot['image'])) {
 		$imgMinWidth = min(260, $spot['image']['width']);
 	} # if
+	
+	if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+		include "spamreport.inc.php"; 
+	} # if
+	
 ?>
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
@@ -50,6 +55,9 @@ echo "</th>";
 <?php } else { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>
 <?php } } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
+						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
+<?php } ?>
 					</tr>
 				</tbody>
 			</table>
@@ -97,10 +105,8 @@ echo "</th>";
 								<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
 <?php } ?>
 
-<?php if ($spot['reportcount'] > 0) { ?>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> Aantal spam reports </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
-<?php } ?>
 							</tbody>
 						</table>
 					</td>
@@ -110,14 +116,6 @@ echo "</th>";
 				<h4>Post Description</h4>
 				<pre><?php echo $spot['description']; ?></pre>
 			</div>
-			
-			<div class="spam" id="spam">
-				<ul id="spamreport">
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-				echo "<li class='reportAsSpam'>";
-				include "spamreport.inc.php";
-				echo "</li></ul></div>"; 
-		} # if ?>
 			
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_comments, '')) { ?>
 			<div class="comments" id="comments">
