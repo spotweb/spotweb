@@ -66,7 +66,7 @@ echo "</th>";
 ?>
 						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
 <?php } else { ?>
-						<th class="spamreport"><a onclick="return false;" class="spamreport-button" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
+						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
 <?php } } ?>
 					</tr>
 				</tbody>

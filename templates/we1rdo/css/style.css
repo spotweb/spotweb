@@ -252,8 +252,8 @@ div.details table.spotheader th.spamreport a.spamreport-button,
 table.spots tr td a.spamreport-button {display:block; width:20px; height:17px; cursor:pointer; margin:0 2px 1px 0; background:url(../img/alerticon.png) no-repeat;}
 div.details table.spotheader th.spamreport a.spamreport-button.loading,
 table.spots tr td a.spamreport-button.loading {background:url(../img/loading.gif) no-repeat center center; margin:0 2px 1px 0;}
-div.details table.spotheader th.spamreport a.spamreport-button.succes,
-table.spots tr td a.spamreport-button.succes {background-position:-20px -94px;}
+div.details table.spotheader th.spamreport a.spamreport-button.success,
+table.spots tr td a.spamreport-button.success {background:url(../img/alerticondone.png) no-repeat; }
 
 table.spots tr.blue td {background-color:#daecff;} 
 table.spots tr.orange td {background-color:#fffad3;}
