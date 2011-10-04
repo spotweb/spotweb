@@ -15,11 +15,19 @@
 		$imgMinWidth = min(260, $spot['image']['width']);
 	} # if
 	
-	if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-		include "spamreport.inc.php"; 
-	} # if
-	
 ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
+<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
+	<input type="hidden" name="postreportform[submit]" value="Post">
+	<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
+	<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
+	<input type="hidden" name="postreportform[newmessageid]" value="">
+	<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
+</form>
+<?php } # if ?>
+	
+
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
 			<table class="spotheader">
 				<tbody>
