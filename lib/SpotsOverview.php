@@ -185,20 +185,25 @@ class SpotsOverview {
 		# Stel je de boom als volgt voor, met tussen haakjes de unieke key:
 		#
 		# - Beeld (cat0)
-		# +-- Formaat (cat0_a)
-		# +---- DivX (cat0_a0)
-		# +---- WMV (cat0_a1)
-		# +-- Bron (cat0_b)
-		# - Geluid (cat1)
-		# +-- Formaat (cat1_a)
+		# +-- Film (cat0_z0)
+		# +--- Formaat (cat0_z0_a)
+		# +----- DivX (cat0_z0_a0)
+		# +----- WMV (cat0_z0_a1)
+		# +-- Series (cat0_z1)
+		# +--- Formaat (cat0_z1_a)
+		# +----- DivX (cat0_z1_a0)
+		# +----- WMV (cat0_z1_a1)
+		# +--- Bron (cat0_z1_b)
+		# - Applicaties (cat3)
+		# +-- Formaat (cat1_zz_a / cat1_a)
 		# 
-		# Oftewel - je hebt een hoofdcategory nummer, daaronder heb je een subcategory type (a,b,c etc),
-		# en daaronder heb je dan weer een nummer welke subcategory het is.
+		# Oftewel - je hebt een hoofdcategory nummer, daaronder heb je een type, daaronder 
+		# een subcategory type (a,b,c etc), en daaronder heb je dan weer een nummer welke subcategory het is.
 		#
-		# Als je in bovenstaand voorbeeld dus DivX wilt selecteren, dan is de keywaarde simpelweg cat0_a0, 
+		# Als je in bovenstaand voorbeeld dus Film in DivX wilt selecteren, dan is de keywaarde simpelweg cat0_z0_a0, 
 		# wil je echter heel 'Beeld' selecteren dan is 'cat0' al genoeg. Als je echter in de Dynatree boom
 		# zelf het item 'Beeld' zou selecteren, dan zal Dynatree de verschillende items doorsturen als
-		# individuele keys, oftewel: cat0_a0,cat0_a1, etc etc.
+		# individuele keys, oftewel: cat0_z0_a0,cat0_z1_a0, etc etc.
 		#
 		# Als we gebruikers handmatig de category willen laten opgeven (bv. door een entry in settings.php)
 		# dan is het bijzonder onhandig als ze al die categorieen individueel moeten opgeven. Om dit op te
@@ -209,9 +214,10 @@ class SpotsOverview {
 		# de boom:
 		#
 		# cat0						- Zal uitgebreid worden naar alle subcategorieen van category 0
-		# cat0_a					- Zal uitgebreid worden naar alle subcategorieen 'A' van category 0.
-		# !cat0_a1					- Zal cat0_a1 verwijderen uit de lijst (volgorde van opgeven is belangrijk)
-		# ~cat0_a1					- 'Verbied' dat een spot in cat0_a1 zit
+		# cat0_z0_a					- Zal uitgebreid worden naar alle subcategorieen 'A' van category 0, type z0.
+		# !cat0_z0_a1				- Zal cat0_z0_a1 verwijderen uit de lijst (volgorde van opgeven is belangrijk)
+		# ~cat0_z0_a1				- 'Verbied' dat een spot in cat0_z0_a1 zit
+		# cat0_a					- Alles in a voor hoofdcategorie 0 kiezen
 		#
 		# Intern werken we dus alleen met de gehele lijst van subcategorieen.
 		#
@@ -223,19 +229,46 @@ class SpotsOverview {
 		# een volledige category met subcategorieen indien nodig.
 		$dynaListCount = count($dynaList);
 		for($i = 0; $i < $dynaListCount; $i++) {
-			# De opgegeven category kan in twee soorten voorkomen:
-			#     cat1_a			==> Alles van cat1, en daar alles van 'a' selecteren
+			# De opgegeven category kan in drie soorten voorkomen:
+			#     cat1_z0_a			==> Alles van cat1, type z0, en daar alles van 'a' selecteren
+			#     cat1_z0			==> Alles van cat1, type z0
+			# 	  cat1_a			==> Alles van cat1, alles van 'a' selecteren
 			#	  cat1				==> Heel cat1 selecteren
 			#
 			# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
-			if ((strlen($dynaList[$i]) == 6) || (strlen($dynaList[$i]) == 4)) {
+			if ((strlen($dynaList[$i]) > 0) && ($dynaList[$i][0] == 'c')) {
 				$hCat = (int) substr($dynaList[$i], 3, 1);
 				
-				# was een subcategory gespecificeerd?
-				if (strlen($dynaList[$i]) == 6) {
-					$subCatSelected = substr($dynaList[$i], 5);
-				} else {
+				# was een type + subcategory gespecificeerd? (cat1_z0_a)
+				if (strlen($dynaList[$i]) == 9) {
+					$typeSelected = substr($dynaList[$i], 5, 2);
+					$subCatSelected = substr($dynaList[$i], 8);
+				# was enkel een category gespecificeerd? (cat1)
+				} elseif (strlen($dynaList[$i]) == 4) {
+					$typeSelected = '*';
 					$subCatSelected = '*';
+				# was een category en type gespecificeerd? (cat1_z0)
+				} elseif ((strlen($dynaList[$i]) == 7) && ($dynaList[$i][5] === 'z')) {
+					$typeSelected = substr($dynaList[$i], 5, 2);
+					$subCatSelected = '*';
+				# was een category en subcategorie gespecificeerd, oude style? (cat1_a3)
+				} elseif (((strlen($dynaList[$i]) == 7) || (strlen($dynaList[$i]) == 8)) && ($dynaList[$i][5] !== 'z')) {
+					# Zet die oude style om naar de verschillende expliciete categorieen
+					foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
+						$newTreeQuery .= "," . substr($dynaList[$i], 0, 4) . '_z' . $typeKey . '_' . substr($dynaList[$i], 5);
+					} # foreach
+					
+					$typeSelected = '';
+					$subCatSelected = '';
+				# was een subcategory gespecificeerd? (cat1_a)
+				} elseif (strlen($dynaList[$i]) == 6) {
+					$typeSelected = '*';
+					$subCatSelected = substr($dynaList[$i], 5, 1);
+				} else {
+					$newTreeQuery .= "," . $dynaList[$i];
+					
+					$typeSelected = '';
+					$subCatSelected = '';
 				} # else
 
 				#
@@ -247,9 +280,17 @@ class SpotsOverview {
 				$tmpStr = '';
 				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
 				
-					if (($subCat == $subCatSelected) || ($subCatSelected == '*')) {
-						foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-							$tmpStr .= ",cat" . $hCat . "_" . $subCat . $x;
+					if ((($subCat == $subCatSelected) || ($subCatSelected == '*')) && ($subCat !== 'z')) {
+						foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
+							$typeKey = 'z' . $typeKey;
+							if (($typeKey == $typeSelected) || ($typeSelected == '*')) {
+							
+								foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
+									if (in_array($typeKey, $y[1])) {
+										$tmpStr .= ",cat" . $hCat . "_" . $typeKey . '_' . $subCat . $x;
+									} # if
+								} # foreach
+							} # if
 						} # foreach
 					} # if
 				} # foreach
@@ -257,14 +298,14 @@ class SpotsOverview {
 				$newTreeQuery .= $tmpStr;
 			} elseif (substr($dynaList[$i], 0, 1) == '!') {
 				# als het een NOT is, haal hem dan uit de lijst
-				$newTreeQuery = str_replace(substr($dynaList[$i], 1) . ",", "", $newTreeQuery);
+				$newTreeQuery = str_replace(',' . substr($dynaList[$i], 1), "", $newTreeQuery);
 			} elseif (substr($dynaList[$i], 0, 1) == '~') {
 				# als het een STRONG NOT is, zorg dat hij in de lijst blijft omdat we die moeten
 				# meegeven aan de nextpage urls en dergelijke.
 				$newTreeQuery .= "," . $dynaList[$i];
 				
-				# en voeg hem toe aan een strong NOT list (~cat0_d12)
-				$strongNotTmp = explode("_", $dynaList[$i]);
+				# en voeg hem toe aan een strong NOT list (~cat0_z0_d12)
+				$strongNotTmp = explode("_", $dynaList[$i], 2);
 				$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
 			} else {
 				$newTreeQuery .= "," . $dynaList[$i];
@@ -285,15 +326,18 @@ class SpotsOverview {
 		foreach($dynaList as $val) {
 			if (substr($val, 0, 3) == 'cat') {
 				# 0e element is hoofdcategory
-				# 1e element is category
+				# 1e element is type
+				# 2e element is category
+				
 				$val = explode('_', (substr($val, 3) . '_'));
 
 				$catVal = $val[0];
-				$subCatIdx = substr($val[1], 0, 1);
-				$subCatVal = substr($val[1], 1);
+				$typeVal = $val[1];
+				$subCatIdx = substr($val[2], 0, 1);
+				$subCatVal = substr($val[2], 1);
 
-				if (count($val) >= 3) {
-					$categoryList['cat'][$catVal][$subCatIdx][] = $subCatVal;
+				if (count($val) >= 4) {
+					$categoryList['cat'][$catVal][$typeVal][$subCatIdx][] = $subCatVal;
 				} # if
 			} # if
 		} # foreach
@@ -312,15 +356,12 @@ class SpotsOverview {
 		if ((!isset($categoryList['cat'])) || (!is_array($categoryList['cat']))) {
 			return $categorySql;
 		} # if
-		
+
 		# 
 		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
 		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
 		# 
 		foreach($categoryList['cat'] as $catid => $cat) {
-			$catid = (int) $catid;
-			$tmpStr = "((category = " . (int) $catid . ")";
-
 			#
 			# Voor welke category die we hebben, gaan we alle subcategorieen 
 			# af en proberen die vervolgens te verwerken.
@@ -328,52 +369,61 @@ class SpotsOverview {
 			if ((is_array($cat)) && (!empty($cat))) {
 				#
 				# Uiteraard is een LIKE query voor category search niet super schaalbaar
-				# maar omdat deze webapp sowieso niet bedoeld is voor grootschalig gebruik
-				# moet het meer dan genoeg zijn
+				# maar het is in de praktijk een hele performante manier
 				#
-				$subcatItems = array();
-				foreach($cat as $subcat => $subcatItem) {
+				foreach($cat as $type => $typeValues) {
+					$catid = (int) $catid;
+					$tmpStr = "((category = " . (int) $catid . ")";
+
+					$subcatItems = array();
 					$subcatValues = array();
-					
-					foreach($subcatItem as $subcatValue) {
-						#
-						# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-						# equality ipv like doen
-						#
-						if (in_array($subcat, array('a', 'z'))) {
-							$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
-						} elseif (in_array($subcat, array('b', 'c', 'd'))) {
-							$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
-						} # if
-					} # foreach
-					
+						
+					foreach($typeValues as $subcat => $subcatItem) {
+						foreach($subcatItem as $subcatValue) {
+							#
+							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+							# equality ipv like doen
+							#
+							if ($subcat == 'a')  {
+								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
+							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
+								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+							} # if
+						} # foreach
+					} # foreach subcat
+
 					# 
 					# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
 					# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
 					#
-					$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
-				} # foreach subcat
+					if ($type[1] !== 'z') {
+						$subcatItems[] = " ((subcatz = '" . $type . "|') AND (" . join(" OR ", $subcatValues) . ")) ";
+					} else {
+						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
+					} # if
 
-				#
-				# Hierna voegen we binnen de hoofdcategory (Beeld,Geluid), de subcategorieen filters die hierboven
-				# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
-				#
-				# Je krijgt dus een filter als volgt:
-				#
-				# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
-				# 
-				# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
-				# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
-				# op filterde.
-				#
-				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+					#
+					# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
+					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
+					#
+					# Je krijgt dus een filter als volgt:
+					#
+					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+					# 
+					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
+					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
+					# op filterde.
+					#
+					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+					
+					# Sluit het haakje af
+					$tmpStr .= ")";
+					$categorySql[] = $tmpStr;			
+				} # foreach type
+					
 			} # if
-			
-			# Sluit het haakje af
-			$tmpStr .= ")";
-			$categorySql[] = $tmpStr;
 		} # foreach
-		
+
 		return $categorySql;
 	} # categoryListToSql 
 	
@@ -394,15 +444,23 @@ class SpotsOverview {
 		#
 		foreach(array_keys($strongNotList) as $strongNotCat) {
 			foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-				$subcat = $strongNotSubcat[0];
+				$subcats = explode('_', $strongNotSubcat);
 
 				# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
 				# equality ipv like doen
-				if (in_array($subcat, array('a', 'z'))) { 
-					$strongNotSql[] = "((Category <> " . (int) $strongNotCat . ") OR (subcat" . $subcat . " <> '" . $this->_db->safe($strongNotSubcat) . "|'))";
-				} elseif (in_array($subcat, array('b', 'c', 'd'))) { 
-					$strongNotSql[] = "((Category <> " . (int) $strongNotCat . ") OR (NOT subcat" . $subcat . " LIKE '%" . $this->_db->safe($strongNotSubcat) . "|%'))";
-				} # if
+				if (count($subcats) == 1) {
+					if (in_array($subcats[0][0], array('a', 'z'))) { 
+						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
+					} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
+						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
+					} # if
+				} elseif (count($subcats) == 2) {
+					if (in_array($subcats[1][0], array('a', 'z'))) { 
+						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
+					} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
+						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
+					} # if
+				} # else
 			} # foreach				
 		} # forEach
 
@@ -694,25 +752,32 @@ class SpotsOverview {
 		#
 		foreach(SpotCategories::$_head_categories as $headCatNumber => $headCatValue) {
 			$subcatsMissing = array();
-			
+
 			# loop door elke subcategorie heen 
 			if (isset($categoryList['cat'][$headCatNumber])) {
 				$subcatsMissing[$headCatNumber] = array();
 				
-				foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
-				
-					if (isset($categoryList['cat'][$headCatNumber][$subCat])) {
-						# en loop door de subcategorie waardes heen om te zien of er daar missen
-						foreach(SpotCategories::$_categories[$headCatNumber][$subCat] as $subcatValue => $subcatDescription) {
-						
-							# Is de category item in deze hoofdcategory's subcategory beschikbaar
-							if (array_search($subcatValue, $categoryList['cat'][$headCatNumber][$subCat]) === false) {
-								$subcatsMissing[$headCatNumber][$subCat][$subcatValue] = 1;
+				foreach($categoryList['cat'][$headCatNumber] as $subCatType => $subCatValues) {
+					$subcatsMissing[$headCatNumber][$subCatType] = array();
+					
+					foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
+						if ($subCat !== 'z') {
+							if (isset($categoryList['cat'][$headCatNumber][$subCatType][$subCat])) {
+								# en loop door de subcategorie waardes heen om te zien of er daar missen
+								foreach(SpotCategories::$_categories[$headCatNumber][$subCat] as $subcatValue => $subcatDescription) {
+									# Make sure this subcat is available for this type
+									if (in_array($subCatType, $subcatDescription[1])) {
+										# Is de category item in deze hoofdcategory's subcategory beschikbaar
+										if (array_search($subcatValue, $categoryList['cat'][$headCatNumber][$subCatType][$subCat]) === false) {
+											$subcatsMissing[$headCatNumber][$subCatType][$subCat][$subcatValue] = 1;
+										} # if
+									} # if
+								} # foreach
+							} else {
+								$subcatsMissing[$headCatNumber][$subCatType][$subCat] = array();
 							} # if
-						} # foreach
-					} else {
-						$subcatsMissing[$headCatNumber][$subCat] = array();
-					} # if
+						} # if
+					} # foreach
 					
 				} # foreach
 
@@ -724,24 +789,56 @@ class SpotsOverview {
 					# - de subcategorie bestaat helemaal niet, dan selecteren we heel de subcategorie.
 					# - de subcategorie bestaat maar is leeg, dan willen we er niets uit hebben
 					# - de subcategorie bestaat, maar is niet leeg. Dan bevat het de items die we NIET willen hebben
-					foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
+					foreach($categoryList['cat'][$headCatNumber] as $subType => $subTypeValue) {
+						#
+						# Is heel de hoofdcat+subtype (cat0_z0, cat0_z1) geselecteerd?
+						#
+						if (!empty($subcatsMissing[$headCatNumber][$subType])) {
+							foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
+								if ($subCatKey !== 'z') {
+									if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
+										$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
+									} elseif (empty($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
+										# Als de subcategorie helemaal leeg is, dan wil de 
+										# gebruiker er niets uit hebben
+									} else {
+										# De subcategorie bestaat, maar bevat enkele items die de
+										# gebruiker niet wil hebben. Die pikken we er hier uit.
+										#
+										# Afhankelijk of de user meer dan de helft wel of niet 
+										# geselecteerd heeft, voegen we hier not's toe of juist niet
+										#
+										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
+											if (in_array($subType, $subCatDesc[1])) {
+											
+												$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) < (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 
-						if (!isset($subcatsMissing[$headCatNumber][$subCatKey])) {
-							$compressedList .= 'cat' . $headCatNumber . '_' . $subCatKey . ',';
-						} elseif (empty($subcatsMissing[$headCatNumber][$subCatKey])) {
-							# Als de subcategorie helemaal leeg is, dan wil de 
-							# gebruiker er niets uit hebben
-						} else {
-							# De subcategorie bestaat, maar bevat enkele items die de
-							# gebruiker niet wil hebben. Die pikken we er hier uit
-							foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
-								if (!isset($subcatsMissing[$headCatNumber][$subCatKey][$subCatValue])) {
-									$compressedList .= 'cat' . $headCatNumber . '_' . $subCatKey . $subCatValue . ',';
+												if ($moreFalseThanTrue) {
+													if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
+														$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
+													} # if
+												} else {
+													if (isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
+														# We moeten zeker er van zijn dat heel de categorie geselecteerd is, dus daar
+														# checken we extra op
+														if (strpos(',' . $compressedList . ',', ',cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',') === false) {
+															$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
+														} # if
+														
+														# en 'deselecteer' nu de category
+														$compressedList .= '!cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
+													} # if
+												} # if
+											} # if
+										} # foreach
+									} # else
 								} # if
+								
 							} # foreach
-						} # else
-						
-					} # if
+						} else {
+							$compressedList .= 'cat' . $headCatNumber . '_' . $subType . ',';
+						} # if
+					} # foreach
 				} else {
 					$compressedList .= 'cat' . $headCatNumber . ',';
 				} # else

@@ -1,11 +1,22 @@
 <?php
 class SpotPage_catsjson extends SpotPage_Abs {
+	private $_params;
 
-	function render() {
-		# stuur een expires header zodat dit een jaar of 10 geldig is
-		$this->sendExpireHeaders(false);
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
+		
+		# stuur een expires header zodat dit niet gecached is, hierin staat 
+		# state van de boom
+		$this->sendExpireHeaders(true);
 		$this->sendContentTypeHeader();
 
+		$this->_params = $params;
+	} # ctor
+	
+	/*
+	 * render a page 
+	 */
+	function render() {
 		$this->categoriesToJson();
 	} # render
 	
@@ -14,29 +25,102 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * te kunnen weergeven
 	 */
 	function categoriesToJson() {
+		/* First parse the search string so we know which items to select and which not */
+		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
+													  array(),
+													  $this->_currentSession,
+													  $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+		$compressedCatList = ',' . $spotsOverview->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
+//error_log($this->_params['search']['tree']);
+//var_dump($parsedSearch);
+//var_dump($compressedCatList);
+//die();
+ 
 		echo "[";
 		
 		$hcatList = array();
 		foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
 			$hcatTmp = '{"title": "' . $hcat_val . '", "isFolder": true, "key": "cat' . $hcat_key . '",	"children": [' ;
-					
-			$subcatDesc = array();
-			foreach(SpotCategories::$_subcat_descriptions[$hcat_key] as $sclist_key => $sclist_desc) {
-				$subcatTmp = '{"title": "' . $sclist_desc . '", "isFolder": true, "hideCheckbox": true, "key": "cat' . $hcat_key . '_' . $sclist_key . '", "unselectable": false, "children": [';
-				# echo ".." . $sclist_desc . " <br>";
+			$typeCatDesc = array();
 
-				$catList = array();
-				foreach(SpotCategories::$_categories[$hcat_key][$sclist_key] as $key => $val) {
-					if ((strlen($val) != 0) && (strlen($key) != 0)) {
-						$catList[] = '{"title": "' . $val . '", "icon": false, "key":"'. 'cat' . $hcat_key . '_' . $sclist_key.$key .'"}';
+			if (isset(SpotCategories::$_categories[$hcat_key]['z'])) {
+				foreach(SpotCategories::$_categories[$hcat_key]['z'] as $type_key => $type_value) {
+					if ($type_key !== 'z') {
+						# Now determine wether we need to enable the checkbox
+						$isSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key . ',') !== false ? "true" : "false";
+						
+						# Is this strongnot?
+						$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
+						if ($isStrongNot) {
+							$isStrongNot = '"strongnot": true, "addClass": "strongnotnode", ';
+							$isSelected = 'true';
+						} else {
+							$isStrongNot = '';
+						} # if
+
+						$typeCatTmp = '{"title": "' . $type_value . '", "isFolder": true, ' . $isStrongNot . ' "select": ' . $isSelected . ', "hideCheckbox": false, "key": "cat' . $hcat_key . '_z' . $type_key . '", "unselectable": false, "children": [';
+					} # if
+					
+					$subcatDesc = array();
+					foreach(SpotCategories::$_subcat_descriptions[$hcat_key] as $sclist_key => $sclist_desc) {
+						if ($sclist_key !== 'z') {
+							# We inherit the strongnode from our parent
+							$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
+							if ($isStrongNot) {
+								$isStrongNot = '"strongnot": true, "addClass": "strongnotnode", ';
+								$isSelected = 'true';
+							} else {
+								$isStrongNot = '';
+							} # if
+							$subcatTmp = '{"title": "' . $sclist_desc . '", "isFolder": true, ' . $isStrongNot . ' "hideCheckbox": true, "key": "cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key . '", "unselectable": false, "children": [';
+							# echo ".." . $sclist_desc . " <br>";
+
+							$catList = array();
+							foreach(SpotCategories::$_categories[$hcat_key][$sclist_key] as $key => $valTmp) {
+								if (in_array('z' . $type_key, $valTmp[1])) {
+									$val = $valTmp[0];
+									
+									if ((strlen($val) != 0) && (strlen($key) != 0)) {
+										# Now determine wether we need to enable the checkbox
+										$isSelected = isset($parsedSearch['categoryList']['cat'][$hcat_key]['z' . $type_key][$sclist_key]) && array_search($key, $parsedSearch['categoryList']['cat'][$hcat_key]['z' . $type_key][$sclist_key]) !== false;
+										$isSelected = $isSelected ? 'true' : 'false';
+										
+										/*
+										 * Is this strongnot?
+										 */
+										$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
+										if (!$isStrongNot) { 
+											$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key.$key . ',') !== false ? true : false;
+										} # if
+										if ($isStrongNot) {
+											$isStrongNot = '"strongnot": true, "addClass": "strongnotnode", ';
+											$isSelected = 'true';
+										} else {
+											$isStrongNot = '';
+										} # if
+										
+										$catList[] = '{"title": "' . $val . '", "icon": false, "select": ' . $isSelected . ', ' . $isStrongNot . '"key":"'. 'cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key.$key .'"}';
+									} # if
+								} # if
+							} # foreach
+							$subcatTmp .= join(",", $catList);
+							
+							$subcatDesc[] = $subcatTmp . "]}";
+						} # if
+					} # foreach
+
+					if ($type_key !== 'z') {
+						$typeCatDesc[] = $typeCatTmp . join(",", $subcatDesc) . "]}";
+					} else {
+						$typeCatDesc[] = join(",", $subcatDesc);
 					} # if
 				} # foreach
-				$subcatTmp .= join(",", $catList);
 				
-				$subcatDesc[] = $subcatTmp . "]}";
 			} # foreach
 
-			$hcatList[] = $hcatTmp . join(",", $subcatDesc) . "]}";
+			$hcatList[] = $hcatTmp . join(",", $typeCatDesc) . "]}";
 		} # foreach	
 		
 		echo join(",", $hcatList);

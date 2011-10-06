@@ -328,9 +328,14 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(3, " . SpotSecurity::spotsec_keep_own_downloadlist . ", 'erasedls')");
 		} # if
 		
-		# Spam reporting en moderator panel toegevoegd
+		# Spam reporting toegevoegd
 		if ($this->_settings->get('securityversion') < 0.15) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
+		} # if
+
+		# Nieuwe spot posten toegevoegd
+		if ($this->_settings->get('securityversion') < 0.16) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_post_spot . ")");
 		} # if
 	} # updateSecurityGroups
 
@@ -339,9 +344,12 @@ class SpotUserUpgrader {
 	 */
 	function updateUserFilters() {
 
-		if ($this->_settings->get('securityversion') < 0.12) {
+		if (($this->_settings->get('securityversion') < 0.12)) {
 			# DB connectie
 			$dbCon = $this->_db->getDbHandle();
+			
+			# delete all existing filters
+			$dbCon->rawExec("DELETE FROM filters WHERE filtertype = 'filter'");
 
 			$userList = $this->_db->listUsers("", 0, 9999999);
 
@@ -350,23 +358,36 @@ class SpotUserUpgrader {
 				/* Beeld */
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Beeld', 'film.png', 0, 0, 'cat0_z0')");
 				$beeldFilterId = $dbCon->lastInsertId('filters');
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DivX', 'divx.png', 0, " . $beeldFilterId . ", 'cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'WMV', 'wmv.png', 1, " . $beeldFilterId . ", 'cat0_a1,~cat0_z1,~cat0_z2,~cat0_z3')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'MPEG', 'mpg.png', 2, " . $beeldFilterId . ", 'cat0_a2,~cat0_z1,~cat0_z2,~cat0_z3')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DVD', 'dvd.png', 3, " . $beeldFilterId . ", 'cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'HD', 'hd.png', 4, " . $beeldFilterId . ", 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DivX', 'divx.png', 0, " . $beeldFilterId . ", 'cat0_z0_a0')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'WMV', 'wmv.png', 1, " . $beeldFilterId . ", 'cat0_z0_a1')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'MPEG', 'mpg.png', 2, " . $beeldFilterId . ", 'cat0_z0_a2')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'DVD', 'dvd.png', 3, " . $beeldFilterId . ", 'cat0_z0_a3,cat0_z0_a10')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'HD', 'hd.png', 4, " . $beeldFilterId . ", 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9')");
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Series', 'tv.png', 5, " . $beeldFilterId . ", 'cat0_z1')");
+
+				/* Boeken */
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Boeken', 'book.png', 6, " . $beeldFilterId . ", 'cat0_z2')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Erotiek', 'female.png', 7, " . $beeldFilterId . ", 'cat0_z3')");
+				$boekenFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Nederlands', 'book.png', 0, " . $boekenFilterId . ", 'cat0_z2_c11')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Engels', 'book.png', 1, " . $boekenFilterId . ", 'cat0_z2_c10')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Anders', 'book.png', 2, " . $boekenFilterId . ", 'cat0_z2,~cat0_z2_c10,~cat0_z2_c11')");
+				
+				/* Erotiek */
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Erotiek', 'female.png', 7, " . $beeldFilterId. ", 'cat0_z3')");
+				$erotiekFilterId = $dbCon->lastInsertId('filters');
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Hetero', 'female.png', 0, " . $erotiekFilterId . ", 'cat0_z3_d75,cat0_z3_d23')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Homo', 'female.png', 1, " . $erotiekFilterId . ", 'cat0_z3_d74,cat0_z3_d24')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Lesbo', 'female.png', 2, " . $erotiekFilterId . ", 'cat0_z3_d73,cat0_z3_d25')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Bi', 'female.png', 3, " . $erotiekFilterId . ", 'cat0_z3_d72,cat0_z3_d26')");
 
 				/* Muziek */
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Muziek', 'music.png', 1, 0, 'cat1_a')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Muziek', 'music.png', 2, 0, 'cat1')");
 				$muziekFilterId = $dbCon->lastInsertId('filters');
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Compressed', 'music.png', 0, " . $muziekFilterId . ", 'cat1_a0,cat1_a3,cat1_a5,cat1_a6')");
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Lossless', 'music.png', 1, " . $muziekFilterId . ", 'cat1_a2,cat1_a4,cat1_a7,cat1_a8')");
 
 				/* Spellen */
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Spellen', 'controller.png', 2, 0, 'cat2_a')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Spellen', 'controller.png', 3, 0, 'cat2')");
 				$gameFilterId = $dbCon->lastInsertId('filters');
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows', 'windows.png', 0, " . $gameFilterId . ", 'cat2_a0')");
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Mac / Linux', 'linux.png', 1, " . $gameFilterId . ", 'cat2_a1,cat2_a2')");
@@ -376,7 +397,7 @@ class SpotUserUpgrader {
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Smartphone / PDA', 'pda.png', 5, " . $gameFilterId . ", 'cat2_a13,cat2_a14,cat2_a15')");
 
 				/* Applicaties */
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Applicaties', 'application.png', 3, 0, 'cat3_a')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Applicaties', 'application.png', 4, 0, 'cat3')");
 				$appFilterId = $dbCon->lastInsertId('filters');
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows', 'vista.png', 0, " . $appFilterId . ", 'cat3_a0')");
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Mac / Linux / OS2', 'linux.png', 1, " . $appFilterId . ", 'cat3_a1,cat3_a2,cat3_a3')");

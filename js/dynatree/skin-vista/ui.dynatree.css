@@ -7,6 +7,7 @@ ul.dynatree-container
 	font-size: 10pt; /* font size should not be too big */
 	white-space: nowrap;
 	padding: 3px;
+	margin: 0; /* issue 201 */
 
 	background-color: white;
 	border: 1px dotted gray;
@@ -279,7 +280,7 @@ span.dynatree-icon /* Default icon */
    Removed again for issue 165; (133 couldn't be reproduced) */
 span.dynatree-node
 {
-/*  display: -moz-inline-box; /* @ FF 1+2 */
+  display: -moz-inline-box; /* issue 133, 165, 172, 192 */
 /*  display: inline-block; /* Required to make a span sizeable */
 }
 
