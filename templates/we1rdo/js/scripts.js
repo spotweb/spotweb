@@ -1433,3 +1433,14 @@ function bindSelectedSortableFilter() {
 		});
 	} // if
 } // bindSelectedSortableFilter
+
+function newspotChangeCategory(elm) {
+	if (elm.selectedIndex >= 2) {
+		$("#newspotcategoryselectlist").attr('disabled', 'disabled');
+	} else {
+		$("#newspotcategoryselectlist").remoteAttr('disabled');
+	} // else
+	
+	$("label[for='newspotform[subcata]']").text('whee');
+
+} // newspotChangeCategory

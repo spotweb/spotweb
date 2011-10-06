@@ -213,6 +213,18 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=createuser";
 	} # makeCreateUserAction
+
+	/*
+	 * Creeert de action url voor het aanmaken van een nieuwe spot
+	 */
+	function makePostSpotAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_post_spot, '')) {
+			return '';
+		} # if
+		
+		return $this->makeBaseUrl("path") . "?page=postspot";
+	} # makePostSpotAction
 	
 	/*
 	 * Creeert de action url voor het beweken van een security group 
@@ -513,6 +525,10 @@ class SpotTemplateHelper {
 	 * naar een nieuwe GET query
 	 */
 	function convertUnfilteredToQueryParams() {
+		if (!isset($this->_parms['parsedsearch']['unfiltered'])) {
+			return '';
+		} # if
+		
 		# en eventueel als de huidige list unfiltered is, geef
 		# dat ook mee
 		$unfilteredStr = '';
@@ -528,6 +544,10 @@ class SpotTemplateHelper {
 	 * nieuwe GET query
 	 */
 	function convertTreeFilterToQueryParams() {
+		if (!isset($this->_parms['parsedsearch']['categoryList'])) {
+			return '';
+		} # if
+		
 		# Bouwen de search[tree] value op
 		return '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
 														$this->_params['parsedsearch']['strongNotList']);
@@ -538,6 +558,10 @@ class SpotTemplateHelper {
 	 * naar een nieuwe GET query
 	 */
 	function convertTextFilterToQueryParams() {
+		if (!isset($this->_parms['parsedsearch']['filterValueList'])) {
+			return '';
+		} # if
+
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {

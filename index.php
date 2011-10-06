@@ -134,7 +134,11 @@ try {
 		} # erasedls
 
 		case 'catsjson' : {
-				$page = new SpotPage_catsjson($db, $settings, $currentSession);
+				$page = new SpotPage_catsjson(
+									$db, 
+									$settings, 
+									$currentSession,
+									Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid']))));
 				$page->render();
 				break;
 		} # getspot
