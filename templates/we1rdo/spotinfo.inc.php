@@ -44,6 +44,13 @@
 	}
 ?>
 						</th>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+		if (!$tplHelper->isReportPlaced($spot['messageid'])) {
+?>
+						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
+<?php } else { ?>
+						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
+<?php } } ?>
 						<th class="nzb">
 <?php if ($show_nzb_button) { ?>
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
@@ -60,13 +67,6 @@ echo "</th>";
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot) (s)"> </a></th>
 <?php } else { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>
-<?php } } ?>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-		if (!$tplHelper->isReportPlaced($spot['messageid'])) {
-?>
-						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
-<?php } else { ?>
-						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
 <?php } } ?>
 					</tr>
 				</tbody>

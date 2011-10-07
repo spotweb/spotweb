@@ -343,7 +343,6 @@ class SpotUserUpgrader {
 	 * Update user filters
 	 */
 	function updateUserFilters() {
-
 		if (($this->_settings->get('securityversion') < 0.12)) {
 			# DB connectie
 			$dbCon = $this->_db->getDbHandle();
