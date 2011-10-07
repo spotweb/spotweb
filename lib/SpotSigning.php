@@ -139,7 +139,7 @@ class SpotSigning {
 	public function verifySpotHeader($spot, $signature, $rsaKeys) {
 		# This is the string to verify
 		$toCheck = $spot['title'] . substr($spot['header'], 0, strlen($spot['header']) - strlen($spot['headersign']) - 1) . $spot['poster'];
-		
+
 		# Check the RSA signature on the spot
 		return $this->checkRsaSignature($toCheck, $signature, $rsaKeys[$spot['keyid']], true);
 	} # verifySpotHeader()

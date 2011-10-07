@@ -811,7 +811,7 @@ class SpotsOverview {
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
 											if (in_array($subType, $subCatDesc[1])) {
 											
-												$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) < (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
+												$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 
 												if ($moreFalseThanTrue) {
 													if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {

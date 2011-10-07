@@ -525,7 +525,7 @@ class SpotTemplateHelper {
 	 * naar een nieuwe GET query
 	 */
 	function convertUnfilteredToQueryParams() {
-		if (!isset($this->_parms['parsedsearch']['unfiltered'])) {
+		if (!isset($this->_params['parsedsearch']['unfiltered'])) {
 			return '';
 		} # if
 		
@@ -544,7 +544,7 @@ class SpotTemplateHelper {
 	 * nieuwe GET query
 	 */
 	function convertTreeFilterToQueryParams() {
-		if (!isset($this->_parms['parsedsearch']['categoryList'])) {
+		if (!isset($this->_params['parsedsearch']['categoryList'])) {
 			return '';
 		} # if
 		
@@ -558,7 +558,7 @@ class SpotTemplateHelper {
 	 * naar een nieuwe GET query
 	 */
 	function convertTextFilterToQueryParams() {
-		if (!isset($this->_parms['parsedsearch']['filterValueList'])) {
+		if (!isset($this->_params['parsedsearch']['filterValueList'])) {
 			return '';
 		} # if
 
