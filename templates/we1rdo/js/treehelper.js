@@ -35,15 +35,42 @@
 			// Attach the dynatree widget to an existing <div id="newspotcatselecttree"> element
 			// and pass the tree options as an argument to the dynatree() function:
 			$("div#newspotcatselecttree").dynatree({
-				initAjax: { url: "?page=catsjson&category=0&subcatz=*&disallowstrongnot=1" },
+				initAjax: { url: "?page=catsjson&category=0&subcatz=1&disallowstrongnot=1" },
 			    checkbox: true, // Show checkboxes.
 				persist: false, // Persist expand-status to a cookie
 				selectMode: 3, //  1:single, 2:multi, 3:multi-hier
 			    clickFolderMode: 2, // 1:activate, 2:expand, 3:activate and expand
 			    ajaxDefaults: { // Used by initAjax option
 					cache: false // false: Append random '_' argument to the request url to prevent caching.
-				}
+				},
+				onSelect: function(flag, node) {
+					if (flag) {
+						if (node.data.key.match('^cat\\d_z[0-9z]_a\\d+$')) {
+							// Find the parent node, and deselect them all. 
+							node.tree.getNodeByKey(node.data.key.match('^cat\\d_z[0-9z]_a')).visit(function(visitNode) {
+								if (visitNode.data.key != node.data.key) { 
+									visitNode.select(false);
+								} // if
+							});
+						} // if
+						
+					} // if
+					
+					return true;
+				} // onSelect
 			});
+
+			$("#newspotform").submit(function() {
+				var formField = $("#subcatlist");
+
+				// then append Dynatree selected 'checkboxes':
+				var selectedNodes = $("div#newspotcatselecttree").dynatree("getTree").getSelectedNodes();
+				var tmp = $.map(selectedNodes, function(node){
+					return node.data.key;
+				}); // map
+            	
+				formField[0].value = tmp.join(',');
+			}); // submit handler for newspotform
 			
 			$("#filterform").submit(function() {
 				var formField = $("#search-tree");
@@ -59,7 +86,7 @@
 							} // if
 						} // if
 						
-						return '~' + node.data .key;
+						return '~' + node.data.key;
 					} else {
 						/* If our parent node is selected, don't bother selecting this one */
 						if (node.parent) {
