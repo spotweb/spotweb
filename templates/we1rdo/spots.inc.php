@@ -32,9 +32,6 @@
 <?php if ($show_filesize) { ?>
 							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="Sorteren op Omvang [aflopend]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="Sorteren op Omvang [oplopend]"> </a></span> Size </th> 
 <?php } ?>
-<?php if ($show_spamreports) { ?>
-							<th class='spamreports'> <a title='Aantal spam reports'>#</a> </th>
-<?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> NZB </th>
 <?php } ?>
@@ -59,7 +56,6 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_comments) { $colSpan++; }
 		if ($show_nzb_button) { $colSpan++; }
 		if ($show_filesize) { $colSpan++; }
-		if ($show_spamreports) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
@@ -85,6 +81,12 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} else {
 			$markSpot = '';
 		}
+		
+		if ($show_spamreports && $spot['reportcount'] != 0) {
+			$reportSpam = '<span class="reportedSpam" title="Er zijn '.$spot['reportcount'].' spam reports gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
+		} else {
+			$reportSpam = '';
+		}
 
 		echo "\t\t\t\t\t\t\t";
 		echo "<tr class='" . $tplHelper->cat2color($spot);
@@ -93,7 +95,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} # if
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='Ga naar de categorie \"" . $spot['catshortdesc'] . "\"'>" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $rating . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
@@ -112,11 +114,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 
 		if ($show_filesize) {
 			echo "<td class='filesize'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
-		} 
-
-		if ($show_spamreports) {
-			echo "<td class='spamreports'><a title='Er zijn " . $spot['reportcount'] . " spam reports gevonden op deze spot'>" . $spot['reportcount'] . "</a></td>";
-		} 
+		}
 		
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
