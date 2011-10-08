@@ -35,7 +35,7 @@
 			// Attach the dynatree widget to an existing <div id="newspotcatselecttree"> element
 			// and pass the tree options as an argument to the dynatree() function:
 			$("div#newspotcatselecttree").dynatree({
-				initAjax: { url: "?page=catsjson&category=3&subcatz=*" },
+				initAjax: { url: "?page=catsjson&category=0&subcatz=*&disallowstrongnot=1" },
 			    checkbox: true, // Show checkboxes.
 				persist: false, // Persist expand-status to a cookie
 				selectMode: 3, //  1:single, 2:multi, 3:multi-hier
