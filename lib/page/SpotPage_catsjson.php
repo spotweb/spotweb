@@ -37,20 +37,29 @@ class SpotPage_catsjson extends SpotPage_Abs {
 //var_dump($parsedSearch);
 //var_dump($compressedCatList);
 //die();
- 
+
 		echo "[";
 		
 		$hcatList = array();
 		foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
-			$hcatTmp = '{"title": "' . $hcat_val . '", "isFolder": true, "key": "cat' . $hcat_key . '",	"children": [' ;
+			# The uer can opt to only show a specific category, if so, skip all others
+			if (($hcat_key != $this->_params['category']) && ($this->_params['category'] != '*')) {
+				continue;
+			} # if
+			
+			# If the user choose to show only one category, we dont want the category item itself
+			if ($this->_params['category'] == '*') {
+				$hcatTmp = '{"title": "' . $hcat_val . '", "isFolder": true, "key": "cat' . $hcat_key . '",	"children": [' ;
+			} # if
 			$typeCatDesc = array();
 
 			if (isset(SpotCategories::$_categories[$hcat_key]['z'])) {
 				foreach(SpotCategories::$_categories[$hcat_key]['z'] as $type_key => $type_value) {
-					if ($type_key !== 'z') {
+			
+					if (($type_key !== 'z') && (($this->_params['subcatz'] == $type_key) || ($this->_params['subcatz'] == '*'))) {
 						# Now determine wether we need to enable the checkbox
 						$isSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key . ',') !== false ? "true" : "false";
-						
+
 						# Is this strongnot?
 						$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
 						if ($isStrongNot) {
@@ -60,12 +69,16 @@ class SpotPage_catsjson extends SpotPage_Abs {
 							$isStrongNot = '';
 						} # if
 
-						$typeCatTmp = '{"title": "' . $type_value . '", "isFolder": true, ' . $isStrongNot . ' "select": ' . $isSelected . ', "hideCheckbox": false, "key": "cat' . $hcat_key . '_z' . $type_key . '", "unselectable": false, "children": [';
+						# If the user choose to show only one categortype, we dont want the categorytype item itself
+						if ($this->_params['subcatz'] == '*') {
+							$typeCatTmp = '{"title": "' . $type_value . '", "isFolder": true, ' . $isStrongNot . ' "select": ' . $isSelected . ', "hideCheckbox": false, "key": "cat' . $hcat_key . '_z' . $type_key . '", "unselectable": false, "children": [';
+						} # if
 					} # if
 					
 					$subcatDesc = array();
 					foreach(SpotCategories::$_subcat_descriptions[$hcat_key] as $sclist_key => $sclist_desc) {
-						if ($sclist_key !== 'z') {
+						if (($sclist_key !== 'z') && (($this->_params['subcatz'] == $type_key) || ($this->_params['subcatz'] == '*'))) {
+
 							# We inherit the strongnode from our parent
 							$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
 							if ($isStrongNot) {
@@ -74,6 +87,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 							} else {
 								$isStrongNot = '';
 							} # if
+
 							$subcatTmp = '{"title": "' . $sclist_desc . '", "isFolder": true, ' . $isStrongNot . ' "hideCheckbox": true, "key": "cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key . '", "unselectable": false, "children": [';
 							# echo ".." . $sclist_desc . " <br>";
 
@@ -100,7 +114,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 										} else {
 											$isStrongNot = '';
 										} # if
-										
+	
 										$catList[] = '{"title": "' . $val . '", "icon": false, "select": ' . $isSelected . ', ' . $isStrongNot . '"key":"'. 'cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key.$key .'"}';
 									} # if
 								} # if
@@ -111,16 +125,28 @@ class SpotPage_catsjson extends SpotPage_Abs {
 						} # if
 					} # foreach
 
-					if ($type_key !== 'z') {
-						$typeCatDesc[] = $typeCatTmp . join(",", $subcatDesc) . "]}";
+ 					if ($type_key !== 'z') {
+						# If the user choose to show only one categortype, we dont want the categorytype item itself
+						if ($this->_params['subcatz'] == '*') {
+							$typeCatDesc[] = $typeCatTmp . join(",", $subcatDesc) . "]}";
+						} else {
+							if (!empty($subcatDesc)) {
+								$typeCatDesc[] = join(",", array_filter($subcatDesc));
+							} # if
+						} # else
 					} else {
 						$typeCatDesc[] = join(",", $subcatDesc);
-					} # if
+					} # else
 				} # foreach
 				
 			} # foreach
 
-			$hcatList[] = $hcatTmp . join(",", $typeCatDesc) . "]}";
+			# If the user choose to show only one category, we dont want the category item itself
+			if ($this->_params['category'] == '*') {
+				$hcatList[] = $hcatTmp . join(",", $typeCatDesc) . "]}";
+			} else {
+				$hcatList[] = join(",", $typeCatDesc);
+			} # if
 		} # foreach	
 		
 		echo join(",", $hcatList);

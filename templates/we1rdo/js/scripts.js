@@ -1436,11 +1436,11 @@ function bindSelectedSortableFilter() {
 
 function newspotChangeCategory(elm) {
 	if (elm.selectedIndex >= 2) {
-		$("#newspotcategoryselectlist").attr('disabled', 'disabled');
+		$("#newspotcategoryselectlist").attr('disabled', 'disabled').hide();
+		$("label[for='newspotform[subcatz]']").hide();
 	} else {
-		$("#newspotcategoryselectlist").remoteAttr('disabled');
+		$("#newspotcategoryselectlist").removeAttr('disabled').show();
+		$("label[for='newspotform[subcatz]']").show();
 	} // else
-	
-	$("label[for='newspotform[subcata]']").text('whee');
 
 } // newspotChangeCategory
