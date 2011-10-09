@@ -1,4 +1,3 @@
-
 /* GENERAL */
 html {overflow:auto; height:100%;}
 body {margin:0;}
@@ -10,7 +9,7 @@ div.container.hidden {position:absolute; top:0; bottom:0; left:0; right:0; overf
 .smallGreyButton, .greyButton {font:11px Arial, Helvetica, sans-serif; display:block; background:url(../img/sprite_button.png) no-repeat 0 0; width:210px !important; margin:0 10px 5px 10px; line-height:20px; height:20px; color:#fff !important; font-weight:bold; text-align:center; cursor:pointer; border:0;}
 .smallGreyButton:focus, .greyButton:focus,
 .smallGreyButton:hover, .greyButton:hover {background-position:0 -20px;}
-.smallGreyButton { background:url(../img/sprite_button_small.png) no-repeat 0 0; width: 84px !important; }
+.smallGreyButton { background:url(../img/sprite_button_small.png) no-repeat 0 0; width: 84px !important;}
 
 input {outline:none;}
 div.clear {clear:both;}
@@ -93,7 +92,7 @@ table.sabQueue tr.title td span.move {float:left; display:table; padding:0 4px 0
 table.sabQueue tr.title td a.up {background:url(../img/sprite.png) no-repeat -81px -103px; width:7px; height:5px; display:block; cursor:pointer;}
 table.sabQueue tr.title td a.down {background:url(../img/sprite.png) no-repeat -94px -102px; width:7px; height:5px; display:block; cursor:pointer;}
 table.sabQueue tr.title td span.delete {float:left; padding:0 1px 0 0;}
-table.sabQueue tr.title td span.delete a {background:url(../img/sprite.png) no-repeat -60px -111px; width:11px; height:13px; display:block; cursor:pointer;}
+table.sabQueue tr.title td span.delete a {background:url(../img/sprite.png) no-repeat -36px -129px; width:11px; height:13px; display:block; cursor:pointer;}
 table.sabQueue tr.progressBar td {padding:0; background-color:#ececec; border:1px solid #D2D2D2;}
 table.sabQueue div.progressBar {background:url(../img/sprite_x.png) repeat-x 0 -123px; height:4px; border:1px solid #00c01b; margin:-1px;}
 table.sabQueue div.progressBar.empty {border:0; height:6px;}
@@ -170,11 +169,7 @@ div.filter > ul > li.red a.selected {background-color:#fca9a9;}
 div.filter > ul > li a:hover {background-color:#fff;}
 div.filter > ul > li a:hover span.newspots {background-color:#fff; color:#000;}
 
-div.filter a img {
-	border:0;
-	float:left;
-	margin:2px 7px 2px 7px;
-}
+div.filter a img {border:0; float:left; margin:2px 7px 2px 7px;}
 
 /* MAINTENANCE */
 ul.maintenancebox li.info {text-align:center; margin:5px 0; height:16px; line-height:16px;}
@@ -195,8 +190,6 @@ table.spots th.category {text-align:center; min-width:55px; width:55px; padding:
 table.spots th.title {width:100%;}
 table.spots td.watch,
 table.spots th.watch {min-width:20px; width:20px;}
-table.spots td.spamreports,
-table.spots th.spamreports,
 table.spots td.comments,
 table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:0;}
 table.spots td.genre,
@@ -240,6 +233,12 @@ table.spots tr td span.rating {float:right; display:block; width:47px; height:18
 table.spots tr td span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -127px;}
 table.spots tr td span.reportedSpam {display:block; float:right; width:25px; height:16px; background:url(../img/sprite.png) no-repeat 0 -143px; margin:2px 2px 0 5px; padding:0 0 0 18px;}
 table.spots tr td span.reportedSpam span {display:block; line-height:16px; text-align:center; color:#a40000; font-weight:bold; font-size:11px;}
+table.spots tr td span.reportedSpam.grey {background:url(../img/sprite.png) no-repeat -45px -163px;}
+table.spots tr td span.reportedSpam.grey span {color:#585858;}
+table.spots tr td span.reportedSpam.orange {background:url(../img/sprite.png) no-repeat 0 -159px;}
+table.spots tr td span.reportedSpam.orange span {color:#955700;}
+table.spots tr td span.reportedSpam.darkorange {background:url(../img/sprite.png) no-repeat -45px -147px;}
+table.spots tr td span.reportedSpam.darkorange span {color:#9f4a00;}
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(../img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
 table.spots tr td.watch a.remove {background-position:-56px -80px;}
 
@@ -251,11 +250,11 @@ div.details table.spotheader th.sabnzbd a.sabnzbd-button.succes,
 table.spots tr td a.sabnzbd-button.succes {background-position:-20px -94px;}
 
 div.details table.spotheader th.spamreport a.spamreport-button,
-table.spots tr td a.spamreport-button {display:block; width:22px; height:18px; cursor:pointer; margin:0 0 1px 0; background:url(../img/sprite.png) no-repeat -43px -141px;}
+table.spots tr td a.spamreport-button {display:block; width:22px; height:18px; cursor:pointer; margin:0 0 1px 0; background:url(../img/sprite.png) no-repeat -54px -129px;}
 div.details table.spotheader th.spamreport a.spamreport-button.loading,
 table.spots tr td a.spamreport-button.loading {background:url(../img/loading.gif) no-repeat center center; margin:0 0 1px 0;}
 div.details table.spotheader th.spamreport a.spamreport-button.success,
-table.spots tr td a.spamreport-button.success {background:url(../img/sprite.png) no-repeat -65px -141px;}
+table.spots tr td a.spamreport-button.success {background:url(../img/sprite.png) no-repeat -76px -129px;}
 
 table.spots tr.blue td {background-color:#daecff;} 
 table.spots tr.orange td {background-color:#fffad3;}
@@ -359,7 +358,7 @@ div.details table.spotheader th.watch a {display:block; cursor:pointer; backgrou
 div.details table.spotheader th.watch a.remove {background-position:-56px -80px;}
 div.details table.spotheader th.nzb {width:20px; min-width:20px; padding:0;}
 div.details table.spotheader th.nzb a.nzb {display:block; width:16px; height:8px; margin:0 auto; background:url(../img/sprite.png) no-repeat -17px -129px; text-decoration:none; padding:0;}
-div.details table.spotheader th.nzb a.nzb.downloaded {width:20px; background-position:-37px -129px;}
+div.details table.spotheader th.nzb a.nzb.downloaded {width:20px; background-position:-48px -113px;}
 div.details table.spotheader th.rating span.rating {float:right; display:block; width:47px; height:18px; background:url(../img/sprite.png) no-repeat 0 -111px;}
 div.details table.spotheader th.rating span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -127px;}
 div.details table.spotheader th.search {width:20px; min-width:20px; padding:0;}
@@ -433,7 +432,6 @@ div.details form.postreportform fieldset {padding:0; margin:0; border:0;}
 div.details form.postreportform fieldset dl {margin:0;}
 div.details form.postreportform fieldset dd {margin:0;}
 div.details form.postreportform input.greyButton {display:inline; margin: 0;}
-
 
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
