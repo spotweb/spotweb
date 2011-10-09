@@ -1,4 +1,4 @@
-<?php 
+<?php
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
 		require_once "includes/header.inc.php";	
@@ -81,11 +81,13 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} else {
 			$markSpot = '';
 		}
-		
-		if ($show_spamreports && $spot['reportcount'] != 0) {
-			$reportSpam = '<span class="reportedSpam" title="Er zijn '.$spot['reportcount'].' spam reports gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
-		} else {
+
+		if($spot['reportcount'] == 0 || !$show_spamreports) {
 			$reportSpam = '';
+		} elseif ($spot['reportcount'] == 1) {
+			$reportSpam = '<span class="reportedSpam" title="Er is '.$spot['reportcount'].' spam report gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
+		} else {
+			$reportSpam = '<span class="reportedSpam" title="Er zijn '.$spot['reportcount'].' spam reports gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
 		}
 
 		echo "\t\t\t\t\t\t\t";
