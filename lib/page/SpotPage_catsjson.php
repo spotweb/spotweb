@@ -32,6 +32,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 													  array(),
 													  $this->_currentSession,
 													  $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+		if ($this->_params['disallowstrongnot']) {
+			$parsedSearch['strongNotList'] = '';
+		} # if
 		$compressedCatList = ',' . $spotsOverview->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
 //error_log($this->_params['search']['tree']);
 //var_dump($parsedSearch);

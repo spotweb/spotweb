@@ -870,6 +870,9 @@ class SpotTemplateHelper {
 		$strings['postspot_imagetoolarge'] = 'Opgegeven afbeelding is te groot';
 		$strings['postspot_imageinvalid'] = 'Opgegeven afbeelding is niet herkend als afbeelding';
 		$strings['postspot_toomanycategories'] = 'Teveel categorieen opgegeven';
+		$strings['postspot_toofewcategories'] = 'Deel de spot in in een aantal categorieen';
+		$strings['postspot_canonlybeoneformat'] = 'Een spot kan maar 1 formaat hebben';
+		$strings['postspot_musthaveformat'] = 'Een spot moet een formaat hebben';
 		$strings['postspot_invalidnzb'] = 'Ongeldig NZB bestand';
 		
 		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
