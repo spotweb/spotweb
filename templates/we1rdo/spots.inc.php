@@ -83,7 +83,16 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 		
 		if ($show_spamreports && $spot['reportcount'] != 0) {
-			$reportSpam = '<span class="reportedSpam" title="Er zijn '.$spot['reportcount'].' spam reports gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
+			if($spot['reportcount'] == 1) {
+				$reportSpamClass = ' grey';
+			} elseif ($spot['reportcount'] >= 2 && $spot['reportcount'] < 4) {
+				$reportSpamClass = ' orange';
+			} elseif ($spot['reportcount'] >= 4 && $spot['reportcount'] < 6) {
+				$reportSpamClass = ' darkorange';
+			} elseif ($spot['reportcount'] >= 6) {
+				$reportSpamClass = ' red';
+			}
+			$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="Er zijn '.$spot['reportcount'].' spam reports gevonden op deze spot"><span>'.$spot['reportcount'].'</span></span>';
 		} else {
 			$reportSpam = '';
 		}
