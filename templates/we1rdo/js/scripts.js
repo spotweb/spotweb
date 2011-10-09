@@ -1434,13 +1434,25 @@ function bindSelectedSortableFilter() {
 	} // if
 } // bindSelectedSortableFilter
 
-function newspotChangeCategory(elm) {
-	if (elm.selectedIndex >= 2) {
-		$("#newspotcategoryselectlist").attr('disabled', 'disabled').hide();
+function newspotChangeCategory() {
+	var elm = $("#newspotcategoryselectlist");
+	if (!elm) return ;
+	
+	if (elm[0].value >= 2) {
+		$("#newspotcategorytypeselectlist").attr('disabled', 'disabled').hide();
 		$("label[for='newspotform[subcatz]']").hide();
 	} else {
-		$("#newspotcategoryselectlist").removeAttr('disabled').show();
+		$("#newspotcategorytypeselectlist").removeAttr('disabled').show();
 		$("label[for='newspotform[subcatz]']").show();
 	} // else
+	
+	/* Get the selected z-type variant */
+	var subcatz = $("#newspotcategorytypeselectlist")[0].value;
+	if (!$("#newspotcategorytypeselectlist").is(":visible")) {
+		subcatz = '*';
+	} // if
 
+	/* Change the json url, and reload the tree */
+	$("div#newspotcatselecttree").dynatree('option', 'initAjax', { url: ('?page=catsjson&category=' + elm[0].value + '&subcatz=' + subcatz + '&disallowstrongnot=1') });
+	$("div#newspotcatselecttree").dynatree('getTree').reload();
 } // newspotChangeCategory

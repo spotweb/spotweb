@@ -158,28 +158,46 @@ class SpotPosting {
 		} # if
 
 		# Fix up some overly long spot properties and other minor issues
-		$spot['tag'] = substr(trim($spot['tag'], ' |;'), 0, 99);
+		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
 		$spot['http'] = substr(trim($spot['website']), 0, 449);
 
 		# Create one list of all subcategories
-		$spot['subcatlist'] = array_filter(explode('|', $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz']));
+		$spot['subcatlist'] = explode(',', $spot['subcatlist']);
 
 		/*
 		 * Loop through all subcategories and check if they are valid in
 		 * our list of subcategories
 		 */
+		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
 		foreach($spot['subcatlist'] as $subCat) {
 			$subCatLetter = substr($subCat, 0, 1);
 			$subCatNumber = (int) substr($subCat, 1);
+			
+			$subCatSplitted[$subCatLetter][] = $subcatNumber;
 			
 			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][$subCatNumber])) {
 				$errorList[] = array('postspot_invalidsubcat', array($subCat));
 			} # if
 		} # foreach	
+
+		# Make sure the spot isn't being posted in many categories
+		if (count($subCatSplitted['a']) > 1) {
+			$errorList[] = array('postspot_canonlybeoneformat', count($spot['subcatlist']));
+		} # if
+
+		# Make sure the spot isn't being posted in many categories
+		if (count($subCatSplitted['a']) < 1) {
+			$errorList[] = array('postspot_musthaveformat', count($spot['subcatlist']));
+		} # if
 		
 		# Make sure the spot isn't being posted for too many categories
 		if (count($spot['subcatlist']) > 10) {
 			$errorList[] = array('postspot_toomanycategories', count($spot['subcatlist']));
+		} # if
+
+		# Make sure the spot isn't being posted for too many categories
+		if (count($spot['subcatlist']) < 2) {
+			$errorList[] = array('postspot_toofewcategories', count($spot['subcatlist']));
 		} # if
 		
 		# en post daadwerkelijk de spot

@@ -140,7 +140,8 @@ try {
 									$currentSession,
 									Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 									      'subcatz' => $req->getDef('subcatz', '*'),
-										  'category' => $req->getDef('category', '*')));
+										  'category' => $req->getDef('category', '*'),
+										  'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
 				$page->render();
 				break;
 		} # getspot
