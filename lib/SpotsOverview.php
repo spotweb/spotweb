@@ -381,26 +381,26 @@ class SpotsOverview {
 					foreach($typeValues as $subcat => $subcatItem) {
 						foreach($subcatItem as $subcatValue) {
 							#
-							# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+							# een spot heeft maar 1 a en z subcat, dus dan kunnen we gewoon
 							# equality ipv like doen
 							#
 							if ($subcat == 'a')  {
-								$subcatValues[] = "(subcat" . $subcat . " = '" . $subcat . $subcatValue . "|') ";
+								$subcatValues[] = "(subcata = '" . $subcat . $subcatValue . "|') ";
 							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
 								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
 							} # if
 						} # foreach
-					} # foreach subcat
 
-					# 
-					# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
-					# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
-					#
-					if ($type[1] !== 'z') {
-						$subcatItems[] = " ((subcatz = '" . $type . "|') AND (" . join(" OR ", $subcatValues) . ")) ";
-					} else {
-						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
-					} # if
+						# 
+						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
+						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
+						#
+						if ($type[1] !== 'z') {
+							$subcatItems[] = " ((subcatz = '" . $type . "|') AND (" . join(" OR ", $subcatValues) . ")) ";
+						} else {
+							$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
+						} # if
+					} # foreach subcat
 
 					#
 					# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
@@ -418,7 +418,7 @@ class SpotsOverview {
 					
 					# Sluit het haakje af
 					$tmpStr .= ")";
-					$categorySql[] = $tmpStr;			
+					$categorySql[] = $tmpStr;
 				} # foreach type
 					
 			} # if
