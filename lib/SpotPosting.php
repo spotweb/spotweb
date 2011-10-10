@@ -170,7 +170,7 @@ class SpotPosting {
 		 */
 		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
 		foreach($spot['subcatlist'] as $subCat) {
-			$subCatLetter = substr($subCat, 0, 1);
+			$subCatLetter = substr($subCat, -2, 1);
 			$subCatNumber = (int) substr($subCat, 1);
 			
 			$subCatSplitted[$subCatLetter][] = $subcatNumber;
@@ -185,7 +185,7 @@ class SpotPosting {
 			$errorList[] = array('postspot_canonlybeoneformat', count($spot['subcatlist']));
 		} # if
 
-		# Make sure the spot isn't being posted in many categories
+		# Make sure the spot has at least a format
 		if (count($subCatSplitted['a']) < 1) {
 			$errorList[] = array('postspot_musthaveformat', count($spot['subcatlist']));
 		} # if
