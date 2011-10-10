@@ -374,11 +374,14 @@ class SpotsOverview {
 				foreach($cat as $type => $typeValues) {
 					$catid = (int) $catid;
 					$tmpStr = "((category = " . (int) $catid . ")";
+					if ($type[1] !== 'z') {
+						$tmpStr .= " AND (subcatz = '" . $type . "|')";
+					} # if
 
 					$subcatItems = array();
-					$subcatValues = array();
-						
 					foreach($typeValues as $subcat => $subcatItem) {
+						$subcatValues = array();
+						
 						foreach($subcatItem as $subcatValue) {
 							#
 							# een spot heeft maar 1 a en z subcat, dus dan kunnen we gewoon
@@ -395,31 +398,27 @@ class SpotsOverview {
 						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
 						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
 						#
-						if ($type[1] !== 'z') {
-							$subcatItems[] = " ((subcatz = '" . $type . "|') AND (" . join(" OR ", $subcatValues) . ")) ";
-						} else {
-							$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
-						} # if
+						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
 					} # foreach subcat
-
-					#
-					# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
-					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
-					#
-					# Je krijgt dus een filter als volgt:
-					#
-					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
-					# 
-					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
-					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
-					# op filterde.
-					#
-					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
-					
-					# Sluit het haakje af
-					$tmpStr .= ")";
-					$categorySql[] = $tmpStr;
 				} # foreach type
+
+				#
+				# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
+				# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
+				#
+				# Je krijgt dus een filter als volgt:
+				#
+				# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+				# 
+				# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
+				# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
+				# op filterde.
+				#
+				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+				
+				# Sluit het haakje af
+				$tmpStr .= ")";
+				$categorySql[] = $tmpStr;
 					
 			} # if
 		} # foreach
