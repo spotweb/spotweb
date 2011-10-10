@@ -202,8 +202,7 @@ class SpotsOverview {
 		#
 		# Als je in bovenstaand voorbeeld dus Film in DivX wilt selecteren, dan is de keywaarde simpelweg cat0_z0_a0, 
 		# wil je echter heel 'Beeld' selecteren dan is 'cat0' al genoeg. Als je echter in de Dynatree boom
-		# zelf het item 'Beeld' zou selecteren, dan zal Dynatree de verschillende items doorsturen als
-		# individuele keys, oftewel: cat0_z0_a0,cat0_z1_a0, etc etc.
+		# zelf het item 'Beeld' zou selecteren, dan zal Dynatree enkel de parentitem doorsturen, dus cat0_z0
 		#
 		# Als we gebruikers handmatig de category willen laten opgeven (bv. door een entry in settings.php)
 		# dan is het bijzonder onhandig als ze al die categorieen individueel moeten opgeven. Om dit op te
@@ -219,10 +218,6 @@ class SpotsOverview {
 		# ~cat0_z0_a1				- 'Verbied' dat een spot in cat0_z0_a1 zit
 		# cat0_a					- Alles in a voor hoofdcategorie 0 kiezen
 		#
-		# Intern werken we dus alleen met de gehele lijst van subcategorieen.
-		#
-		# In deze functie herbouwen we de categorylijst naar een nieuwe lijst met alle categorieen welke mogelijk
-		# zijn.
 		$newTreeQuery = '';
 		
 		# We lopen nu door elk item in de lijst heen, en expanden die eventueel naar
@@ -286,9 +281,12 @@ class SpotsOverview {
 							if (($typeKey == $typeSelected) || ($typeSelected == '*')) {
 							
 								foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-									if (in_array($typeKey, $y[1])) {
-										$tmpStr .= ",cat" . $hCat . "_" . $typeKey . '_' . $subCat . $x;
-									} # if
+									/* We kunnen /moeten hier niet de check doen of de category in
+									 * dit subtype valt, anders vallen er namelijk behoorlijk weg
+									 * omdat die niet aan het nieuwe formaat voldoen. */
+									//if (in_array($typeKey, $y[1])) {
+									$tmpStr .= ",cat" . $hCat . "_" . $typeKey . '_' . $subCat . $x;
+									//} # if
 								} # foreach
 							} # if
 						} # foreach
@@ -404,7 +402,9 @@ class SpotsOverview {
 						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
 						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
 						#
-						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
+						if (count($subcatValues) > 0) {
+							$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
+						} # if
 					} # foreach subcat
 
 					#
@@ -419,7 +419,9 @@ class SpotsOverview {
 					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
 					# op filterde.
 					#
-					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+					if (count($subcatItems) > 0) {
+						$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+					} # if
 					
 					# Sluit het haakje af
 					$tmpStr .= ")";

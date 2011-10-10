@@ -101,8 +101,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 									
 									if ((strlen($val) != 0) && (strlen($key) != 0)) {
 										# Now determine wether we need to enable the checkbox
-										$isSelected = isset($parsedSearch['categoryList']['cat'][$hcat_key]['z' . $type_key][$sclist_key]) && array_search($key, $parsedSearch['categoryList']['cat'][$hcat_key]['z' . $type_key][$sclist_key]) !== false;
-										$isSelected = $isSelected ? 'true' : 'false';
+										$isSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key.$key . ',') !== false ? true : false;
+										$parentSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key .',') !== false ? true : false;
+										$isSelected = ($isSelected || $parentSelected) ? 'true' : 'false';
 										
 										/*
 										 * Is this strongnot?
