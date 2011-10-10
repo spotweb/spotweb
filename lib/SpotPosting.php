@@ -171,12 +171,12 @@ class SpotPosting {
 		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
 		foreach($spot['subcatlist'] as $subCat) {
 			$subCatLetter = substr($subCat, -2, 1);
-			$subCatNumber = (int) substr($subCat, 1);
+			$subcats = explode('_', $subCat);
 			
-			$subCatSplitted[$subCatLetter][] = $subcatNumber;
+			$subCatSplitted[$subCatLetter][] = $subCat;
 			
-			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][$subCatNumber])) {
-				$errorList[] = array('postspot_invalidsubcat', array($subCat));
+			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
+				$errorList[] = array('postspot_invalidsubcat', array($subCat . ' ' . $subCatLetter . ' ' . substr($subcats[2], 1)));
 			} # if
 		} # foreach	
 
