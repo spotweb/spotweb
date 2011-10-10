@@ -361,6 +361,12 @@ class SpotsOverview {
 		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
 		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
 		# 
+		#
+		# Testset met filters:
+		#   cat0_z0_a9,cat0_z1_a9,cat0_z3_a9, ==> HD beeld
+		#	cat0_z0_a9,cat0_z0_b3,cat0_z0_c1,cat0_z0_c2,cat0_z0_c6,cat0_z0_c11,~cat0_z1,~cat0_z2,~cat0_z3 ==> Nederlands ondertitelde films
+		# 	cat0_a9 ==> Alles in x264HD
+		#	
 		foreach($categoryList['cat'] as $catid => $cat) {
 			#
 			# Voor welke category die we hebben, gaan we alle subcategorieen 
@@ -400,25 +406,25 @@ class SpotsOverview {
 						#
 						$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
 					} # foreach subcat
-				} # foreach type
 
-				#
-				# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
-				# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
-				#
-				# Je krijgt dus een filter als volgt:
-				#
-				# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
-				# 
-				# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
-				# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
-				# op filterde.
-				#
-				$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
-				
-				# Sluit het haakje af
-				$tmpStr .= ")";
-				$categorySql[] = $tmpStr;
+					#
+					# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
+					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
+					#
+					# Je krijgt dus een filter als volgt:
+					#
+					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+					# 
+					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
+					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
+					# op filterde.
+					#
+					$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
+					
+					# Sluit het haakje af
+					$tmpStr .= ")";
+					$categorySql[] = $tmpStr;
+				} # foreach type
 					
 			} # if
 		} # foreach
