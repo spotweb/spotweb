@@ -31,6 +31,7 @@ $(function(){
 	
 	postCommentsForm();
 	postReportForm();
+	postNewspotForm();
 });
 
 // createBaseURL
@@ -321,6 +322,13 @@ function loadComments(messageid,perpage,pagenr) {
 function postReportForm() {
 	$("form.postreportform").submit(function(){ 
 		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
+		return false;
+	});	
+}
+
+function postNewspotForm() {
+	$("form.newspotform").submit(function(){ 
+		new spotPosting().postNewSpot(this,postReportUiStart,postReportUiDone); 
 		return false;
 	});	
 }

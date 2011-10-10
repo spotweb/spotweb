@@ -73,6 +73,34 @@ function spotPosting() {
 			});
 	} // callback rpHashcashCalculated
 
+	this.spotHashcashCalculated = function (self, hash) {
+			self.newSpotForm['newspotform[newmessageid]'].value = hash;
+			self.newSpotForm['newspotform[submit]'].value = 'Post';
+			self.uiDone();
+			
+			var dataString2 = $(self.newSpotForm).serialize()
+			
+			$.ajax({  
+				type: "POST",  
+				url: "?page=postspot",  
+				dataType: "xml",
+				data: dataString2,  
+				success: function(xml) {
+					var result = $(xml).find('result').text();
+					var errors = $(xml).find('errors').text();
+					
+					if(result != 'success') {
+						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+						
+						alert('Posten van spot is niet gelukt: ' + errors);
+					} // else					
+				},
+				error: function(xml) {
+					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+				}
+			});
+	} // callback spotHashcashCalculated
+	
 	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
 		this.uiStart = uiStart;
@@ -109,6 +137,16 @@ function spotPosting() {
 		
 		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr + '.', '@spot.net>', 0, this.rpHashcashCalculated);
 	} // postReport
+
+	this.postNewSpot = function(newSpotForm, uiStart, uiDone) {
+		this.newSpotForm = newSpotForm;
+		this.uiStart = uiStart;
+		this.uiDone = uiDone;
+		
+		this.uiStart();
+		
+		this.calculateCommentHashCash('<', '@spot.net>', 0, this.spotHashcashCalculated);
+	} // postNewSpot
 	
 	//
 	// We breken de make expensive hash op in stukken omdat 
