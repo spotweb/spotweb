@@ -327,10 +327,20 @@ function postReportForm() {
 }
 
 function postNewspotForm() {
+	$('form.newspotform').submit(function(e) {
+		e.preventDefault(); 
+
+		new spotPosting().postNewSpot(this,postReportUiStart,postReportUiDone); 
+		
+		return false;
+	});
+	
+/*	
 	$("form.newspotform").submit(function(){ 
 		new spotPosting().postNewSpot(this,postReportUiStart,postReportUiDone); 
 		return false;
 	});	
+*/
 }
 
 // Load post comment form

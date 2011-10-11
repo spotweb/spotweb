@@ -77,14 +77,11 @@ function spotPosting() {
 			self.newSpotForm['newspotform[newmessageid]'].value = hash;
 			self.newSpotForm['newspotform[submit]'].value = 'Post';
 			self.uiDone();
-			
-			var dataString2 = $(self.newSpotForm).serialize()
-			
-			$.ajax({  
+
+			$(self.newSpotForm).ajaxSubmit({
 				type: "POST",  
 				url: "?page=postspot",  
 				dataType: "xml",
-				data: dataString2,  
 				success: function(xml) {
 					var result = $(xml).find('result').text();
 					var errors = $(xml).find('errors').text();
@@ -92,7 +89,7 @@ function spotPosting() {
 					if(result != 'success') {
 						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 						
-						alert('Posten van spot is niet gelukt: ' + errors);
+						alert('Posten van spot is niet gelukt: ' + result + ' => ' + errors + " => " + xml);
 					} // else					
 				},
 				error: function(xml) {
