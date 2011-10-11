@@ -106,8 +106,6 @@ class SpotDb {
 	 * Add the posted spot to the database
 	 */
 	function addPostedSpot($userId, $spot, $fullXml) {
-		$spot['subcatlist'] = $spot['subcata'] . $spot['subcatb'] . $spot['subcatc'] . $spot['subcatd'] . $spot['subcatz'];
-		
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
 					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
@@ -117,7 +115,7 @@ class SpotDb {
 					  $spot['title'],
 					  $spot['tag'],
 					  (int) $spot['category'],
-					  $spot['subcatlist'],
+					  implode(',', $spot['subcatlist']),
 					  $fullXml));
 	} # addPostedSpot
 	

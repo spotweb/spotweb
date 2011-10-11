@@ -157,13 +157,19 @@ class SpotPosting {
 			$errorList[] = array('postspot_replayattack', array());
 		} # if
 
+		# We require the keyid 7 because it is selfsigned
+		$spot['key'] = 7;
+		
+		# Poster's  username
+		$spot['poster'] = $user['username'];
+		
 		# Fix up some overly long spot properties and other minor issues
 		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
 		$spot['http'] = substr(trim($spot['website']), 0, 449);
 
 		# Create one list of all subcategories
 		$spot['subcatlist'] = explode(',', $spot['subcatlist']);
-
+		
 		/*
 		 * Loop through all subcategories and check if they are valid in
 		 * our list of subcategories
@@ -179,6 +185,28 @@ class SpotPosting {
 				$errorList[] = array('postspot_invalidsubcat', array($subCat . ' ' . $subCatLetter . ' ' . substr($subcats[2], 1)));
 			} # if
 		} # foreach	
+
+		/*
+		 * Make sure all subcategories are in the format we expect, for
+		 * example we strip the 'cat' part and strip the z-subcat
+		 */
+		$subcatCount = count($spot['subcatlist']);
+		for($i = 0; $i < $subcatCount; $i++) {
+			$subcats = explode('_', $spot['subcatlist'][$i]);
+			
+			# If not in our format
+			if (count($subcats) != 3) {
+				$errorList[] = array('postspot_invalidsubcat', array($spot['subcatlist'][$i]));
+			} else {
+				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
+				
+				# Explicitly add the 'z'-category
+				$zcatStr = substr($subcats[1], 0, 1) . str_pad(substr($subcats[1], 1), 2, '0', STR_PAD_LEFT);
+				if (array_search($zcatStr, $spot['subcatlist']) === false) {
+					$spot['subcatlist'][] = $zcatStr;
+				} # if
+			} # else			
+		} # for
 
 		# Make sure the spot isn't being posted in many categories
 		if (count($subCatSplitted['a']) > 1) {
