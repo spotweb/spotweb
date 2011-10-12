@@ -158,6 +158,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 
 				var messageid = $('#messageid').val();
 				postCommentsForm();
+				postReportForm();
 				loadSpotImage();
 				loadComments(messageid,'5','0');
 			});
