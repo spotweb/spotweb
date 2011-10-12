@@ -28,10 +28,6 @@ $(function(){
 			return true;
 		}
     });	
-	
-	postCommentsForm();
-	postReportForm();
-	postNewspotForm();
 });
 
 // createBaseURL
