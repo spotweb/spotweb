@@ -387,7 +387,7 @@ class SpotNntp {
 			# Process each subcategory and add them to the from header
 			foreach($spot['subcatlist'] as $subcat) {
 				$spotHeader .= $subcat[0] . str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
-			} # foreach 
+			} # foreach
 			
 			$spotHeader .= '.' . $spot['filesize'];
 			$spotHeader .= '.' . 10; // some kind of magic number?
