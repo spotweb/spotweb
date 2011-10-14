@@ -33,8 +33,6 @@
 	// Voor uitgebreide filters tonen we een lijst met op dat moment actieve filters
 	$searchType = 'Titel'; 
 	$searchText = '';
-	$sortType = 'stamp';
-	$sortOrder = 'DESC';
 	
 	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
 	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
@@ -57,6 +55,14 @@
 	$tmpSort = $tplHelper->getActiveSorting();
 	$sortType = strtolower($tmpSort['friendlyname']);
 	$sortOrder = strtolower($tmpSort['direction']);
+	
+	/*
+	 * Als er geen sorteer volgorde opgegeven is door de user, dan gebruiken we de user
+	 * preference om een sorteerveld te pakken
+	 */	
+	if (empty($sortType)) {
+		$sortType = $currentSession['user']['prefs']['defaultsortfield'];
+	} # if
 
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst
 	if (count($parsedsearch['filterValueList']) > 1) {
