@@ -168,6 +168,9 @@ class SpotUserUpgrader {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
 			} // foreach
 
+			# make sure a sort preference is defined. An empty field means relevancy
+			$this->setSettingIfNot($user['prefs'], 'defaultsortfield', '');
+
 			# oude settings verwijderen
 			$this->unsetSetting($user['prefs'], 'search_url');
 			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');

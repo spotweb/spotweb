@@ -50,6 +50,15 @@ include "includes/form-messages.inc.php";
 						</select>
 					</dd>
 
+					<dt><label for="edituserprefsform[defaultsortfield]">Standaard sorteervolgorde bij zoeken?</label></dt>
+					<dd>
+						<select name="edituserprefsform[defaultsortfield]">
+							<option <?php if ($edituserprefsform['defaultsortfield'] == '') { echo 'selected="selected"'; } ?> value="">Relevantie</option>
+							<option <?php if ($edituserprefsform['defaultsortfield'] == 'stamp') { echo 'selected="selected"'; } ?> value="stamp">Nieuwste eerst</option>
+						</select>
+					</dd>
+
+
 					<dt><label for="edituserprefsform[date_formatting]">Opmaak van datums</label></dt>
 					<dd>
 						<select name="edituserprefsform[date_formatting]">

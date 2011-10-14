@@ -329,6 +329,7 @@ class SpotUserSystem {
 		# Definieer een aantal arrays met valid settings
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
 		$validTemplates = array('we1rdo');
+		$validDefaultSorts = array('', 'stamp');
 		
 		# Controleer de per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
@@ -343,6 +344,10 @@ class SpotUserSystem {
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
 			$errorList[] = array('validateuser_invalidpreference', array('template'));
+		} # if
+
+		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	
+			$errorList[] = array('validateuser_invalidpreference', array('defaultsortfield' . $prefs['defaultsortfield']));
 		} # if
 		
 		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
