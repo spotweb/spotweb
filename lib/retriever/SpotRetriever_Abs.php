@@ -75,7 +75,7 @@ abstract class SpotRetriever_Abs {
 				# messageid als uitgangspunt nemen
 				$hdrList = array_reverse($hdrList, true);
 
-				foreach($hdrList as $msgNum => $msgId) {
+ 				foreach($hdrList as $msgNum => $msgId) {
 					if (isset($messageIdList[$msgId])) {
 						$curMsg = $msgNum;
 						$found = true;
