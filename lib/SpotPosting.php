@@ -33,6 +33,9 @@ class SpotPosting {
 		if (strlen($comment['body']) < 2) {
 			$errorList[] = array('postcomment_bodytooshort', array());
 		} # if
+		if (strlen($comment['body']) > 9000) {
+			$errorList[] = array('postcomment_bodytoolong', array());
+		} # if
 		
 		# Rating mag niet uit de range vallen
 		if (($comment['rating'] > 10) || ($comment['rating'] < 0)) {
@@ -110,10 +113,13 @@ class SpotPosting {
 					  	       'height' => $tmpGdImageSize[1]);
 		} # if
 
-		# Body cannot be empty or very short
+		# Body cannot be empty, very short or too long
 		$spot['body'] = trim($spot['body']);
 		if (strlen($spot['body']) < 30) {
 			$errorList[] = array('postspot_bodytooshort', array());
+		} # if
+		if (strlen($spot['body']) > 9000) {
+			$errorList[] = array('postspot_bodytoolong', array());
 		} # if
 
 		# Title cannot be empty or very short
