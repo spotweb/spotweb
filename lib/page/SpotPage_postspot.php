@@ -36,7 +36,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$postResult = array();
 		
 		# zet de page title
-		$this->_pageTitle = "spot: post spot";
+		$this->_pageTitle = "spot: post";
 
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
@@ -51,24 +51,30 @@ class SpotPage_postspot extends SpotPage_Abs {
 			unset($this->_spotForm['submit']);
 		} # if
 
+		# If user tried to submit, validte the file uploads
 		if (isset($this->_spotForm['submit'])) {
-			# submit unsetten we altijd
-			unset($this->_spotForm['submit']);
-
 			# Make sure an NZB file was provided
-			if ((isset($_FILES['newspotform'])) && ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
+			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
 				$formMessages['errors'][] = array('postspot_invalidnzb', '(none given)');
+				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 				unset($this->_spotForm['submit']);
 			} # if
 
 			# Make sure an imgae file was provided
-			if ((isset($_FILES['newspotform'])) && ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
+			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
 				$formMessages['errors'][] = array('postspot_imageinvalid', '(none given)');
+				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 				unset($this->_spotForm['submit']);
 			} # if
-			
+		} # if
+		
+		
+		if (isset($this->_spotForm['submit'])) {
+			# submit unsetten we altijd
+			unset($this->_spotForm['submit']);
+
 			# zorg er voor dat alle variables ingevuld zijn
 			$spot = array_merge($spot, $this->_spotForm);
 

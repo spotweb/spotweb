@@ -400,6 +400,15 @@ class SpotUserSystem {
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
 			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
 		} # if		
+
+		# We willen geen megabytes aan defalt newspot body of tag opslaan
+		if (strlen($prefs['newspotdefault_tag'] > 90)) { 
+			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_tag'));
+		} # if		
+		
+		if (strlen($prefs['newspotdefault_body'] > 9000)) { 
+			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_body'));
+		} # if		
 		
 		# als men runcommand of save wil, moet er een local_dir opgegeven worden
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {

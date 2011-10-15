@@ -37,22 +37,22 @@ require_once "includes/header.inc.php";
 				</select>
 			</dd>
 
-			<dt>Classificatie</dt>
+			<dt>Genre</dt>
 			<dd>
 				<div id="newspotcatselecttree"></div>
 			</dd>
 			
 			<dt><label for="newspotform[title]">Titel</label></dt>
-			<dd><input type="text" name="newspotform[title]" value="<?php echo htmlspecialchars($postspotform['title']); ?>"></dd>
+			<dd><input type="text" name="newspotform[title]" maxlength="60" value="<?php echo htmlspecialchars($postspotform['title']); ?>"></dd>
 
 			<dt><label for="newspotform[body]">Omschrijving</label></dt>
-			<dd><textarea name="newspotform[body]" id="newspotform[body]"><?php echo htmlspecialchars($postspotform['body']); ?></textarea></dd>
+			<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="80" rows="12"><?php echo empty($postspotform['body']) ? htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']) : htmlspecialchars($postspotform['body']); ?></textarea></dd>
 
 			<dt><label for="newspotform[tag]">Tag</label></dt>
-			<dd><input type="text" name="newspotform[tag]" value="<?php echo htmlspecialchars($postspotform['tag']); ?>"></dd>
+			<dd><input type="text" name="newspotform[tag]" maxlength="99" value="<?php echo empty($postspotform['tag']) ? htmlspecialchars($currentSession['user']['prefs']['newspotdefault_tag']) : htmlspecialchars($postspotform['tag']); ?>"></dd>
 
 			<dt><label for="newspotform[website]">Website</label></dt>
-			<dd><input type="text" name="newspotform[website]" value="<?php echo htmlspecialchars($postspotform['website']); ?>"></dd>
+			<dd><input type="text" name="newspotform[website]" maxlength="255" value="<?php echo htmlspecialchars($postspotform['website']); ?>"></dd>
 
 			<dt><label for="newspotform[nzbfile]">NZB bestand</label></dt>
 			<dd><input name="newspotform[nzbfile]" type="file" /></dd>
