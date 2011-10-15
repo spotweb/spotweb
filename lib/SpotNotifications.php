@@ -61,12 +61,17 @@ class SpotNotifications {
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $title, $body);
 	} # sendNzbHandled
 
-	function sendRetrieverFinished($newSpotCount, $newCommentCount) {
+	function sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount) {
 		if ($newSpotCount > 0) {
 			$body = ($newSpotCount == 1) ? "Er is " . $newSpotCount . " spot" : "Er zijn " . $newSpotCount . " spots";
 			if ($newCommentCount > 0) {
-				$body .= " en " . $newCommentCount;
+				$body .= ($newReportCount > 0) ? ", " : " en ";
+				$body .= $newCommentCount;
 				$body .= ($newCommentCount == 1) ? " reactie" : " reacties";
+			} # if
+			if ($newReportCount > 0) {
+				$body .= " en " . $newReportCount;
+				$body .= ($newCommentCount == 1) ? " reports" : " reports";
 			} # if
 			$body .= " opgehaald.";
 

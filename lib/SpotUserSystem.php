@@ -389,7 +389,7 @@ class SpotUserSystem {
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
 
-		# Twitter tokens komen niet binnen via het form, maar mogen perse niet weggegooid worden.
+		# Twitter tokens komen niet binnen via het form, maar mogen per se niet weggegooid worden.
 		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
 		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];
 		$prefs['notifications']['twitter']['access_token_secret'] = $currentPrefs['notifications']['twitter']['access_token_secret'];
@@ -412,6 +412,13 @@ class SpotUserSystem {
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {
 				$errorList[] = array('validateuser_invalidpreference', array('growl host'));
+			} # if
+		} # if
+
+		# als men Notify My Android wil gebruiken, moet er een apikey opgegeven worden
+		if ($prefs['notifications']['nma']['enabled']) {
+			if (empty($prefs['notifications']['nma']['api'])) {
+				$errorList[] = array('validateuser_invalidpreference', array('Notify My Android api'));
 			} # if
 		} # if
 
