@@ -85,8 +85,10 @@ class SpotPosting {
 		$hdr_newsgroup = $this->_settings->get('hdr_group');
 		$bin_newsgroup = $this->_settings->get('nzb_group');
 		
+/*
 		$hdr_newsgroup = 'alt.test';
 		$bin_newsgroup = 'alt.test';
+*/
 
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
