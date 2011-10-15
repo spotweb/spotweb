@@ -27,7 +27,7 @@
 			# dit maakt het simpeler om te zien welke rechten een user heeft
 			if ($group['ismember']) {
 				if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) {
-					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'Wijzig groep\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', false, function() { refreshTab(\'adminpaneltabs\')}); ">' . $group['name'] . '</a>, ';
+					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'Wijzig groep\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); ">' . $group['name'] . '</a>, ';
 				} elseif ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '')) { 
 					$groupList .= $group['name'] . ', ';
 				} # if
@@ -45,7 +45,7 @@
 		echo $user['username'];
 	} else {
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'Wijzig gebruiker\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', true, function() { refreshTab(\'adminpaneltabs\')}); ">' .
+				'onclick="return openDialog(\'editdialogdiv\', \'Wijzig gebruiker\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); ">' .
 				 $user['username'] . '</a>'; 
 	} # else
 ?> 
