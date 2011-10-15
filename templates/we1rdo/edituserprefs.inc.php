@@ -251,6 +251,21 @@ include "includes/form-messages.inc.php";
 			</fieldset>
 <?php } ?>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'nma')) { ?>
+<!-- Notify My Android -->
+			<fieldset>
+				<dt><label for="use_nma">Notify My Android gebruiken?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][nma][enabled]" id="use_nma" <?php if ($edituserprefsform['notifications']['nma']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+				<fieldset id="content_use_nma">
+					<dt><label for="edituserprefsform[notifications][nma][api]">Notify My Android <a href="https://www.notifymyandroid.com/account.php">API key</a>?</label></dt>
+					<dd><input type="text" name="edituserprefsform[notifications][nma][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['nma']['api']); ?>"></dd>
+
+					<?php showNotificationOptions('nma', $edituserprefsform, $tplHelper); ?>
+				</fieldset>
+			</fieldset>
+<?php } ?>
+
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'notifo')) { ?>
 <!-- Notifo -->
 			<fieldset>

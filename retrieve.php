@@ -171,9 +171,9 @@ catch(Exception $x) {
 	die();
 } # catch
 
-## Comments
+## Reports
 try {
-	$newCommentCount = 0;
+	$newReportCount = 0;
 	if ($settings->get('retrieve_reports')) {
 		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
 												$db,
@@ -186,7 +186,7 @@ try {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('reports'));
 		} # if
 
-		$newCommentCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
+		$newReportCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 		$retriever->quit();
 	} # if
 }
@@ -242,7 +242,7 @@ try {
 
 # Verstuur notificaties
 $spotsNotifications = new SpotNotifications($db, $settings, $userSession);
-$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount);
+$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
 
 if ($req->getDef('output', '') == 'xml') {
 	echo "</xml>";

@@ -151,6 +151,7 @@ class SpotUserUpgrader {
 
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
+			$this->setSettingIfNot($user['prefs']['notifications']['nma'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['notifo'], 'api', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
@@ -339,6 +340,11 @@ class SpotUserUpgrader {
 		# Nieuwe spot posten toegevoegd
 		if ($this->_settings->get('securityversion') < 0.16) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_post_spot . ")");
+		} # if
+
+		# Notify My Android toegevoegd
+		if ($this->_settings->get('securityversion') < 0.17) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'nma')");
 		} # if
 	} # updateSecurityGroups
 
