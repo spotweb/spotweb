@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.16');
+define('SPOTWEB_SECURITY_VERSION', '0.17');
 
 class SpotSecurity {
 	private $_db;
