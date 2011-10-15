@@ -166,7 +166,7 @@
 						<br>
 						<h4>Filters</h4>
 						<br>
-						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', true, null); " class="greyButton">Sla opdracht op als filter</a>
+						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, true, null); " class="greyButton">Sla opdracht op als filter</a>
 				</div>
 			</form>
 <?php } # if perform search ?>
@@ -331,7 +331,6 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) { ?>
 						<li class="info"> Laatste update: <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php } ?>
-
 <?php 
 		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
 			if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
@@ -343,6 +342,11 @@
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread">Markeer alles als gelezen</a></li>
+<?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+<!--
+					<li><a href="<?php echo $tplHelper->getPageUrl('postspot'); ?>" onclick="return openDialog('editdialogdiv', 'Voeg een spot toe', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postReportUiStart, postReportUiDone); return false; }, true, null);" class="greyButton newspot">Voeg een spot toe</a></li>
+-->					
 <?php } ?>
 					</ul>
 				</div>

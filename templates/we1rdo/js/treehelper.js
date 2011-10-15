@@ -60,18 +60,6 @@
 				} // onSelect
 			});
 
-			$("#newspotform").submit(function() {
-				var formField = $("#subcatlist");
-
-				// then append Dynatree selected 'checkboxes':
-				var selectedNodes = $("div#newspotcatselecttree").dynatree("getTree").getSelectedNodes();
-				var tmp = $.map(selectedNodes, function(node){
-					return node.data.key;
-				}); // map
-            	
-				formField[0].value = tmp.join(',');
-			}); // submit handler for newspotform
-			
 			$("#filterform").submit(function() {
 				var formField = $("#search-tree");
 				

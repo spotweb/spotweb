@@ -851,11 +851,13 @@ class SpotsOverview {
 		} # foreach
 
 		# en voeg de strong not lijst toe
-		foreach($strongNotList as $headCat => $subcatList) {
-			foreach($subcatList as $subcatValue) {
-				$compressedList .= '~cat' . $headCat . '_' . $subcatValue . ',';
+		if (!empty($strongNotList)) {
+			foreach($strongNotList as $headCat => $subcatList) {
+				foreach($subcatList as $subcatValue) {
+					$compressedList .= '~cat' . $headCat . '_' . $subcatValue . ',';
+				} # foreach
 			} # foreach
-		} # foreach
+		} # if
 
 		return $compressedList;
 	} # compressCategorySelection

@@ -74,24 +74,45 @@ function spotPosting() {
 	} // callback rpHashcashCalculated
 
 	this.spotHashcashCalculated = function (self, hash) {
+		alert(self);
+		alert(self.newSpotForm);
+
+			// Append Dynatree selected 'checkboxes':
+			var selectedNodes = $("div#newspotcatselecttree").dynatree("getTree").getSelectedNodes();
+			var subcatList = $.map(selectedNodes, function(node){
+				return node.data.key;
+			}); // map
+			
+			// and enter the form's inputfields
 			self.newSpotForm['newspotform[newmessageid]'].value = hash;
+			self.newSpotForm['newspotform[subcatlist]'].value = subcatList.join(',');
 			self.newSpotForm['newspotform[submit]'].value = 'Post';
 			self.uiDone();
 
+			alert('goin to post...');
+			
 			$(self.newSpotForm).ajaxSubmit({
 				type: "POST",  
 				url: "?page=postspot",  
 				dataType: "xml",
 				success: function(xml) {
+					var $dialdiv = $("#editdialogdiv")
 					var result = $(xml).find('result').text();
-					var errors = $(xml).find('errors').text();
 					
-					if(result != 'success') {
-						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-						
-						alert('Posten van spot is niet gelukt: ' + result + ' => ' + errors + " => " + xml);
-					} // else					
-				},
+					if (result == 'success') {
+						$dialdiv.empty();
+						$dialdiv.dialog('close');
+					} else {						
+						// voeg nu de errors in de html
+						var $formerrors = $dialdiv.find("ul.formerrors");
+						$formerrors.empty();
+
+						// zet de errors van het formulier in de errorlijst
+						$('errors', xml).each(function() {
+							$formerrors.append("<li>" + $(this).text() + "</li>");
+						}); // each
+					} // if post was not succesful
+				}, // success()
 				error: function(xml) {
 					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 				}
