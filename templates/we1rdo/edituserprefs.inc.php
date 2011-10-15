@@ -34,6 +34,9 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
 			<li><a href="#edituserpreftab-5"><span>Eigen CSS</span></a></li>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+			<li><a href="#edituserpreftab-6"><span>Posten van spots</span></a></li>
+<?php } ?>
 	
 		</ul>
 			
@@ -311,7 +314,7 @@ include "includes/form-messages.inc.php";
 					<div class="testNotification" id="twitter_result"><b>Stap 1</b>:<br />Klik op de knop "Toestemming Vragen". Dit opent een nieuwe pagina met een PIN nummer.<br />Let op: als er niets gebeurt, controleer je pop-up blocker.</div>
 					<input type="button" value="Toestemming Vragen" id="twitter_request_auth" />
 	<?php if (!empty($edituserprefsform['notifications']['twitter']['screen_name'])) { ?>
-					<input type="button" id="twitter_remove" value="Account <?php echo $edituserprefsform['notifications']['twitter']['screen_name']; ?> verwijderen" />
+					<input type="button" id="twitter_remove" value="Account <?php echo htmlspecialchars($edituserprefsform['notifications']['twitter']['screen_name']); ?> verwijderen" />
 	<?php } ?>
 					<?php showNotificationOptions('twitter', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
@@ -330,12 +333,34 @@ include "includes/form-messages.inc.php";
 					<label for="edituserprefsform[customcss]">Custom CSS gebruiken</label>
 				</dt>
 				<dd>
-					<textarea name="edituserprefsform[customcss]" rows="15" cols="120"><?php echo $edituserprefsform['customcss']; ?></textarea>
+					<textarea name="edituserprefsform[customcss]" rows="15" cols="120"><?php echo htmlspecialchars($edituserprefsform['customcss']); ?></textarea>
 				</dd>
 			</fieldset>
 		</div>
 <?php } ?>
 <!-- Einde Custom Stylesheet -->
+
+<!-- New spot defaults -->
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+		<div id="edituserpreftab-6" class="ui-tabs-hide">
+			<fieldset>
+				<dt>
+					<label for="edituserprefsform[newspotdefault_tag]">De volgende tag standaard invullen</label>
+				</dt>
+				<dd>
+					<input type="text" name="edituserprefsform[newspotdefault_tag]" maxlength="99" value="<?php echo htmlspecialchars($edituserprefsform['newspotdefault_tag']); ?>">
+				</dd>
+
+				<dt>
+					<label for="edituserprefsform[newspotdefault_body]">De volgende body standaard invullen</label>
+				</dt>
+				<dd>
+					<textarea name="edituserprefsform[newspotdefault_body]" rows="15" cols="80"><?php echo htmlspecialchars($edituserprefsform['newspotdefault_body']); ?></textarea>
+				</dd>
+			</fieldset>
+		</div>
+<?php } ?>
+<!-- Einde new spot default -->
 
 		<dd>
 			<input class="greyButton" type="submit" name="edituserprefsform[submitedit]" value="Bijwerken">

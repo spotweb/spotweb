@@ -136,6 +136,8 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'show_reportcount', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
 			$this->setSettingIfNot($user['prefs'], 'customcss', '');
+			$this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
+			$this->setSettingIfNot($user['prefs'], 'newspotdefault_body', '');
 
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');

@@ -344,9 +344,7 @@
 						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread">Markeer alles als gelezen</a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
-<!--
 					<li><a href="<?php echo $tplHelper->getPageUrl('postspot'); ?>" onclick="return openDialog('editdialogdiv', 'Voeg een spot toe', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postReportUiStart, postReportUiDone); return false; }, true, null);" class="greyButton newspot">Voeg een spot toe</a></li>
--->					
 <?php } ?>
 					</ul>
 				</div>
