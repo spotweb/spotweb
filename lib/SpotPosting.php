@@ -185,8 +185,8 @@ class SpotPosting {
 		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
 
 		foreach($spot['subcatlist'] as $subCat) {
-			$subCatLetter = substr($subCat, -2, 1);
 			$subcats = explode('_', $subCat);
+			$subCatLetter = substr($subcats[2], 0, 1);
 			
 			$subCatSplitted[$subCatLetter][] = $subCat;
 			
@@ -236,7 +236,7 @@ class SpotPosting {
 		if (count($spot['subcatlist']) < 2) {
 			$errorList[] = array('postspot_toofewcategories', count($spot['subcatlist']));
 		} # if
-		
+
 		# en post daadwerkelijk de spot
 		if (empty($errorList)) {
 			/* 
