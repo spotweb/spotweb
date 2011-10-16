@@ -84,7 +84,7 @@ class SpotPosting {
 		$errorList = array();
 		$hdr_newsgroup = $this->_settings->get('hdr_group');
 		$bin_newsgroup = $this->_settings->get('nzb_group');
-		
+
 /*
 		$hdr_newsgroup = 'alt.test';
 		$bin_newsgroup = 'alt.test';
@@ -183,6 +183,7 @@ class SpotPosting {
 		 * our list of subcategories
 		 */
 		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
+
 		foreach($spot['subcatlist'] as $subCat) {
 			$subCatLetter = substr($subCat, -2, 1);
 			$subcats = explode('_', $subCat);
@@ -190,7 +191,7 @@ class SpotPosting {
 			$subCatSplitted[$subCatLetter][] = $subCat;
 			
 			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-				$errorList[] = array('postspot_invalidsubcat', array($subCat . ' ' . $subCatLetter . ' ' . substr($subcats[2], 1)));
+				$errorList[] = array('postspot_invalidsubcat', array($subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
 			} # if
 		} # foreach	
 
