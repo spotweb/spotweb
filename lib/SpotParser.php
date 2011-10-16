@@ -500,14 +500,14 @@ class SpotParser {
 		 * Title element is enclosed in CDATA
 		 */
 		$titleElm = $doc->createElement('Title');
-		$titleElm->appendChild($doc->createCDATASection($spot['title']));
+		$titleElm->appendChild($doc->createCDATASection(htmlentities($spot['title'], ENT_NOQUOTES, 'UTF-8')));
 		$postingElm->appendChild($titleElm);
 		
 		/* 
 		 * Description element is enclosed in CDATA
 		 */
 		$descrElm = $doc->createElement('Description');
-		$descrElm->appendChild($doc->createCDATASection( str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['body'])));
+		$descrElm->appendChild($doc->createCDATASection( htmlentities(str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['body']), ENT_NOQUOTES, 'UTF-8')));
 		$postingElm->appendChild($descrElm);
 
 		/*
