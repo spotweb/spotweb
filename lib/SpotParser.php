@@ -21,7 +21,7 @@ class SpotParser {
 		$xml = $xml->Posting;
 		$tpl_spot['category'] = (string) $xml->Category;
 		$tpl_spot['website'] = (string) $xml->Website;
-		$tpl_spot['description'] = (string) utf8_encode($xml->Description);
+		$tpl_spot['description'] = (string) $xml->Description;
 		$tpl_spot['filesize'] = (string) $xml->Size;
 		$tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
 		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
