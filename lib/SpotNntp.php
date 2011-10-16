@@ -273,7 +273,7 @@ class SpotNntp {
 		 * Post plain usenet message
 		 */
 		function postPlainMessage($newsgroup, $message, $additionalHeaders) {
-			$header = 'Subject: ' . $message['title'] . "\r\n";
+			$header = 'Subject: ' . utf8_decode($message['title']) . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: <' . $message['newmessageid'] . ">\r\n";
 			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
