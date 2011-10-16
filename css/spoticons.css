@@ -1,54 +1,36 @@
-span.spoticon { 
-	background-image: url(../images/iconsprite.png); 
-	background-repeat: no-repeat; 
+span.spoticon {background-image:url(../images/iconsprite.png); background-repeat: no-repeat; float:left; display:block; width:16px; height:16px; margin:2px 5px 0 5px;}
 
-	width: 16px;
-	height: 16px;
-	
-	line-height: 20px; 
-	font-size: 16px; 
-	
-	margin: 0;
-	padding: 0;
-	
-	position: relative;
-	top: 2px;
-	
-	margin-left: 6px; 
-	padding-right: 20px; 
-}
-
-.spoticon-application{ background-position: 0 0;  } 
-.spoticon-bluray{ background-position: 0 -18px;  } 
-.spoticon-book{ background-position: 0 -36px;  } 
-.spoticon-controller{ background-position: 0 -54px;  } 
-.spoticon-custom{ background-position: 0 -72px;  } 
-.spoticon-divx{ background-position: 0 -90px;  } 
-.spoticon-download{ background-position: 0 -108px;  } 
-.spoticon-dvd{ background-position: 0 -126px;  } 
-.spoticon-eye{ background-position: 0 -144px;  } 
-.spoticon-fav{ background-position: 0 -162px;  } 
-.spoticon-female{ background-position: 0 -180px;  } 
-.spoticon-film{ background-position: 0 -198px;  } 
-.spoticon-hd{ background-position: 0 -216px;  } 
-.spoticon-help{ background-position: 0 -234px;  } 
-.spoticon-home{ background-position: 0 -252px;  } 
-.spoticon-ipod{ background-position: 0 -270px;  } 
-.spoticon-linux{ background-position: 0 -288px;  } 
-.spoticon-mac{ background-position: 0 -306px;  } 
-.spoticon-mpg{ background-position: 0 -324px;  } 
-.spoticon-music{ background-position: 0 -342px;  } 
-.spoticon-nintendo_ds{ background-position: 0 -360px;  } 
-.spoticon-nintendo_wii{ background-position: 0 -378px;  } 
-.spoticon-pda{ background-position: 0 -396px;  } 
-.spoticon-phone{ background-position: 0 -414px;  } 
-.spoticon-picture{ background-position: 0 -432px;  } 
-.spoticon-playstation{ background-position: 0 -450px;  } 
-.spoticon-refresh{ background-position: 0 -468px;  } 
-.spoticon-tag{ background-position: 0 -486px;  } 
-.spoticon-today{ background-position: 0 -504px;  } 
-.spoticon-tv{ background-position: 0 -522px;  } 
-.spoticon-vista{ background-position: 0 -540px;  } 
-.spoticon-windows{ background-position: 0 -558px;  } 
-.spoticon-wmv{ background-position: 0 -576px;  } 
-.spoticon-xbox{ background-position: 0 -594px;  } 
+.spoticon-application {background-position: 0 0;}
+.spoticon-bluray {background-position: 0 -16px;}
+.spoticon-book {background-position: 0 -32px;}
+.spoticon-controller {background-position: 0 -48px;}
+.spoticon-custom {background-position: 0 -64px;}
+.spoticon-divx {background-position: 0 -80px;}
+.spoticon-download {background-position: 0 -96px;}
+.spoticon-dvd {background-position: 0 -112px;}
+.spoticon-eye {background-position: 0 -128px;}
+.spoticon-fav {background-position: 0 -144px;}
+.spoticon-female {background-position: 0 -160px;}
+.spoticon-film {background-position: 0 -176px;}
+.spoticon-hd {background-position: 0 -192px;}
+.spoticon-help {background-position: 0 -208px;}
+.spoticon-home {background-position: 0 -224px;}
+.spoticon-ipod {background-position: 0 -240px;}
+.spoticon-linux {background-position: 0 -256px;}
+.spoticon-mac {background-position: 0 -272px;}
+.spoticon-mpg {background-position: 0 -288px;}
+.spoticon-music {background-position: 0 -304px;}
+.spoticon-nintendo_ds {background-position: 0 -320px;}
+.spoticon-nintendo_wii {background-position: 0 -336px;}
+.spoticon-pda {background-position: 0 -352px;}
+.spoticon-phone {background-position: 0 -368px;}
+.spoticon-picture {background-position: 0 -384px;}
+.spoticon-playstation {background-position: 0 -400px;}
+.spoticon-refresh {background-position: 0 -416px;}
+.spoticon-tag {background-position: 0 -432px;}
+.spoticon-today {background-position: 0 -448px;}
+.spoticon-tv {background-position: 0 -464px;}
+.spoticon-vista {background-position: 0 -480px;}
+.spoticon-windows {background-position: 0 -496px;}
+.spoticon-wmv {background-position: 0 -512px;}
+.spoticon-xbox {background-position: 0 -528px;}
