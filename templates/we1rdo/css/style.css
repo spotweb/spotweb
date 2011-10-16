@@ -236,7 +236,7 @@ table.spots tr td span.reportedSpam span {display:block; line-height:16px; text-
 table.spots tr td span.reportedSpam.grey {background:url(../img/sprite.png) no-repeat -45px -163px;}
 table.spots tr td span.reportedSpam.grey span {color:#585858;}
 table.spots tr td span.reportedSpam.orange {background:url(../img/sprite.png) no-repeat 0 -159px;}
-table.spots tr td span.reportedSpam.orange span {color:#955700;}
+table.spots tr td span.reportedSpam.orange span {color:#9e7701;}
 table.spots tr td span.reportedSpam.darkorange {background:url(../img/sprite.png) no-repeat -45px -147px;}
 table.spots tr td span.reportedSpam.darkorange span {color:#9f4a00;}
 table.spots tr td.watch a {display:block; cursor:pointer; background:url(../img/sprite.png) no-repeat -40px -80px; width:16px; height:16px;}
