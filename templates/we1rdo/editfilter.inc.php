@@ -57,32 +57,32 @@ if (empty($editresult)) {
 			<dt><label for="editfilterform[icon]">Icoon</label></dt>
 			<dd>
 				<select name="editfilterform[icon]">
-					<option <?php if ($filter['icon'] == 'application.png') { echo ' selected="selected" '; } ?> value='application.png'>Applicatie</option>
-					<option <?php if ($filter['icon'] == 'bluray.png') { echo ' selected="selected" '; } ?> value='bluray.png'>Blu-Ray</option>
-					<option <?php if ($filter['icon'] == 'book.png') { echo ' selected="selected" '; } ?> value='book.png'>Boek</option>
-					<option <?php if ($filter['icon'] == 'controller.png') { echo ' selected="selected" '; } ?> value='controller.png'>Game</option>
-					<option <?php if ($filter['icon'] == 'custom.png') { echo ' selected="selected" '; } ?> value='custom.png'>Eigen</option>
-					<option <?php if ($filter['icon'] == 'divx.png') { echo ' selected="selected" '; } ?> value='divx.png'>DivX</option>
-					<option <?php if ($filter['icon'] == 'female.png') { echo ' selected="selected" '; } ?> value='female.png'>Erotiek</option>
-					<option <?php if ($filter['icon'] == 'film.png') { echo ' selected="selected" '; } ?> value='film.png'>Film</option>
-					<option <?php if ($filter['icon'] == 'hd.png') { echo ' selected="selected" '; } ?> value='hd.png'>HD</option>
-					<option <?php if ($filter['icon'] == 'ipod.png') { echo ' selected="selected" '; } ?> value='ipod.png'>iPod</option>
-					<option <?php if ($filter['icon'] == 'linux.png') { echo ' selected="selected" '; } ?> value='linux.png'>Linux</option>
-					<option <?php if ($filter['icon'] == 'mac.png') { echo ' selected="selected" '; } ?> value='mac.png'>Apple</option>
-					<option <?php if ($filter['icon'] == 'mpg.png') { echo ' selected="selected" '; } ?> value='mpg.png'>MPEG</option>
-					<option <?php if ($filter['icon'] == 'music.png') { echo ' selected="selected" '; } ?> value='music.png'>Muziek</option>
-					<option <?php if ($filter['icon'] == 'nintendo_ds.png') { echo ' selected="selected" '; } ?> value='nintendo_ds.png'>Nintendo DS</option>
-					<option <?php if ($filter['icon'] == 'nintendo_wii.png') { echo ' selected="selected" '; } ?> value='nintendo_wii.png'>Nintendo Wii</option>
-					<option <?php if ($filter['icon'] == 'phone.png') { echo ' selected="selected" '; } ?> value='phone.png'>Telefoon</option>
-					<option <?php if ($filter['icon'] == 'picture.png') { echo ' selected="selected" '; } ?> value='picture.png'>Afbeelding</option>
-					<option <?php if ($filter['icon'] == 'playstation.png') { echo ' selected="selected" '; } ?> value='playstation.png'>Playstation</option>
-					<option <?php if ($filter['icon'] == 'tv.png') { echo ' selected="selected" '; } ?> value='tv.png'>TV</option>
-					<option <?php if ($filter['icon'] == 'vista.png') { echo ' selected="selected" '; } ?> value='vista.png'>Vista</option>
-					<option <?php if ($filter['icon'] == 'windows.png') { echo ' selected="selected" '; } ?> value='windows.png'>Windows</option>
-					<option <?php if ($filter['icon'] == 'wmv.png') { echo ' selected="selected" '; } ?> value='wmv.png'>WMV</option>
-					<option <?php if ($filter['icon'] == 'xbox.png') { echo ' selected="selected" '; } ?> value='xbox.png'>Xbox</option>
-					<option <?php if ($filter['icon'] == 'dvd.png') { echo ' selected="selected" '; } ?> value='dvd.png'>DVD</option>
-					<option <?php if ($filter['icon'] == 'pda.png') { echo ' selected="selected" '; } ?> value='pda.png'>PDA</option>
+					<option <?php if ($filter['icon'] == 'application') { echo ' selected="selected" '; } ?> value='application'>Applicatie</option>
+					<option <?php if ($filter['icon'] == 'bluray') { echo ' selected="selected" '; } ?> value='bluray'>Blu-Ray</option>
+					<option <?php if ($filter['icon'] == 'book') { echo ' selected="selected" '; } ?> value='book'>Boek</option>
+					<option <?php if ($filter['icon'] == 'controller') { echo ' selected="selected" '; } ?> value='controller'>Game</option>
+					<option <?php if ($filter['icon'] == 'custom') { echo ' selected="selected" '; } ?> value='custom'>Eigen</option>
+					<option <?php if ($filter['icon'] == 'divx') { echo ' selected="selected" '; } ?> value='divx'>DivX</option>
+					<option <?php if ($filter['icon'] == 'female') { echo ' selected="selected" '; } ?> value='female'>Erotiek</option>
+					<option <?php if ($filter['icon'] == 'film') { echo ' selected="selected" '; } ?> value='film'>Film</option>
+					<option <?php if ($filter['icon'] == 'hd') { echo ' selected="selected" '; } ?> value='hd'>HD</option>
+					<option <?php if ($filter['icon'] == 'ipod') { echo ' selected="selected" '; } ?> value='ipod'>iPod</option>
+					<option <?php if ($filter['icon'] == 'linux') { echo ' selected="selected" '; } ?> value='linux'>Linux</option>
+					<option <?php if ($filter['icon'] == 'mac') { echo ' selected="selected" '; } ?> value='mac'>Apple</option>
+					<option <?php if ($filter['icon'] == 'mpg') { echo ' selected="selected" '; } ?> value='mpg'>MPEG</option>
+					<option <?php if ($filter['icon'] == 'music') { echo ' selected="selected" '; } ?> value='music'>Muziek</option>
+					<option <?php if ($filter['icon'] == 'nintendo_ds') { echo ' selected="selected" '; } ?> value='nintendo_ds'>Nintendo DS</option>
+					<option <?php if ($filter['icon'] == 'nintendo_wii') { echo ' selected="selected" '; } ?> value='nintendo_wii'>Nintendo Wii</option>
+					<option <?php if ($filter['icon'] == 'phone') { echo ' selected="selected" '; } ?> value='phone'>Telefoon</option>
+					<option <?php if ($filter['icon'] == 'picture') { echo ' selected="selected" '; } ?> value='picture'>Afbeelding</option>
+					<option <?php if ($filter['icon'] == 'playstation') { echo ' selected="selected" '; } ?> value='playstation'>Playstation</option>
+					<option <?php if ($filter['icon'] == 'tv') { echo ' selected="selected" '; } ?> value='tv'>TV</option>
+					<option <?php if ($filter['icon'] == 'vista') { echo ' selected="selected" '; } ?> value='vista'>Vista</option>
+					<option <?php if ($filter['icon'] == 'windows') { echo ' selected="selected" '; } ?> value='windows'>Windows</option>
+					<option <?php if ($filter['icon'] == 'wmv') { echo ' selected="selected" '; } ?> value='wmv'>WMV</option>
+					<option <?php if ($filter['icon'] == 'xbox') { echo ' selected="selected" '; } ?> value='xbox'>Xbox</option>
+					<option <?php if ($filter['icon'] == 'dvd') { echo ' selected="selected" '; } ?> value='dvd'>DVD</option>
+					<option <?php if ($filter['icon'] == 'pda') { echo ' selected="selected" '; } ?> value='pda'>PDA</option>
 				</select>
 			</dd>
 			
