@@ -74,13 +74,12 @@ function spotPosting() {
 	} // callback rpHashcashCalculated
 
 	this.spotHashcashCalculated = function (self, hash) {
-		alert(self);
-		alert(self.newSpotForm);
-
 			// Append Dynatree selected 'checkboxes':
 			var selectedNodes = $("div#newspotcatselecttree").dynatree("getTree").getSelectedNodes();
 			var subcatList = $.map(selectedNodes, function(node){
-				return node.data.key;
+				if (node.countChildren() == 0) {
+					return node.data.key;
+				} // if
 			}); // map
 			
 			// and enter the form's inputfields
@@ -89,8 +88,6 @@ function spotPosting() {
 			self.newSpotForm['newspotform[submit]'].value = 'Post';
 			self.uiDone();
 
-			alert('goin to post...');
-			
 			$(self.newSpotForm).ajaxSubmit({
 				type: "POST",  
 				url: "?page=postspot",  
