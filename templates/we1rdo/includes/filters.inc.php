@@ -299,7 +299,7 @@
 			} # if
 			
 			echo '" href="' . $strFilter . '">';
-			echo '<img src="images/icons/' . $filter['icon'] . '" alt="' . $filter['title'] . '">' . $filter['title'];
+			echo '<span class="spoticon spoticon-' . str_replace('.png', '', $filter['icon']) . '">&nbsp;</span>' . $filter['title'];
 			if ($newCount) { 
 				echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='Laat nieuwe spots in filter &quot;".$filter['title']."&quot; zien'>$newCount</span>"; 
 			} # if 
@@ -311,7 +311,7 @@
 			
 			echo '</a>';
 			
-			# Als er children zijn, output die ool
+			# Als er children zijn, output die ook
 			if (!empty($filter['children'])) {
 				echo '<ul class="filterlist subfilterlist">';
 				processFilters($tplHelper, $count_newspots, $filter['children']);

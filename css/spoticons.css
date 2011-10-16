@@ -1,0 +1,53 @@
+span.spoticon { 
+	background-image: url(../images/iconsprite.png); 
+	background-repeat: no-repeat; 
+	
+	line-height: 20px; 
+	font-size: 16px; 
+	
+	margin: 0;
+	padding: 0;
+	
+	position: relative;
+	top: 2px;
+	
+	margin-left: 6px; 
+	padding-right: 20px; 
+}
+
+.spoticon-application{ background-position: 0 0; width: 16px; height: 16px; } 
+.spoticon-bluray{ background-position: 0 -66px; width: 16px; height: 16px; } 
+.spoticon-book{ background-position: 0 -132px; width: 16px; height: 16px; } 
+.spoticon-controller{ background-position: 0 -198px; width: 16px; height: 16px; } 
+.spoticon-custom{ background-position: 0 -264px; width: 16px; height: 16px; } 
+.spoticon-divx{ background-position: 0 -330px; width: 16px; height: 16px; } 
+.spoticon-download{ background-position: 0 -396px; width: 16px; height: 16px; } 
+.spoticon-dvd{ background-position: 0 -462px; width: 16px; height: 16px; } 
+.spoticon-eye{ background-position: 0 -528px; width: 16px; height: 16px; } 
+.spoticon-fav{ background-position: 0 -594px; width: 16px; height: 16px; } 
+.spoticon-female{ background-position: 0 -660px; width: 16px; height: 16px; } 
+.spoticon-film{ background-position: 0 -726px; width: 16px; height: 16px; } 
+.spoticon-hd{ background-position: 0 -792px; width: 16px; height: 16px; } 
+.spoticon-help{ background-position: 0 -858px; width: 16px; height: 16px; } 
+.spoticon-home{ background-position: 0 -924px; width: 16px; height: 16px; } 
+.spoticon-ipod{ background-position: 0 -990px; width: 16px; height: 16px; } 
+.spoticon-linux{ background-position: 0 -1056px; width: 16px; height: 16px; } 
+.spoticon-mac{ background-position: 0 -1122px; width: 16px; height: 16px; } 
+.spoticon-mpg{ background-position: 0 -1188px; width: 16px; height: 16px; } 
+.spoticon-music{ background-position: 0 -1254px; width: 16px; height: 16px; } 
+.spoticon-nintendo_ds{ background-position: 0 -1320px; width: 16px; height: 16px; } 
+.spoticon-nintendo_wii{ background-position: 0 -1386px; width: 16px; height: 16px; } 
+.spoticon-pda{ background-position: 0 -1452px; width: 16px; height: 16px; } 
+.spoticon-phone{ background-position: 0 -1518px; width: 16px; height: 16px; } 
+.spoticon-picture{ background-position: 0 -1584px; width: 16px; height: 16px; } 
+.spoticon-playstation{ background-position: 0 -1650px; width: 16px; height: 16px; } 
+.spoticon-refresh{ background-position: 0 -1716px; width: 16px; height: 16px; } 
+.spoticon-tag{ background-position: 0 -1782px; width: 16px; height: 16px; } 
+.spoticon-today{ background-position: 0 -1848px; width: 16px; height: 16px; } 
+.spoticon-tv{ background-position: 0 -1914px; width: 16px; height: 16px; } 
+.spoticon-vista{ background-position: -66px 0; width: 16px; height: 16px; } 
+.spoticon-windows{ background-position: -66px -66px; width: 16px; height: 16px; } 
+.spoticon-wmv{ background-position: -66px -132px; width: 16px; height: 16px; } 
+.spoticon-xbox{ background-position: -66px -198px; width: 16px; height: 16px; } 
+
+
