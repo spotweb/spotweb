@@ -99,7 +99,7 @@ try {
 	if ($curMsg != 0) {
 		$curMsgTemp = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 		if ($curMsg > $curMsgTemp) {
-		$curMsg = $curMsgTemp;
+			$curMsg = $curMsgTemp;
 		} # if
 	} # if
 
@@ -145,7 +145,10 @@ try {
 
 		$curMsg = $db->getMaxArticleId('comments');
 		if ($curMsg != 0) {
-			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
+			$curMsgTemp = $retriever->searchMessageId($db->getMaxMessageId('comments'));
+			if ($curMsg > $curMsgTemp) {
+				$curMsg = $curMsgTemp;
+			} # if
 		} # if
 
 		$newCommentCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
@@ -186,7 +189,10 @@ try {
 
 		$curMsg = $db->getMaxArticleId('reports');
 		if ($curMsg != 0) {
-			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('reports'));
+			$curMsgTemp = $retriever->searchMessageId($db->getMaxMessageId('reports'));
+			if ($curMsg > $curMsgTemp) {
+				$curMsg = $curMsgTemp;
+			} # if
 		} # if
 
 		$newReportCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
