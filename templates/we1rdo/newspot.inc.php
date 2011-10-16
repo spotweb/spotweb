@@ -58,7 +58,14 @@ if (empty($postresult)) {
 			<dd><input type="text" name="newspotform[title]" maxlength="60" value="<?php echo htmlspecialchars($postspotform['title']); ?>"></dd>
 
 			<dt><label for="newspotform[body]">Omschrijving</label></dt>
-			<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="80" rows="12"><?php echo empty($postspotform['body']) ? htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']) : htmlspecialchars($postspotform['body']); ?></textarea></dd>
+			<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="80" rows="12"><?php echo empty($postspotform['body']) ? htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']) : htmlspecialchars($postspotform['body']); ?></textarea><br />
+<?php
+	$smileyList = $tplHelper->getSmileyList();
+	foreach ($smileyList as $name => $image) {
+		echo "<a onclick=\"addText(' [img=" . $name . "]', 'newspotform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
+	}
+?>
+			</dd>
 
 			<dt><label for="newspotform[tag]">Tag</label></dt>
 			<dd><input type="text" name="newspotform[tag]" maxlength="99" value="<?php echo empty($postspotform['tag']) ? htmlspecialchars($currentSession['user']['prefs']['newspotdefault_tag']) : htmlspecialchars($postspotform['tag']); ?>"></dd>
