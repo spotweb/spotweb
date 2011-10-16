@@ -9,7 +9,6 @@ if (empty($postresult)) {
 	if (isset($formmessages)) {
 		include "includes/form-messages.inc.php"; 
 	} # if
-require_once "includes/header.inc.php";
 ?>
 
 <form class="newspotform" name="newspotform" id="newspotform" action="<?php echo $tplHelper->makePostSpotAction(); ?>" method="post"  enctype="multipart/form-data">
@@ -77,5 +76,11 @@ require_once "includes/header.inc.php";
 		</dl>
 	</fieldset>
 </form>
+
+<script type='text/javascript'>
+	loadNewSpotTree();
+	newspotChangeCategory();
+</script>
+
 <?php
 	}
