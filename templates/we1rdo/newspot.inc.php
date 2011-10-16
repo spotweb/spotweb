@@ -27,15 +27,28 @@ require_once "includes/header.inc.php";
 <?php } ?>
 				</select>
 			</dd>
-			
-			<dt><label for="newspotform[subcatz]">Type</label></dt>
-			<dd>
-				<select name="newspotform[subcatz]" id="newspotcategorytypeselectlist" onchange="newspotChangeCategory()">
+
+	<div id='subcatzselector-cat0'>
+		<dt><label for="newspotform[subcatz0]">Type</label></dt>
+		<dd>
+			<select name="newspotform[subcatz0]" class="newspotcategorytypeselectlist" id="newspotcategory0typeselectlist" onchange="newspotChangeCategory()">
 <?php foreach(SpotCategories::$_categories[0]['z'] as $catnr => $catvalue) { ?>
-					<option value="<?php echo $catnr; ?>" <?php if ($postspotform['subcatz'] == $catnr) { echo 'selected="selected"'; } ?>><?php echo $catvalue; ?></option>
+				<option value="<?php echo $catnr; ?>" <?php if ($postspotform['subcatz'] == $catnr) { echo 'selected="selected"'; } ?>><?php echo $catvalue; ?></option>
 <?php } ?>
-				</select>
-			</dd>
+			</select>
+		</dd>
+	</div>
+
+	<div id='subcatzselector-cat1'>
+		<dt><label for="newspotform[subcatz1]">Type</label></dt>
+		<dd>
+			<select name="newspotform[subcatz1]" class="newspotcategorytypeselectlist" id="newspotcategory1typeselectlist" onchange="newspotChangeCategory()">
+<?php foreach(SpotCategories::$_categories[1]['z'] as $catnr => $catvalue) { ?>
+				<option value="<?php echo $catnr; ?>" <?php if ($postspotform['subcatz'] == $catnr) { echo 'selected="selected"'; } ?>><?php echo $catvalue; ?></option>
+<?php } ?>
+			</select>
+		</dd>
+	</div>
 
 			<dt>Genre</dt>
 			<dd>
@@ -64,6 +77,5 @@ require_once "includes/header.inc.php";
 		</dl>
 	</fieldset>
 </form>
-
 <?php
 	}
