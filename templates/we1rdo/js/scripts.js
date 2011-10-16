@@ -28,6 +28,8 @@ $(function(){
 			return true;
 		}
     });	
+	
+	newspotChangeCategory();
 });
 
 // createBaseURL
@@ -1441,23 +1443,29 @@ function bindSelectedSortableFilter() {
 
 function newspotChangeCategory() {
 	var elm = $("#newspotcategoryselectlist");
-	if (!elm) return ;
+	if ((!elm) || (!elm[0])) return ;
 	
 	if (elm[0].value >= 2) {
-		$("#newspotcategorytypeselectlist").attr('disabled', 'disabled').hide();
-		$("label[for='newspotform[subcatz]']").hide();
+		$(".newspotcategorytypeselectlist").attr('disabled', 'disabled').hide();
+		$("div#subcatzselector-cat0").hide();
+		$("div#subcatzselector-cat1").hide();
+		subcatz = '*';
 	} else {
-		$("#newspotcategorytypeselectlist").removeAttr('disabled').show();
-		$("label[for='newspotform[subcatz]']").show();
+		$(".newspotcategorytypeselectlist").removeAttr('disabled').show();
+		if (elm[0].value == 0) {
+			var subcatz = $("#newspotcategory0typeselectlist")[0].value;
+			$("div#subcatzselector-cat0").show();
+			$("div#subcatzselector-cat1").hide();
+		} else {
+			var subcatz = $("#newspotcategory1typeselectlist")[0].value;
+			$("div#subcatzselector-cat0").hide();
+			$("div#subcatzselector-cat1").show();
+		} // else			
 	} // else
 	
-	/* Get the selected z-type variant */
-	var subcatz = $("#newspotcategorytypeselectlist")[0].value;
-	if (!$("#newspotcategorytypeselectlist").is(":visible")) {
-		subcatz = '*';
-	} // if
-
 	/* Change the json url, and reload the tree */
-	$("div#newspotcatselecttree").dynatree('option', 'initAjax', { url: ('?page=catsjson&category=' + elm[0].value + '&subcatz=' + subcatz + '&disallowstrongnot=1') });
-	$("div#newspotcatselecttree").dynatree('getTree').reload();
+	if ($("div#newspotcatselecttree").dynatree('getTree').reload) {
+		$("div#newspotcatselecttree").dynatree('option', 'initAjax', { url: ('?page=catsjson&category=' + elm[0].value + '&subcatz=' + subcatz + '&disallowstrongnot=1') });
+		$("div#newspotcatselecttree").dynatree('getTree').reload();
+	} 
 } // newspotChangeCategory

@@ -51,7 +51,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 			unset($this->_spotForm['submit']);
 		} # if
 
-		# If user tried to submit, validte the file uploads
+		# If user tried to submit, validate the file uploads
 		if (isset($this->_spotForm['submit'])) {
 			# Make sure an NZB file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
@@ -74,7 +74,11 @@ class SpotPage_postspot extends SpotPage_Abs {
 		if (isset($this->_spotForm['submit'])) {
 			# submit unsetten we altijd
 			unset($this->_spotForm['submit']);
-
+			
+			# De subcatz wordt per hoofdcategory doorgegeven, merge die naar 1
+			# subcatz
+			$spot['subcatz'] = isset($this->_spotForm['subcatz' . $this->_spotForm['category']]) : $this->_spotForm['subcatz' . $this->_spotForm['category']] ? '';
+			
 			# zorg er voor dat alle variables ingevuld zijn
 			$spot = array_merge($spot, $this->_spotForm);
 
