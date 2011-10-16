@@ -77,7 +77,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 			
 			# De subcatz wordt per hoofdcategory doorgegeven, merge die naar 1
 			# subcatz
-			$spot['subcatz'] = isset($this->_spotForm['subcatz' . $this->_spotForm['category']]) : $this->_spotForm['subcatz' . $this->_spotForm['category']] ? '';
+			$spot['subcatz'] = isset($this->_spotForm['subcatz' . $this->_spotForm['category']]) ? $this->_spotForm['subcatz' . $this->_spotForm['category']] : '';
 			
 			# zorg er voor dat alle variables ingevuld zijn
 			$spot = array_merge($spot, $this->_spotForm);
