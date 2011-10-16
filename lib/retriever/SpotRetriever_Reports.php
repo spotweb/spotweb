@@ -108,7 +108,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 
 			# update the last retrieved article			
 			$this->_db->addReportRefs($reportDbList);
-			$this->_db->setMaxArticleid('reports', $curMsg);
+			$this->_db->setMaxArticleid('reports', $endMsg);
 			
 			# herbereken het aantal reports in spotnet
 			$this->_db->updateSpotReportCount($spotMsgIdList);

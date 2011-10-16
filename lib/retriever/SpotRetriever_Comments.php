@@ -120,7 +120,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			 * Add the comments to the database and update the last article
 			 * number found
 			 */
-			$this->_db->setMaxArticleid('comments', $curMsg);
+			$this->_db->setMaxArticleid('comments', $endMsg);
 			$this->_db->addCommentRefs($commentDbList);
 			
 			# herbereken de gemiddelde spotrating, en update het 

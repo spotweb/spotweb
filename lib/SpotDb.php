@@ -509,12 +509,22 @@ class SpotDb {
 	 * Update of insert the maximum article id in de database.
 	 */
 	function setMaxArticleId($server, $maxarticleid) {
-		# Replace INTO reset de kolommen die we niet updaten naar 0 en dat is stom
-		$res = $this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
-
-		if ($this->_conn->rows() == 0) {	
-			$this->_conn->exec("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
-		} # if
+		switch ($this->_dbsettings['engine']) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->modify("INSERT INTO nntp(server, maxarticleid) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE maxarticleid = '%s'",
+										Array($server, (int) $maxarticleid, (int) $maxarticleid));
+					 break;
+			} # mysql
+			
+			default				: {
+					$this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
+					} # if
+					break;
+			} # default
+		} # switch
 	} # setMaxArticleId()
 
 	/*
