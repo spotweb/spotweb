@@ -11,7 +11,7 @@
 					<?php } ?>
 				</div>
 
-				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" class="user" title='Open "Gebruikers Paneel"'>
+				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title='Open "Gebruikers Paneel"'>
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					Inloggen
@@ -20,6 +20,10 @@
 					<?php echo $currentSession['user']['firstname']; ?>
 <?php } ?>
 				</a></p></div>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', 'Spot toevoegen', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='Spot toevoegen'>Spot toevoegen</a></p></div>
+<?php } ?>
 
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
@@ -342,9 +346,6 @@
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>
 						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread">Markeer alles als gelezen</a></li>
-<?php } ?>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
-					<li><a onclick="return openDialog('editdialogdiv', 'Voeg een spot toe', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" class="greyButton newspot">Voeg een spot toe</a></li>
 <?php } ?>
 					</ul>
 				</div>
