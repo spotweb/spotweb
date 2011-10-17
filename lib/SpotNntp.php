@@ -330,7 +330,7 @@ class SpotNntp {
 				/* 
 				 * Split the body in parts of 900 characters
 				 */
-				$message['body'] = chunk_split($this->_spotParser->specialZipstr($chunk, 900));
+				$message['body'] = chunk_split($this->_spotParser->specialZipstr($chunk), 900);
 
 				/*
 				 * Create an unique messageid and store it so we can return it

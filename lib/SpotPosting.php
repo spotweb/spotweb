@@ -274,7 +274,7 @@ class SpotPosting {
 										   $spot);
 			$this->_db->addPostedSpot($user['userid'], $dbSpot, $spotXml);
 		} # if
-		
+
 		return $errorList;
 	} # postSpot
 	
