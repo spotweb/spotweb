@@ -644,7 +644,7 @@ class SpotTemplateHelper {
 		// title escapen
 		$spot['title'] = htmlentities($spot['title'], ENT_QUOTES, 'UTF-8');
 		$spot['title'] = html_entity_decode($spot['title'], ENT_COMPAT, 'UTF-8');
-		$spot['title'] = htmlspecialchars(strip_tags($this->remove_extensive_dots($spot['title'])), ENT_QUOTES, 'UTF-8');
+		$spot['title'] = strip_tags($this->remove_extensive_dots($spot['title']));
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		
 		// we zetten de short description van de category bij
@@ -657,6 +657,9 @@ class SpotTemplateHelper {
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+
+		// is deze spot al eens bekeken?
+		$spot['hasbeenseen'] = ($spot['seenstamp'] != NULL);
 		
 		// zit deze spot in de watchlist?
 		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
