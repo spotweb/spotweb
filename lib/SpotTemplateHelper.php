@@ -657,6 +657,9 @@ class SpotTemplateHelper {
 		
 		// is deze spot al eens gedownload?
 		$spot['hasbeendownloaded'] = ($spot['downloadstamp'] != NULL);
+
+		// is deze spot al eens bekeken?
+		$spot['hasbeenseen'] = ($spot['seenstamp'] != NULL);
 		
 		// zit deze spot in de watchlist?
 		$spot['isbeingwatched'] = ($spot['watchstamp'] != NULL);
