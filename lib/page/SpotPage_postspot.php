@@ -72,6 +72,9 @@ class SpotPage_postspot extends SpotPage_Abs {
 		
 		
 		if (isset($this->_spotForm['submit'])) {
+			# Notificatiesysteem initialiseren
+			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+
 			# submit unsetten we altijd
 			unset($this->_spotForm['submit']);
 			
@@ -103,6 +106,9 @@ class SpotPage_postspot extends SpotPage_Abs {
 									'user' => $this->_currentSession['user']['username'],
 									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
 									'body' => $spot['body']);
+
+				# en verstuur een notificatie
+				$spotsNotifications->sendSpotPosted($spot);
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else

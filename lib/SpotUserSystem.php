@@ -386,6 +386,7 @@ class SpotUserSystem {
 			$prefs['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
+			$prefs['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
 

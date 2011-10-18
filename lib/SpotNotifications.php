@@ -14,6 +14,7 @@ class SpotNotifications {
 	const notifytype_nzb_handled			= 'nzb_handled';
 	const notifytype_watchlist_handled		= 'watchlist_handled';
 	const notifytype_retriever_finished		= 'retriever_finished';
+	const notifytype_spot_posted			= 'spot_posted';
 	const notifytype_user_added				= 'user_added';
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
@@ -68,6 +69,11 @@ class SpotNotifications {
 			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, $notification);
 		} # if
 	} # sendRetrieverFinished
+
+	function sendSpotPosted($spot) {
+		$notification = $this->_notificationTemplate->template('spot_posted', array('spot' => $spot));
+		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_spot_posted, 'Single', $notification);
+	} # sendSpotPosted
 
 	function sendUserAdded($username, $password) {
 		$notification = $this->_notificationTemplate->template('user_added', array('username' => $username, 'password' => $password));
