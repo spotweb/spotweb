@@ -194,6 +194,12 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
 							# keren per xover mee komt ...
 							$dbIdList['fullspot'][$msgId] = 1;
+							
+							# Overschrijf de titel in de spots array omdat de XML de UTF-8 titel
+							# bevat
+							if ($header_isInDb) {
+								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
+							} # if
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
