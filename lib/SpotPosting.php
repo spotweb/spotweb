@@ -239,18 +239,6 @@ class SpotPosting {
 
 		# en post daadwerkelijk de spot
 		if (empty($errorList)) {
-			/* 
-			 * We save the original spot because we mangle it a little
-			 * bit before posting / converting it, but we want the
-			 * original to be in the database. 
-			 */
-			$dbSpot = $spot;
-			
-			# If a tag is given, add it to the subject
-			if (strlen(trim($spot['tag'])) > 0) {
-				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
-			} # if
-			
 			/*
 			 * Retrieve the image information and post the image to 
 			 * the appropriate newsgroup so we have the messageid list of 
@@ -272,7 +260,7 @@ class SpotPosting {
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $hdr_newsgroup,
 										   $spot);
-			$this->_db->addPostedSpot($user['userid'], $dbSpot, $spotXml);
+			$this->_db->addPostedSpot($user['userid'], $spot, $spotXml);
 		} # if
 
 		return $errorList;
