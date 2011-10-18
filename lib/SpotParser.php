@@ -25,7 +25,11 @@ class SpotParser {
 		$tpl_spot['filesize'] = (string) $xml->Size;
 		$tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
 		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
-		$tpl_spot['title'] = (string) utf8_encode($xml->Title);
+		$tpl_spot['title'] = (string) $xml->Title;
+
+// header("Content-Type: text/html; charset=utf-8");
+// echo $tpl_spot['title'];
+// die();
 
 		# FTD spots bevatten de filename
 		if (!empty($xml->Filename)) {

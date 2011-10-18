@@ -395,6 +395,11 @@ class SpotNntp {
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
 			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
 
+			# If a tag is given, add it to the subject
+			if (strlen(trim($spot['tag'])) > 0) {
+				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
+			} # if
+			
 			# sign the header by using the users' key
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 
