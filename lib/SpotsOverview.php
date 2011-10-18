@@ -29,8 +29,18 @@ class SpotsOverview {
 			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		} # if
 
+		/**
+		 * Overschrijf nu onze 'spot info' uit de database met sommige info welke we uit de 
+		 * de XML parseren, we doen dit omdat de XML o.a. betere encoding bevat, zie de titel van spot 
+		 * bdZZdJ3gPxTAmSE%40spot.net bijvoorbeeld.
+		 *
+		 * Alles uit de SpotsFull aannemen is niet interessant omdat niet elke XML versie alle
+		 * informatie bevat
+		 */
 		$spotParser = new SpotParser();
-		$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
+		$fullSpot = array_merge($parsedXml, $fullSpot);
+		$fullSpot['title'] = $parsedXml['title'];
 		
 		/*
 		 * Als je een fullspot ophaalt, maar er is nog gen 'spot' entry, dan blijf je een
