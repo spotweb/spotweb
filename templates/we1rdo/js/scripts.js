@@ -152,12 +152,6 @@ function openDialog(divid, title, url, formname, buttonClick, autoClose, closeCb
 	/* submit button handler */
 	if (!buttonClick) {
 		var buttonClick = function() {
-			// If we need to call a pre-POST callback, run it here
-			// so if any form modification is done we also post it
-			if (prepostCb) {
-				prepostCb();
-			} // if
-			
 			// In deze context is 'this' de submit button waarop gedrukt is,
 			// dus die data voegen we gewoon aan de post data toe.
 			var formdata = $(this).attr("name") + "=" + $(this).val();  
