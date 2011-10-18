@@ -168,6 +168,7 @@ class SpotUserUpgrader {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'watchlist_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'nzb_handled', false);
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'retriever_finished', false);
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'spot_posted', false);		
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
 			} // foreach
 
@@ -347,6 +348,11 @@ class SpotUserUpgrader {
 		# Notify My Android toegevoegd
 		if ($this->_settings->get('securityversion') < 0.17) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'nma')");
+		} # if
+
+		# Notificatie bij Spot Posten
+		if ($this->_settings->get('securityversion') < 0.18) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'spot_posted')");
 		} # if
 	} # updateSecurityGroups
 

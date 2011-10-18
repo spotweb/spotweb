@@ -373,7 +373,7 @@ include "includes/form-messages.inc.php";
 	function showNotificationOptions($provider, $edituserprefsform, $tplHelper) {
 		echo "<fieldset>" . PHP_EOL;
 
-		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'watchlist_handled')) {
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'watchlist_handled') && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
 			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][watchlist_handled]\">Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de watchlist?</label></dt>" . PHP_EOL;
 			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][watchlist_handled]\"";
 			if ($edituserprefsform['notifications'][$provider]['events']['watchlist_handled']) {
@@ -395,6 +395,15 @@ include "includes/form-messages.inc.php";
 			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][retriever_finished]\">Bericht versturen wanneer Spots Updaten klaar is?</label></dt>" . PHP_EOL;
 			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][retriever_finished]\"";
 			if ($edituserprefsform['notifications'][$provider]['events']['retriever_finished']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'spot_posted') && $tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][spot_posted]\">Bericht versturen wanneer Spot Posten gelukt is?</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][spot_posted]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['spot_posted']) {
 				echo "checked=\"checked\"";
 			} # if
 			echo "></dd>" . PHP_EOL . PHP_EOL;
