@@ -400,6 +400,15 @@ include "includes/form-messages.inc.php";
 			echo "></dd>" . PHP_EOL . PHP_EOL;
 		} # if
 
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'report_posted') && $tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][report_posted]\">Bericht versturen wanneer Spam Report verzonden is?</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][report_posted]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['report_posted']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
 		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'spot_posted') && $tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
 			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][spot_posted]\">Bericht versturen wanneer Spot Posten gelukt is?</label></dt>" . PHP_EOL;
 			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][spot_posted]\"";
