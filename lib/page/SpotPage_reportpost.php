@@ -48,6 +48,9 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		} # if
 		
 		if (isset($this->_reportForm['submit'])) {
+			# Notificatiesysteem initialiseren
+			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+
 			# submit unsetten we altijd
 			unset($this->_reportForm['submit']);
 			
@@ -68,6 +71,9 @@ class SpotPage_reportpost extends SpotPage_Abs {
 			
 			if (empty($formMessages['errors'])) {
 				$postResult = array('result' => 'success');
+
+				# en verstuur een notificatie
+				$spotsNotifications->sendReportPosted($report['inreplyto']);
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else
