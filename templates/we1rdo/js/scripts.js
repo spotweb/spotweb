@@ -997,6 +997,7 @@ function sabActions(start,limit,action,slot) {
 // Text toevoegen aan id (Smiley's)
 function addText(text,element_id) {
 	document.getElementById(element_id).value += text;
+	document.getElementById(element_id).focus();
 }
 
 function drawGraph(currentSpeed,interval) {
