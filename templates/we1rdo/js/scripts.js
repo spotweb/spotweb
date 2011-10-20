@@ -726,13 +726,13 @@ $(function(){
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
 	if(data != null) {
 		$.each(data, function(i, value) {
-			$("ul.filters").children().eq(value.count).children("ul").css("display", value.state);
+			$("ul.subfilterlist").parent().eq(value.count).children("ul").css("display", value.state);
 			if(value.state == "block") {
-				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
-				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
 			} else {
-				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").css("background-position", "-90px -98px");
-				$("ul.filters").children().eq(value.count).children("a").children("span.toggle").attr("title", "Filter uitklappen");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").css("background-position", "-90px -98px");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "Filter uitklappen");
 
 			}
 		});
@@ -754,7 +754,7 @@ function toggleFilter(id) {
 	}
 
 	var data = new Array();
-	$("ul.filters > li > ul").each(function(index) {
+	$("ul.subfilterlist").each(function(index) {
 		var state = $(this).css("display");
 		data.push({"count": index, "state": state});
 	});
