@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class SpotNotifications {
 	private $_notificationTemplate = array();
 	private $_notificationServices = array();
@@ -60,6 +60,7 @@ class SpotNotifications {
 			case 'nzbget'			: $notification = $this->_notificationTemplate->template('nzb_nzbget', array('spot' => $spot)); break;
 			default					: return;
 		} # switch
+		
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $notification);
 	} # sendNzbHandled
 
@@ -196,3 +197,4 @@ class SpotNotifications {
 	} # sendMessages
 
 } # SpotsNotifications
+
