@@ -196,8 +196,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$dbIdList['fullspot'][$msgId] = 1;
 							
 							# Overschrijf de titel in de spots array omdat de XML de UTF-8 titel
-							# bevat
-							if ($header_isInDb) {
+							# bevat. We checken of de msgid echt wel opgehaald is, omdat je theoretisch
+							# kan hebben dat de header niet opgehaald is, maar de spotfull wordt dan wel
+							# opgehaald.
+							if (($header_isInDb) && (isset($dbIdList['spot'][$msgId]))) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
 							} # if
 						} 
