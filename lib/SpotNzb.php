@@ -49,7 +49,7 @@ class SpotNzb {
 				} # foreach
 			} # if
 		} # if
-		
+
 		# en verstuur een notificatie
 		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $userSession);
 		$spotsNotifications->sendNzbHandled($action, $fullSpot);
