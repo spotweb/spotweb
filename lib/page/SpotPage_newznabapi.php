@@ -211,7 +211,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			foreach($spots['list'] as $spot) {
 				$spot = $this->_tplHelper->formatSpotHeader($spot);
-				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
 				$nzbUrl = $this->_tplHelper->makeBaseUrl("full") . 'api?t=g&amp;id=' . $spot['messageid'] . $this->_tplHelper->makeApiRequestString();
 				if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
 					$nzbUrl .= '&amp;del=1';
@@ -221,7 +220,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', $title));
+				$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
@@ -359,7 +358,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
 			$channel->appendChild($image);
 
-			$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
 			$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
 
 			$guid = $doc->createElement('guid', $spot['messageid']);
@@ -370,7 +368,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$description->appendChild($descriptionCdata);
 
 			$item = $doc->createElement('item');
-			$item->appendChild($doc->createElement('title', $title));
+			$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
 			$item->appendChild($guid);
 			$item->appendChild($doc->createElement('link', $nzbUrl));
 			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
