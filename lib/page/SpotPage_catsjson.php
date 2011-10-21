@@ -5,9 +5,6 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		
-		# stuur een expires header zodat dit niet gecached is, hierin staat 
-		# state van de boom
-		$this->sendExpireHeaders(true);
 		$this->sendContentTypeHeader();
 
 		$this->_params = $params;
@@ -29,6 +26,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * logic whatsoever
 	 */
 	function renderSelectBox() {
+		# stuur een 'always cache' header zodat dit gecached kan worden
+		$this->sendExpireHeaders(false);
+		
 		$category = $this->_params['category'];
 		$genre = $this->_params['subcatz'];
 		
@@ -38,11 +38,14 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		} # if
 
 		$returnArray = array();
+		$scType = 'z';
 		
 		switch($this->_params['rendertype']) {
 			case 'subcatz'	: {
+					$scType = $this->_params['rendertype'][6];
+					
 					foreach(SpotCategories::$_categories[$category]['z'] as $key => $value) {
-						$returnArray['cat' . $category . '_z' . $key] = $value;
+						$returnArray[$key] = $value;
 					} # foreach
 			} # case subcatz
 
@@ -60,7 +63,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 			} # case subcatz
 		} # switch
 		
-		echo json_encode($returnArray);
+		echo json_encode(
+					array('title' => SpotCategories::$_subcat_descriptions[$category][$scType],
+					      'items' => $returnArray));
 	} # renderSelectBox
 	
 	/*
@@ -68,6 +73,10 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * te kunnen weergeven
 	 */
 	function categoriesToJson() {
+		# stuur een expires header zodat dit niet gecached is, hierin staat 
+		# state van de boom
+		$this->sendExpireHeaders(true);
+
 		/* First parse the search string so we know which items to select and which not */
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
