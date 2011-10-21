@@ -24,7 +24,7 @@
 							<th class='watch'> </th>
 							<?php }
 							if ($show_comments) {
-								echo "<th class='comments'> <a title='Aantal reacties'>#</a> </th>";
+								echo "<th class='comments'> <a title='Aantal reacties' href='" . $tplHelper->makeToggleSortUrl('index', 'commentcount', 'DESC') . "'>#</a> </th>";
 							} # if ?>
 							<th class='genre'> Genre </th> 
 							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="Sorteren op Afzender [0-Z]"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="Sorteren op Afzender [Z-0]"> </a></span> Afzender </th> 
