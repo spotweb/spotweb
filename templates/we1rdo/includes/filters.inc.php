@@ -296,7 +296,7 @@
 			
 			# Output de HTML
 			echo '<li class="'. $tplHelper->filter2cat($filter['tree']) .'">';
-			echo '	<a class="filter ' . $filter['title'];
+			echo '<a class="filter ' . $filter['title'];
 			
 			if ($selfUrl == $strFilter) { 
 				echo ' selected';
