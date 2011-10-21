@@ -1515,13 +1515,13 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
 function categorySelectChanged() {
 	var itm = $("#spotcategoryselectbox")[0];
 
-	loadCategoryIntoSelectbox('spottypeselectbox', 'txtspottype', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false);
-	var subcatzValue = $("#spottypeselectbox")[0].value;
+	loadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false);
+	var subcatzValue = $("#subcatzselectbox")[0].value;
 	
-	loadCategoryIntoSelectbox('catformatselectbox', 'txtspotformat', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true);
-	loadCategoryIntoSelectbox('catsourceselectbox', 'txtspotsource', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true);
-	loadCategoryIntoSelectbox('catlanguageselectbox', 'txtspotlanguage', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true);
-	loadCategoryIntoSelectbox('catgenreselectbox', 'txtspotgenre', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true);
+	loadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true);
+	loadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true);
+	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true);
+	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true);
 } // categorySelectChanged
  
  
