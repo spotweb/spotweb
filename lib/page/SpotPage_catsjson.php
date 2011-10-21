@@ -17,8 +17,51 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * render a page 
 	 */
 	function render() {
-		$this->categoriesToJson();
+		if ($this->_params['rendertype'] == 'tree') {
+			$this->categoriesToJson();
+		} else {
+			$this->renderSelectBox();
+		} # else
 	} # render
+	
+	/*
+	 * Render the JSON specifically for one selectbox, no
+	 * logic whatsoever
+	 */
+	function renderSelectBox() {
+		$category = $this->_params['category'];
+		$genre = $this->_params['subcatz'];
+		
+		/* Validate the selected category */
+		if (!isset(SpotCategories::$_head_categories[$category])) {
+			return '';
+		} # if
+
+		$returnArray = array();
+		
+		switch($this->_params['rendertype']) {
+			case 'subcatz'	: {
+					foreach(SpotCategories::$_categories[$category]['z'] as $key => $value) {
+						$returnArray['cat' . $category . '_z' . $key] = $value;
+					} # foreach
+			} # case subcatz
+
+			case 'subcata'  :
+			case 'subcatb'  :
+			case 'subcatc'  :
+			case 'subcatd'	: {
+					$scType = $this->_params['rendertype'][6];
+					
+					foreach(SpotCategories::$_categories[$category][$scType] as $key => $value) {
+						if (in_array('z'. $genre, $value[1])) {
+							$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
+						} # if
+					} # foreach
+			} # case subcatz
+		} # switch
+		
+		echo json_encode($returnArray);
+	} # renderSelectBox
 	
 	/*
 	 * Geeft JSON terug interpreteerbaar voor DynaTree om de categorylist als boom
