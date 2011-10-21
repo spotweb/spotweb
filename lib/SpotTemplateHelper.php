@@ -368,6 +368,27 @@ class SpotTemplateHelper {
 	function makeSortUrl($page, $sortby, $sortdir) {
 		return $this->makeBaseUrl("path") . '?page=' . $page . $this->convertFilterToQueryParams() . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
 	} # makeSortUrl
+
+	/*
+	 * Creert een sorteer url die andersom sorteert 
+	 * dan de huidige sortering
+	 */
+	function makeToggleSortUrl($page, $sortby, $sortdir) {
+		$curSort = $this->getActiveSorting();
+
+		/**
+		 * If we are currently sorting on the same field, make
+		 * sure we are reversing direction from the current sort
+		 */
+		if ($curSort['friendlyname'] == $sortby) {
+				if ($curSort['direction'] == 'ASC') {
+				$sortdir = 'DESC';
+			} else {
+				$sortdir = 'ASC';
+			} # else
+		} # if
+		return $this->makeBaseUrl("path") . '?page=' . $page . $this->convertFilterToQueryParams() . '&amp;sortby=' . $sortby . '&amp;sortdir=' . $sortdir;
+	} # makeToggleSortUrl
 	
 	/*
 	 * Creert een category url
