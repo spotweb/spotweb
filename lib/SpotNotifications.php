@@ -14,6 +14,7 @@ class SpotNotifications {
 	const notifytype_nzb_handled			= 'nzb_handled';
 	const notifytype_watchlist_handled		= 'watchlist_handled';
 	const notifytype_retriever_finished		= 'retriever_finished';
+	const notifytype_report_posted			= 'report_posted';
 	const notifytype_spot_posted			= 'spot_posted';
 	const notifytype_user_added				= 'user_added';
 
@@ -70,6 +71,14 @@ class SpotNotifications {
 			$this->newMultiMessage(SpotNotifications::notifytype_retriever_finished, $notification);
 		} # if
 	} # sendRetrieverFinished
+
+	function sendReportPosted($messageid) {
+		# haal de spot op
+		$spot = $this->_db->getSpotHeader($messageid);
+
+		$notification = $this->_notificationTemplate->template('report_posted', array('spot' => $spot));
+		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_report_posted, 'Single', $notification);
+	} # sendReportPosted
 
 	function sendSpotPosted($spot) {
 		$notification = $this->_notificationTemplate->template('spot_posted', array('spot' => $spot));
