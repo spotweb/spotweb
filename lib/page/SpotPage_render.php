@@ -10,7 +10,7 @@ class SpotPage_render extends SpotPage_Abs {
 	} # ctor
 
 	function sanitizeTplName($tpl) {
-		$validChars = 'abcdefghijklmnopqrstuvwxyz';
+		$validChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
 		
 		$newName = '';
 		for($i = 0; $i < strlen($tpl); $i++) {
