@@ -141,6 +141,7 @@ try {
 									Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 									      'subcatz' => $req->getDef('subcatz', '*'),
 										  'category' => $req->getDef('category', '*'),
+										  'rendertype' => $req->getDef('rendertype', 'tree'),
 										  'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
 				$page->render();
 				break;
