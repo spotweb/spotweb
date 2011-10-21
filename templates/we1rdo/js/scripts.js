@@ -1464,3 +1464,64 @@ function newspotChangeCategory() {
 		$("div#newspotcatselecttree").dynatree('getTree').reload();
 	} 
 } // newspotChangeCategory
+
+
+/*
+ * Function to load the ?page=catsjson data into an
+ * selectbox given by the system
+ */
+function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
+	var $selectbox = $("#" + selectId);
+	var $titleElm = $("#" + titleElm);
+	if ($selectbox.data('fromurl') == $.toJSON(data)) {
+		return ;
+	} // if
+	
+    $.ajax({
+        type: "GET",
+        url: "?page=catsjson",
+        data: data,
+		async: async,
+        dataType: "json",
+        success: function(msg) {
+			$selectbox.data('fromurl', $.toJSON(data));
+			$titleElm.text(msg.title);
+			
+            $selectbox[0].options.length = 0;
+            $.each(msg.items, function(index, item) {
+				var optionElm = new Option(item, index);
+				if (!$selectbox[0].multiple) {
+					optionElm.selected = ($selectbox[0].options.length == 0);
+				} // if
+				
+				$selectbox[0].add(optionElm);
+            });
+            $selectbox[0].selected = 0;
+			
+			if ($selectbox[0].options.length == 0) {
+				$titleElm.hide();
+				$selectbox.hide();
+			} else {
+				$titleElm.show();
+				$selectbox.show();
+			} // else
+        },
+        error: function() {
+            alert("Failed to load data");
+        }
+    });
+}  // loadCategoryIntoSelectbox
+
+function categorySelectChanged() {
+	var itm = $("#spotcategoryselectbox")[0];
+
+	loadCategoryIntoSelectbox('spottypeselectbox', 'txtspottype', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false);
+	var subcatzValue = $("#spottypeselectbox")[0].value;
+	
+	loadCategoryIntoSelectbox('catformatselectbox', 'txtspotformat', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true);
+	loadCategoryIntoSelectbox('catsourceselectbox', 'txtspotsource', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true);
+	loadCategoryIntoSelectbox('catlanguageselectbox', 'txtspotlanguage', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true);
+	loadCategoryIntoSelectbox('catgenreselectbox', 'txtspotgenre', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true);
+} // categorySelectChanged
+ 
+ 
