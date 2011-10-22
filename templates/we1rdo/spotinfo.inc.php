@@ -8,7 +8,7 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
-	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['userid'])));
+	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['userid'])) && (!empty($spot['userid'])));
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
