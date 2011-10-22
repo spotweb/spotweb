@@ -220,7 +220,7 @@ try {
 
 		case 'editsecgroup' : {
 				$page = new SpotPage_editsecgroup($db, $settings, $currentSession,
-							Array('editsecgroupform' => $req->getForm('editsecgroupform', array('submitaddperm', 'submitremoveperm', 'submitchangename', 'submitaddgroup', 'submitremovegroup')),
+							Array('editsecgroupform' => $req->getForm('editsecgroupform', array('submitaddperm', 'submitremoveperm', 'submitchangename', 'submitaddgroup', 'submitremovegroup', 'submitsetallow', 'submitsetdeny')),
 							      'groupid' => $req->getDef('groupid', 0)));
 				$page->render();
 				break;

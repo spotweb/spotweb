@@ -52,6 +52,12 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		} elseif (isset($this->_editSecGroupForm['submitremovegroup'])) {
 			$formAction = 'removegroup';
 			unset($this->_editSecGroupForm['submitremovegroup']);
+		} elseif (isset($this->_editSecGroupForm['submitsetallow'])) {
+			$formAction = 'setallow';
+			unset($this->_editSecGroupForm['submitsetallow']);
+		} elseif (isset($this->_editSecGroupForm['submitsetdeny'])) {
+			$formAction = 'setdeny';
+			unset($this->_editSecGroupForm['submitsetdeny']);
 		} # if
 
 		# Als er een van de ingebouwde groepen geprobeerd bewerkt te worden, 
@@ -91,11 +97,22 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 					break;
 				} # case 'removeparm' 
 				
+				case 'setallow' 	:
+				case 'setdeny'		:  {
+					$this->_editSecGroupForm['deny'] = (bool) ($formAction == 'setdeny');
+				
+					$spotUserSystem->setDenyForPermFromSecGroup($this->_groupId,
+																$this->_editSecGroupForm);
+					$editResult = array('result' => 'success');
+
+					break;
+				} # case 'setallow' / 'setdeny'
+				
 				case 'addgroup' : 
 				case 'changename'	: {
 					# update het security group record
 					$secGroup['name'] = $this->_editSecGroupForm['name'];
-
+				
 					# controleer en repareer alle preferences 
 					list ($formMessages['errors'], $secGroup) = $spotUserSystem->validateSecGroup($secGroup);
 

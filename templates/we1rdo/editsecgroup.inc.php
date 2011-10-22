@@ -18,12 +18,14 @@ if (empty($editresult)) {
 				<th>Object</th>
 				<?php if ($securitygroup['id'] > 3) { ?>
 					<th>Wis</th>
+					<th>Deny/Allow</th>
 				<?php } ?>
 				<th>|</th>
 				<th>Permissie</th> 
 				<th>Object</th>
 				<?php if ($securitygroup['id'] > 3) { ?>
 					<th>Wis</th>
+					<th>Deny/Allow</th>
 				<?php } ?>
 			</tr>
 		</thead>
@@ -45,6 +47,20 @@ if (empty($editresult)) {
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
 						<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
 						<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="Wis">
+					</form>
+				</td>
+				<td> 
+					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
+						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
+						<input type="hidden" name="editsecgroupform[objectid]" value="<?php echo $perm['objectid']; ?>">
+						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
+						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
+						<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
+						<?php if ($perm['deny']) { ?>
+							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetallow]" value="Set to allow">
+						<?php } else { ?>
+							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetdeny]" value="Set to deny">
+						<?php } ?>
 					</form>
 				</td>
 				<?php } ?>
