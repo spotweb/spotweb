@@ -27,7 +27,9 @@ include "includes/form-messages.inc.php";
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 			<li><a href="?page=render&tplname=listfilters" title="Filters"><span>Filters</span></a></li>
+<!--
 			<li><a href="?page=render&tplname=cat2dlmapping" title="Download Categorieen"><span>Download Categorieen</span></a></li>
+-->
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span>Notificaties</span></a></li>
