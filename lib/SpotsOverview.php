@@ -387,9 +387,9 @@ class SpotsOverview {
 				#
 				foreach($cat as $type => $typeValues) {
 					$catid = (int) $catid;
-					$tmpStr = "((category = " . (int) $catid . ")";
+					$tmpStr = "((s.category = " . (int) $catid . ")";
 					if ($type[1] !== 'z') {
-						$tmpStr .= " AND (subcatz = '" . $type . "|')";
+						$tmpStr .= " AND (s.subcatz = '" . $type . "|')";
 					} # if
 
 					$subcatItems = array();
@@ -402,9 +402,9 @@ class SpotsOverview {
 							# equality ipv like doen
 							#
 							if ($subcat == 'a')  {
-								$subcatValues[] = "(subcata = '" . $subcat . $subcatValue . "|') ";
+								$subcatValues[] = "(s.subcata = '" . $subcat . $subcatValue . "|') ";
 							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
-								$subcatValues[] = "(subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
+								$subcatValues[] = "(s.subcat" . $subcat . " LIKE '%" . $subcat . $subcatValue . "|%') ";
 							} # if
 						} # foreach
 
@@ -467,15 +467,15 @@ class SpotsOverview {
 				# equality ipv like doen
 				if (count($subcats) == 1) {
 					if (in_array($subcats[0][0], array('a', 'z'))) { 
-						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
+						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
 					} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
-						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
+						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
 					} # if
 				} elseif (count($subcats) == 2) {
 					if (in_array($subcats[1][0], array('a', 'z'))) { 
-						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
+						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
 					} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
-						$strongNotSql[] = "(NOT ((Category = " . (int) $strongNotCat . ") AND (subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
+						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
 					} # if
 				} # else
 			} # foreach				
@@ -505,6 +505,7 @@ class SpotsOverview {
 		#				Downloaded:0 	(spots welke gedownload zijn door deze account)
 		#				Watch:0 		(spots die op de watchlist staan van deze account)
 		#				Seen:0 			(spots die al geopend zijn door deze account)
+		#				MyPostedSpots:0 (spots die gepost zijn door die user)
 		#				
 		#
 		if (isset($search['type'])) {
@@ -567,6 +568,8 @@ class SpotsOverview {
 		$filterValueSql = array();
 		$additionalFields = array();
 		$additionalTables = array();
+		$additionalJoins = array();
+		
 		$sortFields = array();
 		$textSearchFields = array();
 		
@@ -581,6 +584,7 @@ class SpotsOverview {
 								  'new' => 'new',
 								  'reportcount' => 's.reportcount',
 								  'downloaded' => 'downloaded', 
+								  'mypostedspots' => 'mypostedspots',
 								  'watch' => 'watch', 
 								  'seen' => 'seen');
 
@@ -621,7 +625,7 @@ class SpotsOverview {
 				# en creeeren de textfilter later in 1 keer.
 				#
 				$textSearchFields[] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
-			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen'))) {
+			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots'))) {
 				# 
 				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
 				# met de spotstatelist. Deze veldnamen behandelen we hier
@@ -637,6 +641,19 @@ class SpotsOverview {
 							
 							break;
 					} # case 'new' 
+					
+					case 'mypostedspots' : {
+						$additionalJoins[] = array('tablename' => 'spotsposted',
+												   'tablealias' => 'spost',
+												   'jointype' => 'LEFT',
+												   'joincondition' => 'spost.messageid = s.messageid');
+						$tmpFilterValue = ' (spost.ouruserid = ' . (int) $this->_db->safe($currentSession['user']['userid']) . ') '; 	
+						$sortFields[] = array('field' => 'spost.stamp',
+											  'direction' => 'DESC',
+											  'autoadded' => true,
+											  'friendlyname' => null);
+						break;
+					} # case 'mypostedspots'
 
 					case 'downloaded' : { 
 						$tmpFilterValue = ' (l.download IS NOT NULL)'; 	
@@ -714,7 +731,7 @@ class SpotsOverview {
 		} # if
 
 		
-		return array($filterValueSql, $additionalFields, $additionalTables, $sortFields);
+		return array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields);
 	} # filterValuesToSql
 
 	/*
@@ -892,6 +909,7 @@ class SpotsOverview {
 		
 		$additionalFields = array();
 		$additionalTables = array();
+		$additionalJoins = array();
 		$sortFields = array();
 		
 		# Als er geen enkele filter opgegeven is, filteren we niets
@@ -900,6 +918,7 @@ class SpotsOverview {
 						 'search' => array(),
 					     'additionalFields' => array(),
 						 'additionalTables' => array(),
+						 'additionalJoins' => array(),
 						 'categoryList' => array(),
 						 'strongNotList' => array(),
 					     'filterValueList' => array(),
@@ -912,7 +931,7 @@ class SpotsOverview {
 		# type filter waardes), naar een array met filter waarden
 		#
 		$filterValueList = $this->prepareFilterValues($search);
-		list($filterValueSql, $additionalFields, $additionalTables, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
+		list($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
 		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
 		# resetten we gewoon de boom
@@ -955,6 +974,7 @@ class SpotsOverview {
 					 'filterValueList' => $filterValueList,
 					 'additionalFields' => $additionalFields,
 					 'additionalTables' => $additionalTables,
+					 'additionalJoins' => $additionalJoins,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
 	
