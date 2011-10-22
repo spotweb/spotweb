@@ -479,3 +479,14 @@ div.userpanel form input.withicon {width:200px;}
 span.strongnotnode-active a,
 span.strongnotnode a { background-color: maroon !important; color: white !important; }
 span.strongnotnode a:hover { background-color: white !important; color: maroon !important; }
+
+div.newspotdiv form fieldset {padding:0 5px 0 5px; margin:0; border:0;}
+div.newspotdiv form dl {margin:0;}
+div.newspotdiv form dt {padding:3px 0 2px 0; float: left; width: 80px; clear: left;}
+div.newspotdiv form dd {margin:0; float: left; margin-bottom: 6px; } 
+
+div.newspotdiv form dt#txtsubcata  { width: auto; margin-right: 6px; }
+
+div.newspotdiv form div.categorydropdown,
+div.newspotdiv form div.subcategorylistbox { float: left; width: 200px; }
+div.newspotdiv form div.subcategorylistbox select { width: 192px; }

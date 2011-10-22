@@ -47,6 +47,8 @@ class SpotPage_catsjson extends SpotPage_Abs {
 					foreach(SpotCategories::$_categories[$category]['z'] as $key => $value) {
 						$returnArray[$key] = $value;
 					} # foreach
+					
+					 break;
 			} # case subcatz
 
 			case 'subcata'  :
@@ -60,6 +62,8 @@ class SpotPage_catsjson extends SpotPage_Abs {
 							$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
 						} # if
 					} # foreach
+					
+					break;
 			} # case subcatz
 		} # switch
 		

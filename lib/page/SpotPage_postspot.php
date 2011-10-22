@@ -25,8 +25,11 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$spot = array('title' => '',
 					  'body' => '',
 					  'category' => 0,
+					  'subcata' => '',
+					  'subcatb' => array(),
+					  'subcatc' => array(),
+					  'subcatd' => array(),
 					  'subcatz' => '',
-					  'subcatlist' => '',
 					  'tag' => '',
 					  'website' => '',
 					  'newmessageid' => '',
@@ -51,14 +54,18 @@ class SpotPage_postspot extends SpotPage_Abs {
 			unset($this->_spotForm['submit']);
 		} # if
 
+		# zorg er voor dat alle variables ingevuld zijn
+		$spot = array_merge($spot, $this->_spotForm);
+
+
 		# If user tried to submit, validate the file uploads
-		if (isset($this->_spotForm['submit'])) {
+		if (isset($spot['submit'])) {
 			# Make sure an NZB file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
 				$formMessages['errors'][] = array('postspot_invalidnzb', '(none given)');
 				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
-				unset($this->_spotForm['submit']);
+				unset($spot['submit']);
 			} # if
 
 			# Make sure an imgae file was provided
@@ -66,24 +73,31 @@ class SpotPage_postspot extends SpotPage_Abs {
 				$formMessages['errors'][] = array('postspot_imageinvalid', '(none given)');
 				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
-				unset($this->_spotForm['submit']);
+				unset($spot['submit']);
 			} # if
+		
+			# Make sure the subcategorie are in the proper format
+			if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) { 
+				$formMessages['errors'][] = array('postspot_invalidsubcat', '(format invalid)');
+				$postResult = array('result' => 'failure');
+				unset($spot['submit']);
+			} # if				
 		} # if
 		
-		
-		if (isset($this->_spotForm['submit'])) {
+		if (isset($spot['submit'])) {
 			# Notificatiesysteem initialiseren
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
 			# submit unsetten we altijd
-			unset($this->_spotForm['submit']);
+			unset($spot['submit']);
 			
-			# De subcatz wordt per hoofdcategory doorgegeven, merge die naar 1
-			# subcatz
-			$spot['subcatz'] = isset($this->_spotForm['subcatz' . $this->_spotForm['category']]) ? $this->_spotForm['subcatz' . $this->_spotForm['category']] : '';
-			
-			# zorg er voor dat alle variables ingevuld zijn
-			$spot = array_merge($spot, $this->_spotForm);
+			# en creer een grote lijst met spots
+			$spot['subcatlist'] = array_merge(
+										array($spot['subcata']), 
+										$spot['subcatb'], 
+										$spot['subcatc'], 
+										$spot['subcatd']
+									);
 
 			# vraag de users' privatekey op
 			$this->_currentSession['user']['privatekey'] = 

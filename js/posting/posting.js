@@ -74,17 +74,8 @@ function spotPosting() {
 	} // callback rpHashcashCalculated
 
 	this.spotHashcashCalculated = function (self, hash) {
-			// Append Dynatree selected 'checkboxes':
-			var selectedNodes = $("div#newspotcatselecttree").dynatree("getTree").getSelectedNodes();
-			var subcatList = $.map(selectedNodes, function(node){
-				if (node.countChildren() == 0) {
-					return node.data.key;
-				} // if
-			}); // map
-			
 			// and enter the form's inputfields
 			self.newSpotForm['newspotform[newmessageid]'].value = hash;
-			self.newSpotForm['newspotform[subcatlist]'].value = subcatList.join(',');
 			self.newSpotForm['newspotform[submit]'].value = 'Post';
 			self.uiDone();
 

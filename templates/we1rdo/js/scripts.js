@@ -28,8 +28,6 @@ $(function(){
 			return true;
 		}
     });	
-	
-	newspotChangeCategory();
 });
 
 // createBaseURL
@@ -1436,36 +1434,6 @@ function bindSelectedSortableFilter() {
 	} // if
 } // bindSelectedSortableFilter
 
-function newspotChangeCategory() {
-	var elm = $("#newspotcategoryselectlist");
-	if ((!elm) || (!elm[0])) return ;
-	
-	if (elm[0].value >= 2) {
-		$(".newspotcategorytypeselectlist").attr('disabled', 'disabled').hide();
-		$("div#subcatzselector-cat0").hide();
-		$("div#subcatzselector-cat1").hide();
-		subcatz = '*';
-	} else {
-		$(".newspotcategorytypeselectlist").removeAttr('disabled').show();
-		if (elm[0].value == 0) {
-			var subcatz = $("#newspotcategory0typeselectlist")[0].value;
-			$("div#subcatzselector-cat0").show();
-			$("div#subcatzselector-cat1").hide();
-		} else {
-			var subcatz = $("#newspotcategory1typeselectlist")[0].value;
-			$("div#subcatzselector-cat0").hide();
-			$("div#subcatzselector-cat1").show();
-		} // else			
-	} // else
-	
-	/* Change the json url, and reload the tree */
-	if ($("div#newspotcatselecttree").dynatree('getTree').reload) {
-		$("div#newspotcatselecttree").dynatree('option', 'initAjax', { url: ('?page=catsjson&category=' + elm[0].value + '&subcatz=' + subcatz + '&disallowstrongnot=1') });
-		$("div#newspotcatselecttree").dynatree('getTree').reload();
-	} 
-} // newspotChangeCategory
-
-
 /*
  * Function to load the ?page=catsjson data into an
  * selectbox given by the system
@@ -1498,7 +1466,7 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
             });
             $selectbox[0].selected = 0;
 			
-			if ($selectbox[0].options.length == 0) {
+			if ($selectbox[0].options.length < 2) {
 				$titleElm.hide();
 				$selectbox.hide();
 			} else {
