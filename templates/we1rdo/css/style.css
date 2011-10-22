@@ -378,6 +378,8 @@ div.details table.spotinfo td.rating.stars span {cursor:default !important;}
 
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
 
+div.details table.spotinfo a.delete {background:url(../img/sprite.png) no-repeat -36px -129px; text-decoration: none; width:11px; height:13px; display:inline; cursor:pointer;}
+
 div.details div.description {clear:both; padding:10px 5px 0 5px;}
 div.details div.description pre {overflow:hidden; white-space:pre-wrap; margin:10px 10px 0;}
 

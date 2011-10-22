@@ -1473,9 +1473,8 @@ class SpotDb {
 	 * Haalt niet-verzonden notificaties op van een user
 	 */
 	function getUnsentNotifications($userId) {
-		$tmpResult = $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
+		return $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
 					Array($userId));
-		return $tmpResult;
 	} # getUnsentNotifications
 
 	/* 
@@ -1485,7 +1484,32 @@ class SpotDb {
 		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
 					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
 	} // updateNotification
+	
+	/*
+	 * Voegt een userid toe aan de blacklist
+	 */
+	function addSpotterToBlacklist($userId, $ourUserId, $origin) {
+		$this->_conn->modify("INSERT INTO spotteridblacklist(userid, origin, ouruserid) VALUES ('%s', '%s', %d)",
+					Array($userId, $origin, (int) $ourUserId));
+	} // addSpotterToBlackList
+	
+	/*
+	 * Geeft alle blacklisted spotterid's terug
+	 */
+	function getSpotterBlacklist($ourUserId) {
+		return $this->_conn->arrayQuery("SELECT id, userid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+					Array((int) $ourUserId));
+	} # getSpotterBlacklist
 
+	/*
+	 * Geeft alle blacklisted spotterid's terug
+	 */
+	function isSpotterBlacklisted($spotterId, $ourUserId) {
+		$blacklistResult = $this->_conn->arrayQuery("SELECT id FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = 1)) AND (userid = '%s')",
+							Array((int) $ourUserId, $spotterId));
+		return (!empty($blacklistResult));
+	} # getSpotterBlacklist
+	
 	/*
 	 * Verwijder een filter en de children toe (recursive)
 	 */

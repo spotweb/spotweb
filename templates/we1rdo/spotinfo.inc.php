@@ -8,6 +8,7 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
+	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['userid'])));
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -30,6 +31,15 @@
 <?php } # if
 	} # if 
 ?>
+<?php if ($allow_blackList) { ?>
+			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeBlacklistAction(); ?>" method="post">
+				<input type="hidden" name="blacklistspotterform[submit]" value="Blacklist">
+				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
+				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['userid']); ?>">
+				<input type="hidden" name="blacklistspotterform[origin]" value="Reported via Spotweb for spot <?php echo htmlspecialchars($spot['messageid']); ?>">
+			</form>
+<?php } # if ?>
+
 			<table class="spotheader">
 				<tbody>
 					<tr>
@@ -111,6 +121,7 @@ echo "</th>";
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> Afzender </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['userid'])) { ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>)<?php } ?>
+								<?php if ($allow_blackList) { ?> <a class="delete" id="blacklistuserlink" title="Deze spotter blacklisten" onclick="$('form.blacklistspotterform').submit();">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								</td> </tr>
 								<tr> <th> Tag </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='Zoek naar spots met de tag "<?php echo $spot['tag']; ?>"'><?php echo $spot['tag']; ?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
@@ -163,6 +174,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				var messageid = $('#messageid').val();
 				postCommentsForm();
 				postReportForm();
+				postBlacklistForm();
 				loadSpotImage();
 				loadComments(messageid,'5','0');
 			});

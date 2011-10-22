@@ -283,6 +283,13 @@ try {
 				break;
 		} # reportpost
 
+		case 'blacklistspotter' : {
+				$page = new SpotPage_blacklistspotter($db, $settings, $currentSession, 
+							Array ('blform' => $req->getForm('blacklistspotterform', array('submit'))));
+				$page->render();
+				break;
+		} # blacklistspotter
+		
 		case 'logout' : {
 				$page = new SpotPage_logout($db, $settings, $currentSession);
 				$page->render();
