@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.39');
+define('SPOTDB_SCHEMA_VERSION', '0.40');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -824,9 +824,9 @@ class SpotDb {
 		$offset = (int) $pageNr * (int) $limit;
 
 		# je hebt de zoek criteria (category, titel, etc)
-		$criteriaFilter = $parsedSearch['filter'];
-		if (!empty($criteriaFilter)) {
-			$criteriaFilter = ' WHERE ' . $criteriaFilter;
+		$criteriaFilter = ' WHERE (bl.userid IS NULL)';
+		if (!empty($parsedSearch['filter'])) {
+			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
 		} # if 
 
 		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
@@ -890,7 +890,8 @@ class SpotDb {
 									 FROM spots AS s " . 
 									 $additionalTableList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) " .
+									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
+									 LEFT JOIN spotteridblacklist as bl ON ((bl.userid = f.userid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1))) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
