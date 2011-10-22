@@ -360,6 +360,11 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.19) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'report_posted')");
 		} # if
+
+		# Spotters kunnen blacklisten
+		if ($this->_settings->get('securityversion') < 0.20) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_blacklist_spotter . ")");
+		} # if
 	} # updateSecurityGroups
 
 	/*

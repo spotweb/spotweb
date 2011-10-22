@@ -308,15 +308,34 @@ class SpotTemplateHelper {
 	} # makePostCommentAction
 	
 	/*
-	* Creeert de action url voor het spam reporten van een spot
-	*/
+	 * Creeert de action url voor het spam reporten van een spot
+	 */
 	function makeReportAction() {
 		if(!$this->_spotSec->allowed(SpotSecurity::spotsec_report_spam, '')) {
 			return '';
 		}
 		
 		return $this->makeBaseUrl("path") . "?page=reportpost";
-	} #reportSpotAsSpam
+	} # makeReportAction
+
+	/*
+	 * Creeert de action url voor het blacklisten van een spotter
+	 */
+	function makeBlacklistAction() {
+		if(!$this->_spotSec->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) {
+			return '';
+		}
+		
+		return $this->makeBaseUrl("path") . "?page=blacklistspotter";
+	} # makeBlacklistAction
+	
+	/*
+	 * Geeft terug of een spotter geblacklist is voor deze user
+	 */
+	function isSpotterBlacklisted($spotterId) {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->isSpotterBlacklisted($this->_currentSession['user']['userid'], $spotterId);
+	} # isSpotterBlacklisted
 	
 	/*
 	 * Creeert een linkje naar een specifieke nzb

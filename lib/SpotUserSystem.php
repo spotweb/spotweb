@@ -1011,4 +1011,18 @@ class SpotUserSystem {
 		return $filterList;
 	} # xmlToFilters
 	
+	/*
+	 * Blacklist a specific spotter
+	 */
+	function addSpotterToBlacklist($ourUserId, $spotterId, $origin) {
+		$this->_db->addSpotterToBlacklist($spotterId, $ourUserId, $origin);
+	} # addSpotterToBlacklist	
+
+	/*
+	 * Returns if an spotter is blacklisted
+	 */
+	function isSpotterBlacklisted($ourUserId, $spotterId) {
+		return $this->_db->isSpotterBlacklisted($spotterId, $ourUserId);
+	} # isSpotterBlacklisted	
+	
 } # class SpotUserSystem

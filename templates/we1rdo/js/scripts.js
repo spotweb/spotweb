@@ -95,6 +95,7 @@ function openSpot(id,url) {
 
 		postCommentsForm();
 		postReportForm();
+		postBlacklistForm();
 		loadComments(messageid,'5','0');
 		loadSpotImage();
 	});
@@ -323,6 +324,24 @@ function postReportForm() {
 		return false;
 	});	
 }
+
+function postBlacklistForm() {
+	$("form.blacklistspotterform").submit(function(){ 
+		formdata = $(this).serialize();
+		
+		$.ajax({
+			type: "POST",
+			url: this.action, 
+			dataType: "xml",
+			data: formdata,
+			success: function(xml) {
+				$("#blacklistuserlink").remove();
+			} // success
+		}); // ajax call om de form te submitten
+		return false;
+	}); // submit
+} // postBlacklistForm
+
 
 // Load post comment form
 function postCommentsForm() {
