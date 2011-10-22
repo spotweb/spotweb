@@ -21,9 +21,12 @@
 <?php } ?>
 				</a></p></div>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
+		if ($currentSession['user']['userid'] > 2) { ?>
 				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', 'Spot toevoegen', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='Spot toevoegen'>Spot toevoegen</a></p></div>
-<?php } ?>
+<?php 	} 
+	  }
+?>
 
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="Wissel tussen vaste en meescrollende sidebar"><label>&nbsp;</label></span>
 
