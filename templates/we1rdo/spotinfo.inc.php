@@ -18,7 +18,8 @@
 ?>
 
 		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
+		if ($currentSession['user']['userid'] > 2) { ?>
 			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
 				<input type="hidden" name="postreportform[submit]" value="Post">
 				<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
@@ -26,7 +27,9 @@
 				<input type="hidden" name="postreportform[newmessageid]" value="">
 				<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
 			</form>
-<?php } # if ?>
+<?php } # if
+	} # if 
+?>
 			<table class="spotheader">
 				<tbody>
 					<tr>
@@ -45,12 +48,13 @@
 ?>
 						</th>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-		if (!$tplHelper->isReportPlaced($spot['messageid'])) {
+		if ($currentSession['user']['userid'] > 2) {
+			if (!$tplHelper->isReportPlaced($spot['messageid'])) {
 ?>
 						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
-<?php } else { ?>
+<?php 		} else { ?>
 						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
-<?php } } ?>
+<?php 	}	} } ?>
 						<th class="nzb">
 <?php if ($show_nzb_button) { ?>
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
