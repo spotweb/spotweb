@@ -558,6 +558,13 @@ class SpotUserSystem {
 	function removePermFromSecGroup($groupId, $perm) {
 		$this->_db->removePermFromSecGroup($groupId, $perm);
 	} # removePermFromSecGroup
+
+	/*
+	 * Set een permissie in een security group op deny of allow
+	 */
+	function setDenyForPermFromSecGroup($groupId, $perm) {
+		$this->_db->setDenyForPermFromSecGroup($groupId, $perm);
+	} # setDenyForPermFromSecGroup
 	
 	/*
 	 * Voegt een permissie aan een security group toe

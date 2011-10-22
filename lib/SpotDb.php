@@ -1421,6 +1421,14 @@ class SpotDb {
 		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
 				Array($groupId, $perm['permissionid'], $perm['objectid']));
 	} # removePermFromSecGroup
+
+	/*
+	 * Verwijdert een permissie uit een security group
+	 */
+	function setDenyForPermFromSecGroup($groupId, $perm) {
+		$this->_conn->modify("UPDATE grouppermissions SET deny = %d WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
+				Array((int) $perm['deny'], $groupId, $perm['permissionid'], $perm['objectid']));
+	} # removePermFromSecGroup
 	
 	/*
 	 * Voegt een permissie aan een security group toe
