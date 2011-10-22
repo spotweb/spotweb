@@ -22,7 +22,7 @@ if (empty($postresult)) {
 			<div class="categorydropdown">
 				<dt id='txtcategory'>Category</dt>
 				<dd>
-					<select id='spotcategoryselectbox' onchange="categorySelectChanged()">
+					<select id='spotcategoryselectbox' name='newspotform[category]' onchange="categorySelectChanged()">
 			<?php foreach(SpotCategories::$_head_categories as $catnr => $catvalue) { ?>
 							<option value="<?php echo $catnr; ?>"><?php echo $catvalue; ?></option>
 			<?php } ?>
