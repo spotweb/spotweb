@@ -175,9 +175,6 @@ class SpotPosting {
 		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
 		$spot['http'] = substr(trim($spot['website']), 0, 449);
 
-		# Create one list of all subcategories
-		$spot['subcatlist'] = explode(',', $spot['subcatlist']);
-		
 		/*
 		 * Loop through all subcategories and check if they are valid in
 		 * our list of subcategories
@@ -186,13 +183,18 @@ class SpotPosting {
 
 		foreach($spot['subcatlist'] as $subCat) {
 			$subcats = explode('_', $subCat);
-			$subCatLetter = substr($subcats[2], 0, 1);
-			
-			$subCatSplitted[$subCatLetter][] = $subCat;
-			
-			if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-				$errorList[] = array('postspot_invalidsubcat', array($subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
-			} # if
+			# If not in our format
+			if (count($subcats) != 3) {
+				$errorList[] = array('postspot_invalidsubcat', array($subCat));
+			} else {
+				$subCatLetter = substr($subcats[2], 0, 1);
+				
+				$subCatSplitted[$subCatLetter][] = $subCat;
+				
+				if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
+					$errorList[] = array('postspot_invalidsubcat', array($subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
+				} # if
+			} # else
 		} # foreach	
 
 		/*
@@ -209,7 +211,7 @@ class SpotPosting {
 			} else {
 				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
 				
-				# Explicitly add the 'z'-category
+				# Explicitly add the 'z'-category - we derive it from the full categorynames we already have
 				$zcatStr = substr($subcats[1], 0, 1) . str_pad(substr($subcats[1], 1), 2, '0', STR_PAD_LEFT);
 				if (array_search($zcatStr, $spot['subcatlist']) === false) {
 					$spot['subcatlist'][] = $zcatStr;
