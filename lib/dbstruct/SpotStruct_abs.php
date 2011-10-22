@@ -302,11 +302,11 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('title', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spots', 'INTEGER', NULL, false, '');
-		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('subcatb', 'spots', 'VARCHAR(64)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('subcatc', 'spots', 'VARCHAR(64)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
-		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatb', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatc', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('stamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('reversestamp', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('filesize', 'spots', 'UNSIGNED BIGINTEGER', "0", true, '');
@@ -319,7 +319,7 @@ abstract class SpotStruct_abs {
 		# ---- spotsfull table ---- #
 		$this->createTable('spotsfull', "utf8"); 
 		$this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
@@ -329,7 +329,7 @@ abstract class SpotStruct_abs {
 	
 		# ---- nntp table ---- #
 		$this->createTable('nntp', "utf8"); 
-		$this->validateColumn('server', 'nntp', 'VARCHAR(128)', "''", true, 'utf8'); # FIXME: charset kan ook ascii worden
+		$this->validateColumn('server', 'nntp', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('maxarticleid', 'nntp', 'INTEGER', NULL, false, '');
 		$this->validateColumn('nowrunning', 'nntp', 'INTEGER', "0", false, '');
 		$this->validateColumn('lastrun', 'nntp', 'INTEGER', "0", false, '');
@@ -490,6 +490,13 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->alterStorageEngine("filters", "InnoDB");
 		
+		# ---- spotteridblacklist table ---- #
+		$this->createTable('spotteridblacklist', "utf8"); 
+		$this->validateColumn('userid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii'); 
+		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
+		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
+		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
+
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
@@ -621,6 +628,9 @@ abstract class SpotStruct_abs {
 
 		# ---- Indexen op filters ----
 		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
+
+		# ---- Indexen op spotteridblacklist ----
+		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
 		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
