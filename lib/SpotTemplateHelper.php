@@ -423,7 +423,14 @@ class SpotTemplateHelper {
 	 */
 	function makeSubCatUrl($spot, $cat) {
 		$catSpot = explode("|", $cat);
-		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
+		
+		/* Format the subcatz url */
+		$subcatzStr = $spot['subcatz'];
+		if (!empty($subcatzStr)) {
+			$subcatzStr = '_z' . $subcatzStr[1];
+		} # if
+		
+		return $this->makeBaseUrl("path") . '?search[tree]=cat' . $spot['category'] . $subcatzStr . '_' . $catSpot[0] . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeSubCatUrl
 
 	/*
