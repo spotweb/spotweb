@@ -842,6 +842,15 @@ class SpotDb {
 		foreach($parsedSearch['additionalTables'] as $additionalTable) {
 			$additionalTableList = ', ' . $additionalTable . $additionalTableList;
 		} # foreach
+
+		# zelfs additionele joinskunnen gevraagd zijn door de filter parser, die 
+		# moeten we dan ook toevoegen
+		$additionalJoinList = '';
+		foreach($parsedSearch['additionalJoins'] as $additionalJoin) {
+			$additionalJoinList = ' ' . $additionalJoin['jointype'] . ' JOIN ' . 
+							$additionalJoin['tablename'] . ' AS ' . $additionalJoin['tablealias'] .
+							' ON (' . $additionalJoin['joincondition'] . ') ';
+		} # foreach
 		
 		# Nu prepareren we de sorterings lijst
 		$sortFields = $parsedSearch['sortFields'];
@@ -889,6 +898,7 @@ class SpotDb {
 												" . $extendedFieldList . "
 									 FROM spots AS s " . 
 									 $additionalTableList . 
+									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.userid = f.userid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1))) " .
