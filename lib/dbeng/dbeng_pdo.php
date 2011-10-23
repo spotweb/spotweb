@@ -17,7 +17,7 @@ abstract class dbeng_pdo extends dbeng_abs {
             return $this->_conn->prepare($s);
         } # if
 
-		$pattern = '/(\'?\%[ds]\'?)/';
+		$pattern = '/(\'?\%[dsb]\'?)/';
         $matches = array();
         preg_match_all($pattern, $s, $matches);
         $s = preg_replace($pattern, '?', $s);
@@ -33,12 +33,18 @@ abstract class dbeng_pdo extends dbeng_abs {
                 $stmt->bindValue($idx, null, PDO::PARAM_NULL);
             } else {
                 switch ($m) {
-                    case '%d':
+                    case '%d': {
 						# we converteren expliciet naar strval, omdat PDO anders een 0 naar '' omzet
                         $stmt->bindParam($idx, strval($p[$idx-1]), PDO::PARAM_INT);
                         break;
-                    default:
+					} 
+					case "'%b'": {
+						$stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_LOB);
+						break;
+					} 
+                    default: {
                         $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_STR);
+					} 
                 }
             }
             $idx++;

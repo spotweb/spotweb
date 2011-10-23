@@ -1726,12 +1726,27 @@ class SpotDb {
 		return $tree;
 	} # getFilterList
 
-	function cleanWebCache() {
-		return $this->_conn->modify("DELETE FROM webcache WHERE stamp < %d", array(time()-30*24*60*60));
+	function cleanWebCache($expireDays) {
+		return $this->_conn->modify("DELETE FROM webcache WHERE stamp < %d", array(time()-$expireDays*24*60*60));
 	} # cleanWebCache
 
 	function getWebCache($url) {
-		$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, content FROM webcache WHERE url = '%s'", array($url));
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql' : {
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, content FROM webcache WHERE url = '%s'", array($url));
+				if (!empty($tmp)) {
+					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
+				} # if
+				
+				break;
+			} # case 'pdo_pgsql'
+		
+			default		: {
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, content FROM webcache WHERE url = '%s'", array($url));
+				break;
+			} # default
+		} # switch
+		
 		if (!empty($tmp)) {
 			return $tmp[0];
 		} # if
@@ -1748,10 +1763,19 @@ class SpotDb {
 					 break;
 			} # mysql
 			
+			case 'pdo_pgsql'	: {
+					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', content = '%b' WHERE url = '%s'", Array(time(), $headers, $content, $url));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%b')", Array(time(), $url, $headers, $content));
+					} # if
+					break;
+			} # pgsql
+			
+			
 			default				: {
 					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES ('%s', %d, '%s')", Array(time(), $url, $headers, $content));
+						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%s')", Array(time(), $url, $headers, $content));
 					} # if
 					break;
 			} # default
