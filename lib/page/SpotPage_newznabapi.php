@@ -67,6 +67,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$dom->loadXML($tvrage_content);
 			$showTitle = $dom->getElementsByTagName('showname');
+			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
+			if (!@$showTitle->item(0)->nodeValue) {
+				$this->showApiError(300);
+			} # if
 			$tvSearch = $showTitle->item(0)->nodeValue;
 
 			$epSearch = '';
@@ -224,7 +228,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
+				$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
@@ -372,7 +376,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$description->appendChild($descriptionCdata);
 
 			$item = $doc->createElement('item');
-			$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
+			$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
 			$item->appendChild($guid);
 			$item->appendChild($doc->createElement('link', $nzbUrl));
 			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));

@@ -29,7 +29,7 @@
 	<tr> <th colspan="2"> PHP extension </th> <th> Info </th> <th> Result </th> </tr>
 	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
 	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
-	<tr> <td colspan="2"> curl </td> <td> Notifo & Prowl </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
+	<tr> <td colspan="2"> curl </td> <td> </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
 	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>

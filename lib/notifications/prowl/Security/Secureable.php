@@ -14,23 +14,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-namespace Prowl\Security;
-
-/**
- * Filter Interface
- * 
- * @author Mario Mueller <mario.mueller.work at gmail.com>
- * @version 1.0.0
- * @package Prowl
- * @subpackage Connector.Security
- */
-interface Secureable {
+namespace Prowl\Security {
 
 	/**
-	 * Filters a string.
-	 * @abstract
-	 * @param  String $sContentToFilter
-	 * @return string
+	 * Filter Interface
+	 *
+	 * @author Mario Mueller <mario.mueller.work at gmail.com>
+	 * @version 1.0.0
+	 * @package Prowl
+	 * @subpackage Connector.Security
 	 */
-	public function filter($sContentToFilter);
+	interface Secureable {
+
+		/**
+		 * Filters a string.
+		 * @abstract
+		 * @param  String $sContentToFilter
+		 * @return string
+		 */
+		public function filter($sContentToFilter);
+	}
 }
