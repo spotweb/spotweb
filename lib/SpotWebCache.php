@@ -51,7 +51,20 @@ class SpotWebCache {
 				return false;
 			} # else
 		} # else
-
 	} # get_remote_content
+
+	function get_nntp_image($messageid) {
+		$data = $this->_db->getWebCache("SpotImage::" . $messageid);
+
+		if ($data) {
+			return $data['content'];
+		} else {
+			return false;
+		} # else
+	} # get_nntp_image
+
+	function save_nntp_image($messageid, $content) {
+		$this->_db->saveWebCache("SpotImage::" . $messageid, NULL, $content);
+	} # save_nntp_image
 	
 } # class
