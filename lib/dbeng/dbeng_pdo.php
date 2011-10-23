@@ -21,11 +21,12 @@ abstract class dbeng_pdo extends dbeng_abs {
         $matches = array();
         preg_match_all($pattern, $s, $matches);
         $s = preg_replace($pattern, '?', $s);
-        
+
 		$stmt = $this->_conn->prepare($s);
         $idx=1;
+		$totalCount = count($p);
         foreach ($matches[1] as $m) {
-            if (!isset($p[$idx-1])) {
+			if ($idx > ($totalCount+1)) {
                 break;
             } # if
 			
