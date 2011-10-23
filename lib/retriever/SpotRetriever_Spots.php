@@ -95,6 +95,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$spotParser = new SpotParser();
 		
 			foreach($hdrList as $msgid => $msgheader) {
+				/*
+				 * We keep track wether we actually fetched this header to add it
+				 * to the database, because only then we can update the titel from
+				 * the spots titel
+				 */
+				$didFetchHeader = false;
+				
 				# Reset timelimit
 				set_time_limit(120);
 
@@ -158,6 +165,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 								$dbIdList['spot'][$msgId] = 1;
 								$header_isInDb = true;
 								$lastProcessedId = $msgId;
+								$didFetchHeader = true;
 
 								if ($spot['wassigned']) {
 									$signedCount++;
@@ -196,10 +204,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$dbIdList['fullspot'][$msgId] = 1;
 							
 							# Overschrijf de titel in de spots array omdat de XML de UTF-8 titel
-							# bevat. We checken of de msgid echt wel opgehaald is, omdat je theoretisch
-							# kan hebben dat de header niet opgehaald is, maar de spotfull wordt dan wel
-							# opgehaald.
-							if (($header_isInDb) && (isset($dbIdList['spot'][$msgId]))) {
+							# bevat. We kunnen dit enkel doen als de header opgehaald is
+							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
 							} # if
 						} 
