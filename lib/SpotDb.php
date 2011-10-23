@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.40');
+define('SPOTDB_SCHEMA_VERSION', '0.41');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -145,7 +145,7 @@ class SpotDb {
 	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
 	 */
 	function isReportPlaced($messageid, $userId) {
-		$tmpResult = $this->_conn->singleQuery("SELECT id FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
 		
 		return (!empty($tmpResult));
 	} #isReportPlaced
@@ -1720,6 +1720,38 @@ class SpotDb {
 
 		return $tree;
 	} # getFilterList
+
+	function cleanWebCache() {
+		return $this->_conn->modify("DELETE FROM webcache WHERE stamp < %d", array(time()-30*24*60*60));
+	} # cleanWebCache
+
+	function getWebCache($url) {
+		$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, content FROM webcache WHERE url = '%s'", array($url));
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} # if
+		
+		return false;
+	} # getWebCache
+
+	function saveWebCache($url, $headers, $content) {
+		switch ($this->_dbsettings['engine']) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE headers = '%s', content = '%s', stamp = %d",
+										Array(time(), $url, $headers, $content, $headers, $content, time()));
+					 break;
+			} # mysql
+			
+			default				: {
+					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $content, $url));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES ('%s', %d, '%s')", Array(time(), $url, $headers, $content));
+					} # if
+					break;
+			} # default
+		} # switch
+	} # saveWebCache
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

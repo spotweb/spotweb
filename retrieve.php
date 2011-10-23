@@ -234,6 +234,19 @@ try {
 	die();
 } # catch
 
+## WebCache cleanup
+try {
+	$db->cleanWebCache();
+} catch(Exception $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while cleaning up webcache:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
+	die();
+} # catch
+
 ## Retention cleanup
 try {
 	if ($settings->get('retention') > 0) {
