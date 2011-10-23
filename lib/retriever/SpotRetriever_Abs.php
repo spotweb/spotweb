@@ -75,6 +75,8 @@ abstract class SpotRetriever_Abs {
 				# messageid als uitgangspunt nemen
 				$hdrList = array_reverse($hdrList, true);
 
+				echo 'Searching from ' . ($curMsg -1) . ' to ' . ($curMsg + $decrement) . PHP_EOL;
+				
  				foreach($hdrList as $msgNum => $msgId) {
 					if (isset($messageIdList[$msgId])) {
 						$curMsg = $msgNum;
