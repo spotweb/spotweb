@@ -23,6 +23,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			case 'BIGINTEGER'			: $colType = 'bigint'; break;
 			case 'UNSIGNED BIGINTEGER'	: $colType = 'bigint'; break;
 			case 'BOOLEAN'				: $colType = 'boolean'; break;
+			case 'MEDIUMBLOB'			: $colType = 'bytea'; break;
 		} # switch
 		
 		return $colType;
@@ -34,6 +35,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			case 'integer'				: $colInfo = 'INTEGER'; break;
 			case 'bigint'				: $colInfo = 'BIGINTEGER'; break;
 			case 'boolean'				: $colInfo = 'BOOLEAN'; break;
+			case 'bytea'				: $colInfo = 'MEDIUMBLOB'; break;
 		} # switch
 		
 		return $colInfo;
