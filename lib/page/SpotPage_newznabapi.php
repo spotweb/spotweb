@@ -1,11 +1,13 @@
 <?php
 class SpotPage_newznabapi extends SpotPage_Abs {
+	private $_webCache = array();
 	private $_params;
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
+		$this->_webCache = new SpotWebCache($this->_db);
 	} # __construct
 
 	function render() {
@@ -59,10 +61,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@$dom->load('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'] . '/')) {
+			if (!@list($http_headers, $tvrage_content) = $this->_webCache->get_remote_content('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60)) {
 				$this->showApiError(300);
 			} # if
+
+			$dom->loadXML($tvrage_content);
 			$showTitle = $dom->getElementsByTagName('showname');
+			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
+			if (!@$showTitle->item(0)->nodeValue) {
+				$this->showApiError(300);
+			} # if
 			$tvSearch = $showTitle->item(0)->nodeValue;
 
 			$epSearch = '';
@@ -94,7 +102,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@$imdb_content = file_get_contents('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/')) {
+			if (!@list($http_headers, $imdb_content) = $this->_webCache->get_remote_content('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60)) {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb_content, $movieTitle);
@@ -220,7 +228,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
+				$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
@@ -368,7 +376,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$description->appendChild($descriptionCdata);
 
 			$item = $doc->createElement('item');
-			$item->appendChild($doc->createElement('title', htmlentities($spot['title'])));
+			$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
 			$item->appendChild($guid);
 			$item->appendChild($doc->createElement('link', $nzbUrl));
 			$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));

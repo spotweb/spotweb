@@ -1,12 +1,14 @@
 <?php
 class SpotPage_getimage extends SpotPage_Abs {
-	private $_messageid;
+	private $_webCache = array();
 	private $_image;
+	private $_messageid;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];
+		$this->_webCache = new SpotWebCache($this->_db);
 	} # ctor
 
 	
@@ -35,15 +37,15 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 			echo $spotnntp_img->getImage($fullSpot['image']['segment']);
 		} else {
-			$x = file_get_contents($fullSpot['image']);
+			list($http_headers, $image) = $this->_webCache->get_remote_content($fullSpot['image'], 24*60*60);
 			
-			foreach($http_response_header as $hdr) {
+			foreach(explode("\r\n", $http_headers) as $hdr) {
 				if (substr($hdr, 0, strlen('Content-Type: ')) == 'Content-Type: ') {
 					header($hdr);
 				} # if
 			} # foreach
 			
-			echo $x;
+			echo $image;
 		} # else
 		
 	} # render

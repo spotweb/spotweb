@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.40');
+define('SPOTDB_SCHEMA_VERSION', '0.41');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -145,7 +145,7 @@ class SpotDb {
 	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
 	 */
 	function isReportPlaced($messageid, $userId) {
-		$tmpResult = $this->_conn->singleQuery("SELECT id FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
 		
 		return (!empty($tmpResult));
 	} #isReportPlaced
@@ -1191,15 +1191,17 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
+									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1235,14 +1237,17 @@ class SpotDb {
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
+									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
+					LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1720,6 +1725,38 @@ class SpotDb {
 
 		return $tree;
 	} # getFilterList
+
+	function cleanWebCache() {
+		return $this->_conn->modify("DELETE FROM webcache WHERE stamp < %d", array(time()-30*24*60*60));
+	} # cleanWebCache
+
+	function getWebCache($url) {
+		$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, content FROM webcache WHERE url = '%s'", array($url));
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} # if
+		
+		return false;
+	} # getWebCache
+
+	function saveWebCache($url, $headers, $content) {
+		switch ($this->_dbsettings['engine']) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE stamp = %d, headers = '%s', content = '%s'",
+										Array(time(), $url, $headers, $content, time(), $headers, $content));
+					 break;
+			} # mysql
+			
+			default				: {
+					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $content, $url));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES ('%s', %d, '%s')", Array(time(), $url, $headers, $content));
+					} # if
+					break;
+			} # default
+		} # switch
+	} # saveWebCache
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

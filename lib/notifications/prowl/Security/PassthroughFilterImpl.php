@@ -14,24 +14,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-namespace Prowl\Security;
-
-/**
- * Simple pass-through filter
- *
- * @author Mario Mueller <mario.mueller.work at gmail.com>
- * @version 1.0.0
- * @package Prowl
- * @subpackage Connector.Security
- */
-class PassthroughFilterImpl implements \Prowl\Security\Secureable {
+namespace Prowl\Security {
 
 	/**
-	 * Filters a string.
-	 * @param  String $sContentToFilter
-	 * @return string
+	 * Simple pass-through filter
+	 *
+	 * @author Mario Mueller <mario.mueller.work at gmail.com>
+	 * @version 1.0.0
+	 * @package Prowl
+	 * @subpackage Connector.Security
 	 */
-	public function filter($sContentToFilter) {
-		return $sContentToFilter;
+	class PassthroughFilterImpl implements \Prowl\Security\Secureable {
+
+		/**
+		 * Filters a string.
+		 * @param  String $sContentToFilter
+		 * @return string
+		 */
+		public function filter($sContentToFilter) {
+			return $sContentToFilter;
+		}
 	}
 }
