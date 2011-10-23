@@ -33,7 +33,7 @@ try {
 
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
 	echo "Database schema of settings upgrade mislukt:" . PHP_EOL;
 	echo "   " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
