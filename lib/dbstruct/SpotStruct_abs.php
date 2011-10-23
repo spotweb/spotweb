@@ -238,6 +238,8 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+		$this->dropIndex("idx_nntp_2", "nntp");
+		$this->dropIndex("idx_nntp_3", "nntp");
 
 		# relaties wissen
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -252,7 +254,7 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		# Opschonen data #############################################################################
 		##############################################################################################
-		if (($this instanceof SpotStruct_mysql) && (false)) {
+		if ($this instanceof SpotStruct_mysql) {
 			echo "Cleaning up old data..." . PHP_EOL;
 			if ($this->tableExists('usersettings') && $this->tableExists('users')) {
 				$this->_dbcon->rawExec("DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL");
@@ -489,13 +491,21 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->alterStorageEngine("filters", "InnoDB");
-		
+
 		# ---- spotteridblacklist table ---- #
-		$this->createTable('spotteridblacklist', "utf8"); 
-		$this->validateColumn('userid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii'); 
+		$this->createTable('spotteridblacklist', "utf8");
+		$this->validateColumn('userid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
+
+		# ---- webcache table ---- #
+		$this->createTable('webcache', "ascii");
+		$this->validateColumn('stamp', 'webcache', 'INTEGER', "0", true, '');
+		$this->validateColumn('url', 'webcache', 'VARCHAR(255)', "''", true, 'ascii');
+		$this->validateColumn('headers', 'webcache', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('content', 'webcache', 'mediumblob', NULL, false, '');
+		$this->alterStorageEngine("webcache", "InnoDB");
 
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
@@ -580,6 +590,7 @@ abstract class SpotStruct_abs {
 
 		# ---- Indexen op reportsposted ----
 		$this->validateIndex("idx_reportsposted_1", "UNIQUE", "reportsposted", array("messageid"));
+		$this->validateIndex("idx_reportsposted_2", "UNIQUE", "reportsposted", array("inreplyto", "ouruserid"));
 		$this->validateIndex("idx_reportspostedrel_1", "", "reportsposted", array("ouruserid"));
 		
 		# ---- Indexen op commentsposted ----
@@ -631,6 +642,9 @@ abstract class SpotStruct_abs {
 
 		# ---- Indexen op spotteridblacklist ----
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
+
+		# ---- Indexen op webcache ----
+		$this->validateIndex("idx_webcache_1", "UNIQUE", "webcache", array("url"));
 		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
