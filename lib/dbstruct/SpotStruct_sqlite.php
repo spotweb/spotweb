@@ -19,6 +19,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			case 'BIGINTEGER'			: $colType = 'BIGINT'; break;
 			case 'UNSIGNED BIGINTEGER'	: $colType = 'BIGINT'; break;
 			case 'BOOLEAN'				: $colType = 'BOOLEAN'; break;
+			case 'MEDIUMBLOB'			: $colType = 'BLOB'; break;
 		} # switch
 		
 		return $colType;
@@ -26,6 +27,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 
 	/* converteert een mysql datatype naar een "spotweb" datatype */
 	public function nativeDtToSw($colInfo) {
+		switch(strtolower($colInfo)) {
+			case 'blob'				: $colInfo = 'MEDIUMBLOB'; break;
+		} # switch
+	
 		return $colInfo;
 	} # nativeDtToSw 
 	

@@ -23,6 +23,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			case 'BIGINTEGER'			: $colType = 'bigint(20)'; break;
 			case 'UNSIGNED BIGINTEGER'	: $colType = 'bigint(20) unsigned'; break;
 			case 'BOOLEAN'				: $colType = 'tinyint(1)'; break;
+			case 'MEDIUMBLOB'			: $colType = 'mediumblob'; break;
 		} # switch
 		
 		return $colType;
@@ -36,6 +37,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			case 'bigint(20)'			: $colInfo = 'BIGINTEGER'; break;
 			case 'bigint(20) unsigned'	: $colInfo = 'UNSIGNED BIGINTEGER'; break;
 			case 'tinyint(1)'			: $colInfo = 'BOOLEAN'; break;
+			case 'mediumblob'			: $colInfo = 'MEDIUMBLOB'; break;
 		} # switch
 		
 		return $colInfo;
