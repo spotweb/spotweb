@@ -1191,15 +1191,17 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
+									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1235,14 +1237,17 @@ class SpotDb {
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
+									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, spotstatelist USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
+					LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1738,8 +1743,8 @@ class SpotDb {
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'		:
 			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE headers = '%s', content = '%s', stamp = %d",
-										Array(time(), $url, $headers, $content, $headers, $content, time()));
+					$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,content) VALUES (%d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE stamp = %d, headers = '%s', content = '%s'",
+										Array(time(), $url, $headers, $content, time(), $headers, $content));
 					 break;
 			} # mysql
 			

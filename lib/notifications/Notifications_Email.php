@@ -14,6 +14,7 @@ class Notifications_Email extends Notifications_abs {
 
 	function sendMessage($type, $title, $body, $sourceUrl) {
 		$header = "From: ". $this->_appName . " <" . $this->_dataArray['sender'] . ">\r\n";
+		$body = wordwrap($body, 70);
 		mail($this->_dataArray['receiver'], $title, $body, $header);
 	} # sendMessage
 
