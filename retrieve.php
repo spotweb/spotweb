@@ -243,7 +243,7 @@ try {
 
 ## WebCache cleanup
 try {
-	$db->cleanWebCache();
+	$db->cleanWebCache(30);
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
