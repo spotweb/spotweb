@@ -10,7 +10,7 @@ class SpotWebCache {
 		$this->_db = $db;
 	} # ctor
 
-	function get_remote_content($url, $ttl = 900) {
+	function get_remote_content($url, $ttl=900, $compress=false) {
 		$url = urldecode($url);
 		$url = str_replace(" ", "+", $url);
 		$data = $this->_db->getWebCache($url);
@@ -41,7 +41,7 @@ class SpotWebCache {
 
 		if ($http_code == 200 || $http_code == 304) {
 			if ($ttl > 0) {
-				$this->_db->saveWebCache($url, trim($headers), $content);
+				$this->_db->saveWebCache($url, trim($headers), $content, $compress);
 			} # if
 			return array($headers, $content);
 		} else {
@@ -63,8 +63,8 @@ class SpotWebCache {
 		} # else
 	} # get_nntp_image
 
-	function save_nntp_image($messageid, $content) {
-		$this->_db->saveWebCache("SpotImage::" . $messageid, NULL, $content);
+	function save_nntp_image($messageid, $content, $compress=false) {
+		$this->_db->saveWebCache("SpotImage::" . $messageid, NULL, $content, $compress);
 	} # save_nntp_image
 	
 } # class

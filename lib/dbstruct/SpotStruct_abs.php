@@ -504,6 +504,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('stamp', 'webcache', 'INTEGER', "0", true, '');
 		$this->validateColumn('url', 'webcache', 'VARCHAR(255)', "''", true, 'ascii');
 		$this->validateColumn('headers', 'webcache', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('compressed', 'webcache', 'BOOLEAN', 'false', true, ''); 
 		$this->validateColumn('content', 'webcache', 'mediumblob', NULL, false, '');
 		$this->alterStorageEngine("webcache", "InnoDB");
 
