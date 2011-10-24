@@ -60,7 +60,9 @@ form#filterform table.search th {font-weight: bold; text-align: left; padding-le
 form#filterform table.search td {text-align: left; }
 form#filterform table.search td a {color: #bbb; }
 
-ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none;}
+ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none; }
+/* IE9 scrolls, see issue #1047 */
+ul.dynatree-container {margin-top: auto; }
 ul.dynatree-container a {display:inline-block; font:11px Arial, Helvetica, sans-serif normal; background:none; line-height:16px; width:auto; border:0;}
 
 div.addspot, div.logininfo {float:right;}
