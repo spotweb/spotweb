@@ -6,6 +6,8 @@ class SpotSecurity {
 	private $_user;
 	private $_permissions;
 	private $_settings;
+	private $_failAudit;
+	private $_AllAudit;
 	
 	/*
 	 * Het security systeem kent een aantal rechten welke gedefinieerd worden met een aantal parameters.
@@ -101,20 +103,40 @@ class SpotSecurity {
 		35		=> "Filters als standaard in kunnen stellen voor nieuwe gebruikers",
 		36		=> "Rapporteer spot of gebruiker als spam",
 		37		=> "Een nieuwe spot kunnen posten",
-		38		=> "Een spotter kunnen blacklisten",
-		39		=> "Een spotter kunnen blacklisten voor heel Spotweb"
+		38		=> "Een spotter kunnen blacklisten"
 	);
+
+	/*
+	 * Audit levels
+	 */
+	const spot_secaudit_none			= 0; 
+	const spot_secaudit_failure			= 1;
+	const spot_secaudit_all				= 2; 
 	
 	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
 		$this->_db = $db;
 		$this->_user = $user;
 		$this->_settings = $settings;
+		$this->_failAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_failure);
+		$this->_allAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_all);
+		
+		if (($this->_failAudit) || ($this->_allAudit)) {
+			$this->_spotAudit = new SpotAudit($db, $settings, $user);
+		} # if
 		
 		$this->_permissions = $db->getPermissions($user['userid']);
 	} # ctor
 	
 	function allowed($perm, $object) {
-		return isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
+		$allowed = isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
+
+		# We check for auditing in SpotSecurity to prvent the overhead
+		# of a function call for each security check
+		if (($this->_allAudit) || ((!$allowed) && ($this->_failAudit))) {
+			$this->_spotAudit->audit($perm, $object, $allowed);
+		} # if
+		
+		return $allowed;
 	} # allowed
 	
 	function fatalPermCheck($perm, $object) {

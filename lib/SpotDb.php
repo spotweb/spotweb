@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.43');
+define('SPOTDB_SCHEMA_VERSION', '0.44');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1750,6 +1750,16 @@ class SpotDb {
 
 		return $tree;
 	} # getFilterList
+
+	/*
+	 * Create an entry in the auditlog
+	 */
+	function addAuditEntry($userid, $perm, $objectid, $allowed) {
+		return $this->_conn->modify("INSERT INTO permaudit(stamp, userid, permissionid, objectid, result) 
+										VALUES(%d, %d, %d, '%s', %d)",
+								Array(time(), (int) $userid, (int) $perm, $objectid, (int) $result));
+	} # addAuditEntry
+
 
 	function cleanCache($expireDays) {
 		return $this->_conn->modify("DELETE FROM cache WHERE stamp < %d", array(time()-$expireDays*24*60*60));
