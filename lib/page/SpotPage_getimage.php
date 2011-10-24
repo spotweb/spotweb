@@ -1,6 +1,5 @@
 <?php
 class SpotPage_getimage extends SpotPage_Abs {
-	private $_cache = array();
 	private $_image;
 	private $_messageid;
 
@@ -10,57 +9,37 @@ class SpotPage_getimage extends SpotPage_Abs {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];
-		$this->_cache = new SpotCache($this->_db);
 	} # ctor
 
 	
 	function render() {
+		$hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
+
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
 
-		if (!$img = $this->_cache->get_from_cache(SpotPage_getimage::cache_image_prefix . $this->_messageid)) {
-			$spotnntp_hdr = new SpotNntp($this->_settings->get('nntp_hdr'));
+		# Haal de volledige spotinhoud op
+		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
 
-			# Haal de volledige spotinhoud op
-			$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
-
-			# sluit de connectie voor de header
-			$spotnntp_hdr->quit();
-		} # if
+		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
+		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
+		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
+		if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
+			$nzb_spotnntp = $hdr_spotnntp;
+		} else {
+			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
+		} # else
 
 		# Images mogen gecached worden op de client
 		$this->sendExpireHeaders(false);
 
-		if ($img) {
-			$this->_cache->update_cache_stamp(SpotPage_getimage::cache_image_prefix . $this->_messageid);
+		# Haal de image op
+		list($header, $image) = $spotsOverview->getImage($fullSpot, $nzb_spotnntp);
 
-			header("Content-Type: image/jpeg");
-			echo $img['content'];
-		} elseif (is_array($fullSpot['image'])) {
-			$spotnntp_img = new SpotNntp($this->_settings->get('nntp_nzb'));
-
-			# Haal de image op
-			$image = $spotnntp_img->getImage($fullSpot['image']['segment']);
-
-			# sluit de connectie voor de image
-			$spotnntp_img->quit();
-
-			# Sla de image op in de cache
-			$this->_cache->save_to_cache(SpotPage_getimage::cache_image_prefix . $this->_messageid, NULL, $image);
-
-			header("Content-Type: image/jpeg");
-			echo $image;
-		} else {
-			list($http_headers, $image) = $this->_cache->get_remote_content($fullSpot['image'], 24*60*60);
-			
-			foreach(explode("\r\n", $http_headers) as $hdr) {
-				if (substr($hdr, 0, strlen('Content-Type: ')) == 'Content-Type: ') {
-					header($hdr);
-				} # if
-			} # foreach
-			
-			echo $image;
-		} # else
+		header($header);
+		echo $image;
 		
 	} # render
 	
