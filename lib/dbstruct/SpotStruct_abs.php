@@ -508,6 +508,15 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('content', 'cache', 'mediumblob', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
+		# ---- permaudit table ---- #
+		$this->createTable('permaudit', "ascii");
+		$this->validateColumn('stamp', 'permaudit', 'INTEGER', "0", true, '');
+		$this->validateColumn('userid', 'permaudit', 'INTEGER', "0", true, '');
+		$this->validateColumn('permissionid', 'permaudit', 'INTEGER', "0", true, '');
+		$this->validateColumn('objectid', 'permaudit', "VARCHAR(128)", "''", true, 'ascii');
+		$this->validateColumn('result', 'permaudit', "BOOLEAN", "true", true, '');
+		$this->alterStorageEngine("permaudit", "InnoDB");
+
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
