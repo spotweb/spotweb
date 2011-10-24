@@ -89,7 +89,7 @@ class SpotPosting {
 		$hdr_newsgroup = 'alt.test';
 		$bin_newsgroup = 'alt.test';
 */
-
+	
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
 			$errorList[] = array('postspot_invalidhashcash', array());
