@@ -46,7 +46,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$spotnntp_img->quit();
 
 			# Sla de image op in de cache
-			$this->_webCache->save_to_cache(SpotPage_getimage::cache_image_prefix . $this->_messageid, NULL, $image);
+			$this->_cache->save_to_cache(SpotPage_getimage::cache_image_prefix . $this->_messageid, NULL, $image);
 
 			header("Content-Type: image/jpeg");
 			echo $image;
