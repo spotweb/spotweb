@@ -71,7 +71,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 */
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
-		
+
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
