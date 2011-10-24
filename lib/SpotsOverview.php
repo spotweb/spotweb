@@ -4,12 +4,16 @@
  * cache dient
  */
 class SpotsOverview {
+	private $_cache = array();
 	private $_db;
 	private $_settings;
+
+	const cache_nzb_prefix		= 'SpotNzb::';
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
+		$this->_cache = new SpotCache($this->_db);
 	} # ctor
 	
 	/*
@@ -147,7 +151,15 @@ class SpotsOverview {
 	 * Geef de NZB file terug
 	 */
 	function getNzb($fullSpot, $nntp) {
-		return $nntp->getNzb($fullSpot['nzb']);
+		if ($nzb = $this->_cache->get_from_cache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
+			$this->_cache->update_cache_stamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid']);
+			$nzb = $nzb['content'];
+		} else {
+			$nzb = $nntp->getNzb($fullSpot['nzb']);
+			$this->_cache->save_to_cache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+		} # else
+
+		return $nzb;
 	} # getNzb
 
 	/*
