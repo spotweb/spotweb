@@ -240,6 +240,7 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
+		$this->dropIndex("idx_webcache_1", "webcache");
 
 		# relaties wissen
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -564,7 +565,6 @@ abstract class SpotStruct_abs {
 			# drop de 'oude' tabellen
 			$this->dropTable('spots');
 			$this->dropTable('spottexts');
-			$this->dropTable('webcache');
 			
 			# rename deze tabel
 			$this->renameTable('spotstmp', 'spots');
@@ -655,7 +655,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
 
 		# ---- Indexen op webcache ----
-		$this->validateIndex("idx_webcache_1", "UNIQUE", "webcache", array("url"));
+		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("url"));
 		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -675,6 +675,8 @@ abstract class SpotStruct_abs {
 		# Hier droppen we kolommen ###################################################################
 		##############################################################################################
 		$this->dropColumn('filesize', 'spotsfull');
+		if ($this->tableExists('webcache')) { $this->dropTable('webcache'); }
+
 		
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
