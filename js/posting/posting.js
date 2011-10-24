@@ -87,14 +87,29 @@ function spotPosting() {
 					var $dialdiv = $("#editdialogdiv")
 					var result = $(xml).find('result').text();
 					
+					var $formerrors = $dialdiv.find("ul.formerrors");
+					$formerrors.empty();
+					var $forminfo = $dialdiv.find("ul.forminformation");
+					$forminfo.empty();
+
 					if (result == 'success') {
-						$dialdiv.empty();
-						$dialdiv.dialog('close');
+						// zet de information van het formulier in de infolijst
+						$('info', xml).each(function() {
+							$forminfo.append("<li>" + $(this).text() + "</li>");
+						}); // each
+						
+						/**
+						 * We succesfully posted a new spot, now clear the title field
+						 * and body. This makes the other field stay in tact, so if a 
+						 * user is posting several of the same type of spots, he doesn't
+						 * have to enter everything again 
+						 */
+						$("input[name='newspotform[title]']").val('');
+						$("textarea[name='newspotform[body]']").val('');
+						$("input[name='newspotform[nzbfile]']").val('');
+						$("input[name='newspotform[imagefile]']").val('');						
 					} else {						
 						// voeg nu de errors in de html
-						var $formerrors = $dialdiv.find("ul.formerrors");
-						$formerrors.empty();
-
 						// zet de errors van het formulier in de errorlijst
 						$('errors', xml).each(function() {
 							$formerrors.append("<li>" + $(this).text() + "</li>");
@@ -148,7 +163,12 @@ function spotPosting() {
 		this.newSpotForm = newSpotForm;
 		this.uiStart = uiStart;
 		this.uiDone = uiDone;
-		
+
+		/* Clear the errors */
+		var $dialdiv = $("#editdialogdiv")
+		$dialdiv.find("ul.formerrors").empty();
+		$dialdiv.find("ul.forminformation").empty();
+				
 		this.uiStart();
 		
 		this.calculateCommentHashCash('<', '@spot.net>', 0, this.spotHashcashCalculated);

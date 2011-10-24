@@ -120,6 +120,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 									'user' => $this->_currentSession['user']['username'],
 									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
 									'body' => $spot['body']);
+				$formMessages['info'][] = array('postspot_success', '');
 
 				# en verstuur een notificatie
 				$spotsNotifications->sendSpotPosted($spot);
