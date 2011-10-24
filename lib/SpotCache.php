@@ -1,6 +1,6 @@
 <?php
 
-class SpotWebCache {
+class SpotCache {
 	protected $_db;
 	protected $_settings;
 	protected $_currentSession;
@@ -13,7 +13,7 @@ class SpotWebCache {
 	function get_remote_content($url, $ttl=900, $compress=false) {
 		$url = urldecode($url);
 		$url = str_replace(" ", "+", $url);
-		$data = $this->_db->getWebCache($url);
+		$data = $this->get_from_cache($url);
 
 		if ($data && time()-(int) $data['stamp'] < $ttl) {
 			return array($data['headers'], $data['content']);
@@ -41,7 +41,7 @@ class SpotWebCache {
 
 		if ($http_code == 200 || $http_code == 304) {
 			if ($ttl > 0) {
-				$this->_db->saveWebCache($url, trim($headers), $content, $compress);
+				$this->save_to_cache($url, $headers, $content, $compress);
 			} # if
 			return array($headers, $content);
 		} else {
@@ -53,18 +53,22 @@ class SpotWebCache {
 		} # else
 	} # get_remote_content
 
-	function get_nntp_image($messageid) {
-		$data = $this->_db->getWebCache("SpotImage::" . $messageid);
+	function get_from_cache($url) {
+		$data = $this->_db->getCache($url);
 
 		if ($data) {
-			return $data['content'];
+			return $data;
 		} else {
 			return false;
 		} # else
-	} # get_nntp_image
+	} # get_from_cache
 
-	function save_nntp_image($messageid, $content, $compress=false) {
-		$this->_db->saveWebCache("SpotImage::" . $messageid, NULL, $content, $compress);
-	} # save_nntp_image
+	function save_to_cache($url, $headers, $content, $compress=false) {
+		$this->_db->saveCache($url, trim($headers), $content, $compress);
+	} # save_to_cache
+
+	function update_cache_stamp($url) {
+		$this->_db->updateCacheStamp($url);
+	}
 	
 } # class
