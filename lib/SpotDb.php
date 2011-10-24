@@ -1257,6 +1257,7 @@ class SpotDb {
 	 * Voeg een reeks met spots toe aan de database
 	 */
 	function addSpots($spots, $fullSpots = array()) {
+		$insertArray = array();
 		foreach($spots as $spot) {
 			# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
 			# versies een verkeerde afronding geeft bij >32bits getallen.
@@ -1273,23 +1274,27 @@ class SpotDb {
 			$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
 			$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
 			$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
-
-			$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
-					VALUES('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-					 Array($spot['messageid'],
-						   $spot['poster'],
-						   $spot['title'],
-						   $spot['tag'],
-						   (int) $spot['category'],
-						   $spot['subcata'],
-						   $spot['subcatb'],
-						   $spot['subcatc'],
-						   $spot['subcatd'],
-						   $spot['subcatz'],
-						   $spot['stamp'],
-						   ($spot['stamp'] * -1),
-						   $spot['filesize']));
+			
+			$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+					 Array($this->safe($spot['messageid']),
+						   $this->safe($spot['poster']),
+						   $this->safe($spot['title']),
+						   $this->safe($spot['tag']),
+						   $this->safe((int) $spot['category']),
+						   $this->safe($spot['subcata']),
+						   $this->safe($spot['subcatb']),
+						   $this->safe($spot['subcatc']),
+						   $this->safe($spot['subcatd']),
+						   $this->safe($spot['subcatz']),
+						   $this->safe($spot['stamp']),
+						   $this->safe(($spot['stamp'] * -1)),
+						   $this->safe($spot['filesize'])));
 		} # foreach
+		
+		# Actually insert the batch
+		$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
+												subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+							  VALUES " . implode(',', $insertArray), array());
 		
 		if (!empty($fullSpots)) {
 			$this->addFullSpots($fullSpots);
@@ -1301,6 +1306,8 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpots($fullSpots) {
+		$insertArray = array();
+
 		# en voeg het aan de database toe
 		foreach($fullSpots as $fullSpot) {
 			# Kap de verschillende strings af op een maximum van 
@@ -1308,16 +1315,19 @@ class SpotDb {
 			# kappen we expres niet af
 			$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
 			
-			$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
-					VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-					Array($fullSpot['messageid'],
-						  $fullSpot['userid'],
-						  (int) $fullSpot['verified'],
-						  $fullSpot['user-signature'],
-						  base64_encode(serialize($fullSpot['user-key'])),
-						  $fullSpot['xml-signature'],
-						  $fullSpot['fullxml']));
+			$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+					Array($this->safe($fullSpot['messageid']),
+						  $this->safe($fullSpot['userid']),
+						  $this->safe((int) $fullSpot['verified']),
+						  $this->safe($fullSpot['user-signature']),
+						  $this->safe(base64_encode(serialize($fullSpot['user-key']))),
+						  $this->safe($fullSpot['xml-signature']),
+						  $this->safe($fullSpot['fullxml'])));
 		} # foreach
+
+		# Actually insert the batch
+		$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
+							  VALUES " . implode(',', $insertArray), array());
 	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
