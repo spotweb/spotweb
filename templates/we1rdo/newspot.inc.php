@@ -12,6 +12,7 @@ if (empty($postresult)) {
 ?>
 
 <div class="newspotdiv">
+	<div></div> <!-- Empty div we can set loading to  -->
 	<form class="newspotform" name="newspotform" id="newspotform" action="<?php echo $tplHelper->makePostSpotAction(); ?>" method="post"  enctype="multipart/form-data">
 		<input type="hidden" name="newspotform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('newspotform'); ?>">
 		<input type="hidden" name="newspotform[newmessageid]" value="">
