@@ -1754,10 +1754,10 @@ class SpotDb {
 	/*
 	 * Create an entry in the auditlog
 	 */
-	function addAuditEntry($userid, $perm, $objectid, $allowed) {
-		return $this->_conn->modify("INSERT INTO permaudit(stamp, userid, permissionid, objectid, result) 
-										VALUES(%d, %d, %d, '%s', %d)",
-								Array(time(), (int) $userid, (int) $perm, $objectid, (int) $result));
+	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
+		return $this->_conn->modify("INSERT INTO permaudit(stamp, userid, permissionid, objectid, result, ipaddr) 
+										VALUES(%d, %d, %d, '%s', %d, '%s')",
+								Array(time(), (int) $userid, (int) $perm, $objectid, (int) $result, $ipaddr));
 	} # addAuditEntry
 
 
