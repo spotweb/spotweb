@@ -31,7 +31,7 @@ class SpotNzb {
 			
 			if (!empty($fullSpot['nzb'])) {
 				$nzbList[] = array('spot' => $fullSpot, 
-								   'nzb' => $spotsOverview->getNzb($fullSpot['nzb'], $nzb_spotnntp));
+								   'nzb' => $spotsOverview->getNzb($fullSpot, $nzb_spotnntp));
 			} # if
 		} # foreach
 
