@@ -482,6 +482,7 @@ span.strongnotnode-active a,
 span.strongnotnode a { background-color: maroon !important; color: white !important; }
 span.strongnotnode a:hover { background-color: white !important; color: maroon !important; }
 
+div.newspotdiv div.loading {background:#fff url(../img/loading.gif) no-repeat 50% 50%; opacity:0.75; position:absolute; margin:0;}
 div.newspotdiv form fieldset {padding:0 5px 0 5px; margin:0; border:0;}
 div.newspotdiv form dl {margin:0;}
 div.newspotdiv form dt {padding:3px 0 2px 0; float: left; width: 80px; clear: left;}

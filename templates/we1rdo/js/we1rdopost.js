@@ -22,7 +22,14 @@ function postReportUiDone() {
 } // postReportUiDone
 
 function postSpotUiStart() {
+	$("div.newspotdiv > div").css({
+		width: $("div.newspotdiv").width(),
+		height: $("div.newspotdiv").height()
+	});
+	$("div.newspotdiv > div").addClass("loading").show();
 } // postSpotUiStart()
 
 function postSpotUiDone() {
+	$("div.newspotdiv > div ").removeClass("loading").hide();
 } // postSpotUiDone()
+ 
