@@ -499,14 +499,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 
-		# ---- webcache table ---- #
-		$this->createTable('webcache', "ascii");
-		$this->validateColumn('stamp', 'webcache', 'INTEGER', "0", true, '');
-		$this->validateColumn('url', 'webcache', 'VARCHAR(255)', "''", true, 'ascii');
-		$this->validateColumn('headers', 'webcache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('compressed', 'webcache', 'BOOLEAN', 'false', true, ''); 
-		$this->validateColumn('content', 'webcache', 'mediumblob', NULL, false, '');
-		$this->alterStorageEngine("webcache", "InnoDB");
+		# ---- cache table ---- #
+		$this->createTable('cache', "ascii");
+		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
+		$this->validateColumn('url', 'cache', 'VARCHAR(255)', "''", true, 'ascii');
+		$this->validateColumn('headers', 'cache', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('compressed', 'cache', 'BOOLEAN', 'false', true, ''); 
+		$this->validateColumn('content', 'cache', 'mediumblob', NULL, false, '');
+		$this->alterStorageEngine("cache", "InnoDB");
 
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
@@ -555,6 +555,7 @@ abstract class SpotStruct_abs {
 			# drop de 'oude' tabellen
 			$this->dropTable('spots');
 			$this->dropTable('spottexts');
+			$this->dropTable('webcache');
 			
 			# rename deze tabel
 			$this->renameTable('spotstmp', 'spots');
