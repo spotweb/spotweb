@@ -516,6 +516,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('permissionid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'permaudit', "VARCHAR(128)", "''", true, 'ascii');
 		$this->validateColumn('result', 'permaudit', "BOOLEAN", "true", true, '');
+		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(40)", "''", true, 'ascii');
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
 		##############################################################################################
