@@ -40,14 +40,14 @@ class SpotPage_login extends SpotPage_Abs {
 			
 			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
 			if (!$tryLogin) {
-				$loginResult = array('result' => 'failure');
-			} else {
 				/* Create an audit event */
 				if ($this->_settings->get('auditlevel') != SpotSecurity::spot_secaudit_none) {
 					$spotAudit = new SpotAudit($this->_db, $this->_settings, $this->_currentSession['user']);
 					$spotAudit->audit(SpotSecurity::spotsec_perform_login, 'incorrect user or pass', false);
 				} # if
 				
+				$loginResult = array('result' => 'failure');
+			} else {
 				$loginResult = array('result' => 'success');
 				$this->_currentSession = $tryLogin;
 			} # else
