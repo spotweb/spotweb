@@ -146,8 +146,8 @@ class SpotsOverview {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($msgIdList, $nntp) {
-		return $nntp->getNzb($msgIdList);
+	function getNzb($fullSpot, $nntp) {
+		return $nntp->getNzb($fullSpot['nzb']);
 	} # getNzb
 
 	/*
