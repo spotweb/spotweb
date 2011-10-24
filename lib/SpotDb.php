@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.42');
+define('SPOTDB_SCHEMA_VERSION', '0.43');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1736,14 +1736,14 @@ class SpotDb {
 		return $tree;
 	} # getFilterList
 
-	function cleanWebCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM webcache WHERE stamp < %d", array(time()-$expireDays*24*60*60));
-	} # cleanWebCache
+	function cleanCache($expireDays) {
+		return $this->_conn->modify("DELETE FROM cache WHERE stamp < %d", array(time()-$expireDays*24*60*60));
+	} # cleanCache
 
-	function getWebCache($url) {
+	function getCache($url) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM webcache WHERE url = '%s'", array($url));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM cache WHERE url = '%s'", array($url));
 				if (!empty($tmp)) {
 					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
 				} # if
@@ -1752,7 +1752,7 @@ class SpotDb {
 			} # case 'pdo_pgsql'
 		
 			default		: {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM webcache WHERE url = '%s'", array($url));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM cache WHERE url = '%s'", array($url));
 				break;
 			} # default
 		} # switch
@@ -1766,9 +1766,13 @@ class SpotDb {
 		} # if
 		
 		return false;
-	} # getWebCache
+	} # getCache
 
-	function saveWebCache($url, $headers, $content, $compress) {
+	function updateCacheStamp($url) {
+		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE url = '%s'", Array(time(), $url));
+	} # updateCacheStamp
+
+	function saveCache($url, $headers, $content, $compress) {
 		if ($compress == true) {
 			$content = gzdeflate($content);
 		} # if
@@ -1777,28 +1781,28 @@ class SpotDb {
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'		:
 			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE stamp = %d, headers = '%s', compressed = %s, content = '%s'",
+					$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE stamp = %d, headers = '%s', compressed = %s, content = '%s'",
 										Array(time(), $url, $headers, $compressed, $content, time(), $headers, $compressed, $content));
 					 break;
 			} # mysql
 
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%b')", Array(time(), $url, $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%b')", Array(time(), $url, $headers, $compressed, $content));
 					} # if
 					break;
 			} # pgsql
 
 			default				: {
-					$this->_conn->exec("UPDATE webcache SET stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO webcache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s')", Array(time(), $url, $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s')", Array(time(), $url, $headers, $compressed, $content));
 					} # if
 					break;
 			} # default
 		} # switch
-	} # saveWebCache
+	} # saveCache
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
