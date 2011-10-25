@@ -386,7 +386,29 @@ class SpotsOverview {
 		#   cat0_z0_a9,cat0_z1_a9,cat0_z3_a9, ==> HD beeld
 		#	cat0_z0_a9,cat0_z0_b3,cat0_z0_c1,cat0_z0_c2,cat0_z0_c6,cat0_z0_c11,~cat0_z1,~cat0_z2,~cat0_z3 ==> Nederlands ondertitelde films
 		# 	cat0_a9 ==> Alles in x264HD
-		#	
+		#	cat1_z0,cat1_z1,cat1_z2,cat1_z3 ==> Alle muziek, maar soms heeft muziek geen genre ingevuld!
+		#
+		#
+		# De categoryList array is als volgt opgebouwd:
+		#
+		#	array(1) {
+		#	  ["cat"]=>
+		#	  array(1) {								<== Hoofdcategory nummer (cat1)
+		#		[1]=>
+		#		array(4) {
+		#		  ["z0"]=>								<== Type (subcatz) nummer (cat1_z0)
+		#		  array(4) {
+		#			["a"]=>								<== Subcategorieen (cat1_z0_a)
+		#			array(9) {
+		#			  [0]=>								
+		#			  string(1) "0"						<== Geselecteerde subcategory (in totaal dus cat1_z0_a0)
+		#			}
+		#			["b"]=>
+		#			array(7) {
+		#			  [0]=>
+		#			  string(1) "0"
+		#
+		#
 		foreach($categoryList['cat'] as $catid => $cat) {
 			#
 			# Voor welke category die we hebben, gaan we alle subcategorieen 
@@ -449,7 +471,7 @@ class SpotsOverview {
 					$tmpStr .= ")";
 					$categorySql[] = $tmpStr;
 				} # foreach type
-					
+
 			} # if
 		} # foreach
 
