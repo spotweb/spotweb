@@ -232,13 +232,13 @@ try {
 	die();
 } # catch
 
-## WebCache cleanup
+## cache cleanup
 try {
 	$db->cleanCache(30);
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while cleaning up webcache:" . PHP_EOL;
+	echo "Fatal error occured while cleaning up cache:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
 	echo $x->getTraceAsString();

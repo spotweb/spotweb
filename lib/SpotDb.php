@@ -1760,11 +1760,10 @@ class SpotDb {
 								Array(time(), (int) $userid, (int) $perm, $objectid, (int) $allowed, $ipaddr));
 	} # addAuditEntry
 
-
 	function cleanCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE stamp < %d", array(time()-$expireDays*24*60*60));
+		return $this->_conn->modify("DELETE FROM cache WHERE url LIKE 'http%' AND stamp < %d", array(time()-$expireDays*24*60*60));
 	} # cleanCache
-
+	
 	function getCache($url) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
