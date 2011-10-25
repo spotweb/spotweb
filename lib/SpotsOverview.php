@@ -297,7 +297,22 @@ class SpotsOverview {
 				$tmpStr = '';
 				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
 				
-					if ((($subCat == $subCatSelected) || ($subCatSelected == '*')) && ($subCat !== 'z')) {
+					/*
+					 * We kunnen vier gevallen hebben:
+					 *
+					 *  $subCatSelected bevat een lege string, dan matched het op niets
+					 * 	$subCatSelected bevat een sterretje, dan matchen we alle subcategorieen
+					 *	$typeSelected bevat een lege string, dan matched het op niets
+					 *  $typeSelected bevat een sterretje, dan matched het op alle subcategorieen
+					 */
+					if ($subCatSelected == '*') {
+						foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
+							$typeKey = 'z' . $typeKey;
+							if (($typeKey == $typeSelected) || ($typeSelected == '*')) {
+								$tmpStr .= ',sub' . $hCat . '_' . $typeKey;
+							} # if
+						} # foreach
+					} elseif (($subCat == $subCatSelected) && ($subCat !== 'z')) {
 						foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
 							$typeKey = 'z' . $typeKey;
 							if (($typeKey == $typeSelected) || ($typeSelected == '*')) {
@@ -348,7 +363,6 @@ class SpotsOverview {
 				# 0e element is hoofdcategory
 				# 1e element is type
 				# 2e element is category
-				
 				$val = explode('_', (substr($val, 3) . '_'));
 
 				$catVal = $val[0];
@@ -359,7 +373,21 @@ class SpotsOverview {
 				if (count($val) >= 4) {
 					$categoryList['cat'][$catVal][$typeVal][$subCatIdx][] = $subCatVal;
 				} # if
-			} # if
+			} elseif (substr($val, 0, 3) == 'sub') {
+				# 0e element is hoofdcategory
+				# 1e element is type
+				$val = explode('_', (substr($val, 3) . '_'));
+
+				$catVal = $val[0];
+				$typeVal = $val[1];
+
+				# Creer de z-category in de categorylist
+				if (count($val) == 3) {
+					if (!isset($categoryList['cat'][$catVal][$typeVal])) {
+						$categoryList['cat'][$catVal][$typeVal] = array();
+					} # if
+				} # if
+			} # elseif
 		} # foreach
 		
 		return array($categoryList, $strongNotList);
@@ -387,7 +415,6 @@ class SpotsOverview {
 		#	cat0_z0_a9,cat0_z0_b3,cat0_z0_c1,cat0_z0_c2,cat0_z0_c6,cat0_z0_c11,~cat0_z1,~cat0_z2,~cat0_z3 ==> Nederlands ondertitelde films
 		# 	cat0_a9 ==> Alles in x264HD
 		#	cat1_z0,cat1_z1,cat1_z2,cat1_z3 ==> Alle muziek, maar soms heeft muziek geen genre ingevuld!
-		#
 		#
 		# De categoryList array is als volgt opgebouwd:
 		#
