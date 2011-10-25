@@ -1761,7 +1761,7 @@ class SpotDb {
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE url LIKE 'http%' AND stamp < %d", array(time()-$expireDays*24*60*60));
+		return $this->_conn->rawExec("DELETE FROM cache WHERE url LIKE 'http%' AND stamp < " . ((int) time()-$expireDays*24*60*60));
 	} # cleanCache
 	
 	function getCache($url) {
