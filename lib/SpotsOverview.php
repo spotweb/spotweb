@@ -4,16 +4,15 @@
  * cache dient
  */
 class SpotsOverview {
-	private $_cache = array();
 	private $_db;
 	private $_settings;
 
 	const cache_nzb_prefix		= 'SpotNzb::';
+	const cache_image_prefix	= 'SpotImage::';
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		$this->_cache = new SpotCache($this->_db);
 	} # ctor
 	
 	/*
@@ -151,16 +150,92 @@ class SpotsOverview {
 	 * Geef de NZB file terug
 	 */
 	function getNzb($fullSpot, $nntp) {
-		if ($nzb = $this->_cache->get_from_cache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
-			$this->_cache->update_cache_stamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid']);
+		$cache = new SpotCache($this->_db);
+
+		if ($nzb = $cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
+			$cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid']);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$this->_cache->save_to_cache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+			$cache->saveCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
 		} # else
 
 		return $nzb;
 	} # getNzb
+	
+	/* 
+	 * Geef de image file terug
+	 */
+	function getImage($fullSpot, $nntp) {
+		$cache = new SpotCache($this->_db);
+
+		if (is_array($fullSpot['image'])) {
+			$header = "Content-Type: image/jpeg";
+
+			if ($img = $cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
+				$cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid']);
+				$img = $img['content'];
+			} else {
+				$img = $nntp->getImage($fullSpot);
+				$cache->saveCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
+			} # if 
+		} else {
+			list($http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
+
+			foreach(explode("\r\n", $http_headers) as $hdr) {
+				if (substr($hdr, 0, strlen('Content-Type: ')) == 'Content-Type: ') {
+					$header = $hdr;
+				} # if
+			} # foreach
+			
+			//$header = ($header
+			
+		} # else
+
+		return array($header, $img);
+	} # getImage
+
+	/* 
+	 * Haalt een url op en cached deze
+	 */
+	function getFromWeb($url, $ttl=900, $compress=false) {
+		$cache = new SpotCache($this->_db);
+		$url = str_replace(" ", "+", urldecode($url));
+
+		$content = $cache->getCache($url);
+		if (!$content || time()-(int) $content['stamp'] > $ttl) {
+			$data = array();
+
+			$ch = curl_init();
+			curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
+			curl_setopt ($ch, CURLOPT_URL, $url);
+			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
+			curl_setopt ($ch, CURLOPT_HEADER, 1); 
+			if ($content) {
+				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
+			} # if
+
+			$response = curl_exec($ch);
+			$info = curl_getinfo($ch);
+			$data['headers'] = substr($response, 0, $info['header_size']);
+			$data['content'] = substr($response, -$info['download_content_length']);  
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+
+			if ($http_code != 200 && $http_code != 304) {
+				return false;
+			} elseif ($ttl > 0) {
+				$cache->saveCache($url, trim($data['headers']), $data['content'], $compress);
+			} # else
+		} else {
+			$data = $content;
+		} # else
+
+		return array($data['headers'], $data['content']);
+	} # getUrl
 
 	/*
 	 * Laad de spots van af positie $start, maximaal $limit spots.

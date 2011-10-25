@@ -251,7 +251,7 @@ class SpotNntp {
 			/*
 			 * Retrieve all image segments 
 			 */
-			foreach($segmentList as $seg) {
+			foreach($segmentList['image']['segment'] as $seg) {
 				$imgTmp = implode('', $this->getBody('<' . $seg . '>'));
 				$imageContent .= $this->_spotParser->unspecialZipStr($imgTmp);
 			} # foreach
