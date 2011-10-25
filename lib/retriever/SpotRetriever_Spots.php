@@ -9,8 +9,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull) {
-			parent::__construct($server, $db, $settings);
+		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull, $debug) {
+			parent::__construct($server, $db, $settings, $debug);
 			
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
@@ -63,6 +63,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * opgehaald hebben.
 		 */
 		function updateLastRetrieved($highestMessageId) {
+			$this->debug('Highest messageid found: ' . $highestMessageId);
+			
 			$this->_db->removeExtraSpots($highestMessageId);
 		} # updateLastRetrieved
 		
@@ -87,9 +89,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			} else {
 				$retentionStamp = 0;
 			} # else
+			$this->debug('retentionStamp=' . $retentionStamp);
+			$this->debug('hdrList=' . serialize($hdrList));
 			
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
+
+			$this->debug('dbIdList=' . serialize($dbidList));
 
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
@@ -252,7 +258,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			 * number found
 			 */
 			$this->_db->addSpots($spotDbList, $fullSpotDbList);
+			$this->debug('added Spots, spotDbList=' . serialize($spotDbList));
+			$this->debug('added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
+			
 			$this->_db->setMaxArticleid($this->_server['host'], $endMsg);
+			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
 			
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
