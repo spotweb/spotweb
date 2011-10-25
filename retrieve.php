@@ -83,6 +83,9 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 	$db->setRetrieverRunning($settings_nntp_hdr['host'], false);
 } # if
 
+## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
+$debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
+
 ## Spots
 try {
 	$rsaKeys = $settings->get('rsa_keys');
@@ -91,7 +94,8 @@ try {
 										 $settings,										 
 										 $rsaKeys, 
 										 $req->getDef('output', ''),
-										 $settings->get('retrieve_full'));
+										 $settings->get('retrieve_full'),
+										 $debugLog);
 	$msgdata = $retriever->connect($settings->get('hdr_group'));
 	$retriever->displayStatus('dbcount', $db->getSpotCount(''));
 	
@@ -139,7 +143,8 @@ try {
 		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
 												$db,
 												$settings,
-												$req->getDef('output', ''));
+												$req->getDef('output', ''),
+												$debugLog);
 		$msgdata = $retriever->connect($settings->get('comment_group'));
 
 		$curMsg = $db->getMaxArticleId('comments');
@@ -182,7 +187,8 @@ try {
 		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
 												$db,
 												$settings,
-												$req->getDef('output', ''));
+												$req->getDef('output', ''),
+												$debugLog);
 		$msgdata = $retriever->connect($settings->get('report_group'));
 
 		$curMsg = $db->getMaxArticleId('reports');

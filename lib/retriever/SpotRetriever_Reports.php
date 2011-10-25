@@ -6,8 +6,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		 * server - de server waar naar geconnect moet worden
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType) {
-			parent::__construct($server, $db, $settings);			
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug) {
+			parent::__construct($server, $db, $settings, $debug);
 			
 			$this->_outputType = $outputType;
 		} # ctor

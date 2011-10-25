@@ -4,6 +4,7 @@ abstract class SpotRetriever_Abs {
 		protected $_spotnntp;
 		protected $_db;
 		protected $_settings;
+		protected $_debug;
 		
 		private $_msgdata;
 
@@ -26,11 +27,18 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $debug) {
 			$this->_server = $server;
 			$this->_db = $db;
 			$this->_settings = $settings;
+			$this->_debug = $debug;
 		} # ctor
+
+		function debug($s) {
+			if ($this->_debug) {
+				echo 'DEBUG: ' . $s . PHP_EOL;
+			} # if
+		} # debug
 		
 		function connect($group) {
 			# als er al een retriever instance loopt, stop er dan mee
@@ -54,6 +62,8 @@ abstract class SpotRetriever_Abs {
 		 * Zoekt het juiste articlenummer voor een opgegeven lijst van messageids
 		 */
 		function searchMessageid($messageIdList) {
+			$this->debug('searchMessageId=' . serialize($messageIdList));
+			
 			if (empty($messageIdList)) {
 				return 0;
 			} # if
@@ -70,6 +80,7 @@ abstract class SpotRetriever_Abs {
 
 				# get the list of headers (XHDR)
 				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				$this->debug('getMessageIdList returned=' . serialize($hdrList));
 				
 				# we draaien de messageid's lijst om, omdat we willen dat we de meest recente
 				# messageid als uitgangspunt nemen
@@ -86,6 +97,9 @@ abstract class SpotRetriever_Abs {
 				} # for
 			} # while
 
+			$this->debug('getMessageIdList loop finished, found = ' . $found);
+			$this->debug('getMessageIdList loop finished, curMsg = ' . $curMsg);
+			
 			return $curMsg;
 		} # searchMessageId
 		
@@ -135,6 +149,7 @@ abstract class SpotRetriever_Abs {
 			# we are done updating, make sure that if the newsserver deleted 
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
+				$this->debug('loopTillEnd() finished, highestMessageId = ' . $highestMessageId);
 				$this->updateLastRetrieved($highestMessageId);
 			} # if
 	
