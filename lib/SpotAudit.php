@@ -11,7 +11,17 @@ class SpotAudit {
 	} # ctor
 	
 	function audit($perm, $objectid, $allowed) {
-		$this->_db->addAuditEntry($this->_user['userid'], $perm, $objectid, $allowed, $_REQUEST['REMOTE_ADDR']);
+		if (getenv("HTTP_CLIENT_IP")) {
+			$remote_addr = getenv("HTTP_CLIENT_IP");
+		} elseif(getenv("HTTP_X_FORWARDED_FOR")) {
+			$remote_addr = getenv("HTTP_X_FORWARDED_FOR");
+		} elseif(getenv("REMOTE_ADDR")) {
+			$remote_addr = getenv("REMOTE_ADDR");
+		} else {
+			$remote_addr = "unknown";
+		}
+
+		$this->_db->addAuditEntry($this->_user['userid'], $perm, $objectid, $allowed, $remote_addr);
 	} # audit
 	
 } # class SpotAudit
