@@ -89,40 +89,34 @@ $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
 if ($settings_external_blacklist = "yes") {
+	echo PHP_EOL . PHP_EOL;
+	$blurl = $settings->get('blacklist_url');
 	try {
-		# Is het opgehaalde bestand een echte blacklist?
-		echo PHP_EOL . PHP_EOL;
-		$blurl = $settings->get('blacklist_url');
-		$blfile = $settings->get('blacklist_path');
-		if (copy($blurl,"external/temp.txt") == 1) {
-			$checkfile = fopen ("external/temp.txt","r");
-			$checkfirst = fgets($checkfile);
-			fclose($checkfile);
-			if ((strlen($checkfirst) < 4) || (strlen($checkfirst) > 6)) {
-				echo "Error, can't update blacklist!" . PHP_EOL;
-			} else {
-				if (copy("external/temp.txt",blfile) == 1) {
-					echo "Downloaded blacklist succesfully";
-				} else {
-					echo "Error, can't write to " . $blfile;
-				}
-			}
-		} else {
+		$blacklistfile = fopen ($blurl,"r");
+		$blacklistuserid = fgets($blacklistfile);
+		# Is het bestand dat we willen ophalen een echte blacklist? 
+		if ((strlen($blacklistuserid) < 4) || (strlen($blacklistuserid) > 8)) {
 			echo "Error, can't update blacklist!" . PHP_EOL;
-		}
-		$blacklistfile = fopen ($blfile,"r") or exit("Error, can't open " . $blfile);
-		while(!feof($blacklistfile)) {
-			$blacklistuserid = fgets($blacklistfile);
+		} else {
+			# haal de blacklist op
 			$blacklistuserid = str_replace(chr(13),"",$blacklistuserid);
 			$blacklistuserid = str_replace(chr(10),"",$blacklistuserid);
 			$db->addExternalToBlacklist($blacklistuserid);
+			while(!feof($blacklistfile)) {
+				$blacklistuserid = fgets($blacklistfile);
+				$blacklistuserid = str_replace(chr(13),"",$blacklistuserid);
+				$blacklistuserid = str_replace(chr(10),"",$blacklistuserid);
+				$db->addExternalToBlacklist($blacklistuserid);
+			}
+			# verwijder userid's die niet meer op de blacklist staan
+			$db->removeOldBlackList();
+			echo "Blacklist updated succesfully" . PHP_EOL;
 		}
 		fclose($blacklistfile);
-		$db->removeOldBlackList();
 	} catch(Exception $x) {
+		echo "Error, can't update blacklist!" . PHP_EOL;
 		echo PHP_EOL . PHP_EOL;
-		echo 'Update external blacklist failed' . PHP_EOL;
-	} # catch
+	}
 } # if
 
 ## Spots
