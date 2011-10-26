@@ -944,12 +944,16 @@ class SpotsOverview {
 									} # if
 								} # foreach
 							} else {
-								$subcatsMissing[$headCatNumber][$subCatType][$subCat] = array();
+								// $subcatsMissing[$headCatNumber][$subCatType][$subCat] = array();
 							} # if
 						} # if
 					} # foreach
 					
 				} # foreach
+
+//var_dump($categoryList);
+//var_dump($subcatsMissing);
+//die();
 
 				#
 				# Niet de hele hoofdgroep is geselecteerd, dan selecteren we met de hand
@@ -968,7 +972,7 @@ class SpotsOverview {
 							foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
 								if ($subCatKey !== 'z') {
 									if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
-										$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
+										// $compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
 									} elseif (empty($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
 										# Als de subcategorie helemaal leeg is, dan wil de 
 										# gebruiker er niets uit hebben
@@ -979,11 +983,9 @@ class SpotsOverview {
 										# Afhankelijk of de user meer dan de helft wel of niet 
 										# geselecteerd heeft, voegen we hier not's toe of juist niet
 										#
+										$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
-											if (in_array($subType, $subCatDesc[1])) {
-											
-												$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
-
+											//if (in_array($subType, $subCatDesc[1])) {
 												if ($moreFalseThanTrue) {
 													if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
 														$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
@@ -1000,7 +1002,7 @@ class SpotsOverview {
 														$compressedList .= '!cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
 													} # if
 												} # if
-											} # if
+											//} # if
 										} # foreach
 									} # else
 								} # if
