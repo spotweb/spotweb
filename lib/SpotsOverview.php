@@ -157,7 +157,7 @@ class SpotsOverview {
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$cache->saveCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+			$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
 		} # else
 
 		return $nzb;
@@ -177,7 +177,7 @@ class SpotsOverview {
 				$img = $img['content'];
 			} else {
 				$img = $nntp->getImage($fullSpot);
-				$cache->saveCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
+				$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
 			} # if 
 		} else {
 			list($http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
@@ -187,9 +187,6 @@ class SpotsOverview {
 					$header = $hdr;
 				} # if
 			} # foreach
-			
-			//$header = ($header
-			
 		} # else
 
 		return array($header, $img);
@@ -228,7 +225,7 @@ class SpotsOverview {
 			if ($http_code != 200 && $http_code != 304) {
 				return false;
 			} elseif ($ttl > 0) {
-				$cache->saveCache($url, trim($data['headers']), $data['content'], $compress);
+				$cache->saveCache(NULL, $url, $data['headers'], $data['content'], $compress);
 			} # else
 		} else {
 			$data = $content;
@@ -495,8 +492,8 @@ class SpotsOverview {
 		#
 		#	array(1) {
 		#	  ["cat"]=>
-		#	  array(1) {								<== Hoofdcategory nummer (cat1)
-		#		[1]=>
+		#	  array(1) {								
+		#		[1]=>									<== Hoofdcategory nummer (cat1)
 		#		array(4) {
 		#		  ["z0"]=>								<== Type (subcatz) nummer (cat1_z0)
 		#		  array(4) {
@@ -524,6 +521,8 @@ class SpotsOverview {
 				foreach($cat as $type => $typeValues) {
 					$catid = (int) $catid;
 					$tmpStr = "((s.category = " . (int) $catid . ")";
+					
+					# dont filter the zz types (games/apps)
 					if ($type[1] !== 'z') {
 						$tmpStr .= " AND (s.subcatz = '" . $type . "|')";
 					} # if
@@ -924,10 +923,10 @@ class SpotsOverview {
 			# loop door elke subcategorie heen 
 			if (isset($categoryList['cat'][$headCatNumber])) {
 				$subcatsMissing[$headCatNumber] = array();
-				
+
 				foreach($categoryList['cat'][$headCatNumber] as $subCatType => $subCatValues) {
 					$subcatsMissing[$headCatNumber][$subCatType] = array();
-					
+	
 					foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
 						if ($subCat !== 'z') {
 							if (isset($categoryList['cat'][$headCatNumber][$subCatType][$subCat])) {
@@ -942,13 +941,18 @@ class SpotsOverview {
 									} # if
 								} # foreach
 							} else {
-								$subcatsMissing[$headCatNumber][$subCatType][$subCat] = array();
+								// $subcatsMissing[$headCatNumber][$subCatType][$subCat] = array();
 							} # if
 						} # if
 					} # foreach
 					
 				} # foreach
 
+//var_dump($categoryList);
+//var_dump($subcatsMissing);
+//die();
+
+				#
 				# Niet de hele hoofdgroep is geselecteerd, dan selecteren we met de hand
 				# handmatig de verschillende subcategorieen.
 				#
@@ -965,7 +969,7 @@ class SpotsOverview {
 							foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
 								if ($subCatKey !== 'z') {
 									if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
-										$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
+										// $compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
 									} elseif (empty($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
 										# Als de subcategorie helemaal leeg is, dan wil de 
 										# gebruiker er niets uit hebben
@@ -976,11 +980,9 @@ class SpotsOverview {
 										# Afhankelijk of de user meer dan de helft wel of niet 
 										# geselecteerd heeft, voegen we hier not's toe of juist niet
 										#
+										$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
-											if (in_array($subType, $subCatDesc[1])) {
-											
-												$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
-
+											//if (in_array($subType, $subCatDesc[1])) {
 												if ($moreFalseThanTrue) {
 													if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
 														$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
@@ -997,7 +999,7 @@ class SpotsOverview {
 														$compressedList .= '!cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
 													} # if
 												} # if
-											} # if
+											//} # if
 										} # foreach
 									} # else
 								} # if
