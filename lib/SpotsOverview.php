@@ -495,8 +495,8 @@ class SpotsOverview {
 		#
 		#	array(1) {
 		#	  ["cat"]=>
-		#	  array(1) {								<== Hoofdcategory nummer (cat1)
-		#		[1]=>
+		#	  array(1) {								
+		#		[1]=>									<== Hoofdcategory nummer (cat1)
 		#		array(4) {
 		#		  ["z0"]=>								<== Type (subcatz) nummer (cat1_z0)
 		#		  array(4) {
@@ -524,6 +524,8 @@ class SpotsOverview {
 				foreach($cat as $type => $typeValues) {
 					$catid = (int) $catid;
 					$tmpStr = "((s.category = " . (int) $catid . ")";
+					
+					# dont filter the zz types (games/apps)
 					if ($type[1] !== 'z') {
 						$tmpStr .= " AND (s.subcatz = '" . $type . "|')";
 					} # if
@@ -924,10 +926,10 @@ class SpotsOverview {
 			# loop door elke subcategorie heen 
 			if (isset($categoryList['cat'][$headCatNumber])) {
 				$subcatsMissing[$headCatNumber] = array();
-				
+
 				foreach($categoryList['cat'][$headCatNumber] as $subCatType => $subCatValues) {
 					$subcatsMissing[$headCatNumber][$subCatType] = array();
-					
+	
 					foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
 						if ($subCat !== 'z') {
 							if (isset($categoryList['cat'][$headCatNumber][$subCatType][$subCat])) {
@@ -949,6 +951,7 @@ class SpotsOverview {
 					
 				} # foreach
 
+				#
 				# Niet de hele hoofdgroep is geselecteerd, dan selecteren we met de hand
 				# handmatig de verschillende subcategorieen.
 				#
