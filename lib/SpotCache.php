@@ -15,8 +15,8 @@ class SpotCache {
 		} # else
 	} # getCache
 
-	function saveCache($url, $headers, $content, $compress=false) {
-		$this->_db->saveCache($url, trim($headers), $content, $compress);
+	function saveCache($messageid, $url, $headers, $content, $compress=false) {
+		$this->_db->saveCache($messageid, $url, trim($headers), $content, $compress);
 	} # saveCache
 
 	function updateCacheStamp($url) {
