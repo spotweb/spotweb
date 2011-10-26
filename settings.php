@@ -174,6 +174,13 @@ $settings['nonauthenticated_userid'] = 1;
 $settings['retrieve_increment'] = 1000;
 
 #
+# Externe blacklist
+#
+$settings['external_blacklist'] = "yes";
+$settings['blacklist_url'] = "http://jij.haatmij.nl/spotnet/blacklist.txt";
+$settings['blacklist_path'] = "external/blacklist.txt";
+
+#
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
 #
@@ -216,6 +223,7 @@ if (($settings['templates']['autodetect']) &&
 	$settings['tpl_name'] = $settings['templates']['default'];
 } # else
 $settings['tpl_name'] = str_replace('templates/', '', $settings['tpl_name']);
+
 
 # Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 # de NZB server

@@ -86,6 +86,45 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 ## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
 $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 
+## External blacklist
+$settings_external_blacklist = $settings->get('external_blacklist');
+if ($settings_external_blacklist = "yes") {
+	try {
+		# Is het opgehaalde bestand een echte blacklist?
+		echo PHP_EOL . PHP_EOL;
+		$blurl = $settings->get('blacklist_url');
+		$blfile = $settings->get('blacklist_path');
+		if (copy($blurl,"external/temp.txt") == 1) {
+			$checkfile = fopen ("external/temp.txt","r");
+			$checkfirst = fgets($checkfile);
+			fclose($checkfile);
+			if ((strlen($checkfirst) < 4) || (strlen($checkfirst) > 6)) {
+				echo "Error, can't update blacklist!" . PHP_EOL;
+			} else {
+				if (copy("external/temp.txt",blfile) == 1) {
+					echo "Downloaded blacklist succesfully";
+				} else {
+					echo "Error, can't write to " . $blfile;
+				}
+			}
+		} else {
+			echo "Error, can't update blacklist!" . PHP_EOL;
+		}
+		$blacklistfile = fopen ($blfile,"r") or exit("Error, can't open " . $blfile);
+		while(!feof($blacklistfile)) {
+			$blacklistuserid = fgets($blacklistfile);
+			$blacklistuserid = str_replace(chr(13),"",$blacklistuserid);
+			$blacklistuserid = str_replace(chr(10),"",$blacklistuserid);
+			$db->addExternalToBlacklist($blacklistuserid);
+		}
+		fclose($blacklistfile);
+		$db->removeOldBlackList();
+	} catch(Exception $x) {
+		echo PHP_EOL . PHP_EOL;
+		echo 'Update external blacklist failed' . PHP_EOL;
+	} # catch
+} # if
+
 ## Spots
 try {
 	$rsaKeys = $settings->get('rsa_keys');
