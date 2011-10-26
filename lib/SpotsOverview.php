@@ -157,7 +157,7 @@ class SpotsOverview {
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$cache->saveCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+			$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
 		} # else
 
 		return $nzb;
@@ -177,7 +177,7 @@ class SpotsOverview {
 				$img = $img['content'];
 			} else {
 				$img = $nntp->getImage($fullSpot);
-				$cache->saveCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
+				$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
 			} # if 
 		} else {
 			list($http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
@@ -187,9 +187,6 @@ class SpotsOverview {
 					$header = $hdr;
 				} # if
 			} # foreach
-			
-			//$header = ($header
-			
 		} # else
 
 		return array($header, $img);
@@ -228,7 +225,7 @@ class SpotsOverview {
 			if ($http_code != 200 && $http_code != 304) {
 				return false;
 			} elseif ($ttl > 0) {
-				$cache->saveCache($url, trim($data['headers']), $data['content'], $compress);
+				$cache->saveCache(NULL, $url, $data['headers'], $data['content'], $compress);
 			} # else
 		} else {
 			$data = $content;

@@ -234,6 +234,11 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
+		# Cache moest geleegd worden
+		if (($this->_spotdb->getSchemaVer() < 0.45) && ($this->tableExists('cache'))) {
+			$this->dropTable('cache');
+		}
+
 		# drop eventueel FTS indexes op de spotsfull tabel
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
@@ -502,8 +507,9 @@ abstract class SpotStruct_abs {
 
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
-		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
+		$this->validateColumn('messageid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('url', 'cache', 'VARCHAR(255)', "''", true, 'ascii');
+		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('headers', 'cache', 'TEXT', NULL, false, 'ascii');
 		$this->validateColumn('compressed', 'cache', 'BOOLEAN', 'false', true, ''); 
 		$this->validateColumn('content', 'cache', 'mediumblob', NULL, false, '');
@@ -655,8 +661,9 @@ abstract class SpotStruct_abs {
 		# ---- Indexen op spotteridblacklist ----
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
 
-		# ---- Indexen op webcache ----
-		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("url"));
+		# ---- Indexen op cache ----
+		$this->validateIndex("idx_cache_1", "", "cache", array("messageid"));
+		$this->validateIndex("idx_cache_2", "UNIQUE", "cache", array("url"));
 		
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -676,9 +683,12 @@ abstract class SpotStruct_abs {
 		# Hier droppen we kolommen ###################################################################
 		##############################################################################################
 		$this->dropColumn('filesize', 'spotsfull');
-		if ($this->tableExists('webcache')) { $this->dropTable('webcache'); }
 
-		
+		##############################################################################################
+		# Hier droppen we tabellen ###################################################################
+		##############################################################################################		
+		$this->dropTable('webcache');
+
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
