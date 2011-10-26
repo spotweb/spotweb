@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.44');
+define('SPOTDB_SCHEMA_VERSION', '0.45');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1192,22 +1192,22 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM cache WHERE messageid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			
 			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
 									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
+									LEFT JOIN cache ON spots.messageid=cache.messageid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
 	} # deleteSpot
-	
-	
 
 	/*
 	 * Markeer een spot in de db moderated
@@ -1239,15 +1239,18 @@ class SpotDb {
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
 									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM cache WHERE cache.messageid not in 
+									(SELECT messageid FROM spots)") ;
 				break;
 			} # pdo_sqlite
 			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
+				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
 					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
+					LEFT JOIN cache ON spots.messageid=cache.messageid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1796,7 +1799,7 @@ class SpotDb {
 		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE url = '%s'", Array(time(), $url));
 	} # updateCacheStamp
 
-	function saveCache($url, $headers, $content, $compress) {
+	function saveCache($messageid, $url, $headers, $content, $compress) {
 		if ($compress == true) {
 			$content = gzdeflate($content);
 		} # if
@@ -1805,23 +1808,24 @@ class SpotDb {
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'		:
 			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE stamp = %d, headers = '%s', compressed = %s, content = '%s'",
-										Array(time(), $url, $headers, $compressed, $content, time(), $headers, $compressed, $content));
+					$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')
+										  ON DUPLICATE KEY UPDATE messageid = '%s', stamp = %d, headers = '%s', compressed = %s, content = '%s'",
+										  Array($messageid, $url, time(), $headers, $compressed, $content, $messageid, time(), $headers, $compressed, $content));
 					 break;
 			} # mysql
 
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array($messageid, time(), $headers, $compressed, $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%b')", Array(time(), $url, $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($messageid, $url, time(), $headers, $compressed, $content));
 					} # if
 					break;
 			} # pgsql
 
 			default				: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array(time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array($messageid, time(), $headers, $compressed, $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(stamp,url,headers,compressed,content) VALUES (%d, '%s', '%s', '%s', '%s')", Array(time(), $url, $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($messageid, $url, time(), $headers, $compressed, $content));
 					} # if
 					break;
 			} # default
