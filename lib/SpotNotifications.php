@@ -93,7 +93,7 @@ class SpotNotifications {
 	function sendNewUserMail($user) {
 		# Omdat het versturen van dit bericht expliciet is opgegeven, worden er
 		# geen security-checks gedaan voor de ontvanger.
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) {
+		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'welcomemail')) {
 			$notification = $this->_notificationTemplate->template('user_added_email', array('user' => $user, 'adminUser' => $this->_currentSession['user']));
 
 			$user['prefs']['notifications']['email']['sender'] = $this->_currentSession['user']['mail'];
