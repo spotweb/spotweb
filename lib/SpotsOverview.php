@@ -980,7 +980,7 @@ class SpotsOverview {
 										# Afhankelijk of de user meer dan de helft wel of niet 
 										# geselecteerd heeft, voegen we hier not's toe of juist niet
 										#
-										$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
+										$moreFalseThanTrue = (count(@$subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(@SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
 											//if (in_array($subType, $subCatDesc[1])) {
 												if ($moreFalseThanTrue) {

@@ -29,11 +29,11 @@
 	<tr> <th colspan="2"> PHP extension </th> <th> Info </th> <th> Result </th> </tr>
 	<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> </td> <td> <?php showResult(extension_loaded($settings['db']['engine'])); ?> </td> </tr>
 	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
-	<tr> <td colspan="2"> curl </td> <td> Notify My Android / Notifo / Prowl / Twitter </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
+	<tr> <td colspan="2"> curl </td> <td> </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
 	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
-	<tr> <td colspan="2"> zip </td> <td> NZB files comprimeren </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
+	<tr> <td colspan="2"> zip </td> <td> </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
