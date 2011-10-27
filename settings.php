@@ -178,6 +178,14 @@ $settings['nonauthenticated_userid'] = 1;
 $settings['retrieve_increment'] = 1000;
 
 #
+# Externe blacklist
+# 
+$settings['external_blacklist'] = "on";	# "on" = zet de externe blacklist aan, de blacklist wordt opgehaald bij de eerstvolgende retrieve
+										# "off" = zet het ophalen van de blacklist uit (huidige blackist blijft in de database aanwezig)
+										# "remove" = verwijderd de externe blacklist uit de database
+$settings['blacklist_url'] = "http://jij.haatmij.nl/spotnet/blacklist.txt"; 
+
+#
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
 #

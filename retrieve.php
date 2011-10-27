@@ -86,6 +86,38 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 ## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
 $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 
+## External blacklist
+$settings_external_blacklist = $settings->get('external_blacklist');
+if ($settings_external_blacklist == "on") {
+	echo PHP_EOL . PHP_EOL;
+	$blurl = $settings->get('blacklist_url');
+	try {
+		# haal de blacklist op
+		$blacklistfile = file_get_contents($blurl);
+		$blacklistishtml = strpos($blacklistfile,">");
+		$blacklistfile = str_replace(chr(13),"",$blacklistfile);
+		$blacklistarray = explode(chr(10),$blacklistfile);
+		
+		# Is het bestand dat we opgehaald hebben een echte blacklist? 
+		if ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
+			echo "Error, can't update blacklist!" . PHP_EOL;
+		} else {
+			foreach ($blacklistarray as $blacklistuserid) {
+				$db->addExternalToBlacklist($blacklistuserid);
+			}
+			# verwijder userid's die niet meer op de blacklist staan
+			$db->removeOldBlackList();
+			echo "Blacklist updated succesfully" . PHP_EOL;
+		}
+	} catch(Exception $x) {
+		echo "Error, can't update blacklist!" . PHP_EOL;
+		echo PHP_EOL . PHP_EOL;
+	}
+} elseif ($settings_external_blacklist == "remove") {
+	$db->removeOldBlackList();
+	echo "Blacklist removed succesfully" . PHP_EOL;
+} # if
+
 ## Spots
 try {
 	$rsaKeys = $settings->get('rsa_keys');
