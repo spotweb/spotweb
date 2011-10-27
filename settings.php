@@ -64,6 +64,9 @@ $settings['retrieve_full'] = true;
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
+# moeten wij comments volledig ophalen?
+$settings['retrieve_full_comments'] = true;
+
 # moeten wij (spamm) repors ophalen?
 $settings['retrieve_reports'] = true;
 
