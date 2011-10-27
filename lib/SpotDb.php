@@ -1795,8 +1795,8 @@ class SpotDb {
 		return false;
 	} # getCache
 
-	function updateCacheStamp($url) {
-		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE url = '%s'", Array(time(), $url));
+	function updateCacheStamp($url, $headers) {
+		$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s' WHERE url = '%s'", Array(time(), $headers, $url));
 	} # updateCacheStamp
 
 	function saveCache($messageid, $url, $headers, $content, $compress) {
