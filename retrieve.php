@@ -88,35 +88,34 @@ $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
-if ($settings_external_blacklist = "yes") {
+if ($settings_external_blacklist == "on") {
 	echo PHP_EOL . PHP_EOL;
 	$blurl = $settings->get('blacklist_url');
 	try {
-		$blacklistfile = fopen ($blurl,"r");
-		$blacklistuserid = fgets($blacklistfile);
-		# Is het bestand dat we willen ophalen een echte blacklist? 
-		if ((strlen($blacklistuserid) < 4) || (strlen($blacklistuserid) > 8)) {
+		# haal de blacklist op
+		$blacklistfile = file_get_contents($blurl);
+		$blacklistishtml = strpos($blacklistfile,">");
+		$blacklistfile = str_replace(chr(13),"",$blacklistfile);
+		$blacklistarray = explode(chr(10),$blacklistfile);
+		
+		# Is het bestand dat we opgehaald hebben een echte blacklist? 
+		if ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
 			echo "Error, can't update blacklist!" . PHP_EOL;
 		} else {
-			# haal de blacklist op
-			$blacklistuserid = str_replace(chr(13),"",$blacklistuserid);
-			$blacklistuserid = str_replace(chr(10),"",$blacklistuserid);
-			$db->addExternalToBlacklist($blacklistuserid);
-			while(!feof($blacklistfile)) {
-				$blacklistuserid = fgets($blacklistfile);
-				$blacklistuserid = str_replace(chr(13),"",$blacklistuserid);
-				$blacklistuserid = str_replace(chr(10),"",$blacklistuserid);
+			foreach ($blacklistarray as $blacklistuserid) {
 				$db->addExternalToBlacklist($blacklistuserid);
 			}
 			# verwijder userid's die niet meer op de blacklist staan
 			$db->removeOldBlackList();
 			echo "Blacklist updated succesfully" . PHP_EOL;
 		}
-		fclose($blacklistfile);
 	} catch(Exception $x) {
 		echo "Error, can't update blacklist!" . PHP_EOL;
 		echo PHP_EOL . PHP_EOL;
 	}
+} elseif ($settings_external_blacklist == "remove") {
+	$db->removeOldBlackList();
+	echo "Blacklist removed succesfully" . PHP_EOL;
 } # if
 
 ## Spots
