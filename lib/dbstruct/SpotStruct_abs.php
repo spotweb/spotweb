@@ -235,9 +235,9 @@ abstract class SpotStruct_abs {
 
 	function updateSchema() {
 		# Cache moest geleegd worden
-		if (($this->_spotdb->getSchemaVer() < 0.45) && ($this->tableExists('cache'))) {
+		if (($this->tableExists('cache') && (!$this->columnExists('cache', 'headers')))) {
 			$this->dropTable('cache');
-		}
+		} # if
 
 		# drop eventueel FTS indexes op de spotsfull tabel
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
