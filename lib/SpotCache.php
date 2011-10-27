@@ -19,8 +19,8 @@ class SpotCache {
 		$this->_db->saveCache($messageid, $url, trim($headers), $content, $compress);
 	} # saveCache
 
-	function updateCacheStamp($url) {
-		$this->_db->updateCacheStamp($url);
+	function updateCacheStamp($url, $headers) {
+		$this->_db->updateCacheStamp($url, trim($headers));
 	}
 	
 } # class
