@@ -153,7 +153,7 @@ class SpotsOverview {
 		$cache = new SpotCache($this->_db);
 
 		if ($nzb = $cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
-			$cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid']);
+			$cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
@@ -173,7 +173,7 @@ class SpotsOverview {
 			$header = "Content-Type: image/jpeg";
 
 			if ($img = $cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
-				$cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid']);
+				$cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
 				$img = $img['content'];
 			} else {
 				$img = $nntp->getImage($fullSpot);
@@ -225,7 +225,10 @@ class SpotsOverview {
 			if ($http_code != 200 && $http_code != 304) {
 				return false;
 			} elseif ($ttl > 0) {
-				$cache->saveCache(NULL, $url, $data['headers'], $data['content'], $compress);
+				switch($http_code) {
+					case 304:	$cache->updateCacheStamp($url, $data['headers']); break;
+					default:	$cache->saveCache(NULL, $url, $data['headers'], $data['content'], $compress);
+				} # switch
 			} # else
 		} else {
 			$data = $content;
@@ -980,7 +983,7 @@ class SpotsOverview {
 										# Afhankelijk of de user meer dan de helft wel of niet 
 										# geselecteerd heeft, voegen we hier not's toe of juist niet
 										#
-										$moreFalseThanTrue = (count($subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
+										$moreFalseThanTrue = (count(@$subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(@SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
 											//if (in_array($subType, $subCatDesc[1])) {
 												if ($moreFalseThanTrue) {
