@@ -57,6 +57,7 @@ $settings['spot_moderation'] = 'act';
 #
 # Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
 # het ophalen van headers veel, veel trager. Het staat je dan echter wel toe om te filteren op userid.
+# Bovendien worden comments veel sneller geladen (mocht je deze ook ophalen, zie volgende setting)
 #
 $settings['retrieve_full'] = true;
 

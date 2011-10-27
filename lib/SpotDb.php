@@ -723,7 +723,7 @@ class SpotDb {
 	function matchCommentMessageIds($hdrList) {
 		# We negeren commentsfull hier een beetje express, als die een 
 		# keer ontbreken dan fixen we dat later wel.
-		$idList = array();
+		$idList = array('comment' => array(), 'fullcomment' => array());
 
 		# geen message id's gegeven? vraag het niet eens aan de db
 		if (count($hdrList) == 0) {
@@ -737,14 +737,22 @@ class SpotDb {
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
 
-		# en vraag alle comments op die we kennen
-		$rs = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
+		# Omdat MySQL geen full joins kent, doen we het zo
+		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
+											UNION
+					 				    SELECT '' as comment, messageid AS fullcomment FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
 
-		# geef hier een array terug die kant en klaar is voor array_search
+		# en lossen we het hier op
 		foreach($rs as $msgids) {
-			$idList[$msgids['messageid']] = 1;
+			if (!empty($msgids['comment'])) {
+				$idList['comment'][$msgids['comment']] = 1;
+			} # if
+
+			if (!empty($msgids['fullcomment'])) {
+				$idList['fullcomment'][$msgids['fullcomment']] = 1;
+			} # if
 		} # foreach
-		
+
 		return $idList;
 	} # matchCommentMessageIds
 
