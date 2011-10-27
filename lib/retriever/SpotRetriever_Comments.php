@@ -1,16 +1,18 @@
 <?php
 class SpotRetriever_Comments extends SpotRetriever_Abs {
 		private $_outputType;
+		private $_retrieveFull;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $retrieveFull, $debug) {
 			parent::__construct($server, $db, $settings, $debug);
 			
 			$this->_outputType = $outputType;
+			$this->_retrieveFull = $retrieveFull;
 		} # ctor
 		
 		/*
@@ -61,7 +63,15 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$signedCount = 0;
 			$lastProcessedId = '';
 			$commentDbList = array();
-	
+			$fullCommentDbList = array();
+
+			# Bepaal onze retention stamp
+			if ($this->_settings->get('retention') > 0) {
+				$retentionStamp = time() - ($this->_settings->get('retention') * 24 * 60 * 60);
+			} else {
+				$retentionStamp = 0;
+			} # else
+
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
 			
@@ -77,17 +87,28 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				# strip de reference van de <>'s
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 
+				# definieer een paar booleans zodat we niet steeds een array lookup moeten doen
+				# en de code wat duidelijker is
+				$header_isInDb = isset($dbIdList['comment'][$commentId]);
+				$fullcomment_isInDb = isset($dbIdList['fullcomment'][$commentId]);
+
 				# als we de comment nog niet in de database hebben, haal hem dan op
-				if (!isset($dbIdList[$commentId])) {
+				if (!$header_isInDb || (!$fullcomment_isInDb && $this->_retrieveFull)) {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					$spotMsgIdList[] = $msgheader['References'];
-					
+					$commentStamp = strtotime($msgheader['Date']);
+
+					# Oudere comments niet toevoegen
+					if (($retentionStamp > 0 && $commentStamp < $retentionStamp) || $commentStamp < $this->_settings->get('retrieve_newer_than')) {
+						continue;
+					} # if
+
 					# als dit een nieuw soort comment is met rating vul die dan ook op
 					if (count($msgIdParts) == 5) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
-						
+
 						# Sommige oudere comments bevatten een niet-numerieke
 						# string op deze positie, dus we controleren nog even
 						# of het puur een getal is wat er staat.
@@ -97,17 +118,62 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					} else {
 						$msgheader['rating'] = 0;
 					} # if
+
+					# Hier kijken we alleen of de commentheader niet bestaat
+					if (!$header_isInDb) {
+						$commentDbList[] = array('messageid' => $commentId,
+												 'nntpref' => $msgheader['References'],
+												 'rating' => $msgheader['rating']);
+
+						# we moeten ook de msgid lijst updaten omdat 
+						# soms een messageid meerdere keren per xover mee komt
+						$dbIdList['comment'][$commentId] = 1;
+						$header_isInDb = true;
+						$lastProcessedId = $commentId;
+						$didFetchHeader = true;
+					} # if
+				} else {
 					$lastProcessedId = $commentId;
+				} # else
 
-					# voeg spot aan db toe
-					$commentDbList[] = array('messageid' => $commentId,
-											 'nntpref' => $msgheader['References'],
-											 'rating' => $msgheader['rating']);
+				# We willen enkel de volledige comment ophalen als de header in de database zit, omdat 
+				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
+				if (($header_isInDb)  &&		# header moet in db zitten
+					(!$fullcomment_isInDb)) 		# maar de fullcomment niet
+				   {
 
-					# we moeten ook de msgid lijst updaten omdat 
-					# soms een messageid meerdere keren per xover mee komt
-					$dbIdList[$commentId] = 1;
-				} # if
+					if ($this->_retrieveFull) {
+						$fullComment = array();
+						try {
+							$fullComment = $this->_spotnntp->getComments(array(array('messageid' => $commentId)));
+
+							# en voeg hem aan de database toe
+							$fullCommentDbList[] = $fullComment;
+							$fullcomment_isInDb = true;
+							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
+							# keren per xover mee komt ...
+							$dbIdList['fullcomment'][$msgid] = 1;
+						} 
+						catch(ParseSpotXmlException $x) {
+							; # swallow error
+						} 
+						catch(Exception $x) {
+							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
+							# dit is de "No such article" error
+							# swallow the error
+							if ($x->getCode() == 430) {
+								;
+							} 
+							# als de XML niet te parsen is, niets aan te doen
+							elseif ($x->getMessage() == 'String could not be parsed as XML') {
+								;
+							} else {
+								throw $x;
+							} # else
+						} # catch
+						
+					} # if retrievefull
+				} # if fullcomment is not in db yet
 			} # foreach
 
 			if (count($hdrList) > 0) {
@@ -122,7 +188,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			 */
 			$this->_db->setMaxArticleid('comments', $endMsg);
 			$this->_db->addCommentRefs($commentDbList);
-			
+			while($fullComments=array_shift($fullCommentDbList)) {
+				$this->_db->addCommentsFull($fullComments);
+			}
+
 			# herbereken de gemiddelde spotrating, en update het 
 			# aantal niet geverifieerde comments
 			$this->_db->updateSpotRating($spotMsgIdList);

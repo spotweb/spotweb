@@ -144,6 +144,7 @@ try {
 												$db,
 												$settings,
 												$req->getDef('output', ''),
+												$settings->get('retrieve_full'),
 												$debugLog);
 		$msgdata = $retriever->connect($settings->get('comment_group'));
 
