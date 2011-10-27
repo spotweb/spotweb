@@ -176,7 +176,7 @@ try {
 												$db,
 												$settings,
 												$req->getDef('output', ''),
-												$settings->get('retrieve_full'),
+												$settings->get('retrieve_full_comments'),
 												$debugLog);
 		$msgdata = $retriever->connect($settings->get('comment_group'));
 
