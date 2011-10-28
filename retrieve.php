@@ -271,18 +271,20 @@ try {
 
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
-if ($settings_external_blacklist == "on") {
-	echo PHP_EOL . PHP_EOL;
-	$blurl = $settings->get('blacklist_url');
+if ($settings_external_blacklist) {
 	try {
+		$spotsOverview = new SpotsOverview($db, $settings);
+
 		# haal de blacklist op
-		$blacklistfile = file_get_contents($blurl);
-		$blacklistishtml = strpos($blacklistfile,">");
-		$blacklistfile = str_replace(chr(13),"",$blacklistfile);
-		$blacklistarray = explode(chr(10),$blacklistfile);
+		list($http_code, $http_headers, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60, true);
+		$blacklistishtml = strpos($blacklist,">");
+		$blacklist = str_replace(chr(13),"",$blacklist);
+		$blacklistarray = explode(chr(10),$blacklist);
 		
 		# Is het bestand dat we opgehaald hebben een echte blacklist? 
-		if ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
+		if ($http_code == 304) {
+			echo "Blacklist not modified, no need to update" . PHP_EOL;
+		} elseif ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
 			echo "Error, can't update blacklist!" . PHP_EOL;
 		} else {
 			foreach ($blacklistarray as $blacklistuserid) {
@@ -290,15 +292,18 @@ if ($settings_external_blacklist == "on") {
 			}
 			# verwijder userid's die niet meer op de blacklist staan
 			$db->removeOldBlackList();
-			echo "Blacklist updated succesfully" . PHP_EOL;
+			echo "Finished updating blacklist" . PHP_EOL;
 		}
 	} catch(Exception $x) {
-		echo "Error, can't update blacklist!" . PHP_EOL;
+		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
+		echo "  " . $x->getMessage() . PHP_EOL;
+		echo PHP_EOL . PHP_EOL;
+		echo $x->getTraceAsString();
 		echo PHP_EOL . PHP_EOL;
 	}
 } elseif ($settings_external_blacklist == "remove") {
 	$db->removeOldBlackList();
-	echo "Blacklist removed succesfully" . PHP_EOL;
+	echo "Finished removing blacklist" . PHP_EOL;
 } # if
 
 # Verstuur notificaties
