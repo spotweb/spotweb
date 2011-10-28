@@ -180,7 +180,7 @@ class SpotsOverview {
 				$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
 			} # if 
 		} else {
-			list($http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
+			list($http_code, $http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
 
 			foreach(explode("\r\n", $http_headers) as $hdr) {
 				if (substr($hdr, 0, strlen('Content-Type: ')) == 'Content-Type: ') {
@@ -227,14 +227,15 @@ class SpotsOverview {
 			} elseif ($ttl > 0) {
 				switch($http_code) {
 					case 304:	$cache->updateCacheStamp($url, $data['headers']); break;
-					default:	$cache->saveCache(NULL, $url, $data['headers'], $data['content'], $compress);
+					default:	$cache->saveCache('', $url, $data['headers'], $data['content'], $compress);
 				} # switch
 			} # else
 		} else {
+			$http_code = 304;
 			$data = $content;
 		} # else
 
-		return array($data['headers'], $data['content']);
+		return array($http_code, $data['headers'], $data['content']);
 	} # getUrl
 
 	/*

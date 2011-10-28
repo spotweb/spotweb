@@ -59,7 +59,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@list($http_headers, $tvrage_content) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60, true)) {
+			if (!@list($http_code, $http_headers, $tvrage_content) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60, true)) {
 				$this->showApiError(300);
 			} # if
 
@@ -100,7 +100,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@list($http_headers, $imdb_content) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60, true)) {
+			if (!@list($http_code, $http_headers, $imdb_content) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60, true)) {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb_content, $movieTitle);
