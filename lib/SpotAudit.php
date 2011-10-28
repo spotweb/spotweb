@@ -11,15 +11,16 @@ class SpotAudit {
 	} # ctor
 	
 	function audit($perm, $objectid, $allowed) {
-		if (getenv("HTTP_CLIENT_IP")) {
-			$remote_addr = getenv("HTTP_CLIENT_IP");
-		} elseif(getenv("HTTP_X_FORWARDED_FOR")) {
-			$remote_addr = getenv("HTTP_X_FORWARDED_FOR");
-		} elseif(getenv("REMOTE_ADDR")) {
-			$remote_addr = getenv("REMOTE_ADDR");
-		} else {
-			$remote_addr = "unknown";
-		}
+		foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key) {
+			if (array_key_exists($key, $_SERVER) === true) {
+				foreach (explode(',', $_SERVER[$key]) as $ip) {
+					if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+						$remote_addr = $ip;
+					} # if
+				} # foreach
+			} # if
+		} # foreach
+		$remote_addr = (isset($remote_addr)) ? $remote_addr : "unknown";
 
 		$this->_db->addAuditEntry($this->_user['userid'], $perm, $objectid, $allowed, $remote_addr);
 	} # audit
