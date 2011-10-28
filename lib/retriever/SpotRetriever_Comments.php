@@ -186,11 +186,13 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			 * Add the comments to the database and update the last article
 			 * number found
 			 */
+			$fullComments = array();
+			while($fullComment=array_shift($fullCommentDbList)) {
+				$fullComments = array_merge($fullComments, $fullComment);
+			} # while
+
 			$this->_db->setMaxArticleid('comments', $endMsg);
-			$this->_db->addCommentRefs($commentDbList);
-			while($fullComments=array_shift($fullCommentDbList)) {
-				$this->_db->addCommentsFull($fullComments);
-			}
+			$this->_db->addComments($commentDbList, $fullComments);
 
 			# herbereken de gemiddelde spotrating, en update het 
 			# aantal niet geverifieerde comments
