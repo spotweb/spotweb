@@ -1012,12 +1012,65 @@ class SpotDb {
 	 *   messageid is het werkelijke commentaar id
 	 *   nntpref is de id van de spot
 	 */
-	function addCommentRefs($commentList) { 
-		foreach($commentList as $comment) {
-			$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating) VALUES('%s', '%s', %d)",
-									Array($comment['messageid'], $comment['nntpref'], $comment['rating']));
+	function addComments($comments, $fullComments = array()) {
+		# Databases can have a maximum length of statements, so we 
+		# split the amount of spots in chunks of 100
+		$chunks = array_chunk($comments, 100);
+
+		foreach($chunks as $comments) {
+			$insertArray = array();
+
+			foreach($comments as $comment) {
+				$insertArray[] = vsprintf("('%s', '%s', %d)",
+						 Array($this->safe($comment['messageid']),
+							   $this->safe($comment['nntpref']),
+							   $this->safe($comment['rating'])));
+			} # foreach
+
+			# Actually insert the batch
+			if (!empty($insertArray)) {
+				$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating)
+									  VALUES " . implode(',', $insertArray), array());
+			} # if
 		} # foreach
-	} # addCommentRefs
+
+		if (!empty($fullComments)) {
+			$this->addFullComments($fullComments);
+		} # if
+	} # addComments
+
+	/*
+	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
+	 */
+	function addFullComments($fullComments) {
+		# Databases can have a maximum length of statements, so we 
+		# split the amount of spots in chunks of 100
+		$chunks = array_chunk($fullComments, 100);
+
+		foreach($chunks as $fullComments) {
+			$insertArray = array();
+
+			foreach($fullComments as $comment) {
+				# Kap de verschillende strings af op een maximum van 
+				# de datastructuur, de unique keys kappen we expres niet af
+				$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
+
+				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
+						Array($this->safe($comment['messageid']),
+							  $this->safe($comment['fromhdr']),
+							  $this->safe($comment['stamp']),
+							  $this->safe($comment['user-signature']),
+							  $this->safe(serialize($comment['user-key'])),
+							  $this->safe($comment['userid']),
+							  $this->safe(implode("\r\n", $comment['body'])),
+							  $this->safe($comment['verified'])));
+			} # foreach
+
+			# Actually insert the batch
+			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified)
+								  VALUES " . implode(',', $insertArray), array());
+		} # foreach
+	} # addFullComments
 
 	/*
 	 * Insert addReportRef, 
@@ -1030,28 +1083,6 @@ class SpotDb {
 									Array($report['messageid'], $report['fromhdr'], $report['keyword'], $report['nntpref']));
 		} # foreach
 	} # addReportRefs
-
-	/*
-	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
-	 */
-	function addCommentsFull($commentList) {
-		foreach($commentList as $comment) {
-			# Kap de verschillende strings af op een maximum van 
-			# de datastructuur, de unique keys kappen we expres niet af
-			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
-			
-			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified) 
-					VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', %d)",
-					Array($comment['messageid'],
-						  $comment['fromhdr'],
-						  $comment['stamp'],
-						  $comment['user-signature'],
-						  serialize($comment['user-key']),
-						  $comment['userid'],
-						  implode("\r\n", $comment['body']),
-						  $comment['verified']));
-		} # foreach
-	} # addCommentFull
 
 	/*
 	 * Update een lijst van messageid's met de gemiddelde spotrating
@@ -1163,7 +1194,7 @@ class SpotDb {
 				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
 				$commentList[$i]['body'] = explode("\r\n", utf8_decode($commentList[$i]['body']));
 			} # if
-		} # foreach
+		} # for
 
 		SpotTiming::stop(__FUNCTION__);
 		return $commentList;
@@ -1314,7 +1345,7 @@ class SpotDb {
 														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
 									  VALUES " . implode(',', $insertArray), array());
 			} # if
-		} # if
+		} # foreach
 		
 		if (!empty($fullSpots)) {
 			$this->addFullSpots($fullSpots);
