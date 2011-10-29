@@ -130,7 +130,7 @@ class SpotSecurity {
 	function allowed($perm, $object) {
 		$allowed = isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
 
-		# We check for auditing in SpotSecurity to prvent the overhead
+		# We check for auditing in SpotSecurity to prevent the overhead
 		# of a function call for each security check
 		if (($this->_allAudit) || ((!$allowed) && ($this->_failAudit))) {
 			$this->_spotAudit->audit($perm, $object, $allowed);

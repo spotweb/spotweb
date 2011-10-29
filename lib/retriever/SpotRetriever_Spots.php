@@ -3,6 +3,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_rsakeys;
 		private $_outputType;
 		private $_retrieveFull;
+		private $_nntp_nzb;
+		private $_prefetch_image;
+		private $_prefetch_nzb;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
@@ -15,6 +18,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
 			$this->_retrieveFull = $retrieveFull;
+			$this->_nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
+			$this->_prefetch_image = $this->_settings->get('prefetch_image');
+			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
 		} # ctor
 
 
@@ -201,6 +207,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
+							$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
 							# en voeg hem aan de database toe
 							$fullSpotDbList[] = $fullSpot;
@@ -213,6 +220,21 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# bevat. We kunnen dit enkel doen als de header opgehaald is
 							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
+							} # if
+
+							# image prefetchen
+							if ($this->_prefetch_image) {
+								# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
+								if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
+									$spotsOverview->getImage($fullSpot, $this->_nntp_nzb);
+								} # if
+							} # if
+
+							# NZB prefetchen
+							if ($this->_prefetch_nzb) {
+								if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
+									$spotsOverview->getNzb($fullSpot, $this->_nntp_nzb);
+								} # if
 							} # if
 						} 
 						catch(ParseSpotXmlException $x) {

@@ -61,6 +61,12 @@ $settings['spot_moderation'] = 'act';
 #
 $settings['retrieve_full'] = true;
 
+# moeten wij images tijdens retrieve in cache opslaan?
+$settings['prefetch_image'] = true;
+
+# moeten wij de nzb tijdens retrieve in cache opslaan?
+$settings['prefetch_nzb'] = true;
+
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
@@ -173,7 +179,7 @@ $settings['nonauthenticated_userid'] = 1;
 
 #
 # Hoeveel verschillende headers (van danwel spots, reports danwel comments) moeten er per keer opgehaald worden? 
-# Als je regelmatig timeouts krijgt van retrieve.php, vrelaag dan dit aantal
+# Als je regelmatig timeouts krijgt van retrieve.php, verlaag dan dit aantal
 #
 $settings['retrieve_increment'] = 1000;
 

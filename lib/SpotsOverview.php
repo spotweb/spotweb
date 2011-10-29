@@ -170,8 +170,6 @@ class SpotsOverview {
 		$cache = new SpotCache($this->_db);
 
 		if (is_array($fullSpot['image'])) {
-			$header = "Content-Type: image/jpeg";
-
 			if ($img = $cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
 				$cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
 				$img = $img['content'];
@@ -189,6 +187,7 @@ class SpotsOverview {
 			} # foreach
 		} # else
 
+		$header = (isset($header)) ? $header : "Content-Type: image/jpeg";
 		return array($header, $img);
 	} # getImage
 
