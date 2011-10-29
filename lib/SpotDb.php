@@ -4,8 +4,8 @@ define('SPOTDB_SCHEMA_VERSION', '0.45');
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
-	private $_phpMemoryLimit;
-	private $_maxPacketSize;
+	private $_phpMemoryLimit = null;
+	private $_maxPacketSize = 0;
 
 	/*
 	 * Constants used for updating the SpotStateList
@@ -16,7 +16,6 @@ class SpotDb {
 
 	function __construct($db) {
 		$this->_dbsettings = $db;
-		$this->_phpMemoryLimit = return_bytes(ini_get("memory_limit"));
 	} # __ctor
 
 	/*
@@ -1854,10 +1853,35 @@ class SpotDb {
 		$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s' WHERE url = '%s'", Array(time(), $headers, $url));
 	} # updateCacheStamp
 
+	/*
+	 * Calculates the memory limit
+	 */
+	private function calculatePhpMemoryLimit() {
+		# Calculate the PHP memory limit if required
+		if ($this->_phpMemoryLimit == null) {
+			$val = trim(ini_get("memory_limit"));
+			
+			$last = strtolower($val[strlen($val)-1]);
+			switch($last) {
+				// The 'G' modifier is available since PHP 5.1.0
+				case 'g':
+					$val *= 1024;
+				case 'm':
+					$val *= 1024;
+				case 'k':
+					$val *= 1024;
+			} # swich
+			
+			$this->_phpMemoryLimit = $val;
+		} # if
+			
+		return $this->_phpMemoryLimit;
+	} # calculatePhpMemoryLimit
+	
 	function saveCache($messageid, $url, $headers, $content, $compress) {
 		$compressed = 0;
 
-		if (strlen($content) > $this->_phpMemoryLimit*0.33) {
+		if (strlen($content) > ($this->calculatePhpMemoryLimit() * 0.33) ) {
 			return;
 		} # if
 
