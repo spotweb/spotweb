@@ -4,6 +4,7 @@ define('SPOTDB_SCHEMA_VERSION', '0.45');
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
+	private $_phpMemoryLimit;
 	private $_maxPacketSize;
 
 	/*
@@ -15,6 +16,7 @@ class SpotDb {
 
 	function __construct($db) {
 		$this->_dbsettings = $db;
+		$this->_phpMemoryLimit = return_bytes(ini_get("memory_limit"));
 	} # __ctor
 
 	/*
@@ -1855,7 +1857,7 @@ class SpotDb {
 	function saveCache($messageid, $url, $headers, $content, $compress) {
 		$compressed = 0;
 
-		if (strlen($content) > 1024*1024*40) {
+		if (strlen($content) > $this->_phpMemoryLimit*0.33) {
 			return;
 		} # if
 
