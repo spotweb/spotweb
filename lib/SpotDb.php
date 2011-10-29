@@ -5,7 +5,7 @@ class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
 	private $_phpMemoryLimit = null;
-	private $_maxPacketSize = 0;
+	private $_maxPacketSize = null;
 
 	/*
 	 * Constants used for updating the SpotStateList
@@ -59,7 +59,6 @@ class SpotDb {
 		} # switch
 
 		$this->_conn->connect();
-		$this->getMaxPacketSize();
 		SpotTiming::stop(__FUNCTION__);
 	} # connect
 
@@ -88,15 +87,20 @@ class SpotDb {
 	} # getAllSettings
 
 	function getMaxPacketSize() {
-		$packet = -1;
-		switch ($this->_dbsettings['engine']) {
-			case 'mysql'		:
-			case 'pdo_mysql'	: $packet = $this->_conn->arrayQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"); 
-								  $packet = $packet[0]['Value'];
-								  break;
-		} # switch
-
-		$this->_maxPacketSize = $packet;
+		if ($this->_maxPacketSize == null) {
+			$packet = -1;
+			
+			switch ($this->_dbsettings['engine']) {
+				case 'mysql'		:
+				case 'pdo_mysql'	: $packet = $this->_conn->arrayQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"); 
+									  $packet = $packet[0]['Value'];
+									  break;
+			} # switch
+			
+			$this->_maxPacketSize = $packet;
+		} # if
+		
+		return $this->_maxPacketSize;
 	} # getMaxPacketSize
 
 	/* 
@@ -1881,7 +1885,7 @@ class SpotDb {
 	function saveCache($messageid, $url, $headers, $content, $compress) {
 		$compressed = 0;
 
-		if (strlen($content) > ($this->calculatePhpMemoryLimit() * 0.33) ) {
+		if (strlen($content) > ($this->calculatePhpMemoryLimit() * 0.33)) {
 			return;
 		} # if
 
@@ -1890,7 +1894,7 @@ class SpotDb {
 			$compressed = 1;
 		} # if
 
-		if ($this->_maxPacketSize > 0 && strlen($content) > $this->_maxPacketSize) {
+		if ($this->getMaxPacketsize() > 0 && strlen($content) > $this->getMaxPacketSize()) {
 			return;
 		} # if
 
