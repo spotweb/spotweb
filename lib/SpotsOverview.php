@@ -5,6 +5,7 @@
  */
 class SpotsOverview {
 	private $_db;
+	private $_cache;
 	private $_settings;
 
 	const cache_nzb_prefix		= 'SpotNzb::';
@@ -13,6 +14,7 @@ class SpotsOverview {
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
+		$this->_cache = new SpotCache($db);
 	} # ctor
 	
 	/*
@@ -150,14 +152,12 @@ class SpotsOverview {
 	 * Geef de NZB file terug
 	 */
 	function getNzb($fullSpot, $nntp) {
-		$cache = new SpotCache($this->_db);
-
-		if ($nzb = $cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
-			$cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
+		if ($nzb = $this->_cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
+			$this->_cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+			$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
 		} # else
 
 		return $nzb;
@@ -167,15 +167,13 @@ class SpotsOverview {
 	 * Geef de image file terug
 	 */
 	function getImage($fullSpot, $nntp) {
-		$cache = new SpotCache($this->_db);
-
 		if (is_array($fullSpot['image'])) {
-			if ($img = $cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
-				$cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
+			if ($img = $this->_cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
+				$this->_cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
 				$img = $img['content'];
 			} else {
 				$img = $nntp->getImage($fullSpot);
-				$cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
+				$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
 			} # if 
 		} else {
 			list($http_code, $http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
@@ -195,10 +193,9 @@ class SpotsOverview {
 	 * Haalt een url op en cached deze
 	 */
 	function getFromWeb($url, $ttl=900, $compress=false) {
-		$cache = new SpotCache($this->_db);
 		$url = str_replace(" ", "+", urldecode($url));
 
-		$content = $cache->getCache($url);
+		$content = $this->_cache->getCache($url);
 		if (!$content || time()-(int) $content['stamp'] > $ttl) {
 			$data = array();
 
@@ -225,8 +222,8 @@ class SpotsOverview {
 				return false;
 			} elseif ($ttl > 0) {
 				switch($http_code) {
-					case 304:	$cache->updateCacheStamp($url, $data['headers']); break;
-					default:	$cache->saveCache('', $url, $data['headers'], $data['content'], $compress);
+					case 304:	$this->_cache->updateCacheStamp($url, $data['headers']); break;
+					default:	$this->_cache->saveCache('', $url, $data['headers'], $data['content'], $compress);
 				} # switch
 			} # else
 		} else {
