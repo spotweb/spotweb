@@ -124,6 +124,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# en de code wat duidelijker is
 				$header_isInDb = isset($dbIdList['spot'][$msgId]);
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
+				
+				# if we need to fetch images or nzb files, we need an spotsoverview instance
+				if (($this->_prefetch_image) || ($this->_prefetch_nzb)) {
+					$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+				} # if
 
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
@@ -207,7 +212,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
-							$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
 							# en voeg hem aan de database toe
 							$fullSpotDbList[] = $fullSpot;
