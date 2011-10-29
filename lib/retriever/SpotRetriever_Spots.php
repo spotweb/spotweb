@@ -3,7 +3,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_rsakeys;
 		private $_outputType;
 		private $_retrieveFull;
-		private $_nntp_nzb;
 		private $_prefetch_image;
 		private $_prefetch_nzb;
 
@@ -18,7 +17,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
 			$this->_retrieveFull = $retrieveFull;
-			$this->_nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
 		} # ctor
@@ -128,6 +126,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# if we need to fetch images or nzb files, we need an spotsoverview instance
 				if (($this->_prefetch_image) || ($this->_prefetch_nzb)) {
 					$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+					$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
 				} # if
 
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
@@ -230,14 +229,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							if ($this->_prefetch_image) {
 								# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
 								if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
-									$spotsOverview->getImage($fullSpot, $this->_nntp_nzb);
+									$spotsOverview->getImage($fullSpot, $nntp_nzb);
 								} # if
 							} # if
 
 							# NZB prefetchen
 							if ($this->_prefetch_nzb) {
 								if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
-									$spotsOverview->getNzb($fullSpot, $this->_nntp_nzb);
+									$spotsOverview->getNzb($fullSpot, $nntp_nzb);
 								} # if
 							} # if
 						} 
