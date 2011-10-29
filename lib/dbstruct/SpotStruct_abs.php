@@ -508,7 +508,7 @@ abstract class SpotStruct_abs {
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('messageid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('url', 'cache', 'VARCHAR(255)', "''", true, 'ascii');
+		$this->validateColumn('url', 'cache', 'VARCHAR(767)', "''", true, 'ascii');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('headers', 'cache', 'TEXT', NULL, false, 'ascii');
 		$this->validateColumn('compressed', 'cache', 'BOOLEAN', 'false', true, ''); 

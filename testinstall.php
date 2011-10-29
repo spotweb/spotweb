@@ -22,6 +22,7 @@
 	<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
 	<tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
 	<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (32*1024*1024), "", "memory_limit below 32M"); ?> </td> </tr>
+	<tr> <td> Memory limit (indien prefetch_nzb enabled is) </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), "", "memory_limit below 128M"); ?> </td> </tr>
 </table>
 <br />
 

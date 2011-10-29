@@ -4,6 +4,7 @@ define('SPOTDB_SCHEMA_VERSION', '0.45');
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
+	private $_maxPacketSize;
 
 	/*
 	 * Constants used for updating the SpotStateList
@@ -57,6 +58,7 @@ class SpotDb {
 		} # switch
 
 		$this->_conn->connect();
+		$this->getMaxPacketSize();
 		SpotTiming::stop(__FUNCTION__);
 	} # connect
 
@@ -83,6 +85,18 @@ class SpotDb {
 		
 		return $tmpSettings;
 	} # getAllSettings
+
+	function getMaxPacketSize() {
+		$packet = -1;
+		switch ($this->_dbsettings['engine']) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: $packet = $this->_conn->arrayQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"); 
+								  $packet = $packet[0]['Value'];
+								  break;
+		} # switch
+
+		$this->_maxPacketSize = $packet;
+	} # getMaxPacketSize
 
 	/* 
 	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
@@ -1839,20 +1853,22 @@ class SpotDb {
 	} # updateCacheStamp
 
 	function saveCache($messageid, $url, $headers, $content, $compress) {
+		$compressed = 0;
+
+		if (strlen($content) > 1024*1024*40) {
+			return;
+		} # if
+
 		if ($compress == true) {
 			$content = gzdeflate($content);
+			$compressed = 1;
 		} # if
-		$compressed = ($compress == true) ? 1 : 0;
+
+		if ($this->_maxPacketSize > 0 && strlen($content) > $this->_maxPacketSize) {
+			return;
+		} # if
 
 		switch ($this->_dbsettings['engine']) {
-			case 'mysql'		:
-			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')
-										  ON DUPLICATE KEY UPDATE messageid = '%s', stamp = %d, headers = '%s', compressed = %s, content = '%s'",
-										  Array($messageid, $url, time(), $headers, $compressed, $content, $messageid, time(), $headers, $compressed, $content));
-					 break;
-			} # mysql
-
 			case 'pdo_pgsql'	: {
 					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array($messageid, time(), $headers, $compressed, $content, $url));
 					if ($this->_conn->rows() == 0) {
