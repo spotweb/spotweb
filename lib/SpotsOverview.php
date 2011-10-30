@@ -718,6 +718,7 @@ class SpotsOverview {
 								  'tag' => 's.tag',
 								  'new' => 'new',
 								  'reportcount' => 's.reportcount',
+								  'commentcount' => 's.commentcount',
 								  'downloaded' => 'downloaded', 
 								  'mypostedspots' => 'mypostedspots',
 								  'watch' => 'watch', 
