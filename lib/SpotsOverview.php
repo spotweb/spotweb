@@ -127,7 +127,7 @@ class SpotsOverview {
 			} # else
 			
 			# voeg ze aan de database toe
-			$this->_db->addCommentsFull($newComments);
+			$this->_db->addFullComments($newComments);
 			
 			# en voeg de oude en de nieuwe comments samen
 			$fullComments = $this->_db->getCommentsFull($msgId);
