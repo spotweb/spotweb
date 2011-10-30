@@ -152,6 +152,8 @@ class SpotsOverview {
 	 * Geef de NZB file terug
 	 */
 	function getNzb($fullSpot, $nntp, $uncompressForHandling=true) {
+		SpotTiming::start(__FUNCTION__);
+
 		if ($nzb = $this->_cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
 			$this->_cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
 			$nzb = $nzb['content'];
@@ -164,6 +166,8 @@ class SpotsOverview {
 			$nzb = gzinflate($nzb);
 		} # if
 
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $uncompressForHandling));
+
 		return $nzb;
 	} # getNzb
 	
@@ -171,6 +175,8 @@ class SpotsOverview {
 	 * Geef de image file terug
 	 */
 	function getImage($fullSpot, $nntp) {
+		SpotTiming::start(__FUNCTION__);
+
 		if (is_array($fullSpot['image'])) {
 			if ($img = $this->_cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
 				$this->_cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
@@ -190,6 +196,8 @@ class SpotsOverview {
 		} # else
 
 		$header = (isset($header)) ? $header : "Content-Type: image/jpeg";
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
+
 		return array($header, $img);
 	} # getImage
 
@@ -197,6 +205,8 @@ class SpotsOverview {
 	 * Haalt een url op en cached deze
 	 */
 	function getFromWeb($url, $ttl=900, $compress=false) {
+		SpotTiming::start(__FUNCTION__);
+
 		$url = str_replace(" ", "+", urldecode($url));
 
 		$content = $this->_cache->getCache($url);
@@ -215,7 +225,9 @@ class SpotsOverview {
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
 			} # if
 
+			SpotTiming::start(__FUNCTION__ . ':curl_exec()');
 			$response = curl_exec($ch);
+			SpotTiming::stop(__FUNCTION__ . ':curl_exec()', array($response));
 			$info = curl_getinfo($ch);
 			$data['headers'] = substr($response, 0, $info['header_size']);
 			$data['content'] = substr($response, -$info['download_content_length']);  
@@ -234,6 +246,8 @@ class SpotsOverview {
 			$http_code = 304;
 			$data = $content;
 		} # else
+
+		SpotTiming::stop(__FUNCTION__, array($url, $ttl, $compress));
 
 		return array($http_code, $data['headers'], $data['content']);
 	} # getUrl
