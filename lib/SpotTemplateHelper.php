@@ -816,7 +816,9 @@ class SpotTemplateHelper {
 
 
 	function formatDate($stamp, $type) {
-		if ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
+		if (empty($stamp)) {
+			return "onbekend";
+		} elseif ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
 			return $this->time_ago($stamp);
 		} else {
 			switch($type) {
