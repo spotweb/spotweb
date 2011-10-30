@@ -21,7 +21,7 @@ require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/exceptions/NntpException.php";
 
-# disable timing, met alle queries die er draaien loopt dat  uit op een hele grote memory usage
+# disable timing, met alle queries die er draaien loopt dat uit op een te grote memory usage
 SpotTiming::disable();
 
 # in safe mode, max execution time cannot be set, warn the user
