@@ -236,7 +236,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# NZB prefetchen
 							if ($this->_prefetch_nzb) {
 								if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
-									$spotsOverview->getNzb($fullSpot, $nntp_nzb);
+									$spotsOverview->getNzb($fullSpot, $nntp_nzb, false);
 								} # if
 							} # if
 						} 
