@@ -151,14 +151,18 @@ class SpotsOverview {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($fullSpot, $nntp) {
+	function getNzb($fullSpot, $nntp, $uncompressForHandling=true) {
 		if ($nzb = $this->_cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
 			$this->_cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, true);
+			$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, "done");
 		} # else
+
+		if ($uncompressForHandling == true) {
+			$nzb = gzinflate($nzb);
+		} # if
 
 		return $nzb;
 	} # getNzb

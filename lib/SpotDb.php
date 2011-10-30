@@ -1892,7 +1892,9 @@ class SpotDb {
 		if ($compress == true) {
 			$content = gzdeflate($content);
 			$compressed = 1;
-		} # if
+		} elseif ($compress == "done") {
+			$compressed = 1;
+		} # else
 
 		if ($this->getMaxPacketsize() > 0 && strlen($content) > $this->getMaxPacketSize()) {
 			return;
