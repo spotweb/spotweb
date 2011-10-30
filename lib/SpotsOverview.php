@@ -700,7 +700,7 @@ class SpotsOverview {
 	 */
 	private function filterValuesToSql($filterValueList, $currentSession) {
 		# Add a list of possible text searches
-		$filterValueSql = array();
+		$filterValueSql = array('OR' => array(), 'AND' => array());
 		$additionalFields = array();
 		$additionalTables = array();
 		$additionalJoins = array();
@@ -815,7 +815,7 @@ class SpotsOverview {
 				} # switch
 				
 				# en creeer de query string
-				$filterValueSql[] = $tmpFilterValue;
+				$filterValueSql['AND'][] = $tmpFilterValue;
 			} else {
 				# Anders is het geen textsearch maar een vergelijkings operator, 
 				# eerst willen we de vergelijking eruit halen.
@@ -846,7 +846,11 @@ class SpotsOverview {
 				} # if
 
 				# en creeer de query string
-				$filterValueSql[] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
+				if (in_array($tmpFilterFieldname, array('userid'))) {
+					$filterValueSql['OR'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
+				} else {
+					$filterValueSql['AND'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
+				} # else
 			} # if
 		} # foreach
 
@@ -859,7 +863,7 @@ class SpotsOverview {
 		if (!empty($textSearchFields)) {
 			$parsedTextQueryResult = $this->_db->createTextQuery($textSearchFields);
 
-			$filterValueSql = array_merge($filterValueSql, $parsedTextQueryResult['filterValueSql']);
+			$filterValueSql['AND'] = array_merge($filterValueSql['AND'], $parsedTextQueryResult['filterValueSql']);
 			$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
 			$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);
 			$sortFields = array_merge($sortFields, $parsedTextQueryResult['sortFields']);
@@ -1100,7 +1104,12 @@ class SpotsOverview {
 		if (!empty($categorySql)) { 
 			$endFilter[] = '(' . join(' OR ', $categorySql) . ') ';
 		} # if
-		$endFilter[] = join(' AND ', $filterValueSql);
+		if (!empty($filterValueSql['AND'])) {
+			$endFilter[] = '(' . join(' AND ', $filterValueSql['AND']) . ') ';
+		} # if
+		if (!empty($filterValueSql['OR'])) {
+			$endFilter[] = '(' . join(' OR ', $filterValueSql['OR']) . ') ';
+		} # if
 		$endFilter[] = join(' AND ', $strongNotSql);
 		$endFilter = array_filter($endFilter);
 		
