@@ -62,16 +62,16 @@ $settings['spot_moderation'] = 'act';
 $settings['retrieve_full'] = true;
 
 # moeten wij images tijdens retrieve in cache opslaan?
-$settings['prefetch_image'] = true;
+$settings['prefetch_image'] = false;
 
 # moeten wij de nzb tijdens retrieve in cache opslaan?
-$settings['prefetch_nzb'] = true;
+$settings['prefetch_nzb'] = false;
 
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
 # moeten wij comments volledig ophalen?
-$settings['retrieve_full_comments'] = true;
+$settings['retrieve_full_comments'] = false;
 
 # moeten wij (spamm) repors ophalen?
 $settings['retrieve_reports'] = true;
