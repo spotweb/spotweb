@@ -118,6 +118,8 @@ catch(NntpException $x) {
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
 
 	if (isset($retriever)){
 		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
@@ -163,6 +165,8 @@ catch(NntpException $x) {
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
 
 	if (isset($retriever)){
 		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
@@ -206,6 +210,8 @@ catch(NntpException $x) {
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
 	echo PHP_EOL . PHP_EOL;
 
 	if (isset($retriever)){
