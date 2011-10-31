@@ -297,25 +297,36 @@ $settings_external_blacklist = $settings->get('external_blacklist');
 if ($settings_external_blacklist) {
 	try {
 		$spotsOverview = new SpotsOverview($db, $settings);
-
+		$countnewblacklistuserid = 0;
+		$countdelblacklistuserid = 0;
 		# haal de blacklist op
 		list($http_code, $http_headers, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60, true);
 		$blacklistishtml = strpos($blacklist,">");
 		$blacklist = str_replace(chr(13),"",$blacklist);
 		$blacklistarray = explode(chr(10),$blacklist);
-		
 		# Is het bestand dat we opgehaald hebben een echte blacklist? 
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;
 		} elseif ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
 			echo "Error, can't update blacklist!" . PHP_EOL;
 		} else {
+			$oldblacklist = $db->getOldExternalBlacklist();
+			$blmatch = array_intersect_key($blacklistarray,$oldblacklist);
+			# voeg nieuwe userid's toe aan de blacklist
 			foreach ($blacklistarray as $blacklistuserid) {
-				$db->addExternalToBlacklist($blacklistuserid);
+				if (!in_array($blacklistuserid,$blmatch)) {
+					$countnewblacklistuserid++;
+					$db->addExternalToBlacklist($blacklistuserid);
+				}
 			}
 			# verwijder userid's die niet meer op de blacklist staan
-			$db->removeOldBlackList();
-			echo "Finished updating blacklist" . PHP_EOL;
+			foreach ($oldblacklist as $obl) {
+				if (!in_array($obl['userid'],$blmatch)) {
+					$countdelblacklistuserid++;
+					$db->removeExternalFromBlacklist($obl['userid']);
+				}
+			}		
+			echo "Finished updating blacklist. Added: " . $countnewblacklistuserid . ", removed: " . $countdelblacklistuserid . ", total: " . count($blacklistarray) . PHP_EOL;
 		}
 	} catch(Exception $x) {
 		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
