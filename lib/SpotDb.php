@@ -1896,7 +1896,8 @@ class SpotDb {
 			$compressed = 1;
 		} # else
 
-		if ($this->getMaxPacketsize() > 0 && strlen($content) > $this->getMaxPacketSize()) {
+		$tmp = $this->_conn->safe($messageid . $headers . $compressed . $content . $url);
+		if ($this->getMaxPacketsize() > 0 && strlen($tmp)+115 > $this->getMaxPacketSize()) {
 			return;
 		} # if
 
