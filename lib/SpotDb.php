@@ -2010,27 +2010,47 @@ class SpotDb {
 		
 	function removeOldBlackList() {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
-		$this->_conn->modify("UPDATE spotteridblacklist SET ouruserid = -1 WHERE ouruserid = -2 AND origin = 'external'");
 	} # removeOldBlackList
 	
-	function addExternalToBlacklist($usrid) {
-		if ($usrid) {
-			switch ($this->_dbsettings['engine']) {
-				case 'mysql'		:
-				case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT IGNORE INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-1','external')", Array($usrid));	
-					$this->_conn->modify("UPDATE spotteridblacklist SET ouruserid = -2 WHERE userid = '%s' AND ouruserid = -1 AND origin = 'external'", Array($usrid));
-					break;
-				} # mysql
-				default	: {
-					$this->_conn->exec("UPDATE spotteridblacklist SET ouruserid = -2 WHERE userid = '%s' AND ouruserid = -1 AND origin = 'external'", Array($usrid));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-2','external')", Array($usrid));
-					}
-					break;
-				} # default
+	function updateExternalBlacklist($newblacklist) {
+		$updatelist = array();
+		$updskipped = 0;
+		$countnewblacklistuserid = 0;
+		$countdelblacklistuserid = 0;
+		/* Haal de oude blacklist op*/
+		$oldblacklist = $this->_conn->arrayQuery("SELECT userid
+												FROM spotteridblacklist 
+												WHERE ouruserid = -1 AND origin = 'external'");
+		foreach ($oldblacklist as $obl) {
+			$updatelist[$obl['userid']] = 2;  # 'oude' userids eerst op verwijderen zetten.
+		}
+		/* verwerk de nieuwe blacklist */
+		foreach ($newblacklist as $nbl) {
+			if ((strlen($nbl) > 2) && (strlen($nbl) < 8)) {
+				if (empty($updatelist[$nbl])) {
+					$updatelist[$nbl] = 1;  # nieuwe userids toevoegen 
+				} elseif ($updatelist[$nbl] == 2) {
+					$updatelist[$nbl] = 0;  # userid staat nog steeds op de blacklist, niet verwijderen.
+				} else {
+					$updskipped++;          # dubbel userid in blacklist.txt.
+				}
+			} else {
+				$updskipped++; # er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
 			}
 		}
-	}
-
+		$updblacklist = array_keys($updatelist);
+		foreach ($updblacklist as $updl) {
+			if ($updatelist[$updl] == 1) {
+				# voeg nieuwe userid's toe aan de blacklist
+				$countnewblacklistuserid++;
+				$this->_conn->modify("INSERT INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-1','external')", Array($updl));
+			} elseif ($updatelist[$updl] == 2) {
+				# verwijder userid's die niet meer op de blacklist staan
+				$countdelblacklistuserid++;
+				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (userid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
+			}
+		}
+		return array('added' => $countnewblacklistuserid,'removed' => $countdelblacklistuserid,'skipped' => $updskipped);
+	} # updateExternalBlacklist
+	
 } # class db
