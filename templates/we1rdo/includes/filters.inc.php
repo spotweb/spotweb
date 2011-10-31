@@ -169,11 +169,12 @@
 						<div id="human-reportcount"></div>
 						<div id="slider-reportcount"></div>
 <?php } ?>
-
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 						<br>
 						<h4>Filters</h4>
 						<br>
 						<a onclick="return openDialog('editdialogdiv', 'Voeg een filter toe', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, true, null); " class="greyButton">Sla opdracht op als filter</a>
+<?php } ?>
 				</div>
 			</form>
 <?php } # if perform search ?>
