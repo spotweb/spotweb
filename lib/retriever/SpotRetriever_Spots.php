@@ -41,7 +41,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					case 'verified'			: echo "verified " . $txt . ", "; break;
 					case 'modcount'			: echo "moderated " . $txt . ", "; break;
 					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
-					case 'loopcount'		: echo $txt . " total messages)" . PHP_EOL; break;
+					case 'loopcount'		: echo $txt . " total messages)"; break;
+					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
 					case ''					: echo PHP_EOL; break;
@@ -86,6 +87,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$lastProcessedId = '';
 			$fullSpotDbList = array();
 			$spotDbList = array();
+			$timer = microtime(true);
 
 			# Bepaal onze retention stamp
 			if ($this->_settings->get('retention') > 0) {
@@ -277,6 +279,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->displayStatus("skipcount", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
+			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			/* 
 			 * Add the spots to the database and update the last article
