@@ -1969,29 +1969,26 @@ class SpotDb {
 		return $this->_conn->bool2dt($b);
 	} # bool2dt
 		
-	function removeOldBlackList() {
-		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
-		$this->_conn->modify("UPDATE spotteridblacklist SET ouruserid = -1 WHERE ouruserid = -2 AND origin = 'external'");
-	} # removeOldBlackList
+	function getOldExternalBlacklist() {
+		/* Haal de huidige blacklist op*/
+		return $this->_conn->arrayQuery("SELECT userid
+												FROM spotteridblacklist 
+												WHERE ouruserid = -1 AND origin = 'external'");
+		
+	} # getOldExternalBlacklist
 	
 	function addExternalToBlacklist($usrid) {
 		if ($usrid) {
-			switch ($this->_dbsettings['engine']) {
-				case 'mysql'		:
-				case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT IGNORE INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-1','external')", Array($usrid));	
-					$this->_conn->modify("UPDATE spotteridblacklist SET ouruserid = -2 WHERE userid = '%s' AND ouruserid = -1 AND origin = 'external'", Array($usrid));
-					break;
-				} # mysql
-				default	: {
-					$this->_conn->exec("UPDATE spotteridblacklist SET ouruserid = -2 WHERE userid = '%s' AND ouruserid = -1 AND origin = 'external'", Array($usrid));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-2','external')", Array($usrid));
-					}
-					break;
-				} # default
-			}
+			$this->_conn->modify("INSERT INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-1','external')", Array($usrid));
 		}
 	}
-
+	function removeExternalFromBlacklist($usrid) {
+		if ($usrid) {
+			$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (userid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($usrid));
+		}
+	}
+	function removeOldBlackList() {
+		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
+	} # removeOldBlackList
+	
 } # class db
