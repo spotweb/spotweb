@@ -226,6 +226,21 @@ include "includes/form-messages.inc.php";
 <!-- Notificaties -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 		<div id="edituserpreftab-4">
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'boxcar')) { ?>
+<!-- Boxcar -->
+			<fieldset>
+				<dt><label for="use_boxcar">Boxcar gebruiken?</label></dt>
+				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][boxcar][enabled]" id="use_growl" <?php if ($edituserprefsform['notifications']['boxcar']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+				<fieldset id="content_use_growl">
+					<dt><label for="edituserprefsform[notifications][boxcar][email]">Boxcar e-mail adres?</label></dt>
+					<dd><input type="input" name="edituserprefsform[notifications][boxcar][email]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['boxcar']['email']); ?>"></dd>
+
+					<?php showNotificationOptions('boxcar', $edituserprefsform, $tplHelper); ?>
+				</fieldset>
+			</fieldset>
+<?php } ?>
 		
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) { ?>
 <!-- E-mail -->
