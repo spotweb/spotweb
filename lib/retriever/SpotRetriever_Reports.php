@@ -25,7 +25,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
-					case 'loopcount'		: echo ", found " . $txt . " reports" . PHP_EOL; break;
+					case 'loopcount'		: echo ", found " . $txt . " reports"; break;
+					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " reports" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
 					case ''					: echo PHP_EOL; break;
@@ -60,7 +61,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			$signedCount = 0;
 			$lastProcessedId = '';
 			$reportDbList = array();
-			
+			$timer = microtime(true);
+
 			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
 			$dbIdList = $this->_db->matchReportMessageIds($hdrList);
 			
@@ -105,6 +107,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			} else {
 				$this->displayStatus("loopcount", 0);
 			} # else
+			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			# update the last retrieved article			
 			$this->_db->addReportRefs($reportDbList);
