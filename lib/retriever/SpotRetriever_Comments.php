@@ -28,7 +28,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
-					case 'loopcount'		: echo ", found " . $txt . " comments" . PHP_EOL; break;
+					case 'loopcount'		: echo ", found " . $txt . " comments"; break;
+					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
 					case ''					: echo PHP_EOL; break;
@@ -64,6 +65,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$lastProcessedId = '';
 			$commentDbList = array();
 			$fullCommentDbList = array();
+			$timer = microtime(true);
 
 			# Bepaal onze retention stamp
 			if ($this->_settings->get('retention') > 0) {
@@ -181,6 +183,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			} else {
 				$this->displayStatus("loopcount", 0);
 			} # else
+			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			/* 
 			 * Add the comments to the database and update the last article

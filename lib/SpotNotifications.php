@@ -28,6 +28,10 @@ class SpotNotifications {
 
 	function register() {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
+			# Boxcar heeft extra settings nodig
+			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
+			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
+
 			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled']) {
@@ -168,6 +172,10 @@ class SpotNotifications {
 			# Twitter heeft ook extra settings nodig
 			$user['prefs']['notifications']['twitter']['consumer_key'] = $this->_settings->get('twitter_consumer_key');
 			$user['prefs']['notifications']['twitter']['consumer_secret'] = $this->_settings->get('twitter_consumer_secret');
+
+			# Evenals Boxcar
+			$user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
+			$user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
 			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {

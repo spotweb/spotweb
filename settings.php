@@ -253,6 +253,13 @@ if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"
 	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file" . PHP_EOL);
 } # if
 
+# enc = true is een veelgemaakte fout, welke door de gebruiker niet duidelijk te traceren is
+foreach (array('nntp_nzb', 'nntp_hdr', 'nntp_post') as $tmp) {
+	if ($settings[$tmp]['enc'] === true) {
+		die("\$settings['" . $tmp . "']['enc'] bevat de waarde true. Wijzig dit in false, 'tls' of 'ssl'" . PHP_EOL);
+	} # if
+} # foreach
+
 # Voeg een sluitende slash toe als die er nog niet is
 if (substr($settings['spotweburl'], -1) != '/') {
 	$settings['spotweburl'] .= '/';
