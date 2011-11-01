@@ -5,6 +5,7 @@ abstract class SpotRetriever_Abs {
 		protected $_db;
 		protected $_settings;
 		protected $_debug;
+		protected $_retro;
 		
 		private $_msgdata;
 
@@ -27,11 +28,12 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * NNTP Server waar geconnet moet worden
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $debug) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
 			$this->_server = $server;
 			$this->_db = $db;
 			$this->_settings = $settings;
 			$this->_debug = $debug;
+			$this->_retro = $retro;
 		} # ctor
 
 		function debug($s) {
@@ -64,7 +66,7 @@ abstract class SpotRetriever_Abs {
 		function searchMessageid($messageIdList) {
 			$this->debug('searchMessageId=' . serialize($messageIdList));
 			
-			if (empty($messageIdList)) {
+			if (empty($messageIdList) || $this->_retro) {
 				return 0;
 			} # if
 				

@@ -8,8 +8,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $retrieveFull, $debug) {
-			parent::__construct($server, $db, $settings, $debug);
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $retrieveFull, $debug, $retro) {
+			parent::__construct($server, $db, $settings, $debug, $retro);
 			
 			$this->_outputType = $outputType;
 			$this->_retrieveFull = $retrieveFull;
@@ -140,8 +140,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 
 				# We willen enkel de volledige comment ophalen als de header in de database zit, omdat 
 				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
-				if (($header_isInDb)  &&		# header moet in db zitten
-					(!$fullcomment_isInDb)) 		# maar de fullcomment niet
+				if (($header_isInDb) &&			# header moet in db zitten
+					(!$fullcomment_isInDb))		# maar de fullcomment niet
 				   {
 
 					if ($this->_retrieveFull) {
@@ -194,7 +194,11 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				$fullComments = array_merge($fullComments, $fullComment);
 			} # while
 
-			$this->_db->setMaxArticleid('comments', $endMsg);
+			if ($this->_retro) {
+				$this->_db->setMaxArticleid('comments_retro', $endMsg);
+			} else {
+				$this->_db->setMaxArticleid('comments', $endMsg);
+			} # if
 			$this->_db->addComments($commentDbList, $fullComments);
 
 			# herbereken de gemiddelde spotrating, en update het 

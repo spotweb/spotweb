@@ -7,7 +7,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		 * db - database object
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug) {
-			parent::__construct($server, $db, $settings, $debug);
+			parent::__construct($server, $db, $settings, $debug, false);
 			
 			$this->_outputType = $outputType;
 		} # ctor
