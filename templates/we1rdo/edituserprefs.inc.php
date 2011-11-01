@@ -211,8 +211,8 @@ include "includes/form-messages.inc.php";
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][port]">Port nummer voor nzbget?</label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['port']); ?>"></dd>
 
-						<dt><label for="edituserprefsform[nzbhandling][nzbget][username]">Username voor nzbget?</label></dt>
-						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][username]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['username']); ?>"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][username]">Username voor nzbget? Let op: op dit moment is all&eacute;&eacute;n <u>nzbget</u> een geldige waarde!</label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][username]" value="nzbget"></dd>
 
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][password]">Password voor nzbget?</label></dt>
 						<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>

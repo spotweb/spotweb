@@ -17,10 +17,10 @@ if (empty($editresult)) {
 			<dt><label for="edituserform[username]">Gebruikersnaam</label></dt>
 			<dd><input type="text" disabled="disabled" value="<?php echo htmlspecialchars($edituserform['username']); ?>"></dd>
 
-			<dt><label for="edituserform[newpassword1]">Wachtwoord</label></dt>
+			<dt><label for="edituserform[newpassword1]">Nieuw wachtwoord</label></dt>
 			<dd><input type="password" name="edituserform[newpassword1]" value=""></dd>
 
-			<dt><label for="edituserform[newpassword2]">Wachtwoord (bevestig)</label></dt>
+			<dt><label for="edituserform[newpassword2]">Bevestig nieuw wachtwoord</label></dt>
 			<dd><input type="password" name="edituserform[newpassword2]" value=""></dd>
 
 			<dt><label for="edituserform[firstname]">Voornaam</label></dt>
