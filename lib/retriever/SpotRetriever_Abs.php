@@ -36,7 +36,7 @@ abstract class SpotRetriever_Abs {
 
 		function debug($s) {
 			if ($this->_debug) {
-				echo 'DEBUG: ' . $s . PHP_EOL;
+				echo 'DEBUG: ' . microtime(true) . ':' . $s . PHP_EOL;
 			} # if
 		} # debug
 		

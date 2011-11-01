@@ -105,8 +105,16 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 			# en loop door elke header heen
 			$spotParser = new SpotParser();
-		
+
+			# if we need to fetch images or nzb files, we need an spotsoverview instance
+			if (($this->_prefetch_image) || ($this->_prefetch_nzb)) {
+				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+				$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
+			} # if
+			
 			foreach($hdrList as $msgid => $msgheader) {
+				$this->debug('foreach-loop, start. msgId= ' . $msgid);
+
 				/*
 				 * We keep track wether we actually fetched this header to add it
 				 * to the database, because only then we can update the titel from
@@ -125,22 +133,18 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$header_isInDb = isset($dbIdList['spot'][$msgId]);
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
 				
-				# if we need to fetch images or nzb files, we need an spotsoverview instance
-				if (($this->_prefetch_image) || ($this->_prefetch_nzb)) {
-					$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-					$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
-				} # if
-
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
 				# die wel in de header zitten, zitten niet in de database (denk aan 'keyid')
 				if ((!$header_isInDb) || ((!$fullspot_isInDb) && ($this->_retrieveFull))) {
 					$hdrsRetrieved++;
+					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgid);
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
+					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgid);
 												
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
@@ -212,8 +216,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;
+							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
-
+							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
+							
 							# en voeg hem aan de database toe
 							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
@@ -231,14 +237,18 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							if ($this->_prefetch_image) {
 								# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
 								if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
+									$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
 									$spotsOverview->getImage($fullSpot, $nntp_nzb);
+									$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 								} # if
 							} # if
 
 							# NZB prefetchen
 							if ($this->_prefetch_nzb) {
 								if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
+									$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
 									$spotsOverview->getNzb($fullSpot, $nntp_nzb, false);
+									$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 								} # if
 							} # if
 						} 
@@ -262,6 +272,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} # if retrievefull
 				} # if fullspot is not in db yet
+
+				$this->debug('foreach-loop, done. msgId= ' . $msgid);
 			} # foreach
 
 			if (count($hdrList) > 0) {
