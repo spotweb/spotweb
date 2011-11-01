@@ -218,6 +218,7 @@ class SpotsOverview {
 			curl_setopt ($ch, CURLOPT_URL, $url);
 			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
 			curl_setopt ($ch, CURLOPT_HEADER, 1); 
 			if ($content) {
