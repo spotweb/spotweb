@@ -151,6 +151,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
 
+			$this->setSettingIfNot($user['prefs']['notifications']['boxcar'], 'email', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['nma'], 'api', '');
@@ -370,6 +371,12 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.21) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(1, " . SpotSecurity::spotsec_send_notifications_services . ", 'welcomemail')");
 		} # if
+
+		# Boxcar toegevoegd
+		if ($this->_settings->get('securityversion') < 0.22) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'boxcar')");
+		} # if
+
 	} # updateSecurityGroups
 
 	/*

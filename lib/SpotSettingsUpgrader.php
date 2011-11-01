@@ -25,6 +25,8 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
 		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // Ook al heet deze secret, hij mag geshared worden
+		$this->setIfNot('boxcar_api_key', 'pOQM9O2AnEWL0RjSoHln');
+		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // Ook al heet deze secret, hij mag geshared worden
 		$this->setIfNot('auditlevel', 0); // No auditing
 		$this->updateSettingsVersion();
 	} # update()

@@ -271,6 +271,7 @@ class SpotUserSystem {
 		# Geef de user default preferences en settingss
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
 		$tmpUser = array_merge($anonUser, $tmpUser);
+		$tmpUser['prefs']['newspotdefault_tag'] = $user['username'];
 		$this->_db->setUser($tmpUser);
 		
 		# en geef de gebruiker de nodige groepen
