@@ -29,10 +29,12 @@ class SpotCategories {
 			  2 =>
 			Array('a' => 'Platform',
 				  'b' => 'Formaat',
-				  'c' => 'Genre'),
+				  'c' => 'Genre',
+				  'z' => 'Type'),
 			  3 =>
 			Array('a' => 'Platform',
-				  'b' => 'Genre')
+				  'b' => 'Genre',
+				  'z' => 'Type'),
 			);
 
 	public static $_shortcat =

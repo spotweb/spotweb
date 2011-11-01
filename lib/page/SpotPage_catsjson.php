@@ -27,10 +27,13 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 */
 	function renderSelectBox() {
 		# stuur een 'always cache' header zodat dit gecached kan worden
-		$this->sendExpireHeaders(false);
+		$this->sendExpireHeaders(true);
 		
 		$category = $this->_params['category'];
 		$genre = $this->_params['subcatz'];
+		if (strlen($genre) == 0) {
+			$genre = 'z';
+		} # if
 		
 		/* Validate the selected category */
 		if (!isset(SpotCategories::$_head_categories[$category])) {
@@ -56,20 +59,28 @@ class SpotPage_catsjson extends SpotPage_Abs {
 			case 'subcatc'  :
 			case 'subcatd'	: {
 					$scType = $this->_params['rendertype'][6];
-					
-					foreach(SpotCategories::$_categories[$category][$scType] as $key => $value) {
-						if (in_array('z'. $genre, $value[1])) {
-							$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
-						} # if
-					} # foreach
+
+					if (isset(SpotCategories::$_categories[$category][$scType])) {
+						foreach(SpotCategories::$_categories[$category][$scType] as $key => $value) {
+							if (in_array('z'. $genre, $value[1])) {
+								$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
+							} # if
+						} # foreach
+					} # if
 					
 					break;
 			} # case subcatz
 		} # switch
 		
-		echo json_encode(
-					array('title' => SpotCategories::$_subcat_descriptions[$category][$scType],
-					      'items' => $returnArray));
+		if (isset(SpotCategories::$_subcat_descriptions[$category][$scType])) {
+			echo json_encode(
+						array('title' => SpotCategories::$_subcat_descriptions[$category][$scType],
+							  'items' => $returnArray));
+		} else {
+			echo json_encode(
+						array('title' => '',
+							  'items' => array()));
+		} # if
 	} # renderSelectBox
 	
 	/*
