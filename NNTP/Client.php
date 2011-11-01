@@ -561,7 +561,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
         $data = $this->cmdBody($article);
-
+		
     	if ($implode == true) {
     	    $data = implode("\r\n", $data);
     	}
