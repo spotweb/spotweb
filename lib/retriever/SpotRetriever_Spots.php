@@ -11,8 +11,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * db - database object
 		 * rsakeys = array van rsa keys
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull, $debug) {
-			parent::__construct($server, $db, $settings, $debug);
+		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull, $debug, $retro) {
+			parent::__construct($server, $db, $settings, $debug, $retro);
 			
 			$this->_rsakeys = $rsakeys;
 			$this->_outputType = $outputType;
@@ -202,8 +202,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
 				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
-				if (($header_isInDb)  &&		# header moet in db zitten
-					(!$fullspot_isInDb)) 		# maar de fullspot niet
+				if ($header_isInDb &&			# header moet in db zitten
+					(!$fullspot_isInDb ||		# maar de fullspot niet
+					$this->_retro))				# tenzij we in Retro mode zitten
 				   {
 					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
@@ -217,11 +218,18 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
-							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
+							if (!$fullspot_isInDb) {
+								$fullSpot = $this->_spotnntp->getFullSpot($msgId);
+							} else {
+								$fullSpot = $this->_db->getFullSpot($msgId, 1);
+								$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+							} # else
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
 							# en voeg hem aan de database toe
-							$fullSpotDbList[] = $fullSpot;
+							if (!$fullspot_isInDb) {
+								$fullSpotDbList[] = $fullSpot;
+							} # if
 							$fullspot_isInDb = true;
 							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
 							# keren per xover mee komt ...
@@ -300,8 +308,12 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_db->addSpots($spotDbList, $fullSpotDbList);
 			$this->debug('added Spots, spotDbList=' . serialize($spotDbList));
 			$this->debug('added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
-			
-			$this->_db->setMaxArticleid($this->_server['host'], $endMsg);
+
+			if ($this->_retro) {
+				$this->_db->setMaxArticleid('spots_retro', $endMsg);
+			} else {
+				$this->_db->setMaxArticleid($this->_server['host'], $endMsg);
+			} # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
 			
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);

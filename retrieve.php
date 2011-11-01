@@ -86,6 +86,9 @@ if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
 ## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
 $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 
+## RETRO MODE! Hiermee kunnen we de fullspots, fullcomments en/of cache achteraf ophalen
+$retroMode = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--retro'));
+
 ## Spots
 try {
 	$rsaKeys = $settings->get('rsa_keys');
@@ -95,11 +98,17 @@ try {
 										 $rsaKeys, 
 										 $req->getDef('output', ''),
 										 $settings->get('retrieve_full'),
-										 $debugLog);
+										 $debugLog,
+										 $retroMode);
 	$msgdata = $retriever->connect($settings->get('hdr_group'));
 	$retriever->displayStatus('dbcount', $db->getSpotCount(''));
+
+	if ($retroMode) {
+		$curMsg = $db->getMaxArticleId('spots_retro');
+	} else {
+		$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
+	} # if
 	
-	$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
 	if ($curMsg != 0) {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
@@ -147,10 +156,16 @@ try {
 												$settings,
 												$req->getDef('output', ''),
 												$settings->get('retrieve_full_comments'),
-												$debugLog);
+												$debugLog,
+												$retroMode);
 		$msgdata = $retriever->connect($settings->get('comment_group'));
 
-		$curMsg = $db->getMaxArticleId('comments');
+		if ($retroMode) {
+			$curMsg = $db->getMaxArticleId('comments_retro');
+		} else {
+			$curMsg = $db->getMaxArticleId('comments');
+		} # if
+
 		if ($curMsg != 0) {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
@@ -188,7 +203,7 @@ catch(Exception $x) {
 ## Reports
 try {
 	$newReportCount = 0;
-	if ($settings->get('retrieve_reports')) {
+	if ($settings->get('retrieve_reports') && !$retroMode) {
 		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
 												$db,
 												$settings,
@@ -247,7 +262,9 @@ try {
 
 ## cache cleanup
 try {
-	$db->cleanCache(30);
+	if (!$retroMode) {
+		$db->cleanCache(30);
+	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
@@ -261,7 +278,7 @@ try {
 
 ## Retention cleanup
 try {
-	if ($settings->get('retention') > 0) {
+	if ($settings->get('retention') > 0 && !$retroMode) {
 		$db->deleteSpotsRetention($settings->get('retention'));
 	} # if
 } catch(Exception $x) {
