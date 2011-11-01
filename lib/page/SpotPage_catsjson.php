@@ -27,7 +27,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 */
 	function renderSelectBox() {
 		# stuur een 'always cache' header zodat dit gecached kan worden
-		$this->sendExpireHeaders(true);
+		$this->sendExpireHeaders(false);
 		
 		$category = $this->_params['category'];
 		$genre = $this->_params['subcatz'];
