@@ -208,6 +208,7 @@ class SpotsOverview {
 		SpotTiming::start(__FUNCTION__);
 
 		$url = str_replace(" ", "+", urldecode($url));
+		$url = mb_convert_encoding($url, "ASCII");
 
 		$content = $this->_cache->getCache($url);
 		if (!$content || time()-(int) $content['stamp'] > $ttl) {
