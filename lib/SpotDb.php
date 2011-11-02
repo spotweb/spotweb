@@ -1885,11 +1885,13 @@ class SpotDb {
 	function saveCache($messageid, $url, $headers, $content, $compress) {
 		$compressed = 0;
 
+		# Sommige van onderstaande acties vergen nogal wat geheugen en dat geeft een Fatal als
+		# daar niet genoeg van is. Daarom testen we of we wel genoeg hebben
+		if (strlen($content)*2 > ($this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
+			return;
+		} # if
+		
 		if ($compress == true) {
-			if (strlen($content) > ($this->calculatePhpMemoryLimit() * 0.33)) {
-				return;
-			} # if
-
 			$content = gzdeflate($content);
 			$compressed = 1;
 		} elseif ($compress == "done") {
