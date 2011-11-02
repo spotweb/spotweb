@@ -38,6 +38,11 @@ abstract class dbeng_abs {
 	 * Voert de database specifieke "safe-parameter" functie uit.
 	 */
 	abstract function safe($s);	
+	
+	/*
+	 * Returns a database specific representation of a boolean value
+	 */
+	abstract function bool2dt($b);
 
 	/*
 	 * Geef het aantal affected rows terug

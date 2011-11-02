@@ -64,7 +64,18 @@ abstract class dbeng_pdo extends dbeng_abs {
 		
 		return $stmt;
 	}
-	
+
+	/*
+	 * Returns a database specific representation of a boolean value
+	 */
+	function bool2dt($b) {
+		if ($b) {
+			return 'true';
+		} # if
+		
+		return 'false';
+	} # bool2dt
+
 	/**
      * Deze functie voert het statement uit en plaatst het aantal rijen in
      * een var.
