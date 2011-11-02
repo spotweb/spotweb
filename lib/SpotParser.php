@@ -278,7 +278,7 @@ class SpotParser {
 						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey);
 					*/
 					} # if
-				} elseif ($spot['keyid'] == 2 || $spot['keyid'] == 3 || $spot['keyid'] == 4) {
+				} elseif (isset($rsaKeys[$spot['keyid']])) {
 					# the signature this header is signed with
 					$signature = $this->unspecialString($spot['headersign']);
 
