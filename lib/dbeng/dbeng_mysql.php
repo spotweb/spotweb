@@ -149,6 +149,17 @@ class dbeng_mysql extends dbeng_abs {
 		return $rows;
 	} # arrayQuery
 
+	/*
+	 * Returns a database specific representation of a boolean value
+	 */
+	function bool2dt($b) {
+		if ($b) {
+			return 'true';
+		} # if
+		
+		return 'false';
+	} # bool2dt
+	
 	/* 
 	 * Begins an transaction
 	 */

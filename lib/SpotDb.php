@@ -17,6 +17,7 @@ class SpotDb {
 	function __construct($db) {
 		$this->_dbsettings = $db;
 	} # __ctor
+	
 
 	/*
 	 * Open connectie naar de database (basically factory), de 'engine' wordt uit de 
@@ -222,15 +223,15 @@ class SpotDb {
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'		:
 			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%d') ON DUPLICATE KEY UPDATE value = '%s', serialized = '%d'",
-										Array($name, $value, $serialized, $value, $serialized));
+					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', %s) ON DUPLICATE KEY UPDATE value = '%s', serialized = %s",
+										Array($name, $value, $serialized, $this->bool2dt($value), $this->bool2dt($serialized)));
 					 break;
 			} # mysql
 			
 			default				: {
-					$this->_conn->exec("UPDATE settings SET value = '%s', serialized = %d WHERE name = '%s'", Array($value, (int) $serialized, $name));
+					$this->_conn->exec("UPDATE settings SET value = '%s', serialized = %s WHERE name = '%s'", Array($value, $this->bool2dt($serialized), $name));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', %d)", Array($name, $value, (int) $serialized));
+						$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', %s)", Array($name, $value, $this->bool2dt($serialized)));
 					} # if
 					break;
 			} # default
@@ -429,7 +430,7 @@ class SpotDb {
 									lastvisit = %d,
 									lastread = %d,
 									lastapiusage = %d,
-									deleted = %d
+									deleted = %s
 								WHERE id = %d", 
 				Array($user['firstname'],
 					  $user['lastname'],
@@ -439,7 +440,7 @@ class SpotDb {
 					  (int) $user['lastvisit'],
 					  (int) $user['lastread'],
 					  (int) $user['lastapiusage'],
-					  (int) $user['deleted'],
+					  $this->bool2dt($user['deleted']),
 					  (int) $user['userid']));
 
 		# daarna updaten we zijn preferences
@@ -1082,7 +1083,7 @@ class SpotDb {
 							  $this->safe(serialize($comment['user-key'])),
 							  $this->safe($comment['userid']),
 							  $this->safe(implode("\r\n", $comment['body'])),
-							  $this->safe($comment['verified'])));
+							  $this->bool2dt($comment['verified'])));
 			} # foreach
 
 			# Actually insert the batch
@@ -1271,7 +1272,7 @@ class SpotDb {
 	 * Markeer een spot in de db moderated
 	 */
 	function markSpotModerated($msgId) {
-		$this->_conn->modify("UPDATE spots SET moderated = 1 WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->modify("UPDATE spots SET moderated = %s WHERE messageid = '%s'", Array($this->bool2dt(true), $msgId));
 	} # markSpotModerated
 
 	/*
@@ -1342,7 +1343,7 @@ class SpotDb {
 				$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
 				$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, %d)",
 						 Array($this->safe($spot['messageid']),
 							   $this->safe($spot['poster']),
 							   $this->safe($spot['title']),
@@ -1353,9 +1354,9 @@ class SpotDb {
 							   $this->safe($spot['subcatc']),
 							   $this->safe($spot['subcatd']),
 							   $this->safe($spot['subcatz']),
-							   $this->safe($spot['stamp']),
-							   $this->safe(($spot['stamp'] * -1)),
-							   $this->safe($spot['filesize'])));
+							   (int) $this->safe($spot['stamp']),
+							   (int) $this->safe(($spot['stamp'] * -1)),
+							   (int) $this->safe($spot['filesize'])));
 			} # foreach
 
 			# Actually insert the batch
@@ -1390,10 +1391,10 @@ class SpotDb {
 				# kappen we expres niet af
 				$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
 				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+				$insertArray[] = vsprintf("('%s', '%s', %s, '%s', '%s', '%s', '%s')",
 						Array($this->safe($fullSpot['messageid']),
 							  $this->safe($fullSpot['userid']),
-							  $this->safe((int) $fullSpot['verified']),
+							  $this->bool2dt((int) $fullSpot['verified']),
 							  $this->safe($fullSpot['user-signature']),
 							  $this->safe(base64_encode(serialize($fullSpot['user-key']))),
 							  $this->safe($fullSpot['xml-signature']),
@@ -1517,8 +1518,8 @@ class SpotDb {
 	 * Verwijdert een permissie uit een security group
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
-		$this->_conn->modify("UPDATE grouppermissions SET deny = %d WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array((int) $perm['deny'], $groupId, $perm['permissionid'], $perm['objectid']));
+		$this->_conn->modify("UPDATE grouppermissions SET deny = %s WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
+				Array($this->bool2dt($perm['deny']), $groupId, $perm['permissionid'], $perm['objectid']));
 	} # removePermFromSecGroup
 	
 	/*
@@ -1574,8 +1575,8 @@ class SpotDb {
 	 * Voegt een nieuwe notificatie toe
 	 */
 	function addNewNotification($userId, $objectId, $type, $title, $body) {
-		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', %d)",
-					Array($userId, (int) time(), $objectId, $type, $title, $body, 0));
+		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', %s)",
+					Array($userId, (int) time(), $objectId, $type, $title, $body, $this->bool2dt(false)));
 	} # addNewNotification
 	
 	/*
@@ -1590,8 +1591,8 @@ class SpotDb {
 	 * Een notificatie updaten
 	 */
 	function updateNotification($msg) {
-		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %d WHERE id = %d;",
-					Array($msg['title'], $msg['body'], $msg['sent'], $msg['id']));
+		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = %s WHERE id = %d;",
+					Array($msg['title'], $msg['body'], $this->bool2dt($msg['sent']), $msg['id']));
 	} // updateNotification
 	
 	/*
@@ -1817,8 +1818,8 @@ class SpotDb {
 	 */
 	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
 		return $this->_conn->modify("INSERT INTO permaudit(stamp, userid, permissionid, objectid, result, ipaddr) 
-										VALUES(%d, %d, %d, '%s', %d, '%s')",
-								Array(time(), (int) $userid, (int) $perm, $objectid, (int) $allowed, $ipaddr));
+										VALUES(%d, %d, %d, '%s', %s, '%s')",
+								Array(time(), (int) $userid, (int) $perm, $objectid, $this->bool2dt($allowed), $ipaddr));
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
@@ -1905,17 +1906,17 @@ class SpotDb {
 
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array($messageid, time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = %s, content = '%b' WHERE url = '%s'", Array($messageid, time(), $headers, $this->bool2dt($compressed), $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($messageid, $url, time(), $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', %s, '%b')", Array($messageid, $url, time(), $headers, $this->bool2dt($compressed), $content));
 					} # if
 					break;
 			} # pgsql
 
 			default				: {
-					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array($messageid, time(), $headers, $compressed, $content, $url));
+					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = %s, content = '%s' WHERE url = '%s'", Array($messageid, time(), $headers, $this->bool2dt($compressed), $content, $url));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($messageid, $url, time(), $headers, $compressed, $content));
+						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', %s, '%s')", Array($messageid, $url, time(), $headers, $this->bool2dt($compressed), $content));
 					} # if
 					break;
 			} # default
@@ -1938,6 +1939,14 @@ class SpotDb {
 		return $this->_conn->safe($q);
 	} # safe
 
+	/*
+	 * Converts a boolean value to a string
+	 * for usage by the database
+	 */
+	function bool2dt($b) {
+		return $this->_conn->bool2dt($b);
+	} # bool2dt
+		
 	function removeOldBlackList() {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
 		$this->_conn->modify("UPDATE spotteridblacklist SET ouruserid = -1 WHERE ouruserid = -2 AND origin = 'external'");
@@ -1962,4 +1971,5 @@ class SpotDb {
 			}
 		}
 	}
+
 } # class db
