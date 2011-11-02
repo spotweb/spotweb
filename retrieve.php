@@ -109,7 +109,7 @@ try {
 		$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
 	} # if
 	
-	if ($curMsg != 0) {
+	if ($curMsg != 0 && !$retroMode) {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
 	} # if
 
@@ -166,7 +166,7 @@ try {
 			$curMsg = $db->getMaxArticleId('comments');
 		} # if
 
-		if ($curMsg != 0) {
+		if ($curMsg != 0 && !$retroMode) {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
 
