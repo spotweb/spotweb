@@ -134,8 +134,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
 				
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
-				# ook als de fullspot er nog niet is, moeten we dit doen want een aantal velden
-				# die wel in de header zitten, zitten niet in de database (denk aan 'keyid')
+				# ook als de fullspot er nog niet is (of we in retro modus draaien), 
+				# moeten we dit doen want een aantal velden die wel in de header zitten, 
+				# zitten niet in de database (denk aan 'keyid')
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgid);
@@ -200,10 +201,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$lastProcessedId = $msgId;
 				} # else
 
-				# We willen enkel de volledige spot ophalen als de header in de database zit, omdat 
-				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
+				# We willen enkel de volledige spot ophalen als de header in de database zit, of als
+				# we in retromodus draaien. In retromodus moeten we dit code path wel in, want anders
+				# kunnen we de images en de NZB file niet ophalen.
 				if ($header_isInDb &&			# header moet in db zitten
-					(!$fullspot_isInDb ||		# maar de fullspot niet
+					(!$fullspot_isInDb || 		# maar de fullspot niet
 					$this->_retro))				# tenzij we in Retro mode zitten
 				   {
 					#
@@ -221,16 +223,19 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							if (!$fullspot_isInDb) {
 								$fullSpot = $this->_spotnntp->getFullSpot($msgId);
 							} else {
-								$fullSpot = $this->_db->getFullSpot($msgId, 1);
+								# We halen de fullspot op uit de db (in retro modus) zodat we
+								# de NZB file kunnen ophalen
+								$fullSpot = $this->_db->getFullSpot($msgId, 1); // 1 for anoynmous user
 								$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
 							} # else
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
-							# en voeg hem aan de database toe
+							# en voeg hem aan de database toe tenzij we in retro modus draaien
 							if (!$fullspot_isInDb) {
 								$fullSpotDbList[] = $fullSpot;
 							} # if
 							$fullspot_isInDb = true;
+							
 							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
 							# keren per xover mee komt ...
 							$dbIdList['fullspot'][$msgId] = 1;
