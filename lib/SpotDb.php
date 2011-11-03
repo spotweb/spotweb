@@ -224,7 +224,7 @@ class SpotDb {
 			case 'mysql'		:
 			case 'pdo_mysql'	: { 
 					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE value = '%s', serialized = %s",
-										Array($name, $value, $serialized, $this->bool2dt($value), $this->bool2dt($serialized)));
+										Array($name, $value, $this->bool2dt($serialized), $value, $this->bool2dt($serialized)));
 					 break;
 			} # mysql
 			
@@ -1356,7 +1356,7 @@ class SpotDb {
 							   $this->safe($spot['subcatz']),
 							   (int) $this->safe($spot['stamp']),
 							   (int) $this->safe(($spot['stamp'] * -1)),
-							   (int) $this->safe($spot['filesize'])));
+							   $this->safe($spot['filesize']))); # Filesize mag niet naar int gecast worden, dan heb je 2GB limiet
 			} # foreach
 
 			# Actually insert the batch
