@@ -116,11 +116,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->debug('foreach-loop, start. msgId= ' . $msgid);
 
 				/*
-				 * We keep track wether we actually fetched this header to add it
-				 * to the database, because only then we can update the titel from
-				 * the spots titel
+				 * We keep track whether we actually fetched this header and fullspot
+				 * to add it to the database, because only then we can update the
+				 * titel from the spots titel or rely on our database to fetch
+				 * the fullspot
 				 */
 				$didFetchHeader = false;
+				$didFetchFullSpot = false;
 				
 				# Reset timelimit
 				set_time_limit(120);
@@ -201,40 +203,25 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$lastProcessedId = $msgId;
 				} # else
 
-				# We willen enkel de volledige spot ophalen als de header in de database zit, of als
-				# we in retromodus draaien. In retromodus moeten we dit code path wel in, want anders
-				# kunnen we de images en de NZB file niet ophalen.
+				# We willen enkel de volledige spot ophalen als de header in de database zit
 				if ($header_isInDb &&			# header moet in db zitten
-					(!$fullspot_isInDb || 		# maar de fullspot niet
-					$this->_retro))				# tenzij we in Retro mode zitten
+					!$fullspot_isInDb)	 		# maar de fullspot niet
 				   {
-					#
 					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
 					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
 					# vragen we enkel de de headers op van de artikelen die er daadwerkelijk zijn
-					#
-					# KeyID 2 is een 'moderator' post en kan dus niet getrieved worden
-					#
-					if (($this->_retrieveFull) && ($spot['keyid'] != 2)) {
+					if ($this->_retrieveFull) {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
-							if (!$fullspot_isInDb) {
-								$fullSpot = $this->_spotnntp->getFullSpot($msgId);
-							} else {
-								# We halen de fullspot op uit de db (in retro modus) zodat we
-								# de NZB file kunnen ophalen
-								$fullSpot = $this->_db->getFullSpot($msgId, 1); // 1 for anoynmous user
-								$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
-							} # else
+							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
-							# en voeg hem aan de database toe tenzij we in retro modus draaien
-							if (!$fullspot_isInDb) {
-								$fullSpotDbList[] = $fullSpot;
-							} # if
+							# en voeg hem aan de database toe
+							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
+							$didFetchFullSpot = true;
 							
 							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
 							# keren per xover mee komt ...
@@ -244,25 +231,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# bevat. We kunnen dit enkel doen als de header opgehaald is
 							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
-							} # if
-
-							# image prefetchen
-							if ($this->_prefetch_image) {
-								# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
-								if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
-									$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
-									$spotsOverview->getImage($fullSpot, $nntp_nzb);
-									$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
-								} # if
-							} # if
-
-							# NZB prefetchen
-							if ($this->_prefetch_nzb) {
-								if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
-									$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-									$spotsOverview->getNzb($fullSpot, $nntp_nzb, false);
-									$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
-								} # if
 							} # if
 						} 
 						catch(ParseSpotXmlException $x) {
@@ -285,6 +253,52 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						
 					} # if retrievefull
 				} # if fullspot is not in db yet
+
+				if ($header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
+					try {
+						# Als we in retro modus draaien kan het zijn dat fullSpot al in de database zat en daarom niet is opgehaald
+						if (!$didFetchFullSpot) {
+							$fullSpot = $this->_db->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
+							$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+						} # if
+
+						# image prefetchen
+						if ($this->_prefetch_image) {
+							# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
+							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
+								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
+								$spotsOverview->getImage($fullSpot, $nntp_nzb);
+								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
+							} # if
+						} # if
+
+						# NZB prefetchen
+						if ($this->_prefetch_nzb) {
+							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
+								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
+								$spotsOverview->getNzb($fullSpot, $nntp_nzb, false);
+								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
+							} # if
+						} # if
+					}
+					catch(ParseSpotXmlException $x) {
+						; # swallow error
+					} 
+					catch(Exception $x) {
+						# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
+						# dit is de "No such article" error
+						# swallow the error
+						if ($x->getCode() == 430) {
+							;
+						} 
+						# als de XML niet te parsen is, niets aan te doen
+						elseif ($x->getMessage() == 'String could not be parsed as XML') {
+							;
+						} else {
+							throw $x;
+						} # else
+					} # catch
+			} # if prefetch image and/or nzb
 
 				$this->debug('foreach-loop, done. msgId= ' . $msgid);
 			} # foreach
