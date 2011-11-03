@@ -2,20 +2,22 @@
 require_once "lib/notifications/growl/class.growl.php"; // https://github.com/tylerhall/php-growl
 
 class Notifications_Growl extends Notifications_abs {
+	private $_connection;
 	var $growlObj;
 
 	function __construct($appName, array $dataArray) {
-		$this->growlObj = new Growl($dataArray['host'], $dataArray['password'], $appName);
+		$this->growlObj = new Growl($appName);
+		$this->_connection = array('address' => $dataArray['host'], 'password' => $dataArray['password']);
 	} # ctor
 
 	function register() {
 		$this->growlObj->addNotification('Single');
 		$this->growlObj->addNotification('Multi');
-		$this->growlObj->register();
+		$this->growlObj->register($this->_connection);
 	} # register
 
 	function sendMessage($type, $title, $body, $sourceUrl) {
-		$this->growlObj->notify($type, $title, $body);
+		$this->growlObj->notify($this->_connection, $type, $title, $body);
 	} # sendMessage
 
 } # Notifications_Growl
