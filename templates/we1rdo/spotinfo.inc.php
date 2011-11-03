@@ -176,7 +176,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				postReportForm();
 				postBlacklistForm();
 				loadSpotImage();
-				loadComments(messageid,'5','0');
+				loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
 			});
 
 			function addText(text,element_id) {

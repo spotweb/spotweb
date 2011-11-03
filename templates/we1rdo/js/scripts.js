@@ -96,7 +96,7 @@ function openSpot(id,url) {
 		postCommentsForm();
 		postReportForm();
 		postBlacklistForm();
-		loadComments(messageid,'5','0');
+		loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
 		loadSpotImage();
 	});
 }
@@ -310,7 +310,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 		pagenr++;
 		if (count >= 1) { 
-			loadComments(messageid,'5',pagenr);
+			loadComments(messageid,perpage,pagenr);
 		} else {
 			detectScrollbar();
 		}
