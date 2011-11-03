@@ -1350,7 +1350,7 @@ class SpotDb {
 				$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
 				$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, %d)",
+				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s')",
 						 Array($this->safe($spot['messageid']),
 							   $this->safe($spot['poster']),
 							   $this->safe($spot['title']),
