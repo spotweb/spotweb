@@ -512,7 +512,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('headers', 'cache', 'TEXT', NULL, false, 'ascii');
 		$this->validateColumn('compressed', 'cache', 'BOOLEAN', 'false', true, ''); 
-		$this->validateColumn('content', 'cache', 'mediumblob', NULL, false, '');
+		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
 		# ---- permaudit table ---- #
