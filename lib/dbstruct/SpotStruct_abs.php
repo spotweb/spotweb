@@ -542,15 +542,15 @@ abstract class SpotStruct_abs {
 			$maxSpots = $maxSpotsAr[0]['count'];
 			
 			echo "\tDeleting corrupt comments cache";
-			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . $maxComments);
+			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . (int) $maxComments);
 			echo "\tDeleting corrupt comments headers";
-			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . $maxCommentsXover);
+			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . (int) $maxCommentsXover);
 			echo "\tDeleting corrupt cache items";
-			$this->_dbcon->rawExec("DELETE FROM cache WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . $maxSpots . ")");
+			$this->_dbcon->rawExec("DELETE FROM cache WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . (int) $maxSpots . ")");
 			echo "\tDeleting corrupt spots cache";
-			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . $maxSpotsFull);
+			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . (int) $maxSpotsFull);
 			echo "\tDeleting corrupt spots";
-			$this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . $maxSpots);
+			$this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpots);
 		} # if
 
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
