@@ -87,6 +87,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$lastProcessedId = '';
 			$fullSpotDbList = array();
 			$spotDbList = array();
+			$moderationList = array();
 			$timer = microtime(true);
 
 			# Bepaal onze retention stamp
@@ -158,18 +159,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					if ($spot['keyid'] == 2) {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
-						
+
 						# FIXME: Message-ID kan ook van een comment zijn,
 						# onderstaande code gaat uit van een spot.
 
 						# is dit een geldig commando?
 						if (in_array($commandAr[0], $validCommands) !== false) {
-							switch($this->_settings->get('spot_moderation')) {
-								case 'disable'	: break;
-								case 'markspot'	: $this->_db->markSpotModerated($commandAr[1]); break;
-								default			: $this->_db->deleteSpot($commandAr[1]); break;
-							} # switch
-							
+							$moderationList[] = $commandAr[1];
 							$modCount++;
 						} # if
 						
@@ -298,7 +294,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							throw $x;
 						} # else
 					} # catch
-			} # if prefetch image and/or nzb
+				} # if prefetch image and/or nzb
 
 				$this->debug('foreach-loop, done. msgId= ' . $msgid);
 			} # foreach
@@ -328,6 +324,19 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->debug('added Spots, spotDbList=' . serialize($spotDbList));
 			$this->debug('added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
 
+			/*
+			 * Actually act on the moderation settings. We cannot process this inline
+			 * because a spot can be added and moderated within the same iteration
+			 */
+			foreach($moderationList as $moderateId) {
+				switch($this->_settings->get('spot_moderation')) {
+					case 'disable'	: break;
+					case 'markspot'	: $this->_db->markSpotModerated($moderateId); break;
+					default			: $this->_db->deleteSpot($moderateId); break;
+				} # switch
+			} # foreach
+			
+			# update the maximum article id
 			if ($this->_retro) {
 				$this->_db->setMaxArticleid('spots_retro', $endMsg);
 			} else {
