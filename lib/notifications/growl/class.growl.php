@@ -1,11 +1,12 @@
-<?PHP
+<?php
+
     class Growl
     {
-        const GROWL_PRIORITY_LOW = -2;
-        const GROWL_PRIORITY_MODERATE = -1;
-        const GROWL_PRIORITY_NORMAL = 0;
-        const GROWL_PRIORITY_HIGH = 1;
-        const GROWL_PRIORITY_EMERGENCY = 2;
+        const GROWL_PRIORITY_LOW        = -2;
+        const GROWL_PRIORITY_MODERATE   = -1;
+        const GROWL_PRIORITY_NORMAL     = 0;
+        const GROWL_PRIORITY_HIGH       = 1;
+        const GROWL_PRIORITY_EMERGENCY  = 2;
 
         private $appName;
         private $address;
@@ -13,12 +14,12 @@
         private $password;
         private $port;
 
-        public function __construct($address, $password = '', $app_name = 'PHP Growl')
+        public function __construct($app_name = 'PHP Growl')
         {
             $this->appName       = utf8_encode($app_name);
-            $this->address       = $address;
+            $this->address       = null;
             $this->notifications = array();
-            $this->password      = $password;
+            $this->password      = null;
             $this->port          = 9887;
         }
 
@@ -27,8 +28,10 @@
             $this->notifications[] = array('name' => utf8_encode($name), 'enabled' => $enabled);
         }
 
-        public function register()
+        public function register($connection)
         {
+            $this->setConnectionData($connection);
+            
             $data         = '';
             $defaults     = '';
             $num_defaults = 0;
@@ -50,8 +53,10 @@
             return $this->send($data);
         }
 
-        public function notify($name, $title, $message, $priority = 0, $sticky = false)
+        public function notify($connection, $name, $title, $message, $priority = 0, $sticky = false)
         {
+            $this->setConnectionData($connection);
+            
             $name     = utf8_encode($name);
             $title    = utf8_encode($title);
             $message  = utf8_encode($message);
@@ -73,8 +78,11 @@
         {
             if(function_exists('socket_create') && function_exists('socket_sendto'))
             {
-                $sck = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+                $sck = ( strlen(inet_pton($this->address)) > 4 && defined('AF_INET6') ) 
+                    ? socket_create(AF_INET6, SOCK_DGRAM, SOL_UDP) 
+                    : socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
                 socket_sendto($sck, $data, strlen($data), 0x100, $this->address, $this->port);
+                $this->resetConnectionData();
                 return true;
             }
             elseif(function_exists('fsockopen'))
@@ -82,9 +90,27 @@
                 $fp = fsockopen('udp://' . $this->address, $this->port);
                 fwrite($fp, $data);
                 fclose($fp);
+                $this->resetConnectionData();
                 return true;
             }
 
             return false;
+        }
+        
+        private function setConnectionData($connection)
+        {
+            if(empty($connection['address']))
+            {
+                throw new Exception('Address Missing', 'Unable to send notification without ip address.');
+            }
+            
+            $this->address  = $connection['address'];
+            $this->password = (!empty($connection['password'])) ? $connection['password'] : '';
+        }
+        
+        private function resetConnectionData()
+        {
+            $this->address  = null;
+            $this->password = null;
         }
     }

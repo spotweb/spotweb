@@ -29,10 +29,17 @@ class SpotDb {
 		/* 
 		 * Erase username/password so it won't show up in any stacktrace
 		 */
-		$tmpUser = $this->_dbsettings['user'];
-		$tmpPass = $this->_dbsettings['pass'];
-		$this->_dbsettings['user'] = '*FILTERED*';
-		$this->_dbsettings['pass'] = '*FILTERED*';
+
+		# SQlite heeft geen username gedefinieerd
+		if (isset($this->_dbsettings['user'])) {
+			$tmpUser = $this->_dbsettings['user'];
+			$this->_dbsettings['user'] = '*FILTERED*';
+		} # if
+		# en ook geen pass
+		if (isset($this->_dbsettings['pass'])) {
+			$tmpPass = $this->_dbsettings['pass'];
+			$this->_dbsettings['pass'] = '*FILTERED*';
+		} # if
 
 		switch ($this->_dbsettings['engine']) {
 			case 'mysql'	: $this->_conn = new dbeng_mysql($this->_dbsettings['host'],
@@ -1515,7 +1522,7 @@ class SpotDb {
 	} # removePermFromSecGroup
 
 	/*
-	 * Verwijdert een permissie uit een security group
+	 * Zet een permissie op deny in een security group
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
 		$this->_conn->modify("UPDATE grouppermissions SET deny = '%s' WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
