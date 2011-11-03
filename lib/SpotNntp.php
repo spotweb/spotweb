@@ -449,7 +449,7 @@ class SpotNntp {
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
-
+			
 			# als de spot verified is, toon dan de userid van deze user
 			if ($spot['verified']) {
 				$spot['userid'] = $spotSigning->calculateUserid($spot['user-key']['modulo']);
