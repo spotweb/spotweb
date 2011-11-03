@@ -207,7 +207,7 @@ class SpotNotifications {
 					$newMessage['body'] = implode(" ", $body);
 				} # if
 
-				$newMessage['sent'] = 1;
+				$newMessage['sent'] = true;
 				$this->_db->updateNotification($newMessage);
 			} # foreach message
 		} # foreach user
