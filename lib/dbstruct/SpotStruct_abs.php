@@ -528,6 +528,31 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
+		
+		# Wissen van corrupte spots, 3 novmber 2011.
+		if ($this->_spotdb->getSchemaVer() == 0.45) {
+			$maxCommentsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count FROM commentsfull', array());
+			$maxCommentsXoverAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count  FROM commentsxover', array());
+			$maxSpotsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spotsfull', array());
+			$maxSpotsAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spots', array());
+			
+			$maxComments = $maxCommentsFullAr[0]['count'];
+			$maxCommentsXover = $maxCommentsXoverAr[0]['count'];
+			$maxSpotsFull = $maxSpotsFullAr[0]['count'];
+			$maxSpots = $maxSpotsAr[0]['count'];
+			
+			echo "\tDeleting corrupt comments cache";
+			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . $maxComments);
+			echo "\tDeleting corrupt comments headers";
+			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . $maxCommentsXover);
+			echo "\tDeleting corrupt cache items";
+			$this->_dbcon->rawExec("DELETE FROM cache WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . $maxSpots . ")");
+			echo "\tDeleting corrupt spots cache";
+			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . $maxSpotsFull);
+			echo "\tDeleting corrupt spots";
+			$this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . $maxSpots);
+		} # if
+
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
 			throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
 							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
