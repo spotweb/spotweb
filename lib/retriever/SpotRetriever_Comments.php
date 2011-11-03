@@ -99,9 +99,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					# fix de references, niet alle news servers geven die goed door
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
-					$spotMsgIdList[] = $msgheader['References'];
-					$commentStamp = strtotime($msgheader['Date']);
 
+					$commentStamp = strtotime($msgheader['Date']);
 					# Oudere comments niet toevoegen
 					if (($retentionStamp > 0 && $commentStamp < $retentionStamp) || $commentStamp < $this->_settings->get('retrieve_newer_than')) {
 						continue;
@@ -130,6 +129,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						# we moeten ook de msgid lijst updaten omdat 
 						# soms een messageid meerdere keren per xover mee komt
 						$dbIdList['comment'][$commentId] = 1;
+						$spotMsgIdList[] = $msgheader['References'];
 						$header_isInDb = true;
 						$lastProcessedId = $commentId;
 						$didFetchHeader = true;

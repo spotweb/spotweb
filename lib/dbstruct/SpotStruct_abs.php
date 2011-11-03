@@ -664,7 +664,8 @@ abstract class SpotStruct_abs {
 		# ---- Indexen op cache ----
 		$this->validateIndex("idx_cache_1", "", "cache", array("messageid"));
 		$this->validateIndex("idx_cache_2", "UNIQUE", "cache", array("url"));
-		
+		$this->validateIndex("idx_cache_3", "", "cache", array("stamp"));
+
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
