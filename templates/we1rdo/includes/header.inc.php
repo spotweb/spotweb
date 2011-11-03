@@ -26,6 +26,7 @@
 			var spotweb_security_allow_view_spotimage = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_spotimage, ''); ?>;
 			var spotweb_security_allow_view_comments = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''); ?>;
 			var spotweb_currentfilter_params = "<?php echo str_replace('&amp;', '&', $tplHelper->convertFilterToQueryParams()); ?>";
+			var spotweb_retrieve_commentsperpage = <?php if ($settings->get('retrieve_full_comments')) { echo 100; } else { echo 5; } ?>;
 		</script>
 	</head>
 	<body>
