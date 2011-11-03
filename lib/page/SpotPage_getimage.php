@@ -40,7 +40,6 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		header($header);
 		echo $image;
-		
 	} # render
 	
 } # SpotPage_getimage

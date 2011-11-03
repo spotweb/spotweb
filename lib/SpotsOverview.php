@@ -184,7 +184,7 @@ class SpotsOverview {
 			} else {
 				$img = $nntp->getImage($fullSpot);
 				$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
-			} # if 
+			} # if
 		} else {
 			list($http_code, $http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
 
