@@ -981,7 +981,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		
     	// Fetch overview from server
 		if ($this->_supportXzver) {
-			$overview = $this->cmdXZver($range);
+			try {
+				$overview = $this->cmdXZver($range);
+			} catch(Exception $x) {
+				$overview = $this->cmdXOver($range);
+				$this->_supportXzver = false;
+			} # catch
 		} else {
 			$overview = $this->cmdXOver($range);
 		} # else
