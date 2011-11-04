@@ -976,7 +976,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 		// Does the server support XZVER
 		if (is_null($this->_supportXzver)) {
-			$this->_supportXzver = (array_search('XZVER', $this->cmdCapabilities()) !== false);
+			try {
+				$this->_supportXzver = (array_search('XZVER', $this->cmdCapabilities()) !== false);
+			} catch(Exception $x) {
+				$this->_supportXzver = false;
+			} # try
 		} # if
 		
     	// Fetch overview from server
