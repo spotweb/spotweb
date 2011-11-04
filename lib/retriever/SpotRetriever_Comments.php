@@ -133,7 +133,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						# we moeten ook de msgid lijst updaten omdat 
 						# soms een messageid meerdere keren per xover mee komt
 						$dbIdList['comment'][$commentId] = 1;
-						$spotMsgIdList[] = $msgheader['References'];
+						$spotMsgIdList[$msgheader['References']] = 1;
 
 						# als dit comment een rating bevat voegen we hem aan de 
 						# msg lijst toe voor ratings
