@@ -104,6 +104,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @since 1.3.0
      */
     var $_overviewFormatCache = null;
+	
+	/**
+	 * 
+	 * 
+	 * @var array
+	 * @access private
+	 */
+	var $_supportXzver = null;
 
     // }}}
     // {{{ constructor
@@ -966,8 +974,17 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return $articles;
     	}
 
+		// Does the server support XZVER
+		if (is_null($this->_supportXzver)) {
+			$this->_supportXzver = (array_search('XZVER', $this->cmdCapabilities()) !== false);
+		} # if
+		
     	// Fetch overview from server
-    	$overview = $this->cmdXOver($range);
+		if ($this->_supportXzver) {
+			$overview = $this->cmdXZver($range);
+		} else {
+			$overview = $this->cmdXOver($range);
+		} # else
 
     	// Use field names from overview format as keys?
     	if ($_names) {
