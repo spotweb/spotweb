@@ -21,8 +21,7 @@
 	<tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), "", "Niet leeg, <strong>kan</strong> een probleem zijn"); ?> </td> </tr>
 	<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
 	<tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
-	<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (32*1024*1024), "", "memory_limit below 32M"); ?> </td> </tr>
-	<tr> <td> Memory limit (indien prefetch_nzb enabled is) </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), "", "memory_limit below 128M"); ?> </td> </tr>
+	<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), "", "memory_limit below 128M"); ?> </td> </tr>
 </table>
 <br />
 
@@ -32,7 +31,7 @@
 	<tr> <td colspan="2"> ctype </td> <td> </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
 	<tr> <td colspan="2"> curl </td> <td> </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> Opera Speed Dial </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
+	<tr> <td colspan="2"> GD </td> <td> </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
 	<tr> <td colspan="2"> zip </td> <td> </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>

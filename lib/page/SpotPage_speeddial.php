@@ -9,6 +9,7 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		$fontSize = 24;
 
 		$tplHelper = $this->getTplHelper(array());
+		$spotImage = new SpotImage();
 
 		// Create image
 		$img = imagecreatetruecolor(512, 320);
@@ -17,7 +18,7 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		imagealphablending($img, true);
 
 		// Draw a square
-		imagefilledrectangle($img, 8, 8, 504, 312, $this->colorHex($img, $backgroundColor));
+		imagefilledrectangle($img, 8, 8, 504, 312, $spotImage->colorHex($img, $backgroundColor));
 
 		// Load and show the background image
 		$bg = imagecreatefromgif($backgroundImage);
@@ -28,23 +29,23 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		// Add some usefull text
 		$text = "Totaal aantal spots: " . $this->_db->getSpotCount('');
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
-		imagettftext($img, $fontSize, 0, 256-($width/2), 50, $this->colorHex($img, $text_color), $ttfFont, $text);
+		imagettftext($img, $fontSize, 0, 256-($width/2), 50, $spotImage->colorHex($img, $text_color), $ttfFont, $text);
 
 		$count = $tplHelper->getNewCountForFilter('');
 		if (!$count) { $count = 0; }
 		$text = "Aantal nieuwe spots: " . $count;
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
-		imagettftext($img, $fontSize, 0, 256-($width/2), 90, $this->colorHex($img, $text_color), $ttfFont, $text);
+		imagettftext($img, $fontSize, 0, 256-($width/2), 90, $spotImage->colorHex($img, $text_color), $ttfFont, $text);
 
 		$text = "Laatste update:";
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
-		imagettftext($img, $fontSize, 0, 256-($width/2), 230+$fontSize, $this->colorHex($img, $text_color), $ttfFont, $text);
+		imagettftext($img, $fontSize, 0, 256-($width/2), 230+$fontSize, $spotImage->colorHex($img, $text_color), $ttfFont, $text);
 
 		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
 		$text = $tplHelper->formatDate($this->_db->getLastUpdate($nntp_hdr_settings['host']), 'lastupdate');
 		if (!$text) { $text = "onbekend"; }
 		$bbox = imagettfbbox($fontSize, 0, $ttfFont, $text); $width = abs($bbox[2]);
-		imagettftext($img, $fontSize, 0, 256-($width/2), 270+$fontSize, $this->colorHex($img, $text_color), $ttfFont, $text);
+		imagettftext($img, $fontSize, 0, 256-($width/2), 270+$fontSize, $spotImage->colorHex($img, $text_color), $ttfFont, $text);
 
 		// Headers
 		$this->sendExpireHeaders(true);
@@ -54,12 +55,5 @@ class SpotPage_speeddial extends SpotPage_Abs {
 		imagejpeg($img);
 		imagedestroy($img);
 	} # render
-
-	function colorHex($img, $HexColorString) {
-		$R = hexdec(substr($HexColorString, 0, 2));
-		$G = hexdec(substr($HexColorString, 2, 2));
-		$B = hexdec(substr($HexColorString, 4, 2));
-		return ImageColorAllocate($img, $R, $G, $B);
-	} # colorHex
 
 } # class SpotPage_speeddial

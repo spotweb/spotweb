@@ -299,12 +299,11 @@ if ($settings_external_blacklist) {
 		$spotsOverview = new SpotsOverview($db, $settings);
 
 		# haal de blacklist op
-		list($http_code, $http_headers, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60, true);
-		$blacklistishtml = strpos($blacklist,">");
-		$blacklist = str_replace(chr(13),"",$blacklist);
-		$blacklistarray = explode(chr(10),$blacklist);
-		
-		# Is het bestand dat we opgehaald hebben een echte blacklist? 
+		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60);
+		$blacklistishtml = strpos($blacklist['content'],">");
+		$blacklist['content'] = str_replace(chr(13),"",$blacklist['content']);
+		$blacklistarray = explode(chr(10),$blacklist['content']);
+
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;
 		} elseif ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
