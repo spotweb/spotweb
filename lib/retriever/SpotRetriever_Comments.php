@@ -80,6 +80,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			# we houden een aparte lijst met spot messageids bij zodat we dat extracten
 			# niet meer in de db laag moeten doen
 			$spotMsgIdList = array();
+			
 			# en een aparte lijst met spot messageids die een rating bevatten. Zo
 			# hoeven we bij comments zonder rating niet te herberekenen
 			$spotMsgIdRatingList = array();
@@ -137,7 +138,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						# als dit comment een rating bevat voegen we hem aan de 
 						# msg lijst toe voor ratings
 						if ($msgheader['rating'] >= 1 && $msgheader['rating'] <= 10) {
-							$spotMsgIdRatingList[] = $msgheader['References'];
+							$spotMsgIdRatingList[$msgheader['References']] = 1;
 						} # if
 
 						$header_isInDb = true;
