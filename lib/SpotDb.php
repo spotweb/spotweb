@@ -1135,6 +1135,10 @@ class SpotDb {
 			return;
 		} # if
 
+		# als een spot messageid meerdere keren voorkomt geeft dat
+		# overbodig extra werk. Daarom maken we de array uniek
+		$spotMsgIdList = array_unique($spotMsgIdList);
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
@@ -1163,6 +1167,10 @@ class SpotDb {
 			return;
 		} # if
 
+		# als een spot messageid meerdere keren voorkomt geeft dat
+		# overbodig extra werk. Daarom maken we de array uniek
+		$spotMsgIdList = array_unique($spotMsgIdList);
+
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
 		foreach($spotMsgIdList as $spotMsgId) {
@@ -1189,6 +1197,10 @@ class SpotDb {
 		if (count($spotMsgIdList) == 0) {
 			return;
 		} # if
+
+		# als een spot messageid meerdere keren voorkomt geeft dat
+		# overbodig extra werk. Daarom maken we de array uniek
+		$spotMsgIdList = array_unique($spotMsgIdList);
 
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';

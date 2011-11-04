@@ -80,6 +80,9 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			# we houden een aparte lijst met spot messageids bij zodat we dat extracten
 			# niet meer in de db laag moeten doen
 			$spotMsgIdList = array();
+			# en een aparte lijst met spot messageids die een rating bevatten. Zo
+			# hoeven we bij comments zonder rating niet te herberekenen
+			$spotMsgIdRatingList = array();
 			
 			# en loop door elke header heen
 			foreach($hdrList as $msgid => $msgheader) {
@@ -130,6 +133,13 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						# soms een messageid meerdere keren per xover mee komt
 						$dbIdList['comment'][$commentId] = 1;
 						$spotMsgIdList[] = $msgheader['References'];
+
+						# als dit comment een rating bevat voegen we hem aan de 
+						# msg lijst toe voor ratings
+						if ($msgheader['rating'] >= 1 && $msgheader['rating'] <= 10) {
+							$spotMsgIdRatingList[] = $msgheader['References'];
+						} # if
+
 						$header_isInDb = true;
 						$lastProcessedId = $commentId;
 						$didFetchHeader = true;
@@ -203,7 +213,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 
 			# herbereken de gemiddelde spotrating, en update het 
 			# aantal niet geverifieerde comments
-			$this->_db->updateSpotRating($spotMsgIdList);
+			$this->_db->updateSpotRating($spotMsgIdRatingList);
 			$this->_db->updateSpotCommentCount($spotMsgIdList);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
