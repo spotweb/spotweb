@@ -1135,13 +1135,9 @@ class SpotDb {
 			return;
 		} # if
 
-		# als een spot messageid meerdere keren voorkomt geeft dat
-		# overbodig extra werk. Daarom maken we de array uniek
-		$spotMsgIdList = array_unique($spotMsgIdList);
-
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId) {
+		foreach($spotMsgIdList as $spotMsgId => $v) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
@@ -1167,13 +1163,9 @@ class SpotDb {
 			return;
 		} # if
 
-		# als een spot messageid meerdere keren voorkomt geeft dat
-		# overbodig extra werk. Daarom maken we de array uniek
-		$spotMsgIdList = array_unique($spotMsgIdList);
-
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId) {
+		foreach($spotMsgIdList as $spotMsgId => $v) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
@@ -1198,13 +1190,9 @@ class SpotDb {
 			return;
 		} # if
 
-		# als een spot messageid meerdere keren voorkomt geeft dat
-		# overbodig extra werk. Daarom maken we de array uniek
-		$spotMsgIdList = array_unique($spotMsgIdList);
-
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId) {
+		foreach($spotMsgIdList as $spotMsgId => $v) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
