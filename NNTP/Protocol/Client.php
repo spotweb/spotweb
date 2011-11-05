@@ -346,7 +346,7 @@ class Net_NNTP_Protocol_Client
 			
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
-				usleep(5);
+				usleep(50000);
                 continue;
             }
 
@@ -440,21 +440,19 @@ class Net_NNTP_Protocol_Client
 		$uncompressed = '';
         while (!feof($this->_socket)) {
 
-            // Retrieve and append up to 32 characters from the server, we use
-			// small sizes so even low bandwidth connections have some data, if
-			// there is any data left.
-            $received = @fread($this->_socket, 16384);
+            # Retrieve and append up to 32k characters from the server
+            $received = @fread($this->_socket, 32768);
 			if (strlen($received) == 0) {
 				$tries++;
 				
 				# Try decompression
 				$uncompressed = @gzuncompress($line);
-				if (($uncompressed !== false) || ($tries > 50)) {
+				if (($uncompressed !== false) || ($tries > 500)) {
 					break;
 				} # if
 				
-				if ($tries % 10 == 0) {
-					usleep(250);
+				if ($tries % 50 == 0) {
+					usleep(50000);
 				} # if
 			} # if
 			
