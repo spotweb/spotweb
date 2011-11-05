@@ -17,6 +17,17 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 		$this->_db_db = $db;
 	}
 
+	/*
+	 * Returns a database specific representation of a boolean value
+	 */
+	function bool2dt($b) {
+		if ($b) {
+			return 'true';
+		} # if
+		
+		return 'false';
+	} # bool2dt
+
 	function connect() {
 		if (!$this->_conn instanceof PDO) {
 			$this->_db_conn = "host=" . $this->_db_host;
