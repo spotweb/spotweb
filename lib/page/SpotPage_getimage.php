@@ -37,7 +37,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		# Haal de image op
 		list($header, $image) = $spotsOverview->getImage($fullSpot, $nzb_spotnntp);
-
+		
 		header($header);
 		echo $image;
 	} # render
