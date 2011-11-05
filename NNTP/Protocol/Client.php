@@ -343,7 +343,7 @@ class Net_NNTP_Protocol_Client
     	    }
 
             $line .= $recieved;
-
+			
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
 				usleep(5);
@@ -402,6 +402,82 @@ class Net_NNTP_Protocol_Client
     	return $this->throwError('End of stream! Connection lost?', null);
     }
 
+    /**
+     * Retrieve blob
+     *
+     * Get data and assume we do not hit any blindspots
+     *
+     * @return mixed (array) text response on success or (object) pear_error on failure
+     * @access private
+     */
+    function _getCompressedResponse()
+    {
+        $data = array();
+		
+		// We can have two kinds of compressed support:
+		//
+		// - yEnc encoding
+		// - Just a gzip drop
+		//
+		// We try to autodetect which one this uses
+		$line = @fread($this->_socket, 1024);
+		
+		if (substr($line, 0, 7) == '=ybegin') {
+			$data = $this->_getTextResponse();
+			$data = $line . "\r\n" . implode("", $data);
+   	    	$data = $this->yencDecode($data);
+			$data = explode("\r\n", gzinflate($data));
+			
+			return $data;
+		} # if
+
+		// We cannot use blocked I/O on this one
+		$streamMetadata = stream_get_meta_data($this->_socket);
+		stream_set_blocking($this->_socket, false);
+		
+        // Continue until connection is lost or we don't receive any data anymore
+		$tries = 0;
+		$uncompressed = '';
+        while (!feof($this->_socket)) {
+
+            // Retrieve and append up to 32 characters from the server, we use
+			// small sizes so even low bandwidth connections have some data, if
+			// there is any data left.
+            $received = @fread($this->_socket, 16384);
+			if (strlen($received) == 0) {
+				$tries++;
+				
+				# Try decompression
+				$uncompressed = @gzuncompress($line);
+				if (($uncompressed !== false) || ($tries > 50)) {
+					break;
+				} # if
+				
+				if ($tries % 10 == 0) {
+					usleep(250);
+				} # if
+			} # if
+			
+            $line .= $received;
+        } # while
+		
+		# and set the stream to its original blocked(?) value
+		stream_set_blocking($this->_socket, $streamMetadata['blocked']);
+		$data = explode("\r\n", $uncompressed);
+		$dataCount = count($data);
+
+		# Gzipped compress includes the "." and linefeed in the compressed stream
+		# skip those.
+		if ($dataCount > 2) {
+			if (($data[($dataCount - 2)] == ".") && (empty($data[($dataCount - 1)]))) {
+				array_pop($data);
+				array_pop($data);
+			} # if
+		} # if
+		
+		return $data;
+    } # _getCompressedResponse
+	
     // }}}
     // {{{ _sendText()
 
@@ -1679,6 +1755,109 @@ class Net_NNTP_Protocol_Client
     // }}}
     // {{{ cmdListOverviewFmt()
 
+
+    // }}}
+    // {{{ cmdXZver()
+
+	
+	/*
+	 * Based on code from http://wonko.com/software/yenc/, but
+	 * simplified because XZVER and the likes don't implement
+	 * yenc properly 
+	 */
+	private function yencDecode($string, $destination = "") {
+		$encoded = array();
+		$header = array();
+		$decoded = '';
+		
+		# Extract the yEnc string itself
+		preg_match("/^(=ybegin.*=yend[^$]*)$/ims", $string, $encoded);
+		$encoded = $encoded[1];
+		
+		# Extract the filesize and filename from the yEnc header
+		preg_match("/^=ybegin.*size=([^ $]+).*name=([^\\r\\n]+)/im", $encoded, $header);
+		$filesize = $header[1];
+		$filename = $header[2];
+		
+		# Remove the header and footer from the string before parsing it.
+		$encoded = preg_replace("/(^=ybegin.*\\r\\n)/im", "", $encoded, 1);
+		$encoded = preg_replace("/(^=yend.*)/im", "", $encoded, 1);        
+
+		# Remove linebreaks and whitespace from the string
+		$encoded = trim(str_replace("\r\n", "", $encoded));
+		
+		// Decode
+		$strLength = strlen($encoded);
+		for($i = 0; $i < $strLength; $i++) {
+			$c = $encoded[$i];
+			
+			if ($c == '=') {
+				$i++;
+				$decoded .= chr((ord($encoded[$i]) - 64) - 42);
+			} else {
+				$decoded .= chr(ord($c) - 42);
+			} # else
+		} # for
+
+		// Make sure the decoded filesize is the same as the size specified in the header.
+		if (strlen($decoded) != $filesize) {
+			throw new Exception("Filesize in yEnc header en filesize found do not match up");
+		} # if
+		
+		return $decoded;
+	} # yencDecode()
+	
+    /**
+     * Fetch message header from message number $first until $last
+     *
+     * The format of the returned array is:
+     * $messages[message_id][header_name]
+     *
+     * @param optional string $range articles to fetch
+     *
+     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdXZver($range = null)
+    {
+        if (is_null($range)) {
+			$command = 'XZVER';
+    	} else {
+    	    $command = 'XZVER ' . $range;
+        }
+
+        $response = $this->_sendCommand($command);
+
+    	switch ($response) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
+				$data = $this->_getCompressedResponse();
+    	        foreach ($data as $key => $value) {
+    	            $data[$key] = explode("\t", trim($value));
+    	        }
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Fetched overview ' . ($range == null ? 'for current article' : 'for range: '.$range));
+    	    	}
+
+    	    	return $data;
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
+    	    	return $this->throwError('No news group current selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC2980: 'No article(s) selected'
+    	    	return $this->throwError('No article(s) selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 502: // RFC2980: 'no permission'
+    	    	return $this->throwError('No permission', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+
+    // }}}
+    // {{{ cmdListOverviewFmt()
+	
     /**
      * Returns a list of avaible headers which are send from newsserver to client for every news message
      *
