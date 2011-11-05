@@ -1042,7 +1042,11 @@ class SpotDb {
 	function addComments($comments, $fullComments = array()) {
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($comments, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($comments, 1);
+		} else {
+			$chunks = array_chunk($comments, 100);
+		} # else
 
 		foreach($chunks as $comments) {
 			$insertArray = array();
@@ -1072,7 +1076,11 @@ class SpotDb {
 	function addFullComments($fullComments) {
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullComments, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($fullComments, 1);
+		} else {
+			$chunks = array_chunk($fullComments, 100);
+		} # else
 
 		foreach($chunks as $fullComments) {
 			$insertArray = array();
@@ -1107,7 +1115,11 @@ class SpotDb {
 	function addReportRefs($reportList) {
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($reportList, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($reportList, 1);
+		} else {
+			$chunks = array_chunk($reportList, 100);
+		} # else
 
 		foreach($chunks as $reportList) {
 			$insertArray = array();
@@ -1343,7 +1355,11 @@ class SpotDb {
 	function addSpots($spots, $fullSpots = array()) {
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($spots, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($spots, 1);
+		} else {
+			$chunks = array_chunk($spots, 100);
+		} # else
 		
 		foreach($chunks as $spots) {
 			$insertArray = array();
@@ -1401,8 +1417,12 @@ class SpotDb {
 	function addFullSpots($fullSpots) {
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullSpots, 100);
-		
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($fullSpots, 1);
+		} else {
+			$chunks = array_chunk($fullSpots, 100);
+		} # else
+	
 		foreach($chunks as $fullSpots) {
 			$insertArray = array();
 
