@@ -466,7 +466,7 @@ class Net_NNTP_Protocol_Client
 
 		# Gzipped compress includes the "." and linefeed in the compressed stream
 		# skip those.
-		if ($dataCount > 2) {
+		if ($dataCount >= 2) {
 			if (($data[($dataCount - 2)] == ".") && (empty($data[($dataCount - 1)]))) {
 				array_pop($data);
 				array_pop($data);
