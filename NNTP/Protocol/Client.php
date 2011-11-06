@@ -471,6 +471,8 @@ class Net_NNTP_Protocol_Client
 				array_pop($data);
 				array_pop($data);
 			} # if
+			
+			$data = array_filter($data);
 		} # if
 		
 		return $data;
