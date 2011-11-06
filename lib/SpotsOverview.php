@@ -22,7 +22,7 @@ class SpotsOverview {
 	 */
 	function getFullSpot($msgId, $ourUserId, $nntp) {
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
-
+		
 		if (empty($fullSpot)) {
 			# Vraag de volledige spot informatie op -- dit doet ook basic
 			# sanity en validatie checking
