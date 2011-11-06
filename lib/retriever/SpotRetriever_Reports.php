@@ -87,7 +87,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 					if (count($tmpSubject) > 2) {
 						$msgheader['keyword'] = $tmpSubject[0];
 						$msgheader['References'] = substr($tmpSubject[1], 1, strlen($tmpSubject[1]) - 2);
-						$spotMsgIdList[] = $msgheader['References'];
+						$spotMsgIdList[$msgheader['References']] = 1;
 
 						# voeg spot aan db toe
 						$reportDbList[] = array('messageid' => $reportId,
