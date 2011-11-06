@@ -2021,18 +2021,20 @@ class SpotDb {
 												FROM spotteridblacklist 
 												WHERE ouruserid = -1 AND origin = 'external'");
 		foreach ($oldblacklist as $obl) {
-			$updatelist[$obl['userid']] = 2;  /* verwijderen*/
+			$updatelist[$obl['userid']] = 2;  # 'oude' userids eerst op verwijderen zetten.
 		}
 		/* verwerk de nieuwe blacklist */
 		foreach ($newblacklist as $nbl) {
 			if ((strlen($nbl) > 3) && (strlen($nbl) < 8)) {
 				if (empty($updatelist[$nbl])) {
-					$updatelist[$nbl] = 1;  /* toevoegen*/
+					$updatelist[$nbl] = 1;  # nieuwe userids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
-					$updatelist[$nbl] = 0;  /* laten staan */
+					$updatelist[$nbl] = 0;  # userid staat nog steeds op de blacklist, niet verwijderen.
+				} else {
+					$updskipped++;          # dubbel userid in blacklist.txt.
 				}
 			} else {
-				$updskipped++;
+				$updskipped++; # er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
 			}
 		}
 		$updblacklist = array_keys($updatelist);
