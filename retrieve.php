@@ -308,8 +308,9 @@ if ($settings_external_blacklist) {
 		} elseif ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
 			echo "Error, can't update blacklist!" . PHP_EOL;
 		} else {
+			# update de blacklist
 			$updateblacklist = $db->updateExternalBlacklist($blacklistarray);
-			echo "Finished updating blacklist. Added: " . $updateblacklist['added'] . ", removed: " . $updateblacklist['removed'] . ", skipped: " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
+			echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
 		}
 	} catch(Exception $x) {
 		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
