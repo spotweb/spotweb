@@ -34,7 +34,7 @@ if (empty($editresult)) {
 
 			<dt><label for="edituserform[apikey]">API key</label></dt>
 			<dd><input class="withicon apikeyinputfield" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
-			<input type="image" class="resetApiSubmit" src="images/icons/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key genereren"></dd>
+			<input type="image" class="resetApiSubmit" src="images/refresh.png" name="edituserform[submitresetuserapi]" value="Nieuwe API key genereren"></dd>
 
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) || ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, ''))) { ?>
 			<!-- Dummy grouplist variable om zeker te zijn dat de grouplist altijd gepost wordt -->
