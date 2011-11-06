@@ -70,10 +70,10 @@ abstract class dbeng_pdo extends dbeng_abs {
 	 */
 	function bool2dt($b) {
 		if ($b) {
-			return 'true';
+			return '1';
 		} # if
 		
-		return 'false';
+		return '0';
 	} # bool2dt
 
 	/**

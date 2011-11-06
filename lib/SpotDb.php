@@ -1040,9 +1040,15 @@ class SpotDb {
 	 *   nntpref is de id van de spot
 	 */
 	function addComments($comments, $fullComments = array()) {
+		$this->beginTransaction();
+		
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($comments, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($comments, 1);
+		} else {
+			$chunks = array_chunk($comments, 100);
+		} # else
 
 		foreach($chunks as $comments) {
 			$insertArray = array();
@@ -1060,6 +1066,7 @@ class SpotDb {
 									  VALUES " . implode(',', $insertArray), array());
 			} # if
 		} # foreach
+		$this->commitTransaction();
 
 		if (!empty($fullComments)) {
 			$this->addFullComments($fullComments);
@@ -1070,9 +1077,15 @@ class SpotDb {
 	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
 	 */
 	function addFullComments($fullComments) {
+		$this->beginTransaction();
+		
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullComments, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($fullComments, 1);
+		} else {
+			$chunks = array_chunk($fullComments, 100);
+		} # else
 
 		foreach($chunks as $fullComments) {
 			$insertArray = array();
@@ -1097,6 +1110,8 @@ class SpotDb {
 			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified)
 								  VALUES " . implode(',', $insertArray), array());
 		} # foreach
+
+		$this->commitTransaction();
 	} # addFullComments
 
 	/*
@@ -1105,9 +1120,15 @@ class SpotDb {
 	 *   nntpref is de id van de spot
 	 */
 	function addReportRefs($reportList) {
+		$this->beginTransaction();
+		
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($reportList, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($reportList, 1);
+		} else {
+			$chunks = array_chunk($reportList, 100);
+		} # else
 
 		foreach($chunks as $reportList) {
 			$insertArray = array();
@@ -1124,6 +1145,8 @@ class SpotDb {
 			$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref)
 									VALUES " . implode(',', $insertArray), array());
 		} # foreach
+
+		$this->commitTransaction();
 	} # addReportRefs
 
 	/*
@@ -1341,9 +1364,15 @@ class SpotDb {
 	 * Voeg een reeks met spots toe aan de database
 	 */
 	function addSpots($spots, $fullSpots = array()) {
+		$this->beginTransaction();
+		
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($spots, 100);
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($spots, 1);
+		} else {
+			$chunks = array_chunk($spots, 100);
+		} # else
 		
 		foreach($chunks as $spots) {
 			$insertArray = array();
@@ -1388,6 +1417,7 @@ class SpotDb {
 									  VALUES " . implode(',', $insertArray), array());
 			} # if
 		} # foreach
+		$this->commitTransaction();
 		
 		if (!empty($fullSpots)) {
 			$this->addFullSpots($fullSpots);
@@ -1399,10 +1429,16 @@ class SpotDb {
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */
 	function addFullSpots($fullSpots) {
+		$this->beginTransaction();
+		
 		# Databases can have a maximum length of statements, so we 
 		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullSpots, 100);
-		
+		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
+			$chunks = array_chunk($fullSpots, 1);
+		} else {
+			$chunks = array_chunk($fullSpots, 100);
+		} # else
+	
 		foreach($chunks as $fullSpots) {
 			$insertArray = array();
 
@@ -1427,6 +1463,8 @@ class SpotDb {
 			$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  VALUES " . implode(',', $insertArray), array());
 		} # foreach
+
+		$this->commitTransaction();
 	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
