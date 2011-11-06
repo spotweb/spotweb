@@ -988,6 +988,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 			try {
 				$overview = $this->cmdXZver($range);
 			} catch(Exception $x) {
+				# If cmdXZver throws an fatal error, escalate it
+				if (!$this->_isConnected()) {
+					throw $x;
+				} # if
+				
 				$overview = $this->cmdXOver($range);
 				$this->_supportXzver = false;
 			} # catch
