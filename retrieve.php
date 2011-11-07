@@ -299,13 +299,15 @@ if ($settings_external_blacklist) {
 		$spotsOverview = new SpotsOverview($db, $settings);
 		# haal de blacklist op
 		list($http_code, $http_headers, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60, true);
+
 		$blacklistishtml = strpos($blacklist,">");
 		$blacklist = str_replace(chr(13),"",$blacklist);
 		$blacklistarray = explode(chr(10),$blacklist);
+
 		# Is het bestand dat we opgehaald hebben een echte blacklist? 
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;
-		} elseif ((strlen($blacklistarray[0]) < 4) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) {
+		} elseif ((strlen($blacklistarray[0]) < 3) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) { # de lengte van een userid is tussen 3 en 6 karakters groot (tot op heden)
 			echo "Error, can't update blacklist!" . PHP_EOL;
 		} else {
 			# update de blacklist
