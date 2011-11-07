@@ -2025,7 +2025,7 @@ class SpotDb {
 		}
 		/* verwerk de nieuwe blacklist */
 		foreach ($newblacklist as $nbl) {
-			if ((strlen($nbl) > 3) && (strlen($nbl) < 8)) {
+			if ((strlen($nbl) > 2) && (strlen($nbl) < 8)) {
 				if (empty($updatelist[$nbl])) {
 					$updatelist[$nbl] = 1;  # nieuwe userids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
