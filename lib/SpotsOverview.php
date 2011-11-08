@@ -163,11 +163,11 @@ class SpotsOverview {
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
 
-			# gzinflate verbruikt hier 8(!) keer de ingevoerde data aan geheugen
-			if ($recompress && strlen($nzb)*8 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
-				$nzbTmp = gzinflate($nzb);
+			# hier wordt extreem veel geheugen verbruikt
+			if ($recompress && strlen($nzb)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
+				$nzbTmp = @gzinflate($nzb); // Corrupte data uitfilteren
 
-				if ($recompress && strlen($nzbTmp)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
+				if ($nzbTmp && strlen($nzbTmp)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
 					$nzb = gzdeflate($nzbTmp, 9);
 				} # if
 				unset($nzbTmp);
