@@ -165,8 +165,12 @@ class SpotsOverview {
 
 			# gzinflate verbruikt hier 8(!) keer de ingevoerde data aan geheugen
 			if ($recompress && strlen($nzb)*8 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
-				$nzb = gzinflate($nzb);
-				$nzb = gzdeflate($nzb, 9);
+				$nzbTmp = gzinflate($nzb);
+
+				if ($recompress && strlen($nzbTmp)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
+					$nzb = gzdeflate($nzbTmp, 9);
+				} # if
+				unset($nzbTmp);
 			} # if
 
 			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, NULL, $nzb, "done");
