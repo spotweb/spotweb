@@ -297,8 +297,8 @@ $settings_external_blacklist = $settings->get('external_blacklist');
 if ($settings_external_blacklist) {
 	try {
 		$spotsOverview = new SpotsOverview($db, $settings);
-		# haal de blacklist op
 
+		# haal de blacklist op
 		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60);
 		$blacklistishtml = strpos($blacklist['content'],">");
 		$blacklist['content'] = str_replace(chr(13),"",$blacklist['content']);
