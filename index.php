@@ -318,7 +318,9 @@ try {
 
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
-					$page = new SpotPage_speeddial($db, $settings, $currentSession);
+					$page = new SpotPage_getimage($db, $settings, $currentSession,
+							Array('messageid' => $req->getDef('messageid', ''),
+								  'image' => 'speeddial'));
 				} else {
 					$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
@@ -329,7 +331,7 @@ try {
 								  'action' => $req->getDef('action', ''),
 								  'data'	=> $req->getDef('data', array()))
 					);
-				}
+				} # if
 				$page->render();
 				break;
 		} # default

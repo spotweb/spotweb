@@ -2,32 +2,15 @@
 class SpotImage {
 
 	function createErrorImage($errcode) {
-		$imageFile = 'images/spotnet.gif';
-		$ttfFont = 'images/ttf/Arialbd.TTF';
+		$img = $this->createDefaultSpotwebImage();
 		$fontSize = 30;
-		$fontColor = "ffffff";
 		$angle = 0;
-
-		# Create image
-		$img = imagecreatetruecolor(512, 320);
-
-		# Set alphablending to on
-		imagealphablending($img, true);
-
-		# Draw a square
-		imagefilledrectangle($img, 8, 8, 504, 312, $this->colorHex($img, '123456'));
-
-		# Load and show the background image
-		$bg = imagecreatefromgif($imageFile);
-		list($width, $height, $type, $attr) = getimagesize($imageFile);
-		imagecopymerge($img, $bg, 256-($width/2), 160-($height/2), 0, 0, $width, $height, 30);
-		imagedestroy($bg);
 
 		# Headertext
 		$text = ($errcode < 900) ? "ERROR " . $errcode : "ERROR";
-		$bbox = imagettfbbox($fontSize, $angle, $ttfFont, $text);
+		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
 		$txtwidth = abs($bbox[2]);
-		imagettftext($img, $fontSize, $angle, 256-($txtwidth/2), 50, $this->colorHex($img, $fontColor), $ttfFont, $text);
+		imagettftext($img['resource'], $fontSize, $angle, 256-($txtwidth/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
 		# error info
 		switch ($errcode) {
@@ -38,19 +21,73 @@ class SpotImage {
 			case 901:	$text = "Image is corrupt"; break;
 			default:	$text = "Onbekende fout";
 		} # switch
+
 		$fontSize = 20;
-		$bbox = imagettfbbox ($fontSize, $angle, $ttfFont, $text);
+		$bbox = imagettfbbox ($fontSize, $angle, $img['font'], $text);
 		$txtwidth = abs($bbox[2]);
-		imagettftext($img, $fontSize, $angle, 256-($txtwidth/2), 300, $this->colorHex($img, $fontColor), $ttfFont, $text);		
+		imagettftext($img['resource'], $fontSize, $angle, 256-($txtwidth/2), 300, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);		
 
 		ob_start();
-		imagejpeg($img);
+		imagejpeg($img['resource']);
 		$imageString = ob_get_clean();
-		imagedestroy($img);
+		imagedestroy($img['resource']);
 
 		$data = $this->getImageInfoFromString($imageString);
 		return array('metadata' => $data['metadata'], 'isErrorImage' => true, 'content' => $imageString);
 	} # createErrorImage
+
+	function createSpeedDial($totalSpots, $newSpots, $lastUpdate) {
+		$img = $this->createDefaultSpotwebImage();
+		$fontSize = 24;
+		$angle = 0;
+
+		$text = "Totaal aantal spots: " . $totalSpots;
+		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
+		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+
+		if (!$newSpots) { $newSpots = 0; }
+		$text = "Aantal nieuwe spots: " . $newSpots;
+		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
+		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 90, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+
+		$text = "Laatste update:";
+		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
+		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 230+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+
+		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $lastUpdate); $width = abs($bbox[2]);
+		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 270+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $lastUpdate);
+
+		ob_start();
+		imagejpeg($img['resource']);
+		$imageString = ob_get_clean();
+		imagedestroy($img['resource']);
+
+		$data = $this->getImageInfoFromString($imageString);
+		return array('metadata' => $data['metadata'], 'isErrorImage' => true, 'content' => $imageString);
+	} # createSpeedDial
+
+	function createDefaultSpotwebImage() {
+		$imageFile = 'images/spotnet.gif';
+		$ttfFont = 'images/ttf/Arialbd.TTF';
+		$fontColor = "ffffff";
+
+		// Create image
+		$img = imagecreatetruecolor(512, 320);
+
+		// Set alphablending to on
+		imagealphablending($img, true);
+
+		// Draw a square
+		imagefilledrectangle($img, 8, 8, 504, 312, $this->colorHex($img, '123456'));
+
+		// Load and show the background image
+		$bg = imagecreatefromgif($imageFile);
+		list($width, $height, $type, $attr) = getimagesize($imageFile);
+		imagecopymerge($img, $bg, 256-($width/2), 160-($height/2), 0, 0, $width, $height, 30);
+		imagedestroy($bg);
+
+		return array('resource' => $img, 'font' => $ttfFont, 'fontColor' => $fontColor);
+	} # createDefaultSpotwebImage
 
 	function getImageInfoFromString($imageString) {
 		# PHP image functies willen bestanden inlezen
