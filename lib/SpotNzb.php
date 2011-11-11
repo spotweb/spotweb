@@ -31,7 +31,7 @@ class SpotNzb {
 			
 			if (!empty($fullSpot['nzb'])) {
 				$nzbList[] = array('spot' => $fullSpot, 
-								   'nzb' => $spotsOverview->getNzb($fullSpot, $nzb_spotnntp, true));
+								   'nzb' => $spotsOverview->getNzb($fullSpot, $nzb_spotnntp, $this->_settings->get('recompress_nzb')));
 			} # if
 		} # foreach
 

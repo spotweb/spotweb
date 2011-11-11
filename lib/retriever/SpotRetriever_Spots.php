@@ -19,6 +19,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_retrieveFull = $retrieveFull;
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
+			$this->_recompress_nzb = $this->_settings->get('recompress_nzb');
 		} # ctor
 
 
@@ -108,8 +109,9 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$spotParser = new SpotParser();
 
 			# if we need to fetch images or nzb files, we need an spotsoverview instance
-			if (($this->_prefetch_image) || ($this->_prefetch_nzb)) {
+			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
 				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+				$spotsOverview->setActiveRetriever(true);
 				$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
 			} # if
 			
@@ -250,7 +252,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} # if retrievefull
 				} # if fullspot is not in db yet
 
-				if ($header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
+				if ($this->_retrieveFull && $header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
 					try {
 						# Als we in retro modus draaien kan het zijn dat fullSpot al in de database zat en daarom niet is opgehaald
 						if (!$didFetchFullSpot) {
@@ -272,7 +274,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						if ($this->_prefetch_nzb) {
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$spotsOverview->getNzb($fullSpot, $nntp_nzb, false);
+								$spotsOverview->getNzb($fullSpot, $nntp_nzb, $this->_recompress_nzb);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
