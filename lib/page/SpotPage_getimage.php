@@ -13,8 +13,17 @@ class SpotPage_getimage extends SpotPage_Abs {
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
 		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
 
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
+
 		# Haal de image op
 		if ($this->_image == 'speeddial') {
+			/*
+			 * Because the speeddial image shows stuff like last update and amount of new spots,
+			 * we want to make sure this is not a totally closed system
+			 */
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
+
 			# init
 			$spotImage = new SpotImage();
 			
@@ -27,9 +36,6 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 			$hdr_spotnntp = new SpotNntp($settings_nntp_hdr);
 			
-			# Controleer de users' rechten
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
-
 			/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 			if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
 				$nzb_spotnntp = $hdr_spotnntp;
