@@ -59,11 +59,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@list($http_code, $http_headers, $tvrage_content) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60, true)) {
+			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60)) {
 				$this->showApiError(300);
 			} # if
 
-			$dom->loadXML($tvrage_content);
+			$dom->loadXML($tvrage['content']);
 			$showTitle = $dom->getElementsByTagName('showname');
 			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
 			if (!@$showTitle->item(0)->nodeValue) {
@@ -100,10 +100,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@list($http_code, $http_headers, $imdb_content) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60, true)) {
+			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60)) {
 				$this->showApiError(300);
 			} # if
-			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb_content, $movieTitle);
+			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb['content'], $movieTitle);
 			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);

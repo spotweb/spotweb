@@ -15,7 +15,7 @@ class SpotParser {
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
 
 		/* 
-		 * Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
+		 * Onderdruk errors bij corrupte messageid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		
 		$xml = @(new SimpleXMLElement($xmlStr));
 		$xml = $xml->Posting;

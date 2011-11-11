@@ -7,14 +7,15 @@ class SpotsOverview {
 	private $_db;
 	private $_cache;
 	private $_settings;
-
-	const cache_nzb_prefix		= 'SpotNzb::';
-	const cache_image_prefix	= 'SpotImage::';
+	private $_activeRetriever;
+	private $_phpMemoryLimit = null;
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
+		$this->_spotImage = new SpotImage();
+		$this->_activeRetriever = basename($_SERVER['SCRIPT_NAME']) != 'retrieve.php';
 	} # ctor
 	
 	/*
@@ -151,22 +152,31 @@ class SpotsOverview {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($fullSpot, $nntp, $uncompressForHandling=true) {
+	function getNzb($fullSpot, $nntp, $recompress) {
 		SpotTiming::start(__FUNCTION__);
 
-		if ($nzb = $this->_cache->getCache(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'])) {
-			$this->_cache->updateCacheStamp(SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL);
+		if ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
+			if (!$this->_activeRetriever) {
+				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
+			} # if
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_nzb_prefix . $fullSpot['messageid'], NULL, $nzb, "done");
+
+			# hier wordt extreem veel geheugen verbruikt
+			if ($recompress && strlen($nzb)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
+				$nzbTmp = @gzinflate($nzb); // Corrupte data uitfilteren
+
+				if ($nzbTmp && strlen($nzbTmp)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
+					$nzb = gzdeflate($nzbTmp, 9);
+				} # if
+				unset($nzbTmp);
+			} # if
+
+			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, NULL, $nzb, "done");
 		} # else
 
-		if ($uncompressForHandling == true) {
-			$nzb = gzinflate($nzb);
-		} # if
-
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $uncompressForHandling));
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $recompress));
 
 		return $nzb;
 	} # getNzb
@@ -176,72 +186,105 @@ class SpotsOverview {
 	 */
 	function getImage($fullSpot, $nntp) {
 		SpotTiming::start(__FUNCTION__);
+		$return_code = false;
 
 		if (is_array($fullSpot['image'])) {
-			if ($img = $this->_cache->getCache(SpotsOverview::cache_image_prefix . $fullSpot['messageid'])) {
-				$this->_cache->updateCacheStamp(SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL);
-				$img = $img['content'];
+			if ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
+				if (!$this->_activeRetriever) {
+					$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
+				} # if
 			} else {
-				$img = $nntp->getImage($fullSpot);
-				$this->_cache->saveCache($fullSpot['messageid'], SpotsOverview::cache_image_prefix . $fullSpot['messageid'], NULL, $img, false);
+				try {
+					$img = $nntp->getImage($fullSpot);
+
+					if ($data = $this->_spotImage->getImageInfoFromString($img)) {
+						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content'], false);
+					} # if
+				}
+				catch(ParseSpotXmlException $x) {
+					$return_code = 900;
+				}
+				catch(Exception $x) {
+					# "No such article" error
+					if ($x->getCode() == 430) {
+						$return_code = 430;
+					} 
+					# als de XML niet te parsen is, niets aan te doen
+					elseif ($x->getMessage() == 'String could not be parsed as XML') {
+						$return_code = 900;
+					} else {
+						throw $x;
+					} # else
+				} # catch
 			} # if
 		} else {
-			list($http_code, $http_headers, $img) = $this->getFromWeb($fullSpot['image'], 24*60*60, false);
-
-			foreach(explode("\r\n", $http_headers) as $hdr) {
-				if (substr($hdr, 0, strlen('Content-Type: ')) == 'Content-Type: ') {
-					$header = $hdr;
-				} # if
-			} # foreach
+			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], 24*60*60);
 		} # else
 
-		$header = (isset($header)) ? $header : "Content-Type: image/jpeg";
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
+		if (!isset($data['metadata'])) {
+			$return_code = 901;
+		} # if
 
-		return array($header, $img);
+		# bij een error toch een image serveren
+		if ($this->_activeRetriever) {
+			if ($return_code && $return_code != 200 && $return_code != 304) {
+				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif (!$data) {
+				$data = $this->_spotImage->createErrorImage(999);
+			} # elseif
+		} # if
+
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
+		return $data;
 	} # getImage
 
 	/* 
 	 * Haalt een url op en cached deze
 	 */
-	function getFromWeb($url, $ttl=900, $compress=false) {
+	function getFromWeb($url, $ttl=900) {
 		SpotTiming::start(__FUNCTION__);
+		$url_md5 = md5($url);
 
-		$url = str_replace(" ", "+", urldecode($url));
-		$url = mb_convert_encoding($url, "ASCII");
-
-		$content = $this->_cache->getCache($url);
+		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
 		if (!$content || time()-(int) $content['stamp'] > $ttl) {
 			$data = array();
 
+			SpotTiming::start(__FUNCTION__ . ':curl');
 			$ch = curl_init();
-			curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
+			curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
 			curl_setopt ($ch, CURLOPT_URL, $url);
 			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
 			curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
-			curl_setopt ($ch, CURLOPT_HEADER, 1); 
+			curl_setopt ($ch, CURLOPT_HEADER, 1);
+			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
 			if ($content) {
 				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
 			} # if
-
-			SpotTiming::start(__FUNCTION__ . ':curl_exec()');
 			$response = curl_exec($ch);
-			SpotTiming::stop(__FUNCTION__ . ':curl_exec()', array($response));
+			SpotTiming::stop(__FUNCTION__ . ':curl', array($response));
+
 			$info = curl_getinfo($ch);
-			$data['headers'] = substr($response, 0, $info['header_size']);
-			$data['content'] = substr($response, -$info['download_content_length']);  
 			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
 			curl_close($ch);
 
 			if ($http_code != 200 && $http_code != 304) {
-				return false;
+				return array($http_code, false);
 			} elseif ($ttl > 0) {
+				if ($imageData = $this->_spotImage->getImageInfoFromString($data['content'])) {
+					$data['metadata'] = $imageData['metadata'];
+					$compress = false;
+				} else {
+					$data['metadata'] = '';
+					$compress = true;
+				} # else
+
 				switch($http_code) {
-					case 304:	$this->_cache->updateCacheStamp($url, $data['headers']); break;
-					default:	$this->_cache->saveCache('', $url, $data['headers'], $data['content'], $compress);
+					case 304:	if (!$this->_activeRetriever) { $this->_cache->updateCacheStamp($url_md5, SpotCache::Web); } break;
+					default:	$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content'], $compress);
 				} # switch
 			} # else
 		} else {
@@ -249,9 +292,9 @@ class SpotsOverview {
 			$data = $content;
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($url, $ttl, $compress));
+		SpotTiming::stop(__FUNCTION__, array($url, $ttl));
 
-		return array($http_code, $data['headers'], $data['content']);
+		return array($http_code, $data);
 	} # getUrl
 
 	/*
@@ -1145,6 +1188,30 @@ class SpotsOverview {
 					 'additionalJoins' => $additionalJoins,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
-	
-	
+
+	/*
+	 * Calculates the memory limit
+	 */
+	private function calculatePhpMemoryLimit() {
+		# Calculate the PHP memory limit if required
+		if ($this->_phpMemoryLimit == null) {
+			$val = trim(ini_get("memory_limit"));
+			
+			$last = strtolower($val[strlen($val)-1]);
+			switch($last) {
+				// The 'G' modifier is available since PHP 5.1.0
+				case 'g':
+					$val *= 1024;
+				case 'm':
+					$val *= 1024;
+				case 'k':
+					$val *= 1024;
+			} # swich
+
+			$this->_phpMemoryLimit = $val;
+		} # if
+			
+		return $this->_phpMemoryLimit;
+	} # calculatePhpMemoryLimit
+
 } # class SpotOverview
