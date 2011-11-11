@@ -705,7 +705,7 @@ function multinzb() {
 		if(count == 1) {
 			$('span.count').html('<t>Download 1 spot</t>');
 		} else {
-			$('span.count').html('<t>Download %d spots</t>'.replace('%d', count));
+			$('span.count').html('<t>Download %1 spots</t>'.replace('%1', count));
 		}
 	}
 }
