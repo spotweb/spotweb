@@ -893,7 +893,7 @@ class SpotTemplateHelper {
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */
-	/*
+ 	/*
 	 * Geeft de lijst met users terug
 	 */
 	function getUserList($username) {

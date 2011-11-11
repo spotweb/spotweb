@@ -40,7 +40,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# geef dan een error
 		if ((empty($spotFilter)) && (isset($this->_editFilterForm['submitchangefilter']))) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = vsprintf(_('Filter bestaat niet'));
+			$formMessages['errors'][] = _('Filter bestaat niet');
 		} # if
 		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
@@ -112,16 +112,16 @@ class SpotPage_editfilter extends SpotPage_Abs {
 								$spotUserSystem->setFilterList($this->_currentSession['user']['userid'], $filterList);
 							} catch(Exception $x) {
 								$editResult = array('result' => 'failure');
-								$formMessages['errors'][] = vsprintf(_('Geuploade Spotweb filter file is ongeldig'));
+								$formMessages['errors'][] = _('Geuploade Spotweb filter file is ongeldig');
 							} # catch
 						} else {
 							$editResult = array('result' => 'failure');
-							$formMessages['errors'][] = vsprintf(_('Fout tijdens uploaden van filter (%s)', $_FILES['filterimport']['error']));
+							$formMessages['errors'][] = sprintf(_('Fout tijdens uploaden van filter (%s)', $_FILES['filterimport']['error']));
 						} # if
 					
 					} else {
 						$editResult = array('result' => 'failure');
-						$formMessages['errors'][] = vsprintf(_('Filter is niet geupload'));
+						$formMessages['errors'][] = _('Filter is niet geupload');
 					} # else
 					
 					break;
