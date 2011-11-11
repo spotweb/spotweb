@@ -68,8 +68,8 @@ class SpotImage {
 
 	function createDefaultSpotwebImage() {
 		$imageFile = 'images/spotnet.gif';
-		$ttfFont = 'images/ttf/Arialbd.TTF';
-		$fontColor = "ffffff";
+		$ttfFont = 'images/ttf/liberation-sans/LiberationSans-Bold.ttf';
+		$fontColor = 'ffffff';
 
 		// Create image
 		$img = imagecreatetruecolor(512, 320);
