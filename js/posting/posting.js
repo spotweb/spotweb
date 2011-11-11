@@ -28,6 +28,7 @@ function spotPosting() {
 					var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
 
 					var data = "<li> <strong> Gepost door <span class='user'>"+user+"</span> (<a class='userid' target='_parent' href='"+useridurl+"' title='Zoek naar spots van "+user+"'>"+userid+"</a>) @ just now </strong> <br>"+text+"</li>";
+					var data = "<li> <strong> <t>Gepost door %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='userid' target='_parent' href='"+useridurl+"' title='<t>Zoek naar spots van %1</t>".replace("%1", userid) + "</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
 
 					$("li.nocomments").remove();
 					$("li.firstComment").removeClass("firstComment");
@@ -64,7 +65,7 @@ function spotPosting() {
 						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 						
 						$(".spamreport-button").attr('title', result + ': ' + errors);
-						alert('Markeren als spam is niet gelukt: ' + errors);
+						alert('<t>Markeren als spam is niet gelukt:</t> ' + errors);
 					} // else					
 				},
 				error: function(xml) {
@@ -200,7 +201,7 @@ function spotPosting() {
 			cbWhenFound(this, prefix + uniquePart + suffix);
 		} else {
 			if (runCount > 400000) {
-				alert("Unable to calculate SHA1 hash: " + runCount);
+				alert("<t>SHA1 hash berekenen niet gelukt:</t> " + runCount);
 				cbWhenFound(this, '');
 			} else {
 				var _this = this;
