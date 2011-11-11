@@ -236,7 +236,7 @@ abstract class SpotStruct_abs {
 	function updateSchema() {
 		# cache omzetten naar nieuw systeem, tijdelijke tabel nodig
 		# Dit doen we hier, zodat een correcte cache tabel kan worden aangemaakt
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid'))) {
+		if (($this->tableExists('cache')) && (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid')))) {
 			$this->renameTable('cache', 'cachetmp');
 		} # if
 
