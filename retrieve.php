@@ -294,22 +294,23 @@ try {
 
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
-if ($settings_external_blacklist) {
+if (is_string($settings_external_blacklist) && $settings_external_blacklist == "remove") {
+	$db->removeOldBlackList($settings->get('blacklist_url'));
+	echo "Finished removing blacklist" . PHP_EOL;
+} elseif ($settings_external_blacklist) {
 	try {
 		$spotsOverview = new SpotsOverview($db, $settings);
 
 		# haal de blacklist op
 		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60);
-		$blacklistishtml = strpos($blacklist['content'],">");
-		$blacklist['content'] = str_replace(chr(13),"",$blacklist['content']);
-		$blacklistarray = explode(chr(10),$blacklist['content']);
 
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;
-		} elseif ((strlen($blacklistarray[0]) < 3) || (strlen($blacklistarray[0]) > 7) || ($blacklistishtml)) { # de lengte van een userid is tussen 3 en 6 karakters groot (tot op heden)
-			echo "Error, can't update blacklist!" . PHP_EOL;
+		} elseif (strpos($blacklist['content'],">")) {
+			echo "Error, blacklist does not have expected layout!" . PHP_EOL;
 		} else {
 			# update de blacklist
+			$blacklistarray = explode(chr(10),$blacklist['content']);
 			$updateblacklist = $db->updateExternalBlacklist($blacklistarray);
 			echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
 		}
@@ -320,9 +321,6 @@ if ($settings_external_blacklist) {
 		echo $x->getTraceAsString();
 		echo PHP_EOL . PHP_EOL;
 	}
-} elseif ($settings_external_blacklist == "remove") {
-	$db->removeOldBlackList();
-	echo "Finished removing blacklist" . PHP_EOL;
 } # if
 
 # Verstuur notificaties
