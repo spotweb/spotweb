@@ -198,7 +198,7 @@ class SpotsOverview {
 
 					if ($data = $this->_spotImage->getImageInfoFromString($img)) {
 						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content'], false);
-					} # if
+					} # if	
 				}
 				catch(ParseSpotXmlException $x) {
 					$return_code = 900;
@@ -245,7 +245,7 @@ class SpotsOverview {
 		$url_md5 = md5($url);
 
 		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
-		if (!$content || time()-(int) $content['stamp'] > $ttl) {
+		if ((!$content) || (time()-(int) $content['stamp'] > $ttl)) {
 			$data = array();
 
 			SpotTiming::start(__FUNCTION__ . ':curl');
@@ -254,21 +254,28 @@ class SpotsOverview {
 			curl_setopt ($ch, CURLOPT_URL, $url);
 			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-			curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
+			curl_setopt ($ch, CURLOPT_TIMEOUT, 15);
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
 			curl_setopt ($ch, CURLOPT_HEADER, 1);
 			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-			if ($content) {
+			if (!$content) {
 				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
 			} # if
 			$response = curl_exec($ch);
 			SpotTiming::stop(__FUNCTION__ . ':curl', array($response));
 
-			$info = curl_getinfo($ch);
-			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
-			curl_close($ch);
+			/*
+			 * Curl returns false on some unspecified errors (eg: a timeout)
+			 */
+			if ($response !== false) {
+				$info = curl_getinfo($ch);
+				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
+				curl_close($ch);
+			} else {
+				return array(500, false); // 500 == Internal Server Error
+			} # if
 
 			if ($http_code != 200 && $http_code != 304) {
 				return array($http_code, false);
