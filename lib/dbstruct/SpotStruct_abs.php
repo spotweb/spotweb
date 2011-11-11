@@ -234,9 +234,10 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
-		# Cache moest geleegd worden
-		if (($this->tableExists('cache') && (!$this->columnExists('cache', 'headers')))) {
-			$this->dropTable('cache');
+		# cache omzetten naar nieuw systeem, tijdelijke tabel nodig
+		# Dit doen we hier, zodat een correcte cache tabel kan worden aangemaakt
+		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid'))) {
+			$this->renameTable('cache', 'cachetmp');
 		} # if
 
 		# drop eventueel FTS indexes op de spotsfull tabel
@@ -245,7 +246,6 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
-		$this->dropIndex("idx_webcache_1", "webcache");
 
 		# relaties wissen
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -507,11 +507,11 @@ abstract class SpotStruct_abs {
 
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
-		$this->validateColumn('messageid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('url', 'cache', 'VARCHAR(767)', "''", true, 'ascii');
+		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
-		$this->validateColumn('headers', 'cache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('compressed', 'cache', 'BOOLEAN', 'false', true, ''); 
+		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('compressed', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
@@ -529,7 +529,7 @@ abstract class SpotStruct_abs {
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
 		
-		# Wissen van corrupte spots, 3 novmber 2011.
+		# Wissen van corrupte spots, 3 november 2011.
 		if ($this->_spotdb->getSchemaVer() == 0.45) {
 			$maxCommentsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count FROM commentsfull', array());
 			$maxCommentsXoverAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count  FROM commentsxover', array());
@@ -558,7 +558,6 @@ abstract class SpotStruct_abs {
 							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
 								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
 		} # if
-
 
 		# Tabellen terug samenvoegen in een MyISAM tabel
 		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
@@ -600,6 +599,57 @@ abstract class SpotStruct_abs {
 			
 			# rename deze tabel
 			$this->renameTable('spotstmp', 'spots');
+		} # if
+
+		# cache omzetten naar nieuw systeem
+		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp'))) {
+			$spotImage = new SpotImage();
+
+			# Web
+			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");
+			foreach ($tmp AS $cachetmp) {
+				$data = $this->_dbcon->arrayQuery("SELECT stamp, compressed, content FROM cachetmp WHERE url = '%s'", Array($cachetmp['url']));
+				$data = $data[0];
+
+				if ($data['compressed']) {
+					$metadata = '';
+				} else {
+					$imageData = $spotImage->getImageInfoFromString($data['content']);
+					$metadata = serialize($imageData['metadata']);
+				} # else
+
+				$content = (!empty($imageData)) ? $imageData['content'] : $data['content'];
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt($data['compressed']), $content));
+			} # foreach
+
+			# images vanaf de NNTP server
+			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotImage::', messageid);");
+			foreach ($tmp AS $cachetmp) {
+				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotImage::', messageid);", Array($cachetmp['messageid']));
+				$data = $data[0];
+
+				if (!$imageData = $spotImage->getImageInfoFromString($data['content'])) {
+					continue;
+				} # if
+
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array($cachetmp['messageid'], SpotCache::SpotImage, $data['stamp'], serialize($imageData['metadata']), $this->_dbcon->bool2dt(false), $imageData['content']));
+			} # foreach
+
+			# NZBs
+			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotNzb::', messageid);");
+			foreach ($tmp AS $cachetmp) {
+				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotNzb::', messageid);", Array($cachetmp['messageid']));
+				$data = $data[0];
+				$data['content'] = gzdeflate($data['content']); // door een bug waren NZB-files dubbel compressed
+
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(true), $data['content']));
+			} # foreach
+
+			# drop de oude tabel
+			$this->dropTable('cachetmp');
 		} # if
 
 		# En creeer de diverse indexen
@@ -687,9 +737,8 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
 
 		# ---- Indexen op cache ----
-		$this->validateIndex("idx_cache_1", "", "cache", array("messageid"));
-		$this->validateIndex("idx_cache_2", "UNIQUE", "cache", array("url"));
-		$this->validateIndex("idx_cache_3", "", "cache", array("stamp"));
+		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
+		$this->validateIndex("idx_cache_2", "", "cache", array("stamp"));
 
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');

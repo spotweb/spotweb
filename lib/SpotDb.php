@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.46');
+define('SPOTDB_SCHEMA_VERSION', '0.47');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1296,7 +1296,7 @@ class SpotDb {
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
 				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM cache WHERE messageid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM cache WHERE resourceid = '%s'", Array($msgId));
 				break; 
 			} # pdo_sqlite
 			
@@ -1307,7 +1307,7 @@ class SpotDb {
 									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-									LEFT JOIN cache ON spots.messageid=cache.messageid
+									LEFT JOIN cache ON spots.messageid=cache.resourceid
 									WHERE spots.messageid = '%s'", Array($msgId));
 			} # default
 		} # switch
@@ -1343,8 +1343,8 @@ class SpotDb {
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM cache WHERE cache.messageid not in 
-									(SELECT messageid FROM spots)") ;
+				$this->_conn->modify("DELETE FROM cache WHERE (cache.cachetype = %d OR cache.cachetype = %d) AND cache.resourceid not in 
+									(SELECT messageid FROM spots)", Array(SpotCache::SpotImage, SpotCache::SpotNzb)) ;
 				break;
 			} # pdo_sqlite
 			default		: {
@@ -1354,7 +1354,7 @@ class SpotDb {
 					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 					LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-					LEFT JOIN cache ON spots.messageid=cache.messageid
+					LEFT JOIN cache ON spots.messageid=cache.resourceid
 					WHERE spots.stamp < " . (time() - $retention) );
 			} # default
 		} # switch
@@ -1675,7 +1675,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function isSpotterBlacklisted($spotterId, $ourUserId) {
-		$blacklistResult = $this->_conn->arrayQuery("SELECT userid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = 1)) AND (userid = '%s')",
+		$blacklistResult = $this->_conn->arrayQuery("SELECT userid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (userid = '%s')",
 							Array((int) $ourUserId, $spotterId));
 		return (!empty($blacklistResult));
 	} # getSpotterBlacklist
@@ -1883,39 +1883,40 @@ class SpotDb {
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
-		return $this->_conn->rawExec("DELETE FROM cache WHERE messageid = '' AND stamp < " . ((int) time()-$expireDays*24*60*60));
+		return $this->_conn->modify("DELETE FROM cache WHERE cachetype = %d AND stamp < %d", Array(SpotCache::Web, (int) time()-$expireDays*24*60*60));
 	} # cleanCache
-	
-	function getCache($url) {
+
+	function getCache($resourceid, $cachetype) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM cache WHERE url = '%s'", array($url));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				if (!empty($tmp)) {
 					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
 				} # if
 				
 				break;
 			} # case 'pdo_pgsql'
-		
+
 			default		: {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, headers, compressed, content FROM cache WHERE url = '%s'", array($url));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				break;
 			} # default
 		} # switch
-		
+
 		if (!empty($tmp)) {
 			if ($tmp[0]['compressed'] == 1) {
 				$tmp[0]['content'] = gzinflate($tmp[0]['content']);
 			} # if
 
+			$tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
 			return $tmp[0];
 		} # if
-		
+
 		return false;
 	} # getCache
 
-	function updateCacheStamp($url, $headers) {
-		$this->_conn->exec("UPDATE cache SET stamp = %d, headers = '%s' WHERE url = '%s'", Array(time(), $headers, $url));
+	function updateCacheStamp($resourceid, $cachetype) {
+		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
 
 	/*
@@ -1936,47 +1937,47 @@ class SpotDb {
 				case 'k':
 					$val *= 1024;
 			} # swich
-			
+
 			$this->_phpMemoryLimit = $val;
 		} # if
 			
 		return $this->_phpMemoryLimit;
 	} # calculatePhpMemoryLimit
-	
-	function saveCache($messageid, $url, $headers, $content, $compress) {
-		$compressed = 0;
 
+	function saveCache($resourceid, $cachetype, $metadata, $content, $compress) {
 		# Sommige van onderstaande acties vergen nogal wat geheugen en dat geeft een Fatal als
 		# daar niet genoeg van is. Daarom testen we of we wel genoeg hebben
 		if (strlen($content)*2 > ($this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
 			return;
 		} # if
-		
-		if ($compress == true) {
+
+		if (is_string($compress) && $compress == "done") {
+			$compress = true;
+		} elseif ($compress) {
 			$content = gzdeflate($content);
-			$compressed = 1;
-		} elseif ($compress == "done") {
-			$compressed = 1;
 		} # else
 
-		$tmp = $this->_conn->safe($messageid . $headers . $compressed . $content . $url);
-		if ($this->getMaxPacketsize() > 0 && strlen($tmp)+115 > $this->getMaxPacketSize()) {
+		if ($metadata) {
+			$metadata = serialize($metadata);
+		} # if
+
+		if ($this->getMaxPacketsize() > 0 && (strlen($content)*1.15)+115 > $this->getMaxPacketSize()) {
 			return;
 		} # if
 
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%b' WHERE url = '%s'", Array($messageid, time(), $headers, $this->bool2dt($compressed), $content, $url));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($messageid, $url, time(), $headers, $this->bool2dt($compressed), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
 					} # if
 					break;
 			} # pgsql
 
 			default				: {
-					$this->_conn->exec("UPDATE cache SET messageid = '%s', stamp = %d, headers = '%s', compressed = '%s', content = '%s' WHERE url = '%s'", Array($messageid, time(), $headers, $this->bool2dt($compressed), $content, $url));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(messageid,url,stamp,headers,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($messageid, $url, time(), $headers, $this->bool2dt($compressed), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
 					} # if
 					break;
 			} # default
@@ -2007,8 +2008,9 @@ class SpotDb {
 		return $this->_conn->bool2dt($b);
 	} # bool2dt
 		
-	function removeOldBlackList() {
+	function removeOldBlackList($blacklistUrl) {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
+		$this->_conn->modify("DELETE FROM cache WHERE (resourceid = '%s') AND (cachetype = '%s')", Array(md5($blacklistUrl), SpotCache::Web));
 	} # removeOldBlackList
 	
 	function updateExternalBlacklist($newblacklist) {
@@ -2025,16 +2027,17 @@ class SpotDb {
 		}
 		/* verwerk de nieuwe blacklist */
 		foreach ($newblacklist as $nbl) {
-			if ((strlen($nbl) > 2) && (strlen($nbl) < 8)) {
+			$nbl = trim($nbl);									# Enters en eventuele spaties wegfilteren
+			if ((strlen($nbl) >= 3) && (strlen($nbl) <= 6)) {	# de lengte van een userid is tussen 3 en 6 karakters groot (tot op heden)
 				if (empty($updatelist[$nbl])) {
-					$updatelist[$nbl] = 1;  # nieuwe userids toevoegen 
+					$updatelist[$nbl] = 1;						# nieuwe userids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
-					$updatelist[$nbl] = 0;  # userid staat nog steeds op de blacklist, niet verwijderen.
+					$updatelist[$nbl] = 0;						# userid staat nog steeds op de blacklist, niet verwijderen.
 				} else {
-					$updskipped++;          # dubbel userid in blacklist.txt.
+					$updskipped++;								# dubbel userid in blacklist.txt.
 				}
 			} else {
-				$updskipped++; # er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
+				$updskipped++;									# er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
 			}
 		}
 		$updblacklist = array_keys($updatelist);
