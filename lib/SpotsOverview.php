@@ -258,7 +258,7 @@ class SpotsOverview {
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
 			curl_setopt ($ch, CURLOPT_HEADER, 1);
 			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-			if (!$content) {
+			if ($content) {
 				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
 			} # if
@@ -273,8 +273,6 @@ class SpotsOverview {
 				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
 				curl_close($ch);
-			} else {
-				return array(500, false); // 500 == Internal Server Error
 			} # if
 
 			if ($http_code != 200 && $http_code != 304) {
