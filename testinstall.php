@@ -31,10 +31,16 @@
 	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
 	<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
-	<tr> <td colspan="2"> GD </td> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
 	<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
+<?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
+	<tr> <th colspan="2"> GD </th> <th> <?php showResult(extension_loaded('gd')); ?> </th> </tr>
+	<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support']); ?> </td> </tr>
+	<tr> <td colspan="2"> GIF Read Support </td> <td> <?php showResult($gdInfo['GIF Read Support']); ?> </td> </tr>
+	<tr> <td colspan="2"> GIF Create Support </td> <td> <?php showResult($gdInfo['GIF Create Support']); ?> </td> </tr>
+	<tr> <td colspan="2"> JPEG Support </td> <td> <?php showResult($gdInfo['JPEG Support'] || $gdInfo['JPG Support']); ?> </td> </tr> <!-- Previous to PHP 5.3.0, the JPEG Support attribute was named JPG Support. -->
+	<tr> <td colspan="2"> PNG Support </td> <td> <?php showResult($gdInfo['PNG Support']); ?> </td> </tr>
 	<tr> <th colspan="3"> OpenSSL </th> </tr>
 <?php require_once "lib/SpotSigning.php";
 	$spotSigning = new SpotSigning();
