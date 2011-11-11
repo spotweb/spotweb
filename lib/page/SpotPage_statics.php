@@ -38,6 +38,14 @@ class SpotPage_statics extends SpotPage_Abs {
 			# is het het overwegen waard.
 			$this->_currentCssFile = $file;
 			$fc = preg_replace_callback('/url\((.+)\)/i', array($this, 'cbFixCssUrl'), $fc);
+			
+			# also replace any internationalisation strings in JS. 
+			# Code copied from:
+			#	http://stackoverflow.com/questions/5069321/preg-replace-and-gettext-problem
+			$fc = preg_replace_callback("%\<t\>([a-zA-Z0-9,\.\\s)]*)\</t\>%is", function($matches){
+					return $matches[1];
+				}, $fc);
+			
 			$tmp .= $fc;
 		} # foreach
 
