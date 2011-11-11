@@ -272,8 +272,10 @@ class SpotsOverview {
 				$info = curl_getinfo($ch);
 				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
-				curl_close($ch);
-			} # if
+			} else {
+				$http_code = -1;	 # Curl returned an error
+			} # else
+			curl_close($ch);
 
 			if ($http_code != 200 && $http_code != 304) {
 				return array($http_code, false);
