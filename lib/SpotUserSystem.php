@@ -335,20 +335,20 @@ class SpotUserSystem {
 		# Controleer de per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
-			$errorList[] = array('validateuser_invalidpreference', array('perpage'));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (perpage)'));
 		} # if
 		
 		# Controleer basis settings
 		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
-			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (date_formatting)'));
 		} # if
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
-			$errorList[] = array('validateuser_invalidpreference', array('template'));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (template)'));
 		} # if
 
 		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	
-			$errorList[] = array('validateuser_invalidpreference', array('defaultsortfield' . $prefs['defaultsortfield']));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (defaultsortfield)'));
 		} # if
 		
 		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
@@ -362,7 +362,7 @@ class SpotUserSystem {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
-				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (sabnzbd url)'));
 			} # if
 			
 			# SABnzbd URL moet altijd eindigen met een slash
@@ -401,60 +401,60 @@ class SpotUserSystem {
 
 		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (customcss)'));
 		} # if		
 
 		# We willen geen megabytes aan defalt newspot body of tag opslaan
 		if (strlen($prefs['newspotdefault_tag'] > 90)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_tag'));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (newspotdefault_tag)'));
 		} # if		
 		
 		if (strlen($prefs['newspotdefault_body'] > 9000)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_body'));
+			$errorList[] = vsprintf(_('Ongeldige user preference waarde (newspotdefault_body)'));
 		} # if		
 		
 		# als men runcommand of save wil, moet er een local_dir opgegeven worden
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
 			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (local_dir)'));
 			} # if
 		} # if
 
 		# als men Growl wil gebruiken, moet er een host opgegeven worden
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('growl host'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (growl_host)'));
 			} # if
 		} # if
 
 		# als men Notify My Android wil gebruiken, moet er een apikey opgegeven worden
 		if ($prefs['notifications']['nma']['enabled']) {
 			if (empty($prefs['notifications']['nma']['api'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('Notify My Android api'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (Notify My Android API)'));
 			} # if
 		} # if
 
 		# als men Notifo wil gebruiken, moet er een username & apikey opgegeven worden
 		if ($prefs['notifications']['notifo']['enabled']) {
 			if (empty($prefs['notifications']['notifo']['username'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('notifo username'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (Notifo usernae)'));
 			} # if
 			if (empty($prefs['notifications']['notifo']['api'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('notifo api'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (Notifo API)'));
 			} # if
 		} # if
 
 		# als men Prowl wil gebruiken, moet er een apikey opgegeven worden
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('prowl apikey'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (Prowl APIkey)'));
 			} # if
 		} # if
 
 		# als men Twitter wil gebruiken, moet er er een account zijn geverifieerd
 		if ($prefs['notifications']['twitter']['enabled']) {
 			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('Er is geen account geverifi&euml;erd voor Twitter notificaties.'));
+				$errorList[] = vsprintf(_('Ongeldige user preference waarde (Er is geen account geverifi&euml;erd voor Twitter notificaties)'));
 			} # if
 		} # if
 
@@ -471,46 +471,46 @@ class SpotUserSystem {
 		# Controleer de username
 		if (!$isEdit) {
 			if (!$this->validUsername($user['username'])) {
-				$errorList[] = array('validateuser_invalidusername', array());
+				$errorList[] = vsprintf(_('Geen geldige gebruikersnaam'));
 			} # if
 		} # if
 		
 		# controleer de firstname
 		if (strlen($user['firstname']) < 3) {
-			$errorList[] = array('validateuser_invalidfirstname', array());
+			$errorList[] = vsprintf(_('Geen geldige voornaam'));
 		} # if
 		
 		# controleer de lastname
 		if (strlen($user['lastname']) < 3) {
-			$errorList[] = array('validateuser_invalidlastname', array());
+			$errorList[] = vsprintf(_('Geen geldige achternaam'));
 		} # if
 
 		# controleer het password, als er een opgegeven is
 		if (strlen($user['newpassword1'] > 0)) {
 			if (strlen($user['newpassword1']) < 5){
-				$errorList[] = array('validateuser_passwordtooshort', array());
+				$errorList[] = vsprintf(_('Opgegeven wachtwoord is te kort'));
 			} # if 
 		} # if
 
 		# password1 en password2 moeten hetzelfde zijn (password en bevestig password)
 		if ($user['newpassword1'] != $user['newpassword2']) {
-			$errorList[] = array('validateuser_passworddontmatch', array());
+			$errorList[] = vsprintf(_('Wachtwoord velden komen niet overeen'));
 		} # if
 
 		# anonymous user editten mag niet
 		if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$errorList[] = array('edituser_cannoteditanonymous', array());
+			$errorList[] = vsprintf(_('Anonymous user kan niet bewerkt worden'));
 		} # if
 		
 		# controleer het mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = array('validateuser_invalidmail', array());
+			$errorList[] = vsprintf(_('Geen geldig mailadres'));
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
 		$emailExistResult = $this->_db->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
-			$errorList[] = array('validateuser_mailalreadyexist', array());
+			$errorList[] = vsprintf(_('Mailadres is al ingebruik'));
 		} # if
 		
 		return $errorList;
@@ -535,7 +535,7 @@ class SpotUserSystem {
 		# Controleer of er een usergroup opgegeven is en of de 
 		# naam niet te kort is
 		if (strlen($group['name']) < 3) {
-			$errorList[] = array('validatesecgroup_invalidname', array('name'));
+			$errorList[] = vsprintf(_('Ongeldige naam voor de groep'));
 		} # if
 		
 		# Vraag nu alle security groepen om, om er zeker van te zijn
@@ -545,7 +545,7 @@ class SpotUserSystem {
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
 				if ($secGroup['id'] != $group['id']) {
-					$errorList[] = array('validatesecgroup_duplicatename', array('name'));
+					$errorList[] = vsprintf(_('Deze naam voor de groep is al in gebruik'));
 				} # if
 			} # if
 		} # foreach
@@ -583,7 +583,7 @@ class SpotUserSystem {
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
 				# Dubbele permissie
-				$errorList[] = array('validatesecgroup_duplicatepermission', array('name'));
+				$errorList[] = vsprintf(_('Permissie bestaat al in deze groep'));
 			} # if
 		} # foreach
 	
@@ -685,7 +685,7 @@ class SpotUserSystem {
 		
 		// controleer dat deze specifieke permissie niet al in de security groep zit
 		if (strlen($filter['title']) < 3) {
-			$errorList[] = array('validatefilter_invalidtitle', array('name'));
+			$errorList[] = vsprintf(_('Ongeldige naam voor een filter'));
 		} # if
 		
 		return array($filter, $errorList);

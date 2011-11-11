@@ -25,21 +25,21 @@ class SpotPosting {
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = array('postcomment_invalidhashcash', array());
+			$errorList[] = vsprintf(_('Hash is niet goed berekend, ongeldige post'));
 		} # if
 
 		# Body mag niet leeg zijn of heel kort
 		$comment['body'] = trim($comment['body']);
 		if (strlen($comment['body']) < 2) {
-			$errorList[] = array('postcomment_bodytooshort', array());
+			$errorList[] = vsprintf(_('Geef een reactie'));
 		} # if
 		if (strlen($comment['body']) > 9000) {
-			$errorList[] = array('postcomment_bodytoolong', array());
+			$errorList[] = vsprintf(_('Reactie is te lang'));
 		} # if
 		
 		# Rating mag niet uit de range vallen
 		if (($comment['rating'] > 10) || ($comment['rating'] < 0)) {
-			$errorList[] = array('postcomment_ratinginvalid', array());
+			$errorList[] = vsprintf(_('Gegeven rating is niet geldig'));
 		} # if
 		
 		# controleer dat de messageid waarop we replyen overeenkomt
@@ -47,14 +47,14 @@ class SpotPosting {
 		$replyToPart = substr($comment['inreplyto'], 0, strpos($comment['inreplyto'], '@'));
 
 		if (substr($comment['newmessageid'], 0, strlen($replyToPart)) != $replyToPart) { 
-			$errorList[] = array('postcomment_replayattack', array());
+			$errorList[] = vsprintf(_('Replay attack!?'));
 		} # if
 		
 		# controleer dat het random getal niet recentelijk ook al gebruikt
 		# is voor deze messageid (hiermee voorkomen we dat de hashcash niet
 		# steeds herberekend wordt voor het volspammen van 1 spot).
 		if (!$this->_db->isCommentMessageIdUnique($comment['newmessageid'])) {
-			$errorList[] = array('postcomment_replayattack', array());
+			$errorList[] = vsprintf(_('Replay attack!?'));
 		} # if
 
 		# Add the title as a comment property
@@ -92,7 +92,7 @@ class SpotPosting {
 	
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = array('postspot_invalidhashcash', array());
+			$errorList[] = vsprintf(_('Hash is niet goed berekend, ongeldige spot'));
 		} # if
 
 		# Read the contents of image so we can check it
@@ -100,7 +100,7 @@ class SpotPosting {
 
 		# the image should be below 1MB
 		if (strlen($imageContents) > 1024*1024) {
-			$errorList[] = array('postspot_imagetoolarge', array());
+			$errorList[] = vsprintf(_('Opgegeven afbeelding is te groot (maximum 1MB)'));
 		} # if
 
 		/*
@@ -109,7 +109,7 @@ class SpotPosting {
 		 */
 		$tmpGdImageSize = getimagesize($imageFilename);
 		if ($tmpGdImageSize === false) {
-			$errorList[] = array('postspot_imageinvalid', array());
+			$errorList[] = vsprintf(_('Opgegeven afbeelding is niet herkend als afbeelding'));
 		} else {
 			$imageInfo = array('width' => $tmpGdImageSize[0],
 					  	       'height' => $tmpGdImageSize[1]);
@@ -118,21 +118,21 @@ class SpotPosting {
 		# Body cannot be empty, very short or too long
 		$spot['body'] = trim($spot['body']);
 		if (strlen($spot['body']) < 30) {
-			$errorList[] = array('postspot_bodytooshort', array());
+			$errorList[] = vsprintf(_('Geef een omschrijving'));
 		} # if
 		if (strlen($spot['body']) > 9000) {
-			$errorList[] = array('postspot_bodytoolong', array());
+			$errorList[] = vsprintf(_('Omschrijving is te lang'));
 		} # if
 
 		# Title cannot be empty or very short
 		$spot['title'] = trim($spot['title']);
 		if (strlen($spot['title']) < 5) {
-			$errorList[] = array('postspot_titletooshort', array());
+			$errorList[] = vsprintf(_('Geef een titel'));
 		} # if
 		
 		# Subcategory should be valid
 		if (($spot['category'] < 0) || ($spot['category'] > count(SpotCategories::$_head_categories))) {
-			$errorList[] = array('postspot_invalidcategory', array($spot['category']));
+			$errorList[] = vsprintf(_('Ongeldige hoofdcategory (%s)', $spot['category']));
 		} # if
 		
 		/*
@@ -145,7 +145,7 @@ class SpotPosting {
 
 		# Do some basic sanity checking for some required NZB elements
 		if (empty($nzbXml->file)) {
-			$errorList[] = array('postspot_invalidnzb', array());
+			$errorList[] = vsprintf(_('Ongeldig NZB bestand'));
 		} # if
 		
 		# and determine the total filesize
@@ -162,7 +162,7 @@ class SpotPosting {
 		 * the system
 		 */
 		if (!$this->_db->isNewSpotMessageIdUnique($spot['newmessageid'])) {
-			$errorList[] = array('postspot_replayattack', array());
+			$errorList[] = vsprintf(_('Replay attack!?'));
 		} # if
 
 		# We require the keyid 7 because it is selfsigned
@@ -185,14 +185,14 @@ class SpotPosting {
 			$subcats = explode('_', $subCat);
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = array('postspot_invalidsubcat', array($subCat));
+				$errorList[] = vsprintf(_('Ongeldige subcategorieen (%s)', $subCat));
 			} else {
 				$subCatLetter = substr($subcats[2], 0, 1);
 				
 				$subCatSplitted[$subCatLetter][] = $subCat;
 				
 				if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-					$errorList[] = array('postspot_invalidsubcat', array($subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
+					$errorList[] = vsprintf(_('Ongeldige subcategorieen (%s)', $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
 				} # if
 			} # else
 		} # foreach	
@@ -207,7 +207,7 @@ class SpotPosting {
 			
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = array('postspot_invalidsubcat', array($spot['subcatlist'][$i]));
+				$errorList[] = vsprintf(_('Ongeldige subcategorieen (%s)', $spot['subcatlist'][$i]));
 			} else {
 				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
 				
@@ -221,22 +221,22 @@ class SpotPosting {
 
 		# Make sure the spot isn't being posted in many categories
 		if (count($subCatSplitted['a']) > 1) {
-			$errorList[] = array('postspot_canonlybeoneformat', count($spot['subcatlist']));
+			$errorList[] = vsprintf(_('Een spot kan maar 1 formaat hebben'));
 		} # if
 
 		# Make sure the spot has at least a format
 		if (count($subCatSplitted['a']) < 1) {
-			$errorList[] = array('postspot_musthaveformat', count($spot['subcatlist']));
+			$errorList[] = vsprintf(_('Een spot moet een formaat hebben'));
 		} # if
 		
 		# Make sure the spot isn't being posted for too many categories
 		if (count($spot['subcatlist']) > 10) {
-			$errorList[] = array('postspot_toomanycategories', count($spot['subcatlist']));
+			$errorList[] = vsprintf(_('Teveel categorieen opgegeven'));
 		} # if
 
 		# Make sure the spot isn't being posted for too many categories
 		if (count($spot['subcatlist']) < 2) {
-			$errorList[] = array('postspot_toofewcategories', count($spot['subcatlist']));
+			$errorList[] = vsprintf(_('Geef een aantal categorieen op'));
 		} # if
 
 		# en post daadwerkelijk de spot
@@ -277,7 +277,7 @@ class SpotPosting {
 
 		# Controleer eerst of de user al een report heeft aangemaakt, dan kunnen we gelijk stoppen.
 		if ($this->_db->isReportPlaced($report['inreplyto'], $user['userid'])) {
-			$errorList[] = array('postreport_alreadyreported', array());
+			$errorList[] = vsprintf(_('Deze spot heb je al gemarkeerd als spam'));
 		} # if
 		
 		# haal de spot op waar dit een reply op is
@@ -286,13 +286,13 @@ class SpotPosting {
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $report['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = array('postcomment_invalidhashcash', array());
+			$errorList[] = vsprintf(_('Hash is niet goed berekend, ongeldige report'));
 		} # if
 
 		# Body mag niet leeg zijn of heel kort
 		$report['body'] = trim($report['body']);
 		if (strlen($report['body']) < 2) {
-			$errorList[] = array('postcomment_bodytooshort', array());
+			$errorList[] = vsprintf(_('Geef een reactie'));
 		} # if
 		
 		# controleer dat de messageid waarop we replyen overeenkomt
@@ -300,14 +300,14 @@ class SpotPosting {
 		$replyToPart = substr($report['inreplyto'], 0, strpos($report['inreplyto'], '@'));
 
 		if (substr($report['newmessageid'], 0, strlen($replyToPart)) != $replyToPart) { 
-			$errorList[] = array('postcomment_replayattack', array());
+			$errorList[] = vsprintf(_('Replay attack!?'));
 		} # if
 		
 		# controleer dat het random getal niet recentelijk ook al gebruikt
 		# is voor deze messageid (hiermee voorkomen we dat de hashcash niet
 		# steeds herberekend wordt voor het volspammen van 1 spot).
 		if (!$this->_db->isReportMessageIdUnique($report['newmessageid'])) {
-			$errorList[] = array('postcomment_replayattack', array());
+			$errorList[] = vsprintf(_('Replay attack!?'));
 		} # if
 
 		# Body komt vanuit het form als UTF-8, maar moet verzonden worden als ISO-8859-1
