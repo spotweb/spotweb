@@ -618,7 +618,7 @@ abstract class SpotStruct_abs {
 					$metadata = serialize($imageData['metadata']);
 				} # else
 
-				$content = ($imageData) ? $imageData['content'] : $data['content'];
+				$content = (!empty($imageData)) ? $imageData['content'] : $data['content'];
 				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
 										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt($data['compressed']), $content));
 			} # foreach
