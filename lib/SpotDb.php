@@ -1675,7 +1675,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function isSpotterBlacklisted($spotterId, $ourUserId) {
-		$blacklistResult = $this->_conn->arrayQuery("SELECT userid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = 1)) AND (userid = '%s')",
+		$blacklistResult = $this->_conn->arrayQuery("SELECT userid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (userid = '%s')",
 							Array((int) $ourUserId, $spotterId));
 		return (!empty($blacklistResult));
 	} # getSpotterBlacklist
@@ -1951,10 +1951,10 @@ class SpotDb {
 			return;
 		} # if
 
-		if ($compress === true) {
-			$content = gzdeflate($content);
-		} elseif ($compress == "done") {
+		if (is_string($compress) && $compress == "done") {
 			$compress = true;
+		} elseif ($compress) {
+			$content = gzdeflate($content);
 		} # else
 
 		if ($metadata) {
@@ -2008,8 +2008,9 @@ class SpotDb {
 		return $this->_conn->bool2dt($b);
 	} # bool2dt
 		
-	function removeOldBlackList() {
+	function removeOldBlackList($blacklistUrl) {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external')");
+		$this->_conn->modify("DELETE FROM cache WHERE (resourceid = '%s') AND (cachetype = '%s')", Array(md5($blacklistUrl), SpotCache::Web));
 	} # removeOldBlackList
 	
 	function updateExternalBlacklist($newblacklist) {
@@ -2026,16 +2027,17 @@ class SpotDb {
 		}
 		/* verwerk de nieuwe blacklist */
 		foreach ($newblacklist as $nbl) {
-			if ((strlen($nbl) > 2) && (strlen($nbl) < 8)) {
+			$nbl = trim($nbl);									# Enters en eventuele spaties wegfilteren
+			if ((strlen($nbl) >= 3) && (strlen($nbl) <= 6)) {	# de lengte van een userid is tussen 3 en 6 karakters groot (tot op heden)
 				if (empty($updatelist[$nbl])) {
-					$updatelist[$nbl] = 1;  # nieuwe userids toevoegen 
+					$updatelist[$nbl] = 1;						# nieuwe userids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
-					$updatelist[$nbl] = 0;  # userid staat nog steeds op de blacklist, niet verwijderen.
+					$updatelist[$nbl] = 0;						# userid staat nog steeds op de blacklist, niet verwijderen.
 				} else {
-					$updskipped++;          # dubbel userid in blacklist.txt.
+					$updskipped++;								# dubbel userid in blacklist.txt.
 				}
 			} else {
-				$updskipped++; # er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
+				$updskipped++;									# er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
 			}
 		}
 		$updblacklist = array_keys($updatelist);
