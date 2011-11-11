@@ -608,7 +608,7 @@ abstract class SpotStruct_abs {
 			# Web
 			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");
 			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, compressed, content FROM cachetmp WHERE url = '%s';);", Array($cachetmp['url']));
+				$data = $this->_dbcon->arrayQuery("SELECT stamp, compressed, content FROM cachetmp WHERE url = '%s'", Array($cachetmp['url']));
 				$data = $data[0];
 
 				if ($data['compressed']) {

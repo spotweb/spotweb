@@ -15,7 +15,6 @@ class SpotsOverview {
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
 		$this->_spotImage = new SpotImage();
-		$this->_activeRetriever = basename($_SERVER['SCRIPT_NAME']) != 'retrieve.php';
 	} # ctor
 	
 	/*
@@ -1213,5 +1212,9 @@ class SpotsOverview {
 			
 		return $this->_phpMemoryLimit;
 	} # calculatePhpMemoryLimit
+	
+	public function setActiveRetriever($b) {
+		$this->_activeRetriever = $b;
+	} # setActiveRetriever
 
 } # class SpotOverview
