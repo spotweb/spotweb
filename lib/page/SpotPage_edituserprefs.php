@@ -26,7 +26,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# haal de te editten user op 
 		$spotUser = $this->_db->getUser($this->_currentSession['user']['userid']);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = vsprintf(_('Gebruiker kan niet gevonden worden'), $spotUser['username']);
+			$formMessages['errors'][] = sprintf(_('Gebruiker kan niet gevonden worden'), $spotUser['username']);
 			$editResult = array('result' => 'failure');
 		} # if
 		

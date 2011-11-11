@@ -43,7 +43,7 @@
 			<table class="spotheader">
 				<tbody>
 					<tr>
-						<th class="back"> <a class="closeDetails" title="Ga terug naar het overzicht (esc / u)">&lt;&lt;</a> </th>
+						<th class="back"> <a class="closeDetails" title="<?php echo _('Ga terug naar het overzicht (esc / u)'); ?>">&lt;&lt;</a> </th>
 						<th class="category"><span><?php echo $spot['formatname'];?></span></th>
 						<th class="title"><?php echo $spot['title'];?></th>
 						<th class="rating">
@@ -51,9 +51,9 @@
 	if($spot['rating'] == 0) {
 		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
 	} elseif($spot['rating'] == 1) {
-		echo '<span class="rating" title="Deze spot heeft '.$spot['rating'].' ster"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+		echo '<span class="rating" title="' . _('Deze spot heeft 1 ster') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	} else {
-		echo '<span class="rating" title="Deze spot heeft '.$spot['rating'].' sterren"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+		echo '<span class="rating" title="' . sprintf(_('Deze spot heeft %d sterren'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	}
 ?>
 						</th>
@@ -61,26 +61,26 @@
 		if ($currentSession['user']['userid'] > 2) {
 			if (!$tplHelper->isReportPlaced($spot['messageid'])) {
 ?>
-						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="Rapporteer deze spot als spam"></a> </th>
+						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="<?php echo _('Rapporteer deze spot als spam'); ?>"></a> </th>
 <?php 		} else { ?>
-						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="Deze spot heb jij als spam gerapporteerd"></a> </th>
+						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="<?php echo _('Deze spot heb jij als spam gerapporteerd'); ?>"></a> </th>
 <?php 	}	} } ?>
 						<th class="nzb">
 <?php if ($show_nzb_button) { ?>
-							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="Download NZB <?php if ($spot['hasbeendownloaded']) {echo '(deze spot is al gedownload)';} echo " (n)"; ?>"></a>
+							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="<?php echo _('Download NZB'); if ($spot['hasbeendownloaded']) {echo _('(deze spot is al gedownload)');} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
-						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="NZB zoeken"></a></th>
+						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="<?php echo _('NZB zoeken');?>"></a></th>
 <?php if ($show_watchlist_button) {
 echo "<th class='watch'>";
-echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='Verwijder uit watchlist (w)'> </a>";
-echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched'] == true) { echo " style='display: none;'"; } echo " title='Plaats in watchlist (w)'> </a>";
+echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='" . _('Verwijder uit watchlist (w)') . "'> </a>";
+echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched'] == true) { echo " style='display: none;'"; } echo " title='" . _('Plaats in watchlist (w)') . "'> </a>";
 echo "</th>";
 } ?>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($spot['hasbeendownloaded']) { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="Add NZB to SabNZBd queue (you already downloaded this spot) (s)"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SabNZBd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
 <?php } else { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="Add NZB to SabNZBd queue (s)"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SabNZBd queue (s)'); ?>"> </a></th>
 <?php } } ?>
 					</tr>
 				</tbody>
@@ -96,61 +96,61 @@ echo "</th>";
 <?php if (!$spot['verified'] || $tplHelper->isModerated($spot)) {
 	echo "<div class='warning'>";
 	if (!$spot['verified']) {
-		echo "Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!<br>";
+		echo _("Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!") . "<br>";
 	}
 	if ($tplHelper->isModerated($spot)) {
-		echo "Deze spot is als mogelijk onwenselijk gemodereerd!";
+		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!");
 	}
 	echo "</div>";
 } ?>
 						<table class="spotinfo">
 							<tbody>
-								<tr><th> Categorie </th> <td><a href="<?php echo $tplHelper->makeCatUrl($spot); ?>" title='Zoek spots in de categorie "<?php echo $spot['catname']; ?>"'><?php echo $spot['catname']; ?></a></td> </tr>
+								<tr><th> <?php echo _('Categorie'); ?> </th> <td><a href="<?php echo $tplHelper->makeCatUrl($spot); ?>" title='<?php echo _('Zoek spots in de categorie'); ?> "<?php echo $spot['catname']; ?>"'><?php echo $spot['catname']; ?></a></td> </tr>
 <?php
 	if (!empty($spot['subcatlist'])) {
 		foreach($spot['subcatlist'] as $sub) {
 			$subcatType = substr($sub, 0, 1);
 			echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th>";
-			echo "<td><a href='" . $tplHelper->makeSubCatUrl($spot, $sub) . "' title='Zoek spots in de categorie " . SpotCategories::Cat2Desc($spot['category'], $sub) . "'>" . SpotCategories::Cat2Desc($spot['category'], $sub) . "</a></td> </tr>\r\n";
+			echo "<td><a href='" . $tplHelper->makeSubCatUrl($spot, $sub) . "' title='" . _('Zoek spots in de categorie') . ' ' . SpotCategories::Cat2Desc($spot['category'], $sub) . "'>" . SpotCategories::Cat2Desc($spot['category'], $sub) . "</a></td> </tr>\r\n";
 		} # foreach
 	} # if
 ?>
-								<tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
+								<tr><th> <?php echo _('Omvang'); ?> </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
 								<tr><td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
+								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr> <th> Afzender </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['poster']; ?></a>
-								<?php if (!empty($spot['userid'])) { ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='Zoek naar spots van "<?php echo $spot['poster']; ?>"'><?php echo $spot['userid']; ?></a>)<?php } ?>
-								<?php if ($allow_blackList) { ?> <a class="delete" id="blacklistuserlink" title="Deze spotter blacklisten" onclick="$('form.blacklistspotterform').submit();">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+								<tr> <th> <?php echo _('Afzender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots van "%s"'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
+								<?php if (!empty($spot['userid'])) { ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots van "%s"'), $spot['userid']);?>'><?php echo $spot['userid']; ?></a>)<?php } ?>
+								<?php if ($allow_blackList) { ?> <a class="delete" id="blacklistuserlink" title="<?php echo _('Deze spotter blacklisten'); ?>" onclick="$('form.blacklistspotterform').submit();">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								</td> </tr>
-								<tr> <th> Tag </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='Zoek naar spots met de tag "<?php echo $spot['tag']; ?>"'><?php echo $spot['tag']; ?></a> </td> </tr>
+								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots met de tag "%s"'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr> <th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+								<tr> <th> <?php echo _('Zoekmachine'); ?></th> <td> <a href='<?php echo $spot['searchurl']; ?>'><?php echo _('Zoek'); ?></a> </td> </tr>
 <?php if ($show_nzb_button) { ?>		
-								<tr> <th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='Download NZB (n)'>NZB</a> </td> </tr>
+								<tr> <th> <?php echo _('NZB'); ?></th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' title='<?php echo _('Download NZB (n)'); ?>'><?php echo _('NZB'); ?></a> </td> </tr>
 <?php } ?>
 
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr> <th> Aantal spam reports </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
+								<tr> <th> <?php echo _('Aantal spam reports'); ?> </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
 							</tbody>
 						</table>
 					</td>
 				</tr>
 			</table>
 			<div class="description">
-				<h4>Post Description</h4>
+				<h4><?php echo _('Post Description'); ?></h4>
 				<pre><?php echo $spot['description']; ?></pre>
 			</div>
 			
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_comments, '')) { ?>
 			<div class="comments" id="comments">
-				<h4>Comments <span class="commentcount"># 0</span></h4>
+				<h4><?php echo _('Comments'); ?> <span class="commentcount"># 0</span></h4>
 				<ul id="commentslist">
 <?php 
 if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) { 
 	if ($currentSession['user']['userid'] > 2) { 
 		echo "<li class='addComment'>";
-		echo "<a class='togglePostComment' title='Reactie toevoegen (uitklappen)'>Reactie toevoegen <span></span></a><div><div></div>";
+		echo "<a class='togglePostComment' title='" . _('Reactie toevoegen (uitklappen)') . "'>" . _('Reactie toevoegen') . "> <span></span></a><div><div></div>";
 		include "postcomment.inc.php"; 
 		echo "</div></li>";
 	}

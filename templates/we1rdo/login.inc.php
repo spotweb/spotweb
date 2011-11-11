@@ -20,13 +20,13 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 	<?php } ?>
 	<fieldset>
 		<dl>
-			<dt><label for="loginform[username]">Gebruikersnaam</label></dt>
+			<dt><label for="loginform[username]"><?php echo _('Gebruikersnaam'); ?></label></dt>
 			<dd><input type="text" name="loginform[username]" value="<?php echo htmlspecialchars($loginform['username']); ?>"></dd>
 
-			<dt><label for="loginform[password]">Wachtwoord</label></dt>
+			<dt><label for="loginform[password]"><?php echo _('Wachtwoord'); ?></label></dt>
 			<dd><input type="password" name="loginform[password]" value=""></dd>
 
-			<dd><input class="greyButton" type="submit" name="loginform[submit]" value="Inloggen"></dd>
+			<dd><input class="greyButton" type="submit" name="loginform[submit]" value="<?php echo _('Inloggen'); ?>"></dd>
 		</dl>
 	</fieldset>
 </form>

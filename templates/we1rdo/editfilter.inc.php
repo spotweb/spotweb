@@ -49,12 +49,12 @@ if (empty($editresult)) {
 			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir, ENT_QUOTES, "UTF-8"); ?>"></input>
 <?php } ?>
 			
-			<dt><label for="editfilterform[title]">Naam</label></dt>
+			<dt><label for="editfilterform[title]"><?php echo _('Naam'); ?></label></dt>
 			<dd>
 				<input type="text" name="editfilterform[title]" value="<?php echo htmlspecialchars($filter['title']); ?>"></input>
 			</dd>
 
-			<dt><label for="editfilterform[icon]">Icoon</label></dt>
+			<dt><label for="editfilterform[icon]"><?php echo _('Icoon'); ?></label></dt>
 			<dd>
 				<select name="editfilterform[icon]">
 					<option <?php if ($filter['icon'] == 'application') { echo ' selected="selected" '; } ?> value='application'>Applicatie</option>
@@ -88,10 +88,10 @@ if (empty($editresult)) {
 			
 			<dd>
 <?php if ($isNew) { ?>			
-				<input class="smallGreyButton" type="submit" name="editfilterform[submitaddfilter]" value="Voeg toe">
+				<input class="smallGreyButton" type="submit" name="editfilterform[submitaddfilter]" value="<?php echo _('Voeg toe'); ?>">
 <?php } else { ?>
-				<input class="smallGreyButton" type="submit" name="editfilterform[submitchangefilter]" value="Wijzig">
-				<input class="smallGreyButton" type="submit" name="editfilterform[submitremovefilter]" value="Verwijder">
+				<input class="smallGreyButton" type="submit" name="editfilterform[submitchangefilter]" value="<?php echo _('Wijzig'); ?>">
+				<input class="smallGreyButton" type="submit" name="editfilterform[submitremovefilter]" value="<?php echo _('Verwijder'); ?>">
 <?php } ?>
 			</dd>
 		</form>
