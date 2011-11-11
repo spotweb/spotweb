@@ -111,6 +111,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			# if we need to fetch images or nzb files, we need an spotsoverview instance
 			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
 				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+				$spotsOverview->setActiveRetriever(true);
 				$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
 			} # if
 			

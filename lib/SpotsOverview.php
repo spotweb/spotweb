@@ -15,7 +15,6 @@ class SpotsOverview {
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
 		$this->_spotImage = new SpotImage();
-		$this->_activeRetriever = basename($_SERVER['SCRIPT_NAME']) != 'retrieve.php';
 	} # ctor
 	
 	/*
@@ -226,7 +225,7 @@ class SpotsOverview {
 		} # if
 
 		# bij een error toch een image serveren
-		if ($this->_activeRetriever) {
+		if (!$this->_activeRetriever) {
 			if ($return_code && $return_code != 200 && $return_code != 304) {
 				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif (!$data) {
@@ -1213,5 +1212,9 @@ class SpotsOverview {
 			
 		return $this->_phpMemoryLimit;
 	} # calculatePhpMemoryLimit
+	
+	public function setActiveRetriever($b) {
+		$this->_activeRetriever = $b;
+	} # setActiveRetriever
 
 } # class SpotOverview
