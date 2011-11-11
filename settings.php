@@ -69,11 +69,6 @@ $settings['prefetch_image'] = false;
 # retrieve_full moet hiervoor op true staan!
 $settings['prefetch_nzb'] = false;
 
-# moeten wij de NZB opnieuw inpakken voor betere compressie?
-# De compressie op binnenkomende NZB files is vaak niet al te sterk
-# Goed voor diskspace, slecht voor performance
-$settings['recompress_nzb'] = false;
-
 # moeten wij comments ophalen?
 $settings['retrieve_comments'] = true;
 
