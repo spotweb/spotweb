@@ -161,7 +161,7 @@ class SpotsOverview {
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-
+			
 			# hier wordt extreem veel geheugen verbruikt
 			if ($recompress && strlen($nzb)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
 				$nzbTmp = @gzinflate($nzb); // Corrupte data uitfilteren
@@ -173,6 +173,9 @@ class SpotsOverview {
 			} # if
 
 			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, NULL, $nzb, "done");
+			
+			# Unpack the NZB file because we are expected to return an uncompressed NZB
+			$nzb = gzinflate($nzb);
 		} # else
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $recompress));
