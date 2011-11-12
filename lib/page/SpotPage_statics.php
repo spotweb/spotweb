@@ -20,7 +20,7 @@ class SpotPage_statics extends SpotPage_Abs {
 	} # cbFixCssUrl
 	
 	function cbGetText($s) {
-		return $s;
+		return $s[1];
 	} # cbGetText
 
 	function mergeFiles($files) {
