@@ -51,7 +51,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 
 			# Is er geen andere user met dezelfde username?
 			if ($this->_db->usernameExists($spotUser['username'])) {
-				$formMessages['errors'][] = array('validateuser_usernameexists', array($spotUser['username']));
+				$formMessages['errors'][] = sprintf(_('"%s" bestaat al'), $spotUser['username']);
 			} # if
 			
 			if (empty($formMessages['errors'])) {

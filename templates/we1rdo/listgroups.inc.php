@@ -6,10 +6,10 @@
 	<table id="spotslistgroups" class="ui-widget ui-widget-content">
 		<thead>
 			<tr class="ui-widget-header">
-				<th>Name</th> 
-				<th>Wijzig naam</th> 
-				<th>Permissies</th> 
-				<th>Wis groep</th> 
+				<th><?php echo _('Name'); ?></th> 
+				<th><?php echo _('Wijzig naam'); ?></th> 
+				<th><?php echo _('Permissies'); ?></th> 
+				<th><?php echo _('Wis groep'); ?></th> 
 			</tr>
 		</thead>
 		<tbody id="grouplist">
@@ -23,13 +23,13 @@
 	if ($group['id'] < 4) {
 		echo '<td>' . $group['name'] . '</td>';
 		echo '<td></td>';
-		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'Toon rechten in groep\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, null); "><span class="ui-icon ui-icon-zoomin"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Toon rechten in groep') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, null); "><span class="ui-icon ui-icon-zoomin"></span></a></td>';
 		echo '<td></td>';
 	} else {
 		echo '<td>' . $group['name'] . '</td>';
-		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'Wijzig groepsnaam\', \'?page=render&tplname=editsecgroupname&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')});"><span class="ui-icon ui-icon-pencil"></span></a></td>';
-		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'Wijzig groep\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-pencil"></span></a></td>';
-		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'Verwijder groep\', \'?page=render&tplname=editsecgroupdelete&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-circle-close"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Wijzig groepsnaam') . '\', \'?page=render&tplname=editsecgroupname&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')});"><span class="ui-icon ui-icon-pencil"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Wijzig groep') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-pencil"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Verwijder groep') . '\', \'?page=render&tplname=editsecgroupdelete&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-circle-close"></span></a></td>';
 	} # else
 ?> 
 			</tr>
@@ -38,7 +38,7 @@
 ?>
 		<tr>
 			<td colspan='4'>
-				<a href="" onclick="return openDialog('editdialogdiv', 'Nieuwe groep toevoegen', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', null, true, function() { refreshTab('adminpaneltabs')});"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
+				<a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Nieuwe groep toevoegen'); ?>', '?page=render&tplname=editsecgroupname&data[isnew]=true', 'editsecgroupform', null, true, function() { refreshTab('adminpaneltabs')});"><span class="ui-icon ui-icon-circle-plus"></span></a></td>
 			</td>
 		</tr>
 		

@@ -220,10 +220,6 @@ class SpotsOverview {
 			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], 24*60*60);
 		} # else
 
-		if (!isset($data['metadata'])) {
-			$return_code = 901;
-		} # if
-
 		# bij een error toch een image serveren
 		if (!$this->_activeRetriever) {
 			if ($return_code && $return_code != 200 && $return_code != 304) {

@@ -6,12 +6,12 @@
 	<table  class="ui-widget ui-widget-content" summary="Users">
 		<thead>
 			<tr class="ui-widget-header">
-				<th>Username</th> 
-				<th>Voornaam</th>
-				<th>Achternaam</th>
-				<th>Mail</th>
-				<th>Laatste bezoek</th>
-				<th>Lid van groepen</th>
+				<th><?php echo _('Username'); ?></th> 
+				<th><?php echo _('Voornaam'); ?></th>
+				<th><?php echo _('Achternaam'); ?></th>
+				<th><?php echo _('Mail'); ?></th>
+				<th><?php echo _('Laatste bezoek'); ?></th>
+				<th><?php echo _('Lid van groepen'); ?></th>
 			</tr>
 		</thead>
 		<tbody id="userlist">
@@ -27,7 +27,7 @@
 			# dit maakt het simpeler om te zien welke rechten een user heeft
 			if ($group['ismember']) {
 				if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) {
-					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'Wijzig groep\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); ">' . $group['name'] . '</a>, ';
+					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Wijzig groep') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); ">' . $group['name'] . '</a>, ';
 				} elseif ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '')) { 
 					$groupList .= $group['name'] . ', ';
 				} # if
@@ -45,7 +45,7 @@
 		echo $user['username'];
 	} else {
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'Wijzig gebruiker\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); ">' .
+				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Wijzig gebruiker') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); ">' .
 				 $user['username'] . '</a>'; 
 	} # else
 ?> 
