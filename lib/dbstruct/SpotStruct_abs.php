@@ -602,7 +602,8 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# cache omzetten naar nieuw systeem
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp'))) {
+		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) {
+			echo PHP_EOL . PHP_EOL;
 			echo 'Converting your cache data to another format' . PHP_EOL;
 			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
 			echo PHP_EOL . PHP_EOL;
@@ -610,6 +611,7 @@ abstract class SpotStruct_abs {
 			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
 			$spotImage = new SpotImage();
 
+			
 			# Web
 			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");
 			foreach ($tmp AS $cachetmp) {
@@ -653,6 +655,10 @@ abstract class SpotStruct_abs {
 										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(true), $data['content']));
 			} # foreach
 
+			# drop de oude tabel
+			$this->dropTable('cachetmp');
+		} # if
+		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp')) && (!($this instanceof SpotStruct_mysql))) {
 			# drop de oude tabel
 			$this->dropTable('cachetmp');
 		} # if
