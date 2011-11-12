@@ -221,7 +221,7 @@ class SpotPosting {
 
 		# Make sure the spot isn't being posted in many categories
 		if (count($subCatSplitted['a']) > 1) {
-			$errorList[] = _('Een spot kan maar 1 formaat hebben')
+			$errorList[] = _('Een spot kan maar 1 formaat hebben');
 		} # if
 
 		# Make sure the spot has at least a format
