@@ -1457,9 +1457,13 @@ function bindSelectedSortableFilter() {
  * Function to load the ?page=catsjson data into an
  * selectbox given by the system
  */
-function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
+function loadCategoryIntoSelectbox(selectId, titleElm, data, async, doClear) {
 	var $selectbox = $("#" + selectId);
-	var $titleElm = $("#" + titleElm);
+	if (titleElm) {
+		var $titleElm = $("#" + titleElm);
+	} else {
+		var $titleElm = null;
+	} // else
 	if ($selectbox.data('fromurl') == $.toJSON(data)) {
 		return ;
 	} // if
@@ -1472,24 +1476,32 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
         dataType: "json",
         success: function(msg) {
 			$selectbox.data('fromurl', $.toJSON(data));
-			$titleElm.text(msg.title);
+			var htmlData = '';
 			
-            $selectbox[0].options.length = 0;
+			if ($titleElm) {
+				$titleElm.text(msg.title);
+			} else {
+				htmlData += '<optgroup label="' + msg.title + '">';
+			} // else
+
+			if (doClear) {
+				$selectbox[0].options.length = 0;
+			} // if
             $.each(msg.items, function(index, item) {
-				var optionElm = new Option(item, index);
-				if (!$selectbox[0].multiple) {
-					optionElm.selected = ($selectbox[0].options.length == 0);
-				} // if
-				
-				$selectbox[0].add(optionElm);
+				htmlData += '<option value="' + index + '">' + item + '</option>';
             });
+			if (!$titleElm) {
+				htmlData += '</optgroup>';
+			} // if
+
+			$selectbox.append(htmlData);
             $selectbox[0].selected = 0;
 			
 			if ($selectbox[0].options.length < 2) {
-				$titleElm.hide();
+				if ($titleElm) { $titleElm.hide(); }
 				$selectbox.hide();
 			} else {
-				$titleElm.show();
+				if ($titleElm) { $titleElm.show(); }
 				$selectbox.show();
 			} // else
         },
@@ -1502,13 +1514,24 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
 function categorySelectChanged() {
 	var itm = $("#spotcategoryselectbox")[0];
 
-	loadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false);
+	loadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false, true);
 	var subcatzValue = $("#subcatzselectbox")[0].value;
 	
-	loadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true);
-	loadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true);
-	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true);
-	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true);
+	loadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true, true);
+	loadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true, true);
+	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true, true);
+	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true, true);
 } // categorySelectChanged
  
- 
+function downloadMappingTypeChanged() {
+	var itm = $("#spotcategoryselectbox")[0];
+	var $selectbox = $('#subcataselectbox');
+
+	var itmValue = itm.value.split('_')[0].substring(3);
+	var subcatzValue = itm.value.split('_')[1];
+
+ 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcata'}, false, true);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatb'}, false, false);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatc'}, false, false);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatd'}, false, false);
+} // downloadMappingTypeChanged
