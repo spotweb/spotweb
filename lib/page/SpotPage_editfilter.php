@@ -116,7 +116,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 							} # catch
 						} else {
 							$editResult = array('result' => 'failure');
-							$formMessages['errors'][] = sprintf(_('Fout tijdens uploaden van filter (%s)', $_FILES['filterimport']['error']));
+							$formMessages['errors'][] = sprintf(_('Fout tijdens uploaden van filter (%s)'), $_FILES['filterimport']['error']);
 						} # if
 					
 					} else {

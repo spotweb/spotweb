@@ -14,12 +14,12 @@ class SpotImage {
 
 		# error info
 		switch ($errcode) {
-			case 403:	$text = "URL mag niet worden geopend"; break;
-			case 404:	$text = "Bestand niet gevonden"; break;
-			case 430:	$text = "Artikel niet gevonden"; break;
-			case 900:	$text = "XML parse error"; break;
-			case 901:	$text = "Image is corrupt"; break;
-			default:	$text = "Onbekende fout";
+			case 403:	$text = _('URL mag niet worden geopend'); break;
+			case 404:	$text = _('Bestand niet gevonden'); break;
+			case 430:	$text = _('Artikel niet gevonden'); break;
+			case 900:	$text = _('XML parse error'); break;
+			case 901:	$text = _('Image is corrupt'); break;
+			default:	$text = _('Onbekende fout');
 		} # switch
 
 		$fontSize = 20;
@@ -41,16 +41,16 @@ class SpotImage {
 		$fontSize = 24;
 		$angle = 0;
 
-		$text = "Totaal aantal spots: " . $totalSpots;
+		$text = sprintf(_('Totaal aantal spots: %d'), $totalSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
 		if (!$newSpots) { $newSpots = 0; }
-		$text = "Aantal nieuwe spots: " . $newSpots;
+		$text = sprintf(_('Aantal nieuwe spots: %d'), $newSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 90, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
-		$text = "Laatste update:";
+		$text = _('Laatste update:');
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 230+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
