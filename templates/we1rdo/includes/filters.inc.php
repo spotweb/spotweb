@@ -23,7 +23,7 @@
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
 		if ($currentSession['user']['userid'] > 2) { ?>
-				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Spot toevoegen'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Spot toevoegen'); ?>'>echo _('Spot toevoegen');</a></p></div>
+				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Spot toevoegen'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Spot toevoegen'); ?>'><?php echo _('Spot toevoegen'); ?></a></p></div>
 <?php 	} 
 	  }
 ?>
