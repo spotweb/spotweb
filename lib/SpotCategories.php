@@ -158,7 +158,7 @@ class SpotCategories {
 					  12  => array("Horror", array("z0", "z1")),
 					  13  => array("Music", array("z0", "z1")),
 					  14  => array("Musical", array("z0", "z1")),
-					  15  => array("Mysterie", array("z0", "z1", "z2")),
+					  15  => array("Mystery", array("z0", "z1", "z2")),
 					  16  => array("Romance", array("z0", "z1", "z2")),
 					  17  => array("Science Fiction", array("z0", "z1", "z2")),
 					  18  => array("Sport", array("z0", "z1")),
@@ -208,7 +208,7 @@ class SpotCategories {
 					  73  => array("Lesbian", array("z3")),
 					  74  => array("Homo", array("z3")),
 					  75  => array("Hetero", array("z3")),
-					  76  => array("Amateur", array("z3")),
+					  76  => array("Amature", array("z3")),
 					  77  => array("Group", array("z3")),
 					  78  => array("POV", array("z3")),
 					  79  => array("Solo", array("z3")),
@@ -349,7 +349,7 @@ class SpotCategories {
 					  14 => array("Cards", array("zz")),
 					  15 => array("Education", array("zz")),
 					  16 => array("Music", array("zz")),
-					  17 => array("Familie", array("zz"))),
+					  17 => array("Family", array("zz"))),
 				  'z' =>
 				Array('z' => "everything")
 			),
@@ -360,7 +360,7 @@ class SpotCategories {
 					  2 => array("Linux", array("zz")),
 					  3 => array("OS/2", array("zz")),
 					  4 => array("Windows Phone", array("zz")),
-					  5 => array("Navigatiesystemen", array("zz")),
+					  5 => array("Navigation systems", array("zz")),
 					  6 => array("iOS", array("zz")),
 					  7 => array("Android", array("zz"))),
 				  'b' =>

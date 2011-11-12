@@ -744,6 +744,42 @@ class SpotDb {
 		} # if
 	} # getSpotCount
 
+	function getSpotCountPerHour($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%H', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT DISTINCT FROM_UNIXTIME(stamp,'%H') AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data");
+		} # switch
+		return $rs;
+	} # getSpotCountPerHour
+
+	function getSpotCountPerWeekday($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(WEEKDAY FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%v', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT DISTINCT FROM_UNIXTIME(stamp,'%w') AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;");
+		} # switch
+		return $rs;
+	} # getSpotCountPerWeekday
+
+	function getSpotCountPerMonth($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%m', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT DISTINCT FROM_UNIXTIME(stamp,'%m') AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;");
+		} # switch
+		return $rs;
+	} # getSpotCountPerMonth
+
+	function getSpotCountPerCategory($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		$rs = $this->_conn->arrayQuery("SELECT DISTINCT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data ORDER BY data;");
+		return $rs;
+	} # getSpotCountPerCategory
+
 	/*
 	 * Match set of comments
 	 */
@@ -1883,7 +1919,7 @@ class SpotDb {
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE cachetype = %d AND stamp < %d", Array(SpotCache::Web, (int) time()-$expireDays*24*60*60));
+		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics,(int) time()-$expireDays*24*60*60));
 	} # cleanCache
 
 	function getCache($resourceid, $cachetype) {
