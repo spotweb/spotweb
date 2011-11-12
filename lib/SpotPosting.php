@@ -132,7 +132,7 @@ class SpotPosting {
 		
 		# Subcategory should be valid
 		if (($spot['category'] < 0) || ($spot['category'] > count(SpotCategories::$_head_categories))) {
-			$errorList[] = sprintf(_('Ongeldige hoofdcategory (%s)', $spot['category']));
+			$errorList[] = sprintf(_('Ongeldige hoofdcategory (%s)'), $spot['category']);
 		} # if
 		
 		/*
@@ -185,14 +185,14 @@ class SpotPosting {
 			$subcats = explode('_', $subCat);
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)', $subCat));
+				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $subCat);
 			} else {
 				$subCatLetter = substr($subcats[2], 0, 1);
 				
 				$subCatSplitted[$subCatLetter][] = $subCat;
 				
 				if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-					$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)', $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
+					$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1));
 				} # if
 			} # else
 		} # foreach	
@@ -207,7 +207,7 @@ class SpotPosting {
 			
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)', $spot['subcatlist'][$i]));
+				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $spot['subcatlist'][$i]);
 			} else {
 				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
 				
