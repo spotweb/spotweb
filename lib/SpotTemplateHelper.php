@@ -1046,7 +1046,7 @@ class SpotTemplateHelper {
 	function getNzbHandlerName(){
 		return $this->_nzbHandler->getName();
 	} # getNzbHandlerName
-	
+
 	/*
 	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
 	 * voor de geselecteerde NzbHandler
@@ -1054,5 +1054,21 @@ class SpotTemplateHelper {
 	function getNzbHandlerApiSupport(){
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
-	
+
+	/*
+	 * Geeft een array met valide statistics graphs terug
+	 */
+	function getValidStatisticsGraphs(){
+		$spotImage = new SpotImage($this->_db, $this->_settings);
+		return $spotImage->getValidStatisticsGraphs();
+	} # getValidStatisticsGraphs
+
+	/*
+	 * Geeft een array met valide statistics limits terug
+	 */
+	function getValidStatisticsLimits(){
+		$spotImage = new SpotImage($this->_db, $this->_settings);
+		return $spotImage->getValidStatisticsLimits();
+	} # getValidStatisticsGraphs
+
 } # class SpotTemplateHelper

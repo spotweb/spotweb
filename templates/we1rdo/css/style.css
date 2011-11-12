@@ -439,6 +439,9 @@ div.details form.postreportform fieldset dl {margin:0;}
 div.details form.postreportform fieldset dd {margin:0;}
 div.details form.postreportform input.greyButton {display:inline; margin: 0;}
 
+/* STATISTIEKEN */
+div.statistics {margin:0 0 0 235px; padding:10px 5px 5px 0; min-width:750px; text-align:center;}
+
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 

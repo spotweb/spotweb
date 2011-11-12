@@ -3,9 +3,10 @@
 class SpotCache {
 	protected $_db;
 
-	const SpotImage	= 1;
-	const SpotNzb	= 2;
-	const Web		= 3;
+	const SpotImage		= 1;
+	const SpotNzb		= 2;
+	const Web			= 3;
+	const Statistics	= 4;
 
 	function __construct(SpotDb $db) {
 		$this->_db = $db;

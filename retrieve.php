@@ -246,6 +246,22 @@ catch(Exception $x) {
 	die();
 } # catch
 
+## Statistics
+if ($settings->get('prepare_statistics')) {
+	$spotsOverview = new SpotsOverview($db, $settings);
+	$spotImage = new SpotImage($db, $settings);
+	$spotsOverview->setActiveRetriever(true);
+
+	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
+		foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
+			$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr);
+		} # foreach graph
+		echo "Finished creating statistics " . $limitName . PHP_EOL;
+	} # foreach limit
+
+	echo PHP_EOL;
+} # if
+
 ## SpotStateList cleanup
 try {
 	$db->cleanSpotStateList();

@@ -1,5 +1,12 @@
 <?php
 class SpotImage {
+	protected $_db;
+	protected $_settings;
+
+	function __construct(SpotDb $db, SpotSettings $settings) {
+		$this->_db = $db;
+		$this->_settings = $settings;
+	} # ctor
 
 	function createErrorImage($errcode) {
 		$img = $this->createDefaultSpotwebImage();
@@ -19,6 +26,7 @@ class SpotImage {
 			case 430:	$text = _('Artikel niet gevonden'); break;
 			case 900:	$text = _('XML parse error'); break;
 			case 901:	$text = _('Image is corrupt'); break;
+			case 990:	$text = _('Statistieken incorrect opgevraagd'); break;
 			default:	$text = _('Onbekende fout');
 		} # switch
 
@@ -33,8 +41,103 @@ class SpotImage {
 		imagedestroy($img['resource']);
 
 		$data = $this->getImageInfoFromString($imageString);
-		return array('metadata' => $data['metadata'], 'isErrorImage' => true, 'content' => $imageString);
+		return array('metadata' => $data['metadata'], 'expire' => true, 'content' => $imageString);
 	} # createErrorImage
+
+	function createStatistics($graph, $limit) {
+		include_once("images/pchart/pData.class.php");
+		include_once("images/pchart/pDraw.class.php");
+		include_once("images/pchart/pImage.class.php");
+
+		$width = 800;
+		$height = 500;
+		$titleHeight = 20;
+		$dataSet = array();
+		$graphs = $this->getValidStatisticsGraphs();
+		$limits = $this->getValidStatisticsLimits();
+
+		switch ($graph) {
+			case 'spotsperhour'		: $prepData = $this->prepareData($this->_db->getSpotCountPerHour($limit));
+									  $legend = array(_('0'),_('1'),_('2'),_('3'),_('4'),_('5'),_('6'),_('7'),_('8'),_('9'),_('10'),_('11'),_('12'),_('13'),_('14'),_('15'),_('16'),_('17'),_('18'),_('19'),_('20'),_('21'),_('22'),_('23'));
+									  for ($x=0; $x<=23; $x++) { $dataSet[] = @$prepData[$x]; }
+									  $graphicType = "bar";
+									  break;
+			case 'spotsperweekday'	: $prepData = $this->prepareData($this->_db->getSpotCountPerWeekday($limit));
+									  $legend = array(_("Maandag"),_("Dinsdag"),_("Woensdag"),_("Donderdag"),_("Vrijdag"),_("Zaterdag"),_("Zondag"));
+									  $dataSet = array(@$prepData[1],@$prepData[2],@$prepData[3],@$prepData[4],@$prepData[5],@$prepData[6],@$prepData[0]);
+									  $graphicType = "bar";
+									  break;
+			case 'spotspermonth'	: $prepData = $this->prepareData($this->_db->getSpotCountPerMonth($limit));
+									  $legend = array(_("Januari"),_("Februari"),_("Maart"),_("April"),_("Mei"),_("Juni"),_("Juli"),_("Augustus"),_("September"),_("Oktober"),_("November"),_("December"));
+									  for ($x=1; $x<=12; $x++) { $dataSet[] = @$prepData[$x]; }
+									  $graphicType = "bar";
+									  break;
+			case 'spotspercategory'	: $prepData = $this->prepareData($this->_db->getSpotCountPerCategory($limit));
+									  $legend = array(SpotCategories::HeadCat2Desc(0),SpotCategories::HeadCat2Desc(1),SpotCategories::HeadCat2Desc(2),SpotCategories::HeadCat2Desc(3));
+									  for ($x=0; $x<=3; $x++) { $dataSet[] = @$prepData[$x]; }
+									  $graphicType = "3Dpie";
+									  break;
+		} # switch
+		array_walk_recursive($dataSet, create_function('& $item, $key', 'if ($item === NULL) $item = 0;'));
+
+		$title = $graphs[$graph];
+		if (!empty($limit)) {
+			$title .= " (" . $limits[$limit] . ")";
+		} # if
+
+		$imgData = new pData();
+		if ($graphicType == "bar") {
+			$imgData->addPoints($dataSet,"data");
+			$imgData->addPoints($legend,"legend");
+			$imgData->setAbscissa("legend");
+			$imgData->setPalette("data",array("R"=>0,"G"=>108,"B"=>171,"Alpha"=>100));
+
+			$img = new pImage($width,$height,$imgData);
+
+			$img->drawGradientArea(0,$titleHeight,$width,$height,DIRECTION_VERTICAL,array("StartR"=>200,"StartG"=>200,"StartB"=>200,"EndR"=>18,"EndG"=>52,"EndB"=>86,"Alpha"=>100));
+			$img->drawGradientArea(0,0,$width,$titleHeight,DIRECTION_VERTICAL,array("StartR"=>18,"StartG"=>52,"StartB"=>86,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
+
+			$img->setFontProperties(array("FontName"=>"images/ttf/liberation-sans/LiberationSans-Bold.ttf","FontSize"=>10));
+			$img->drawText($width/2,13,$title,array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"R"=>255,"G"=>255,"B"=>255));
+
+			$img->setFontProperties(array("R"=>255,"G"=>255,"B"=>255,"FontName"=>"images/ttf/liberation-sans/LiberationSans-Regular.ttf","FontSize"=>9));
+			$img->setGraphArea(60,$titleHeight+20,$width-50,$height-30);
+			$img->drawScale(array("GridR"=>200,"GridG"=>200,"GridB"=>200,"Mode"=>SCALE_MODE_START0));
+			$img->drawBarChart(array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayPos"=>LABEL_POS_INSIDE,"DisplayValues"=>TRUE,"Surrounding"=>10)); 
+		} elseif ($graphicType == "3Dpie") {
+			include_once("images/pchart/pPie.class.php");
+
+			$imgData->addPoints($dataSet,"data");
+			$imgData->addPoints($legend,"legend");
+			$imgData->setAbscissa("legend");
+
+			$img = new pImage($width,$height,$imgData,TRUE);
+			$PieChart = new pPie($img,$imgData);
+
+			$img->drawGradientArea(0,$titleHeight,$width,$height,DIRECTION_VERTICAL,array("StartR"=>200,"StartG"=>200,"StartB"=>200,"EndR"=>18,"EndG"=>52,"EndB"=>86,"Alpha"=>100));
+			$img->drawGradientArea(0,0,$width,$titleHeight,DIRECTION_VERTICAL,array("StartR"=>18,"StartG"=>52,"StartB"=>86,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
+
+			$img->setFontProperties(array("FontName"=>"images/ttf/liberation-sans/LiberationSans-Bold.ttf","FontSize"=>10));
+			$img->drawText($width/2,13,$title,array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"R"=>255,"G"=>255,"B"=>255));
+
+			$PieChart->setSliceColor(0,array("R"=>0,"G"=>108,"B"=>171));
+			$PieChart->setSliceColor(1,array("R"=>205,"G"=>159,"B"=>0));
+			$PieChart->setSliceColor(2,array("R"=>0,"G"=>171,"B"=>0));
+			$PieChart->setSliceColor(3,array("R"=>171,"G"=>28,"B"=>0));
+
+			$img->setFontProperties(array("FontName"=>"images/ttf/liberation-sans/LiberationSans-Regular.ttf","FontSize"=>9));
+			$PieChart->draw3DPie($width/2,($height/2)+$titleHeight,array("Radius"=>($width/2)-100,"SecondPass"=>TRUE,"DrawLabels"=>TRUE,"WriteValues"=>TRUE,"Precision"=>2,"ValueR"=>0,"ValueG"=>0,"ValueB"=>0,"ValueAlpha"=>100,"SkewFactor"=>0.6,"LabelR"=>255,"LabelG"=>255,"LabelB"=>255,"LabelAlpha"=>100));
+		} # if
+
+		if (isset($img)) {
+			ob_start();
+			$img->render(NULL);
+			$imageString = ob_get_clean();
+
+			$data = $this->getImageInfoFromString($imageString);
+			return array('metadata' => $data['metadata'], 'content' => $imageString);
+		} # img
+	} # createStatistics
 
 	function createSpeedDial($totalSpots, $newSpots, $lastUpdate) {
 		$img = $this->createDefaultSpotwebImage();
@@ -63,7 +166,7 @@ class SpotImage {
 		imagedestroy($img['resource']);
 
 		$data = $this->getImageInfoFromString($imageString);
-		return array('metadata' => $data['metadata'], 'isErrorImage' => true, 'content' => $imageString);
+		return array('metadata' => $data['metadata'], 'expire' => true, 'content' => $imageString);
 	} # createSpeedDial
 
 	function createDefaultSpotwebImage() {
@@ -282,5 +385,28 @@ class SpotImage {
 		$b = hexdec(substr($hexColorString, 4, 2));
 		return ImageColorAllocate($img, $r, $g, $b);
 	} # colorHex
+
+	function prepareData($data) {
+		$preparedData = array();
+		foreach ($data as $tmp) {
+			$preparedData[(int) $tmp['data']] = (float) $tmp['amount'];
+		} # foreach
+		return $preparedData;
+	} # prepareData
+
+	function getValidStatisticsGraphs() {
+		return array('spotspercategory'		=> _("Spots per categorie"),
+					 'spotsperhour'			=> _("Spots per uur"),
+					 'spotsperweekday'		=> _("Spots per weekdag"),
+					 'spotspermonth'		=> _("Spots per maand"));
+	} # getValidStatisticsGraphs
+
+	function getValidStatisticsLimits() {
+		return array(''			=> _("Alles"),
+					 'year'		=> _("afgelopen jaar"),
+					 'month'	=> _("afgelopen maand"),
+					 'week'		=> _("afgelopen week"),
+					 'day'		=> _("laatste 24 uur"));
+	} # getValidStatisticsLimits
 
 } # class SpotImage
