@@ -603,6 +603,11 @@ abstract class SpotStruct_abs {
 
 		# cache omzetten naar nieuw systeem
 		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp'))) {
+			echo 'Converting your cache data to another format' . PHP_EOL;
+			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
+			echo PHP_EOL . PHP_EOL;
+			
+			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
 			$spotImage = new SpotImage();
 
 			# Web

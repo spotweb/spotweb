@@ -893,63 +893,7 @@ class SpotTemplateHelper {
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */
-	function formMessageToString($message) {
-		$strings = array();
-		$strings['validateuser_mailalreadyexist'] = 'Mailadres is al in gebruik';
-		$strings['validateuser_invalidmail'] = 'Geen geldig mailadres';
-		$strings['validateuser_invalidfirstname'] = 'Geen geldige voornaam';
-		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
-		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
-		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
-		$strings['validateuser_passwordtooshort'] = 'Opgegeven wachtwoord is te kort';
-		$strings['validateuser_passworddontmatch'] = 'Wachtwoord velden komen niet overeen';
-		$strings['validateuser_invalidpreference'] = 'Ongeldige user preference waarde (%s)';
-		
-		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
-		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
-		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
-		$strings['edituser_usermusthaveonegroup'] = 'Een gebruiker moet in minstens een groep zitten';
-
-		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
-		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
-		$strings['postcomment_bodytoolong'] = 'Omschrijving is te lang';
-		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
-		$strings['postcomment_replayattack'] = 'Replay attack';
-		
-		$strings['postspot_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
-		$strings['postspot_bodytooshort'] = 'Geef een omschrijving';
-		$strings['postspot_bodytoolong'] = 'Omschrijving is te lang';
-		$strings['postspot_titletooshort'] = 'Geef een titel';
-		$strings['postspot_replayattack'] = 'Replay attack';
-		$strings['postspot_invalidcategory'] = 'Ongeldige hoofdcategory (%d)';
-		$strings['postspot_invalidsubcat'] = 'Ongeldige subcategory (%s)';
-		$strings['postspot_imagetoolarge'] = 'Opgegeven afbeelding is te groot';
-		$strings['postspot_imageinvalid'] = 'Opgegeven afbeelding is niet herkend als afbeelding';
-		$strings['postspot_toomanycategories'] = 'Teveel categorieen opgegeven';
-		$strings['postspot_toofewcategories'] = 'Deel de spot in in een aantal categorieen';
-		$strings['postspot_canonlybeoneformat'] = 'Een spot kan maar 1 formaat hebben';
-		$strings['postspot_musthaveformat'] = 'Een spot moet een formaat hebben';
-		$strings['postspot_invalidnzb'] = 'Ongeldig NZB bestand';
-		$strings['postspot_success'] = 'Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is';
-		
-		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
-		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
-		$strings['validatesecgroup_duplicatepermission'] = 'Permissie bestaat al in deze groep';
-		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
-		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
-		
-		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
-		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
-		$strings['validatefilter_nofileupload'] = 'Filter is niet geupload';
-		$strings['validatefilter_fileuploaderr'] = 'Fout tijdens uploaden van filter (%d)';
-		$strings['validatefilter_invaliduploadxml'] = 'Geuploade Spotweb filter file is ongeldig';
-		
-		$strings['postreport_alreadyreported'] = 'Deze spot is al gemarkeerd als spam';
-		
-		return vsprintf($strings[$message[0]], $message[1]);
-	} # formMessageToString
-
-	/*
+ 	/*
 	 * Geeft de lijst met users terug
 	 */
 	function getUserList($username) {
