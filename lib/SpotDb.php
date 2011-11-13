@@ -1103,11 +1103,12 @@ class SpotDb {
 							  $this->safe(serialize($comment['user-key'])),
 							  $this->safe($comment['spotterid']),
 							  $this->safe(implode("\r\n", $comment['body'])),
-							  $this->bool2dt($comment['verified'])));
+							  $this->bool2dt($comment['verified']),
+							  $this->safe($comment['user-avatar']));
 			} # foreach
 
 			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified)
+			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar)
 								  VALUES " . implode(',', $insertArray), array());
 		} # foreach
 
@@ -1248,7 +1249,8 @@ class SpotDb {
 														f.spotterid AS spotterid, 
 														f.body AS body, 
 														f.verified AS verified,
-														c.spotrating AS spotrating 
+														c.spotrating AS spotrating,
+														f.avatar as \"user-avatar\"
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
 													WHERE c.nntpref = '%s'

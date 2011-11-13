@@ -184,6 +184,7 @@ class SpotNntp {
 							} # if
 							break;
 					} # x-user-key
+					case 'X-User-Avatar'	: $tmpAr['user-avatar'] = $this->_spotParser->unspecialString(substr($hdr, 15)); break;
 				} # switch
 			} # foreach
 			
@@ -213,7 +214,8 @@ class SpotNntp {
 			foreach($commentList as $comment) {
 				try {
 					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
-										'user-key' => '', 'spotterid' => '', 'verified' => false);
+										'user-key' => '', 'spotterid' => '', 'verified' => false,
+										'user-avatar' => '');
 										
 					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
 					$tmpAr['messageid'] = $comment['messageid'];
