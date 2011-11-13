@@ -75,6 +75,9 @@ try {
 	if (!$currentSession['security']->securityValid()) {
 		die("Security settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
+	
+	# User session has been loaded, let's translate the categories
+	SpotCategories::startTranslation();
 
 	# Nu is het pas veilig rechten te checken op het gebruik van de apikey
 	if ($req->doesExist('apikey')) {
