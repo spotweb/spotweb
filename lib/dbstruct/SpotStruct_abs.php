@@ -687,7 +687,7 @@ abstract class SpotStruct_abs {
 			} # if
 
 			# PostgreSQL (?) specifieke syntax
-			if ($this instanceof SpotStruct_pdo_pgsql) {
+			if ($this instanceof SpotStruct_pgsql) {
 				$this->_dbcon->rawExec("UPDATE spots s SET spotterid = spotsfull.userid FROM spotsfull WHERE (s.messageid = spotsfull.messageid)");
 			} # if
 		} # if
