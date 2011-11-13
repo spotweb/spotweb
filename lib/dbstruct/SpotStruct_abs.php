@@ -546,8 +546,10 @@ abstract class SpotStruct_abs {
 			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . (int) $maxComments);
 			echo "\tDeleting corrupt comments headers";
 			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . (int) $maxCommentsXover);
-			echo "\tDeleting corrupt cache items";
-			$this->_dbcon->rawExec("DELETE FROM cache WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . (int) $maxSpots . ")");
+			if ($this->tableExists('cachetmp')) {
+				echo "\tDeleting corrupt cache items";
+				$this->_dbcon->rawExec("DELETE FROM cachetmp WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . (int) $maxSpots . ")");
+			} # if
 			echo "\tDeleting corrupt spots cache";
 			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . (int) $maxSpotsFull);
 			echo "\tDeleting corrupt spots";
