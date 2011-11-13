@@ -1969,7 +1969,7 @@ class SpotDb {
 			case 'pdo_pgsql'	: {
 					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
 					} # if
 					break;
 			} # pgsql
