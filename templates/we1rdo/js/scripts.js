@@ -384,7 +384,11 @@ function postCommentsForm() {
 		if (id < rating) {
 			$("span#ster"+id).addClass("active").attr('title', '<t>Geef spot</t> '+id+' '+ster);
 		} else if (id == rating) {
-			$("span#ster"+id).addClass("active").attr('title', '<t>Geen '+ster+' </t>geven</t>');
+			if (id == 1) {
+				$("span#ster"+id).addClass("active").attr('title', '<t>Geen ster geven</t>');
+			} else {
+				$("span#ster"+id).addClass("active").attr('title', '<t>Geen sterren geven</t>');
+			} // if
 		} else {
 			$("span#ster"+id).removeClass("active").attr('title', '<t>Geef spot</t> '+id+' '+ster);
 		}
@@ -1485,7 +1489,7 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async, doClear) {
 			} // else
 
 			if (doClear) {
-				$selectbox[0].options.length = 0;
+				$selectbox.empty();
 			} // if
             $.each(msg.items, function(index, item) {
 				htmlData += '<option value="' + index + '">' + item + '</option>';

@@ -150,7 +150,7 @@ echo "</th>";
 if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) { 
 	if ($currentSession['user']['userid'] > 2) { 
 		echo "<li class='addComment'>";
-		echo "<a class='togglePostComment' title='" . _('Reactie toevoegen (uitklappen)') . "'>" . _('Reactie toevoegen') . "> <span></span></a><div><div></div>";
+		echo "<a class='togglePostComment' title='" . _('Reactie toevoegen (uitklappen)') . "'>" . _('Reactie toevoegen') . "<span></span></a><div><div></div>";
 		include "postcomment.inc.php"; 
 		echo "</div></li>";
 	}
