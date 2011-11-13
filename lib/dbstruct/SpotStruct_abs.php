@@ -380,6 +380,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
+		$this->validateColumn('avatar', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
@@ -669,7 +670,7 @@ abstract class SpotStruct_abs {
 		/*
 		 * Convert the information from 'spotsfull' to 'spots' table
 		 */
-		if ($this->_spotdb->getSchemaVer() < 0.48) {
+		if (($this->_spotdb->getSchemaVer() < 0.48) && ($this->_spotdb->getSchemaVer() > 0.01)) {
 			echo PHP_EOL . PHP_EOL;
 			echo 'Converting your spotsfull data to another format' . PHP_EOL;
 			echo 'Please note - if you had spotsfull enabled, this can take a long time' . PHP_EOL;
