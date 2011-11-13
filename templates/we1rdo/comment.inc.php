@@ -7,13 +7,13 @@
 	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * 5), 5);
 	$comments = $tplHelper->formatComments($comments);
 	
-	# we moeten ook de spot zelf hebben zodat we de userid's kunnen vergelijken, dit
+	# we moeten ook de spot zelf hebben zodat we de spotterid's kunnen vergelijken, dit
 	# is op zich geen 'dure' operatie omdat de spot in de database zit.
 	$spot = $tplHelper->getFullSpot($messageId, true);
 	
 	foreach($comments as $comment) {
 		if ($comment['verified']) {
-			$commenterIsPoster = ($comment['userid'] == $spot['userid']);
+			$commenterIsPoster = ($comment['spotterid'] == $spot['spotterid']);
 
 			if($comment['spotrating'] == 0) {
 				$rating = '';
@@ -24,7 +24,7 @@
 			}
 ?>
 					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><strong> <?php echo $rating; ?><?php echo sprintf(_('Gepost door %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
-					(<a class="userid" target = "_parent" href="<?php echo $tplHelper->makeUserIdUrl($comment); ?>" title='<?php echo sprintf(_('Zoek spots van %s'), $comment['fromhdr']); ?>'><?php echo $comment['userid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
+					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Zoek spots van %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
 						<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	

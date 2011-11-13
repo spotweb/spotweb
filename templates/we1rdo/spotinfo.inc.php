@@ -8,7 +8,7 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
-	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['userid'])) && (!empty($spot['userid'])));
+	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['spotterid'])) && (!empty($spot['spotterid'])));
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -35,7 +35,7 @@
 			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeBlacklistAction(); ?>" method="post">
 				<input type="hidden" name="blacklistspotterform[submit]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
-				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['userid']); ?>">
+				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['spotterid']); ?>">
 				<input type="hidden" name="blacklistspotterform[origin]" value="Reported via Spotweb for spot <?php echo htmlspecialchars($spot['messageid']); ?>">
 			</form>
 <?php } # if ?>
@@ -99,10 +99,10 @@ echo "</th>";
 		echo _("Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!") . "<br>";
 	}
 	if ($tplHelper->isModerated($spot)) {
-		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!");
+		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!") . "<br>";
 	}
-	if ($tplHelper->isSpotterBlacklisted($spot['userid'])) {
-		echo _("De spotter staat op een blacklist!");
+	if ($tplHelper->isSpotterBlacklisted($spot['spotterid'])) {
+		echo _("De spotter staat op een blacklist!") . "<br>";
 	}
 	echo "</div>";
 } ?>
@@ -123,7 +123,7 @@ echo "</th>";
 								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Afzender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots van "%s"'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
-								<?php if (!empty($spot['userid'])) { ?> (<a href="<?php echo $tplHelper->makeUserIdUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots van "%s"'), $spot['userid']);?>'><?php echo $spot['userid']; ?></a>)<?php } ?>
+								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots van "%s"'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
 								<?php if ($allow_blackList) { ?> <a class="delete" id="blacklistuserlink" title="<?php echo _('Deze spotter blacklisten'); ?>" onclick="$('form.blacklistspotterform').submit();">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								</td> </tr>
 								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Zoek naar spots met de tag "%s"'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> </td> </tr>

@@ -8,14 +8,14 @@ class SpotParser {
 	
 	
 	function parseFull($xmlStr) {
-		# Gebruik een spot template zodat we altijd de velden hebben die we willen
+		# Create a template array so we always have the full fields to prevent ugly notices
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
 
 		/* 
-		 * Onderdruk errors bij corrupte messageid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net>
+		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		
 		$xml = @(new SimpleXMLElement($xmlStr));
 		$xml = $xml->Posting;
@@ -31,18 +31,23 @@ class SpotParser {
 // echo $tpl_spot['title'];
 // die();
 
-		# FTD spots bevatten de filename
+		# FTD spots have the filename
 		if (!empty($xml->Filename)) {
 			$tpl_spot['filename'] = (string) $xml->Filename;
 		} # if
 
-		# FTD spots bevatten de newsgroup
+		# FTD spots have the newsgroup
 		if (!empty($xml->Newsgroup)) {
 			$tpl_spot['newsgroup'] = (string) $xml->newsgroup;
 		} # if
 
-		# Images behandelen we op een speciale manier, in oude spots
-		# was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid
+		/*
+		 * Images available can be in the XML in two different ways.
+		 *
+		 * Some older spots just have an URL we can use, newer spots
+		 * have an height/width/messageid(s) pair we use to retrieve the image 
+		 * from
+		 */
 		if (empty($xml->Image->Segment)) {
 			$tpl_spot['image'] = (string) $xml->Image;
  		} else {
@@ -57,7 +62,7 @@ class SpotParser {
 			
 		} # else
 
-		# NZB segmenten plakken we gewoon aan elkaar
+		# Just stitch together the NZB segments
 		foreach($xml->xpath('/Spotnet/Posting/NZB/Segment') as $seg) {
 			$tpl_spot['nzb'][] = (string) $seg;
 		} # foreach
@@ -67,13 +72,16 @@ class SpotParser {
 			$tpl_spot['category'] = ((int) $tpl_spot['category']) - 1;
 		} # if
 
-		#
-		# Bij FTD spots wordt er al een gesplitste array van subcategorieen aangeleverd
-		# die uiteraard niet compatible is met de nieuwe style van subcategorieen
-		#
+		/*
+		 * For FTD spots an array of subcategories is created. This array is not 
+		 * compatible with that of newer spots so we need two seperate codepaths
+		 */
 		$subcatList = array();
 
-		# Category subelementen plakken we gewoon aan elkaar, category zelf kennen we toe
+		/*
+		 * We fix up the category list later in the system, so we just extract the
+		 * list of subcategories
+		 */
 		if (!empty($xml->SubCat)) {
 			foreach($xml->xpath('/Spotnet/Posting/Category/SubCat') as $sub) {
 				$subcatList[] = (string) $sub;
@@ -84,7 +92,10 @@ class SpotParser {
 			} # foreach
 		} # if
 
-		# match hoofdcat/subcat-type/subcatvalue
+		/*
+		 * Mangle the several types of subcategory listing to make sure we only
+		 * have to use one type in the rest of Spotwb
+		 */
 		foreach($subcatList as $subcat) {
 			if (preg_match('/(\d+)([aAbBcCdDzZ])(\d+)/', preg_quote($subcat), $tmpMatches)) {
 				$subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
@@ -93,8 +104,10 @@ class SpotParser {
 			} # if
 		} # foreach
 		
-		# we zetten de Z3 category erbij op het moment dat een oude spot in de erotiek
-		# category valt, dit maakt ons filter een stuk simpeler.
+		/*
+		 * subcatz is a subcategory introduced in later Spotnet formats, we prefer to
+		 * always have this subcategory so we just fake it if it's not listed.
+		 */
 		if (empty($tpl_spot['subcatz'])) {
 			$tpl_spot['subcatz'] = SpotCategories::createSubcatZ($tpl_spot['category'], $tpl_spot['subcata'] . $tpl_spot['subcatb'] . $tpl_spot['subcatd']);
 		} # if
@@ -104,35 +117,47 @@ class SpotParser {
 	} # parseFull()
 
 	function parseXover($subj, $from, $date, $messageid, $rsaKeys) {
-		// initialiseer wat variabelen
+		# Initialize an empty array, we create a basic template in a few
 		$spot = array();
 
 
 		/*
-		 * De "From" header is als volgt opgebouwd:
+		 * De "From" header is created using the following system:
 		 *
 		 *   From: [Nickname] <[RANDOM or PUBLICKEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+		 *		or
+		 *   From: [Nickname] <[PUBLICKEY-MODULO.USERSIGNATURE]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 		 *
-		 * We willen nu alles extracten wat achter de '@' staat, maar omdat een nickname theoretisch ook een @ kan bevatten
-		 * doen we eerst wat meer moeite 
+		 *
+		 * First we want to extract everything after the @ but because a nickname could contain an @, we have to mangle it a bit
 		 */
 		$fromInfoPos = strpos($from, '<');
 		if ($fromInfoPos === false) {
 			return false;
 		} else {
-			# Haal de postername en de <>'s weg
+			# Remove the posters' name and the <> characters
 			$fromAddress = explode('@', substr($from, $fromInfoPos + 1, -1));
 			if (count($fromAddress) < 2) {
 				return false;
 			} # if
-			$spot['selfsignedpubkey'] = $this->unSpecialString($fromAddress[0]);
 			$spot['header'] = $fromAddress[1];
+
+			/*
+			 * It is possible the part before the @ contains both the 
+			 * users' signature as the spots signature as signed by the user
+			 */
+			$headerSignatureTemp = explode('.', $fromAddress[0]);
+			$spot['selfsignedpubkey'] = $this->unSpecialString($headerSignatureTemp[0]);
+			
+			if (isset($headerSignatureTemp[1])) {
+				$spot['user-signature'] = $this->unSpecialString($headerSignatureTemp[1]);
+			} # if
 		} # if
 
 		/* 
-		 * Initialiseer wat basis variabelen, doordat we verified op false zetten
-		 * zal de spot altijd nog genegeerd worden ook al geven we nu de spot array
-		 * terug 
+		 * Initialize some basic variables. We set 'verified' to false so we  can
+		 * exit this function at any time and the gathered data for this spot up til
+		 * then is stil ignored.
 		 */
 		$spot['verified'] = false;
 		$spot['filesize'] = 0;
@@ -140,17 +165,16 @@ class SpotParser {
 		$spot['stamp'] = strtotime($date);
 
 		/*
-		 * Breek de .-delimited velden op in een array zodat we er makkelijker wat
-		 * mee kunnen doen. We hebben tenminste 6 velden nodig, anders is de spot
-		 * sowieso ongeldig. Meer velden kan (zie spec)
-		 */		
+		 * Split the .-delimited fields into an array so we can mangle it. We require
+		 * atleast six fields, if any less we can safely assume the spot is invalid
+		 */
 		$fields = explode('.', $spot['header']);
 		if (count($fields) < 6) {
 			return false;
 		} # if
 
 		/*
-		 * De velden die voor het oprapen liggen, halen we nu ook op
+		 * Extract the fixed fields from the header
 		 */
 		$spot['poster'] = substr($from, 0, $fromInfoPos -1);
 		$spot['category'] = (substr($fields[0], 0, 1)) - 1.0;
@@ -162,40 +186,50 @@ class SpotParser {
 		$spot['subcatd'] = '';
 		$spot['subcatz'] = '';
 		$isRecentKey = $spot['keyid'] <> 1;
+		
+		# If the user signature is known, calculate the spotterid
+		if ((empty($spot['user-signature'])) || (empty($spot['selfsignedpubkey']))) {
+			$spot['spotterid'] = '';
+		} else {
+			$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+		} # else
 
 		/* 
-		 * Als er sowieso geen geldige keyid is, is de spot ook ongeldig
+		 * If the keyid is invalid, abort trying to parse it
 		 */
 		if ($spot['keyid'] < 0) {
 			return false;
 		} # if
 
 		/*
-		 * De lijst met subcategorieen is opgebouwd afhankelijk van hoe recent de spot is.
+		 * Listings of subcategories is dependent on the age of the spot.
 		 *
-		 * FTD spots zetten alle subcategorieen gewoon achter elkaar, dus bv: a9b4c0d5d15d11
-		 * nieuwere spots reserveren steeds 3 karakters voor elke categorie, dus: a09b04c00d05d15d11.
+		 * FTD spots just list all subcategories like: a9b4c0d5d15d11
+		 * Newer spots always use three characters for each subcategory like: a09b04c00d05d15d11.
 		 *
-		 * Omdat beide feitelijk dezelfde karakteristieken hebben, parseren we die op dezelfde
-		 * manier. We voegen aan de $strCatLis een extra token toe zodat de laatste categorie ook geparsd
-		 * kan worden. We voegen drie karakters toe zodat een eventuele sanitycheck (strlen() % 3 = 0) nog
-		 * zou valideren.
+		 * We really do not care for this, we just parse them using the same code as the
+		 * first one.
+		 *
+		 * We pad $strCatList with an extra set of tokes so we always parse te last category,
+		 * we make sure any sanitycheck is passed by adding 3 tokens.
 		 */
 		$strCatList = strtolower(substr($fields[0], 2)) . '!!!';
 		$strCatListLen = strlen($strCatList);
 
 		/*
-		 * We initialiseren wat tijdelijke variables zodat we hier de sanity checking
-		 * kunnen doen
+		 * Initialize some basic variables to use for sanitychecking (eg: valid subcats)
 		 */
 		$validSubcats = array('a' => true, 'b' => true, 'c' => true, 'd' => true, 'z' => true);
 		$tmpCatBuild = '';
 		
 
-		/* Probeer nu alle subcategorieen te extracten */
+		/* And just try to extract all given subcategories */
 		for($i = 0; $i < $strCatListLen; $i++) {
-			# Als het huidige karakter geen getal is, dan hebben we de volgende
-			# categorie gevonden, voeg die toe aan de lijst met categorieen
+			/*
+			 * If the current character is not an number, we found the next
+			 * subcategory. Add the current one to the list, and start
+			 * parsing the new one
+			 */
 			if ((!is_numeric($strCatList[$i])) && (!empty($tmpCatBuild))) {
 				if (isset($validSubcats[$tmpCatBuild[0]])) {
 					$spot['subcat' . $tmpCatBuild[0]] .= $tmpCatBuild[0] . (int) substr($tmpCatBuild, 1) . '|';
@@ -207,7 +241,10 @@ class SpotParser {
 			$tmpCatBuild .= $strCatList[$i];
 		} # for
 
-		# We vullen hier de z categorieen alvast op in het geval er geen Z category gegeven is
+		/*
+		 * subcatz is a subcategory introduced in later Spotnet formats, we prefer to
+		 * always have this subcategory so we just fake it if it's not listed.
+		 */
 		if (empty($spot['subcatz'])) {
 			$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
 		} # if
@@ -247,13 +284,15 @@ class SpotParser {
 			} # if
 		} # if recentKey
 
-		# Een title en poster zijn verplicht, anders kan de signature niet gechecked worden
+		# Title and poster fields are mandatory, we require it to validate the signature
 		if (((strlen($spot['title']) == 0) || (strlen($spot['poster']) == 0))) {
 			return $spot;
 		} # if
-		
-		# Als er een recentkey is (key <> 1), OF de spot is na 2010 geplaatst, dan moet
-		# de spot gesigned zijn.
+
+		/* 
+		 * For any recentkey ( >1) or spots created after year-2010, we require the spot
+		 * to be signed
+		 */
 		$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
 		if ($mustbeSigned) {
 			$spot['headersign'] = $fields[count($fields) - 1];
@@ -262,7 +301,10 @@ class SpotParser {
 
 				$spot['wassigned'] = true;
 
-				# KeyID 7 betekent dat een hashcash vereist is
+				/*
+				 * KeyID 7 has a special meaning, it defines a self-signed spot and
+				 * requires a hashcash
+				 */
 				if ($spot['keyid'] == 7) {
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
 					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
@@ -291,15 +333,16 @@ class SpotParser {
 			$spot['wassigned'] = false;
 		} # if doesnt need to be signed, pretend that it is
 
-		# Nu zetten we de titel en dergelijke om naar utf8, we kunnen
-		# dat niet eerder doen omdat anders de RSA signature niet meer
-		# klopt.
+		/*
+		 * We convert the title and other fields to UTF8, we cannot
+		 * do this any earlier because it would break the RSA signature
+		 */
 		if (($spot !== false) && ($spot['verified'])) {
 			$spot['title'] = utf8_encode($spot['title']);
 			$spot['poster'] = utf8_encode($spot['poster']);
 			$spot['tag'] = utf8_encode($spot['tag']);
 			
-			# als de spot in de toekomst ligt, dan corrigeren we dat naar nu
+			# If a spot is in the future, fix it
 			if (time() < $spot['stamp']) {
 				$spot['stamp'] = time();
 			} # if
@@ -472,7 +515,7 @@ class SpotParser {
 	} # specialString
 
 	/*private */function unspecialString($strInput) {
-		/* Zorg dat de input string gepad wordt naar een multiple of 4 */
+		/* Pad the input string to a multiple of 4 */
 		$paddingLen = strlen($strInput) % 4;
 		if ($paddingLen > 0) {
 			$strInput .= str_repeat('=', (4 - $paddingLen));
@@ -485,7 +528,7 @@ class SpotParser {
 	 * Creates XML out of the Spot information array
 	 */
 	function convertSpotToXml($spot, $imageInfo, $nzbSegments) {
-		# Opbouwen XML
+		# XML
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = false;
 

@@ -776,7 +776,8 @@ class SpotsOverview {
 		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
 		$filterFieldMapping = array('filesize' => 's.filesize',
 								  'date' => 's.stamp',
-								  'userid' => 'f.userid',
+								  'userid' => 's.spotterid',
+								  'spotterid' => 's.spotterid',
 								  'moderated' => 's.moderated',
 								  'poster' => 's.poster',
 								  'titel' => 's.title',
@@ -912,7 +913,7 @@ class SpotsOverview {
 				} # if
 
 				# en creeer de query string
-				if (in_array($tmpFilterFieldname, array('userid'))) {
+				if (in_array($tmpFilterFieldname, array('spotterid', 'userid'))) {
 					$filterValueSql['OR'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
 				} else {
 					$filterValueSql['AND'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';

@@ -441,18 +441,18 @@ class SpotTemplateHelper {
 	} # makePosterUrl
 
 	/*
-	 * Creeert een linkje naar een zoekopdracht op userid
+	 * Creeert een linkje naar een zoekopdracht op spotterid
 	 */
-	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
-	} # makeUserIdUrl
+	function makeSpotterIdUrl($spot) {
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=SpotterID:=:' . urlencode($spot['spotterid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+	} # makeSpotterIdUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op tag
 	 */
 	function makeTagUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:=:' . urlencode($spot['tag']);
-	} # makeUserIdUrl
+	} # makeTagUrl
 
 	/*
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
@@ -936,14 +936,6 @@ class SpotTemplateHelper {
 	function getAllAvailablePerms() {
 		return $this->_spotSec->getAllPermissions();
 	} # getAllAvailablePerms
-	
-	/*
-	 * Genereert een random string
-	 */
-	function getSessionCalculatedUserId() {
-		$spotSigning = new SpotSigning();
-		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
-	} # getSessionCalculatedUserId
 	
 	/*
 	 * Geeft een lijst met alle security groepen terug

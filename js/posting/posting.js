@@ -22,12 +22,12 @@ function spotPosting() {
 				var result = $(xml).find('result').text();
 				if(result == 'success') {
 					var user = $(xml).find('user').text();
-					var userid = $(xml).find('userid').text();
+					var spotterid = $(xml).find('spotterid').text();
 					var rating = $(xml).find('rating').text();
 					var text = $(xml).find('body').text();
-					var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
+					var spotteridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
 
-					var data = "<li> <strong> <t>Gepost door %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='userid' target='_parent' href='"+useridurl+"' title='<t>Zoek naar spots van %1</t>".replace("%1", userid) + "'>"+userid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
+					var data = "<li> <strong> <t>Gepost door %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='spotterid' target='_parent' href='"+spotteridurl+"' title='<t>Zoek naar spots van %1</t>".replace("%1", spotterid) + "'>"+spotterid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
 
 					$("li.nocomments").remove();
 					$("li.firstComment").removeClass("firstComment");

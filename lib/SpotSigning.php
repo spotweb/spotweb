@@ -234,7 +234,7 @@ class SpotSigning {
 	/*
 	 * 'Bereken' de userid aan de hand van z'n publickey
 	 */
-	public function calculateUserid($userKey) {
+	public function calculateSpotterId($userKey) {
 		$userSignCrc = crc32(base64_decode($userKey));
 		
 		$userIdTmp = chr($userSignCrc & 0xFF) .
@@ -243,6 +243,6 @@ class SpotSigning {
 						chr(($userSignCrc >> 24) & 0xFF);
 		
 		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-	} # calculateUserId
+	} # calculateSpotterId
 	
 } # class SpotSigning
