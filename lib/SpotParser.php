@@ -27,10 +27,6 @@ class SpotParser {
 		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
 		$tpl_spot['title'] = (string) $xml->Title;
 
-// header("Content-Type: text/html; charset=utf-8");
-// echo $tpl_spot['title'];
-// die();
-
 		# FTD spots have the filename
 		if (!empty($xml->Filename)) {
 			$tpl_spot['filename'] = (string) $xml->Filename;
@@ -148,7 +144,6 @@ class SpotParser {
 			 */
 			$headerSignatureTemp = explode('.', $fromAddress[0]);
 			$spot['selfsignedpubkey'] = $this->unSpecialString($headerSignatureTemp[0]);
-			
 			if (isset($headerSignatureTemp[1])) {
 				$spot['user-signature'] = $this->unSpecialString($headerSignatureTemp[1]);
 			} # if
@@ -192,6 +187,15 @@ class SpotParser {
 			$spot['spotterid'] = '';
 		} else {
 			$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+			$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
+									  'exponent' => 'AQAB');
+			/* 
+			 * The spot contains the signature of the header in the 
+			 */
+			$spot['verified'] = $this->_spotSigning->verifyFullSpot($spot);
+			
+			var_dump($spot);
+			die('Verified by keyid in the header, please notify http://github.com/spotweb/spotweb to see if spots are valid!');
 		} # else
 
 		/* 
@@ -298,6 +302,8 @@ class SpotParser {
 			$spot['headersign'] = $fields[count($fields) - 1];
 
 			if (strlen($spot['headersign']) != 0) {
+				# the signature this header is signed with
+				$signature = $this->unspecialString($spot['headersign']);
 
 				$spot['wassigned'] = true;
 
@@ -308,22 +314,29 @@ class SpotParser {
 				if ($spot['keyid'] == 7) {
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
 					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
-					
+
 					/*
 					 * Create a fake RSA keyarray so we can validate it using our standard
 					 * infrastructure
 					 */
 					 if ($spot['verified']) {
-					 /* Not sure about this
 						$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
 													   'exponent' => 'AQAB'));
-						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey);
-					*/
+													   
+						/*
+						 * We cannot use this as a full measure to check the spot's validness yet, 
+						 * because at least one Spotnet client feeds us invalid date for now
+						 */
+						if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+							/* 
+							 * The users' public key (modulo) is posted in the header, lets 
+							 * try this.
+							 */
+							$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+						} # if
+						
 					} # if
 				} elseif (isset($rsaKeys[$spot['keyid']])) {
-					# the signature this header is signed with
-					$signature = $this->unspecialString($spot['headersign']);
-
 					$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
 				} # else
 			} # if
