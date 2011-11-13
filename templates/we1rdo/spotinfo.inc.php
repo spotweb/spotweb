@@ -101,6 +101,9 @@ echo "</th>";
 	if ($tplHelper->isModerated($spot)) {
 		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!");
 	}
+	if ($tplHelper->isSpotterBlacklisted($spot['userid'])) {
+		echo _("De spotter staat op een blacklist!");
+	}
 	echo "</div>";
 } ?>
 						<table class="spotinfo">
