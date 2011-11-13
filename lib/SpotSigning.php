@@ -153,7 +153,7 @@ class SpotSigning {
 		} # if
 		
 		$verified = $this->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key'], false);
-		if (!$verified) {
+		if ((!$verified) && (!empty($spot['xml-signature']))) {
 			$verified = $this->checkRsaSignature($spot['xml-signature'], $spot['user-signature'], $spot['user-key'], false);
 		} # if
 		
