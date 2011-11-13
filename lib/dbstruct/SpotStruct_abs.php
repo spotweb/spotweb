@@ -244,6 +244,7 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+		$this->dropIndex("idx_spotsfull_2", "spotsfull"); # Index on userid
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
 
@@ -322,12 +323,12 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
 		$this->createTable('spotsfull', "utf8"); 
 		$this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
@@ -375,7 +376,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('stamp', 'commentsfull', 'INTEGER', NULL, false, '');
 		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
-		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
+		$this->validateColumn('spotterid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
@@ -500,7 +501,7 @@ abstract class SpotStruct_abs {
 
 		# ---- spotteridblacklist table ---- #
 		$this->createTable('spotteridblacklist', "utf8");
-		$this->validateColumn('userid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
+		$this->validateColumn('spotterid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
@@ -663,12 +664,39 @@ abstract class SpotStruct_abs {
 			$this->dropTable('cachetmp');
 		} # if
 
+		/*
+		 * Convert the information from 'spotsfull' to 'spots' table
+		 */
+		if ($this->_spotdb->getSchemaVer() < 0.48) {
+			echo PHP_EOL . PHP_EOL;
+			echo 'Converting your spotsfull data to another format' . PHP_EOL;
+			echo 'Please note - if you had spotsfull enabled, this can take a long time' . PHP_EOL;
+			echo PHP_EOL . PHP_EOL;
+
+			# Empty the blacklist table because the userid column is renamed to spotterid
+			$tmp = $this->_dbcon->rawExec("TRUNCATE spotteridblacklist");
+
+			# Update the spotterid field with the userid field
+			$this->_dbcon->rawExec("UPDATE commentsfull SET spotterid = userid");
+
+			# MySQL specifieke syntax to update the spots
+			if ($this instanceof SpotStruct_mysql) {
+				$this->_dbcon->rawExec("UPDATE spots s, spotsfull f SET s.spotterid = f.userid WHERE (s.messageid = f.messageid)");
+			} # if
+
+			# PostgreSQL (?) specifieke syntax
+			if ($this instanceof SpotStruct_pdo_pgsql) {
+				$this->_dbcon->rawExec("UPDATE spots s SET spotterid = spotsfull.userid FROM spotsfull WHERE (s.messageid = spotsfull.messageid)");
+			} # if
+		} # if
+		
 		# En creeer de diverse indexen
 		# ---- Indexen op spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
+		$this->validateIndex("idx_spots_5", "", "spots", array("spotterid"));
 		$this->validateFts("idx_fts_spots", "spots", 
 					array(1 => "poster",
 					      2 => 'title',
@@ -679,7 +707,6 @@ abstract class SpotStruct_abs {
 		
 		# ---- Indexen op spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));
-		$this->validateIndex("idx_spotsfull_2", "", "spotsfull", array("userid"));
 
 		# ---- Indexen op commentsfull ----
 		$this->validateIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", array("messageid"));
@@ -745,7 +772,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
 
 		# ---- Indexen op spotteridblacklist ----
-		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
+		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
 
 		# ---- Indexen op cache ----
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
@@ -769,6 +796,9 @@ abstract class SpotStruct_abs {
 		# Hier droppen we kolommen ###################################################################
 		##############################################################################################
 		$this->dropColumn('filesize', 'spotsfull');
+		$this->dropColumn('userid', 'spotsfull');
+		$this->dropColumn('userid', 'spotteridblacklist');
+		$this->dropColumn('userid', 'commentsfull');
 
 		##############################################################################################
 		# Hier droppen we tabellen ###################################################################

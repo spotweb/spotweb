@@ -225,10 +225,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# keren per xover mee komt ...
 							$dbIdList['fullspot'][$msgId] = 1;
 							
-							# Overschrijf de titel in de spots array omdat de XML de UTF-8 titel
-							# bevat. We kunnen dit enkel doen als de header opgehaald is
+							# Overwrite the spots' title because the fullspot contains the title in
+							# UTF-8 format.
+							# We also overwrite the spotterid from the spotsfull because the spotterid
+							# is only in the header in more recent spots.
 							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
+								$spotDbList[count($spotDbList) - 1]['spotterid'] = $fullSpot['spotterid'];
 							} # if
 						} 
 						catch(ParseSpotXmlException $x) {

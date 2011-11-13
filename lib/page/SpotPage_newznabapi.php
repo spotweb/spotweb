@@ -364,7 +364,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
 			$channel->appendChild($image);
 
-			$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
+			$poster = (empty($spot['spotterid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['spotterid'] . ")";
 
 			$guid = $doc->createElement('guid', $spot['messageid']);
 			$guid->setAttribute('isPermaLink', 'false');

@@ -45,7 +45,7 @@
 	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
 	# en reportcount niet juist zetten
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
 			$searchType = $filterType['fieldname'];
 			$searchText = $filterType['value'];
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
@@ -79,7 +79,7 @@
 
 	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
 			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
 		} # if
 	} # foreach
@@ -101,7 +101,7 @@
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label><?php echo _('Tag'); ?></label></li>
 <?php if ($settings->get('retrieve_full')) { ?>
-							<li> <input type="radio" name="search[type]" value="UserID" <?php echo $searchType == "UserID" ? 'checked="checked"' : "" ?> ><label><?php echo _('UserID'); ?></label></li>
+							<li> <input type="radio" name="search[type]" value="SpotterID" <?php echo $searchType == "SpotterID" ? 'checked="checked"' : "" ?> ><label><?php echo _('SpotterID'); ?></label></li>
 <?php } ?>
 						</ul>
 
@@ -112,7 +112,7 @@
 						<table class='search currentfilterlist'>
 <?php
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'UserID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
 ?>
 							<tr> <th> <?php echo _($filterType['fieldname']); ?> </th> <td> <?php echo $filterType['value']; ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
