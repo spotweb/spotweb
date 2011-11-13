@@ -291,15 +291,21 @@ class SpotNntp {
 			# instantiate necessary objects
 			$spotSigning = new SpotSigning();
 
-			# sign the messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
-			
 			# also by the SpotWeb server 
 			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
 
-			$addHeaders = 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$addHeaders = '';
+			
+			# Only add the user-signature header if there is none set yet
+			if (stripos($additionalHeaders, 'X-User-Signature: ') === false) {
+				# sign the messageid
+				$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
+			
+				$addHeaders .= 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+				$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			} # if
+			
 			$addHeaders .= 'X-Server-Signature: ' . $this->_spotParser->specialString($server_signature['signature']) . "\r\n";
-			$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$addHeaders .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$addHeaders .= $additionalHeaders;
 
@@ -380,7 +386,7 @@ class SpotNntp {
 
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
-			 *   From: [Nickname] <[USER PUBLIC KEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+			 *   From: [Nickname] <[PUBLICKEY-MODULO.USERSIGNATURE]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 			 */
 			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 			
@@ -400,6 +406,11 @@ class SpotNntp {
 				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
 			} # if
 			
+			# Create the user-signature
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
+			$header = 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+				
 			# sign the header by using the users' key
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 
@@ -410,7 +421,10 @@ class SpotNntp {
 			$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
 			
 			# Create the From header
-			$spotnetFrom = $user['username'] . ' <' . $this->_spotParser->specialString($userPubKey['publickey']['modulo']) . '@';
+			$spotnetFrom = $user['username'] . ' <' . 
+								$this->_spotParser->specialString($userPubKey['publickey']['modulo']) . 
+								'.' . 
+								$this->_spotParser->specialString($user_signature['signature']) . '@';
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
 			
 			# Add the Spotnet XML file, but split it in chunks of 900 characters
