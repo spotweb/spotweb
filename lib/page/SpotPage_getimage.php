@@ -44,6 +44,18 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
+			if ($this->_image['size'] < 1 || $this->_image['size'] > 512) {
+				unset($this->_image['size']);
+			} # if
+
+			if (!in_array($this->_image['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
+				unset($this->_image['default']);
+			} # if
+
+			if (!in_array($this->_image['rating'], array('g', 'pg', 'r', 'x'))) {
+				unset($this->_image['rating']);
+			} # if
+
 			$imgDefaults = array('md5' => false,
 								 'size' => 80,
 								 'default' => 'identicon',
