@@ -14,7 +14,7 @@ class SpotsOverview {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
-		$this->_spotImage = new SpotImage($db, $settings);
+		$this->_spotImage = new SpotImage($db);
 	} # ctor
 	
 	/*

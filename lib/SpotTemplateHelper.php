@@ -1079,7 +1079,7 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics graphs terug
 	 */
 	function getValidStatisticsGraphs(){
-		$spotImage = new SpotImage($this->_db, $this->_settings);
+		$spotImage = new SpotImage($this->_db);
 		return $spotImage->getValidStatisticsGraphs();
 	} # getValidStatisticsGraphs
 
@@ -1087,7 +1087,7 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics limits terug
 	 */
 	function getValidStatisticsLimits(){
-		$spotImage = new SpotImage($this->_db, $this->_settings);
+		$spotImage = new SpotImage($this->_db);
 		return $spotImage->getValidStatisticsLimits();
 	} # getValidStatisticsGraphs
 

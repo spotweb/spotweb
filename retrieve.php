@@ -15,6 +15,11 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 	chdir(__DIR__);
 } # if
 
+# Make sure _() exists, a very dumb placeholder for now
+if (!function_exists('_')) {
+	function _($s) { return $s; }
+} # if
+
 require_once "lib/SpotClassAutoload.php";
 require_once "settings.php";
 require_once "lib/SpotTiming.php";
@@ -249,7 +254,7 @@ catch(Exception $x) {
 ## Statistics
 if ($settings->get('prepare_statistics') && $newSpotCount) {
 	$spotsOverview = new SpotsOverview($db, $settings);
-	$spotImage = new SpotImage($db, $settings);
+	$spotImage = new SpotImage($db);
 	$spotsOverview->setActiveRetriever(true);
 
 	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
