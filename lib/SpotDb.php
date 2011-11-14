@@ -1104,7 +1104,7 @@ class SpotDb {
 							  $this->safe($comment['spotterid']),
 							  $this->safe(implode("\r\n", $comment['body'])),
 							  $this->bool2dt($comment['verified']),
-							  $this->safe($comment['user-avatar']));
+							  $this->safe($comment['user-avatar'])));
 			} # foreach
 
 			# Actually insert the batch
