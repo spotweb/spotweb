@@ -613,8 +613,7 @@ abstract class SpotStruct_abs {
 			echo PHP_EOL . PHP_EOL;
 			
 			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
-			$spotImage = new SpotImage();
-
+			$spotImage = new SpotImage($this->_spotdb);
 			
 			# Web
 			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");

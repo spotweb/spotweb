@@ -249,7 +249,7 @@ catch(Exception $x) {
 ## Statistics
 if ($settings->get('prepare_statistics') && $newSpotCount) {
 	$spotsOverview = new SpotsOverview($db, $settings);
-	$spotImage = new SpotImage($db, $settings);
+	$spotImage = new SpotImage($db);
 	$spotsOverview->setActiveRetriever(true);
 
 	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {

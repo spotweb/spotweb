@@ -25,7 +25,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 			# init
-			$spotImage = new SpotImage($this->_db, $this->_settings);
+			$spotImage = new SpotImage($this->_db);
 
 			$totalSpots = $this->_db->getSpotCount('');
 			$newSpots = $this->_tplHelper->getNewCountForFilter('');
