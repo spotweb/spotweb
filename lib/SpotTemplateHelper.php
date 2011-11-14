@@ -391,6 +391,19 @@ class SpotTemplateHelper {
 	/*
 	 * Creert een gravatar url
 	 */
+	function makeCommentGravatarUrl($fullComment) {
+		if (empty($fullComent['avatar'])) {
+			$md5 = $fullComment['avatar'];
+		} else {
+			$md5 = md5($fullComment['user-key']['modulo']);
+		} # else 
+		
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5&amp;image[md5]=' . urlencode($md5);
+	} # makeCommentGravatarUrl
+
+	/*
+	 * Creert een gravatar url
+	 */
 	function makeGravatarUrl($avatar, $size=80, $default='mm', $rating='g') {
 		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5' . $avatar . '&amp;image[size]=' . $size . '&amp;image[default]=' . $default . '&amp;image[rating]=' . $rating;
 	} # makeGravatarUrl
