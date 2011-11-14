@@ -396,6 +396,10 @@ class SpotUserUpgrader {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'boxcar')");
 		} # if
 
+		# Statistieken toegevoegd
+		if ($this->_settings->get('securityversion') < 0.23) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_view_statistics . ")");
+		} # if
 	} # updateSecurityGroups
 
 	/*

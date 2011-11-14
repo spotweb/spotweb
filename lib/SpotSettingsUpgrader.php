@@ -28,7 +28,8 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('boxcar_api_key', 'pOQM9O2AnEWL0RjSoHln');
 		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // Ook al heet deze secret, hij mag geshared worden
 		$this->setIfNot('auditlevel', 0); // No auditing
-		$this->setIfNot('recompress_nzb', false); // No auditing
+		$this->setIfNot('recompress_nzb', false);
+		$this->setIfNot('prepare_statistics', true);
 		$this->updateSettingsVersion();
 	} # update()
 	

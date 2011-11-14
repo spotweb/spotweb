@@ -14,7 +14,7 @@ class SpotsOverview {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
-		$this->_spotImage = new SpotImage();
+		$this->_spotImage = new SpotImage($db, $settings);
 	} # ctor
 	
 	/*
@@ -162,9 +162,9 @@ class SpotsOverview {
 		} else {
 			$nzbCompressed = $nntp->getNzb($fullSpot['nzb']);
 			
-			# hier wordt extreem veel geheugen verbruikt
+			# hier wordt extreem veel geheugen verbruikt, dus tijdens retrieve voeren we dit alleen uit als we genoeg hebben
 			if (!$this->_activeRetriever || ($recompress && strlen($nzbCompressed)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
-				$nzb = gzinflate($nzbCompressed); // Corrupte data uitfilteren
+				$nzb = gzinflate($nzbCompressed);
 
 				if ($recompress && $nzb && strlen($nzb)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
 					$nzbCompressed = gzdeflate($nzb, 9);
@@ -234,6 +234,44 @@ class SpotsOverview {
 	} # getImage
 
 	/* 
+	 * Geef een statistics image file terug
+	 */
+	function getStatisticsImage($graph, $limit, $nntp) {
+		SpotTiming::start(__FUNCTION__);
+
+		if (!array_key_exists($graph, spotImage::getValidStatisticsGraphs()) || !array_key_exists($limit, spotImage::getValidStatisticsLimits())) {
+			$data = $this->_spotImage->createErrorImage(990);
+			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
+			return $data;
+		} # if
+
+		$lastUpdate = $this->_db->getLastUpdate($nntp['host']);
+		$resourceid = ($limit == '') ? $graph . ".all" : $graph . "." . $limit;
+		$data = $this->_cache->getCache($resourceid, SpotCache::Statistics);
+		if (!$data || $this->_activeRetriever || (!$this->_settings->get('prepare_statistics') && (int) $data['stamp'] < $lastUpdate)) {
+			$data = $this->_spotImage->createStatistics($graph, $limit);
+			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content'], false);
+		} # if
+
+		$data['expire'] = true;
+		SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
+		return $data;
+	} # getStatisticsImage
+
+	/*
+	 * Geeft een Gravatar image terug
+	 */
+	function getGravatarImage($md5, $size, $default, $rating) {
+		SpotTiming::start(__FUNCTION__);
+		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . urlencode($default) . "&r=" . $rating;
+
+		list($return_code, $data) = $this->getFromWeb($url, 60*60);
+		$data['expire'] = true;
+		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
+		return $data;
+	} # getGravatarImage
+
+	/* 
 	 * Haalt een url op en cached deze
 	 */
 	function getFromWeb($url, $ttl=900) {
@@ -241,7 +279,7 @@ class SpotsOverview {
 		$url_md5 = md5($url);
 
 		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
-		if ((!$content) || (time()-(int) $content['stamp'] > $ttl)) {
+		if (!$content || time()-(int) $content['stamp'] > $ttl) {
 			$data = array();
 
 			SpotTiming::start(__FUNCTION__ . ':curl');
