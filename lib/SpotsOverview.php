@@ -263,7 +263,7 @@ class SpotsOverview {
 	 */
 	function getGravatarImage($md5, $size, $default, $rating) {
 		SpotTiming::start(__FUNCTION__);
-		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . urlencode($default) . "&r=" . $rating;
+		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
 		list($return_code, $data) = $this->getFromWeb($url, 60*60);
 		$data['expire'] = true;
