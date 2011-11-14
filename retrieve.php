@@ -247,7 +247,7 @@ catch(Exception $x) {
 } # catch
 
 ## Statistics
-if ($settings->get('prepare_statistics')) {
+if ($settings->get('prepare_statistics') && $newSpotCount) {
 	$spotsOverview = new SpotsOverview($db, $settings);
 	$spotImage = new SpotImage($db, $settings);
 	$spotsOverview->setActiveRetriever(true);
