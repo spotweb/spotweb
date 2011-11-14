@@ -15,6 +15,11 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 	chdir(__DIR__);
 } # if
 
+# Make sure _() exists, a very dumb placeholder for now
+if (!function_exists('_')) {
+	function _($s) { return $s; }
+} # if
+
 require_once "lib/SpotClassAutoload.php";
 require_once "settings.php";
 require_once "lib/SpotTiming.php";
