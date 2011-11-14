@@ -325,11 +325,18 @@ try {
 			break;
 		} # twitteroauth
 
+		case 'statistics' : {
+			$page = new SpotPage_statistics($db, $settings, $currentSession,
+					Array('limit' => $req->getDef('limit', '')));
+			$page->render();
+			break;
+		} # statistics
+
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
 					$page = new SpotPage_getimage($db, $settings, $currentSession,
 							Array('messageid' => $req->getDef('messageid', ''),
-								  'image' => 'speeddial'));
+								  'image' => array('type' => 'speeddial')));
 				} else {
 					$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
