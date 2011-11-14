@@ -21,11 +21,11 @@ class SpotImage {
 
 		# error info
 		switch ($errcode) {
+			case 200:	$text = _('Opgegeven bron bevat onjuiste data'); break;
 			case 403:	$text = _('URL mag niet worden geopend'); break;
 			case 404:	$text = _('Bestand niet gevonden'); break;
 			case 430:	$text = _('Artikel niet gevonden'); break;
 			case 900:	$text = _('XML parse error'); break;
-			case 901:	$text = _('Image is corrupt'); break;
 			case 990:	$text = _('Statistieken incorrect opgevraagd'); break;
 			default:	$text = _('Onbekende fout');
 		} # switch

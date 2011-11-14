@@ -318,7 +318,7 @@ if (is_string($settings_external_blacklist) && $settings_external_blacklist == "
 		$spotsOverview = new SpotsOverview($db, $settings);
 
 		# haal de blacklist op
-		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), 30*60);
+		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), false, 30*60);
 
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;

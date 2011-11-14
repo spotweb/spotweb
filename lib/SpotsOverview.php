@@ -217,12 +217,14 @@ class SpotsOverview {
 				} # catch
 			} # if
 		} else {
-			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], 24*60*60);
+			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], false, 24*60*60);
 		} # else
 
 		# bij een error toch een image serveren
 		if (!$this->_activeRetriever) {
 			if ($return_code && $return_code != 200 && $return_code != 304) {
+				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif ($return_code && !$data['metadata']) {
 				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif (!$data) {
 				$data = $this->_spotImage->createErrorImage(999);
@@ -265,7 +267,7 @@ class SpotsOverview {
 		SpotTiming::start(__FUNCTION__);
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
-		list($return_code, $data) = $this->getFromWeb($url, 60*60);
+		list($return_code, $data) = $this->getFromWeb($url, true, 60*60);
 		$data['expire'] = true;
 		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
@@ -274,7 +276,7 @@ class SpotsOverview {
 	/* 
 	 * Haalt een url op en cached deze
 	 */
-	function getFromWeb($url, $ttl=900) {
+	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
 		SpotTiming::start(__FUNCTION__);
 		$url_md5 = md5($url);
 
@@ -292,6 +294,7 @@ class SpotsOverview {
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
 			curl_setopt ($ch, CURLOPT_HEADER, 1);
 			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
 			if ($content) {
 				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
@@ -323,8 +326,13 @@ class SpotsOverview {
 				} # else
 
 				switch($http_code) {
-					case 304:	if (!$this->_activeRetriever) { $this->_cache->updateCacheStamp($url_md5, SpotCache::Web); } break;
-					default:	$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content'], $compress);
+					case 304:	if (!$this->_activeRetriever) {
+									$this->_cache->updateCacheStamp($url_md5, SpotCache::Web);
+								} # if
+								break;
+					default:	if ($info['redirect_count'] == 0 || ($info['redirect_count'] > 0 && $storeWhenRedirected)) {
+									$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content'], $compress);
+								} # if
 				} # switch
 			} # else
 		} else {
@@ -332,7 +340,7 @@ class SpotsOverview {
 			$data = $content;
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($url, $ttl));
+		SpotTiming::stop(__FUNCTION__, array($url, $storeWhenRedirected, $ttl));
 
 		return array($http_code, $data);
 	} # getUrl
