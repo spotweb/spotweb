@@ -441,6 +441,11 @@ div.details form.postreportform input.greyButton {display:inline; margin: 0;}
 
 /* STATISTIEKEN */
 div.statistics {margin:0 0 0 235px; padding:10px 5px 5px 0; min-width:750px; text-align:center;}
+div.statistics form select {background:url(../img/sprite_x.png) repeat-x 0 0; position:fixed; top:28px; right:3px; color:#000; border:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0; width:250px; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px;}
+div.statistics form select option {background-color:#ddd; border-top:1px solid #bbb;}
+div.statistics form select option:checked {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
+
+div.statistics h4.dropdown {-moz-border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0;}
 
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
