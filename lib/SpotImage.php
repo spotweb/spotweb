@@ -1,11 +1,9 @@
 <?php
 class SpotImage {
 	protected $_db;
-	protected $_settings;
 
-	function __construct(SpotDb $db, SpotSettings $settings) {
+	function __construct(SpotDb $db) {
 		$this->_db = $db;
-		$this->_settings = $settings;
 	} # ctor
 
 	function createErrorImage($errcode) {

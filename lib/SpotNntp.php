@@ -184,7 +184,23 @@ class SpotNntp {
 							} # if
 							break;
 					} # x-user-key
-					case 'X-User-Avatar'	: $tmpAr['user-avatar'] = $this->_spotParser->unspecialString(substr($hdr, 15)); break;
+					case 'X-User-Avatar'	: {
+						$tmpAr['user-avatar'] = $this->_spotParser->unspecialString(substr($hdr, 15)); 
+						
+						/* 
+						 * Make sure only valid md5 hashes are posted
+						 */
+						$validChars = '0123456789abcdef';
+						$avatarStrLen = strlen($tmpAr['user-avatar']);
+						for($i = 0; $i < $avatarStrLen; $i++) {
+							if (stripos($validChars, strtolower($tmpAr['user-avatar'][$i])) === false) {
+								$tmpAr['user-avatar'] = '';
+								break;
+							} # if
+						} # foreach
+						
+						break;
+					} # x-user-avatar
 				} # switch
 			} # foreach
 			
