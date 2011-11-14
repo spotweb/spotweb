@@ -389,6 +389,13 @@ class SpotTemplateHelper {
 	} # makeSortUrl
 
 	/*
+	 * Creert een gravatar url
+	 */
+	function makeGravatarUrl($avatar, $size=80, $default='mm', $rating='g') {
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5' . $avatar . '&amp;image[size]=' . $size . '&amp;image[default]=' . $default . '&amp;image[rating]=' . $rating;
+	} # makeGravatarUrl
+
+	/*
 	 * Creert een sorteer url die andersom sorteert 
 	 * dan de huidige sortering
 	 */

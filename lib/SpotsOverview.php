@@ -258,6 +258,19 @@ class SpotsOverview {
 		return $data;
 	} # getStatisticsImage
 
+	/*
+	 * Geeft een Gravatar image terug
+	 */
+	function getGravatarImage($md5, $size, $default, $rating) {
+		SpotTiming::start(__FUNCTION__);
+		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . urlencode($default) . "&r=" . $rating;
+
+		list($return_code, $data) = $this->getFromWeb($url, 60*60);
+		$data['expire'] = true;
+		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
+		return $data;
+	} # getGravatarImage
+
 	/* 
 	 * Haalt een url op en cached deze
 	 */

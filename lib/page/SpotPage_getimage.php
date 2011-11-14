@@ -40,6 +40,15 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
 			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr);
+		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'gravatar') {
+			# init
+			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+
+			$md5 = (isset($this->_image['md5'])) ? $this->_image['md5'] : false;
+			$size = (isset($this->_image['size'])) ? $this->_image['size'] : 80;
+			$default = (isset($this->_image['default'])) ? $this->_image['default'] : 'monsterid';
+			$rating = (isset($this->_image['rating'])) ? $this->_image['rating'] : 'g';
+			$data = $spotsOverview->getGravatarImage($md5, $size, $default, $rating);
 		} else {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
