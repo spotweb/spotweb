@@ -44,11 +44,12 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
-			$md5 = (isset($this->_image['md5'])) ? $this->_image['md5'] : false;
-			$size = (isset($this->_image['size'])) ? $this->_image['size'] : 80;
-			$default = (isset($this->_image['default'])) ? $this->_image['default'] : 'monsterid';
-			$rating = (isset($this->_image['rating'])) ? $this->_image['rating'] : 'g';
-			$data = $spotsOverview->getGravatarImage($md5, $size, $default, $rating);
+			$imgDefaults = array('md5' => false,
+								 'size' => 80,
+								 'default' => 'identicon',
+								 'rating' => 'g');
+			$imgSettings = array_merge($imgDefaults, $this->_image);
+			$data = $spotsOverview->getGravatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
 		} else {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
