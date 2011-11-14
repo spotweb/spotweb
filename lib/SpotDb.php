@@ -1095,7 +1095,7 @@ class SpotDb {
 				# de datastructuur, de unique keys kappen we expres niet af
 				$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
 
-				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s')",
+				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
 						Array($this->safe($comment['messageid']),
 							  $this->safe($comment['fromhdr']),
 							  $this->safe($comment['stamp']),
