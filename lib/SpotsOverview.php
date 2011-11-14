@@ -226,6 +226,8 @@ class SpotsOverview {
 				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif ($return_code && !$data['metadata']) {
 				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif ($return_code && !$data) {
+				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif (!$data) {
 				$data = $this->_spotImage->createErrorImage(999);
 			} # elseif
