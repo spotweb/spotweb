@@ -216,7 +216,7 @@ class SpotsOverview {
 					} # else
 				} # catch
 			} # if
-		} else {
+		} elseif (!empty($fullSpot['image'])) {
 			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], false, 24*60*60);
 		} # else
 
@@ -224,6 +224,8 @@ class SpotsOverview {
 		if (!$this->_activeRetriever) {
 			if ($return_code && $return_code != 200 && $return_code != 304) {
 				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif (empty($fullSpot['image'])) {
+				$data = $this->_spotImage->createErrorImage(901);
 			} elseif ($return_code && !$data['metadata']) {
 				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif ($return_code && !$data) {
@@ -244,7 +246,7 @@ class SpotsOverview {
 		SpotTiming::start(__FUNCTION__);
 
 		if (!array_key_exists($graph, spotImage::getValidStatisticsGraphs()) || !array_key_exists($limit, spotImage::getValidStatisticsLimits())) {
-			$data = $this->_spotImage->createErrorImage(990);
+			$data = $this->_spotImage->createErrorImage(400);
 			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
 			return $data;
 		} # if
@@ -312,7 +314,7 @@ class SpotsOverview {
 				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
 			} else {
-				$http_code = -1;	 # Curl returned an error
+				$http_code = 700; # Curl returned an error
 			} # else
 			curl_close($ch);
 
