@@ -19,13 +19,14 @@ class SpotImage {
 
 		# error info
 		switch ($errcode) {
-			case 200:	$text = _('Opgegeven bron bevat onjuiste data'); break;
-			case 403:	$text = _('URL mag niet worden geopend'); break;
-			case 404:	$text = _('Bestand niet gevonden'); break;
-			case 430:	$text = _('Artikel niet gevonden'); break;
+			case 200:	$text = _('Source contains unknown data'); break;
+			case 400:	$text = _('Bad request'); break;
+			case 403:	$text = _('Permission denied from remote URL'); break;
+			case 404:	$text = _('File not found'); break;
+			case 430:	$text = _('Article not found'); break;
 			case 900:	$text = _('XML parse error'); break;
-			case 990:	$text = _('Statistieken incorrect opgevraagd'); break;
-			default:	$text = _('Onbekende fout');
+			case 901:	$text = _('No image provided'); break;
+			default:	$text = _('Unknown error');
 		} # switch
 
 		$fontSize = 20;
