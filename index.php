@@ -1,15 +1,12 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
-# Make sure _() exists, a very dumb placeholder for now
-if (!function_exists('_')) {
-	function _($s) { return $s; }
-} # if
-
-	
 require_once "lib/SpotClassAutoload.php";
+require_once "lib/SpotTranslation.php";
 #- main() -#
 try {
+	SpotTranslation::initialize('nl_NL');
+	
 	SpotTiming::enable();
 	SpotTiming::start('total');
 	SpotTiming::start('settings');
