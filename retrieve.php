@@ -15,11 +15,7 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 	chdir(__DIR__);
 } # if
 
-# Make sure _() exists, a very dumb placeholder for now
-if (!function_exists('_')) {
-	function _($s) { return $s; }
-} # if
-
+require_once "lib/SpotTranslation.php";
 require_once "lib/SpotClassAutoload.php";
 require_once "settings.php";
 require_once "lib/SpotTiming.php";
@@ -28,6 +24,9 @@ require_once "lib/exceptions/NntpException.php";
 
 # disable timing, met alle queries die er draaien loopt dat uit op een te grote memory usage
 SpotTiming::disable();
+
+# Initialize translation to english 
+SpotTranslation::initialize('en_US');
 
 # in safe mode, max execution time cannot be set, warn the user
 if (ini_get('safe_mode') ) {
