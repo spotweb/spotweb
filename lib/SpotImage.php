@@ -19,11 +19,12 @@ class SpotImage {
 
 		# error info
 		switch ($errcode) {
-			case 200:	$text = _('Source contains unknown data'); break;
+			case 200:	$text = _('Remote host sent bad data'); break;
 			case 400:	$text = _('Bad request'); break;
-			case 403:	$text = _('Permission denied from remote URL'); break;
+			case 403:	$text = _('Permission denied from remote host'); break;
 			case 404:	$text = _('File not found'); break;
 			case 430:	$text = _('Article not found'); break;
+			case 700:	$text = _('No response from remote host'); break;
 			case 900:	$text = _('XML parse error'); break;
 			case 901:	$text = _('No image provided'); break;
 			default:	$text = _('Unknown error');
