@@ -77,7 +77,7 @@ class SpotImage {
 									  $graphicType = "3Dpie";
 									  break;
 		} # switch
-		array_walk_recursive($dataSet, create_function('& $item, $key', 'if ($item === NULL) $item = 0;'));
+		array_walk($dataSet, create_function('& $item, $key', 'if ($item === NULL) $item = 0;'));
 
 		$title = $graphs[$graph];
 		if (!empty($limit)) {
