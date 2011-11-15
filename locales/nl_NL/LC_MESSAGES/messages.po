@@ -1,2 +1,67 @@
+<<<<<<< HEAD
+# Format for translations msgid = UK msgstr = TRANSLATED
+#msgid "TesString"
+#msgstr "Userlist"
+
+#: general translations
+msgid "Add"
+msgstr "Toevoegen"
+msgid "Cancel"
+msgstr "Afbreken"
+msgid "Change"
+msgstr "Wijzig"
+msgid "Delete"
+msgstr "Verwijder"
+
+
+#: adminpanel.inc.php
+msgid "Back to mainview"
+msgstr "Terug naar overzichtspagina"
+msgid "Userlist"
+msgstr "Gebruikerslijst"
+msgid "Grouplist"
+msgstr "Groepenlijst"
+
+#: comment.inc.php
+msgid "Posted by %s"
+msgstr "Gepost door %s"
+msgid "Find spots from %s"
+msgid "Zoek spots van %s"
+
+#: createuser.inc.php
+msgid "Username"
+msgstr "Gebruikersnaam"
+msgid "Firstname"
+msgstr "Voornaam"
+msgid "Lastname"
+msgstr "Achternaam"
+msgid "E-mailaddress"
+msgstr "E-mailadres"
+msgid "Send e-mail to new user?"
+msgstr "E-mail versturen naar nieuwe gebruiker?"
+
+#: editfilter.inc.php
+msgid "Name"
+msgstr "Naam"
+msgid "Icon"
+msgstr "Icoon"
+
+#: editsecgroup.inc.php
+msgid "Permission"
+msgstr "Permissie"
+msgid "Object"
+msgstr "Object"
+msgid "Deny/Allow"
+msgstr "Blokkeer / Sta toe"
+msgid "Set to allow"
+msgstr "Selecteer om toe te staan"
+msgid "Set to deny"
+msgstr "Selecteer om te blokkeren"
+msgid "Add the following rights"
+msgstr "Volgende recht toevoegen"
+msgid "ObjectID (normally empty)"
+msgstr "ObjectID (meestal leeg)"
+=======
 msgid "TesString"
 msgstr "Userlist"
+>>>>>>> upstream/master
