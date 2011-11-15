@@ -77,9 +77,9 @@ class File_Gettext
     function &factory($format, $file = '')
     {
         $format = strToUpper($format);
-        if (!@include_once 'File/Gettext/' . $format . '.php') {
-            return File_Gettext::raiseError($php_errormsg);
-        }
+        #if (!@include_once 'File/Gettext/' . $format . '.php') {
+        #    return File_Gettext::raiseError($php_errormsg);
+        #}
         $class = 'File_Gettext_' . $format;
         $obref = &new $class($file);
         return $obref;
@@ -103,7 +103,7 @@ class File_Gettext
             return File_Gettext::raiseError("File $pofile doesn't exist.");
         }
         
-        include_once 'File/Gettext/PO.php';
+        #include_once 'File/Gettext/PO.php';
         
         $PO = &new File_Gettext_PO($pofile);
         if (true !== ($e = $PO->load())) {
@@ -238,7 +238,7 @@ class File_Gettext
      */
     function &toMO()
     {
-        include_once 'File/Gettext/MO.php';
+        #include_once 'File/Gettext/MO.php';
         $MO = &new File_Gettext_MO;
         $MO->fromArray($this->toArray());
         return $MO;
@@ -252,7 +252,7 @@ class File_Gettext
      */
     function &toPO()
     {
-        include_once 'File/Gettext/PO.php';
+        #include_once 'File/Gettext/PO.php';
         $PO = &new File_Gettext_PO;
         $PO->fromArray($this->toArray());
         return $PO;
@@ -269,8 +269,8 @@ class File_Gettext
      */
     function raiseError($error = null, $code = null)
     {
-        include_once 'PEAR.php';
-        return PEAR::raiseError($error, $code);
+        #include_once 'PEAR.php';
+		throw new Exception($error . ' (#' . $code . ')');
     }
 }
 ?>
