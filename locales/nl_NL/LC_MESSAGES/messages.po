@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Format for translations msgid = UK msgstr = TRANSLATED
 #msgid "TesString"
 #msgstr "Userlist"
@@ -61,7 +60,4 @@ msgid "Add the following rights"
 msgstr "Volgende recht toevoegen"
 msgid "ObjectID (normally empty)"
 msgstr "ObjectID (meestal leeg)"
-=======
-msgid "TesString"
-msgstr "Userlist"
->>>>>>> upstream/master
+
