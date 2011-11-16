@@ -159,6 +159,8 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_body', '');
 			$this->setSettingIfNot($user['prefs'], 'user_language', 'nl_NL');
+			$this->setSettingIfNot($user['prefs'], 'show_avatars', true);
+			$this->setSettingIfNot($user['prefs'], 'usemailaddress_for_gravatar', true);
 
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
