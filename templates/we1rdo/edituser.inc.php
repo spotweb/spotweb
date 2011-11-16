@@ -14,27 +14,27 @@ if (empty($editresult)) {
 	<input type="hidden" name="userid" value="<?php echo $edituserform['userid']; ?>">
 	<fieldset>
 		<dl>
-			<dt><label for="edituserform[username]"><?php echo _('Gebruikersnaam'); ?></label></dt>
+			<dt><label for="edituserform[username]"><?php echo _('Username'); ?></label></dt>
 			<dd><input type="text" disabled="disabled" value="<?php echo htmlspecialchars($edituserform['username']); ?>"></dd>
 
-			<dt><label for="edituserform[newpassword1]"><?php echo _('Nieuw wachtwoord'); ?></label></dt>
+			<dt><label for="edituserform[newpassword1]"><?php echo _('New password'); ?></label></dt>
 			<dd><input type="password" name="edituserform[newpassword1]" value=""></dd>
 
-			<dt><label for="edituserform[newpassword2]"><?php echo _('Bevestig nieuw wachtwoord'); ?></label></dt>
+			<dt><label for="edituserform[newpassword2]"><?php echo _('Confirm new password'); ?></label></dt>
 			<dd><input type="password" name="edituserform[newpassword2]" value=""></dd>
 
-			<dt><label for="edituserform[firstname]"><?php echo _('Voornaam'); ?></label></dt>
+			<dt><label for="edituserform[firstname]"><?php echo _('Firstname'); ?></label></dt>
 			<dd><input type="text" name="edituserform[firstname]" value="<?php echo htmlspecialchars($edituserform['firstname']); ?>"></dd>
 
-			<dt><label for="edituserform[lastname]"><?php echo _('Achternaam'); ?></label></dt>
+			<dt><label for="edituserform[lastname]"><?php echo _('Lastname'); ?></label></dt>
 			<dd><input type="text" name="edituserform[lastname]"  value="<?php echo htmlspecialchars($edituserform['lastname']); ?>"></dd>
 
-			<dt><label for="edituserform[mail]"><?php echo _('E-mail Adres'); ?></label></dt>
+			<dt><label for="edituserform[mail]"><?php echo _('E-mail Address'); ?></label></dt>
 			<dd><input type="text" name="edituserform[mail]"  value="<?php echo htmlspecialchars($edituserform['mail']); ?>"></dd>
 
 			<dt><label for="edituserform[apikey]"><?php echo _('API key'); ?></label></dt>
 			<dd><input class="withicon apikeyinputfield" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
-			<input type="image" class="resetApiSubmit" src="images/refresh.png" name="edituserform[submitresetuserapi]" value="<?php echo _('Nieuwe API key genereren'); ?>"></dd>
+			<input type="image" class="resetApiSubmit" src="images/refresh.png" name="edituserform[submitresetuserapi]" value="<?php echo _('Create new API key'); ?>"></dd>
 
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) || ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, ''))) { ?>
 			<!-- Dummy grouplist variable om zeker te zijn dat de grouplist altijd gepost wordt -->
@@ -56,9 +56,9 @@ if (empty($editresult)) {
 <?php } ?>
 
 			<dd>
-				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="<?php echo _('Bijwerken'); ?>">
+				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="<?php echo _('Change'); ?>">
 <?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID && $tplHelper->allowed(SpotSecurity::spotsec_delete_user, '')) { ?>
-				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="<?php echo _('Wis gebruiker'); ?>">
+				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="<?php echo _('Delete user'); ?>">
 <?php } ?>
 				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="<?php echo _('Wis alle sessies'); ?>">
 			</dd>
