@@ -247,7 +247,7 @@ class SpotsOverview {
 	function getStatisticsImage($graph, $limit, $nntp) {
 		SpotTiming::start(__FUNCTION__);
 
-		if (!array_key_exists($graph, spotImage::getValidStatisticsGraphs()) || !array_key_exists($limit, spotImage::getValidStatisticsLimits())) {
+		if (!array_key_exists($graph, $this->_spotImage->getValidStatisticsGraphs()) || !array_key_exists($limit, $this->_spotImage->getValidStatisticsLimits())) {
 			$data = $this->_spotImage->createErrorImage(400);
 			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
 			return $data;
