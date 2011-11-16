@@ -91,6 +91,8 @@ msgstr "Upload je filters"
 #: postcomment.inc.php
 msgid "Add comment"
 msgstr "Reactie toevoegen"
+msgid "Post"
+msgstr "Plaats"
 
 #: listgroups.inc.php
 msgid "Name"
