@@ -5,6 +5,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_retrieveFull;
 		private $_prefetch_image;
 		private $_prefetch_nzb;
+		private $_recompress_nzb;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
