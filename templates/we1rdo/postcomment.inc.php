@@ -21,7 +21,7 @@ if (empty($postresult)) {
 		<dl>
 			<dd class="rating"><input type="hidden" name="postcommentform[rating]" value="0"></dd>
 			<dd><textarea name="postcommentform[body]" id="postcommentform[body]"></textarea></dd>
-			<dd><input class="greyButton" type="submit" name="dummysubmit" title="<?php echo _('Reactie toevoegen'); ?>" value="<?php echo _('Post'); ?>"></dd>
+			<dd><input class="greyButton" type="submit" name="dummysubmit" title="<?php echo _('Add comment'); ?>" value="<?php echo _('Post'); ?>"></dd>
 			<dd>
 <?php
 	$smileyList = $tplHelper->getSmileyList();
