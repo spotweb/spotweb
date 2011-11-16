@@ -60,7 +60,7 @@ if (empty($editresult)) {
 <?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID && $tplHelper->allowed(SpotSecurity::spotsec_delete_user, '')) { ?>
 				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="<?php echo _('Delete user'); ?>">
 <?php } ?>
-				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="<?php echo _('Wis alle sessies'); ?>">
+				<input class="greyButton" type="submit" name="edituserform[removeallsessions]" value="<?php echo _('Clear all sessions'); ?>">
 			</dd>
 		</dl>
 	</fieldset>

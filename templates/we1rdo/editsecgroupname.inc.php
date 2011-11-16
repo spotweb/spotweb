@@ -25,16 +25,16 @@
 			<input type="hidden" name="groupid" value="9999">
 <?php } ?>
 			
-			<dt><label for="editsecgroupform[name]"><?php echo _('Naam'); ?></label></dt>
+			<dt><label for="editsecgroupform[name]"><?php echo _('Name'); ?></label></dt>
 			<dd>
 				<input type="text" name="editsecgroupform[name]" value="<?php echo htmlspecialchars($securitygroup['name']); ?>"></input>
 			</dd>
 			
 			<dd>
 <?php if ($isNew) { ?>			
-				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitaddgroup]" value="<?php echo _('Voeg toe'); ?>">
+				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitaddgroup]" value="<?php echo _('Add'); ?>">
 <?php } else { ?>
-				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitchangename]" value="<?php echo _('Wijzig'); ?>">
+				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitchangename]" value="<?php echo _('Change'); ?>">
 <?php } ?>
 			</dd>
 		</form>
