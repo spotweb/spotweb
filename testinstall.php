@@ -5,7 +5,7 @@
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<title>Install ...</title>
+	<title>Test your Installation</title>
 	<style type='text/css'>
 		table {margin-left:auto; margin-right:auto; font-size:12px; color:#fff; width:800px; background-color:#666; border:0px; border-collapse:collapse; border-spacing:0px;}
 		table td {background-color:#CCC; color:#000; padding:4px; border:1px #fff solid;}
@@ -37,7 +37,7 @@
 	<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
 <?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
-	<tr> <th colspan="2"> GD </th> <th> <?php showResult(extension_loaded('gd')); ?> </th> </tr>
+	<tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd')); ?> </td> </tr>
 	<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support']); ?> </td> </tr>
 	<tr> <td colspan="2"> GIF Read Support </td> <td> <?php showResult($gdInfo['GIF Read Support']); ?> </td> </tr>
 	<tr> <td colspan="2"> GIF Create Support </td> <td> <?php showResult($gdInfo['GIF Create Support']); ?> </td> </tr>

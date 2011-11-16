@@ -8,19 +8,23 @@ class SpotStatistics {
 	} # ctor
 
 	function getSpotCountPerHour($limit) {
-		return $this->_db->getSpotCountPerHour($limit);
+		$rs = $this->_db->getSpotCountPerHour($limit);
+		return $rs;
 	} # getSpotCountPerHour
 
 	function getSpotCountPerWeekday($limit) {
-		return $this->_db->getSpotCountPerWeekday($limit);
+		$rs = $this->_db->getSpotCountPerWeekday($limit);
+		return $rs;
 	} # getSpotCountPerWeekday
 
 	function getSpotCountPerMonth($limit) {
-		return $this->_db->getSpotCountPerMonth($limit);
+		$rs = $this->_db->getSpotCountPerMonth($limit);
+		return $rs;
 	} # getSpotCountPerMonth
 
 	function getSpotCountPerCategory($limit) {
-		return $this->_db->getSpotCountPerCategory($limit);
+		$rs = $this->_db->getSpotCountPerCategory($limit);
+		return $rs;
 	} # getSpotCountPerCategory
 	
 } # class SpotStatistics
