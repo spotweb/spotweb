@@ -153,6 +153,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'nzb_search_engine', 'nzbindex');
 			$this->setSettingIfNot($user['prefs'], 'show_filesize', true);
 			$this->setSettingIfNot($user['prefs'], 'show_reportcount', true);
+			$this->setSettingIfNot($user['prefs'], 'show_nzbbutton', true);
 			$this->setSettingIfNot($user['prefs'], 'show_multinzb', true);
 			$this->setSettingIfNot($user['prefs'], 'customcss', '');
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
