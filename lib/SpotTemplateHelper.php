@@ -392,6 +392,11 @@ class SpotTemplateHelper {
 	 * Creert een gravatar url
 	 */
 	function makeCommenterImageUrl($fullComment) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotimage, 'avatar')) {
+			return '';
+		} # if
+		
 		if (!empty($fullComent['user-avatar'])) {
 			$md5 = $fullComment['user-avatar'];
 		} else {

@@ -158,6 +158,9 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'customcss', '');
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_body', '');
+			$this->setSettingIfNot($user['prefs'], 'user_language', 'nl_NL');
+			$this->setSettingIfNot($user['prefs'], 'show_avatars', true);
+			$this->setSettingIfNot($user['prefs'], 'usemailaddress_for_gravatar', true);
 
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'action', 'disable');
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'local_dir', '/tmp');
@@ -400,6 +403,11 @@ class SpotUserUpgrader {
 		# Statistieken toegevoegd
 		if ($this->_settings->get('securityversion') < 0.23) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_view_statistics . ")");
+		} # if
+
+		# Showing of avatars is an security right so administrators could globally disable this
+		if ($this->_settings->get('securityversion') < 0.24) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(1, " . SpotSecurity::spotsec_view_spotimage . ", 'avatar')");
 		} # if
 	} # updateSecurityGroups
 
