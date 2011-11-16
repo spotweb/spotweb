@@ -13,7 +13,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
 		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
 
-		# Controleer de users' rechten
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
 		
 		# Haal de image op
@@ -41,6 +41,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
 			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr);
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
+			# Check users' permissions
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
+			
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
