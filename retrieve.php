@@ -257,6 +257,9 @@ if ($settings->get('prepare_statistics') && $newSpotCount) {
 	$spotsOverview->setActiveRetriever(true);
 
 	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
+		# Reset timelimit
+		set_time_limit(60);
+
 		foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
 			$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr);
 		} # foreach graph
