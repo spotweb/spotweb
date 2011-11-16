@@ -25,7 +25,7 @@ msgstr "Groepenlijst"
 msgid "Posted by %s"
 msgstr "Gepost door %s"
 msgid "Find spots from %s"
-msgid "Zoek spots van %s"
+msgstr "Zoek spots van %s"
 
 #: createuser.inc.php
 msgid "Username"
