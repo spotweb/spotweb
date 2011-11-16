@@ -30,6 +30,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('auditlevel', 0); // No auditing
 		$this->setIfNot('recompress_nzb', false);
 		$this->setIfNot('prepare_statistics', true);
+		$this->setIfNot('available_languages', 'nl_NL,en_US');
 		$this->updateSettingsVersion();
 	} # update()
 	
