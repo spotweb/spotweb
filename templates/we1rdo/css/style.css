@@ -418,7 +418,7 @@ div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-
 div.details div.comments li span.rating {float:right; display:block; width:47px; height:18px; margin:1px 0 1px 5px; background:url(../img/sprite.png) no-repeat 0 -111px;}
 div.details div.comments li span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -127px;}
 
-div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec;}
+div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec; min-height: 0; }
 div.details div.comments li.addComment a.togglePostComment {position:relative; display:block; cursor:pointer; font-weight:bold; line-height: 18px;}
 div.details div.comments li.addComment a.togglePostComment span {display:block; position: absolute; top: 0; right: 0; width: 15px; height: 14px; background: url(../img/sprite.png) no-repeat -90px -98px; margin:3px 3px 0 0;}
 div.details div.comments li.addComment a.togglePostComment span.up {background-position: -77px -98px; margin:2px 3px 0 0;}
