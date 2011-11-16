@@ -233,7 +233,9 @@ class SpotsOverview {
 			} elseif (!$data) {
 				$data = $this->_spotImage->createErrorImage(999);
 			} # elseif
-		} # if
+		} elseif (!$data) {
+			$data = false;
+		} # elseif
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
 		return $data;

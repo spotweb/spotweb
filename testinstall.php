@@ -31,11 +31,11 @@
 	<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype')); ?> </td> </tr>
 	<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl')); ?> </td> </tr>
 	<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom')); ?> </td> </tr>
+	<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext')); ?> </td> </tr>
+	<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring')); ?> </td> </tr>
 	<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml')); ?> </td> </tr>
 	<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip')); ?> </td> </tr>
 	<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib')); ?> </td> </tr>
-	<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring')); ?> </td> </tr>
-	<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext')); ?> </td> </tr>
 <?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
 	<tr> <th colspan="2"> GD </th> <th> <?php showResult(extension_loaded('gd')); ?> </th> </tr>
 	<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support']); ?> </td> </tr>
