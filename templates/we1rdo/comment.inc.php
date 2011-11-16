@@ -6,6 +6,9 @@
 	# Get the spot comments for each 5 comments
 	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * 5), 5);
 	$comments = $tplHelper->formatComments($comments);
+
+	# Does the user want to see avatars?
+	$show_avatars = $currentSession['user']['prefs']['show_avatars'];
 	
 	/*
 	 * We retrieve the fullspot as well because we want to compare the spotterids.
@@ -27,7 +30,7 @@
 			}
 ?>
 
-					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><img class="commentavatar" src='<?php echo $tplHelper->makeCommenterImageUrl($comment); ?>'><strong> <?php echo $rating; ?><?php echo sprintf(_('Posted by %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
+					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><?php if ($show_avatars) { ?><img class="commentavatar" src='<?php echo $tplHelper->makeCommenterImageUrl($comment); ?>'><?php } ?><strong> <?php echo $rating; ?><?php echo sprintf(_('Posted by %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
 					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Find spots from %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
 					<?php echo join("<br>", $comment['body']); ?>
 					</li>
