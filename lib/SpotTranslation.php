@@ -23,6 +23,5 @@ class SpotTranslation {
 		bind_textdomain_codeset('messages', 'UTF-8'); 
 		textdomain('messages');
 	} # initialize
-	
 } # class SpotTranslation
 
