@@ -117,6 +117,9 @@ include "includes/form-messages.inc.php";
 					<dd><input type="checkbox" name="edituserprefsform[show_reportcount]" <?php if ($edituserprefsform['show_reportcount']) { echo 'checked="checked"'; } ?>></dd>
 					
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) { ?>
+					<dt><label for="edituserprefsform[show_nzbbutton]"><?php echo _('Toon een NZB knop om deze via je browser te downloaden?'); ?></label></dt>
+					<dd><input type="checkbox" name="edituserprefsform[show_nzbbutton]" <?php if ($edituserprefsform['show_nzbbutton']) { echo 'checked="checked"'; } ?>></dd>
+
 					<dt><label for="edituserprefsform[show_multinzb]"><?php echo _('Toon een checkbox naast elke spot om meerdere NZB files in een keer te downloaden?'); ?></label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_multinzb]" <?php if ($edituserprefsform['show_multinzb']) { echo 'checked="checked"'; } ?>></dd>
 <?php } ?>

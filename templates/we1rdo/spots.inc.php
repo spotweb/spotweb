@@ -6,11 +6,11 @@
 	} # if
 
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
-	$show_nzb_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_spamreports = $currentSession['user']['prefs']['show_reportcount'];
+	$show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	
 ?>
