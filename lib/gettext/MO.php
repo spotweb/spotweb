@@ -18,7 +18,7 @@
 /**
  * Requires File_Gettext
  */
-require_once 'File/Gettext.php';
+#require_once 'File/Gettext.php';
 
 /** 
  * File_Gettext_MO

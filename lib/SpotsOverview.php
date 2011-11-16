@@ -265,9 +265,9 @@ class SpotsOverview {
 	} # getStatisticsImage
 
 	/*
-	 * Geeft een Gravatar image terug
+	 * Geeft een Spotnet avatar image terug
 	 */
-	function getGravatarImage($md5, $size, $default, $rating) {
+	function getAvatarImage($md5, $size, $default, $rating) {
 		SpotTiming::start(__FUNCTION__);
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
@@ -275,7 +275,7 @@ class SpotsOverview {
 		$data['expire'] = true;
 		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
-	} # getGravatarImage
+	} # getAvatarImage
 
 	/* 
 	 * Haalt een url op en cached deze

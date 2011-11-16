@@ -3,12 +3,15 @@
 	$messageId = $tplHelper->getParam('messageid');
 	$pageNr = $tplHelper->getParam('pagenr');
 	
-	# we halen 5 spots per request op
+	# Get the spot comments for each 5 comments
 	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * 5), 5);
 	$comments = $tplHelper->formatComments($comments);
 	
-	# we moeten ook de spot zelf hebben zodat we de spotterid's kunnen vergelijken, dit
-	# is op zich geen 'dure' operatie omdat de spot in de database zit.
+	/*
+	 * We retrieve the fullspot as well because we want to compare the spotterids.
+	 * This operation is rather cheap because we already have the fullspot cached
+	 * in the database
+	 */
 	$spot = $tplHelper->getFullSpot($messageId, true);
 	
 	foreach($comments as $comment) {
@@ -23,9 +26,10 @@
 				$rating = '<span class="rating" title="'.$comment['fromhdr'].' gaf deze spot '.$comment['spotrating'].' sterren"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
 			}
 ?>
-					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><strong> <?php echo $rating; ?><?php echo sprintf(_('Gepost door %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
-					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Zoek spots van %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
-						<?php echo join("<br>", $comment['body']); ?>
+
+					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><img class="commentavatar" src='<?php echo $tplHelper->makeCommenterImageUrl($comment); ?>'><strong> <?php echo $rating; ?><?php echo sprintf(_('Posted by %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
+					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Find spots from %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> <br />
+					<?php echo join("<br>", $comment['body']); ?>
 					</li>
 <?php	
 			} # if
