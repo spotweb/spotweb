@@ -193,9 +193,6 @@ class SpotParser {
 			 * The spot contains the signature of the header in the 
 			 */
 			$spot['verified'] = $this->_spotSigning->verifyFullSpot($spot);
-			
-			var_dump($spot);
-			die('Verified by keyid in the header, please notify http://github.com/spotweb/spotweb to see if spots are valid!');
 		} # else
 
 		/* 

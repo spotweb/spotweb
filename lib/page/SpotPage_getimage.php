@@ -15,7 +15,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
-
+		
 		# Haal de image op
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
 			/*
@@ -40,28 +40,29 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
 			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr);
-		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'gravatar') {
+		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-
-			if ($this->_image['size'] < 1 || $this->_image['size'] > 512) {
-				unset($this->_image['size']);
-			} # if
-
-			if (!in_array($this->_image['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
-				unset($this->_image['default']);
-			} # if
-
-			if (!in_array($this->_image['rating'], array('g', 'pg', 'r', 'x'))) {
-				unset($this->_image['rating']);
-			} # if
 
 			$imgDefaults = array('md5' => false,
 								 'size' => 80,
 								 'default' => 'identicon',
 								 'rating' => 'g');
 			$imgSettings = array_merge($imgDefaults, $this->_image);
-			$data = $spotsOverview->getGravatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
+
+			if ($imgSettings['size'] < 1 || $imgSettings['size'] > 512) {
+				$imgSettings['size'] = $imgDefaults['size'];
+			} # if
+
+			if (!in_array($imgSettings['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
+				$imgSettings['default'] = $imgDefaults['default'];
+			} # if
+
+			if (!in_array($imgSettings['rating'], array('g', 'pg', 'r', 'x'))) {
+				$imgSettings['rating'] = $imgDefaults['rating'];
+			} # if
+
+			$data = $spotsOverview->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
 		} else {
 			# init
 			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);

@@ -14,17 +14,17 @@ if (empty($editresult)) {
 	<table class="ui-widget ui-widget-content secgroupperms" summary="Permissions">
 		<thead>
 			<tr class="ui-widget-header head">
-				<th><?php echo _('Permissie'); ?></th> 
+				<th><?php echo _('Permission'); ?></th> 
 				<th><?php echo _('Object'); ?></th>
 				<?php if ($securitygroup['id'] > 3) { ?>
-					<th><?php echo _('Wis'); ?></th>
+					<th><?php echo _('Delete'); ?></th>
 					<th><?php echo _('Deny/Allow'); ?></th>
 				<?php } ?>
 				<th>|</th>
-				<th><?php echo _('Permissie'); ?></th> 
+				<th><?php echo _('Permission'); ?></th> 
 				<th><?php echo _('Object'); ?></th>
 				<?php if ($securitygroup['id'] > 3) { ?>
-					<th><?php echo _('Wis'); ?></th>
+					<th><?php echo _('Delete'); ?></th>
 					<th><?php echo _('Deny/Allow'); ?></th>
 				<?php } ?>
 			</tr>
@@ -46,7 +46,7 @@ if (empty($editresult)) {
 						<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
 						<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
-						<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="<?php echo _('Wis'); ?>">
+						<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremoveperm]" value="<?php echo _('Delete'); ?>">
 					</form>
 				</td>
 				<td> 
@@ -88,7 +88,7 @@ if (empty($editresult)) {
 		<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
 
 		<fieldset>
-			<dt><label for="editsecgroupform[permissionid]"><?php echo _('Volgende recht toevoegen'); ?></label></dt>
+			<dt><label for="editsecgroupform[permissionid]"><?php echo _('Add the following rights'); ?></label></dt>
 			<dd>
 				<select name="editsecgroupform[permissionid]">
 			
@@ -98,13 +98,13 @@ if (empty($editresult)) {
 				</select>
 			</dd>
 			
-			<dt><label for="editsecgroupform[objectid]"><?php echo _('ObjectID (meestal leeg)'); ?></label></dt>
+			<dt><label for="editsecgroupform[objectid]"><?php echo _('ObjectID (normally empty)'); ?></label></dt>
 			<dd>
 				<input type="text" name="editsecgroupform[objectid]" ></input>
 			</dd>
 
 			<dd>
-				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitaddperm]" value="<?php echo _('Voeg toe'); ?>">
+				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitaddperm]" value="<?php echo _('Add'); ?>">
 			</dd>
 		</fieldset>
 	</form>
