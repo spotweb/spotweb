@@ -1,9 +1,11 @@
 <?php
 class SpotImage {
 	protected $_db;
+	private $_oldestSpotAge;
 
 	function __construct(SpotDb $db) {
 		$this->_db = $db;
+		$this->_oldestSpotAge = round((time()- $this->_db->getOldestSpotTimestamp())/60/60/24);
 	} # ctor
 
 	function createErrorImage($errcode) {
@@ -395,18 +397,22 @@ class SpotImage {
 	} # prepareData
 
 	function getValidStatisticsGraphs() {
-		return array('spotspercategory'		=> _("Spots per categorie"),
-					 'spotsperhour'			=> _("Spots per uur"),
-					 'spotsperweekday'		=> _("Spots per weekdag"),
-					 'spotspermonth'		=> _("Spots per maand"));
+		$graphs = array();
+											$graphs['spotspercategory']	= _("Spots per categorie");
+											$graphs['spotsperhour']		= _("Spots per uur");
+											$graphs['spotsperweekday']	= _("Spots per weekdag");
+		if ($this->_oldestSpotAge > 7) {	$graphs['spotsperweekday']	= _("Spots per maand"); }
+		return $graphs;
 	} # getValidStatisticsGraphs
 
 	function getValidStatisticsLimits() {
-		return array(''			=> _("Alles"),
-					 'year'		=> _("afgelopen jaar"),
-					 'month'	=> _("afgelopen maand"),
-					 'week'		=> _("afgelopen week"),
-					 'day'		=> _("laatste 24 uur"));
+		$limits = array();
+		if ($this->_oldestSpotAge > 365) {		$limits['']			= _("Alles"); }
+		if ($this->_oldestSpotAge > 31) {		$limits['year']		= _("afgelopen jaar"); }
+		if ($this->_oldestSpotAge > 7) {		$limits['month']	= _("afgelopen maand"); }
+		if ($this->_oldestSpotAge > 1) {		$limits['week']		= _("afgelopen week"); }
+												$limits['day']		= _("laatste 24 uur");
+		return $limits;
 	} # getValidStatisticsLimits
 
 } # class SpotImage

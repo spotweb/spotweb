@@ -780,6 +780,11 @@ class SpotDb {
 		return $rs;
 	} # getSpotCountPerCategory
 
+	function getOldestSpotTimestamp() {
+		$rs = $this->_conn->singleQuery("SELECT MIN(stamp) FROM spots;");
+		return $rs;
+	} # getOldestSpotTimestamp
+
 	/*
 	 * Match set of comments
 	 */
