@@ -405,7 +405,7 @@ class SpotImage {
 											$graphs['spotspercategory']	= _("Spots per categorie");
 											$graphs['spotsperhour']		= _("Spots per uur");
 											$graphs['spotsperweekday']	= _("Spots per weekdag");
-		if ($this->_oldestSpotAge > 7) {	$graphs['spotsperweekday']	= _("Spots per maand"); }
+		if ($this->_oldestSpotAge > 31) {	$graphs['spotspermonth']	= _("Spots per maand"); }
 		return $graphs;
 	} # getValidStatisticsGraphs
 
