@@ -30,12 +30,12 @@ class SpotStatistics {
 	} # getSpotCountPerCategory
 
 	function getData($resourceid, $limit, $lastUpdate) {
-		$data = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
-		if (!$data || (int) $data['stamp'] < $lastUpdate) {
+		$rs = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
+		if (!$rs || (int) $rs['stamp'] < $lastUpdate) {
 			$data = $this->_db->getSpotCountPerHour($limit);
-			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', serialize($data), true);
+			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data, true);
 		} else {
-			$data = unserialize($data['content']);
+			$data = $rs['content'];
 		} # else
 		
 		return $data;
