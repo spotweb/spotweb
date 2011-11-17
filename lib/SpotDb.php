@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.48');
+define('SPOTDB_SCHEMA_VERSION', '0.49');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1932,7 +1932,7 @@ class SpotDb {
 	function getCache($resourceid, $cachetype) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				if (!empty($tmp)) {
 					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
 				} # if
@@ -1941,7 +1941,7 @@ class SpotDb {
 			} # case 'pdo_pgsql'
 
 			default		: {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				break;
 			} # default
 		} # switch
@@ -1949,6 +1949,10 @@ class SpotDb {
 		if (!empty($tmp)) {
 			if ($tmp[0]['compressed'] == 1) {
 				$tmp[0]['content'] = gzinflate($tmp[0]['content']);
+			} # if
+
+			if ($tmp[0]['serialized'] == 1) {
+				$tmp[0]['content'] = unserialize($tmp[0]['content']);
 			} # if
 
 			$tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
@@ -1988,6 +1992,13 @@ class SpotDb {
 	} # calculatePhpMemoryLimit
 
 	function saveCache($resourceid, $cachetype, $metadata, $content, $compress) {
+		if (is_array($content)) {
+			$serialize = true;
+			$content = serialize($content);
+		} else {
+			$serialize = false;
+		} # else
+
 		# Sommige van onderstaande acties vergen nogal wat geheugen en dat geeft een Fatal als
 		# daar niet genoeg van is. Daarom testen we of we wel genoeg hebben
 		if (strlen($content)*2 > ($this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
@@ -2010,17 +2021,17 @@ class SpotDb {
 
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', compressed = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $this->bool2dt($compress), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%b')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $this->bool2dt($compress), $content));
 					} # if
 					break;
 			} # pgsql
 
 			default				: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', compressed = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $this->bool2dt($compress), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $this->bool2dt($compress), $content));
 					} # if
 					break;
 			} # default

@@ -258,6 +258,7 @@ class SpotsOverview {
 	 */
 	function getStatisticsImage($graph, $limit, $nntp) {
 		SpotTiming::start(__FUNCTION__);
+		$spotStatistics = new SpotStatistics($this->_db);
 
 		if (!array_key_exists($graph, $this->_spotImage->getValidStatisticsGraphs()) || !array_key_exists($limit, $this->_spotImage->getValidStatisticsLimits())) {
 			$data = $this->_spotImage->createErrorImage(400);
@@ -266,10 +267,10 @@ class SpotsOverview {
 		} # if
 
 		$lastUpdate = $this->_db->getLastUpdate($nntp['host']);
-		$resourceid = ($limit == '') ? $graph . ".all" : $graph . "." . $limit;
+		$resourceid = $spotStatistics->getResourceid($graph, $limit);
 		$data = $this->_cache->getCache($resourceid, SpotCache::Statistics);
 		if (!$data || $this->_activeRetriever || (!$this->_settings->get('prepare_statistics') && (int) $data['stamp'] < $lastUpdate)) {
-			$data = $this->_spotImage->createStatistics($graph, $limit);
+			$data = $this->_spotImage->createStatistics($graph, $limit, $lastUpdate);
 			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content'], false);
 		} # if
 
