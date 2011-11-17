@@ -28,7 +28,7 @@
 	} else {
 		echo '<td>' . $group['name'] . '</td>';
 		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change groupname') . '\', \'?page=render&tplname=editsecgroupname&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')});"><span class="ui-icon ui-icon-pencil"></span></a></td>';
-		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group) . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-pencil"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, false, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-pencil"></span></a></td>';
 		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Delete group') . '\', \'?page=render&tplname=editsecgroupdelete&data[groupid]=' . $group['id'] . '\', \'editsecgroupform\', null, true, function() { refreshTab(\'adminpaneltabs\')}); "><span class="ui-icon ui-icon-circle-close"></span></a></td>';
 	} # else
 ?> 
