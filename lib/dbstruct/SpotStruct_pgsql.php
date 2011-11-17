@@ -253,6 +253,11 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		return false;
 	} # alterStorageEngine
 	
+	/* verandert een row format */
+	function alterRowFormat($tablename, $rowformat) {
+		return false;
+	} # alterStorageEngine
+	
 	/* rename een table */
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " RENAME TO " . $newTableName);

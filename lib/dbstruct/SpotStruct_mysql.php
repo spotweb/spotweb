@@ -229,7 +229,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
 		} # if
 	} # alterStorageEngine
-	
+
+	/* verandert een row format */
+	function alterRowFormat($tablename, $rowformat) {
+		$q = $this->_dbcon->singleQuery("SELECT CREATE_OPTIONS
+										FROM information_schema.TABLES 
+										WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $tablename . "'");
+
+		if (strtolower($q) != strtolower("row_format=" . $rowformat)) {
+			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ROW_FORMAT =" . $rowformat);
+		} # if
+	} # alteralterRowFormat
+
 	/* rename een table */
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("RENAME TABLE " . $tablename . " TO " . $newTableName);
