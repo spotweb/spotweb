@@ -626,10 +626,19 @@ abstract class SpotStruct_abs {
 
 			$tmp = $this->_dbcon->arrayQuery("SELECT resourceid, cachetype FROM cachetmp;");
 			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetmp['cachetype']));
+				if ($this->columnExists('cachetmp', 'serialized')) {
+					$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetmp['cachetype']));
+				} else {
+					$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetmp['cachetype']));
+				} # else
+
 				$data = $data[0];
 				if ($data['compressed']) {
 					$data['content'] = gzdeflate($data['content']);
+				} # if
+
+				if (!$isset($data['serialized'])) {
+					$$data['serialized'] = false;
 				} # if
 
 				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
