@@ -24,23 +24,27 @@ class SpotsOverview {
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
-			# Vraag de volledige spot informatie op -- dit doet ook basic
-			# sanity en validatie checking
-			$fullSpot = $nntp->getFullSpot($msgId);
-			$this->_db->addFullSpots( array($fullSpot) );
+			/*
+			 * Retrieve a full loaded spot from the NNTP server
+			 */
+			$newFullSpot = $nntp->getFullSpot($msgId);
+			$this->_db->addFullSpots( array($newFullSpot) );
 			
-			# we halen de fullspot opnieuw op zodat we de 'xover' informatie en de 
-			# niet xover informatie in 1 hebben
+			/*
+			 * We ask our DB to retrieve the fullspot again, this ensures
+			 * us all information is present and in always the same format
+			 */
 			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		} # if
 
 		/**
-		 * Overschrijf nu onze 'spot info' uit de database met sommige info welke we uit de 
-		 * de XML parseren, we doen dit omdat de XML o.a. betere encoding bevat, zie de titel van spot 
-		 * bdZZdJ3gPxTAmSE%40spot.net bijvoorbeeld.
+		 * We'll overwrite our spot info from the database with some information we parse from the 
+		 * XML. This is necessary because the XML contains better encoding.
 		 *
-		 * Alles uit de SpotsFull aannemen is niet interessant omdat niet elke XML versie alle
-		 * informatie bevat
+		 * For example take the titel from spot bdZZdJ3gPxTAmSE%40spot.net.
+		 *
+		 * We cannot use all information from the XML because because some information just
+		 * isn't present in the XML file
 		 */
 		$spotParser = new SpotParser();
 		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
@@ -48,9 +52,17 @@ class SpotsOverview {
 		$fullSpot['title'] = $parsedXml['title'];
 		
 		/*
-		 * Als je een fullspot ophaalt, maar er is nog gen 'spot' entry, dan blijf je een
-		 * lege spot terugkrijgen omdat de join misgaat. Omdat dit verwarring op kan leveren
-		 * gooien we dan een exception
+		 * If the current spotterid is empty, we probably now
+		 * have a spotterid because we have the fullspot.
+		 */
+		if ((empty($fullSpot['spotterid'])) && ($fullSpot['verified'])) {
+			$spotSigning = new SpotSigning($this->_db, $this->_settings);
+			$fullSpot['spotterid'] = $spotSigning->calculateSpotterId($fullSpot['user-key']['modulo']);
+		} # if
+
+		/*
+		 * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
+		 * causes us to never get the spot, hence we throw this exception
 		 */
 		if (empty($fullSpot)) {
 			throw new Exception("Spot is not in our Spotweb database");
