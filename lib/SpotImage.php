@@ -45,7 +45,7 @@ class SpotImage {
 		return array('metadata' => $data['metadata'], 'expire' => true, 'content' => $imageString);
 	} # createErrorImage
 
-	function createStatistics($graph, $limit) {
+	function createStatistics($graph, $limit, $lastUpdate) {
 		$spotStatistics = new SpotStatistics($this->_db);
 		include_once("images/pchart/pData.class.php");
 		include_once("images/pchart/pDraw.class.php");
@@ -59,22 +59,22 @@ class SpotImage {
 		$limits = $this->getValidStatisticsLimits();
 
 		switch ($graph) {
-			case 'spotsperhour'		: $prepData = $this->prepareData($spotStatistics->getSpotCountPerHour($limit));
+			case 'spotsperhour'		: $prepData = $this->prepareData($spotStatistics->getSpotCountPerHour($limit, $lastUpdate));
 									  $legend = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23');
 									  for ($x=0; $x<=23; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "bar";
 									  break;
-			case 'spotsperweekday'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerWeekday($limit));
+			case 'spotsperweekday'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerWeekday($limit, $lastUpdate));
 									  $legend = array(_("Maandag"),_("Dinsdag"),_("Woensdag"),_("Donderdag"),_("Vrijdag"),_("Zaterdag"),_("Zondag"));
 									  $dataSet = array(@$prepData[1],@$prepData[2],@$prepData[3],@$prepData[4],@$prepData[5],@$prepData[6],@$prepData[0]);
 									  $graphicType = "bar";
 									  break;
-			case 'spotspermonth'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerMonth($limit));
+			case 'spotspermonth'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerMonth($limit, $lastUpdate));
 									  $legend = array(_("Januari"),_("Februari"),_("Maart"),_("April"),_("Mei"),_("Juni"),_("Juli"),_("Augustus"),_("September"),_("Oktober"),_("November"),_("December"));
 									  for ($x=1; $x<=12; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "bar";
 									  break;
-			case 'spotspercategory'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerCategory($limit));
+			case 'spotspercategory'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerCategory($limit, $lastUpdate));
 									  $legend = array(SpotCategories::HeadCat2Desc(0),SpotCategories::HeadCat2Desc(1),SpotCategories::HeadCat2Desc(2),SpotCategories::HeadCat2Desc(3));
 									  for ($x=0; $x<=3; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "3Dpie";
@@ -397,30 +397,29 @@ class SpotImage {
 	} # prepareData
 
 	function getValidStatisticsGraphs() {
-		if ($this->_oldestSpotAge == null) {
-			$this->_oldestSpotAge = round((time()- $this->_db->getOldestSpotTimestamp())/60/60/24);
-		} # if
-
 		$graphs = array();
-											$graphs['spotspercategory']	= _("Spots per categorie");
-											$graphs['spotsperhour']		= _("Spots per uur");
-											$graphs['spotsperweekday']	= _("Spots per weekdag");
-		if ($this->_oldestSpotAge > 31) {	$graphs['spotspermonth']	= _("Spots per maand"); }
+												$graphs['spotspercategory']	= _("Spots per categorie");
+												$graphs['spotsperhour']		= _("Spots per uur");
+												$graphs['spotsperweekday']	= _("Spots per weekdag");
+		if ($this->getOldestSpotAge() > 31) {	$graphs['spotspermonth']	= _("Spots per maand"); }
 		return $graphs;
 	} # getValidStatisticsGraphs
 
 	function getValidStatisticsLimits() {
-		if ($this->_oldestSpotAge == null) {
-			$this->_oldestSpotAge = round((time()- $this->_db->getOldestSpotTimestamp())/60/60/24);
-		} # if
-
 		$limits = array();
-		if ($this->_oldestSpotAge > 365) {		$limits['']			= _("Alles"); }
-		if ($this->_oldestSpotAge > 31) {		$limits['year']		= _("afgelopen jaar"); }
-		if ($this->_oldestSpotAge > 7) {		$limits['month']	= _("afgelopen maand"); }
-		if ($this->_oldestSpotAge > 1) {		$limits['week']		= _("afgelopen week"); }
+		if ($this->getOldestSpotAge() > 365) {	$limits['']			= _("Alles"); }
+		if ($this->getOldestSpotAge() > 31) {	$limits['year']		= _("afgelopen jaar"); }
+		if ($this->getOldestSpotAge() > 7) {	$limits['month']	= _("afgelopen maand"); }
+		if ($this->getOldestSpotAge() > 1) {	$limits['week']		= _("afgelopen week"); }
 												$limits['day']		= _("laatste 24 uur");
 		return $limits;
 	} # getValidStatisticsLimits
+
+	function getOldestSpotAge() {
+		if ($this->_oldestSpotAge == null) {
+			$this->_oldestSpotAge = round((time()- $this->_db->getOldestSpotTimestamp()) / 60 / 60 / 24);
+		} # if
+		return $this->_oldestSpotAge;
+	} # getOldestSpotAge
 
 } # class SpotImage
