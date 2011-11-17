@@ -638,7 +638,7 @@ abstract class SpotStruct_abs {
 				} # if
 
 				if (!$isset($data['serialized'])) {
-					$$data['serialized'] = false;
+					$data['serialized'] = false;
 				} # if
 
 				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
