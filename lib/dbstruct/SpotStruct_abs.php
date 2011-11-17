@@ -530,79 +530,19 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
-		
-		# Wissen van corrupte spots, 3 november 2011.
-		if ($this->_spotdb->getSchemaVer() == 0.45) {
-			$maxCommentsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count FROM commentsfull', array());
-			$maxCommentsXoverAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count  FROM commentsxover', array());
-			$maxSpotsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spotsfull', array());
-			$maxSpotsAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spots', array());
-			
-			$maxComments = $maxCommentsFullAr[0]['count'];
-			$maxCommentsXover = $maxCommentsXoverAr[0]['count'];
-			$maxSpotsFull = $maxSpotsFullAr[0]['count'];
-			$maxSpots = $maxSpotsAr[0]['count'];
-			
-			echo "\tDeleting corrupt comments cache";
-			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . (int) $maxComments);
-			echo "\tDeleting corrupt comments headers";
-			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . (int) $maxCommentsXover);
-			if ($this->tableExists('cachetmp')) {
-				echo "\tDeleting corrupt cache items";
-				$this->_dbcon->rawExec("DELETE FROM cachetmp WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . (int) $maxSpots . ")");
+		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.34)) {
+			if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
+				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
+									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
 			} # if
-			echo "\tDeleting corrupt spots cache";
-			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . (int) $maxSpotsFull);
-			echo "\tDeleting corrupt spots";
-			$this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpots);
-		} # if
 
-		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
-			throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
-								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
-		} # if
-
-		# Tabellen terug samenvoegen in een MyISAM tabel
-		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
-			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) CHARACTER SET ascii NOT NULL,
-										poster varchar(128),
-										title varchar(128),
-										tag varchar(128),
-										category INTEGER, 
-										subcata VARCHAR(64),
-										subcatb VARCHAR(64),
-										subcatc VARCHAR(64),
-										subcatd VARCHAR(64),
-										subcatz VARCHAR(64),
-										stamp INTEGER(10) UNSIGNED,
-										reversestamp INTEGER DEFAULT 0,
-										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
-										moderated BOOLEAN,
-										commentcount INTEGER DEFAULT 0,
-										spotrating INTEGER DEFAULT 0) ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			
-			# Copieer de data uit de andere tabellen
-			$this->_dbcon->rawExec("INSERT INTO spotstmp(messageid, poster, title, tag, category, 
-														 subcata, subcatb, subcatc, subcatd, 
-														 subcatz, stamp, reversestamp, filesize, 
-														 moderated, commentcount, spotrating) 
-										(SELECT s.messageid, t.poster, t.title, t.tag, 
-												s.category, 
-												s.subcata, s.subcatb, s.subcatc, 
-												s.subcatd, s.subcatz, s.stamp, 
-												s.reversestamp, s.filesize, s.moderated, 
-												s.commentcount, s.spotrating 
-											FROM spots s 
-											JOIN spottexts t ON (s.messageid = t.messageid))");
-
-			# drop de 'oude' tabellen
-			$this->dropTable('spots');
-			$this->dropTable('spottexts');
-			
-			# rename deze tabel
-			$this->renameTable('spotstmp', 'spots');
+			# Tabellen terug samenvoegen in een MyISAM tabel
+			if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
+				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/48bc94a63f94959f9fe6b2372b312e35a4d09997), " . PHP_EOL . 
+									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+			} # if
 		} # if
 
 		# cache omzetten naar nieuw systeem
