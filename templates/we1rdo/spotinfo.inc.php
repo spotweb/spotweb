@@ -8,7 +8,8 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
-	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$tplHelper->isSpotterBlacklisted($spot['spotterid'])) && (!empty($spot['spotterid'])));
+	$isBlacklisted = $tplHelper->isSpotterBlacklisted($spot['spotterid']);
+	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$isBlacklisted) && (!empty($spot['spotterid'])));
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -93,7 +94,7 @@ echo "</th>";
 						</a>
 					</td>
 					<td class="info">
-<?php if (!$spot['verified'] || $tplHelper->isModerated($spot)) {
+<?php if (!$spot['verified'] || $tplHelper->isModerated($spot) || $isBlacklisted) {
 	echo "<div class='warning'>";
 	if (!$spot['verified']) {
 		echo _("Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!") . "<br>";
@@ -101,7 +102,7 @@ echo "</th>";
 	if ($tplHelper->isModerated($spot)) {
 		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!") . "<br>";
 	}
-	if ($tplHelper->isSpotterBlacklisted($spot['spotterid'])) {
+	if ($isBlacklisted) {
 		echo _("De spotter staat op een blacklist!") . "<br>";
 	}
 	echo "</div>";
