@@ -387,7 +387,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('avatar', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii');
+		$this->validateColumn('avatar', 'commentsfull', 'TEXT', NULL, false, 'ascii');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
