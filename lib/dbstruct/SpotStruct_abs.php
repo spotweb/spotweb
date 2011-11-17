@@ -571,14 +571,15 @@ abstract class SpotStruct_abs {
 
 				if ($data['compressed']) {
 					$metadata = '';
+					$data['content'] = gzdeflate($data['content']);
 				} else {
 					$imageData = $spotImage->getImageInfoFromString($data['content']);
 					$metadata = serialize($imageData['metadata']);
 				} # else
 
 				$content = (!empty($imageData)) ? $imageData['content'] : $data['content'];
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt($data['compressed']), $content));
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt(false), $content));
 			} # foreach
 
 			# images vanaf de NNTP server
@@ -591,7 +592,7 @@ abstract class SpotStruct_abs {
 					continue;
 				} # if
 
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
 										Array($cachetmp['messageid'], SpotCache::SpotImage, $data['stamp'], serialize($imageData['metadata']), $this->_dbcon->bool2dt(false), $imageData['content']));
 			} # foreach
 
@@ -600,10 +601,11 @@ abstract class SpotStruct_abs {
 			foreach ($tmp AS $cachetmp) {
 				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotNzb::', messageid);", Array($cachetmp['messageid']));
 				$data = $data[0];
+				$data['content'] = gzdeflate($data['content']);
 				$data['content'] = gzdeflate($data['content']); // door een bug waren NZB-files dubbel compressed
 
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(true), $data['content']));
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(false), $data['content']));
 			} # foreach
 
 			# drop de oude tabel
