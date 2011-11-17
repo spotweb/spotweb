@@ -245,7 +245,7 @@ class SpotsOverview {
 			} elseif (!$data) {
 				$data = $this->_spotImage->createErrorImage(999);
 			} # elseif
-		} elseif (!$data) {
+		} elseif (!isset($data)) {
 			$data = false;
 		} # elseif
 
