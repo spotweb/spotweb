@@ -25,10 +25,10 @@ class SpotCache {
 		} # else
 	} # getCache
 
-	function saveCache($resourceid, $cachetype, $metadata, $content, $compress=false) {
+	function saveCache($resourceid, $cachetype, $metadata, $content) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_db->saveCache($resourceid, $cachetype, $metadata, $content, $compress);
-		SpotTiming::stop(__FUNCTION__, array($resourceid, $cachetype, $metadata, $content, $compress));
+		$this->_db->saveCache($resourceid, $cachetype, $metadata, $content);
+		SpotTiming::stop(__FUNCTION__, array($resourceid, $cachetype, $metadata, $content));
 	} # saveCache
 
 	function updateCacheStamp($resourceid, $cachetype) {

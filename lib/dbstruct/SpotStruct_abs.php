@@ -67,9 +67,12 @@ abstract class SpotStruct_abs {
 	
 	/* dropped een foreign key constraint */
 	abstract function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
-	
+
 	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
+
+	/* verandert een row format */
+	abstract function alterRowFormat($tablename, $rowformat);
 
 	/* drop een table */
 	abstract function dropTable($tablename);
@@ -237,6 +240,10 @@ abstract class SpotStruct_abs {
 		# cache omzetten naar nieuw systeem, tijdelijke tabel nodig
 		# Dit doen we hier, zodat een correcte cache tabel kan worden aangemaakt
 		if (($this->tableExists('cache')) && (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid')))) {
+			$this->renameTable('cache', 'cachetmp');
+		} # if
+
+		if (($this->tableExists('cache')) && (($this->_spotdb->getSchemaVer() < 0.50) && ($this->columnExists('cache', 'compressed')))) {
 			$this->renameTable('cache', 'cachetmp');
 		} # if
 
@@ -514,9 +521,9 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
 		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('compressed', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
+		$this->alterRowFormat("cache", "COMPRESSED");
 
 		# ---- permaudit table ---- #
 		$this->createTable('permaudit', "ascii");
@@ -603,6 +610,34 @@ abstract class SpotStruct_abs {
 			$this->dropTable('cachetmp');
 		} # if
 		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp')) && (!($this instanceof SpotStruct_mysql))) {
+			# drop de oude tabel
+			$this->dropTable('cachetmp');
+		} # if
+
+		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) {
+			echo PHP_EOL . PHP_EOL;
+			echo 'Converting your cache data to another format' . PHP_EOL;
+			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
+			echo PHP_EOL . PHP_EOL;
+
+			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
+
+			$tmp = $this->_dbcon->arrayQuery("SELECT resourceid, cachetype FROM cachetmp;");
+			foreach ($tmp AS $cachetmp) {
+				$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetmp['cachetype']));
+				$data = $data[0];
+				if ($data['compressed']) {
+					$data['content'] = gzdeflate($data['content']);
+				} # if
+
+				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
+										Array($cachetmp['resourceid'], $cachetmp['cachetype'], $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
+			} # foreach
+
+			# drop de oude tabel
+			$this->dropTable('cachetmp');
+		} # if
+		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cachetmp')) && (!($this instanceof SpotStruct_mysql))) {
 			# drop de oude tabel
 			$this->dropTable('cachetmp');
 		} # if
