@@ -29,7 +29,7 @@ class SpotSettings {
 			self::$_dbSettings = $db->getAllSettings();
 
 			# en merge de settings met degene die we door krijgen 
-			self::$_settings = array_merge(self::$_phpSettings, self::$_dbSettings);
+			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
 		} # if
 		
 		return self::$_instance;
