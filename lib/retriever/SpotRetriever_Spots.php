@@ -5,7 +5,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_retrieveFull;
 		private $_prefetch_image;
 		private $_prefetch_nzb;
-		private $_recompress_nzb;
 
 		/**
 		 * server - de server waar naar geconnect moet worden
@@ -20,7 +19,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_retrieveFull = $retrieveFull;
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
-			$this->_recompress_nzb = $this->_settings->get('recompress_nzb');
 		} # ctor
 
 
@@ -278,7 +276,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						if ($this->_prefetch_nzb) {
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$spotsOverview->getNzb($fullSpot, $nntp_nzb, $this->_recompress_nzb);
+								$spotsOverview->getNzb($fullSpot, $nntp_nzb);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
