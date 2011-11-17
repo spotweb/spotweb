@@ -4,7 +4,6 @@ define('SPOTDB_SCHEMA_VERSION', '0.50');
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
-	private $_phpMemoryLimit = null;
 	private $_maxPacketSize = null;
 
 	/*
@@ -1961,31 +1960,6 @@ class SpotDb {
 	function updateCacheStamp($resourceid, $cachetype) {
 		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
-
-	/*
-	 * Calculates the memory limit
-	 */
-	private function calculatePhpMemoryLimit() {
-		# Calculate the PHP memory limit if required
-		if ($this->_phpMemoryLimit == null) {
-			$val = trim(ini_get("memory_limit"));
-			
-			$last = strtolower($val[strlen($val)-1]);
-			switch($last) {
-				// The 'G' modifier is available since PHP 5.1.0
-				case 'g':
-					$val *= 1024;
-				case 'm':
-					$val *= 1024;
-				case 'k':
-					$val *= 1024;
-			} # swich
-
-			$this->_phpMemoryLimit = $val;
-		} # if
-			
-		return $this->_phpMemoryLimit;
-	} # calculatePhpMemoryLimit
 
 	function saveCache($resourceid, $cachetype, $metadata, $content) {
 		if (is_array($content)) {
