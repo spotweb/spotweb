@@ -163,7 +163,7 @@ class SpotsOverview {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($fullSpot, $nntp, $recompress) {
+	function getNzb($fullSpot, $nntp) {
 		SpotTiming::start(__FUNCTION__);
 
 		if ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
@@ -172,22 +172,11 @@ class SpotsOverview {
 			} # if
 			$nzb = $nzb['content'];
 		} else {
-			$nzbCompressed = $nntp->getNzb($fullSpot['nzb']);
-			
-			# hier wordt extreem veel geheugen verbruikt, dus tijdens retrieve voeren we dit alleen uit als we genoeg hebben
-			if (!$this->_activeRetriever || ($recompress && strlen($nzbCompressed)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
-				$nzb = gzinflate($nzbCompressed);
-
-				if ($recompress && $nzb && strlen($nzb)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
-					$nzbCompressed = gzdeflate($nzb, 9);
-				} # if
-			} # if
-
-			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, NULL, $nzbCompressed, "done");
-			unset($nzbCompressed);
+			$nzb = $nntp->getNzb($fullSpot['nzb']);
+			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, false, $nzb);
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $recompress));
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
 
 		return $nzb;
 	} # getNzb
@@ -209,7 +198,7 @@ class SpotsOverview {
 					$img = $nntp->getImage($fullSpot);
 
 					if ($data = $this->_spotImage->getImageInfoFromString($img)) {
-						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content'], false);
+						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content']);
 					} # if	
 				}
 				catch(ParseSpotXmlException $x) {
@@ -271,7 +260,7 @@ class SpotsOverview {
 		$data = $this->_cache->getCache($resourceid, SpotCache::Statistics);
 		if (!$data || $this->_activeRetriever || (!$this->_settings->get('prepare_statistics') && (int) $data['stamp'] < $lastUpdate)) {
 			$data = $this->_spotImage->createStatistics($graph, $limit, $lastUpdate);
-			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content'], false);
+			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content']);
 		} # if
 
 		$data['expire'] = true;
@@ -338,10 +327,8 @@ class SpotsOverview {
 			} elseif ($ttl > 0) {
 				if ($imageData = $this->_spotImage->getImageInfoFromString($data['content'])) {
 					$data['metadata'] = $imageData['metadata'];
-					$compress = false;
 				} else {
 					$data['metadata'] = '';
-					$compress = true;
 				} # else
 
 				switch($http_code) {
@@ -350,7 +337,7 @@ class SpotsOverview {
 								} # if
 								break;
 					default:	if ($info['redirect_count'] == 0 || ($info['redirect_count'] > 0 && $storeWhenRedirected)) {
-									$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content'], $compress);
+									$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content']);
 								} # if
 				} # switch
 			} # else
