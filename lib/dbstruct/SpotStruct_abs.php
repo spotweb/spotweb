@@ -513,6 +513,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
+		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('compressed', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
