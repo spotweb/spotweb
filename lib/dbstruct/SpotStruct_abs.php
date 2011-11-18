@@ -637,24 +637,32 @@ abstract class SpotStruct_abs {
 			foreach (array(1,2,3,4,5,2,2) as $cachetype) {
 				$tmp = $this->_dbcon->arrayQuery("SELECT resourceid FROM cachetmp WHERE cachetype = '%s';", Array($cachetype));
 				foreach ($tmp AS $cachetmp) {
+					$insert = true;
 					if ($this->columnExists('cachetmp', 'serialized')) {
 						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
 					} else {
 						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
 					} # else
 					$data = $data[0];
+
 					if ($data['compressed']) {
-						$data['content'] = gzinflate($data['content']);
+						if (strlen($data['content'])*32 < ($phpMemoryLimit-memory_get_usage(true))) {
+							$data['content'] = gzinflate($data['content']);
+						} else {
+							$insert = false;
+						} # else
 					} # if
 
 					if (!isset($data['serialized'])) {
 						$data['serialized'] = false;
 					} # if
 
-					if (strlen($data['content'])*4.5 < ($phpMemoryLimit-memory_get_usage(true))) {
-						$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', %d, %d, '%s', '%s', '%s')",
-												Array($cachetmp['resourceid'], $cachetype, $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
-						$this->_dbcon->modify("DELETE FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s'", Array($cachetmp['resourceid'], $cachetype));
+					if ($insert) {
+						if (strlen($data['content'])*4.5 < ($phpMemoryLimit-memory_get_usage(true))) {
+							$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', %d, %d, '%s', '%s', '%s')",
+													Array($cachetmp['resourceid'], $cachetype, $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
+							$this->_dbcon->modify("DELETE FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s'", Array($cachetmp['resourceid'], $cachetype));
+						} # if
 					} # if
 				} # foreach
 			} # foreach
