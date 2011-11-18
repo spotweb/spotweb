@@ -74,7 +74,7 @@ try {
 	} # if
 	
 	# User session has been loaded, let's translate the categories
-	if ($currentSession['prefs']['user_language'] != 'en_US') {
+	if ($currentSession['user']['prefs']['user_language'] != 'en_US') {
 		SpotTranslation::initialize($currentSession['user']['prefs']['user_language']);
 	} # if
 	SpotCategories::startTranslation();
