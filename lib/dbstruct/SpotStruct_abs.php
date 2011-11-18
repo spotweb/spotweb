@@ -571,7 +571,7 @@ abstract class SpotStruct_abs {
 
 				if ($data['compressed']) {
 					$metadata = '';
-					$data['content'] = gzdeflate($data['content']);
+					$data['content'] = gzinflate($data['content']);
 				} else {
 					$imageData = $spotImage->getImageInfoFromString($data['content']);
 					$metadata = serialize($imageData['metadata']);
@@ -601,8 +601,8 @@ abstract class SpotStruct_abs {
 			foreach ($tmp AS $cachetmp) {
 				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotNzb::', messageid);", Array($cachetmp['messageid']));
 				$data = $data[0];
-				$data['content'] = gzdeflate($data['content']);
-				$data['content'] = gzdeflate($data['content']); // door een bug waren NZB-files dubbel compressed
+				$data['content'] = gzinflate($data['content']);
+				$data['content'] = gzinflate($data['content']); // door een bug waren NZB-files dubbel compressed
 
 				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
 										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(false), $data['content']));
@@ -622,18 +622,41 @@ abstract class SpotStruct_abs {
 			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
 			echo PHP_EOL . PHP_EOL;
 
-			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
+			$val = trim(ini_get("memory_limit"));
+			$last = strtolower($val[strlen($val)-1]);
+			switch($last) {
+				case 'g':
+					$val *= 1024;
+				case 'm':
+					$val *= 1024;
+				case 'k':
+					$val *= 1024;
+			} # swich
+			$phpMemoryLimit = $val;
 
-			$tmp = $this->_dbcon->arrayQuery("SELECT resourceid, cachetype FROM cachetmp;");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetmp['cachetype']));
-				$data = $data[0];
-				if ($data['compressed']) {
-					$data['content'] = gzdeflate($data['content']);
-				} # if
+			foreach (array(1,2,3,4,5,2,2) as $cachetype) {
+				$tmp = $this->_dbcon->arrayQuery("SELECT resourceid FROM cachetmp WHERE cachetype = '%s';", Array($cachetype));
+				foreach ($tmp AS $cachetmp) {
+					if ($this->columnExists('cachetmp', 'serialized')) {
+						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
+					} else {
+						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
+					} # else
+					$data = $data[0];
+					if ($data['compressed']) {
+						$data['content'] = gzinflate($data['content']);
+					} # if
 
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['resourceid'], $cachetmp['cachetype'], $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
+					if (!isset($data['serialized'])) {
+						$data['serialized'] = false;
+					} # if
+
+					if (strlen($data['content'])*4.5 < ($phpMemoryLimit-memory_get_usage(true))) {
+						$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', %d, %d, '%s', '%s', '%s')",
+												Array($cachetmp['resourceid'], $cachetype, $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
+						$this->_dbcon->modify("DELETE FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s'", Array($cachetmp['resourceid'], $cachetype));
+					} # if
+				} # foreach
 			} # foreach
 
 			# drop de oude tabel

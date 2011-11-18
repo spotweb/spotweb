@@ -8,7 +8,6 @@ class SpotsOverview {
 	private $_cache;
 	private $_settings;
 	private $_activeRetriever;
-	private $_phpMemoryLimit = null;
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
@@ -1243,31 +1242,6 @@ class SpotsOverview {
 					 'additionalJoins' => $additionalJoins,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
-
-	/*
-	 * Calculates the memory limit
-	 */
-	private function calculatePhpMemoryLimit() {
-		# Calculate the PHP memory limit if required
-		if ($this->_phpMemoryLimit == null) {
-			$val = trim(ini_get("memory_limit"));
-			
-			$last = strtolower($val[strlen($val)-1]);
-			switch($last) {
-				// The 'G' modifier is available since PHP 5.1.0
-				case 'g':
-					$val *= 1024;
-				case 'm':
-					$val *= 1024;
-				case 'k':
-					$val *= 1024;
-			} # swich
-
-			$this->_phpMemoryLimit = $val;
-		} # if
-			
-		return $this->_phpMemoryLimit;
-	} # calculatePhpMemoryLimit
 	
 	public function setActiveRetriever($b) {
 		$this->_activeRetriever = $b;
