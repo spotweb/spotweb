@@ -5,7 +5,7 @@ require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotTranslation.php";
 #- main() -#
 try {
-	SpotTranslation::initialize('nl_NL');
+	SpotTranslation::initialize('en_US');
 	
 	SpotTiming::enable();
 	SpotTiming::start('total');
@@ -74,6 +74,9 @@ try {
 	} # if
 	
 	# User session has been loaded, let's translate the categories
+	if ($currentSession['prefs']['user_language'] != 'en_US') {
+		SpotTranslation::initialize($currentSession['user']['prefs']['user_language']);
+	} # if
 	SpotCategories::startTranslation();
 
 	# Nu is het pas veilig rechten te checken op het gebruik van de apikey

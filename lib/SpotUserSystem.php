@@ -331,6 +331,7 @@ class SpotUserSystem {
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
 		$validTemplates = array('we1rdo');
 		$validDefaultSorts = array('', 'stamp');
+		$validLanguages = array_keys($this->_settings->get('system_languages'));
 		
 		# Controleer de per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
@@ -345,6 +346,10 @@ class SpotUserSystem {
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
 			$errorList[] = _('Ongeldige user preference waarde (template)');
+		} # if
+
+		if (in_array($prefs['user_language'], $validLanguages) === false) { 	
+			$errorList[] = _('Ongeldige user preference waarde (language)');
 		} # if
 
 		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	

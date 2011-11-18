@@ -23,6 +23,7 @@ class SpotSettingsUpgrader {
 		$this->remove('sabnzbdurltpl');
 		$this->remove('sabnzbdurl');
 		$this->remove('recompress_nzb');
+		$this->remove('available_languages');
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
 		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // Ook al heet deze secret, hij mag geshared worden
@@ -30,7 +31,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // Ook al heet deze secret, hij mag geshared worden
 		$this->setIfNot('auditlevel', 0); // No auditing
 		$this->setIfNot('prepare_statistics', true);
-		$this->setIfNot('available_languages', 'nl_NL,en_US');
+		$this->setIfNot('system_languages', array('nl_NL' => 'Dutch', 'en_US' => 'English'));
 		$this->updateSettingsVersion();
 	} # update()
 	
