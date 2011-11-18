@@ -111,7 +111,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 * @var array
 	 * @access private
 	 */
-	var $_supportXzver = null;
+	var $_supportXzver = false; # disable xzver support for now, causes too many incompatibilies
 
     // }}}
     // {{{ constructor
