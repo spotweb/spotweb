@@ -420,7 +420,11 @@ class Net_NNTP_Protocol_Client
 		// - Just a gzip drop
 		//
 		// We try to autodetect which one this uses
+//echo "DEBUG: Entering getCompressedResponse()" . PHP_EOL;
+		
 		$line = @fread($this->_socket, 1024);
+
+//		echo "DEBUG: getCompressedResponse(): called "  . PHP_EOL;
 		
 		if (substr($line, 0, 7) == '=ybegin') {
 			$data = $this->_getTextResponse();
@@ -432,32 +436,48 @@ class Net_NNTP_Protocol_Client
 		} # if
 
 		// We cannot use blocked I/O on this one
+//echo "DEBUG: Unsetting blocking calls "  . PHP_EOL;
 		$streamMetadata = stream_get_meta_data($this->_socket);
 		stream_set_blocking($this->_socket, false);
+//echo "DEBUG: Unset blocking calls "  . PHP_EOL;
 		
         // Continue until connection is lost or we don't receive any data anymore
 		$tries = 0;
 		$uncompressed = '';
+//echo "DEBUG: Before while loop: " . feof($this->_socket) . PHP_EOL;
         while (!feof($this->_socket)) {
 
             # Retrieve and append up to 32k characters from the server
             $received = @fread($this->_socket, 32768);
 			if (strlen($received) == 0) {
+//				echo "DEBUG: In while loop, received 0 : " . feof($this->_socket) . PHP_EOL;
 				$tries++;
 				
 				# Try decompression
 				$uncompressed = @gzuncompress($line);
 				if (($uncompressed !== false) || ($tries > 500)) {
+//					echo "DEBUG: In while loop, received 0 and tries: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
 					break;
 				} # if
 				
 				if ($tries % 50 == 0) {
+//					echo "DEBUG: In while loop, sleeping: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
 					usleep(50000);
 				} # if
 			} # if
 			
+			# an error occured
+			if ($received === false) {
+				@fclose($this->_socket);
+				$this->_socket = false;
+			} # if
+			
+//echo "DEBUG: In while loop: " . feof($this->_socket) . ' / ' . strlen($line) . PHP_EOL;
+
             $line .= $received;
         } # while
+
+//echo "DEBUG: Out of while loo " . feof($this->_socket) . ' / ' . $uncompressed . PHP_EOL;
 		
 		# and set the stream to its original blocked(?) value
 		stream_set_blocking($this->_socket, $streamMetadata['blocked']);

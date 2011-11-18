@@ -495,14 +495,15 @@ class SpotDb {
 	 */
 	function addUser($user) {
 		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastread, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', false)",
+										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
 									  $user['passhash'],
 									  $user['mail'],
 									  $user['apikey'],
-									  $this->getMaxMessageTime()));
+									  $this->getMaxMessageTime(),
+									  $this->bool2dt(false)));
 
 		# We vragen nu het userrecord terug op om het userid te krijgen,
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
