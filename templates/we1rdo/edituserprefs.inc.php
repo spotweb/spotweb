@@ -46,6 +46,15 @@ include "includes/form-messages.inc.php";
 		<div id="edituserpreftab-1" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
+					<dt><label for="edituserprefsform[user_language]"><?php echo _('Language to use in Spotweb'); ?></label></dt>
+					<dd>
+						<select name="edituserprefsform[user_language]">
+							<?php foreach($tplHelper->getConfiguredLanguages() as $langkey => $langvalue) { ?>
+								<option <?php if ($edituserprefsform['user_language'] == $langkey) { echo 'selected="selected"'; } ?> value="<?php echo $langkey; ?>"><?php echo _($langvalue); ?></option>
+							<?php } ?> 
+						</select>
+					</dd>
+					
 					<dt><label for="edituserprefsform[perpage]"><?php echo _('Items per page?'); ?></label></dt>
 					<dd>
 						<select name="edituserprefsform[perpage]">

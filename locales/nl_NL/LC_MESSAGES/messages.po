@@ -210,6 +210,12 @@ msgid "Add comment (open/close windows)"
 msgstr "Reactie toevoegen (uitklappen)"
 
 #: editusersprefs.inc.php
+msgid "Language to use in Spotweb"
+msgstr "Welke taal wordt Spotweb in getoond"
+msgid "Dutch"
+msgstr "Nederlands (Dutch)"
+msgid "English"
+msgstr "Engels (English)"
 msgid "General"
 msgstr "Algemeen"
 msgid "NZB handeling"

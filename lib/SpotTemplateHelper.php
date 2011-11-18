@@ -1095,5 +1095,12 @@ class SpotTemplateHelper {
 		$spotImage = new SpotImage($this->_db);
 		return $spotImage->getValidStatisticsLimits();
 	} # getValidStatisticsGraphs
+	
+	/*
+	 * Returns an array with configured languages for this system
+	 */
+	function getConfiguredLanguages() {
+		return $this->_settings->get('system_languages');
+	} # getConfiguredLanguages
 
 } # class SpotTemplateHelper
