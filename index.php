@@ -373,7 +373,7 @@ catch(PermissionDeniedException $x) {
 } # PermissionDeniedException
 
 catch(Exception $x) {
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL;
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
