@@ -127,7 +127,7 @@ catch(RetrieverRunningException $x) {
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -142,7 +142,7 @@ catch(NntpException $x) {
 }
 catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving messages:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -180,7 +180,7 @@ try {
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -195,7 +195,7 @@ catch(NntpException $x) {
 }
 catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving comments:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -226,7 +226,7 @@ try {
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -241,7 +241,7 @@ catch(NntpException $x) {
 }
 catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured retrieving reports:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -274,7 +274,7 @@ try {
 	$db->cleanSpotStateList();
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while cleaning up lists:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -290,7 +290,7 @@ try {
 	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while cleaning up cache:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
@@ -306,7 +306,7 @@ try {
 	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while cleaning up messages due to retention:" . PHP_EOL;
 	echo "  " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
