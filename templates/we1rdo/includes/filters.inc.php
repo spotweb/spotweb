@@ -7,11 +7,11 @@
 			<div id="toolbar">
 				<div class="notifications">
 					<?php if ($show_multinzb_checkbox) { ?>
-					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selectie'); ?>">[x]</a></p>
+					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selection'); ?>">[x]</a></p>
 					<?php } ?>
 				</div>
 
-				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Open "Gebruikers Paneel"'); ?>'>
+				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Open \'User Panel\''); ?>'>
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					Inloggen
@@ -23,12 +23,12 @@
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
 		if ($currentSession['user']['userid'] > 2) { ?>
-				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Spot toevoegen'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Spot toevoegen'); ?>'><?php echo _('Spot toevoegen'); ?></a></p></div>
+				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
 <?php 	} 
 	  }
 ?>
 
-				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Wissel tussen vaste en meescrollende sidebar'); ?>"><label>&nbsp;</label></span>
+				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between nailed or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
@@ -92,12 +92,12 @@
 		$filterColCount++;
 	} # if
 ?>
-					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='<?php echo _('Zoeken in huidige filters'); ?>'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='<?php echo _('Zoeken'); ?>'></div>
+					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='<?php echo _('Search within current filters'); ?>'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='<?php echo _('Search'); ?>'></div>
 
 					<div class="sidebarPanel advancedSearch">
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='<?php echo _('Sluit "Advanced Search"'); ?>'>[x]</a><?php echo _('Zoeken op:'); ?></h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='<?php echo _('Close \'Advanced Search\''); ?>'>[x]</a><?php echo _('Search on:'); ?></h4>
 						<ul class="search<?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
-							<li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label><?php echo _('Titel'); ?></label></li>
+							<li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label><?php echo _('Tag'); ?></label></li>
 <?php if ($settings->get('retrieve_full')) { ?>
@@ -108,7 +108,7 @@
 <?php
 	if (count($parsedsearch['filterValueList']) > 0) {
 ?>
-						<h4><?php echo _('Actieve filters:'); ?></h4>
+						<h4><?php echo _('Active filters:'); ?></h4>
 						<table class='search currentfilterlist'>
 <?php
 	foreach($parsedsearch['filterValueList'] as $filterType) {
@@ -126,46 +126,46 @@
 						<h4>Sorteren op:</h4>
 						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
-							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label><?php echo _('Relevantie'); ?></label> </li>
-							<li> <input type="radio" name="sortby" value="title" <?php echo $sortType == "title" ? 'checked="checked"' : "" ?>><label><?php echo _('Titel'); ?></label> </li>
+							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label><?php echo _('Relevance'); ?></label> </li>
+							<li> <input type="radio" name="sortby" value="title" <?php echo $sortType == "title" ? 'checked="checked"' : "" ?>><label><?php echo _('Title'); ?></label> </li>
 							<li> <input type="radio" name="sortby" value="poster" <?php echo $sortType == "poster" ? 'checked="checked"' : "" ?>><label><?php echo _('Poster');?></label> </li>
-							<li> <input type="radio" name="sortby" value="stamp" <?php echo $sortType == "stamp" ? 'checked="checked"' : "" ?>><label><?php echo _('Datum');?></label> </li>
+							<li> <input type="radio" name="sortby" value="stamp" <?php echo $sortType == "stamp" ? 'checked="checked"' : "" ?>><label><?php echo _('Date');?></label> </li>
 							<li> <input type="radio" name="sortby" value="commentcount" <?php echo $sortType == "commentcount" ? 'checked="checked"' : "" ?>><label><?php echo _('Comments'); ?></label> </li>
 							<li> <input type="radio" name="sortby" value="spotrating" <?php echo $sortType == "spotrating" ? 'checked="checked"' : "" ?>><label><?php echo _('Rating'); ?></label> </li>
 						</ul>
 
-						<h4><?php echo _('Leeftijd limiteren'); ?></h4>
+						<h4><?php echo _('Limit age'); ?></h4>
 						<ul class="search age onecol">
 <?php if (!isset($activefilter['filterValues']['date'])) { $activefilter['filterValues']['date'] = ''; } ?>
 							<li><select name="search[value][]">
-								<option value=""><?php echo _('Alles tonen'); ?></option>
-								<option value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 dag'); ?></option>
-								<option value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 dagen'); ?></option>
+								<option value=""><?php echo _('Show all'); ?></option>
+								<option value="date:>:-1 day" <?php echo $activefilter['filterValues']['date'] == ">:-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 day'); ?></option>
+								<option value="date:>:-3 days" <?php echo $activefilter['filterValues']['date'] == ">:-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 days'); ?></option>
 								<option value="date:>:-1 week" <?php echo $activefilter['filterValues']['date'] == ">:-1 week" ? 'selected="selected""' : "" ?>><?php echo _('1 week'); ?></option>
-								<option value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weken'); ?></option>
-								<option value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 maand'); ?></option>
-								<option value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 maanden'); ?></option>
-								<option value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 maanden'); ?></option>
-								<option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 jaar'); ?></option>
+								<option value="date:>:-2 weeks" <?php echo $activefilter['filterValues']['date'] == ">:-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weeks'); ?></option>
+								<option value="date:>:-1 month" <?php echo $activefilter['filterValues']['date'] == ">:-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 month'); ?></option>
+								<option value="date:>:-3 months" <?php echo $activefilter['filterValues']['date'] == ">:-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 months'); ?></option>
+								<option value="date:>:-6 months" <?php echo $activefilter['filterValues']['date'] == ">:-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 months'); ?></option>
+								<option value="date:>:-1 year" <?php echo $activefilter['filterValues']['date'] == ">:-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 year'); ?></option>
 							</select></li>
 						</ul>
 					
-						<h4><?php echo _('Omvang'); ?></h4>
+						<h4><?php echo _('Size'); ?></h4>
 						<input type="hidden" name="search[value][]" id="min-filesize" />
 						<input type="hidden" name="search[value][]" id="max-filesize" />
 						<div id="human-filesize"></div>
 						<div id="slider-filesize"></div>
 
-						<h4><?php echo _('Categori&euml;n'); ?></h4>
+						<h4><?php echo _('Categories'); ?></h4>
 						<div id="tree"></div>
 						<ul class="search clearCategories onecol">
 							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
 							
-							<label><?php if ($parsedsearch['unfiltered'] == 'true') { echo _('Categori&euml;n gebruiken'); } else { echo _('Categori&euml;n niet gebruiken'); } ?></label> </li>
+							<label><?php if ($parsedsearch['unfiltered'] == 'true') { echo _('Use categories'); } else { echo _('Don\'t use categories'); } ?></label> </li>
 						</ul>
 
 <?php if ($settings->get('retrieve_reports')) { ?>
-						<h4><?php echo _('Aantal reports'); ?></h4>
+						<h4><?php echo _('Number of reports'); ?></h4>
 						<input type="hidden" name="search[value][]" id="max-reportcount" />
 						<div id="human-reportcount"></div>
 						<div id="slider-reportcount"></div>
@@ -174,20 +174,20 @@
 						<br>
 						<h4><?php echo _('Filters'); ?></h4>
 						<br>
-						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Voeg een filter toe'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, true, null); " class="greyButton"><?php echo _('Sla opdracht op als filter'); ?></a>
+						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Add a filter'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, true, null); " class="greyButton"><?php echo _('Save search as filter'); ?></a>
 <?php } ?>
 				</div>
 			</form>
 <?php } # if perform search ?>
 
 				<div class="sidebarPanel userPanel">
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Sluit "Gebruikers paneel"'); ?>'>[x]</a><?php echo _('Gebruikers paneel'); ?></h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Close \'User panel\''); ?>'>[x]</a><?php echo _('User panel'); ?></h4>
 					<ul class="userInfo">
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
-						<li><?php echo _('U bent niet ingelogd'); ?></li>
+						<li><?php echo _('You are not logged in'); ?></li>
 <?php } else { ?>
-						<li><?php echo _("Gebruiker:") . " <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
-						<li><?php echo sprintf(_("Laatst gezien: %s"), "<strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"); ?></li>
+						<li><?php echo _('User') . " <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
+						<li><?php echo sprintf(_('Last seen: %s'), "<strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"); ?></li>
 <?php } ?>
 					</ul>
 
@@ -198,12 +198,12 @@
 
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
-					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4><?php echo _('Gebruiker wijzigen'); ?><span class="editUser down"></span></h4></a>
+					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4><?php echo _('Change user'); ?><span class="editUser down"></span></h4></a>
 					<div class="editUser"></div>
 	<?php } ?>
 
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
-					<h4 class="dropdown"><a class="editUserPrefs down" href="?page=edituserprefs"><?php echo _('Voorkeuren wijzigen'); ?></a></h4>
+					<h4 class="dropdown"><a class="editUserPrefs down" href="?page=edituserprefs"><?php echo _('Change preferences'); ?></a></h4>
 					<div class="editUserPrefs"></div>
 	<?php } ?>
 
@@ -219,12 +219,12 @@
 <?php } ?>
 					
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
-					<h4 class="dropdown"><?php echo _('Uitloggen'); ?></h4>
-					<a onclick="userLogout()" class="greyButton"><?php echo _('Uitloggen'); ?></a>
+					<h4 class="dropdown"><?php echo _('Log out'); ?></h4>
+					<a onclick="userLogout()" class="greyButton"><?php echo _('Log out'); ?></a>
 	<?php } ?>
 <?php } else { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
-					<h4><?php echo _('Inloggen'); ?></h4>
+					<h4><?php echo _('Login'); ?></h4>
 					<div class="login"></div>
 	<?php } ?>
 <?php } ?>
@@ -239,23 +239,23 @@
 		if ($tplHelper->getNzbHandlerApiSupport() === false)
 		{?>
 					<table class="sabInfo" summary="SABnzbd infomatie">
-						<tr><td><?php echo _('De geselecteerde methode om NZB\'s te downloaden heeft geen panel support.'); ?></td></tr>
+						<tr><td><?php echo _('Selected NZB download methode doesn\'t support sidepanel'); ?></td></tr>
 					</table>			
 <?php	}
 		else
 		{
 ?>					<table class="sabInfo" summary="SABnzbd infomatie">
 						<tr><td><?php echo _('Status:'); ?></td><td class="state"></td></tr>
-						<tr><td><?php echo _('Opslag (vrij):'); ?></td><td class="diskspace"></td></tr>
-						<tr><td><?php echo _('Snelheid:'); ?></td><td class="speed"></td></tr>
-						<tr><td><?php echo _('Max. snelheid:'); ?></td><td class="speedlimit"></td></tr>
-						<tr><td><?php echo _('Te gaan:'); ?></td><td class="timeleft"></td></tr>
+						<tr><td><?php echo _('Free storage:'); ?></td><td class="diskspace"></td></tr>
+						<tr><td><?php echo _('Speed:'); ?></td><td class="speed"></td></tr>
+						<tr><td><?php echo _('Max. speed:'); ?></td><td class="speedlimit"></td></tr>
+						<tr><td><?php echo _('To go:'); ?></td><td class="timeleft"></td></tr>
 						<tr><td><?php echo _('ETA:'); ?></td><td class="eta"></td></tr>
-						<tr><td><?php echo _('Wachtrij:'); ?></td><td class="mb"></td></tr>
+						<tr><td><?php echo _('Queue:'); ?></td><td class="mb"></td></tr>
 					</table>
 					<canvas id="graph" width="215" height="125"></canvas>
 					<table class="sabGraphData" summary="SABnzbd Graph Data" style="display:none;"><tbody><tr><td></td></tr></tbody></table>
-					<h4><?php echo _('Wachtrij'); ?></h4>
+					<h4><?php echo _('Queue'); ?></h4>
 					<table class="sabQueue" summary="SABnzbd queue"><tbody><tr><td></td></tr></tbody></table>
 <?php 	}
 	  } ?>
@@ -310,12 +310,12 @@
 			echo '" href="' . $strFilter . '">';
 			echo '<span class="spoticon spoticon-' . str_replace('.png', '', $filter['icon']) . '">&nbsp;</span>' . $filter['title'];
 			if ($newCount) { 
-				echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='" . sprintf(_('Laat nieuwe spots in filter &quot;%s&quot; zien'), $filter['title']) . "'>$newCount</span>";
+				echo "<span onclick=\"gotoNew('".$strFilter."')\" class='newspots' title='" . sprintf(_('Show new spots in filter &quot;%s&quot;'), $filter['title']) . "'>$newCount</span>";
 			} # if 
 
 			# als er children zijn, moeten we de category kunnen inklappen
 			if (!empty($filter['children'])) {
-				echo '<span class="toggle" title="' . _('Filter inklappen') . '" onclick="toggleFilter(this)">&nbsp;</span>';
+				echo '<span class="toggle" title="' . _('Collapse filter') . '" onclick="toggleFilter(this)">&nbsp;</span>';
 			} # if
 			
 			echo '</a>';
@@ -338,7 +338,7 @@
 					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Onderhoud<span></span></h4></a>
 					<ul class="filterlist maintenancebox">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) { ?>
-						<li class="info"> <?php echo _('Laatste update:'); ?> <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
+						<li class="info"> <?php echo _('Last update:'); ?> <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
 <?php } ?>
 <?php 
 		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
@@ -347,10 +347,10 @@
 <?php 		}
 		} ?>
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls'))) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads"><?php echo _('Verwijder downloadgeschiedenis'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('erasedls'); ?>" onclick="eraseDownloads()" class="greyButton erasedownloads"><?php echo _('Erase downloadhistory'); ?></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>
-						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread"><?php echo _('Markeer alles als gelezen'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->getPageUrl('markallasread'); ?>" onclick="markAsRead()" class="greyButton markasread"><?php echo _('Mark everything as read'); ?></a></li>
 <?php } ?>
 					</ul>
 				</div>
@@ -381,9 +381,9 @@
 
 				if (ui.values[0] == 21) {
 					/* In de submit handler wordt 21 gefiltered */
-					$( "#human-reportcount" ).text( "<?php echo _('Niet filteren op aantal reports'); ?>" );
+					$( "#human-reportcount" ).text( "<?php echo _('Do not filter on # reports'); ?>" );
 				} else {
-					$( "#human-reportcount" ).text( "<?php echo _('Maximaal %1 reports'); ?>".replace("%1", ui.values[0]) );
+					$( "#human-reportcount" ).text( "<?php echo _('Maximum %1 reports'); ?>".replace("%1", ui.values[0]) );
 				} // if
 			}
 		});
@@ -397,9 +397,9 @@
 		var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
 		$( "#max-reportcount" ).val( "reportcount:<=:" + reportSlideValue);
 		if (reportSlideValue == 21) {
-			$( "#human-reportcount" ).text("<?php echo _('Niet filteren op aantal reports'); ?>");
+			$( "#human-reportcount" ).text("<?php echo _('Do not filter on # reports'); ?>");
 		} else {
-			$( "#human-reportcount" ).text( "<?php echo _('Maximaal %1 reports'); ?>".replace("%1", reportSlideValue));
+			$( "#human-reportcount" ).text( "<?php echo _('Maximum %1 reports'); ?>".replace("%1", reportSlideValue));
 		} // if
 	});
 	</script>
