@@ -33,11 +33,11 @@
 			<form class="editfilterform" name="editfilterform" action="<?php echo $tplHelper->makeEditFilterAction(); ?>" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="editfilterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>">
 				<input type="hidden" name="filterid" value="9999">
-				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="<?php echo _('Herstel filters naar standaard'); ?>">
+				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="<?php echo _('Restore filter to default'); ?>">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_set_filters_as_default, ''))  { ?>
 				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitsetfiltersasdefault]" value="<?php echo _('Use these filters as standard'); ?>">
 <?php } ?>
-				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="<?php echo _('Download je filters'); ?>">
+				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="<?php echo _('Download your filters'); ?>">
 
 				<input type="hidden" name="MAX_FILE_SIZE" value="30720" />
 				<input name="filterimport" type="file" />
