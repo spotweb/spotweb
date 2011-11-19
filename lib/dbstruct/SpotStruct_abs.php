@@ -678,7 +678,7 @@ abstract class SpotStruct_abs {
 		/*
 		 * Convert the information from 'spotsfull' to 'spots' table
 		 */
-		if (($this->_spotdb->getSchemaVer() < 0.48) && ($this->_spotdb->getSchemaVer() > 0.01)) {
+		if (($this->_spotdb->getSchemaVer() < 0.48) && ($this->_spotdb->getSchemaVer() > 0.00)) {
 			echo PHP_EOL . PHP_EOL;
 			echo 'Converting your spotsfull data to another format' . PHP_EOL;
 			echo 'Please note - if you had spotsfull enabled, this can take a long time' . PHP_EOL;
