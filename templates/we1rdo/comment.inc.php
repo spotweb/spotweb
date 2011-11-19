@@ -2,9 +2,10 @@
 	# First retrieve the needed parameters
 	$messageId = $tplHelper->getParam('messageid');
 	$pageNr = $tplHelper->getParam('pagenr');
+	$perPage = $tplHelper->getParam('perpage');
 	
 	# Get the spot comments for each 5 comments
-	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * 5), 5);
+	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
 	$comments = $tplHelper->formatComments($comments);
 
 	# Does the user want to see avatars?

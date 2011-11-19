@@ -97,6 +97,7 @@ try {
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
+								  'perpage' => $req->getDef('perpage', 10),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', '')));
 

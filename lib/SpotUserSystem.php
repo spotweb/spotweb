@@ -386,6 +386,7 @@ class SpotUserSystem {
 		$prefs['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
 		$prefs['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
+		$prefs['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
 		
 		$notifProviders = Notifications_Factory::getActiveServices();
 		foreach ($notifProviders as $notifProvider) {
