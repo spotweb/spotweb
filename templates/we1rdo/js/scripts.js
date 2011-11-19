@@ -296,7 +296,7 @@ function loadComments(messageid,perpage,pagenr) {
 	} // if 
 	
 	var xhr = null;
-	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
+	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr+'&perpage='+perpage, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) {
 			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
