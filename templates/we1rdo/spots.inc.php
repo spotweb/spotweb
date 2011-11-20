@@ -18,19 +18,19 @@
 				<table class="spots" summary="Spots">
 					<thead>
 						<tr class="head">
-							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sorteren op Categorie'); ?>"><?php echo _('Cat.'); ?></a> </th> 
-							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sorteren op Titel [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sorteren op Titel [Z-0]'); ?>"> </a></span> <?php echo _('Titel'); ?> </th> 
+							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sort on category'); ?>"><?php echo _('Cat.'); ?></a> </th> 
+							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sort on title [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sort on title [Z-0]'); ?>"> </a></span> <?php echo _('Title'); ?> </th> 
 							<?php if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
 							if ($show_comments) {
-								echo "<th class='comments'> <a title='" . _('Aantal reacties') . "' href='" . $tplHelper->makeToggleSortUrl('index', 'commentcount', 'DESC') . "'>#</a> </th>";
+								echo "<th class='comments'> <a title='" . _('Number of comment') . "' href='" . $tplHelper->makeToggleSortUrl('index', 'commentcount', 'DESC') . "'>#</a> </th>";
 							} # if ?>
 							<th class='genre'> <?php echo _('Genre'); ?> </th> 
-							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="<?php echo _('Sorteren op Afzender [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="<?php echo _('Sorteren op Afzender [Z-0]'); ?>"> </a></span> <?php echo _('Afzender'); ?> </th> 
-							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="<?php echo _('Sorteren op Leeftijd [oplopend]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="<?php echo _('Sorteren op Leeftijd [aflopend]'); ?>"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? _("Leeftijd") : _("Datum"); ?> </th> 
+							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="<?php echo _('Sort on sender [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="<?php echo _('Sort on sender [Z-0]'); ?>"> </a></span> <?php echo _('Sender'); ?> </th> 
+							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="<?php echo _('Sort on age [ascending]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="<?php echo _('Sort on age [descending]'); ?>"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? _('Age') : _('Date'); ?> </th> 
 <?php if ($show_filesize) { ?>
-							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="<?php echo _('Sorteren op Omvang [aflopend]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="<?php echo _('Sorteren op Omvang [oplopend]'); ?>"> </a></span> <?php echo _('Size'); ?> </th> 
+							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="<?php echo _('Sort on size [descending]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="<?php echo _('Sort on size [ascending]'); ?>"> </a></span> <?php echo _('Size'); ?> </th> 
 <?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> <?php echo _('NZB'); ?> </th>
