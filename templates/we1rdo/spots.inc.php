@@ -18,19 +18,19 @@
 				<table class="spots" summary="Spots">
 					<thead>
 						<tr class="head">
-							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sorteren op Categorie'); ?>"><?php echo _('Cat.'); ?></a> </th> 
-							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sorteren op Titel [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sorteren op Titel [Z-0]'); ?>"> </a></span> <?php echo _('Titel'); ?> </th> 
+							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sort on category'); ?>"><?php echo _('Cat.'); ?></a> </th> 
+							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sort on title [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sort on title [Z-0]'); ?>"> </a></span> <?php echo _('Title'); ?> </th> 
 							<?php if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
 							if ($show_comments) {
-								echo "<th class='comments'> <a title='" . _('Aantal reacties') . "' href='" . $tplHelper->makeToggleSortUrl('index', 'commentcount', 'DESC') . "'>#</a> </th>";
+								echo "<th class='comments'> <a title='" . _('Number of comment') . "' href='" . $tplHelper->makeToggleSortUrl('index', 'commentcount', 'DESC') . "'>#</a> </th>";
 							} # if ?>
 							<th class='genre'> <?php echo _('Genre'); ?> </th> 
-							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="<?php echo _('Sorteren op Afzender [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="<?php echo _('Sorteren op Afzender [Z-0]'); ?>"> </a></span> <?php echo _('Afzender'); ?> </th> 
-							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="<?php echo _('Sorteren op Leeftijd [oplopend]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="<?php echo _('Sorteren op Leeftijd [aflopend]'); ?>"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? _("Leeftijd") : _("Datum"); ?> </th> 
+							<th class='poster'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'ASC'); ?>" title="<?php echo _('Sort on sender [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'poster', 'DESC'); ?>" title="<?php echo _('Sort on sender [Z-0]'); ?>"> </a></span> <?php echo _('Sender'); ?> </th> 
+							<th class='date'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'DESC'); ?>" title="<?php echo _('Sort on age [ascending]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'stamp', 'ASC'); ?>" title="<?php echo _('Sort on age [descending]'); ?>"> </a></span> <?php echo ($currentSession['user']['prefs']['date_formatting'] == 'human') ? _('Age') : _('Date'); ?> </th> 
 <?php if ($show_filesize) { ?>
-							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="<?php echo _('Sorteren op Omvang [aflopend]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="<?php echo _('Sorteren op Omvang [oplopend]'); ?>"> </a></span> <?php echo _('Size'); ?> </th> 
+							<th class='filesize'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'DESC'); ?>" title="<?php echo _('Sort on size [descending]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'filesize', 'ASC'); ?>" title="<?php echo _('Sort on size [ascending]'); ?>"> </a></span> <?php echo _('Size'); ?> </th> 
 <?php } ?>
 <?php if ($show_nzb_button) { ?>
 							<th class='nzb'> <?php echo _('NZB'); ?> </th>
@@ -60,7 +60,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
-		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>" . _('Geen resultaten gevonden') . "</td></tr>\r\n";
+		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>" . _('No results found') . "</td></tr>\r\n";
 	} # if
 	
 	foreach($spots as $spot) {
@@ -71,9 +71,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if($spot['rating'] == 0) {
 			$rating = '';
 		} elseif($spot['rating'] == 1) {
-			$rating = '<span class="rating" title="' . _('Deze spot heeft 1 ster') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+			$rating = '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		} else {
-			$rating = '<span class="rating" title="' . sprintf(_('Deze spot heeft %d sterren'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+			$rating = '<span class="rating" title="' . sprintf(_('This spot has %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
 
 		if($tplHelper->isModerated($spot)) { 
@@ -96,9 +96,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 
 
 			if ($spot['reportcount'] == 1) {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('Er is 1 spam report gevonden op deze spot') . '"><span>'.$spot['reportcount'].'</span></span>';
+				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('There is one spamreport found for this spot') . '"><span>'.$spot['reportcount'].'</span></span>';
 			} else {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('Er zijn %d spam reports gevonden op deze spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
+				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('There are %d spamreports found for this spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
 			} # else 
 		}
 
@@ -111,22 +111,22 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo " seenspot";
 		} # if
 		echo "'>";
-		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='" . sprintf(_('Ga naar de categorie "%s"'), $spot['catshortdesc']) . "'>" . $spot['catshortdesc'] . "</a></td>" .
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='" . sprintf(_('Go to catergory \'%s\''), $spot['catshortdesc']) . "'>" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
-			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Verwijder uit watchlist (w)') . "'> </a>";
-			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Plaats in watchlist (w)') . "'> </a>";
+			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Delete from watchlist (w)') . "'> </a>";
+			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Position in watchlist (w)') . "'> </a>";
 			echo "</td>";
 		}
 
 		if ($show_comments) {
-			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by "%s"'), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
+			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by \'%s\''), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Zoek spots in de categorie %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
-			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Zoek spots van %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
+		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
+			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {
