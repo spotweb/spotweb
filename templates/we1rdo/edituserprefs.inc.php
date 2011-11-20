@@ -146,6 +146,10 @@ include "includes/form-messages.inc.php";
 						</select>
 					</dd>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotimage, 'avatar')) { ?>
+					<dt><label for="edituserprefsform[show_avatars]"><?php echo _('Show avatars in the comments?'); ?></label></dt>
+					<dd><input type="checkbox" name="edituserprefsform[show_avatars]" <?php if ($edituserprefsform['show_avatars']) { echo 'checked="checked"'; } ?>></dd>
+<?php } ?>
 				</dl>
 			</fieldset>
 		</div>
