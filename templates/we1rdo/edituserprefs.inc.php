@@ -11,6 +11,7 @@ if (!empty($edituserprefsresult)) {
 
 require "includes/header.inc.php";
 include "includes/form-messages.inc.php";
+
 ?>
 </div>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
@@ -152,7 +153,7 @@ include "includes/form-messages.inc.php";
 <?php } ?>
 
 					<dt><label for="edituserprefsform[avatar]"><?php echo _('Avatar image to use in posting of comments (maximum 4000 bytes)'); ?></label></dt>
-					<dd><input type="hidden" name="MAX_FILE_SIZE" value="4000" /><input name="edituserprefsform[avatar]" type="file" /></dd>
+					<dd><input type="hidden" name="MAX_FILE_SIZE" value="4000" /><input name="edituserprefsform[avatar]" type="file" /><img src='data:image/png;base64,<?php echo $spotuser['avatar']; ?>'></dd>
 				</dl>
 			</fieldset>
 		</div>
