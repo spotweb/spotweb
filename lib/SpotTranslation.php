@@ -11,17 +11,17 @@ class SpotTranslation {
 
 	public static function initialize($lang) {
 		# Do we need the emulation library?
-		if (function_exists('_gettext_setlang')) {
-			_gettext_setlang($lang);
+		if (function_exists('_gettext_init')) {
+			_gettext_init('messages', $lang);
 		} else {
 			putenv("LC_ALL=" . $lang . ".UTF-8");
 			setlocale(LC_ALL, $lang . '.UTF-8');
-		} # else
 
-		# Initialize the textdomain
-		bindtextdomain('messages', 'locales/');
-		bind_textdomain_codeset('messages', 'UTF-8'); 
-		textdomain('messages');
+			# Initialize the textdomain
+			bindtextdomain('messages', 'locales/');
+			bind_textdomain_codeset('messages', 'UTF-8'); 
+			textdomain('messages');
+		} # else
 	} # initialize
 } # class SpotTranslation
 
