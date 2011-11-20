@@ -136,7 +136,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# en de code wat duidelijker is
 				$header_isInDb = isset($dbIdList['spot'][$msgId]);
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
-				
+
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is (of we in retro modus draaien), 
 				# moeten we dit doen want een aantal velden die wel in de header zitten, 
@@ -150,7 +150,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgid);
-												
+
+
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
