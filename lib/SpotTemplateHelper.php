@@ -400,10 +400,10 @@ class SpotTemplateHelper {
 		if (!empty($fullComent['user-avatar'])) {
 			$md5 = $fullComment['user-avatar'];
 		} else {
-			$md5 = md5($fullComment['user-key']);
+			$md5 = md5(base64_decode($fullComment['user-key']['modulo']));
 		} # else 
 
-		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=avatar&amp;image[size]=48&amp;image[md5]=' . urlencode($md5);
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=avatar&amp;image[size]=32&amp;image[md5]=' . urlencode($md5);
 	} # makeCommenterImageUrl
 
 	/*
