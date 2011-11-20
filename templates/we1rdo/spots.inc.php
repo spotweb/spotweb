@@ -60,7 +60,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
-		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>" . _('Geen resultaten gevonden') . "</td></tr>\r\n";
+		echo "\t\t\t\t\t\t\t<tr class='noresults'><td colspan='" . $colSpan . "'>" . _('No results found') . "</td></tr>\r\n";
 	} # if
 	
 	foreach($spots as $spot) {
@@ -71,9 +71,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if($spot['rating'] == 0) {
 			$rating = '';
 		} elseif($spot['rating'] == 1) {
-			$rating = '<span class="rating" title="' . _('Deze spot heeft 1 ster') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+			$rating = '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		} else {
-			$rating = '<span class="rating" title="' . sprintf(_('Deze spot heeft %d sterren'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+			$rating = '<span class="rating" title="' . sprintf(_('This spot has %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
 
 		if($tplHelper->isModerated($spot)) { 
@@ -96,9 +96,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 
 
 			if ($spot['reportcount'] == 1) {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('Er is 1 spam report gevonden op deze spot') . '"><span>'.$spot['reportcount'].'</span></span>';
+				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('There is one spamreport found for this spot') . '"><span>'.$spot['reportcount'].'</span></span>';
 			} else {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('Er zijn %d spam reports gevonden op deze spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
+				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('There are %d spamreports found for this spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
 			} # else 
 		}
 
@@ -111,22 +111,22 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo " seenspot";
 		} # if
 		echo "'>";
-		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='" . sprintf(_('Ga naar de categorie "%s"'), $spot['catshortdesc']) . "'>" . $spot['catshortdesc'] . "</a></td>" .
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='" . sprintf(_('Go to catergory \'%s\''), $spot['catshortdesc']) . "'>" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
-			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Verwijder uit watchlist (w)') . "'> </a>";
-			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Plaats in watchlist (w)') . "'> </a>";
+			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Delete from watchlist (w)') . "'> </a>";
+			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Position in watchlist (w)') . "'> </a>";
 			echo "</td>";
 		}
 
 		if ($show_comments) {
-			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by "%s"'), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
+			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by \'%s\''), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Zoek spots in de categorie %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
-			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Zoek spots van %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
+		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
+			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {
