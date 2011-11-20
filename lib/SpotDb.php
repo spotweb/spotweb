@@ -1927,7 +1927,7 @@ class SpotDb {
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics,(int) time()-$expireDays*24*60*60));
+		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics, SpotCache::StatisticsData,(int) time()-$expireDays*24*60*60));
 	} # cleanCache
 
 	function getCache($resourceid, $cachetype) {
@@ -1941,9 +1941,14 @@ class SpotDb {
 				break;
 			} # case 'pdo_pgsql'
 
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, UNCOMPRESS(content) AS content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
+				break;
+			} # mysql
+
 			default		: {
 				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
-				break;
 			} # default
 		} # switch
 
@@ -1988,12 +1993,20 @@ class SpotDb {
 					break;
 			} # pgsql
 
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = COMPRESS('%s') WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', COMPRESS('%s'))", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
+					} # if
+					break;
+			} # mysql
+
 			default				: {
 					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
 						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
 					} # if
-					break;
 			} # default
 		} # switch
 	} # saveCache
