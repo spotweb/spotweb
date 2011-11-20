@@ -71,9 +71,6 @@ abstract class SpotStruct_abs {
 	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
 
-	/* verandert een row format */
-	abstract function alterRowFormat($tablename, $rowformat);
-
 	/* drop een table */
 	abstract function dropTable($tablename);
 	
@@ -237,13 +234,11 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
-		# cache omzetten naar nieuw systeem, tijdelijke tabel nodig
-		# Dit doen we hier, zodat een correcte cache tabel kan worden aangemaakt
-		if (($this->tableExists('cache')) && (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid')))) {
-			$this->renameTable('cache', 'cachetmp');
+		# oude cache droppen, converteren gaat te vaak fout
+		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
+			$this->dropTable('cache');
 		} # if
-
-		if (($this->tableExists('cache')) && (($this->_spotdb->getSchemaVer() < 0.50) && ($this->columnExists('cache', 'compressed')))) {
+		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
 			$this->renameTable('cache', 'cachetmp');
 		} # if
 
@@ -524,7 +519,6 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
-		$this->alterRowFormat("cache", "COMPRESSED");
 
 		# ---- permaudit table ---- #
 		$this->createTable('permaudit', "ascii");
@@ -554,128 +548,6 @@ abstract class SpotStruct_abs {
 			} # if
 		} # if
 
-		# cache omzetten naar nieuw systeem
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) {
-			echo PHP_EOL . PHP_EOL;
-			echo 'Converting your cache data to another format' . PHP_EOL;
-			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
-			echo PHP_EOL . PHP_EOL;
-			
-			$tmp = $this->_dbcon->rawExec("TRUNCATE cache");
-			$spotImage = new SpotImage($this->_spotdb);
-			
-			# Web
-			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, compressed, content FROM cachetmp WHERE url = '%s'", Array($cachetmp['url']));
-				$data = $data[0];
-
-				if ($data['compressed']) {
-					$metadata = '';
-					$data['content'] = gzinflate($data['content']);
-				} else {
-					$imageData = $spotImage->getImageInfoFromString($data['content']);
-					$metadata = serialize($imageData['metadata']);
-				} # else
-
-				$content = (!empty($imageData)) ? $imageData['content'] : $data['content'];
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt(false), $content));
-			} # foreach
-
-			# images vanaf de NNTP server
-			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotImage::', messageid);");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotImage::', messageid);", Array($cachetmp['messageid']));
-				$data = $data[0];
-
-				if (!$imageData = $spotImage->getImageInfoFromString($data['content'])) {
-					continue;
-				} # if
-
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['messageid'], SpotCache::SpotImage, $data['stamp'], serialize($imageData['metadata']), $this->_dbcon->bool2dt(false), $imageData['content']));
-			} # foreach
-
-			# NZBs
-			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotNzb::', messageid);");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotNzb::', messageid);", Array($cachetmp['messageid']));
-				$data = $data[0];
-				$data['content'] = gzinflate($data['content']);
-				$data['content'] = gzinflate($data['content']); // door een bug waren NZB-files dubbel compressed
-
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(false), $data['content']));
-			} # foreach
-
-			# drop de oude tabel
-			$this->dropTable('cachetmp');
-		} # if
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp')) && (!($this instanceof SpotStruct_mysql))) {
-			# drop de oude tabel
-			$this->dropTable('cachetmp');
-		} # if
-
-		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) {
-			echo PHP_EOL . PHP_EOL;
-			echo 'Converting your cache data to another format' . PHP_EOL;
-			echo 'Please note - depending on the size of this cache it can take a huge amount of time' . PHP_EOL;
-			echo PHP_EOL . PHP_EOL;
-
-			$val = trim(ini_get("memory_limit"));
-			$last = strtolower($val[strlen($val)-1]);
-			switch($last) {
-				case 'g':
-					$val *= 1024;
-				case 'm':
-					$val *= 1024;
-				case 'k':
-					$val *= 1024;
-			} # swich
-			$phpMemoryLimit = $val;
-
-			foreach (array(1,2,3,4,5,2,2) as $cachetype) {
-				$tmp = $this->_dbcon->arrayQuery("SELECT resourceid FROM cachetmp WHERE cachetype = '%s';", Array($cachetype));
-				foreach ($tmp AS $cachetmp) {
-					$insert = true;
-					if ($this->columnExists('cachetmp', 'serialized')) {
-						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,serialized,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
-					} else {
-						$data = $this->_dbcon->arrayQuery("SELECT stamp,metadata,compressed,content FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s';", Array($cachetmp['resourceid'], $cachetype));
-					} # else
-					$data = $data[0];
-
-					if ($data['compressed']) {
-						if (strlen($data['content'])*32 < ($phpMemoryLimit-memory_get_usage(true))) {
-							$data['content'] = gzinflate($data['content']);
-						} else {
-							$insert = false;
-						} # else
-					} # if
-
-					if (!isset($data['serialized'])) {
-						$data['serialized'] = false;
-					} # if
-
-					if ($insert) {
-						if (strlen($data['content'])*4.5 < ($phpMemoryLimit-memory_get_usage(true))) {
-							$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, serialized, content) VALUES ('%s', %d, %d, '%s', '%s', '%s')",
-													Array($cachetmp['resourceid'], $cachetype, $data['stamp'], $data['metadata'], $this->_dbcon->bool2dt($data['serialized']), $data['content']));
-							$this->_dbcon->modify("DELETE FROM cachetmp WHERE resourceid = '%s' AND cachetype = '%s'", Array($cachetmp['resourceid'], $cachetype));
-						} # if
-					} # if
-				} # foreach
-			} # foreach
-
-			# drop de oude tabel
-			$this->dropTable('cachetmp');
-		} # if
-		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cachetmp')) && (!($this instanceof SpotStruct_mysql))) {
-			# drop de oude tabel
-			$this->dropTable('cachetmp');
-		} # if
-
 		/*
 		 * Convert the information from 'spotsfull' to 'spots' table
 		 */
@@ -701,7 +573,24 @@ abstract class SpotStruct_abs {
 				$this->_dbcon->rawExec("UPDATE spots s SET spotterid = spotsfull.userid FROM spotsfull WHERE (s.messageid = spotsfull.messageid)");
 			} # if
 		} # if
-		
+
+		# cache omzetten naar nieuw systeem
+		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
+			$cachetmpCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cachetmp;");
+			if ($cachetmpCount > 7500) {
+				$dbname = $this->_dbcon->singleQuery("SELECT DATABASE();");
+				echo PHP_EOL;
+				echo "Converting the cache is not necessary to continue working with SpotWeb. If you don't want" . PHP_EOL;
+				echo "to wait for this conversion, please enter the following command in MySQL or phpMyAdmin:" . PHP_EOL;
+				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
+				echo "If you like to convert the cache, enter:" . PHP_EOL;
+				echo "\tINSERT INTO " . $dbname . ".cache SELECT resourceid, cachetype, stamp, metadata, serialized, COMPRESS(content) FROM " . $dbname . ".cachetmp;" . PHP_EOL;
+				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
+				echo "After this operation you must run upgrade-db.php again." . PHP_EOL . PHP_EOL;
+				die();
+			} # if
+		} # if
+
 		# En creeer de diverse indexen
 		# ---- Indexen op spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
@@ -816,6 +705,7 @@ abstract class SpotStruct_abs {
 		# Hier droppen we tabellen ###################################################################
 		##############################################################################################		
 		$this->dropTable('webcache');
+		$this->dropTable('cachetmp');
 
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
