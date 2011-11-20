@@ -212,7 +212,7 @@ msgid "Back to mainview (ESC / U)"
 msgstr "Ga terug naar het overzicht (esc / u)"
 
 msgid "This spot has %d star"
-msgid_plural "This spot thas %d stars"
+msgid_plural "This spot has %d stars"
 msgstr[0] "Deze spot heeft %d ster"
 msgstr[1] "Deze spot heeft %d sterren"
 
@@ -237,11 +237,11 @@ msgstr "Verwijder uit watchlist (w)"
 msgid "Place in watchlist (w)"
 msgstr "Plaats in watchlist (w)"
 
-msgid "Add NZB to SabNZBd queue (you already downloaded this spot) (s)"
-msgstr "Voeg NZB aan SabNZBd wachtrij toe (je hebt deze spot al gedownload) (s)"
+msgid "Add NZB to SABnzbd queue (you already downloaded this spot) (s)"
+msgstr "Voeg NZB aan SABnzbd wachtrij toe (je hebt deze spot al gedownload) (s)"
 
-msgid "Add NZB to SabNZBd queue (s)"
-msgstr "Voeg NZB aan SabNZBd wachtrij toe"
+msgid "Add NZB to SABnzbd queue (s)"
+msgstr "Voeg NZB aan SABnzbd wachtrij toe"
 
 msgid "Find spots in this category"
 msgstr "Zoek spots in de categorie"
@@ -317,9 +317,6 @@ msgstr "Verzend omschrijving"
 
 msgid "No results found"
 msgstr "Geen resultaten gevonden"
-
-msgid "This spot has %d stars"
-msgstr "Deze spot heeft %d sterren"
 
 msgid "There is %d spamreport found for this spot"
 msgid_plural "There are %d spamreports found for this spot"
@@ -438,11 +435,11 @@ msgstr "Wat moeten we met NZB files doen?"
 msgid "No intergration with download client"
 msgstr "Geen integratie met download client"
 
-msgid "Call sabnzbd+ throught HTTP by SpotWeb"
-msgstr "Roep sabnzbd+ aan via HTTP door SpotWeb"
+msgid "Call SABnzbd throught HTTP by SpotWeb"
+msgstr "Roep SABnzbd aan via HTTP door SpotWeb"
 
-msgid "Run sabnzbd+ through users' browser"
-msgstr "Roep sabnzbd+ aan via de users' browser"
+msgid "Run SABnzbd through users' browser"
+msgstr "Roep SABnzbd aan via de users' browser"
 
 msgid "Save to file op disk"
 msgstr "Bewaar bestand op schrijf"
@@ -468,11 +465,11 @@ msgstr " Waar moet het bestand opgeslagen worden?"
 msgid "What programm should be executed?"
 msgstr "Welk programma moet uitgevoerd worden?"
 
-msgid "URL to sabnzbd (HTTP included and portnumber where sabnzbd is installed)?"
-msgstr "URL naar sabnzbd (inclusief HTTP en poortnummer waar sabnzbd geinstalleerd is)?"
+msgid "URL to SABnzbd (HTTP included and portnumber where SABnzbd is installed)?"
+msgstr "URL naar SABnzbd (inclusief HTTP en poortnummer waar SABnzbd geinstalleerd is)?"
 
-msgid "API key from sabnzbd?"
-msgstr "API key voor sabnzbd?"
+msgid "API key for SABnzbd?"
+msgstr "API key voor SABnzbd?"
 
 msgid "Hostname of nzbget?"
 msgstr "Host name van nzbget?"
@@ -546,8 +543,8 @@ msgstr "De volgende body standaard invullen"
 msgid "Send message when a spot is added or deleted from the watchlist?"
 msgstr "Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de watchlist?"
 
-msgid "Send message when a NZB file is send? Doesn't work for client-sanzbd."
-msgstr "Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-sabnzbd."
+msgid "Send message when a NZB file is send? Doesn't work for client-SABnzbd."
+msgstr "Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-SABnzbd."
 
 msgid "Send message when updating spots is finish?"
 msgstr "Bericht versturen wanneer Spots Updaten klaar is?"
@@ -758,10 +755,10 @@ msgstr "sterren"
 msgid "Rate spot"
 msgstr "Geef spot"
 
-msgid "No star given"
+msgid "Don't give any star"
 msgstr "Geen ster geven"
 
-msgid "No stars given"
+msgid "Don't give any stars"
 msgstr "Geen sterren geven"
 
 msgid "Click on this image to show real size (i)"
@@ -805,9 +802,6 @@ msgstr "Nieuwe spots binnengehaald"
 
 msgid "Delete downloadhistory"
 msgstr "Download geschiedenis verwijderd"
-
-# duplicate msgid "Mark everything as read"
-# duplicate msgstr "Alles als gelezen gemarkeerd"
 
 msgid "Succesfully logged out"
 msgstr "Succesvol uitgelogd"
