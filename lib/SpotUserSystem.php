@@ -1027,6 +1027,42 @@ class SpotUserSystem {
 	} # xmlToFilters
 	
 	/*
+	 * Changes the avatar of this user
+	 */
+	function changeAvatar($userId, $imageFile) {
+		$errorList = array();
+		
+		/* 
+		 * Don't allow images larger than 4000 bytes
+		 */
+		if (strlen($imageFile) > 4000) {
+			$errorList[] = _('An avatar image has a maximum of 4000 bytes');
+		} # if
+		
+		/*
+		 * Make sure the image can be read, and stuff
+		 */
+		$spotImage = new SpotImage($this->_db);
+		if ($spotImage->getImageInfoFromString($imageFile) === false) {
+			$errorList[] = _('Invalid avatar image was supplied');
+		} # if
+
+		if (empty($errorList)) {
+			/*
+			 * We store the images base64 encoded
+			 */
+			$imageFile = base64_encode($imageFile);
+			
+			/*
+			 * and update the database 
+			 */
+			$this->_db->setUserAvatar($userId, $imageFile);
+		} # if
+
+		return $errorList;
+	} # changeAvatar
+	
+	/*
 	 * Blacklist a specific spotter
 	 */
 	function addSpotterToBlacklist($ourUserId, $spotterId, $origin) {

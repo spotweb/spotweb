@@ -11,9 +11,10 @@ if (!empty($edituserprefsresult)) {
 
 require "includes/header.inc.php";
 include "includes/form-messages.inc.php";
+
 ?>
 </div>
-<form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post">
+<form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
@@ -146,6 +147,15 @@ include "includes/form-messages.inc.php";
 						</select>
 					</dd>
 
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotimage, 'avatar')) { ?>
+					<dt><label for="edituserprefsform[show_avatars]"><?php echo _('Show avatars in the comments?'); ?></label></dt>
+					<dd><input type="checkbox" name="edituserprefsform[show_avatars]" <?php if ($edituserprefsform['show_avatars']) { echo 'checked="checked"'; } ?>></dd>
+<?php } ?>
+
+					<dt><label for="edituserprefsform[avatar]"><?php echo _('Avatar image to use in posting of comments (maximum 4000 bytes)'); ?></label></dt>
+					<dd><input type="hidden" name="MAX_FILE_SIZE" value="4000" /><input name="edituserprefsform[avatar]" type="file" />
+						<?php if (!empty($spotuser['avatar'])) { ?> <img src='data:image/png;base64,<?php echo $spotuser['avatar']; ?>'> <?php } ?>
+					</dd>
 				</dl>
 			</fieldset>
 		</div>
