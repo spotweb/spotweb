@@ -845,10 +845,6 @@ msgstr "Vorige"
 msgid "Next"
 msgstr "Volgende"
 
-#: we1rdopost.js
-# duplicate msgid "You already reported this spot as spam"
-# duplicate msgstr "Deze spot heb jij als spam gerapporteerd"
-
 #: js/postings/posting.js
 msgid "Posted by %1"
 msgstr "Gepost door %1"
@@ -865,3 +861,60 @@ msgstr "Markeren als spam is niet gelukt:"
 msgid "Calculation of SHA1 hash was not succesfull:"
 msgstr "SHA1 hash berekenen niet gelukt:"
 
+#: js/postings/posting.js
+msgid "Posted by %1"
+msgstr "Gepost door %1"
+msgid "Search spots from %1"
+msgstr "Zoek naar spots van %1"
+msgid "just now"
+msgstr "zojuist"
+msgid "Marking as spam was not succesfull:"
+msgstr "Markeren als spam is niet gelukt:"
+msgid "SHA1 hash calculaties was not succesfull:"
+msgstr "SHA1 hash berekenen niet gelukt:"
+
+#: SpotPage_createuser.php
+msgid "\'%s\' already excists"
+msgstr " \'%s\' bestaat al"
+#: SpotPage_editfulter.php
+msgid "Filter doesn\'t excist"
+msgstr "Filter bestaat niet"
+msgid "Uploaded Spotwebfilter in invalid"
+msgstr "Geuploade Spotweb filter file is ongeldig"
+msgid "Error while uploading filter (%s)"
+msgstr "Fout tijdens uploaden van filter (%s)"
+msgid "Filter hasn\'t been uploaded"
+msgstr "Filter is niet geupload"
+msgid "Group does\'n excist"
+msgstr "Groep bestaat niet"
+msgid "Buildin groups can not be edited"
+msgstr "Ingebouwde groepen mogen niet bewerkt worden"
+#: SpotPage_edituser.php
+msgid "User can not be found"
+msgstr "Gebruiker kan niet gevonden worden"
+msgid "Anonymous user can not be edited"
+msgstr "Anonymous user kan niet bewerkt worden"
+msgid "Admin and Anonymous can not be deleted"
+msgstr "Admin en Anonymous user kunnen niet verwijderd worden"
+msgid "A user must be a member of at least one group"
+msgstr "Een gebruiker moet in minstens een groep zitten"
+#: SpotPage_edituserprefs.php
+msgid "User cannot be found"
+msgstr "Gebruiker kan niet gevonden worden"
+#: SpotPage_postspot.php
+msgid "Please select NZB file"
+msgstr "Geen NZB bestand opgegeven"
+msgid "Please select a picture"
+msgstr "Geen afbeelding opgegeven"
+msgid "Invalid subcategories given "
+msgstr "Ongeldige subcategorieen opgegeven "
+msgid "Spot has been succesfully uploaden. This can take some time before it is shown"
+msgstr "Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is"
+
+#: lib/SpotImage.php vertaal ik niet wellicht engels gewoon beter. Enkel NL strings vertaald
+msgid "Total spots: %d"
+msgstr "Totaal aantal spots: %d"
+msgid "Total new spots: %d"
+msgstr "Aantal nieuwe spots: %d"
+msgid "Last update:"
+msgstr "Laatste update:"

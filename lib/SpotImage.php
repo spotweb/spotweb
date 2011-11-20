@@ -146,16 +146,16 @@ class SpotImage {
 		$fontSize = 24;
 		$angle = 0;
 
-		$text = sprintf(_('Totaal aantal spots: %d'), $totalSpots);
+		$text = sprintf(_('Total spots: %d'), $totalSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
 		if (!$newSpots) { $newSpots = 0; }
-		$text = sprintf(_('Aantal nieuwe spots: %d'), $newSpots);
+		$text = sprintf(_('Total new spots: %d'), $newSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 90, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
-		$text = _('Laatste update:');
+		$text = _('Last update:');
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 230+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
