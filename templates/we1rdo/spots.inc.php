@@ -136,7 +136,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		# only display the NZB button from 24 nov or later
 		if ($spot['stamp'] > 1290578400 ) {
 			if ($show_nzb_button) {
-				echo "<td class='nzb'><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='" . _('Download NZB (n)') . " class='nzb'>NZB";
+				echo "<td class='nzb'><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='" . _('Download NZB (n)') . "' class='nzb'>NZB";
 				
 				if ($spot['hasbeendownloaded']) {
 					echo '*';

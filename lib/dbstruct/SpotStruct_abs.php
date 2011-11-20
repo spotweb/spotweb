@@ -436,6 +436,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'usersettings', 'INTEGER', '0', true, '');
 		$this->validateColumn('privatekey', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('publickey', 'usersettings', "TEXT", NULL, false, 'ascii');
+		$this->validateColumn('avatar', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('otherprefs', 'usersettings', "TEXT", NULL, false, 'utf8');
 		$this->alterStorageEngine("usersettings", "InnoDB");
 	

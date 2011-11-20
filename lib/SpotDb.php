@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.50');
+define('SPOTDB_SCHEMA_VERSION', '0.51');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -354,6 +354,7 @@ class SpotDb {
 								u.lastread AS lastread,
 								u.lastapiusage AS lastapiusage,
 								s.publickey AS publickey,
+								s.avatar AS avatar,
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
@@ -1299,7 +1300,7 @@ class SpotDb {
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
-				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
+				$commentList[$i]['user-key'] = unserialize($commentList[$i]['user-key']);
 				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 			} # if
 		} # for
@@ -1996,6 +1997,13 @@ class SpotDb {
 			} # default
 		} # switch
 	} # saveCache
+	
+	/*
+	 * Updates a users' setting with an base64 encoded image
+	 */
+	function setUserAvatar($userId, $imageEncoded) {
+		$this->_conn->modify("UPDATE usersettings SET avatar = '%s' WHERE userid = %d", Array( $imageEncoded, (int) $userId));
+	} # setUserAvatar
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();

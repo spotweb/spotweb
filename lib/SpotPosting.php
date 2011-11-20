@@ -174,6 +174,14 @@ class SpotPosting {
 		# Fix up some overly long spot properties and other minor issues
 		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
 		$spot['http'] = substr(trim($spot['website']), 0, 449);
+		
+		/**
+		 * If the post's character do not fit into ISO-8859-1, we HTML
+		 * encode the UTF-8 characters so we can properly post the spots
+		 */
+		if (mb_detect_encoding($spot['title'], 'UTF-8, ISO-8859-1', true) == 'UTF-8') {
+			$spot['title'] = mb_convert_encoding($x, 'HTML-ENTITIES', 'UTF-8');
+		} # if
 
 		/*
 		 * Loop through all subcategories and check if they are valid in

@@ -376,6 +376,8 @@ msgid "Send message when posting a spot has finished?"
 msgstr "Bericht versturen wanneer Spot Posten gelukt is?"
 msgid "Send message when a user has been added?"
 msgstr "Bericht versturen wanneer een gebruiker is toegevoegd?"
+msgid "Show avatars in the comments?"
+msgstr "Avatars tonen in de reacties?"
 
 #: filters.inc.php
 msgid "MultiNZB"
@@ -509,3 +511,10 @@ msgstr "Maximaal %1 reports"
 # duplicate msgstr "Geb ruik deze filters standaard"
 msgid "Download your filters"
 msgstr "Download je filters"
+
+#: spotusersystem.php
+msgid "An avatar image has a maximum of 4000 bytes"
+msgstr "Een avatar mag niet groter dan 4000 bytes zijn"
+msgid "Invalid avatar image was supplied"
+msgstr "Opgegeven avatar is geen geldige afbeelding"
+
