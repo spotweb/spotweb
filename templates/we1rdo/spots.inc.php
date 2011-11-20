@@ -94,12 +94,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 				$reportSpamClass = ' red';
 			}
 
-
-			if ($spot['reportcount'] == 1) {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('There is one spamreport found for this spot') . '"><span>'.$spot['reportcount'].'</span></span>';
-			} else {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('There are %d spamreports found for this spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
-			} # else 
+			$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(ngettext('There is %d spamreport found for this spot', 'There are %d spamreports found for this spot', $spot['reportcount']), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
 		}
 
 		echo "\t\t\t\t\t\t\t";

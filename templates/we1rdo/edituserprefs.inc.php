@@ -350,7 +350,7 @@ include "includes/form-messages.inc.php";
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][twitter][enabled]" id="use_twitter" <?php if ($edituserprefsform['notifications']['twitter']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
 				<fieldset id="content_use_twitter">
-					<div class="testNotification" id="twitter_result"><b><?php echo _('Click on "Ask permission". This opens a new page with a PIN number.') . '<br />' . _('Attention: If nothing happens please check you pop-up blocker'); ?></div>
+					<div class="testNotification" id="twitter_result"><b><?php echo _('Click on "Ask permission". This opens a new page with a PIN number.') . '<br />' . _('Attention: If nothing happens please check your pop-up blocker'); ?></div>
 					<input type="button" value="Toestemming Vragen" id="twitter_request_auth" />
 	<?php if (!empty($edituserprefsform['notifications']['twitter']['screen_name'])) { ?>
 					<input type="button" id="twitter_remove" value="Account <?php echo htmlspecialchars($edituserprefsform['notifications']['twitter']['screen_name']); ?> verwijderen" />

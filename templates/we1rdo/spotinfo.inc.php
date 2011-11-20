@@ -51,10 +51,8 @@
 <?php
 	if($spot['rating'] == 0) {
 		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
-	} elseif($spot['rating'] == 1) {
-		echo '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
-	} else {
-		echo '<span class="rating" title="' . sprintf(_('This spot thas %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+	} elseif($spot['rating'] > 0) {
+		echo '<span class="rating" title="' . sprintf(_ngettext('This spot thas %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	}
 ?>
 						</th>

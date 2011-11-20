@@ -200,7 +200,7 @@ function spotPosting() {
 			cbWhenFound(this, prefix + uniquePart + suffix);
 		} else {
 			if (runCount > 400000) {
-				alert("<t>SHA1 hash calculaties was not succesfull:</t> " + runCount);
+				alert("<t>Calculation of SHA1 hash was not succesfull:</t> " + runCount);
 				cbWhenFound(this, '');
 			} else {
 				var _this = this;
