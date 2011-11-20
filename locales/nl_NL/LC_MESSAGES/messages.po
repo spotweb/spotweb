@@ -352,6 +352,8 @@ msgid "Send message when posting a spot has finished?"
 msgstr "Bericht versturen wanneer Spot Posten gelukt is?"
 msgid "Send message when a user has been added?"
 msgstr "Bericht versturen wanneer een gebruiker is toegevoegd?"
+msgid "Show avatars in the comments?"
+msgstr "Avatars tonen in de reacties?"
 
 #: filters.inc.php
 msgid "MultiNZB"
