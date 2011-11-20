@@ -91,8 +91,6 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $this->_currentSession['user']['prefs']);
 
 					if (empty($formMessages['errors'])) {
-					error_log(serialize($_FILES));
-					
 						# Make sure an NZB file was provided
 						if (isset($_FILES['edituserprefsform'])) {
 							$uploadError = $_FILES['edituserprefsform']['error']['avatar'];
