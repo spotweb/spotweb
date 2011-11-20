@@ -48,7 +48,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 		# haal de te editten user op 
 		$spotUser = $this->_db->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = sprintf(_('Gebruiker kan niet gevonden worden'), $spotUser['username']);
+			$formMessages['errors'][] = sprintf(_('User can not be found'), $spotUser['username']);
 			$editResult = array('result' => 'failure');
 		} # if
 		
@@ -81,13 +81,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			# sta niet toe, dat de anonymous user gewijzigd wordt
 			if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-				$formMessages['errors'][] = _('Anonymous user kan niet bewerkt worden');
+				$formMessages['errors'][] = _('Anonymous user can not be edited');
 				$editResult = array('result' => 'failure');
 			} # if
 
 			# sta niet toe, dat de admin user gewist wordt
 			if (($spotUser['userid'] <= SPOTWEB_ADMIN_USERID) && ($formAction == 'delete')) {
-				$formMessages['errors'][] = _('admin en anonymous user kunnen niet verwijderd worden');
+				$formMessages['errors'][] = _('Admin and Anonymous can not be deleted');
 				$editResult = array('result' => 'failure');
 			} # if
 		} # if
@@ -136,7 +136,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 							
 							# zorg er voor dat er meer dan 1 groep overblijft
 							if (count($groupList) < 1) {
-								$formMessages['errors'][] = _('Een gebruiker moet in minstens een groep zitten');
+								$formMessages['errors'][] = _('A user must be a member of at least one group');
 								$editResult = array('result' => 'failure');
 							} else {
 								$spotUserSystem->setUserGroupList($spotUser, $groupList);
