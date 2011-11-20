@@ -599,4 +599,14 @@ msgstr "Volgende"
 msgid "You alerady reported this spot as spam"
 msgstr "Deze spot heb jij als spam gerapporteerd"
 
-
+#: js/postings/posting.js
+msgid "Posted by %1"
+msgstr "Gepost door %1"
+msgid "Search spots from %1"
+msgstr "Zoek naar spots van %1"
+msgid "just now"
+msgstr "zojuist"
+msgid "Marking as spam was not succesfull:"
+msgstr "Markeren als spam is niet gelukt:"
+msgid "SHA1 hash calculaties was not succesfull:"
+msgstr "SHA1 hash berekenen niet gelukt:"
