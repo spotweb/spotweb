@@ -176,6 +176,7 @@ class SpotNntp {
 					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
 					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParser->unspecialString(substr($hdr, 18)); break;
 					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParser->unspecialString(substr($hdr, 17)); break;
+					case 'X-User-Avatar'	: $tmpAr['user-avatar'] .= substr($hdr, 15); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($hdr, 12)); 
 							if ($xml !== false) {
@@ -184,23 +185,6 @@ class SpotNntp {
 							} # if
 							break;
 					} # x-user-key
-					case 'X-User-Avatar'	: {
-						$tmpAr['user-avatar'] = $this->_spotParser->unspecialString(substr($hdr, 15)); 
-						
-						/* 
-						 * Make sure only valid md5 hashes are posted
-						 */
-						$validChars = '0123456789abcdef';
-						$avatarStrLen = strlen($tmpAr['user-avatar']);
-						for($i = 0; $i < $avatarStrLen; $i++) {
-							if (stripos($validChars, strtolower($tmpAr['user-avatar'][$i])) === false) {
-								$tmpAr['user-avatar'] = '';
-								break;
-							} # if
-						} # foreach
-						
-						break;
-					} # x-user-avatar
 				} # switch
 			} # foreach
 			

@@ -397,13 +397,13 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
-		if (!empty($fullComent['user-avatar'])) {
-			$md5 = $fullComment['user-avatar'];
+		if (!empty($fullComment['user-avatar'])) {
+			# Return the image as inline base64 encoded data
+			return 'data:image/png;base64,' . $fullComment['user-avatar'];
 		} else {
 			$md5 = md5(base64_decode($fullComment['user-key']['modulo']));
+			return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=avatar&amp;image[size]=32&amp;image[md5]=' . urlencode($md5);
 		} # else 
-
-		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=avatar&amp;image[size]=32&amp;image[md5]=' . urlencode($md5);
 	} # makeCommenterImageUrl
 
 	/*
