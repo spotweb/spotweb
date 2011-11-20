@@ -374,6 +374,19 @@ class SpotNntp {
 			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$addHeaders .= 'References: <' . $comment['inreplyto']. ">\r\n";
 			$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
+			
+			/*
+			 * And add the X-User-Avatar header if user has an avatar specified
+			 */
+			if (!empty($user['avatar'])) {
+				$tmpAvatar = explode("\r\n", chunk_split($user['avatar'], 900));
+				
+				foreach($tmpAvatar as $avatarChunk) {
+					if (strlen(trim($avatarChunk)) > 0) {
+						$addHeaders .= 'X-User-Avatar: ' . $avatarChunk . "\r\n";
+					} # if
+				} # foreach
+			} # if
 
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $comment, $addHeaders);
 		} # postComment

@@ -153,7 +153,9 @@ include "includes/form-messages.inc.php";
 <?php } ?>
 
 					<dt><label for="edituserprefsform[avatar]"><?php echo _('Avatar image to use in posting of comments (maximum 4000 bytes)'); ?></label></dt>
-					<dd><input type="hidden" name="MAX_FILE_SIZE" value="4000" /><input name="edituserprefsform[avatar]" type="file" /><img src='data:image/png;base64,<?php echo $spotuser['avatar']; ?>'></dd>
+					<dd><input type="hidden" name="MAX_FILE_SIZE" value="4000" /><input name="edituserprefsform[avatar]" type="file" />
+						<?php if (!empty($spotuser['avatar'])) { ?> <img src='data:image/png;base64,<?php echo $spotuser['avatar']; ?>'> <?php } ?>
+					</dd>
 				</dl>
 			</fieldset>
 		</div>
