@@ -385,9 +385,9 @@ function postCommentsForm() {
 			$("span#ster"+id).addClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);
 		} else if (id == rating) {
 			if (id == 1) {
-				$("span#ster"+id).addClass("active").attr('title', '<t>No star given</t>');
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any star</t>");
 			} else {
-				$("span#ster"+id).addClass("active").attr('title', '<t>No stars given</t>');
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any stars</t>");
 			} // if
 		} else {
 			$("span#ster"+id).removeClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);

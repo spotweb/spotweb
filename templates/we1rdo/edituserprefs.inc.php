@@ -171,10 +171,10 @@ include "includes/form-messages.inc.php";
 						<select id="nzbhandlingselect" name="edituserprefsform[nzbhandling][action]">
 							<option data-fields="" <?php if ($edituserprefsform['nzbhandling']['action'] == "disable") { echo 'selected="selected"'; } ?> value="disable"><?php echo _('No intergration with download client'); ?></option>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd')) { ?>
-							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "push-sabnzbd") { echo 'selected="selected"'; } ?> value="push-sabnzbd"><?php echo _('Call sabnzbd+ throught HTTP by SpotWeb'); ?></option>
+							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "push-sabnzbd") { echo 'selected="selected"'; } ?> value="push-sabnzbd"><?php echo _('Call SABnzbd throught HTTP by SpotWeb'); ?></option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
-							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "client-sabnzbd") { echo 'selected="selected"'; } ?> value="client-sabnzbd"><?php echo _('Run sabnzbd+ through users\' browser'); ?></option>
+							<option data-fields="sabnzbd" <?php if ($edituserprefsform['nzbhandling']['action'] == "client-sabnzbd") { echo 'selected="selected"'; } ?> value="client-sabnzbd"><?php echo _("Run SABnzbd through users' browser"); ?></option>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'save')) { ?>
 							<option data-fields="localdir" <?php if ($edituserprefsform['nzbhandling']['action'] == "save") { echo 'selected="selected"'; } ?> value="save"><?php echo _('Save to file op disk'); ?></option>
@@ -213,10 +213,10 @@ include "includes/form-messages.inc.php";
 					<!-- Sabnzbd -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
 					<fieldset id="nzbhandling-fieldset-sabnzbd">
-						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]"><?php echo _('URL to sabnzbd (HTTP included and portnumber where sabnzbd is installed)?'); ?></label></dt>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]"><?php echo _('URL to SABnzbd (HTTP included and portnumber where SABnzbd is installed)?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][url]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['url']); ?>"></dd>
 
-						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]"><?php echo _('API key from sabnzbd?'); ?></label></dt>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]"><?php echo _('API key for SABnzbd?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['apikey']); ?>"></dd>
 					</fieldset>
 <?php } ?>
@@ -422,7 +422,7 @@ include "includes/form-messages.inc.php";
 		} # if
 
 		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'nzb_handled')) {
-			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][nzb_handled]\">" . _('Send message when a NZB file is send? Doesn\'t work for client-sanzbd.') . "</label></dt>" . PHP_EOL;
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][nzb_handled]\">" . _("Send message when a NZB file is send? Doesn't work for client-SABnzbd.") . "</label></dt>" . PHP_EOL;
 			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][nzb_handled]\"";
 			if ($edituserprefsform['notifications'][$provider]['events']['nzb_handled']) {
 				echo "checked=\"checked\"";

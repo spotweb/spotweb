@@ -70,10 +70,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 	
 		if($spot['rating'] == 0) {
 			$rating = '';
-		} elseif($spot['rating'] == 1) {
-			$rating = '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
-		} else {
-			$rating = '<span class="rating" title="' . sprintf(_('This spot has %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+		} elseif($spot['rating'] > 1) {
+			$rating = '<span class="rating" title="' . sprintf(ngettext('This spot has %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
 
 		if($tplHelper->isModerated($spot)) { 
@@ -147,12 +145,12 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 				echo "</td>";
 			} # if
 
-			# display the sabnzbd button
+			# display the SABnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($spot['hasbeendownloaded']) {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SabNZBd queue (you already downloaded this spot) (s)') . "'> </a></td>";
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') . "'> </a></td>";
 				} else {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SabNZBd queue (s)'). "'> </a></td>";	
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SABnzbd queue (s)'). "'> </a></td>";	
 				} # else
 			} # if
 		} else {
