@@ -97,13 +97,13 @@ echo "</th>";
 <?php if (!$spot['verified'] || $tplHelper->isModerated($spot) || $isBlacklisted) {
 	echo "<div class='warning'>";
 	if (!$spot['verified']) {
-		echo _("Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!") . "<br>";
+		echo _('This spot is not verified, the name of the sender has not been confirmed') . "<br>";
 	}
 	if ($tplHelper->isModerated($spot)) {
-		echo _("Deze spot is als mogelijk onwenselijk gemodereerd!") . "<br>";
+		echo _('This spot is marked as potentional spam') . "<br>";
 	}
 	if ($isBlacklisted) {
-		echo _("De spotter staat op een blacklist!") . "<br>";
+		echo _('This spotter is already blacklisted') . "<br>";
 	}
 	echo "</div>";
 } ?>
