@@ -29,6 +29,11 @@ msgid "Grouplist"
 msgstr "Groepenlijst"
 
 #: comment.inc.php
+msgid "%s gave this spot %d star"
+msgid_plural "%s gave this spot %d stars"
+msgstr[0] "%s gaf deze spot %d ster"
+msgstr[1] "%s gaf deze spot %d sterren"
+
 msgid "Posted by %s"
 msgstr "Gepost door %s"
 
@@ -329,8 +334,8 @@ msgstr "Ga naar de categorie '%s'"
 msgid "Position in watchlist (w)"
 msgstr "Plaats in watchlist (w)"
 
-msgid "%d comments by '%s'"
-msgstr "%d reacties door '%s'"
+msgid "%d comments on '%s'"
+msgstr "%d reacties bij '%s'"
 
 msgid "Comments"
 msgstr "Reacties"
