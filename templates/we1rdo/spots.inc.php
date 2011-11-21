@@ -115,7 +115,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		if ($show_comments) {
-			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by \'%s\''), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
+			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
