@@ -1,22 +1,23 @@
 <?php
 	# First retrieve the needed parameters
-	$messageId = $tplHelper->getParam('messageid');
-	$pageNr = $tplHelper->getParam('pagenr');
-	$perPage = $tplHelper->getParam('perpage');
-	
-	# Get the spot comments for each 5 comments
-	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
-	$comments = $tplHelper->formatComments($comments);
-
-	# Does the user want to see avatars?
-	$show_avatars = $currentSession['user']['prefs']['show_avatars'];
+	isset($messageId) ? : $messageId = $tplHelper->getParam('messageid');
+	isset($pageNr) ? : $pageNr = $tplHelper->getParam('pagenr');
+	isset($perPage) ? : $perPage = $tplHelper->getParam('perpage');
 	
 	/*
 	 * We retrieve the fullspot as well because we want to compare the spotterids.
 	 * This operation is rather cheap because we already have the fullspot cached
 	 * in the database
 	 */
-	$spot = $tplHelper->getFullSpot($messageId, true);
+	isset($spot) ? : $spot = $tplHelper->getFullSpot($messageId, true);
+	
+	# Get the spot comments for each $perPage comments
+	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
+	$comments = $tplHelper->formatComments($comments);
+
+	# Does the user want to see avatars?
+	$show_avatars = $currentSession['user']['prefs']['show_avatars'];
+	
 	
 	foreach($comments as $comment) {
 		if ($comment['verified']) {

@@ -96,7 +96,10 @@ function openSpot(id,url) {
 		postCommentsForm();
 		postReportForm();
 		postBlacklistForm();
-		loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+		
+		if (spotweb_retrieve_commentsperpage > 0) {
+			loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+		} // if
 		loadSpotImage();
 	});
 }
