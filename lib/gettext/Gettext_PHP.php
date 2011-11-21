@@ -28,7 +28,7 @@
  * @copyright (c) 2009 David Soria Parra <sn_@gmx.net>
  * @author David Soria Parra <sn_@gmx.net>
  */
-class Gettext_PHP extends Gettext
+class Gettext_PHP extends SpotGettext
 {
     /**
      * First magic word in the MO header
