@@ -470,7 +470,8 @@ class SpotNntp {
 						  'messageid' => $msgId,
 						  'spotterid' => '',
 						  'xml-signature' => '',
-						  'moderated' => 0);
+						  'moderated' => 0,
+						  'user-avatar' => '');
 			# Vraag de volledige article header van de spot op
 			$header = $this->getHeader('<' . $msgId . '>');
 
