@@ -114,3 +114,17 @@
 	function _($message) {
 		return gettext( $message );
 	} # _()
+	
+	/*
+	 * Lookup the plural form of an gettext entry,
+	 * for now we only support 1 and !=1 
+	 */
+	function ngettext($single, $plural, $num) {
+		$translated = explode("\0", gettext($single . "\0" . $plural));
+		
+		if ($num == 1) {
+			return $translated[0];
+		} else {
+			return $translated[1];
+		} # if
+	} # ngettext
