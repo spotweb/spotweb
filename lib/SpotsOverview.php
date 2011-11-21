@@ -165,10 +165,10 @@ class SpotsOverview {
 	function getNzb($fullSpot, $nntp) {
 		SpotTiming::start(__FUNCTION__);
 
-		if ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
-			if (!$this->_activeRetriever) {
-				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
-			} # if
+		if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
+			$nzb = true;
+		} elseif ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
+			$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
@@ -188,10 +188,10 @@ class SpotsOverview {
 		$return_code = false;
 
 		if (is_array($fullSpot['image'])) {
-			if ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
-				if (!$this->_activeRetriever) {
-					$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
-				} # if
+			if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
+				$data = true;
+			} elseif ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
+				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
 			} else {
 				try {
 					$img = $nntp->getImage($fullSpot);
@@ -286,6 +286,10 @@ class SpotsOverview {
 	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
 		SpotTiming::start(__FUNCTION__);
 		$url_md5 = md5($url);
+
+		if ($this->_activeRetriever && $this->_cache->isCached($url_md5, SpotCache::Web)) {
+			return array(200, true);
+		} # if
 
 		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
 		if (!$content || time()-(int) $content['stamp'] > $ttl) {

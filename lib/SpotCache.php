@@ -13,6 +13,10 @@ class SpotCache {
 		$this->_db = $db;
 	} # ctor
 
+	function isCached($resourceid, $cachetype) {
+		return $this->_db->isCached($resourceid, $cachetype);
+	} # isCached
+
 	function getCache($resourceid, $cachetype) {
 		SpotTiming::start(__FUNCTION__);
 		$data = $this->_db->getCache($resourceid, $cachetype);
