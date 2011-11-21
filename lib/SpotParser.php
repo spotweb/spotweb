@@ -180,6 +180,7 @@ class SpotParser {
 		$spot['subcatc'] = '';
 		$spot['subcatd'] = '';
 		$spot['subcatz'] = '';
+		$spot['wassigned'] = false;
 		$isRecentKey = $spot['keyid'] <> 1;
 		
 		# If the user signature is known, calculate the spotterid
