@@ -21,7 +21,8 @@
  * THE SOFTWARE.
  */
 
-require_once 'PHP.php';
+//require_once 'PHP.php';
+//require_once 'Extension.php';
 
 /**
  * Gettext implementation in PHP
@@ -29,7 +30,7 @@ require_once 'PHP.php';
  * @copyright (c) 2009 David Soria Parra <sn_@gmx.net>
  * @author David Soria Parra <sn_@gmx.net>
  */
-abstract class Gettext
+abstract class SpotGettext
 {
     private static $instance = null;
 
@@ -76,7 +77,11 @@ abstract class Gettext
     {
         $key = $directory . $domain . $locale;
         if (!isset(self::$instance[$key])) {
-            self::$instance[$key] = new Gettext_PHP($directory, $domain, $locale);
+            if (extension_loaded('gettext')) {
+                self::$instance[$key] = new Gettext_Extension($directory, $domain, $locale);
+            } else {
+                self::$instance[$key] = new Gettext_PHP($directory, $domain, $locale);
+            }
         }
 
         return self::$instance[$key];
