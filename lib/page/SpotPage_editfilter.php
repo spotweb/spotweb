@@ -40,7 +40,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# geef dan een error
 		if ((empty($spotFilter)) && (isset($this->_editFilterForm['submitchangefilter']))) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Filter doesn\'t excist');
+			$formMessages['errors'][] = _("Filter doesn't exist");
 		} # if
 		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
@@ -121,7 +121,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					
 					} else {
 						$editResult = array('result' => 'failure');
-						$formMessages['errors'][] = _('Filter hasn\'t been uploaded');
+						$formMessages['errors'][] = _("Filter hasn't been uploaded");
 					} # else
 					
 					break;

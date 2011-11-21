@@ -14,7 +14,7 @@ class SpotStatistics {
 		$rs = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
 		if (!$rs || (int) $rs['stamp'] < $lastUpdate) {
 			$data = $this->_db->getSpotCountPerHour($limit);
-			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data, true);
+			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data);
 		} else {
 			$data = $rs['content'];
 		} # else
@@ -27,7 +27,7 @@ class SpotStatistics {
 		$rs = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
 		if (!$rs || (int) $rs['stamp'] < $lastUpdate) {
 			$data = $this->_db->getSpotCountPerWeekday($limit);
-			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data, true);
+			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data);
 		} else {
 			$data = $rs['content'];
 		} # else
@@ -40,7 +40,7 @@ class SpotStatistics {
 		$rs = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
 		if (!$rs || (int) $rs['stamp'] < $lastUpdate) {
 			$data = $this->_db->getSpotCountPerMonth($limit);
-			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data, true);
+			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data);
 		} else {
 			$data = $rs['content'];
 		} # else
@@ -53,7 +53,7 @@ class SpotStatistics {
 		$rs = $this->_cache->getCache($resourceid, SpotCache::StatisticsData);
 		if (!$rs || (int) $rs['stamp'] < $lastUpdate) {
 			$data = $this->_db->getSpotCountPerCategory($limit);
-			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data, true);
+			$this->_cache->saveCache($resourceid, SpotCache::StatisticsData, '', $data);
 		} else {
 			$data = $rs['content'];
 		} # else
@@ -61,12 +61,18 @@ class SpotStatistics {
 		return $data;
 	} # getSpotCountPerCategory
 
-	function getResourceid($name, $limit) {
+	function getResourceid($name, $limit, $language=false) {
 		if ($limit == '') {
-			return $name . '.all';
+			$resourceid = $name . '.all';
 		} else {
-			return $name . '.' . $limit;
+			$resourceid = $name . '.' . $limit;
 		} # else
+
+		if ($language) {
+			$resourceid .= '.' . $language;
+		} # if
+
+		return $resourceid;
 	} # getResourceid
 
 } # class SpotStatistics

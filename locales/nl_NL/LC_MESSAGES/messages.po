@@ -788,14 +788,11 @@ msgstr "Categori&euml;n niet gebruiken"
 msgid "Login Failed"
 msgstr "Inloggen mislukt"
 
-msgid "Succesfully logged in"
+msgid "Successfully logged in"
 msgstr "Succesvol ingelogd"
 
 msgid "Expand filter"
 msgstr "Filter uitklappen"
-
-# duplicate msgid "Collapse filter"
-# duplicate msgstr "Filter inklappen"
 
 msgid "New spots retrieved"
 msgstr "Nieuwe spots binnengehaald"
@@ -803,16 +800,16 @@ msgstr "Nieuwe spots binnengehaald"
 msgid "Delete downloadhistory"
 msgstr "Download geschiedenis verwijderd"
 
-msgid "Succesfully logged out"
+msgid "Successfully logged out"
 msgstr "Succesvol uitgelogd"
 
-msgid "User <strong>&quot;%user%&quot;</strong> succesfully added"
+msgid "User <strong>&quot;%user%&quot;</strong> successfully added"
 msgstr "Gebruiker <strong>&quot;%user%&quot;</strong> succesvol toegevoegd"
 
 msgid "Password: <strong>&quot;%pass%</strong>"
 msgstr "Wachtwoord: <strong>&quot;%pass%</strong>"
 
-msgid "User succesfull changed"
+msgid "User successfully changed"
 msgstr "Gebruiker succesvol gewijzigd"
 
 msgid "Free space (complete)"
@@ -855,66 +852,154 @@ msgstr "Zoek naar spots van %1"
 msgid "just now"
 msgstr "zojuist"
 
-msgid "Marking as spam was not succesfull:"
+msgid "Marking as spam was not successfull:"
 msgstr "Markeren als spam is niet gelukt:"
 
-msgid "Calculation of SHA1 hash was not succesfull:"
-msgstr "SHA1 hash berekenen niet gelukt:"
-
-#: js/postings/posting.js
-msgid "Posted by %1"
-msgstr "Gepost door %1"
-msgid "Search spots from %1"
-msgstr "Zoek naar spots van %1"
-msgid "just now"
-msgstr "zojuist"
-msgid "Marking as spam was not succesfull:"
-msgstr "Markeren als spam is niet gelukt:"
-msgid "SHA1 hash calculaties was not succesfull:"
+msgid "Calculation of SHA1 hash was not successfull:"
 msgstr "SHA1 hash berekenen niet gelukt:"
 
 #: SpotPage_createuser.php
-msgid "\'%s\' already excists"
-msgstr " \'%s\' bestaat al"
-#: SpotPage_editfulter.php
-msgid "Filter doesn\'t excist"
+msgid "'%s' already exists"
+msgstr "'%s' bestaat al"
+
+#: SpotPage_editfilter.php
+msgid "Filter doesn't exist"
 msgstr "Filter bestaat niet"
+
 msgid "Uploaded Spotwebfilter in invalid"
 msgstr "Geuploade Spotweb filter file is ongeldig"
+
 msgid "Error while uploading filter (%s)"
 msgstr "Fout tijdens uploaden van filter (%s)"
-msgid "Filter hasn\'t been uploaded"
+
+msgid "Filter hasn't been uploaded"
 msgstr "Filter is niet geupload"
-msgid "Group does\'n excist"
+
+msgid "Group doesn't exist"
 msgstr "Groep bestaat niet"
-msgid "Buildin groups can not be edited"
+
+msgid "Build-in groups can not be edited"
 msgstr "Ingebouwde groepen mogen niet bewerkt worden"
+
 #: SpotPage_edituser.php
 msgid "User can not be found"
 msgstr "Gebruiker kan niet gevonden worden"
+
 msgid "Anonymous user can not be edited"
 msgstr "Anonymous user kan niet bewerkt worden"
+
 msgid "Admin and Anonymous can not be deleted"
 msgstr "Admin en Anonymous user kunnen niet verwijderd worden"
-msgid "A user must be a member of at least one group"
-msgstr "Een gebruiker moet in minstens een groep zitten"
+
+msgid "A user must be member of at least one group"
+msgstr "Een gebruiker moet in minstens &eacute;&eacute;n groep zitten"
+
 #: SpotPage_edituserprefs.php
 msgid "User cannot be found"
 msgstr "Gebruiker kan niet gevonden worden"
+
 #: SpotPage_postspot.php
 msgid "Please select NZB file"
 msgstr "Geen NZB bestand opgegeven"
+
 msgid "Please select a picture"
 msgstr "Geen afbeelding opgegeven"
+
 msgid "Invalid subcategories given "
 msgstr "Ongeldige subcategorieen opgegeven "
-msgid "Spot has been succesfully uploaden. This can take some time before it is shown"
+
+msgid "Spot has been successfully uploaded. It can take some time before it is shown"
 msgstr "Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is"
 
-#: lib/SpotImage.php vertaal ik niet wellicht engels gewoon beter. Enkel NL strings vertaald
+#: lib/SpotImage.php
 msgid "Total spots: %d"
 msgstr "Totaal aantal spots: %d"
+
 msgid "Total new spots: %d"
 msgstr "Aantal nieuwe spots: %d"
-msgid "Last update:"
-msgstr "Laatste update:"
+
+msgid "Monday"
+msgstr "Maandag"
+
+msgid "Tuesday"
+msgstr "Disndag"
+
+msgid "Wednesday"
+msgstr "Woensdag"
+
+msgid "Thursday"
+msgstr "Donderdag"
+
+msgid "Friday"
+msgstr "Vrijdag"
+
+msgid "Saturday"
+msgstr "Zaterdag"
+
+msgid "Sunday"
+msgstr "Zondag"
+
+msgid "January"
+msgstr "Januari"
+
+msgid "February"
+msgstr "Februari"
+
+msgid "March"
+msgstr "Maart"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "Mei"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "Augustus"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
+
+msgid "Spots per category"
+msgstr "Spots per categorie"
+
+msgid "Spots per hour"
+msgstr "Spots per uur"
+
+msgid "Spots per weekday"
+msgstr "Spots per weekdag"
+
+msgid "Spots per month"
+msgstr "Spots per maand"
+
+msgid "Everything"
+msgstr "Alles"
+
+msgid "last year"
+msgstr "afgelopen jaar"
+
+msgid "last month"
+msgstr "afgelopen maand"
+
+msgid "last week"
+msgstr "afgelopen week"
+
+msgid "last 24 hours"
+msgstr "laatste 24 uur"
+
+

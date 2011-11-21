@@ -64,7 +64,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		# geef dan ook een error.
 		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 4)) { 
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Buildin groups can not be edited');
+			$formMessages['errors'][] = _('Build-in groups can not be edited');
 		} # if
 
 		# Is dit een submit van een form, of nog maar de aanroep?
