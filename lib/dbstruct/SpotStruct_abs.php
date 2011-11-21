@@ -234,14 +234,6 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
-		# oude cache droppen, converteren gaat te vaak fout
-		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
-			$this->dropTable('cache');
-		} # if
-		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
-			$this->renameTable('cache', 'cachetmp');
-		} # if
-
 		# drop eventueel FTS indexes op de spotsfull tabel
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
@@ -509,6 +501,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
+
+		# oude cache droppen, converteren gaat te vaak fout
+		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
+			$this->dropTable('cache');
+		} # if
+		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
+			$this->renameTable('cache', 'cachetmp');
+		} # if
 
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
