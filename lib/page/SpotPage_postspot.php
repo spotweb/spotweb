@@ -120,7 +120,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 									'user' => $this->_currentSession['user']['username'],
 									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'body' => $spot['body']);
-				$formMessages['info'][] = _('Spot has been succesfully uploaden. This can take some time before it is shown');
+				$formMessages['info'][] = _('Spot has been successfully uploaded. It can take some time before it is shown');
 
 				# en verstuur een notificatie
 				$spotsNotifications->sendSpotPosted($spot);

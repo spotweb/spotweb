@@ -39,7 +39,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
-			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr);
+			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr, $this->_currentSession['user']['prefs']['user_language']);
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
 			# Check users' permissions
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');

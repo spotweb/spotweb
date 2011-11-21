@@ -659,7 +659,7 @@ function toggleSidebarPanel(id) {
 							if(result == "failure") {
 								$("div.login > ul.formerrors").append("<li><t>Login Failed</t></li>");
 							} else {
-								$("div.login > ul.forminformation").append("<li><t>Succesfully logged in</t></li>");
+								$("div.login > ul.forminformation").append("<li><t>Successfully logged in</t></li>");
 								setTimeout( function() { location.reload() }, 2000);
 							}
 						}
@@ -844,7 +844,7 @@ function userLogout() {
 	$("div.userPanel > a.greyButton").hide();
 	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 	$.get(url, function(data) {
-		setTimeout( function() { $("span.info").html("<t>Succesfully logged out</t>") }, 1000);
+		setTimeout( function() { $("span.info").html("<t>Successfully logged out</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -885,7 +885,7 @@ function toggleCreateUser() {
 						if(result == "success") {
 							var user = $(xml).find('user').text();
 							var pass = $(xml).find('password').text();
-							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> succesfully added</t></li>".replace('%user%', user));
+							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> successfully added</t></li>".replace('%user%', user));
 							$("div.createUser > ul.forminformation").append("<li><t>Password: <strong>&quot;%pass%</strong></t></li>".replace('%pass%', pass));							
 						} else {
 							$('errors', xml).each(function() {
@@ -943,7 +943,7 @@ function toggleEditUser(userid) {
 						$("div.editUser > ul.forminformation").empty();
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
-							$("div.editUser > ul.forminformation").append("<li><t>User succesfull changed</t></li>");
+							$("div.editUser > ul.forminformation").append("<li><t>User successfully changed</t></li>");
 							
 							if (buttonPressed == 'edituserform[submitresetuserapi]') {
 								$(".apikeyinputfield")[0].value = $(xml).find('newapikey').text();

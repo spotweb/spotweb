@@ -136,7 +136,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 							
 							# zorg er voor dat er meer dan 1 groep overblijft
 							if (count($groupList) < 1) {
-								$formMessages['errors'][] = _('A user must be a member of at least one group');
+								$formMessages['errors'][] = _('A user must be member of at least one group');
 								$editResult = array('result' => 'failure');
 							} else {
 								$spotUserSystem->setUserGroupList($spotUser, $groupList);
