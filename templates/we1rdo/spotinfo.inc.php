@@ -180,7 +180,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				postReportForm();
 				postBlacklistForm();
 				loadSpotImage();
-				loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+				if (spotweb_retrieve_commentsperpage > 0) {
+					loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+				} // if
 			});
 
 			function addText(text,element_id) {
