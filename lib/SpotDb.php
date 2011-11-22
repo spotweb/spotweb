@@ -1930,6 +1930,12 @@ class SpotDb {
 		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics, SpotCache::StatisticsData,(int) time()-$expireDays*24*60*60));
 	} # cleanCache
 
+	function isCached($resourceid, $cachetype) {
+		$tmpResult = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
+
+		return (!empty($tmpResult));
+	} # isCached
+
 	function getCache($resourceid, $cachetype) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {

@@ -57,9 +57,9 @@ if (empty($editresult)) {
 						<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
 						<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
 						<?php if ($perm['deny']) { ?>
-							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetallow]" value="<?php echo _('Set to allow'); ?>">
+							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetallow]" value="<?php echo _('Denied'); ?>" title="<?php echo _('Set to allow'); ?>">
 						<?php } else { ?>
-							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetdeny]" value="<?php echo _('Set to deny'); ?>">
+							<input class="smallGreyButton" type="submit" name="editsecgroupform[submitsetdeny]" value="<?php echo _('Allowed'); ?>" title="<?php echo _('Set to deny'); ?>">
 						<?php } ?>
 					</form>
 				</td>

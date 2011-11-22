@@ -388,9 +388,9 @@ function postCommentsForm() {
 			$("span#ster"+id).addClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);
 		} else if (id == rating) {
 			if (id == 1) {
-				$("span#ster"+id).addClass("active").attr('title', '<t>No star given</t>');
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any star</t>");
 			} else {
-				$("span#ster"+id).addClass("active").attr('title', '<t>No stars given</t>');
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any stars</t>");
 			} // if
 		} else {
 			$("span#ster"+id).removeClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);
@@ -662,7 +662,7 @@ function toggleSidebarPanel(id) {
 							if(result == "failure") {
 								$("div.login > ul.formerrors").append("<li><t>Login Failed</t></li>");
 							} else {
-								$("div.login > ul.forminformation").append("<li><t>Succesfully logged in</t></li>");
+								$("div.login > ul.forminformation").append("<li><t>Successfully logged in</t></li>");
 								setTimeout( function() { location.reload() }, 2000);
 							}
 						}
@@ -808,7 +808,7 @@ function eraseDownloads() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("<t>Delete downloadhistory</t>") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Erased downloadhistory</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -818,7 +818,7 @@ function markAsRead() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("<t>Mark everything as read</t>") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Marked everything as read</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -847,7 +847,7 @@ function userLogout() {
 	$("div.userPanel > a.greyButton").hide();
 	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 	$.get(url, function(data) {
-		setTimeout( function() { $("span.info").html("<t>Succesfully logged out</t>") }, 1000);
+		setTimeout( function() { $("span.info").html("<t>Successfully logged out</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -888,7 +888,7 @@ function toggleCreateUser() {
 						if(result == "success") {
 							var user = $(xml).find('user').text();
 							var pass = $(xml).find('password').text();
-							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> succesfully added</t></li>".replace('%user%', user));
+							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> successfully added</t></li>".replace('%user%', user));
 							$("div.createUser > ul.forminformation").append("<li><t>Password: <strong>&quot;%pass%</strong></t></li>".replace('%pass%', pass));							
 						} else {
 							$('errors', xml).each(function() {
@@ -946,7 +946,7 @@ function toggleEditUser(userid) {
 						$("div.editUser > ul.forminformation").empty();
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
-							$("div.editUser > ul.forminformation").append("<li><t>User succesfull changed</t></li>");
+							$("div.editUser > ul.forminformation").append("<li><t>User successfully changed</t></li>");
 							
 							if (buttonPressed == 'edituserform[submitresetuserapi]') {
 								$(".apikeyinputfield")[0].value = $(xml).find('newapikey').text();

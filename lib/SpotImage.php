@@ -45,7 +45,8 @@ class SpotImage {
 		return array('metadata' => $data['metadata'], 'expire' => true, 'content' => $imageString);
 	} # createErrorImage
 
-	function createStatistics($graph, $limit, $lastUpdate) {
+	function createStatistics($graph, $limit, $lastUpdate, $language) {
+		SpotTranslation::initialize($language);
 		$spotStatistics = new SpotStatistics($this->_db);
 		include_once("images/pchart/pData.class.php");
 		include_once("images/pchart/pDraw.class.php");
@@ -65,12 +66,12 @@ class SpotImage {
 									  $graphicType = "bar";
 									  break;
 			case 'spotsperweekday'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerWeekday($limit, $lastUpdate));
-									  $legend = array(_("Maandag"),_("Dinsdag"),_("Woensdag"),_("Donderdag"),_("Vrijdag"),_("Zaterdag"),_("Zondag"));
+									  $legend = array(_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday"));
 									  $dataSet = array(@$prepData[1],@$prepData[2],@$prepData[3],@$prepData[4],@$prepData[5],@$prepData[6],@$prepData[0]);
 									  $graphicType = "bar";
 									  break;
 			case 'spotspermonth'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerMonth($limit, $lastUpdate));
-									  $legend = array(_("Januari"),_("Februari"),_("Maart"),_("April"),_("Mei"),_("Juni"),_("Juli"),_("Augustus"),_("September"),_("Oktober"),_("November"),_("December"));
+									  $legend = array(_("January"),_("February"),_("March"),_("April"),_("May"),_("June"),_("July"),_("August"),_("September"),_("October"),_("November"),_("December"));
 									  for ($x=1; $x<=12; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "bar";
 									  break;
@@ -146,16 +147,16 @@ class SpotImage {
 		$fontSize = 24;
 		$angle = 0;
 
-		$text = sprintf(_('Totaal aantal spots: %d'), $totalSpots);
+		$text = sprintf(_('Total spots: %d'), $totalSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
 		if (!$newSpots) { $newSpots = 0; }
-		$text = sprintf(_('Aantal nieuwe spots: %d'), $newSpots);
+		$text = sprintf(_('Total new spots: %d'), $newSpots);
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 90, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
-		$text = _('Laatste update:');
+		$text = _('Last update:');
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 230+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
@@ -398,20 +399,20 @@ class SpotImage {
 
 	function getValidStatisticsGraphs() {
 		$graphs = array();
-												$graphs['spotspercategory']	= _("Spots per categorie");
-												$graphs['spotsperhour']		= _("Spots per uur");
-												$graphs['spotsperweekday']	= _("Spots per weekdag");
-		if ($this->getOldestSpotAge() > 31) {	$graphs['spotspermonth']	= _("Spots per maand"); }
+												$graphs['spotspercategory']	= _("Spots per category");
+												$graphs['spotsperhour']		= _("Spots per hour");
+												$graphs['spotsperweekday']	= _("Spots per weekday");
+		if ($this->getOldestSpotAge() > 31) {	$graphs['spotspermonth']	= _("Spots per month"); }
 		return $graphs;
 	} # getValidStatisticsGraphs
 
 	function getValidStatisticsLimits() {
 		$limits = array();
-		if ($this->getOldestSpotAge() > 365) {	$limits['']			= _("Alles"); }
-		if ($this->getOldestSpotAge() > 31) {	$limits['year']		= _("afgelopen jaar"); }
-		if ($this->getOldestSpotAge() > 7) {	$limits['month']	= _("afgelopen maand"); }
-		if ($this->getOldestSpotAge() > 1) {	$limits['week']		= _("afgelopen week"); }
-												$limits['day']		= _("laatste 24 uur");
+		if ($this->getOldestSpotAge() > 365) {	$limits['']			= _("Everything"); }
+		if ($this->getOldestSpotAge() > 31) {	$limits['year']		= _("last year"); }
+		if ($this->getOldestSpotAge() > 7) {	$limits['month']	= _("last month"); }
+		if ($this->getOldestSpotAge() > 1) {	$limits['week']		= _("last week"); }
+												$limits['day']		= _("last 24 hours");
 		return $limits;
 	} # getValidStatisticsLimits
 

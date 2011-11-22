@@ -51,10 +51,8 @@
 <?php
 	if($spot['rating'] == 0) {
 		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
-	} elseif($spot['rating'] == 1) {
-		echo '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
-	} else {
-		echo '<span class="rating" title="' . sprintf(_('This spot thas %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+	} elseif($spot['rating'] > 0) {
+		echo '<span class="rating" title="' . sprintf(ngettext('This spot thas %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	}
 ?>
 						</th>
@@ -79,9 +77,9 @@ echo "</th>";
 } ?>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($spot['hasbeendownloaded']) { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SabNZBd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
 <?php } else { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SabNZBd queue (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
 <?php } } ?>
 					</tr>
 				</tbody>

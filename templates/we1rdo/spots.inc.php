@@ -70,10 +70,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 	
 		if($spot['rating'] == 0) {
 			$rating = '';
-		} elseif($spot['rating'] == 1) {
-			$rating = '<span class="rating" title="' . _('This spot has one star') . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
-		} else {
-			$rating = '<span class="rating" title="' . sprintf(_('This spot has %d stars'), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
+		} elseif($spot['rating'] > 0) {
+			$rating = '<span class="rating" title="' . sprintf(ngettext('This spot has %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
 
 		if($tplHelper->isModerated($spot)) { 
@@ -94,12 +92,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 				$reportSpamClass = ' red';
 			}
 
-
-			if ($spot['reportcount'] == 1) {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . _('There is one spamreport found for this spot') . '"><span>'.$spot['reportcount'].'</span></span>';
-			} else {
-				$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(_('There are %d spamreports found for this spot'), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
-			} # else 
+			$reportSpam = '<span class="reportedSpam'.$reportSpamClass.'" title="' . sprintf(ngettext('There is %d spamreport found for this spot', 'There are %d spamreports found for this spot', $spot['reportcount']), $spot['reportcount']) . '"><span>'.$spot['reportcount'].'</span></span>';
 		}
 
 		echo "\t\t\t\t\t\t\t";
@@ -111,7 +104,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo " seenspot";
 		} # if
 		echo "'>";
-		echo "<td class='category'><a href='" . $spot['caturl'] . "' title='" . sprintf(_('Go to catergory \'%s\''), $spot['catshortdesc']) . "'>" . $spot['catshortdesc'] . "</a></td>" .
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
@@ -122,7 +115,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		if ($show_comments) {
-			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title='" . sprintf(_('%d comments by \'%s\''), $spot['commentcount'], $spot['title']) . "'>" . $spot['commentcount'] . "</a></td>";
+			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
@@ -152,12 +145,12 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 				echo "</td>";
 			} # if
 
-			# display the sabnzbd button
+			# display the SABnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($spot['hasbeendownloaded']) {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SabNZBd queue (you already downloaded this spot) (s)') . "'> </a></td>";
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') . "'> </a></td>";
 				} else {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SabNZBd queue (s)'). "'> </a></td>";	
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SABnzbd queue (s)'). "'> </a></td>";	
 				} # else
 			} # if
 		} else {

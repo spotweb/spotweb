@@ -25,10 +25,8 @@
 
 			if($comment['spotrating'] == 0) {
 				$rating = '';
-			} elseif($comment['spotrating'] == 1) {
-				$rating = '<span class="rating" title="'.$comment['fromhdr'].' gaf deze spot '.$comment['spotrating'].' ster"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
-			} else {
-				$rating = '<span class="rating" title="'.$comment['fromhdr'].' gaf deze spot '.$comment['spotrating'].' sterren"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
+			} elseif($comment['spotrating'] > 0) {
+				$rating = '<span class="rating" title="' . sprintf(ngettext("%s gave this spot %d star", "%s gave this spot %d stars", $comment['spotrating']), $comment['fromhdr'], $comment['spotrating']) . '"><span style="width:' . $comment['spotrating'] * 4 . 'px;"></span></span>';
 			}
 ?>
 

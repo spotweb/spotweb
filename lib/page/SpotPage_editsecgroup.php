@@ -32,7 +32,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		# geef dan een error
 		if ((empty($secGroup)) && (!isset($this->_editSecGroupForm['submitaddgroup']))) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Groep bestaat niet');
+			$formMessages['errors'][] = _('Group does\'n excist');
 		} # if
 		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
@@ -64,7 +64,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		# geef dan ook een error.
 		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 4)) { 
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Ingebouwde groepen mogen niet bewerkt worden');
+			$formMessages['errors'][] = _('Build-in groups can not be edited');
 		} # if
 
 		# Is dit een submit van een form, of nog maar de aanroep?
