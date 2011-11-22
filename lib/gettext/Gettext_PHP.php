@@ -41,6 +41,7 @@ class Gettext_PHP extends SpotGettext
     const MAGIC2 = 0x950412de;
 
     protected $mofile;
+    protected $cachefile;
     protected $translationTable = array();
     protected $parsed = false;
 
@@ -52,6 +53,8 @@ class Gettext_PHP extends SpotGettext
     public function __construct($directory, $domain, $locale)
     {
         $this->mofile = sprintf("%s/%s/LC_MESSAGES/%s.mo", $directory,
+                            $locale, $domain);
+        $this->cachefile = sprintf("%s/%s/LC_MESSAGES/%s.ser", $directory,
                             $locale, $domain);
     }
 
@@ -155,40 +158,45 @@ class Gettext_PHP extends SpotGettext
             return;
         }
 
-        /* check for filesize */
-        $fp = fopen($this->mofile, "rb");
+        if( ($tmpobj = @file_get_contents($this->cachefile)) === FALSE || filemtime($this->cachefile) < filemtime($this->mofile)) {
+            /* check for filesize */
+            $fp = fopen($this->mofile, "rb");
 
-        $offsets = $this->parseHeader($fp);
-        if (null == $offsets || $filesize < 4 * ($offsets['num_strings'] + 7)) {
-            fclose($fp);
-            return;
-        }
-
-        $transTable = array();
-        $table = $this->parseOffsetTable($fp, $offsets['trans_offset'],
-                    $offsets['num_strings']);
-        if (null == $table) {
-            fclose($fp);
-            return;
-        }
-
-        foreach ($table as $idx => $entry) {
-            $transTable[$idx] = $this->parseEntry($fp, $entry);
-        }
-
-        $table = $this->parseOffsetTable($fp, $offsets['orig_offset'],
-                    $offsets['num_strings']);
-        foreach ($table as $idx => $entry) {
-            $entry = $this->parseEntry($fp, $entry);
-
-            $formes      = explode(chr(0), $entry);
-            $translation = explode(chr(0), $transTable[$idx]);
-            foreach($formes as $form) {
-                $this->translationTable[$form] = $translation;
+            $offsets = $this->parseHeader($fp);
+            if (null == $offsets || $filesize < 4 * ($offsets['num_strings'] + 7)) {
+                fclose($fp);
+                return;
             }
-        }
 
-        fclose($fp);
+            $transTable = array();
+            $table = $this->parseOffsetTable($fp, $offsets['trans_offset'],
+                        $offsets['num_strings']);
+            if (null == $table) {
+                fclose($fp);
+                return;
+            }
+
+            foreach ($table as $idx => $entry) {
+                $transTable[$idx] = $this->parseEntry($fp, $entry);
+            }
+
+            $table = $this->parseOffsetTable($fp, $offsets['orig_offset'],
+                        $offsets['num_strings']);
+            foreach ($table as $idx => $entry) {
+                $entry = $this->parseEntry($fp, $entry);
+
+                $formes      = explode(chr(0), $entry);
+                $translation = explode(chr(0), $transTable[$idx]);
+                foreach($formes as $form) {
+                    $this->translationTable[$form] = $translation;
+                }
+            }
+            @file_put_contents($this->cachefile, serialize($this->translationTable) );
+
+            fclose($fp);
+        } else {
+            $this->translationTable = unserialize($tmpobj);
+        }
 
         $this->parsed = true;
     }
