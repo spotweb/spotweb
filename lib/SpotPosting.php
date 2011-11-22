@@ -180,7 +180,7 @@ class SpotPosting {
 		 * encode the UTF-8 characters so we can properly post the spots
 		 */
 		if (mb_detect_encoding($spot['title'], 'UTF-8, ISO-8859-1', true) == 'UTF-8') {
-			$spot['title'] = mb_convert_encoding($x, 'HTML-ENTITIES', 'UTF-8');
+			$spot['title'] = mb_convert_encoding($spot['title'], 'HTML-ENTITIES', 'UTF-8');
 		} # if
 
 		/*
