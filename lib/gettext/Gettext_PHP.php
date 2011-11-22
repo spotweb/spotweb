@@ -158,7 +158,7 @@ class Gettext_PHP extends SpotGettext
             return;
         }
 
-        if( ($tmpobj = @file_get_contents($this->cachefile)) === FALSE || filemtime($this->cachefile) < filemtime($this->mofile)) {
+        if( ($tmpobj = @file_get_contents($this->cachefile)) === FALSE || @filemtime($this->cachefile) < filemtime($this->mofile)) {
             /* check for filesize */
             $fp = fopen($this->mofile, "rb");
 
