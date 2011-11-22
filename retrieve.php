@@ -260,9 +260,11 @@ if ($settings->get('prepare_statistics') && $newSpotCount) {
 		# Reset timelimit
 		set_time_limit(60);
 
-		foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
-			$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr);
-		} # foreach graph
+		foreach($settings->get('system_languages') as $language => $name) {
+			foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
+				$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
+			} # foreach graph
+		} # foreach language
 		echo "Finished creating statistics " . $limitName . PHP_EOL;
 	} # foreach limit
 

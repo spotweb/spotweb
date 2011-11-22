@@ -11,7 +11,7 @@
 					<?php } ?>
 				</div>
 
-				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Open \'User Panel\''); ?>'>
+				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Open 'User Panel'"); ?>">
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					Inloggen
@@ -95,7 +95,7 @@
 					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='<?php echo _('Search within current filters'); ?>'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='<?php echo _('Search'); ?>'></div>
 
 					<div class="sidebarPanel advancedSearch">
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title='<?php echo _('Close \'Advanced Search\''); ?>'>[x]</a><?php echo _('Search on:'); ?></h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title="<?php echo _("Close 'Advanced Search'"); ?>">[x]</a><?php echo _('Search on:'); ?></h4>
 						<ul class="search<?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
 							<li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label><?php echo _('Poster'); ?></label></li>
@@ -179,7 +179,7 @@
 <?php } # if perform search ?>
 
 				<div class="sidebarPanel userPanel">
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title='<?php echo _('Close \'User panel\''); ?>'>[x]</a><?php echo _('User panel'); ?></h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Close 'User panel'"); ?>">[x]</a><?php echo _('User panel'); ?></h4>
 					<ul class="userInfo">
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 						<li><?php echo _('You are not logged in'); ?></li>

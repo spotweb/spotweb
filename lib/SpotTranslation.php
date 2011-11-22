@@ -1,27 +1,48 @@
 <?php
-
-if (!function_exists('gettext')) {
-	require_once "lib/SpotGetTextEmulation.php";
-} # if
-
 /*
  * Translation code for Spotweb
  */
 class SpotTranslation {
 
 	public static function initialize($lang) {
-		# Do we need the emulation library?
-		if (function_exists('_gettext_setlang')) {
-			_gettext_setlang($lang);
-		} else {
+		# Do we native gettext?
+		if (extension_loaded('gettext')) {
 			putenv("LC_ALL=" . $lang . ".UTF-8");
 			setlocale(LC_ALL, $lang . '.UTF-8');
-		} # else
 
-		# Initialize the textdomain
-		bindtextdomain('messages', 'locales/');
-		bind_textdomain_codeset('messages', 'UTF-8'); 
-		textdomain('messages');
+			# Initialize the textdomain
+			bindtextdomain('messages', 'locales/');
+			bind_textdomain_codeset('messages', 'UTF-8');
+			textdomain('messages');
+		} else {
+			global $_gt_obj;
+			$_gt_obj = new Gettext_PHP('locales', 'messages', $lang);
+		} # else
 	} # initialize
 } # class SpotTranslation
 
+
+/*
+ * This is procedural code because we want these functions to
+ * be in the global name space
+ */
+if (!extension_loaded('gettext')) {
+	function _($msg) {
+		global $_gt_obj;
+		return $_gt_obj->gettext($msg);
+	} # _ alias of gettext
+} # if
+
+if (!extension_loaded('gettext')) {
+	function gettext($msg) {
+		global $_gt_obj;
+		return $_gt_obj->gettext($msg);
+	} # gettext
+} # if
+
+if (!extension_loaded('gettext')) {
+	function ngettext($msg, $msg_plural, $count) {
+		global $_gt_obj;
+		return $_gt_obj->ngettext($msg, $msg_plural, $count);
+	} # ngettext
+} # if
