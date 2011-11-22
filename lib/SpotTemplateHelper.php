@@ -807,16 +807,14 @@ class SpotTemplateHelper {
 	# DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...	
 	function time_ago($date, $granularity=2) {
 		$difference = time() - $date;
-		$periods = array(0 => 315360000,
-			1 => 31536000,
-			2 => 2628000,
-			3 => 604800, 
-			4 => 86400,
-			5 => 3600,
-			6 => 60,
-			7 => 1);
-		$names_singular = array('eeuw', 'jaar', 'maand', 'week', 'dag', 'uur', 'minuut', 'seconde');
-		$names_plural = array('eeuwen', 'jaar', 'maanden', 'weken', 'dagen', 'uur', 'minuten', 'seconden');
+		$periods = array('decade' => 315360000,
+			'year' => 31536000,
+			'month' => 2628000,
+			'week' => 604800, 
+			'day' => 86400,
+			'hour' => 3600,
+			'minute' => 60,
+			'second' => 1);
 			
 		$retval = '';
 		foreach ($periods as $key => $value) {
@@ -824,15 +822,10 @@ class SpotTemplateHelper {
 				$time = floor($difference/$value);
 				$difference %= $value;
 				$retval .= ($retval ? ' ' : '').$time.' ';
-				
-				if ($time > 1) {
-					$retval .= $names_plural[$key];
-				} else {
-					$retval .= $names_singular[$key];
-				} # if
+				$retval .= ngettext($key, $key.'s', $time);
 				$retval .= ', ';
 				$granularity--;
-			}
+			} # if
 			
 			if ($granularity == '0') { break; }
 		}
