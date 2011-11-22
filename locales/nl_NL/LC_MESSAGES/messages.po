@@ -73,6 +73,12 @@ msgstr "Object"
 msgid "Deny/Allow"
 msgstr "Blokkeer / Sta toe"
 
+msgid "Allowed"
+msgstr "Toegestaan"
+
+msgid "Denied"
+msgstr "Geweigerd"
+
 msgid "Set to allow"
 msgstr "Selecteer om toe te staan"
 
