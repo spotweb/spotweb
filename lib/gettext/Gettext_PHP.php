@@ -150,6 +150,7 @@ class Gettext_PHP extends SpotGettext
         $this->translationTable = array();
 
         if (!file_exists($this->mofile)) {
+			$this->parsed = true;
             return;
         }
 
