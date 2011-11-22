@@ -808,8 +808,11 @@ msgstr "Filter uitklappen"
 msgid "New spots retrieved"
 msgstr "Nieuwe spots binnengehaald"
 
-msgid "Delete downloadhistory"
+msgid "Erased downloadhistory"
 msgstr "Download geschiedenis verwijderd"
+
+msgid "Marked everything as read"
+msgstr "Alles als gelezen gemarkeerd"
 
 msgid "Successfully logged out"
 msgstr "Succesvol uitgelogd"
