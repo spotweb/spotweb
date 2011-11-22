@@ -805,7 +805,7 @@ function eraseDownloads() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("<t>Delete downloadhistory</t>") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Erased downloadhistory</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -815,7 +815,7 @@ function markAsRead() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("<t>Mark everything as read</t>") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Marked everything as read</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
