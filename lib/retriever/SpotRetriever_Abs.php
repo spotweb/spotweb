@@ -78,6 +78,9 @@ abstract class SpotRetriever_Abs {
 
 			# en start met zoeken
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
+				# Reset timelimit
+				set_time_limit(120);			
+				
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
 
 				# get the list of headers (XHDR)

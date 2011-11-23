@@ -21,7 +21,7 @@ if (empty($postresult)) {
 
 		<div>
 			<div class="categorydropdown">
-				<dt id='txtcategory'>Category</dt>
+				<dt id='txtcategory'><?php echo _('Category'); ?></dt>
 				<dd>
 					<select id='spotcategoryselectbox' name='newspotform[category]' onchange="categorySelectChanged()">
 			<?php foreach(SpotCategories::$_head_categories as $catnr => $catvalue) { ?>
@@ -32,7 +32,7 @@ if (empty($postresult)) {
 			</div>
 			
 			<div class="categorydropdown">
-				<dt id='txtsubcatz'>Type</dt>
+				<dt id='txtsubcatz'><?php echo _('Type'); ?></dt>
 				<dd>
 					<select id='subcatzselectbox' name='newspotform[subcatz]' onchange="categorySelectChanged()">
 					</select>
@@ -40,7 +40,7 @@ if (empty($postresult)) {
 			</div>
 
 			<div class="categorydropdown">
-				<dt id='txtsubcata'>Formaat</dt>
+				<dt id='txtsubcata'><?php echo _('Format'); ?></dt>
 				<dd>
 					<select id='subcataselectbox' name='newspotform[subcata]'>
 					</select>
@@ -50,10 +50,10 @@ if (empty($postresult)) {
 
 		<div class='clear'></div>
 	
-		<dt><label for="newspotform[title]">Titel</label></dt>
+		<dt><label for="newspotform[title]"><?php echo _('Titel'); ?></label></dt>
 		<dd><input type="text" name="newspotform[title]" size="60" maxlength="60" value=""></dd>
 
-		<dt><label for="newspotform[body]">Omschrijving</label></dt>
+		<dt><label for="newspotform[body]"><?php echo _('Description'); ?></label></dt>
 		<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="70" rows="8"><?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']); ?></textarea><br />
 <?php
 	$smileyList = $tplHelper->getSmileyList();
@@ -63,23 +63,23 @@ if (empty($postresult)) {
 ?>
 		</dd>
 
-		<dt><label for="newspotform[tag]">Tag</label></dt>
+		<dt><label for="newspotform[tag]"><?php echo _('Tag'); ?></label></dt>
 		<dd><input type="text" name="newspotform[tag]" size="94" maxlength="99" value="<?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_tag']); ?>"></dd>
 
-		<dt><label for="newspotform[website]">Website</label></dt>
+		<dt><label for="newspotform[website]"><?php echo _('Website'); ?></label></dt>
 		<dd><input type="text" name="newspotform[website]" size="94" maxlength="255" value=""></dd>
 
-		<dt><label for="newspotform[nzbfile]">NZB bestand</label></dt>
+		<dt><label for="newspotform[nzbfile]"><?php echo _('NZB file'); ?></label></dt>
 		<dd><input name="newspotform[nzbfile]" size="82" type="file" /></dd>
 
-		<dt><label for="newspotform[imagefile]">Afbeelding</label></dt>
+		<dt><label for="newspotform[imagefile]"><?php echo _('Picture'); ?></label></dt>
 		<dd><input name="newspotform[imagefile]" size="82" type="file" /></dd>
 
 		<div class='clear'></div>
 
 		<div>
 			<div class="subcategorylistbox">
-				<dt id='txtsubcatb'>Bron</dt>
+				<dt id='txtsubcatb'><?php echo _('Source'); ?></dt>
 				<dd>
 					<select id='subcatbselectbox' name='newspotform[subcatb][]' multiple='multiple' size='8'>
 					</select>
@@ -87,7 +87,7 @@ if (empty($postresult)) {
 			</div>
 			
 			<div class="subcategorylistbox">
-				<dt id='txtsubcatc'>Taal</dt>
+				<dt id='txtsubcatc'><?php echo _('Language'); ?></dt>
 				<dd>
 					<select id='subcatcselectbox' name='newspotform[subcatc][]' multiple='multiple' size='8'>
 					</select>
@@ -95,7 +95,7 @@ if (empty($postresult)) {
 			</div>
 			
 			<div class="subcategorylistbox">
-				<dt id='txtsubcatd'>Genre</dt>
+				<dt id='txtsubcatd'><?php echo _('Genre'); ?></dt>
 				<dd>
 					<select id='subcatdselectbox' name='newspotform[subcatd][]' multiple='multiple' size='8'>
 					</select>
@@ -105,7 +105,7 @@ if (empty($postresult)) {
 		
 		<div class='clear'><br></div>
 
-		<dd><input class="greyButton" type="submit" name="dummySubmit" value="Toevoegen"></dd>
+		<dd><input class="greyButton" type="submit" name="dummySubmit" value="<?php echo _('Add'); ?>"></dd>
 		
 		</fieldset>
 	</form>

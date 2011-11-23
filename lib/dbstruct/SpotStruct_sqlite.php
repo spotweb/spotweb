@@ -186,7 +186,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	function alterStorageEngine($tablename, $engine) {
 		return ; // null operatie
 	} # alterStorageEngine
-	
+
 	/* creeert een foreign key constraint */
 	function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
 		return ; // null

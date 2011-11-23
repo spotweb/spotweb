@@ -11,7 +11,7 @@
 		# now output each formmessage 
 		foreach($formmessages as $formMsgType => $formMsgValues) {
 			foreach($formMsgValues as $value) {
-				$output .= '<' . $formMsgType . '>' . htmlspecialchars($tplHelper->formMessageToString($value)) . '</' . $formMsgType . '>';
+				$output .= '<' . $formMsgType . '>' . htmlspecialchars($value) . '</' . $formMsgType . '>';
 			} # foreach
 		} # foreach
 		

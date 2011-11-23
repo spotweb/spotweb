@@ -18,7 +18,7 @@
 				Bevestig
 			</td>
 			<dd>
-				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremovegroup]" value="Wissen">
+				<input class="smallGreyButton" type="submit" name="editsecgroupform[submitremovegroup]" value="<?php echo _('Delete'); ?>">
 			</dd>
 		</form>
 	</fieldset>

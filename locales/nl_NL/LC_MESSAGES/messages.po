@@ -1,0 +1,1339 @@
+# This file is distributed under the same license as the SpotWeb package. 
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: general translations
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "Cancel"
+msgstr "Afbreken"
+
+msgid "Change"
+msgstr "Wijzig"
+
+msgid "Delete"
+msgstr "Verwijder"
+
+#: adminpanel.inc.php
+msgid "Back to mainview"
+msgstr "Terug naar overzichtspagina"
+
+msgid "Userlist"
+msgstr "Gebruikerslijst"
+
+msgid "Grouplist"
+msgstr "Groepenlijst"
+
+#: comment.inc.php
+msgid "%s gave this spot %d star"
+msgid_plural "%s gave this spot %d stars"
+msgstr[0] "%s gaf deze spot %d ster"
+msgstr[1] "%s gaf deze spot %d sterren"
+
+msgid "Posted by %s"
+msgstr "Gepost door %s"
+
+msgid "Find spots from %s"
+msgstr "Zoek spots van %s"
+
+#: createuser.inc.php
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+msgid "Firstname"
+msgstr "Voornaam"
+
+msgid "Lastname"
+msgstr "Achternaam"
+
+msgid "E-mailaddress"
+msgstr "E-mailadres"
+
+msgid "Send e-mail to new user?"
+msgstr "E-mail versturen naar nieuwe gebruiker?"
+
+#: editfilter.inc.php
+msgid "Name"
+msgstr "Naam"
+
+msgid "Icon"
+msgstr "Icoon"
+
+#: editsecgroup.inc.php
+msgid "Permission"
+msgstr "Permissie"
+
+msgid "Object"
+msgstr "Object"
+
+msgid "Deny/Allow"
+msgstr "Blokkeer / Sta toe"
+
+msgid "Allowed"
+msgstr "Toegestaan"
+
+msgid "Denied"
+msgstr "Geweigerd"
+
+msgid "Set to allow"
+msgstr "Selecteer om toe te staan"
+
+msgid "Set to deny"
+msgstr "Selecteer om te blokkeren"
+
+msgid "Add the following rights"
+msgstr "Volgende recht toevoegen"
+
+msgid "ObjectID (normally empty)"
+msgstr "ObjectID (meestal leeg)"
+
+#: edituser.inc.php
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+msgid "Confirm new password"
+msgstr "Bevestig nieuw wachtwoord"
+
+msgid "Create new API key"
+msgstr "Nieuwe API key genereren"
+
+msgid "Group"
+msgstr "Groep"
+
+msgid "Member"
+msgstr "Lid"
+
+msgid "Delete user"
+msgstr "Wis gebruiker"
+
+msgid "Clear all sessions"
+msgstr "Wis alle sessies"
+
+#: listfilters.inc.php
+msgid "Edit filter"
+msgstr "Bewerk een filter"
+
+msgid "Restore filter to default"
+msgstr "Herstel filters naar standaard"
+
+msgid "Use these filters as standard"
+msgstr "Deze filters gebruiken als standaard"
+
+msgid "Download this filters"
+msgstr "Download je filters"
+
+msgid "Upload filters"
+msgstr "Upload je filters"
+
+#: postcomment.inc.php
+msgid "Add comment"
+msgstr "Reactie toevoegen"
+
+msgid "Post"
+msgstr "Plaats"
+
+#: listgroups.inc.php
+msgid "Change name"
+msgstr "Wijzig naam"
+
+msgid "Permissions"
+msgstr "Permissies"
+
+msgid "Delete group"
+msgstr "Wis groep"
+
+msgid "Show rights in group"
+msgstr "Toon rechten in groep"
+
+msgid "Change groupname"
+msgstr "Wijzig groepsnaam"
+
+msgid "Change group"
+msgstr "Wijzig groep"
+
+msgid "Add new group"
+msgstr "Nieuwe groep toevoegen"
+
+#: login.inc.php
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "Login"
+msgstr "Inloggen"
+
+#: newspot.inc.php
+msgid "Category"
+msgstr "Categorie"
+
+msgid "Type"
+msgstr "Typen"
+
+msgid "Format"
+msgstr "Formaat"
+
+msgid "Titel"
+msgstr "Titel"
+
+msgid "Description"
+msgstr "Omschrijving"
+
+msgid "NZB file"
+msgstr "NZB bestand"
+
+msgid "Picture"
+msgstr "Afbeelding"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "Genre"
+msgstr "Genre"
+
+#: listuser.inc.php
+msgid "Mail"
+msgstr "Mail"
+
+msgid "Last visit"
+msgstr "Laatste bezoek"
+
+msgid "Member of group"
+msgstr "Lid van groepen"
+
+msgid "Change user"
+msgstr "Wijzig gebruiker"
+
+#: spotinfo.inc.php
+msgid "This spot is not verified, the name of the sender has not been confirmed"
+msgstr "Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!"
+
+msgid "This spot is marked as potentional spam"
+msgstr "Deze spot is als mogelijk onwenselijk gemodereerd!"
+
+msgid "This spotter is already blacklisted"
+msgstr "De spotter staat op een blacklist!"
+
+msgid "Back to mainview (ESC / U)"
+msgstr "Ga terug naar het overzicht (esc / u)"
+
+msgid "This spot has %d star"
+msgid_plural "This spot has %d stars"
+msgstr[0] "Deze spot heeft %d ster"
+msgstr[1] "Deze spot heeft %d sterren"
+
+msgid "Report this spot as spam"
+msgstr "Rapporteer deze spot als spam"
+
+msgid "You already reported this spot as spam"
+msgstr "Deze spot heb jij als spam gerapporteerd"
+
+msgid "Download NZB"
+msgstr "Download NZB"
+
+msgid "(this spot has already been downloaded)"
+msgstr "(deze spot is al gedownload)"
+
+msgid "Find NZB"
+msgstr "NZB zoeken"
+
+msgid "Delete from watchlist (w)"
+msgstr "Verwijder uit watchlist (w)"
+
+msgid "Place in watchlist (w)"
+msgstr "Plaats in watchlist (w)"
+
+msgid "Add NZB to SABnzbd queue (you already downloaded this spot) (s)"
+msgstr "Voeg NZB aan SABnzbd wachtrij toe (je hebt deze spot al gedownload) (s)"
+
+msgid "Add NZB to SABnzbd queue (s)"
+msgstr "Voeg NZB aan SABnzbd wachtrij toe"
+
+msgid "Find spots in this category"
+msgstr "Zoek spots in de categorie"
+
+msgid "Sort on sender [0-Z]"
+msgstr "Sorteren op Afzender [0-Z]"
+
+msgid "Sort on category"
+msgstr "Sorteren op Categorie"
+
+msgid "Sort on sender [Z-0]"
+msgstr "Sorteren op Afzender [Z-0]"
+
+msgid "Sort on title [0-Z]"
+msgstr "Sorteren op titel [0-Z]"
+
+msgid "Sort on title [Z-0]"
+msgstr "Sorten op titel [Z-0]"
+
+msgid "Sort on age [ascending]"
+msgstr "Sorteren op Leeftijd [oplopend]"
+
+msgid "Sort on age [descending]"
+msgstr "Sorteren op Leeftijd [aflopend]"
+
+msgid "Sort on size [ascending]"
+msgstr "Sorteren op omvang [aflopend]"
+
+msgid "Sort on size [descending]"
+msgstr "Sorten op omvang [aflopend]"
+
+msgid "Number of comments"
+msgstr "Aantal reacties"
+
+msgid "Age"
+msgstr "Leeftijd"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Size"
+msgstr "Omvang"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Sender"
+msgstr "Afzender"
+
+msgid "Blacklist this spotter"
+msgstr "Deze spotter blacklisten"
+
+msgid "Search spots with the tag: %s"
+msgstr "Zoek naar spots met de tag: %s"
+
+msgid "Searchengine"
+msgstr "Zoekmachine"
+
+msgid "Search"
+msgstr "Zoek"
+
+msgid "NZB"
+msgstr "NZB"
+
+msgid "Download NZB (n)"
+msgstr "Download NZB (n)"
+
+msgid "Number of spamreports"
+msgstr "Aantal spam reports"
+
+msgid "Post Description"
+msgstr "Verzend omschrijving"
+
+msgid "No results found"
+msgstr "Geen resultaten gevonden"
+
+msgid "There is %d spamreport found for this spot"
+msgid_plural "There are %d spamreports found for this spot"
+msgstr[0] "Er is %d spam report gevonden op deze spot"
+msgstr[1] "Er zijn %d spam reports gevonden op deze spot"
+
+msgid "Go to category '%s'"
+msgstr "Ga naar de categorie '%s'"
+
+msgid "Position in watchlist (w)"
+msgstr "Plaats in watchlist (w)"
+
+msgid "%d comments on '%s'"
+msgstr "%d reacties bij '%s'"
+
+msgid "Comments"
+msgstr "Reacties"
+
+msgid "Search spot in catergory %s"
+msgstr "Zoek spots in de categorie %s"
+
+msgid "Search spot from %s"
+msgstr "Zoek spots van %s"
+
+msgid "Add comment (open/close windows)"
+msgstr "Reactie toevoegen (uitklappen)"
+
+#: editusersprefs.inc.php
+msgid "Language to use in Spotweb"
+msgstr "Welke taal wordt Spotweb in getoond"
+
+msgid "Dutch"
+msgstr "Nederlands (Dutch)"
+
+msgid "English"
+msgstr "Engels (English)"
+
+msgid "General"
+msgstr "Algemeen"
+
+msgid "NZB handeling"
+msgstr "NZB afhandeling"
+
+msgid "Filters"
+msgstr "Filters"
+
+msgid "Download categories"
+msgstr "Download Categorieen"
+
+msgid "Notifications"
+msgstr "Notificaties"
+
+msgid "Own CSS"
+msgstr "Eigen CSS"
+
+msgid "Posting of spots"
+msgstr "Posten van spots"
+
+msgid "Items per page?"
+msgstr "Aantal items per pagina?"
+
+msgid "Standard searchorder?"
+msgstr "Standaard sorteervolgorde bij zoeken?"
+
+msgid "Relevance"
+msgstr "Relevantie"
+
+msgid "Latest first"
+msgstr "Nieuwste eerst"
+
+msgid "Formatting of dates"
+msgstr "Opmaak van datums"
+
+msgid "Human"
+msgstr "Menselijk"
+
+msgid "Template"
+msgstr "Template"
+
+msgid "Count new spots in filterd list"
+msgstr "Nieuwe Spots tellen in de lijst met filters"
+
+msgid "Track what you're watching"
+msgstr "Bijhouden wat je bekijkt"
+
+msgid "Automatic mark spots as read after each visit?"
+msgstr "Moeten spots automatisch na elke visit als gelezen worden gemarkeerd?"
+
+msgid "Should we keep track of the downloads that are done?"
+msgstr "Moeten we bijhouden welke downloads er gedaan zijn?"
+
+msgid "Shall we keep track of a watchlist?"
+msgstr "Moeten we een watchlist bijhouden?"
+
+msgid "Show filesize in spotoverview?"
+msgstr "Toon bestandsgrootte in spotoverzicht?"
+
+msgid "Show number of spamreports in spotoverview?"
+msgstr "Toon aantal spamreports in spotoverzicht?"
+
+msgid "Show NZB button to download file with this browser?"
+msgstr "Toon een NZB knop om deze via je browser te downloaden?"
+
+msgid "Show a checkbox next to each spot for multiplex NZB file download?"
+msgstr "Toon een checkbox naast elke spot om meerdere NZB files in een keer te downloaden?"
+
+msgid "Hide erotic spots in index?"
+msgstr "Erotica spots op de index verbergen?"
+
+msgid "What NZB searchengine shall we use?"
+msgstr "Welke zoekmachine moet er gebruikt worden?"
+
+msgid "What shall we do with NZB files?"
+msgstr "Wat moeten we met NZB files doen?"
+
+msgid "No intergration with download client"
+msgstr "Geen integratie met download client"
+
+msgid "Call SABnzbd throught HTTP by SpotWeb"
+msgstr "Roep SABnzbd aan via HTTP door SpotWeb"
+
+msgid "Run SABnzbd through users' browser"
+msgstr "Roep SABnzbd aan via de users' browser"
+
+msgid "Save to file op disk"
+msgstr "Bewaar bestand op schrijf"
+
+msgid "Save file to disk and run a command"
+msgstr "Bewaar bestand op schijf en roep een commando aan"
+
+msgid "Call NZBGet through HTTP by SpotWeb"
+msgstr "Roep NZBGet aan via HTTP door SpotWeb"
+
+msgid "What shall we do with multiple NZB files?"
+msgstr "Wat moeten we met meerdere NZB files doen?"
+
+msgid "Merge NZB files"
+msgstr "Voeg de nzb bestanden samen"
+
+msgid "Compress NZB files to 1 zip-file"
+msgstr "Comprimeer de NZB bestanden tot 1 zip bestand"
+
+msgid "Where shall we store the file?"
+msgstr " Waar moet het bestand opgeslagen worden?"
+
+msgid "What programm should be executed?"
+msgstr "Welk programma moet uitgevoerd worden?"
+
+msgid "URL to SABnzbd (HTTP included and portnumber where SABnzbd is installed)?"
+msgstr "URL naar SABnzbd (inclusief HTTP en poortnummer waar SABnzbd geinstalleerd is)?"
+
+msgid "API key for SABnzbd?"
+msgstr "API key voor SABnzbd?"
+
+msgid "Hostname of nzbget?"
+msgstr "Host name van nzbget?"
+
+msgid "Portnumber of nzbget?"
+msgstr "Poortnummer voor nzbget?"
+
+msgid "Username for nzbget? Attention: At this moment only <u>nzbget</u> is a valid name!"
+msgstr "Username voor nzbget? Let op: op dit moment is all&eacute;&eacute;n <u>nzbget</u> een geldige waarde!"
+
+msgid "Password for nzbget?"
+msgstr "Wachtwoord voor nzbget?"
+
+msgid "Use Boxcar?"
+msgstr "Boxcar gebruiken?"
+
+msgid "Boxcar e-mail address?"
+msgstr "Boxcar e-mail adres?"
+
+msgid "Send e-mail to"
+msgstr "E-mail versturen naar"
+
+msgid "Use Growl?"
+msgstr "Growl gebruiken?"
+
+msgid "Growl IP-address?"
+msgstr "Growl IP-adres?"
+
+msgid "Growl password?"
+msgstr "Growl wachtwoord?"
+
+msgid "Use Notiy My Android?"
+msgstr "Notify My Android gebruiken?"
+
+msgid "API key"
+msgstr "API key"
+
+msgid "Use Notifo?"
+msgstr "Notifo gebruiken?"
+
+msgid "Notifo Username?"
+msgstr "Notifo Gebruikersnaam?"
+
+msgid "Notifo <a href=\"http://notifo.com/user/settings\">API secret</a>?"
+msgstr "Notifo <a href=\"http://notifo.com/user/settings\">API secret</a>?"
+
+msgid "Use Prowl?"
+msgstr "Prowl gebruiken?"
+
+msgid "Prowl <a href=\"https://www.prowlapp.com/api_settings.php\">API key"
+msgstr "Prowl <a href=\"https://www.prowlapp.com/api_settings.php\">API key"
+
+msgid "Use Twitter?"
+msgstr "Twitter gebruiken?"
+
+msgid "Click on \"Ask permission\". This opens a new page with a PIN number."
+msgstr "Klik op de knop \"Toestemming Vragen\". Dit opent een nieuwe pagina met een PIN nummer."
+
+msgid "Attention: If nothing happens please check your pop-up blocker"
+msgstr "Let op: als er niets gebeurt, controleer je pop-up blocker"
+
+msgid "Use custom CSS?"
+msgstr "Eigen CSS gebruiken?"
+
+msgid "Add the following tag"
+msgstr "De volgende tag standaard invullen"
+
+msgid "Use the following standard body"
+msgstr "De volgende body standaard invullen"
+
+msgid "Send message when a spot is added or deleted from the watchlist?"
+msgstr "Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de watchlist?"
+
+msgid "Send message when a NZB file is send? Doesn't work for client-SABnzbd."
+msgstr "Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-SABnzbd."
+
+msgid "Send message when updating spots is finish?"
+msgstr "Bericht versturen wanneer Spots Updaten klaar is?"
+
+msgid "Send message when Spam Reports has been send?"
+msgstr "Bericht versturen wanneer Spam Report verzonden is?"
+
+msgid "Send message when posting a spot has finished?"
+msgstr "Bericht versturen wanneer Spot Posten gelukt is?"
+
+msgid "Send message when a user has been added?"
+msgstr "Bericht versturen wanneer een gebruiker is toegevoegd?"
+
+msgid "Show avatars in the comments?"
+msgstr "Avatars tonen in de reacties?"
+
+#: filters.inc.php
+msgid "MultiNZB"
+msgstr "MultiNZB"
+
+msgid "Reset selection"
+msgstr "Reset selectie"
+
+msgid "Open 'User Panel'"
+msgstr "Open 'Gebruikers Paneel'"
+
+msgid "Add spot"
+msgstr "Spot toevoegen"
+
+msgid "Switch between nailed or scrolling sidebar"
+msgstr "Wissel tussen vaste en meescrollende sidebar"
+
+msgid "Search within current filters"
+msgstr "Zoeken in huidige filters"
+
+msgid "Close 'Advanced Search'"
+msgstr "Sluit 'Advanced Search'"
+
+msgid "Search on:"
+msgstr "Zoeken op:"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Poster"
+msgstr "Poster"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "SpotterID"
+msgstr "SpotterID"
+
+msgid "Active filters:"
+msgstr "Actieve filters:"
+
+msgid "Rating"
+msgstr "Rating"
+
+msgid "Limit age"
+msgstr "Leeftijd limiteren"
+
+msgid "Show all"
+msgstr "Alles tonen"
+
+msgid "1 day"
+msgstr "1 dag"
+
+msgid "3 days"
+msgstr "3 dagen"
+
+msgid "1 week"
+msgstr "1 week"
+
+msgid "2 weeks"
+msgstr "2 weken"
+
+msgid "1 month"
+msgstr "1 maand"
+
+msgid "3 months"
+msgstr "3 maanden"
+
+msgid "6 months"
+msgstr "6 maanden"
+
+msgid "1 year"
+msgstr "1 jaar"
+
+msgid "Categories"
+msgstr "Categori&euml;n"
+
+msgid "Use categories"
+msgstr "Categori&euml;n gebruiken"
+
+msgid "Don't use categories"
+msgstr "Categori&euml;n niet gebruiken"
+
+msgid "Number of reports"
+msgstr "Aantal reports"
+
+msgid "Add a filter"
+msgstr "Voeg een filter toe"
+
+msgid "Save search as filter"
+msgstr "Sla opdracht op als filter"
+
+msgid "Close 'User panel'"
+msgstr "Sluit 'Gebruikers paneel'"
+
+msgid "User panel"
+msgstr "Gebruikers paneel"
+
+msgid "You are not logged in"
+msgstr "U bent niet ingelogd"
+
+msgid "Last seen: %s"
+msgstr "Laatst gezien: %s"
+
+msgid "Change preferences"
+msgstr "Voorkeuren wijzigen"
+
+msgid "Admin panel"
+msgstr "Admin panel"
+
+msgid "Log out"
+msgstr "Uitloggen"
+
+msgid "Selected NZB download methode doesn't support sidepanel"
+msgstr "De geselecteerde methode om NZB's te downloaden heeft geen panel support."
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Free storage:"
+msgstr "Opslag (vrij):"
+
+msgid "Speed:"
+msgstr "Snelheid:"
+
+msgid "Max. speed:"
+msgstr "Max. snelheid:"
+
+msgid "ETA:"
+msgstr "ETA:"
+
+msgid "Queue:"
+msgstr "Wachtrij:"
+
+msgid "Queue"
+msgstr "Wachtrij"
+
+msgid "Quick Links"
+msgstr "Quick Links"
+
+msgid "Show new spots in filter &quot;%s&quot;"
+msgstr "Laat nieuwe spots in filter &quot;%s&quot; zien"
+
+msgid "Collapse filter"
+msgstr "Filter inklappen"
+
+msgid "Last update:"
+msgstr "Laatste update:"
+
+msgid "Update Spots"
+msgstr "Haal spots op"
+
+msgid "Erase downloadhistory"
+msgstr "Verwijder downloadgeschiedenis"
+
+msgid "Mark everything as read"
+msgstr "Markeer alles als gelezen"
+
+msgid "Do not filter on # reports"
+msgstr "Niet filteren op aantal reports"
+
+msgid "Maximum %1 reports"
+msgstr "Maximaal %1 reports"
+
+#: listfilters.inc.php
+msgid "Download your filters"
+msgstr "Download je filters"
+
+#: spotusersystem.php
+msgid "An avatar image has a maximum of 4000 bytes"
+msgstr "Een avatar mag niet groter dan 4000 bytes zijn"
+
+msgid "Invalid avatar image was supplied"
+msgstr "Opgegeven avatar is geen geldige afbeelding"
+
+# javascript
+#: scripts.js
+msgid "Error while loading this page, you will be returned automaticly to the mainview"
+msgstr "Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht..."
+
+msgid "Add comment (hide)"
+msgstr "Reactie toevoegen (verbergen)"
+
+msgid "Add comment (show)"
+msgstr "Reactie toevoegen (uitklappen)"
+
+msgid "star"
+msgstr "ster"
+
+msgid "stars"
+msgstr "sterren"
+
+msgid "Rate spot"
+msgstr "Geef spot"
+
+msgid "Don't give any star"
+msgstr "Geen ster geven"
+
+msgid "Don't give any stars"
+msgstr "Geen sterren geven"
+
+msgid "Click on this image to show real size (i)"
+msgstr "Klik om dit plaatje op ware grootte te laten zien (i)"
+
+msgid "Click image to reduce"
+msgstr "Klik om plaatje te verkleinen"
+
+msgid "<b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this."
+msgstr "<b>Stap 2</b>:<br />Vul hieronder het PIN-nummer in die je van Twitter hebt gekregen en verifi&euml;er deze"
+
+msgid "Validate PIN"
+msgstr "Verifiëer PIN"
+
+msgid "Do not always make the sidebar visible"
+msgstr "Maak sidebar niet altijd zichtbaar"
+
+msgid "Make sidebar always visible"
+msgstr "Maak sidebar altijd zichtbaar"
+
+msgid "Use Categories"
+msgstr "Categori&euml;n gebruiken"
+
+msgid "Disable Catergories"
+msgstr "Categori&euml;n niet gebruiken"
+
+msgid "Login Failed"
+msgstr "Inloggen mislukt"
+
+msgid "Successfully logged in"
+msgstr "Succesvol ingelogd"
+
+msgid "Expand filter"
+msgstr "Filter uitklappen"
+
+msgid "New spots retrieved"
+msgstr "Nieuwe spots binnengehaald"
+
+msgid "Erased downloadhistory"
+msgstr "Download geschiedenis verwijderd"
+
+msgid "Marked everything as read"
+msgstr "Alles als gelezen gemarkeerd"
+
+msgid "Successfully logged out"
+msgstr "Succesvol uitgelogd"
+
+msgid "User <strong>&quot;%user%&quot;</strong> successfully added"
+msgstr "Gebruiker <strong>&quot;%user%&quot;</strong> succesvol toegevoegd"
+
+msgid "Password: <strong>&quot;%pass%</strong>"
+msgstr "Wachtwoord: <strong>&quot;%pass%</strong>"
+
+msgid "User successfully changed"
+msgstr "Gebruiker succesvol gewijzigd"
+
+msgid "Free space (complete)"
+msgstr "Vrije ruimte (complete)"
+
+msgid "Totale space (complete)"
+msgstr "Totale ruimte (complete)"
+
+msgid "No items in queue"
+msgstr "Geen items in de wachtrij"
+
+msgid "Up"
+msgstr "Omhoog"
+
+msgid "Down"
+msgstr "Omlaag"
+
+msgid "Delete from queue"
+msgstr "Verwijder uit de wachtrij"
+
+msgid "Show %1 till %2 from a total of %3 results"
+msgstr "Toon %1 t/m %2 van %3 resultaten"
+
+msgid "Show 1 result"
+msgstr "Toon 1 resultaat"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+#: js/postings/posting.js
+msgid "Posted by %1"
+msgstr "Gepost door %1"
+
+msgid "Search spots from %1"
+msgstr "Zoek naar spots van %1"
+
+msgid "just now"
+msgstr "zojuist"
+
+msgid "Marking as spam was not successfull:"
+msgstr "Markeren als spam is niet gelukt:"
+
+msgid "Calculation of SHA1 hash was not successfull:"
+msgstr "SHA1 hash berekenen niet gelukt:"
+
+#: SpotPage_createuser.php
+msgid "'%s' already exists"
+msgstr "'%s' bestaat al"
+
+#: SpotPage_editfilter.php
+msgid "Filter doesn't exist"
+msgstr "Filter bestaat niet"
+
+msgid "Uploaded Spotwebfilter in invalid"
+msgstr "Geuploade Spotweb filter file is ongeldig"
+
+msgid "Error while uploading filter (%s)"
+msgstr "Fout tijdens uploaden van filter (%s)"
+
+msgid "Filter hasn't been uploaded"
+msgstr "Filter is niet geupload"
+
+msgid "Group doesn't exist"
+msgstr "Groep bestaat niet"
+
+msgid "Build-in groups can not be edited"
+msgstr "Ingebouwde groepen mogen niet bewerkt worden"
+
+#: SpotPage_edituser.php
+msgid "User can not be found"
+msgstr "Gebruiker kan niet gevonden worden"
+
+msgid "Anonymous user can not be edited"
+msgstr "Anonymous user kan niet bewerkt worden"
+
+msgid "Admin and Anonymous can not be deleted"
+msgstr "Admin en Anonymous user kunnen niet verwijderd worden"
+
+msgid "A user must be member of at least one group"
+msgstr "Een gebruiker moet in minstens &eacute;&eacute;n groep zitten"
+
+#: SpotPage_edituserprefs.php
+msgid "User cannot be found"
+msgstr "Gebruiker kan niet gevonden worden"
+
+#: SpotPage_postspot.php
+msgid "Please select NZB file"
+msgstr "Geen NZB bestand opgegeven"
+
+msgid "Please select a picture"
+msgstr "Geen afbeelding opgegeven"
+
+msgid "Invalid subcategories given "
+msgstr "Ongeldige subcategorieen opgegeven "
+
+msgid "Spot has been successfully uploaded. It can take some time before it is shown"
+msgstr "Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is"
+
+#: lib/SpotImage.php
+msgid "Total spots: %d"
+msgstr "Totaal aantal spots: %d"
+
+msgid "Total new spots: %d"
+msgstr "Aantal nieuwe spots: %d"
+
+msgid "Monday"
+msgstr "Maandag"
+
+msgid "Tuesday"
+msgstr "Disndag"
+
+msgid "Wednesday"
+msgstr "Woensdag"
+
+msgid "Thursday"
+msgstr "Donderdag"
+
+msgid "Friday"
+msgstr "Vrijdag"
+
+msgid "Saturday"
+msgstr "Zaterdag"
+
+msgid "Sunday"
+msgstr "Zondag"
+
+msgid "January"
+msgstr "Januari"
+
+msgid "February"
+msgstr "Februari"
+
+msgid "March"
+msgstr "Maart"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "Mei"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "Augustus"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
+
+msgid "Spots per category"
+msgstr "Spots per categorie"
+
+msgid "Spots per hour"
+msgstr "Spots per uur"
+
+msgid "Spots per weekday"
+msgstr "Spots per weekdag"
+
+msgid "Spots per month"
+msgstr "Spots per maand"
+
+msgid "Everything"
+msgstr "Alles"
+
+msgid "last year"
+msgstr "afgelopen jaar"
+
+msgid "last month"
+msgstr "afgelopen maand"
+
+msgid "last week"
+msgstr "afgelopen week"
+
+msgid "last 24 hours"
+msgstr "laatste 24 uur"
+
+#: lib/SpotTemplateHelper.php
+msgid "decade"
+msgid_plural "decades"
+msgstr[0] "decennium"
+msgstr[1] "decennia"
+
+msgid "year"
+msgid_plural "years"
+msgstr[0] "jaar"
+msgstr[1] "jaren"
+
+msgid "month"
+msgid_plural "months"
+msgstr[0] "maand"
+msgstr[1] "maanden"
+
+msgid "week"
+msgid_plural "weeks"
+msgstr[0] "week"
+msgstr[1] "weken"
+
+msgid "day"
+msgid_plural "days"
+msgstr[0] "dag"
+msgstr[1] "dagen"
+
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] "uur"
+msgstr[1] "uren"
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "minuut"
+msgstr[1] "minuten"
+
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] "seconde"
+msgstr[1] "seconden"
+
+#: lib/SpotCategories.php
+msgid "Image"
+msgstr "Beeld"
+
+msgid "Sound"
+msgstr "Geluid"
+
+msgid "Games"
+msgstr "Spellen"
+
+msgid "Applications"
+msgstr "Applicaties"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "HD Oth"
+msgstr "HD Ovg"
+
+msgid "Satelite"
+msgstr "Satelliet"
+
+msgid "No subtitles"
+msgstr "Geen ondertitels"
+
+msgid "Dutch subtitles (external)"
+msgstr "Nederlands ondertiteld (extern)"
+
+msgid "Dutch subtitles (builtin)"
+msgstr "Nederlands ondertiteld (ingebakken)"
+
+msgid "English subtitles (external)"
+msgstr "Engels ondertiteld (extern)"
+
+msgid "English subtitles (builtin)"
+msgstr "Engels ondertiteld (ingebakken)"
+
+msgid "Dutch subtitles (available)"
+msgstr "Nederlands ondertiteld (instelbaar)"
+
+msgid "English subtitles (available)"
+msgstr "Engels ondertiteld (instelbaar)"
+
+msgid "English audio/written"
+msgstr "Engels gesproken/geschreven"
+
+msgid "Dutch audio/written"
+msgstr "Nederlands gesproken/geschreven"
+
+msgid "German audio/written"
+msgstr "Duits gesproken/geschreven"
+
+msgid "French audio/written"
+msgstr "Frans gesproken/geschreven"
+
+msgid "Spanish audio/written"
+msgstr "Spaans gesproken/geschreven"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "Adventure"
+msgstr "Avontuur"
+
+msgid "Animation"
+msgstr "Animatie"
+
+msgid "Comedy"
+msgstr "Komedie"
+
+msgid "Crime"
+msgstr "Misdaad"
+
+msgid "Documentary"
+msgstr "Documentaire"
+
+msgid "Family"
+msgstr "Familie"
+
+msgid "Fantasy"
+msgstr "Fantasie"
+
+msgid "Arthouse"
+msgstr "Filmhuis"
+
+msgid "Television"
+msgstr "Televisie"
+
+msgid "Music"
+msgstr "Muziek"
+
+msgid "Short movie"
+msgstr "Korte film"
+
+msgid "War"
+msgstr "Oorlog"
+
+msgid "Erotica (hetero)"
+msgstr "Erotiek (hetero)"
+
+msgid "Erotica (gay male)"
+msgstr "Erotiek (gay mannen)"
+
+msgid "Erotica (gay female)"
+msgstr "Erotiek (gay vrouwen)"
+
+msgid "Erotica (bi)"
+msgstr "Erotiek (bi)"
+
+msgid "Comicbook"
+msgstr "Stripboek"
+
+msgid "Youth"
+msgstr "Jeugd"
+
+msgid "Business"
+msgstr "Zakelijk"
+
+msgid "Cooking"
+msgstr "Koken"
+
+msgid "Handwork"
+msgstr "Knutselen"
+
+msgid "Craftwork"
+msgstr "Handwerk"
+
+msgid "Health"
+msgstr "Gezondheid"
+
+msgid "History"
+msgstr "Geschiedenis"
+
+msgid "Psychology"
+msgstr "Psychologie"
+
+msgid "Newspaper"
+msgstr "Krant"
+
+msgid "Magazine"
+msgstr "Tijdschrift"
+
+msgid "Science"
+msgstr "Wetenschap"
+
+msgid "Female"
+msgstr "Vrouw"
+
+msgid "Religion"
+msgstr "Religie"
+
+msgid "Biografy"
+msgstr "Biografie"
+
+msgid "Travel"
+msgstr "Reizen"
+
+msgid "True story"
+msgstr "Waargebeurd"
+
+msgid "Non-fiction"
+msgstr "Non-fictie"
+
+msgid "Politics"
+msgstr "Politiek"
+
+msgid "Poetry"
+msgstr "Po&euml;zie"
+
+msgid "Fairy tale"
+msgstr "Sprookje"
+
+msgid "Technical"
+msgstr "Techniek"
+
+msgid "Art"
+msgstr "Kunst"
+
+msgid "Lesbian"
+msgstr "Lesbo"
+
+msgid "Fetish"
+msgstr "Fetisj"
+
+msgid "Old"
+msgstr "Oud"
+
+msgid "Fat"
+msgstr "Dik"
+
+msgid "Rough"
+msgstr "Ruig"
+
+msgid "Dark"
+msgstr "Donker"
+
+msgid "Outside"
+msgstr "Buiten"
+
+msgid "Movie"
+msgstr "Film"
+
+msgid "Series"
+msgstr "Serie"
+
+msgid "Book"
+msgstr "Boek"
+
+msgid "Erotica"
+msgstr "Erotiek"
+
+msgid "Compilation"
+msgstr "Compilatie"
+
+msgid "Other"
+msgstr "Overig"
+
+msgid "Variable"
+msgstr "Variabel"
+
+msgid "World"
+msgstr "Wereld"
+
+msgid "Religious"
+msgstr "Religieus"
+
+msgid "Audiobook"
+msgstr "Luisterboek"
+
+msgid "Strategy"
+msgstr "Strategie"
+
+msgid "Roleplaying"
+msgstr "Rollenspel"
+
+msgid "Simulation"
+msgstr "Simulatie"
+
+msgid "Flying"
+msgstr "Vliegen"
+
+msgid "Child/youth"
+msgstr "Kind/jeugd"
+
+msgid "Puzzle"
+msgstr "Puzzel"
+
+msgid "Boardgame"
+msgstr "Bordspel"
+
+msgid "Cards"
+msgstr "Kaarten"
+
+msgid "Education"
+msgstr "Educatie"
+
+msgid "everything"
+msgstr "alles"
+
+msgid "Graphics"
+msgstr "Grafisch"
+
+msgid "Media players"
+msgstr "Media spelers"
+
+msgid "Photo"
+msgstr "Foto"
+
+msgid "Educational"
+msgstr "Educatief"
+
+msgid "Office"
+msgstr "Kantoor"
+
+msgid "Communication"
+msgstr "Communicatie"
+
+msgid "Development"
+msgstr "Ontwikkeling"

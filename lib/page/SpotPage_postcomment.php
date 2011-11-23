@@ -13,7 +13,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
-		# Controleer de users' rechten
+		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_comment, '');
 							  
 		# Sportparser is nodig voor het escapen van de random string
@@ -71,7 +71,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			if (empty($formMessages['errors'])) {
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
-									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
+									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'rating' => $comment['rating'],
 									'body' => $comment['body']);
 			} else {

@@ -2,8 +2,11 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
 require_once "lib/SpotClassAutoload.php";
+require_once "lib/SpotTranslation.php";
 #- main() -#
 try {
+	SpotTranslation::initialize('en_US');
+	
 	SpotTiming::enable();
 	SpotTiming::start('total');
 	SpotTiming::start('settings');
@@ -69,6 +72,12 @@ try {
 	if (!$currentSession['security']->securityValid()) {
 		die("Security settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
+	
+	# User session has been loaded, let's translate the categories
+	if ($currentSession['user']['prefs']['user_language'] != 'en_US') {
+		SpotTranslation::initialize($currentSession['user']['prefs']['user_language']);
+	} # if
+	SpotCategories::startTranslation();
 
 	# Nu is het pas veilig rechten te checken op het gebruik van de apikey
 	if ($req->doesExist('apikey')) {
@@ -88,6 +97,7 @@ try {
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
+								  'perpage' => $req->getDef('perpage', 10),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', '')));
 
@@ -316,11 +326,18 @@ try {
 			break;
 		} # twitteroauth
 
+		case 'statistics' : {
+			$page = new SpotPage_statistics($db, $settings, $currentSession,
+					Array('limit' => $req->getDef('limit', '')));
+			$page->render();
+			break;
+		} # statistics
+
 		default : {
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
 					$page = new SpotPage_getimage($db, $settings, $currentSession,
 							Array('messageid' => $req->getDef('messageid', ''),
-								  'image' => 'speeddial'));
+								  'image' => array('type' => 'speeddial')));
 				} else {
 					$page = new SpotPage_index($db, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
@@ -360,7 +377,7 @@ catch(PermissionDeniedException $x) {
 } # PermissionDeniedException
 
 catch(Exception $x) {
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' crashed' . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL;
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if

@@ -2,7 +2,6 @@
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
-
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 
@@ -77,7 +76,7 @@ class SpotPage_index extends SpotPage_Abs {
 		} # if
 		
 		# zet de page title
-		$this->_pageTitle = "overzicht";
+		$this->_pageTitle = _("overzicht");
 		
 		#- display stuff -#
 		$this->template('spots', array(

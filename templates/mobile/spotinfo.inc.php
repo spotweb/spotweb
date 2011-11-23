@@ -46,7 +46,7 @@
 ?>
                         <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
                         <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a> </td> </tr>
-                        <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['userid']; ?>) </td> </tr>
+                        <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>) </td> </tr>
                         <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr><th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
                         <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>

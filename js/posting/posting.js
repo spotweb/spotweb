@@ -22,12 +22,12 @@ function spotPosting() {
 				var result = $(xml).find('result').text();
 				if(result == 'success') {
 					var user = $(xml).find('user').text();
-					var userid = $(xml).find('userid').text();
+					var spotterid = $(xml).find('spotterid').text();
 					var rating = $(xml).find('rating').text();
 					var text = $(xml).find('body').text();
-					var useridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=UserID&amp;search[text]='+userid;
+					var spotteridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
 
-					var data = "<li> <strong> Gepost door <span class='user'>"+user+"</span> (<a class='userid' target='_parent' href='"+useridurl+"' title='Zoek naar spots van "+user+"'>"+userid+"</a>) @ just now </strong> <br>"+text+"</li>";
+					var data = "<li> <strong> <t>Posted by %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='spotterid' target='_parent' href='"+spotteridurl+"' title='<t>Search spots from %1</t>".replace("%1", spotterid) + "'>"+spotterid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
 
 					$("li.nocomments").remove();
 					$("li.firstComment").removeClass("firstComment");
@@ -64,7 +64,7 @@ function spotPosting() {
 						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 						
 						$(".spamreport-button").attr('title', result + ': ' + errors);
-						alert('Markeren als spam is niet gelukt: ' + errors);
+						alert('<t>Marking as spam was not successfull:</t> ' + errors);
 					} // else					
 				},
 				error: function(xml) {
@@ -200,7 +200,7 @@ function spotPosting() {
 			cbWhenFound(this, prefix + uniquePart + suffix);
 		} else {
 			if (runCount > 400000) {
-				alert("Unable to calculate SHA1 hash: " + runCount);
+				alert("<t>Calculation of SHA1 hash was not successfull:</t> " + runCount);
 				cbWhenFound(this, '');
 			} else {
 				var _this = this;

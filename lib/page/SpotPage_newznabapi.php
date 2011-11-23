@@ -59,7 +59,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], 24*60*60)) {
+			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
 				$this->showApiError(300);
 			} # if
 
@@ -100,7 +100,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', 24*60*60)) {
+			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
 				$this->showApiError(300);
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb['content'], $movieTitle);
@@ -364,7 +364,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
 			$channel->appendChild($image);
 
-			$poster = (empty($spot['userid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['userid'] . ")";
+			$poster = (empty($spot['spotterid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['spotterid'] . ")";
 
 			$guid = $doc->createElement('guid', $spot['messageid']);
 			$guid->setAttribute('isPermaLink', 'false');

@@ -389,6 +389,31 @@ class SpotTemplateHelper {
 	} # makeSortUrl
 
 	/*
+	 * Creert een gravatar url
+	 */
+	function makeCommenterImageUrl($fullComment) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotimage, 'avatar')) {
+			return '';
+		} # if
+		
+		if (!empty($fullComment['user-avatar'])) {
+			# Return the image as inline base64 encoded data
+			return 'data:image/png;base64,' . $fullComment['user-avatar'];
+		} else {
+			$md5 = md5(base64_decode($fullComment['user-key']['modulo']));
+			return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=avatar&amp;image[size]=32&amp;image[md5]=' . urlencode($md5);
+		} # else 
+	} # makeCommenterImageUrl
+
+	/*
+	 * Creert een gravatar url
+	 */
+	function makeGravatarUrl($avatar, $size=80, $default='mm', $rating='g') {
+		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5' . $avatar . '&amp;image[size]=' . $size . '&amp;image[default]=' . $default . '&amp;image[rating]=' . $rating;
+	} # makeGravatarUrl
+
+	/*
 	 * Creert een sorteer url die andersom sorteert 
 	 * dan de huidige sortering
 	 */
@@ -441,18 +466,18 @@ class SpotTemplateHelper {
 	} # makePosterUrl
 
 	/*
-	 * Creeert een linkje naar een zoekopdracht op userid
+	 * Creeert een linkje naar een zoekopdracht op spotterid
 	 */
-	function makeUserIdUrl($spot) {
-		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=UserID:=:' . urlencode($spot['userid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
-	} # makeUserIdUrl
+	function makeSpotterIdUrl($spot) {
+		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=SpotterID:=:' . urlencode($spot['spotterid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+	} # makeSpotterIdUrl
 
 	/*
 	 * Creeert een linkje naar een zoekopdracht op tag
 	 */
 	function makeTagUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Tag:=:' . urlencode($spot['tag']);
-	} # makeUserIdUrl
+	} # makeTagUrl
 
 	/*
 	 * Creeert een request string met username en apikey als deze zijn opgegeven
@@ -782,16 +807,14 @@ class SpotTemplateHelper {
 	# DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...	
 	function time_ago($date, $granularity=2) {
 		$difference = time() - $date;
-		$periods = array(0 => 315360000,
-			1 => 31536000,
-			2 => 2628000,
-			3 => 604800, 
-			4 => 86400,
-			5 => 3600,
-			6 => 60,
-			7 => 1);
-		$names_singular = array('eeuw', 'jaar', 'maand', 'week', 'dag', 'uur', 'minuut', 'seconde');
-		$names_plural = array('eeuwen', 'jaar', 'maanden', 'weken', 'dagen', 'uur', 'minuten', 'seconden');
+		$periods = array('decade' => 315360000,
+			'year' => 31536000,
+			'month' => 2628000,
+			'week' => 604800, 
+			'day' => 86400,
+			'hour' => 3600,
+			'minute' => 60,
+			'second' => 1);
 			
 		$retval = '';
 		foreach ($periods as $key => $value) {
@@ -799,15 +822,10 @@ class SpotTemplateHelper {
 				$time = floor($difference/$value);
 				$difference %= $value;
 				$retval .= ($retval ? ' ' : '').$time.' ';
-				
-				if ($time > 1) {
-					$retval .= $names_plural[$key];
-				} else {
-					$retval .= $names_singular[$key];
-				} # if
+				$retval .= ngettext($key, $key.'s', $time);
 				$retval .= ', ';
 				$granularity--;
-			}
+			} # if
 			
 			if ($granularity == '0') { break; }
 		}
@@ -893,63 +911,7 @@ class SpotTemplateHelper {
 	/*
 	 * Converteert een message string uit Spotweb naar een toonbare tekst
 	 */
-	function formMessageToString($message) {
-		$strings = array();
-		$strings['validateuser_mailalreadyexist'] = 'Mailadres is al in gebruik';
-		$strings['validateuser_invalidmail'] = 'Geen geldig mailadres';
-		$strings['validateuser_invalidfirstname'] = 'Geen geldige voornaam';
-		$strings['validateuser_invalidlastname'] = 'Geen geldige achternaam';
-		$strings['validateuser_invalidusername'] = 'Geen geldige gebruikersnaam';
-		$strings['validateuser_usernameexists'] = "'%s' bestaat al";
-		$strings['validateuser_passwordtooshort'] = 'Opgegeven wachtwoord is te kort';
-		$strings['validateuser_passworddontmatch'] = 'Wachtwoord velden komen niet overeen';
-		$strings['validateuser_invalidpreference'] = 'Ongeldige user preference waarde (%s)';
-		
-		$strings['edituser_usernotfound'] = 'User kan niet gevonden worden';
-		$strings['edituser_cannoteditanonymous'] = 'Anonymous user kan niet bewerkt worden';
-		$strings['edituser_cannotremovesystemuser'] = 'admin en anonymous user kunnen niet verwijderd worden';
-		$strings['edituser_usermusthaveonegroup'] = 'Een gebruiker moet in minstens een groep zitten';
-
-		$strings['postcomment_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
-		$strings['postcomment_bodytooshort'] = 'Geef een reactie';
-		$strings['postcomment_bodytoolong'] = 'Omschrijving is te lang';
-		$strings['postcomment_ratinginvalid'] = 'Gegeven rating is niet geldig';
-		$strings['postcomment_replayattack'] = 'Replay attack';
-		
-		$strings['postspot_invalidhashcash'] = 'Hash is niet goed berekend, ongeldige post';
-		$strings['postspot_bodytooshort'] = 'Geef een omschrijving';
-		$strings['postspot_bodytoolong'] = 'Omschrijving is te lang';
-		$strings['postspot_titletooshort'] = 'Geef een titel';
-		$strings['postspot_replayattack'] = 'Replay attack';
-		$strings['postspot_invalidcategory'] = 'Ongeldige hoofdcategory (%d)';
-		$strings['postspot_invalidsubcat'] = 'Ongeldige subcategory (%s)';
-		$strings['postspot_imagetoolarge'] = 'Opgegeven afbeelding is te groot';
-		$strings['postspot_imageinvalid'] = 'Opgegeven afbeelding is niet herkend als afbeelding';
-		$strings['postspot_toomanycategories'] = 'Teveel categorieen opgegeven';
-		$strings['postspot_toofewcategories'] = 'Deel de spot in in een aantal categorieen';
-		$strings['postspot_canonlybeoneformat'] = 'Een spot kan maar 1 formaat hebben';
-		$strings['postspot_musthaveformat'] = 'Een spot moet een formaat hebben';
-		$strings['postspot_invalidnzb'] = 'Ongeldig NZB bestand';
-		$strings['postspot_success'] = 'Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is';
-		
-		$strings['validatesecgroup_invalidname'] = 'Ongeldige naam voor de groep';
-		$strings['validatesecgroup_duplicatename'] = 'Deze naam voor de groep is al in gebruik';
-		$strings['validatesecgroup_duplicatepermission'] = 'Permissie bestaat al in deze groep';
-		$strings['validatesecgroup_groupdoesnotexist'] = 'Groep bestaat niet';
-		$strings['validatesecgroup_cannoteditbuiltin'] = 'Ingebouwde groepen mogen niet bewerkt worden';
-		
-		$strings['validatefilter_filterdoesnotexist'] = 'Filter bestaat niet';
-		$strings['validatefilter_invalidtitle'] = 'Ongeldige naam voor een filter';
-		$strings['validatefilter_nofileupload'] = 'Filter is niet geupload';
-		$strings['validatefilter_fileuploaderr'] = 'Fout tijdens uploaden van filter (%d)';
-		$strings['validatefilter_invaliduploadxml'] = 'Geuploade Spotweb filter file is ongeldig';
-		
-		$strings['postreport_alreadyreported'] = 'Deze spot is al gemarkeerd als spam';
-		
-		return vsprintf($strings[$message[0]], $message[1]);
-	} # formMessageToString
-
-	/*
+ 	/*
 	 * Geeft de lijst met users terug
 	 */
 	function getUserList($username) {
@@ -992,14 +954,6 @@ class SpotTemplateHelper {
 	function getAllAvailablePerms() {
 		return $this->_spotSec->getAllPermissions();
 	} # getAllAvailablePerms
-	
-	/*
-	 * Genereert een random string
-	 */
-	function getSessionCalculatedUserId() {
-		$spotSigning = new SpotSigning();
-		return $spotSigning->calculateUserid($this->_currentSession['user']['publickey']);
-	} # getSessionCalculatedUserId
 	
 	/*
 	 * Geeft een lijst met alle security groepen terug
@@ -1110,7 +1064,7 @@ class SpotTemplateHelper {
 	function getNzbHandlerName(){
 		return $this->_nzbHandler->getName();
 	} # getNzbHandlerName
-	
+
 	/*
 	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
 	 * voor de geselecteerde NzbHandler
@@ -1118,5 +1072,28 @@ class SpotTemplateHelper {
 	function getNzbHandlerApiSupport(){
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
+
+	/*
+	 * Geeft een array met valide statistics graphs terug
+	 */
+	function getValidStatisticsGraphs(){
+		$spotImage = new SpotImage($this->_db);
+		return $spotImage->getValidStatisticsGraphs();
+	} # getValidStatisticsGraphs
+
+	/*
+	 * Geeft een array met valide statistics limits terug
+	 */
+	function getValidStatisticsLimits(){
+		$spotImage = new SpotImage($this->_db);
+		return $spotImage->getValidStatisticsLimits();
+	} # getValidStatisticsGraphs
 	
+	/*
+	 * Returns an array with configured languages for this system
+	 */
+	function getConfiguredLanguages() {
+		return $this->_settings->get('system_languages');
+	} # getConfiguredLanguages
+
 } # class SpotTemplateHelper

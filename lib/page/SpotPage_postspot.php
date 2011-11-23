@@ -11,7 +11,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
-		# Controleer de users' rechten
+		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_spot, '');
 							  
 		# Sportparser is nodig voor het escapen van de random string
@@ -62,7 +62,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		if (isset($spot['submit'])) {
 			# Make sure an NZB file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
-				$formMessages['errors'][] = array('postspot_invalidnzb', '(none given)');
+				$formMessages['errors'][] = _('Please select NZB file');
 				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 				unset($spot['submit']);
@@ -70,7 +70,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 			# Make sure an imgae file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
-				$formMessages['errors'][] = array('postspot_imageinvalid', '(none given)');
+				$formMessages['errors'][] = _('Please select a picture');
 				$postResult = array('result' => 'failure');
 				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 				unset($spot['submit']);
@@ -78,7 +78,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		
 			# Make sure the subcategorie are in the proper format
 			if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) { 
-				$formMessages['errors'][] = array('postspot_invalidsubcat', '(format invalid)');
+				$formMessages['errors'][] = _('Invalid subcategories given ');
 				$postResult = array('result' => 'failure');
 				unset($spot['submit']);
 			} # if				
@@ -118,9 +118,9 @@ class SpotPage_postspot extends SpotPage_Abs {
 			if (empty($formMessages['errors'])) {
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
-									'userid' => $spotSigning->calculateUserid($this->_currentSession['user']['publickey']),
+									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'body' => $spot['body']);
-				$formMessages['info'][] = array('postspot_success', '');
+				$formMessages['info'][] = _('Spot has been successfully uploaded. It can take some time before it is shown');
 
 				# en verstuur een notificatie
 				$spotsNotifications->sendSpotPosted($spot);

@@ -176,6 +176,7 @@ class SpotNntp {
 					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
 					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParser->unspecialString(substr($hdr, 18)); break;
 					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParser->unspecialString(substr($hdr, 17)); break;
+					case 'X-User-Avatar'	: $tmpAr['user-avatar'] .= substr($hdr, 15); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($hdr, 12)); 
 							if ($xml !== false) {
@@ -213,7 +214,8 @@ class SpotNntp {
 			foreach($commentList as $comment) {
 				try {
 					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
-										'user-key' => '', 'userid' => '', 'verified' => false);
+										'user-key' => '', 'spotterid' => '', 'verified' => false,
+										'user-avatar' => '');
 										
 					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
 					$tmpAr['messageid'] = $comment['messageid'];
@@ -222,7 +224,7 @@ class SpotNntp {
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
 					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
 					if ($tmpAr['verified']) {
-						$tmpAr['userid'] = $spotSigning->calculateUserid($tmpAr['user-key']['modulo']);
+						$tmpAr['spotterid'] = $spotSigning->calculateSpotterId($tmpAr['user-key']['modulo']);
 					} # if
 
 					# encode de body voor UTF8
@@ -266,7 +268,8 @@ class SpotNntp {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
 
-			return $this->_spotParser->unspecialZipStr($nzb);
+			$nzb = $this->_spotParser->unspecialZipStr($nzb);
+			return gzinflate($nzb);
 		} # getNzb
 		
 		/*
@@ -291,15 +294,21 @@ class SpotNntp {
 			# instantiate necessary objects
 			$spotSigning = new SpotSigning();
 
-			# sign the messageid
-			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
-			
 			# also by the SpotWeb server 
 			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
 
-			$addHeaders = 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$addHeaders = '';
+			
+			# Only add the user-signature header if there is none set yet
+			if (stripos($additionalHeaders, 'X-User-Signature: ') === false) {
+				# sign the messageid
+				$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
+			
+				$addHeaders .= 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+				$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			} # if
+			
 			$addHeaders .= 'X-Server-Signature: ' . $this->_spotParser->specialString($server_signature['signature']) . "\r\n";
-			$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			$addHeaders .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$addHeaders .= $additionalHeaders;
 
@@ -365,6 +374,19 @@ class SpotNntp {
 			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
 			$addHeaders .= 'References: <' . $comment['inreplyto']. ">\r\n";
 			$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
+			
+			/*
+			 * And add the X-User-Avatar header if user has an avatar specified
+			 */
+			if (!empty($user['avatar'])) {
+				$tmpAvatar = explode("\r\n", chunk_split($user['avatar'], 900));
+				
+				foreach($tmpAvatar as $avatarChunk) {
+					if (strlen(trim($avatarChunk)) > 0) {
+						$addHeaders .= 'X-User-Avatar: ' . $avatarChunk . "\r\n";
+					} # if
+				} # foreach
+			} # if
 
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $comment, $addHeaders);
 		} # postComment
@@ -380,7 +402,7 @@ class SpotNntp {
 
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
-			 *   From: [Nickname] <[USER PUBLIC KEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
+			 *   From: [Nickname] <[PUBLICKEY-MODULO.USERSIGNATURE]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 			 */
 			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 			
@@ -400,6 +422,11 @@ class SpotNntp {
 				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
 			} # if
 			
+			# Create the user-signature
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
+			$header = 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+				
 			# sign the header by using the users' key
 			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
 
@@ -410,7 +437,10 @@ class SpotNntp {
 			$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
 			
 			# Create the From header
-			$spotnetFrom = $user['username'] . ' <' . $this->_spotParser->specialString($userPubKey['publickey']['modulo']) . '@';
+			$spotnetFrom = $user['username'] . ' <' . 
+								$this->_spotParser->specialString($userPubKey['publickey']['modulo']) . 
+								'.' . 
+								$this->_spotParser->specialString($user_signature['signature']) . '@';
 			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
 			
 			# Add the Spotnet XML file, but split it in chunks of 900 characters
@@ -438,9 +468,10 @@ class SpotNntp {
 						  'user-key' => '',
 						  'verified' => false,
 						  'messageid' => $msgId,
-						  'userid' => '',
+						  'spotterid' => '',
 						  'xml-signature' => '',
-						  'moderated' => 0);
+						  'moderated' => 0,
+						  'user-avatar' => '');
 			# Vraag de volledige article header van de spot op
 			$header = $this->getHeader('<' . $msgId . '>');
 
@@ -450,9 +481,9 @@ class SpotNntp {
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
 			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
 			
-			# als de spot verified is, toon dan de userid van deze user
+			# als de spot verified is, toon dan de spotterid van deze user
 			if ($spot['verified']) {
-				$spot['userid'] = $spotSigning->calculateUserid($spot['user-key']['modulo']);
+				$spot['spotterid'] = $spotSigning->calculateSpotterId($spot['user-key']['modulo']);
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
