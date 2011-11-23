@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.51');
+define('SPOTDB_SCHEMA_VERSION', '0.52');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1292,6 +1292,7 @@ class SpotDb {
 														f.body AS body, 
 														f.verified AS verified,
 														c.spotrating AS spotrating,
+														c.moderated AS moderated,
 														f.avatar as \"user-avatar\"
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
@@ -1325,6 +1326,14 @@ class SpotDb {
 		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
 		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
+	
+	/*
+	 * Removes a comment from the database
+	 */
+	function removeComment($msgId) {
+		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid = '%s'", Array($msgId));
+		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid = '%s'", Array($msgId));
+	} # removeComment
 
 	/*
 	 * Verwijder een spot uit de db
@@ -1363,6 +1372,13 @@ class SpotDb {
 	function markSpotModerated($msgId) {
 		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid = '%s'", Array($this->bool2dt(true), $msgId));
 	} # markSpotModerated
+
+	/*
+	 * Markeer een comment in de db moderated
+	 */
+	function markCommentModerated($msgId) {
+		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid = '%s'", Array($this->bool2dt(true), $msgId));
+	} # markCommentModerated
 
 	/*
 	 * Verwijder oude spots uit de db

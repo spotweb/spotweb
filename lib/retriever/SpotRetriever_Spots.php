@@ -7,9 +7,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_prefetch_nzb;
 
 		/**
-		 * server - de server waar naar geconnect moet worden
+		 * Server is the server array we are expecting to connect to
 		 * db - database object
-		 * rsakeys = array van rsa keys
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull, $debug, $retro) {
 			parent::__construct($server, $db, $settings, $debug, $retro);
@@ -23,7 +22,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 
 		/*
-		 * Geef de status weer in category/text formaat. Beide zijn vrij te bepalen
+		 * Returns the status in either xml or text format 
 		 */
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
@@ -64,21 +63,31 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		} # displayStatus
 		
 		/*
-		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
-		 * opgehaald hebben.
+		 * Remove any extraneous reports from the database because we assume
+		 * the highest messgeid in the database is the latest on the server.
 		 */
 		function updateLastRetrieved($highestMessageId) {
 			$this->debug('Highest messageid found: ' . $highestMessageId);
-			
-			$this->_db->removeExtraSpots($highestMessageId);
+
+			/*
+			 * Remove any extraneous spots from the database because we assume
+			 * the highest messgeid in the database is the latest on the server.
+			 *
+			 * If the server is marked as buggy, the last 'x' amount of spot are
+			 * always checked so we do not have to do this 
+			 */
+			if (!$this->_server['buggy']) {
+				$this->_db->removeExtraSpots($highestMessageId);
+			} # if
 		} # updateLastRetrieved
 		
 		/*
-		 * De daadwerkelijke processing van de headers
+		 * Actually process the retrieved headers from XOVER
 		 */
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 
+			$spotParser = new SpotParser();
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
@@ -90,7 +99,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$moderationList = array();
 			$timer = microtime(true);
 
-			# Bepaal onze retention stamp
+			/*
+			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to 
+			 * load the spots
+			 */
 			if ($this->_settings->get('retention') > 0) {
 				$retentionStamp = time() - ($this->_settings->get('retention') * 24 * 60 * 60);
 			} else {
@@ -99,19 +111,28 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->debug('retentionStamp=' . $retentionStamp);
 			$this->debug('hdrList=' . serialize($hdrList));
 			
-			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
+			/**
+			 * We ask the database to match our messageid's we just retrieved with
+			 * the list of id's we have just retrieved from the server
+			 */
 			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
-
-			# en loop door elke header heen
-			$spotParser = new SpotParser();
 
 			# if we need to fetch images or nzb files, we need an spotsoverview instance
 			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
 				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 				$spotsOverview->setActiveRetriever(true);
-				$nntp_nzb = ($this->_settings->get('nntp_hdr') == $this->_settings->get('nntp_nzb')) ? $this->_spotnntp : new SpotNntp($this->_settings->get('nntp_nzb'));
+				
+				/*
+				 * Only create a new NZB instance if the server differs from the
+				 * header host, else re-use the connection
+				 */
+				if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
+					$nntp_nzb = $this->_spotnntp;
+				} else {
+					$nntp_nzb = new SpotNntp($this->_settings->get('nntp_nzb'));
+				} # else
 			} # if
 			
 			foreach($hdrList as $msgid => $msgheader) {
@@ -132,15 +153,23 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
 				
-				# definieer een paar booleans zodat we niet steeds een array lookup moeten doen
-				# en de code wat duidelijker is
+				/*
+				 * We prepare some variables to we don't have to perform an array
+				 * lookup for each check and the code is easier to read.
+				 */
 				$header_isInDb = isset($dbIdList['spot'][$msgId]);
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
 
-				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
-				# ook als de fullspot er nog niet is (of we in retro modus draaien), 
-				# moeten we dit doen want een aantal velden die wel in de header zitten, 
-				# zitten niet in de database (denk aan 'keyid')
+				/*
+				 * If the spotheader is not yet added to the database, parse the header
+				 * information.
+				 *
+				 * If the header is present, but we don't have the fullspot yet or we are
+				 * running in 'retro' mode, parse the header as well because some fields
+				 * are only in the header and not in the full.
+				 * 
+				 * We need some of those fields (for example KeyID)
+				 */
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgid);
@@ -151,40 +180,48 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$this->_rsakeys);
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgid);
 
-
-					# als er een parse error was, negeren we de spot volledig, ook niet-
-					# verified spots gooien we weg.
+					/*
+					 * When a parse error occured, we ignore the spot, also unverified
+					 * spots are ignored
+					 */
 					if (($spot === false) || (!$spot['verified'])){
 						continue;
 					} # if
 
+					/*
+					 * Special moderator commands always have keyid 2
+					 */
 					if ($spot['keyid'] == 2) {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 
-						# FIXME: Message-ID kan ook van een comment zijn,
-						# onderstaande code gaat uit van een spot.
-
-						# is dit een geldig commando?
+						# is this one of the defined valid comments?
 						if (in_array($commandAr[0], $validCommands) !== false) {
 							$moderationList[] = $commandAr[1];
 							$modCount++;
 						} # if
 						
 					} else {
-						# Oudere spots niet toevoegen, hoeven we het later ook niet te verwijderen
+						/*
+						 * Don't add spots older than specified for the retention stamp
+						 */
 						if ($retentionStamp > 0 && $spot['stamp'] < $retentionStamp) {
 							$skipCount++;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
 							$skipCount++;
 						} else {
-							# Hier kijken we alleen of de spotheader niet bestaat
+							/*
+							 * Do we have the header in the database? If not, lets add it
+							 */
 							if (!$header_isInDb) {
 								$spotDbList[] = $spot;
 
-								# definieer de header als al ontvangen, we moeten ook de 
-								# msgid lijst updaten omdat soms een messageid meerdere 
-								# keren per xover mee komt ...
+								/*
+								 * Some buggy NNTP servers give us the same messageid
+								 * in once XOVER statement, hence we update the list of
+								 * messageid's we already have retrieved and are ready
+								 * to be added to the database
+								 */
 								$dbIdList['spot'][$msgId] = 1;
 								$header_isInDb = true;
 								$lastProcessedId = $msgId;
@@ -201,13 +238,18 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$lastProcessedId = $msgId;
 				} # else
 
-				# We willen enkel de volledige spot ophalen als de header in de database zit
-				if ($header_isInDb &&			# header moet in db zitten
-					!$fullspot_isInDb)	 		# maar de fullspot niet
+
+				/*
+				 * We don't want to retrieve the fullspot if we don't have the header
+				 * in the database. Because we try to add headers in the above code we just have
+				 * to check if the header is in the database.
+				 *
+				 * We cannot collapse this code with the header fetching code because we want to
+				 * be able to add the fullspot to a system after all the headers are retrieved
+				 */
+				if ($header_isInDb &&			# header must be in the db
+					!$fullspot_isInDb)	 		# but the fullspot should not
 				   {
-					# We gebruiken altijd XOVER, dit is namelijk handig omdat eventueel ontbrekende
-					# artikel nummers (en soms zijn dat er duizenden) niet hoeven op te vragen, nu
-					# vragen we enkel de de headers op van de artikelen die er daadwerkelijk zijn
 					if ($this->_retrieveFull) {
 						$fullSpot = array();
 						try {
@@ -216,19 +258,25 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
-							# en voeg hem aan de database toe
+							# add this spot to the database
 							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
 							$didFetchFullSpot = true;
 							
-							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
-							# keren per xover mee komt ...
+							/*
+							 * Some buggy NNTP servers give us the same messageid
+							 * in once XOVER statement, hence we update the list of
+							 * messageid's we already have retrieved and are ready
+							 * to be added to the database
+							 */
 							$dbIdList['fullspot'][$msgId] = 1;
 							
-							# Overwrite the spots' title because the fullspot contains the title in
-							# UTF-8 format.
-							# We also overwrite the spotterid from the spotsfull because the spotterid
-							# is only in the header in more recent spots.
+							/* 
+							 * Overwrite the spots' title because the fullspot contains the title in
+							 * UTF-8 format.
+							 * We also overwrite the spotterid from the spotsfull because the spotterid
+							 * is only in the header in more recent spots.
+							 */
 							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
 								$spotDbList[count($spotDbList) - 1]['spotterid'] = $fullSpot['spotterid'];
@@ -238,13 +286,15 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							; # swallow error
 						} 
 						catch(Exception $x) {
-							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
-							# dit is de "No such article" error
-							# swallow the error
+							/**
+							 * Sometimes we get an 'No such article' error for a header we just retrieved,
+							 * if we want to retrieve the full article. This is messed up, but let's just
+							 * swallow the error
+							 */
 							if ($x->getCode() == 430) {
 								;
 							} 
-							# als de XML niet te parsen is, niets aan te doen
+							# if the XML is unparseable, don't bother complaining about it
 							elseif ($x->getMessage() == 'String could not be parsed as XML') {
 								;
 							} else {
@@ -257,15 +307,24 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 				if ($this->_retrieveFull && $header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
 					try {
-						# Als we in retro modus draaien kan het zijn dat fullSpot al in de database zat en daarom niet is opgehaald
+						/*
+						 * If we are running in 'retro' mode, it is possible both the header and spot are in the
+						 * database already, however -- we need the information from the fullspot so we retrieve it
+						 * again
+						 */
 						if (!$didFetchFullSpot) {
 							$fullSpot = $this->_db->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
 							$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
 						} # if
 
-						# image prefetchen
+						/*
+						 * Prefetch (cache) the spots' image
+						 */
 						if ($this->_prefetch_image) {
-							# Het plaatje van spots die ouder zijn dan 30 dagen en de image op het web hebben staan prefetchen we niet
+							/*
+							 * If the spot is older than 30 days, and the image is on the web, we do not 
+							 * prefetch the image.
+							 */
 							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
 								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
 								$spotsOverview->getImage($fullSpot, $nntp_nzb);
@@ -273,8 +332,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							} # if
 						} # if
 
-						# NZB prefetchen
+						/*
+						 * Prefetch (cache) the spots' NZB file
+						 */
 						if ($this->_prefetch_nzb) {
+							/*
+							 * Only do so if we can expect an NZB file
+							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
 								$spotsOverview->getNzb($fullSpot, $nntp_nzb);
@@ -286,13 +350,15 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						; # swallow error
 					} 
 					catch(Exception $x) {
-						# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
-						# dit is de "No such article" error
-						# swallow the error
+						/**
+						 * Sometimes we get an 'No such article' error for a header we just retrieved,
+						 * if we want to retrieve the full article. This is messed up, but let's just
+						 * swallow the error
+						 */
 						if ($x->getCode() == 430) {
 							;
 						} 
-						# als de XML niet te parsen is, niets aan te doen
+							# if the XML is unparseable, don't bother complaining about it
 						elseif ($x->getMessage() == 'String could not be parsed as XML') {
 							;
 						} else {
@@ -336,8 +402,17 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			foreach($moderationList as $moderateId) {
 				switch($this->_settings->get('spot_moderation')) {
 					case 'disable'	: break;
-					case 'markspot'	: $this->_db->markSpotModerated($moderateId); break;
-					default			: $this->_db->deleteSpot($moderateId); break;
+					case 'markspot'	: {
+						$this->_db->markCommentModerated($moderateId); 
+						$this->_db->markSpotModerated($moderateId); 
+						
+						break;
+					default			: { 
+						$this->_db->deleteSpot($moderateId); 
+						$this->_db->removeComment($moderateId);
+						
+						break;
+					} # default
 				} # switch
 			} # foreach
 			

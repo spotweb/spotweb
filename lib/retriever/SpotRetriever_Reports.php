@@ -3,7 +3,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		private $_outputType;
 
 		/**
-		 * server - de server waar naar geconnect moet worden
+		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug) {
@@ -13,7 +13,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		} # ctor
 		
 		/*
-		 * Geef de status weer in category/text formaat. Beide zijn vrij te bepalen
+		 * Returns the status in either xml or text format 
 		 */
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
@@ -45,15 +45,24 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		} # displayStatus
 
 		/*
-		 * Wis alle reports welke in de database zitten met een hoger id dan dat wij
-		 * opgehaald hebben.
+		 * Remove any extraneous reports from the database because we assume
+		 * the highest messgeid in the database is the latest on the server.
 		 */
 		function updateLastRetrieved($highestMessageId) {
-			$this->_db->removeExtraReports($highestMessageId);
+			/*
+			 * Remove any extraneous reports from the database because we assume
+			 * the highest messgeid in the database is the latest on the server.
+			 *
+			 * If the server is marked as buggy, the last 'x' amount of repors are
+			 * always checked so we do not have to do this 
+			 */
+			if (!$this->_server['buggy']) {
+				$this->_db->removeExtraReports($highestMessageId);
+			} # if
 		} # updateLastRetrieved
 		
 		/*
-		 * De daadwerkelijke processing van de headers
+		 * Actually process the retrieved headers from XOVER
 		 */
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
@@ -63,22 +72,27 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			$reportDbList = array();
 			$timer = microtime(true);
 
-			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
+			/**
+			 * We ask the database to match our messageid's we just retrieved with
+			 * the list of id's we have just retrieved from the server
+			 */
 			$dbIdList = $this->_db->matchReportMessageIds($hdrList);
-			
-			# we houden een aparte lijst met spot messageids bij zodat we dat extracten
-			# niet meer in de db laag moeten doen
+
+			/*
+			 * We keep a seperate list of messageid's for updating the amount of
+			 * reports for each spot.
+			 */
 			$spotMsgIdList = array();
 			
-			# en loop door elke header heen
+			# Process each header
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
 
-				# strip de reference van de <>'s
+				# strip the <>'s from the reference
 				$reportId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 
-				# als we de report nog niet in de database hebben, haal hem dan op
+				# Prepare the report to be added to the server when the report isn't in the database yet
 				if (!isset($dbIdList[$reportId])) {
 					$lastProcessedId = $reportId;
 					
@@ -89,15 +103,19 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 						$msgheader['References'] = substr($tmpSubject[1], 1, strlen($tmpSubject[1]) - 2);
 						$spotMsgIdList[$msgheader['References']] = 1;
 
-						# voeg spot aan db toe
+						# prepare the spot to be added to the server
 						$reportDbList[] = array('messageid' => $reportId,
 												 'fromhdr' => $msgheader['From'],
 												 'keyword' => $msgheader['keyword'],
 												 'nntpref' => $msgheader['References']);
 					} # if
 
-					# we moeten ook de msgid lijst updaten omdat 
-					# soms een messageid meerdere keren per xover mee komt
+					/*
+					 * Some buggy NNTP servers give us the same messageid
+					 * in once XOVER statement, hence we update the list of
+					 * messageid's we already have retrieved and are ready
+					 * to be added to the database
+					 */
 					$dbIdList[$reportId] = 1;
 				} # if
 			} # foreach
@@ -113,7 +131,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			$this->_db->addReportRefs($reportDbList);
 			$this->_db->setMaxArticleid('reports', $endMsg);
 			
-			# herbereken het aantal reports in spotnet
+			# Calculate the amount of reports for a spot
 			$this->_db->updateSpotReportCount($spotMsgIdList);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);

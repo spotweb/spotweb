@@ -4,9 +4,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		private $_retrieveFull;
 
 		/**
-		 * server - de server waar naar geconnect moet worden
+		 * Server is the server array we are expecting to connect to
 		 * db - database object
-		 * rsakeys = array van rsa keys
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $retrieveFull, $debug, $retro) {
 			parent::__construct($server, $db, $settings, $debug, $retro);
@@ -16,7 +15,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		} # ctor
 		
 		/*
-		 * Geef de status weer in category/text formaat. Beide zijn vrij te bepalen
+		 * Returns the status in either xml or text format 
 		 */
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
@@ -48,15 +47,24 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		} # displayStatus
 
 		/*
-		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
-		 * opgehaald hebben.
+		 * Remove any extraneous reports from the database because we assume
+		 * the highest messgeid in the database is the latest on the server.
 		 */
 		function updateLastRetrieved($highestMessageId) {
-			$this->_db->removeExtraComments($highestMessageId);
+			/*
+			 * Remove any extraneous comments from the database because we assume
+			 * the highest messgeid in the database is the latest on the server.
+			 *
+			 * If the server is marked as buggy, the last 'x' amount of comments are
+			 * always checked so we do not have to do this 
+			 */
+			if (!$this->_server['buggy']) {
+				$this->_db->removeExtraComments($highestMessageId);
+			} # if
 		} # updateLastRetrieved
 		
 		/*
-		 * De daadwerkelijke processing van de headers
+		 * Actually process the retrieved headers from XOVER
 		 */
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
@@ -67,56 +75,81 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			$fullCommentDbList = array();
 			$timer = microtime(true);
 
-			# Bepaal onze retention stamp
+			/*
+			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to 
+			 * load the spots
+			 */
 			if ($this->_settings->get('retention') > 0) {
 				$retentionStamp = time() - ($this->_settings->get('retention') * 24 * 60 * 60);
 			} else {
 				$retentionStamp = 0;
 			} # else
 
-			# pak onze lijst met messageid's, en kijk welke er al in de database zitten
+			/**
+			 * We ask the database to match our messageid's we just retrieved with
+			 * the list of id's we have just retrieved from the server
+			 */
 			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
 			
-			# we houden een aparte lijst met spot messageids bij zodat we dat extracten
-			# niet meer in de db laag moeten doen
+			/*
+			 * We keep a seperate list of messageid's for updating the amount of
+			 * comments each spot.
+			 */
 			$spotMsgIdList = array();
 			
-			# en een aparte lijst met spot messageids die een rating bevatten. Zo
-			# hoeven we bij comments zonder rating niet te herberekenen
+			/*
+			 * and a different list for comments with a rating, this way we wont
+			 * calculcate the rating for a spot when a comments has no rating
+			 */
 			$spotMsgIdRatingList = array();
 			
-			# en loop door elke header heen
+			# Process each header
 			foreach($hdrList as $msgid => $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
 
-				# strip de reference van de <>'s
+				# strip the <>'s from the reference
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
 
-				# definieer een paar booleans zodat we niet steeds een array lookup moeten doen
-				# en de code wat duidelijker is
+				/*
+				 * We prepare some variables to we don't have to perform an array
+				 * lookup for each check and the code is easier to read.
+				 */
 				$header_isInDb = isset($dbIdList['comment'][$commentId]);
 				$fullcomment_isInDb = isset($dbIdList['fullcomment'][$commentId]);
 
-				# als we de comment nog niet in de database hebben, haal hem dan op
+				/*
+				 * Do we have the comment in the database already? If not, lets process it 
+				 */
 				if (!$header_isInDb || (!$fullcomment_isInDb && $this->_retrieveFull)) {
-					# fix de references, niet alle news servers geven die goed door
+					/*
+					 * Because not all usenet servers pass the reference field properly,
+					 * we manually create this reference field by using the messageid of
+					 * the comment
+					 */
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 
+					/*
+					 * Don't add older comments than specified for the retention stamp
+					 */
 					$commentStamp = strtotime($msgheader['Date']);
-					# Oudere comments niet toevoegen
 					if (($retentionStamp > 0 && $commentStamp < $retentionStamp) || $commentStamp < $this->_settings->get('retrieve_newer_than')) {
 						continue;
 					} # if
 
-					# als dit een nieuw soort comment is met rating vul die dan ook op
+					/*
+					 * Newer kind of comments contain a rating, if we think this comment
+					 * is such a comment, extract the rating
+					 */
 					if (count($msgIdParts) == 5) {
 						$msgheader['rating'] = (int) $msgIdParts[1];
 
-						# Sommige oudere comments bevatten een niet-numerieke
-						# string op deze positie, dus we controleren nog even
-						# of het puur een getal is wat er staat.
+						/*
+						 * Some older comments contain an non-numeric string
+						 * on this position. Make sure this is an number else
+						 * reset to zero (no rating given)
+						 */
 						if (!is_numeric($msgIdParts[1])) {
 							$msgheader['rating'] = 0;
 						} # if
@@ -124,19 +157,28 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						$msgheader['rating'] = 0;
 					} # if
 
-					# Hier kijken we alleen of de commentheader niet bestaat
+					/*
+					 * Determine wether we need to add the header to the database
+					 * and extract the required fields 
+					 */
 					if (!$header_isInDb) {
 						$commentDbList[] = array('messageid' => $commentId,
 												 'nntpref' => $msgheader['References'],
 												 'rating' => $msgheader['rating']);
 
-						# we moeten ook de msgid lijst updaten omdat 
-						# soms een messageid meerdere keren per xover mee komt
+						/*
+						 * Some buggy NNTP servers give us the same messageid
+						 * in one XOVER statement, hence we update the list of
+						 * messageid's we already have retrieved and are ready
+						 * to be added to the database
+						 */
 						$dbIdList['comment'][$commentId] = 1;
 						$spotMsgIdList[$msgheader['References']] = 1;
 
-						# als dit comment een rating bevat voegen we hem aan de 
-						# msg lijst toe voor ratings
+						/*
+						 * If this comment contains a rating, mark the spot to
+						 * have it's rating be recalculated
+						 */
 						if ($msgheader['rating'] >= 1 && $msgheader['rating'] <= 10) {
 							$spotMsgIdRatingList[$msgheader['References']] = 1;
 						} # if
@@ -149,10 +191,16 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					$lastProcessedId = $commentId;
 				} # else
 
-				# We willen enkel de volledige comment ophalen als de header in de database zit, omdat 
-				# we dat hierboven eventueel doen, is het enkel daarop checken voldoende
-				if (($header_isInDb) &&			# header moet in db zitten
-					(!$fullcomment_isInDb))		# maar de fullcomment niet
+				/*
+				 * We don't want to retrieve the full comment body if we don't have the header
+				 * in the database. Because we try to add headers in the above code we just have
+				 * to check if the header is in the database.
+				 *
+				 * We cannot collapse this code with the header fetching code because we want to
+				 * be able to add the full body to a system after all the headers are retrieved
+				 */
+				if (($header_isInDb) &&			# header should be in the db
+					(!$fullcomment_isInDb))		# but if we already have the full comment, skip
 				   {
 
 					if ($this->_retrieveFull) {
@@ -160,24 +208,31 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						try {
 							$fullComment = $this->_spotnntp->getComments(array(array('messageid' => $commentId)));
 
-							# en voeg hem aan de database toe
+							# Add this comment to the datbase and mark it as such
 							$fullCommentDbList[] = $fullComment;
 							$fullcomment_isInDb = true;
-							# we moeten ook de msgid lijst updaten omdat soms een messageid meerdere 
-							# keren per xover mee komt ...
+							
+							/*
+							 * Some buggy NNTP servers give us the same messageid
+							 * in one XOVER statement, hence we update the list of
+							 * messageid's we already have retrieved and are ready
+							 * to be added to the database
+							 */
 							$dbIdList['fullcomment'][$msgid] = 1;
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
 						} 
 						catch(Exception $x) {
-							# messed up index aan de kant van de server ofzo? iig, dit gebeurt. soms, if so,
-							# dit is de "No such article" error
-							# swallow the error
+							/**
+							 * Sometimes we get an 'No such article' error for a header we just retrieved,
+							 * if we want to retrieve the full article. This is messed up, but let's just
+							 * swallow the error
+							 */
 							if ($x->getCode() == 430) {
 								;
 							} 
-							# als de XML niet te parsen is, niets aan te doen
+							# if the XML is unparseable, don't bother complaining about it
 							elseif ($x->getMessage() == 'String could not be parsed as XML') {
 								;
 							} else {
@@ -212,8 +267,10 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			} # if
 			$this->_db->addComments($commentDbList, $fullComments);
 
-			# herbereken de gemiddelde spotrating, en update het 
-			# aantal niet geverifieerde comments
+			/*
+			 * Recalculate the average spotrating and update the amount
+			 * of unverified comments
+			 */
 			$this->_db->updateSpotRating($spotMsgIdRatingList);
 			$this->_db->updateSpotCommentCount($spotMsgIdList);
 			
