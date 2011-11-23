@@ -30,7 +30,7 @@ class SpotNotificationTemplate {
 		ob_start(); 
 		
 		# en we spelen de template af
-		require 'templates/' . $settings->get('tpl_name') . '/notifications/' . $tpl . '.inc.php';
+		require 'templates/notifications/' . $tpl . '.inc.php';
 		
 		# nu vraag de inhoud van de output buffer op
 		$notificationContent = ob_get_contents();
