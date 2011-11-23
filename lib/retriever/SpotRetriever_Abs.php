@@ -10,23 +10,23 @@ abstract class SpotRetriever_Abs {
 		private $_msgdata;
 
 		/*
-		 * Geef de status weer in category/text formaat. Beide zijn vrij te bepalen
+		 * Returns the status in either xml or text format 
 		 */
 		abstract function displayStatus($cat, $txt);
 		
 		/*
-		 * De daadwerkelijke processing van de headers
+		 * Actual processing of the headers
 		 */
 		abstract function process($hdrList, $curMsg, $increment);
 		
 		/*
-		 * Wis alle spots welke in de database zitten met een hoger id dan dat wij
-		 * opgehaald hebben.
+		 * Remove any extraneous reports from the database because we assume
+		 * the highest messgeid in the database is the latest on the server.
 		 */
 		abstract function updateLastRetrieved($highestMessageId);
 		
 		/*
-		 * NNTP Server waar geconnet moet worden
+		 * default ctor 
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
 			$this->_server = $server;
@@ -43,15 +43,17 @@ abstract class SpotRetriever_Abs {
 		} # debug
 		
 		function connect($group) {
-			# als er al een retriever instance loopt, stop er dan mee
+			# if an retriever instance is already running, stop this one
 			if ($this->_db->isRetrieverRunning($this->_server['host'])) {
 				throw new RetrieverRunningException();
 			} # if
 			
-			# anders melden we onszelf aan dat we al draaien
+			/*
+			 * and notify the system we are running
+			 */
 			$this->_db->setRetrieverRunning($this->_server['host'], true);
 
-			# zo niet, dan gaan we draaien
+			# and fireup the nntp connection
 			$this->displayStatus("start", $this->_server['host']);
 			$this->_spotnntp = new SpotNntp($this->_server);
 			$this->_msgdata = $this->_spotnntp->selectGroup($group);
@@ -61,7 +63,8 @@ abstract class SpotRetriever_Abs {
 		
 
 		/*
-		 * Zoekt het juiste articlenummer voor een opgegeven lijst van messageids
+		 * Given a list of messageids, check if we can find the corresponding
+		 * articlenumber on the NNTP server. 
 		 */
 		function searchMessageid($messageIdList) {
 			$this->debug('searchMessageId=' . serialize($messageIdList));
@@ -76,7 +79,7 @@ abstract class SpotRetriever_Abs {
 			$decrement = 5000;
 			$curMsg = $this->_msgdata['last'];
 
-			# en start met zoeken
+			# start searching 
 			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
 				# Reset timelimit
 				set_time_limit(120);			
@@ -87,8 +90,11 @@ abstract class SpotRetriever_Abs {
 				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
 				$this->debug('getMessageIdList returned=' . serialize($hdrList));
 				
-				# we draaien de messageid's lijst om, omdat we willen dat we de meest recente
-				# messageid als uitgangspunt nemen
+				/*
+				 * Reverse the list with messageids because we assume we are at a recent
+				 * run and the last retrieved messageid should be on the top of the list
+				 * somewhere
+				 */
 				$hdrList = array_reverse($hdrList, true);
 
 				echo 'Searching from ' . ($curMsg -1) . ' to ' . ($curMsg + $decrement) . PHP_EOL;
@@ -109,7 +115,8 @@ abstract class SpotRetriever_Abs {
 		} # searchMessageId
 		
 		/*
-		 * Haal de headers op en zorg dat ze steeds verwerkt worden
+		 * Process all headers in $increment pieces and call the corresponding
+		 * actual implementation
 		 */
 		function loopTillEnd($curMsg, $increment = 1000) {
 			$processed = 0;
@@ -163,10 +170,10 @@ abstract class SpotRetriever_Abs {
 		} # loopTillEnd()
 
 		function quit() {
-			# anders melden we onszelf af dat we al draaien
+			# notify the system we are not running anymore
 			$this->_db->setRetrieverRunning($this->_server['host'], false);
 			
-			# sluit de NNTP connectie af
+			# and disconnect
 			$this->_spotnntp->quit();
 			$this->displayStatus("done", "");
 		} # quit()

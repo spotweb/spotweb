@@ -344,6 +344,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('messageid', 'commentsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('nntpref', 'commentsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('spotrating', 'commentsxover', 'INTEGER', "0", false, '');
+		$this->validateColumn('moderated', 'commentsxover', 'BOOLEAN', NULL, false, '');
 		$this->alterStorageEngine("commentsxover", "InnoDB");
 
 		# ---- reportsxover table ---- #
