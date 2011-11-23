@@ -1,15 +1,15 @@
 <?php
 	# First retrieve the needed parameters
-	isset($messageId) ? : $messageId = $tplHelper->getParam('messageid');
-	isset($pageNr) ? : $pageNr = $tplHelper->getParam('pagenr');
-	isset($perPage) ? : $perPage = $tplHelper->getParam('perpage');
+	isset($messageId) ? false : $messageId = $tplHelper->getParam('messageid');
+	isset($pageNr) ? false : $pageNr = $tplHelper->getParam('pagenr');
+	isset($perPage) ? false : $perPage = $tplHelper->getParam('perpage');
 	
 	/*
 	 * We retrieve the fullspot as well because we want to compare the spotterids.
 	 * This operation is rather cheap because we already have the fullspot cached
 	 * in the database
 	 */
-	isset($spot) ? : $spot = $tplHelper->getFullSpot($messageId, true);
+	isset($spot) ? false : $spot = $tplHelper->getFullSpot($messageId, true);
 	
 	# Get the spot comments for each $perPage comments
 	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
