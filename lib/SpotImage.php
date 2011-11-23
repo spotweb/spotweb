@@ -13,7 +13,7 @@ class SpotImage {
 		$angle = 0;
 
 		# Headertext
-		$text = ($errcode < 900) ? "ERROR " . $errcode : "ERROR";
+		$text = ($errcode < 900) ? _('ERROR') . ' ' . $errcode : _('ERROR');
 		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
 		$txtwidth = abs($bbox[2]);
 		imagettftext($img['resource'], $fontSize, $angle, 256-($txtwidth/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
