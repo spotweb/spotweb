@@ -527,7 +527,11 @@ class SpotCategories {
 			# and translate the actual categories
 			foreach(self::$_categories[$key] as $subkey => $subvalue) {
 				foreach(self::$_categories[$key][$subkey] as $subsubkey => $subsubvalue) {
-					self::$_categories[$key][$subkey][$subsubkey][0] = _($subsubvalue[0]);
+					if (is_array($subsubvalue)) {
+						self::$_categories[$key][$subkey][$subsubkey][0] = _($subsubvalue[0]);
+					} else {
+						self::$_categories[$key][$subkey][$subsubkey] = _($subsubvalue);
+					} # else
 				} # foreach
 			} # foreach
 		} # foreach
