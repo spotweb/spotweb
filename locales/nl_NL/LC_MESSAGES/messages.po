@@ -927,6 +927,36 @@ msgid "Spot has been successfully uploaded. It can take some time before it is s
 msgstr "Spot is succesvol geplaatst. Het kan enige tijd duren voor je spot zichtbaar is"
 
 #: lib/SpotImage.php
+msgid "ERROR"
+msgstr "FOUT"
+
+msgid "Remote host sent bad data"
+msgstr "Externe host stuurde slechte data"
+
+msgid "Bad request"
+msgstr "Foutieve opdracht"
+
+msgid "Permission denied from remote host"
+msgstr "Toegang geweigerd van externe host"
+
+msgid "File not found"
+msgstr "Bestand niet gevonden"
+
+msgid "Article not found"
+msgstr "Artikel niet gevonden"
+
+msgid "No response from remote host"
+msgstr "Geen antwoord van externe host"
+
+msgid "XML parse error"
+msgstr "Fout tijden XML parsen"
+
+msgid "No image provided"
+msgstr "Geen plaatje opgegeven"
+
+msgid "Unknown error"
+msgstr "Onbekende fout"
+
 msgid "Total spots: %d"
 msgstr "Totaal aantal spots: %d"
 
