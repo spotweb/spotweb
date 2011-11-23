@@ -361,10 +361,10 @@ msgid "Language to use in Spotweb"
 msgstr "Welke taal wordt Spotweb in getoond"
 
 msgid "Dutch"
-msgstr "Nederlands (Dutch)"
+msgstr "Nederlands"
 
 msgid "English"
-msgstr "Engels (English)"
+msgstr "Engels"
 
 msgid "General"
 msgstr "Algemeen"
