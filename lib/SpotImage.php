@@ -76,7 +76,7 @@ class SpotImage {
 									  $graphicType = "bar";
 									  break;
 			case 'spotspercategory'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerCategory($limit, $lastUpdate));
-									  $legend = array(SpotCategories::HeadCat2Desc(0),SpotCategories::HeadCat2Desc(1),SpotCategories::HeadCat2Desc(2),SpotCategories::HeadCat2Desc(3));
+									  $legend = array(_(SpotCategories::HeadCat2Desc(0)),_(SpotCategories::HeadCat2Desc(1)),_(SpotCategories::HeadCat2Desc(2)),_(SpotCategories::HeadCat2Desc(3)));
 									  for ($x=0; $x<=3; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "3Dpie";
 									  break;
