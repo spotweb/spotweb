@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.09');
+define('SPOTWEB_SETTINGS_VERSION', '0.14');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -29,7 +29,7 @@ class SpotSettings {
 			self::$_dbSettings = $db->getAllSettings();
 
 			# en merge de settings met degene die we door krijgen 
-			self::$_settings = array_merge(self::$_phpSettings, self::$_dbSettings);
+			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
 		} # if
 		
 		return self::$_instance;

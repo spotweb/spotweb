@@ -1,10 +1,9 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.47');
+define('SPOTDB_SCHEMA_VERSION', '0.51');
 
 class SpotDb {
 	private $_dbsettings = null;
 	private $_conn = null;
-	private $_phpMemoryLimit = null;
 	private $_maxPacketSize = null;
 
 	/*
@@ -355,6 +354,7 @@ class SpotDb {
 								u.lastread AS lastread,
 								u.lastapiusage AS lastapiusage,
 								s.publickey AS publickey,
+								s.avatar AS avatar,
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
@@ -496,14 +496,15 @@ class SpotDb {
 	 */
 	function addUser($user) {
 		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastread, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', false)",
+										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 								Array($user['username'], 
 									  $user['firstname'],
 									  $user['lastname'],
 									  $user['passhash'],
 									  $user['mail'],
 									  $user['apikey'],
-									  $this->getMaxMessageTime()));
+									  $this->getMaxMessageTime(),
+									  $this->bool2dt(false)));
 
 		# We vragen nu het userrecord terug op om het userid te krijgen,
 		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
@@ -744,6 +745,47 @@ class SpotDb {
 		} # if
 	} # getSpotCount
 
+	function getSpotCountPerHour($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%H', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM FROM_UNIXTIME(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
+		} # switch
+		return $rs;
+	} # getSpotCountPerHour
+
+	function getSpotCountPerWeekday($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%w', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT FROM_UNIXTIME(stamp,'%w') AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
+		} # switch
+		return $rs;
+	} # getSpotCountPerWeekday
+
+	function getSpotCountPerMonth($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%m', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
+			default				: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM FROM_UNIXTIME(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
+		} # switch
+		return $rs;
+	} # getSpotCountPerMonth
+
+	function getSpotCountPerCategory($limit) {
+		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
+		$rs = $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data;");
+		return $rs;
+	} # getSpotCountPerCategory
+
+	function getOldestSpotTimestamp() {
+		$rs = $this->_conn->singleQuery("SELECT MIN(stamp) FROM spots;");
+		return $rs;
+	} # getOldestSpotTimestamp
+
 	/*
 	 * Match set of comments
 	 */
@@ -859,7 +901,7 @@ class SpotDb {
 		$offset = (int) $pageNr * (int) $limit;
 
 		# je hebt de zoek criteria (category, titel, etc)
-		$criteriaFilter = ' WHERE (bl.userid IS NULL)';
+		$criteriaFilter = ' WHERE (bl.spotterid IS NULL)';
 		if (!empty($parsedSearch['filter'])) {
 			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
 		} # if 
@@ -928,7 +970,7 @@ class SpotDb {
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
-												f.userid AS userid,
+												s.spotterid AS spotterid,
 												f.verified AS verified
 												" . $extendedFieldList . "
 									 FROM spots AS s " . 
@@ -936,7 +978,7 @@ class SpotDb {
 									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
-									 LEFT JOIN spotteridblacklist as bl ON ((bl.userid = f.userid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1))) " .
+									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1))) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
@@ -1006,10 +1048,10 @@ class SpotDb {
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
 												s.filesize AS filesize,
+												s.spotterid AS spotterid,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
-												f.userid AS userid,
 												f.verified AS verified,
 												f.usersignature AS \"user-signature\",
 												f.userkey AS \"user-key\",
@@ -1095,19 +1137,20 @@ class SpotDb {
 				# de datastructuur, de unique keys kappen we expres niet af
 				$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
 
-				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s')",
+				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
 						Array($this->safe($comment['messageid']),
 							  $this->safe($comment['fromhdr']),
 							  $this->safe($comment['stamp']),
 							  $this->safe($comment['user-signature']),
 							  $this->safe(serialize($comment['user-key'])),
-							  $this->safe($comment['userid']),
+							  $this->safe($comment['spotterid']),
 							  $this->safe(implode("\r\n", $comment['body'])),
-							  $this->bool2dt($comment['verified'])));
+							  $this->bool2dt($comment['verified']),
+							  $this->safe($comment['user-avatar'])));
 			} # foreach
 
 			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, userid, body, verified)
+			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar)
 								  VALUES " . implode(',', $insertArray), array());
 		} # foreach
 
@@ -1245,10 +1288,11 @@ class SpotDb {
 														f.stamp AS stamp, 
 														f.usersignature AS \"user-signature\", 
 														f.userkey AS \"user-key\", 
-														f.userid AS userid, 
+														f.spotterid AS spotterid, 
 														f.body AS body, 
 														f.verified AS verified,
-														c.spotrating AS spotrating 
+														c.spotrating AS spotrating,
+														f.avatar as \"user-avatar\"
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
 													WHERE c.nntpref = '%s'
@@ -1256,8 +1300,8 @@ class SpotDb {
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
-				$commentList[$i]['user-key'] = base64_decode($commentList[$i]['user-key']);
-				$commentList[$i]['body'] = explode("\r\n", utf8_decode($commentList[$i]['body']));
+				$commentList[$i]['user-key'] = unserialize($commentList[$i]['user-key']);
+				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 			} # if
 		} # for
 
@@ -1394,7 +1438,12 @@ class SpotDb {
 				$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
 				$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
 				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s')",
+				# Kap de verschillende strings af op een maximum van 
+				# de datastructuur, de unique keys en de RSA keys en dergeijke
+				# kappen we expres niet af
+				$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
+				
+				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
 						 Array($this->safe($spot['messageid']),
 							   $this->safe($spot['poster']),
 							   $this->safe($spot['title']),
@@ -1407,13 +1456,14 @@ class SpotDb {
 							   $this->safe($spot['subcatz']),
 							   (int) $this->safe($spot['stamp']),
 							   (int) $this->safe(($spot['stamp'] * -1)),
-							   $this->safe($spot['filesize']))); # Filesize mag niet naar int gecast worden, dan heb je 2GB limiet
+							   $this->safe($spot['filesize']),
+							   $this->safe($spot['spotterid']))); # Filesize mag niet naar int gecast worden, dan heb je 2GB limiet
 			} # foreach
 
 			# Actually insert the batch
 			if (!empty($insertArray)) {
 				$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize) 
+														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
 									  VALUES " . implode(',', $insertArray), array());
 			} # if
 		} # foreach
@@ -1444,14 +1494,8 @@ class SpotDb {
 
 			# en voeg het aan de database toe
 			foreach($fullSpots as $fullSpot) {
-				# Kap de verschillende strings af op een maximum van 
-				# de datastructuur, de unique keys en de RSA keys en dergeijke
-				# kappen we expres niet af
-				$fullSpot['userid'] = substr($fullSpot['userid'], 0, 31);
-				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s')",
 						Array($this->safe($fullSpot['messageid']),
-							  $this->safe($fullSpot['userid']),
 							  $this->bool2dt($fullSpot['verified']),
 							  $this->safe($fullSpot['user-signature']),
 							  $this->safe(base64_encode(serialize($fullSpot['user-key']))),
@@ -1460,7 +1504,7 @@ class SpotDb {
 			} # foreach
 
 			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO spotsfull(messageid, userid, verified, usersignature, userkey, xmlsignature, fullxml)
+			$this->_conn->modify("INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  VALUES " . implode(',', $insertArray), array());
 		} # foreach
 
@@ -1656,18 +1700,18 @@ class SpotDb {
 	} // updateNotification
 	
 	/*
-	 * Voegt een userid toe aan de blacklist
+	 * Voegt een spotterid toe aan de blacklist
 	 */
-	function addSpotterToBlacklist($userId, $ourUserId, $origin) {
-		$this->_conn->modify("INSERT INTO spotteridblacklist(userid, origin, ouruserid) VALUES ('%s', '%s', %d)",
-					Array($userId, $origin, (int) $ourUserId));
+	function addSpotterToBlacklist($spotterId, $ourUserId, $origin) {
+		$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid) VALUES ('%s', '%s', %d)",
+					Array($spotterId, $origin, (int) $ourUserId));
 	} // addSpotterToBlackList
 	
 	/*
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function getSpotterBlacklist($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT userid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
 					Array((int) $ourUserId));
 	} # getSpotterBlacklist
 
@@ -1675,7 +1719,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function isSpotterBlacklisted($spotterId, $ourUserId) {
-		$blacklistResult = $this->_conn->arrayQuery("SELECT userid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (userid = '%s')",
+		$blacklistResult = $this->_conn->arrayQuery("SELECT spotterid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (spotterid = '%s')",
 							Array((int) $ourUserId, $spotterId));
 		return (!empty($blacklistResult));
 	} # getSpotterBlacklist
@@ -1883,13 +1927,19 @@ class SpotDb {
 	} # addAuditEntry
 
 	function cleanCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE cachetype = %d AND stamp < %d", Array(SpotCache::Web, (int) time()-$expireDays*24*60*60));
+		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics, SpotCache::StatisticsData,(int) time()-$expireDays*24*60*60));
 	} # cleanCache
+
+	function isCached($resourceid, $cachetype) {
+		$tmpResult = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
+
+		return (!empty($tmpResult));
+	} # isCached
 
 	function getCache($resourceid, $cachetype) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				if (!empty($tmp)) {
 					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
 				} # if
@@ -1897,15 +1947,20 @@ class SpotDb {
 				break;
 			} # case 'pdo_pgsql'
 
-			default		: {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, compressed, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, UNCOMPRESS(content) AS content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 				break;
+			} # mysql
+
+			default		: {
+				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 			} # default
 		} # switch
 
 		if (!empty($tmp)) {
-			if ($tmp[0]['compressed'] == 1) {
-				$tmp[0]['content'] = gzinflate($tmp[0]['content']);
+			if ($tmp[0]['serialized'] == 1) {
+				$tmp[0]['content'] = unserialize($tmp[0]['content']);
 			} # if
 
 			$tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
@@ -1919,42 +1974,12 @@ class SpotDb {
 		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
 
-	/*
-	 * Calculates the memory limit
-	 */
-	private function calculatePhpMemoryLimit() {
-		# Calculate the PHP memory limit if required
-		if ($this->_phpMemoryLimit == null) {
-			$val = trim(ini_get("memory_limit"));
-			
-			$last = strtolower($val[strlen($val)-1]);
-			switch($last) {
-				// The 'G' modifier is available since PHP 5.1.0
-				case 'g':
-					$val *= 1024;
-				case 'm':
-					$val *= 1024;
-				case 'k':
-					$val *= 1024;
-			} # swich
-
-			$this->_phpMemoryLimit = $val;
-		} # if
-			
-		return $this->_phpMemoryLimit;
-	} # calculatePhpMemoryLimit
-
-	function saveCache($resourceid, $cachetype, $metadata, $content, $compress) {
-		# Sommige van onderstaande acties vergen nogal wat geheugen en dat geeft een Fatal als
-		# daar niet genoeg van is. Daarom testen we of we wel genoeg hebben
-		if (strlen($content)*2 > ($this->calculatePhpMemoryLimit()-memory_get_usage(true))) {
-			return;
-		} # if
-
-		if (is_string($compress) && $compress == "done") {
-			$compress = true;
-		} elseif ($compress) {
-			$content = gzdeflate($content);
+	function saveCache($resourceid, $cachetype, $metadata, $content) {
+		if (is_array($content)) {
+			$serialize = true;
+			$content = serialize($content);
+		} else {
+			$serialize = false;
 		} # else
 
 		if ($metadata) {
@@ -1967,22 +1992,37 @@ class SpotDb {
 
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
 					} # if
 					break;
 			} # pgsql
 
-			default				: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', compressed = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($compress), $content, $resourceid, $cachetype));
+			case 'mysql'		:
+			case 'pdo_mysql'	: { 
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = COMPRESS('%s') WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
 					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,compressed,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($compress), $content));
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', COMPRESS('%s'))", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
 					} # if
 					break;
+			} # mysql
+
+			default				: {
+					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
+					if ($this->_conn->rows() == 0) {
+						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
+					} # if
 			} # default
 		} # switch
 	} # saveCache
+	
+	/*
+	 * Updates a users' setting with an base64 encoded image
+	 */
+	function setUserAvatar($userId, $imageEncoded) {
+		$this->_conn->modify("UPDATE usersettings SET avatar = '%s' WHERE userid = %d", Array( $imageEncoded, (int) $userId));
+	} # setUserAvatar
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
@@ -2016,43 +2056,43 @@ class SpotDb {
 	function updateExternalBlacklist($newblacklist) {
 		$updatelist = array();
 		$updskipped = 0;
-		$countnewblacklistuserid = 0;
-		$countdelblacklistuserid = 0;
+		$countnewblacklistspotterid = 0;
+		$countdelblacklistspotterid = 0;
 		/* Haal de oude blacklist op*/
-		$oldblacklist = $this->_conn->arrayQuery("SELECT userid
+		$oldblacklist = $this->_conn->arrayQuery("SELECT spotterid
 												FROM spotteridblacklist 
 												WHERE ouruserid = -1 AND origin = 'external'");
 		foreach ($oldblacklist as $obl) {
-			$updatelist[$obl['userid']] = 2;  # 'oude' userids eerst op verwijderen zetten.
+			$updatelist[$obl['spotterid']] = 2;  # 'oude' spotterid eerst op verwijderen zetten.
 		}
 		/* verwerk de nieuwe blacklist */
 		foreach ($newblacklist as $nbl) {
 			$nbl = trim($nbl);									# Enters en eventuele spaties wegfilteren
-			if ((strlen($nbl) >= 3) && (strlen($nbl) <= 6)) {	# de lengte van een userid is tussen 3 en 6 karakters groot (tot op heden)
+			if ((strlen($nbl) >= 3) && (strlen($nbl) <= 6)) {	# de lengte van een spotterid is tussen 3 en 6 karakters groot (tot op heden)
 				if (empty($updatelist[$nbl])) {
-					$updatelist[$nbl] = 1;						# nieuwe userids toevoegen 
+					$updatelist[$nbl] = 1;						# nieuwe spoterids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
-					$updatelist[$nbl] = 0;						# userid staat nog steeds op de blacklist, niet verwijderen.
+					$updatelist[$nbl] = 0;						# spotterid staat nog steeds op de blacklist, niet verwijderen.
 				} else {
-					$updskipped++;								# dubbel userid in blacklist.txt.
+					$updskipped++;								# dubbel spotterid in blacklist.txt.
 				}
 			} else {
-				$updskipped++;									# er is iets mis met het userid (bijvoorbeeld een lege regel in blacklist.txt)
+				$updskipped++;									# er is iets mis met het spotterid (bijvoorbeeld een lege regel in blacklist.txt)
 			}
 		}
 		$updblacklist = array_keys($updatelist);
 		foreach ($updblacklist as $updl) {
 			if ($updatelist[$updl] == 1) {
-				# voeg nieuwe userid's toe aan de blacklist
-				$countnewblacklistuserid++;
-				$this->_conn->modify("INSERT INTO spotteridblacklist (userid,ouruserid,origin) VALUES ('%s','-1','external')", Array($updl));
+				# voeg nieuwe spotterid's toe aan de blacklist
+				$countnewblacklistspotterid++;
+				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,origin) VALUES ('%s','-1','external')", Array($updl));
 			} elseif ($updatelist[$updl] == 2) {
-				# verwijder userid's die niet meer op de blacklist staan
-				$countdelblacklistuserid++;
-				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (userid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
+				# verwijder spotterid's die niet meer op de blacklist staan
+				$countdelblacklistspotterid++;
+				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
 			}
 		}
-		return array('added' => $countnewblacklistuserid,'removed' => $countdelblacklistuserid,'skipped' => $updskipped);
+		return array('added' => $countnewblacklistspotterid,'removed' => $countdelblacklistspotterid,'skipped' => $updskipped);
 	} # updateExternalBlacklist
 	
 } # class db

@@ -19,7 +19,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$this->_retrieveFull = $retrieveFull;
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
-			$this->_recompress_nzb = $this->_settings->get('recompress_nzb');
 		} # ctor
 
 
@@ -137,7 +136,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				# en de code wat duidelijker is
 				$header_isInDb = isset($dbIdList['spot'][$msgId]);
 				$fullspot_isInDb = isset($dbIdList['fullspot'][$msgId]);
-				
+
 				# als we de spot overview nog niet in de database hebben, haal hem dan op, 
 				# ook als de fullspot er nog niet is (of we in retro modus draaien), 
 				# moeten we dit doen want een aantal velden die wel in de header zitten, 
@@ -151,7 +150,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgid);
-												
+
+
 					# als er een parse error was, negeren we de spot volledig, ook niet-
 					# verified spots gooien we weg.
 					if (($spot === false) || (!$spot['verified'])){
@@ -225,10 +225,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							# keren per xover mee komt ...
 							$dbIdList['fullspot'][$msgId] = 1;
 							
-							# Overschrijf de titel in de spots array omdat de XML de UTF-8 titel
-							# bevat. We kunnen dit enkel doen als de header opgehaald is
+							# Overwrite the spots' title because the fullspot contains the title in
+							# UTF-8 format.
+							# We also overwrite the spotterid from the spotsfull because the spotterid
+							# is only in the header in more recent spots.
 							if ($didFetchHeader) {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
+								$spotDbList[count($spotDbList) - 1]['spotterid'] = $fullSpot['spotterid'];
 							} # if
 						} 
 						catch(ParseSpotXmlException $x) {
@@ -274,7 +277,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						if ($this->_prefetch_nzb) {
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$spotsOverview->getNzb($fullSpot, $nntp_nzb, $this->_recompress_nzb);
+								$spotsOverview->getNzb($fullSpot, $nntp_nzb);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if

@@ -3,13 +3,19 @@
 class SpotCache {
 	protected $_db;
 
-	const SpotImage	= 1;
-	const SpotNzb	= 2;
-	const Web		= 3;
+	const SpotImage			= 1;
+	const SpotNzb			= 2;
+	const Web				= 3;
+	const Statistics		= 4;
+	const StatisticsData	= 5;
 
 	function __construct(SpotDb $db) {
 		$this->_db = $db;
 	} # ctor
+
+	function isCached($resourceid, $cachetype) {
+		return $this->_db->isCached($resourceid, $cachetype);
+	} # isCached
 
 	function getCache($resourceid, $cachetype) {
 		SpotTiming::start(__FUNCTION__);
@@ -23,10 +29,10 @@ class SpotCache {
 		} # else
 	} # getCache
 
-	function saveCache($resourceid, $cachetype, $metadata, $content, $compress=false) {
+	function saveCache($resourceid, $cachetype, $metadata, $content) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_db->saveCache($resourceid, $cachetype, $metadata, $content, $compress);
-		SpotTiming::stop(__FUNCTION__, array($resourceid, $cachetype, $metadata, $content, $compress));
+		$this->_db->saveCache($resourceid, $cachetype, $metadata, $content);
+		SpotTiming::stop(__FUNCTION__, array($resourceid, $cachetype, $metadata, $content));
 	} # saveCache
 
 	function updateCacheStamp($resourceid, $cachetype) {

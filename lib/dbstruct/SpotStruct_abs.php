@@ -67,7 +67,7 @@ abstract class SpotStruct_abs {
 	
 	/* dropped een foreign key constraint */
 	abstract function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
-	
+
 	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
 
@@ -234,16 +234,11 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
-		# cache omzetten naar nieuw systeem, tijdelijke tabel nodig
-		# Dit doen we hier, zodat een correcte cache tabel kan worden aangemaakt
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->columnExists('cache', 'messageid'))) {
-			$this->renameTable('cache', 'cachetmp');
-		} # if
-
 		# drop eventueel FTS indexes op de spotsfull tabel
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
+		$this->dropIndex("idx_spotsfull_2", "spotsfull"); # Index on userid
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
 
@@ -322,12 +317,12 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
 		$this->createTable('spotsfull', "utf8"); 
 		$this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('userid', 'spotsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
@@ -375,10 +370,11 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('stamp', 'commentsfull', 'INTEGER', NULL, false, '');
 		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
-		$this->validateColumn('userid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
+		$this->validateColumn('spotterid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii'); 
 		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
+		$this->validateColumn('avatar', 'commentsfull', 'TEXT', NULL, false, 'ascii');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
@@ -427,6 +423,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'usersettings', 'INTEGER', '0', true, '');
 		$this->validateColumn('privatekey', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('publickey', 'usersettings', "TEXT", NULL, false, 'ascii');
+		$this->validateColumn('avatar', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('otherprefs', 'usersettings', "TEXT", NULL, false, 'utf8');
 		$this->alterStorageEngine("usersettings", "InnoDB");
 	
@@ -500,10 +497,18 @@ abstract class SpotStruct_abs {
 
 		# ---- spotteridblacklist table ---- #
 		$this->createTable('spotteridblacklist', "utf8");
-		$this->validateColumn('userid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
+		$this->validateColumn('spotterid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
+
+		# oude cache droppen, converteren gaat te vaak fout
+		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
+			$this->dropTable('cache');
+		} # if
+		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
+			$this->renameTable('cache', 'cachetmp');
+		} # if
 
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
@@ -511,7 +516,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('compressed', 'cache', 'BOOLEAN', NULL, false, '');
+		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
@@ -528,128 +533,62 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		### deprecation van oude Spotweb versies #####################################################
 		##############################################################################################
-		
-		# Wissen van corrupte spots, 3 november 2011.
-		if ($this->_spotdb->getSchemaVer() == 0.45) {
-			$maxCommentsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count FROM commentsfull', array());
-			$maxCommentsXoverAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 5000 AS count  FROM commentsxover', array());
-			$maxSpotsFullAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spotsfull', array());
-			$maxSpotsAr = $this->_dbcon->arrayQuery('SELECT MAX(id) - 1500 AS count FROM spots', array());
-			
-			$maxComments = $maxCommentsFullAr[0]['count'];
-			$maxCommentsXover = $maxCommentsXoverAr[0]['count'];
-			$maxSpotsFull = $maxSpotsFullAr[0]['count'];
-			$maxSpots = $maxSpotsAr[0]['count'];
-			
-			echo "\tDeleting corrupt comments cache";
-			$this->_dbcon->rawExec("DELETE FROM commentsfull WHERE id > " . (int) $maxComments);
-			echo "\tDeleting corrupt comments headers";
-			$this->_dbcon->rawExec("DELETE FROM commentsxover WHERE id > " . (int) $maxCommentsXover);
-			echo "\tDeleting corrupt cache items";
-			$this->_dbcon->rawExec("DELETE FROM cache WHERE messageid IN (SELECT messageid FROM spots WHERE id > " . (int) $maxSpots . ")");
-			echo "\tDeleting corrupt spots cache";
-			$this->_dbcon->rawExec("DELETE FROM spotsfull WHERE id > " . (int) $maxSpotsFull);
-			echo "\tDeleting corrupt spots";
-			$this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpots);
+		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.34)) {
+			if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
+				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
+									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+			} # if
+
+			# Tabellen terug samenvoegen in een MyISAM tabel
+			if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
+				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/48bc94a63f94959f9fe6b2372b312e35a4d09997), " . PHP_EOL . 
+									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+			} # if
 		} # if
 
-		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
-			throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-							    "Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
-								"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
-		} # if
+		/*
+		 * Convert the information from 'spotsfull' to 'spots' table
+		 */
+		if (($this->_spotdb->getSchemaVer() < 0.48) && ($this->_spotdb->getSchemaVer() > 0.00)) {
+			echo PHP_EOL . PHP_EOL;
+			echo 'Converting your spotsfull data to another format' . PHP_EOL;
+			echo 'Please note - if you had spotsfull enabled, this can take a long time' . PHP_EOL;
+			echo PHP_EOL . PHP_EOL;
 
-		# Tabellen terug samenvoegen in een MyISAM tabel
-		if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
-			$this->_dbcon->rawExec("CREATE TABLE spotstmp(id INTEGER PRIMARY KEY AUTO_INCREMENT, 
-										messageid varchar(128) CHARACTER SET ascii NOT NULL,
-										poster varchar(128),
-										title varchar(128),
-										tag varchar(128),
-										category INTEGER, 
-										subcata VARCHAR(64),
-										subcatb VARCHAR(64),
-										subcatc VARCHAR(64),
-										subcatd VARCHAR(64),
-										subcatz VARCHAR(64),
-										stamp INTEGER(10) UNSIGNED,
-										reversestamp INTEGER DEFAULT 0,
-										filesize BIGINT UNSIGNED NOT NULL DEFAULT 0,
-										moderated BOOLEAN,
-										commentcount INTEGER DEFAULT 0,
-										spotrating INTEGER DEFAULT 0) ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
-			
-			# Copieer de data uit de andere tabellen
-			$this->_dbcon->rawExec("INSERT INTO spotstmp(messageid, poster, title, tag, category, 
-														 subcata, subcatb, subcatc, subcatd, 
-														 subcatz, stamp, reversestamp, filesize, 
-														 moderated, commentcount, spotrating) 
-										(SELECT s.messageid, t.poster, t.title, t.tag, 
-												s.category, 
-												s.subcata, s.subcatb, s.subcatc, 
-												s.subcatd, s.subcatz, s.stamp, 
-												s.reversestamp, s.filesize, s.moderated, 
-												s.commentcount, s.spotrating 
-											FROM spots s 
-											JOIN spottexts t ON (s.messageid = t.messageid))");
+			# Empty the blacklist table because the userid column is renamed to spotterid
+			$tmp = $this->_dbcon->rawExec("TRUNCATE spotteridblacklist");
 
-			# drop de 'oude' tabellen
-			$this->dropTable('spots');
-			$this->dropTable('spottexts');
-			
-			# rename deze tabel
-			$this->renameTable('spotstmp', 'spots');
+			# Update the spotterid field with the userid field
+			$this->_dbcon->rawExec("UPDATE commentsfull SET spotterid = userid");
+
+			# MySQL specifieke syntax to update the spots
+			if ($this instanceof SpotStruct_mysql) {
+				$this->_dbcon->rawExec("UPDATE spots s, spotsfull f SET s.spotterid = f.userid WHERE (s.messageid = f.messageid)");
+			} # if
+
+			# PostgreSQL (?) specifieke syntax
+			if ($this instanceof SpotStruct_pgsql) {
+				$this->_dbcon->rawExec("UPDATE spots s SET spotterid = spotsfull.userid FROM spotsfull WHERE (s.messageid = spotsfull.messageid)");
+			} # if
 		} # if
 
 		# cache omzetten naar nieuw systeem
-		if (($this->_spotdb->getSchemaVer() < 0.47) && ($this->tableExists('cachetmp'))) {
-			$spotImage = new SpotImage();
-
-			# Web
-			$tmp = $this->_dbcon->arrayQuery("SELECT url FROM cachetmp WHERE messageid = '';");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, compressed, content FROM cachetmp WHERE url = '%s'", Array($cachetmp['url']));
-				$data = $data[0];
-
-				if ($data['compressed']) {
-					$metadata = '';
-				} else {
-					$imageData = $spotImage->getImageInfoFromString($data['content']);
-					$metadata = serialize($imageData['metadata']);
-				} # else
-
-				$content = (!empty($imageData)) ? $imageData['content'] : $data['content'];
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array(md5($cachetmp['url']), SpotCache::Web, $data['stamp'], $metadata, $this->_dbcon->bool2dt($data['compressed']), $content));
-			} # foreach
-
-			# images vanaf de NNTP server
-			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotImage::', messageid);");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotImage::', messageid);", Array($cachetmp['messageid']));
-				$data = $data[0];
-
-				if (!$imageData = $spotImage->getImageInfoFromString($data['content'])) {
-					continue;
-				} # if
-
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['messageid'], SpotCache::SpotImage, $data['stamp'], serialize($imageData['metadata']), $this->_dbcon->bool2dt(false), $imageData['content']));
-			} # foreach
-
-			# NZBs
-			$tmp = $this->_dbcon->arrayQuery("SELECT messageid FROM cachetmp WHERE url = CONCAT('SpotNzb::', messageid);");
-			foreach ($tmp AS $cachetmp) {
-				$data = $this->_dbcon->arrayQuery("SELECT stamp, content FROM cachetmp WHERE messageid = '%s' AND url = CONCAT('SpotNzb::', messageid);", Array($cachetmp['messageid']));
-				$data = $data[0];
-				$data['content'] = gzdeflate($data['content']); // door een bug waren NZB-files dubbel compressed
-
-				$this->_dbcon->modify("INSERT INTO cache(resourceid, cachetype, stamp, metadata, compressed, content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')",
-										Array($cachetmp['messageid'], SpotCache::SpotNzb, $data['stamp'], '', $this->_dbcon->bool2dt(true), $data['content']));
-			} # foreach
-
-			# drop de oude tabel
-			$this->dropTable('cachetmp');
+		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
+			$cachetmpCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cachetmp;");
+			if ($cachetmpCount > 7500) {
+				$dbname = $this->_dbcon->singleQuery("SELECT DATABASE();");
+				echo PHP_EOL;
+				echo "Converting the cache is not necessary to continue working with SpotWeb. If you don't want" . PHP_EOL;
+				echo "to wait for this conversion, please enter the following command in MySQL or phpMyAdmin:" . PHP_EOL;
+				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
+				echo "If you like to convert the cache, enter:" . PHP_EOL;
+				echo "\tINSERT INTO " . $dbname . ".cache SELECT resourceid, cachetype, stamp, metadata, serialized, COMPRESS(content) FROM " . $dbname . ".cachetmp;" . PHP_EOL;
+				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
+				echo "After this operation you must run upgrade-db.php again." . PHP_EOL . PHP_EOL;
+				die();
+			} # if
 		} # if
 
 		# En creeer de diverse indexen
@@ -658,6 +597,7 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
+		$this->validateIndex("idx_spots_5", "", "spots", array("spotterid"));
 		$this->validateFts("idx_fts_spots", "spots", 
 					array(1 => "poster",
 					      2 => 'title',
@@ -668,7 +608,6 @@ abstract class SpotStruct_abs {
 		
 		# ---- Indexen op spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));
-		$this->validateIndex("idx_spotsfull_2", "", "spotsfull", array("userid"));
 
 		# ---- Indexen op commentsfull ----
 		$this->validateIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", array("messageid"));
@@ -734,11 +673,11 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
 
 		# ---- Indexen op spotteridblacklist ----
-		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("userid", "ouruserid"));
+		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
 
 		# ---- Indexen op cache ----
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
-		$this->validateIndex("idx_cache_2", "", "cache", array("stamp"));
+		$this->validateIndex("idx_cache_2", "", "cache", array("cachetype", "stamp"));
 
 		# leg foreign keys aan
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -758,11 +697,15 @@ abstract class SpotStruct_abs {
 		# Hier droppen we kolommen ###################################################################
 		##############################################################################################
 		$this->dropColumn('filesize', 'spotsfull');
+		$this->dropColumn('userid', 'spotsfull');
+		$this->dropColumn('userid', 'spotteridblacklist');
+		$this->dropColumn('userid', 'commentsfull');
 
 		##############################################################################################
 		# Hier droppen we tabellen ###################################################################
 		##############################################################################################		
 		$this->dropTable('webcache');
+		$this->dropTable('cachetmp');
 
 		# voeg het database schema versie nummer toe
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);

@@ -9,7 +9,7 @@
 			
 			# Output de HTML
 			echo '<li class="sortable-element-class ' . $tplHelper->filter2cat($filter['tree']) . '" id="orderfilterslist_' . $filter['id'];
-			echo '"><div><a href="" onclick="return openDialog(\'editdialogdiv\', \'Bewerk een filter\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', null, true, function() { refreshTab(\'edituserpreferencetabs\')});">';
+			echo '"><div><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Edit filter') . '\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', null, true, function() { refreshTab(\'edituserpreferencetabs\')});">';
 			echo '<span class="spoticon spoticon-' . str_replace('.png', '', $filter['icon']) . '">&nbsp;</span>' . $filter['title'] . '</a>';
 			echo '</div>';
 			
@@ -33,15 +33,15 @@
 			<form class="editfilterform" name="editfilterform" action="<?php echo $tplHelper->makeEditFilterAction(); ?>" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="editfilterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>">
 				<input type="hidden" name="filterid" value="9999">
-				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="Herstel filters naar standaard">
+				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitdiscardfilters]" value="<?php echo _('Restore filter to default'); ?>">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_set_filters_as_default, ''))  { ?>
-				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitsetfiltersasdefault]" value="Deze filters gebruiken als standaard">
+				<input class="greyButton" onclick="ajaxSubmitFormWithCb('?page=editfilter', this, function() { refreshTab('edituserpreferencetabs')}); return false;" type="submit" name="editfilterform[submitsetfiltersasdefault]" value="<?php echo _('Use these filters as standard'); ?>">
 <?php } ?>
-				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="Download je filters">
+				<input class="greyButton" type="submit" name="editfilterform[submitexportfilters]" value="<?php echo _('Download your filters'); ?>">
 
 				<input type="hidden" name="MAX_FILE_SIZE" value="30720" />
 				<input name="filterimport" type="file" />
-				<input class="greyButton" type="submit" name="editfilterform[submitimportfilters]" value="Upload je filters">
+				<input class="greyButton" type="submit" name="editfilterform[submitimportfilters]" value="<?php echo _('Upload filters'); ?>">
 			</form>
 			
 		</div>

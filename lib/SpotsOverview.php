@@ -8,13 +8,12 @@ class SpotsOverview {
 	private $_cache;
 	private $_settings;
 	private $_activeRetriever;
-	private $_phpMemoryLimit = null;
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
-		$this->_spotImage = new SpotImage();
+		$this->_spotImage = new SpotImage($db);
 	} # ctor
 	
 	/*
@@ -24,23 +23,27 @@ class SpotsOverview {
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
-			# Vraag de volledige spot informatie op -- dit doet ook basic
-			# sanity en validatie checking
-			$fullSpot = $nntp->getFullSpot($msgId);
-			$this->_db->addFullSpots( array($fullSpot) );
+			/*
+			 * Retrieve a full loaded spot from the NNTP server
+			 */
+			$newFullSpot = $nntp->getFullSpot($msgId);
+			$this->_db->addFullSpots( array($newFullSpot) );
 			
-			# we halen de fullspot opnieuw op zodat we de 'xover' informatie en de 
-			# niet xover informatie in 1 hebben
+			/*
+			 * We ask our DB to retrieve the fullspot again, this ensures
+			 * us all information is present and in always the same format
+			 */
 			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		} # if
 
 		/**
-		 * Overschrijf nu onze 'spot info' uit de database met sommige info welke we uit de 
-		 * de XML parseren, we doen dit omdat de XML o.a. betere encoding bevat, zie de titel van spot 
-		 * bdZZdJ3gPxTAmSE%40spot.net bijvoorbeeld.
+		 * We'll overwrite our spot info from the database with some information we parse from the 
+		 * XML. This is necessary because the XML contains better encoding.
 		 *
-		 * Alles uit de SpotsFull aannemen is niet interessant omdat niet elke XML versie alle
-		 * informatie bevat
+		 * For example take the titel from spot bdZZdJ3gPxTAmSE%40spot.net.
+		 *
+		 * We cannot use all information from the XML because because some information just
+		 * isn't present in the XML file
 		 */
 		$spotParser = new SpotParser();
 		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
@@ -48,9 +51,17 @@ class SpotsOverview {
 		$fullSpot['title'] = $parsedXml['title'];
 		
 		/*
-		 * Als je een fullspot ophaalt, maar er is nog gen 'spot' entry, dan blijf je een
-		 * lege spot terugkrijgen omdat de join misgaat. Omdat dit verwarring op kan leveren
-		 * gooien we dan een exception
+		 * If the current spotterid is empty, we probably now
+		 * have a spotterid because we have the fullspot.
+		 */
+		if ((empty($fullSpot['spotterid'])) && ($fullSpot['verified'])) {
+			$spotSigning = new SpotSigning($this->_db, $this->_settings);
+			$fullSpot['spotterid'] = $spotSigning->calculateSpotterId($fullSpot['user-key']['modulo']);
+		} # if
+
+		/*
+		 * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
+		 * causes us to never get the spot, hence we throw this exception
 		 */
 		if (empty($fullSpot)) {
 			throw new Exception("Spot is not in our Spotweb database");
@@ -151,31 +162,20 @@ class SpotsOverview {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($fullSpot, $nntp, $recompress) {
+	function getNzb($fullSpot, $nntp) {
 		SpotTiming::start(__FUNCTION__);
 
-		if ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
-			if (!$this->_activeRetriever) {
-				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
-			} # if
+		if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
+			$nzb = true;
+		} elseif ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
+			$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
 			$nzb = $nzb['content'];
 		} else {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
-
-			# hier wordt extreem veel geheugen verbruikt
-			if ($recompress && strlen($nzb)*16 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
-				$nzbTmp = @gzinflate($nzb); // Corrupte data uitfilteren
-
-				if ($nzbTmp && strlen($nzbTmp)*1.1 < $this->calculatePhpMemoryLimit()-memory_get_usage(true)) {
-					$nzb = gzdeflate($nzbTmp, 9);
-				} # if
-				unset($nzbTmp);
-			} # if
-
-			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, NULL, $nzb, "done");
+			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, false, $nzb);
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp, $recompress));
+		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
 
 		return $nzb;
 	} # getNzb
@@ -188,16 +188,16 @@ class SpotsOverview {
 		$return_code = false;
 
 		if (is_array($fullSpot['image'])) {
-			if ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
-				if (!$this->_activeRetriever) {
-					$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
-				} # if
+			if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
+				$data = true;
+			} elseif ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
+				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
 			} else {
 				try {
 					$img = $nntp->getImage($fullSpot);
 
 					if ($data = $this->_spotImage->getImageInfoFromString($img)) {
-						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content'], false);
+						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content']);
 					} # if	
 				}
 				catch(ParseSpotXmlException $x) {
@@ -216,36 +216,83 @@ class SpotsOverview {
 					} # else
 				} # catch
 			} # if
-		} else {
-			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], 24*60*60);
+		} elseif (!empty($fullSpot['image'])) {
+			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], false, 24*60*60);
 		} # else
-
-		if (!isset($data['metadata'])) {
-			$return_code = 901;
-		} # if
 
 		# bij een error toch een image serveren
 		if (!$this->_activeRetriever) {
 			if ($return_code && $return_code != 200 && $return_code != 304) {
 				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif (empty($fullSpot['image'])) {
+				$data = $this->_spotImage->createErrorImage(901);
+			} elseif ($return_code && !$data['metadata']) {
+				$data = $this->_spotImage->createErrorImage($return_code);
+			} elseif ($return_code && !$data) {
+				$data = $this->_spotImage->createErrorImage($return_code);
 			} elseif (!$data) {
 				$data = $this->_spotImage->createErrorImage(999);
 			} # elseif
-		} # if
+		} elseif (!isset($data)) {
+			$data = false;
+		} # elseif
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
 		return $data;
 	} # getImage
 
 	/* 
+	 * Geef een statistics image file terug
+	 */
+	function getStatisticsImage($graph, $limit, $nntp, $language) {
+		SpotTiming::start(__FUNCTION__);
+		$spotStatistics = new SpotStatistics($this->_db);
+
+		if (!array_key_exists($graph, $this->_spotImage->getValidStatisticsGraphs()) || !array_key_exists($limit, $this->_spotImage->getValidStatisticsLimits())) {
+			$data = $this->_spotImage->createErrorImage(400);
+			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
+			return $data;
+		} # if
+
+		$lastUpdate = $this->_db->getLastUpdate($nntp['host']);
+		$resourceid = $spotStatistics->getResourceid($graph, $limit, $language);
+		$data = $this->_cache->getCache($resourceid, SpotCache::Statistics);
+		if (!$data || $this->_activeRetriever || (!$this->_settings->get('prepare_statistics') && (int) $data['stamp'] < $lastUpdate)) {
+			$data = $this->_spotImage->createStatistics($graph, $limit, $lastUpdate, $language);
+			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content']);
+		} # if
+
+		$data['expire'] = true;
+		SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
+		return $data;
+	} # getStatisticsImage
+
+	/*
+	 * Geeft een Spotnet avatar image terug
+	 */
+	function getAvatarImage($md5, $size, $default, $rating) {
+		SpotTiming::start(__FUNCTION__);
+		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
+
+		list($return_code, $data) = $this->getFromWeb($url, true, 60*60);
+		$data['expire'] = true;
+		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
+		return $data;
+	} # getAvatarImage
+
+	/* 
 	 * Haalt een url op en cached deze
 	 */
-	function getFromWeb($url, $ttl=900) {
+	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
 		SpotTiming::start(__FUNCTION__);
 		$url_md5 = md5($url);
 
+		if ($this->_activeRetriever && $this->_cache->isCached($url_md5, SpotCache::Web)) {
+			return array(200, true);
+		} # if
+
 		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
-		if ((!$content) || (time()-(int) $content['stamp'] > $ttl)) {
+		if (!$content || time()-(int) $content['stamp'] > $ttl) {
 			$data = array();
 
 			SpotTiming::start(__FUNCTION__ . ':curl');
@@ -258,7 +305,8 @@ class SpotsOverview {
 			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
 			curl_setopt ($ch, CURLOPT_HEADER, 1);
 			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-			if (!$content) {
+			curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
+			if ($content) {
 				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
 			} # if
@@ -272,25 +320,28 @@ class SpotsOverview {
 				$info = curl_getinfo($ch);
 				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
-				curl_close($ch);
 			} else {
-				return array(500, false); // 500 == Internal Server Error
-			} # if
+				$http_code = 700; # Curl returned an error
+			} # else
+			curl_close($ch);
 
 			if ($http_code != 200 && $http_code != 304) {
 				return array($http_code, false);
 			} elseif ($ttl > 0) {
 				if ($imageData = $this->_spotImage->getImageInfoFromString($data['content'])) {
 					$data['metadata'] = $imageData['metadata'];
-					$compress = false;
 				} else {
 					$data['metadata'] = '';
-					$compress = true;
 				} # else
 
 				switch($http_code) {
-					case 304:	if (!$this->_activeRetriever) { $this->_cache->updateCacheStamp($url_md5, SpotCache::Web); } break;
-					default:	$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content'], $compress);
+					case 304:	if (!$this->_activeRetriever) {
+									$this->_cache->updateCacheStamp($url_md5, SpotCache::Web);
+								} # if
+								break;
+					default:	if ($info['redirect_count'] == 0 || ($info['redirect_count'] > 0 && $storeWhenRedirected)) {
+									$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content']);
+								} # if
 				} # switch
 			} # else
 		} else {
@@ -298,7 +349,7 @@ class SpotsOverview {
 			$data = $content;
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($url, $ttl));
+		SpotTiming::stop(__FUNCTION__, array($url, $storeWhenRedirected, $ttl));
 
 		return array($http_code, $data);
 	} # getUrl
@@ -780,7 +831,8 @@ class SpotsOverview {
 		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
 		$filterFieldMapping = array('filesize' => 's.filesize',
 								  'date' => 's.stamp',
-								  'userid' => 'f.userid',
+								  'userid' => 's.spotterid',
+								  'spotterid' => 's.spotterid',
 								  'moderated' => 's.moderated',
 								  'poster' => 's.poster',
 								  'titel' => 's.title',
@@ -916,7 +968,7 @@ class SpotsOverview {
 				} # if
 
 				# en creeer de query string
-				if (in_array($tmpFilterFieldname, array('userid'))) {
+				if (in_array($tmpFilterFieldname, array('spotterid', 'userid'))) {
 					$filterValueSql['OR'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
 				} else {
 					$filterValueSql['AND'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
@@ -1194,31 +1246,6 @@ class SpotsOverview {
 					 'additionalJoins' => $additionalJoins,
 					 'sortFields' => $sortFields);
 	} # filterToQuery
-
-	/*
-	 * Calculates the memory limit
-	 */
-	private function calculatePhpMemoryLimit() {
-		# Calculate the PHP memory limit if required
-		if ($this->_phpMemoryLimit == null) {
-			$val = trim(ini_get("memory_limit"));
-			
-			$last = strtolower($val[strlen($val)-1]);
-			switch($last) {
-				// The 'G' modifier is available since PHP 5.1.0
-				case 'g':
-					$val *= 1024;
-				case 'm':
-					$val *= 1024;
-				case 'k':
-					$val *= 1024;
-			} # swich
-
-			$this->_phpMemoryLimit = $val;
-		} # if
-			
-		return $this->_phpMemoryLimit;
-	} # calculatePhpMemoryLimit
 	
 	public function setActiveRetriever($b) {
 		$this->_activeRetriever = $b;

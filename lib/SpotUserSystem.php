@@ -331,24 +331,29 @@ class SpotUserSystem {
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
 		$validTemplates = array('we1rdo');
 		$validDefaultSorts = array('', 'stamp');
+		$validLanguages = array_keys($this->_settings->get('system_languages'));
 		
 		# Controleer de per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
-			$errorList[] = array('validateuser_invalidpreference', array('perpage'));
+			$errorList[] = _('Ongeldige user preference waarde (perpage)');
 		} # if
 		
 		# Controleer basis settings
 		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
-			$errorList[] = array('validateuser_invalidpreference', array('date_formatting')); 
+			$errorList[] = _('Ongeldige user preference waarde (date_formatting)');
 		} # if
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
-			$errorList[] = array('validateuser_invalidpreference', array('template'));
+			$errorList[] = _('Ongeldige user preference waarde (template)');
+		} # if
+
+		if (in_array($prefs['user_language'], $validLanguages) === false) { 	
+			$errorList[] = _('Ongeldige user preference waarde (language)');
 		} # if
 
 		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	
-			$errorList[] = array('validateuser_invalidpreference', array('defaultsortfield' . $prefs['defaultsortfield']));
+			$errorList[] = _('Ongeldige user preference waarde (defaultsortfield)');
 		} # if
 		
 		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
@@ -362,7 +367,7 @@ class SpotUserSystem {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
-				$errorList[] = array('validateuser_invalidpreference', array('sabnzbd url'));
+				$errorList[] = _('Ongeldige user preference waarde (sabnzbd url)');
 			} # if
 			
 			# SABnzbd URL moet altijd eindigen met een slash
@@ -379,7 +384,9 @@ class SpotUserSystem {
 		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
 		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
 		$prefs['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
+		$prefs['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
 		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
+		$prefs['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
 		
 		$notifProviders = Notifications_Factory::getActiveServices();
 		foreach ($notifProviders as $notifProvider) {
@@ -401,60 +408,60 @@ class SpotUserSystem {
 
 		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('customcss'));
+			$errorList[] = _('Ongeldige user preference waarde (customcss)');
 		} # if		
 
 		# We willen geen megabytes aan defalt newspot body of tag opslaan
 		if (strlen($prefs['newspotdefault_tag'] > 90)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_tag'));
+			$errorList[] = _('Ongeldige user preference waarde (newspotdefault_tag)');
 		} # if		
 		
 		if (strlen($prefs['newspotdefault_body'] > 9000)) { 
-			$errorList[] = array('validateuser_invalidpreference', array('newspotdefault_body'));
+			$errorList[] = _('Ongeldige user preference waarde (newspotdefault_body)');
 		} # if		
 		
 		# als men runcommand of save wil, moet er een local_dir opgegeven worden
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
 			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('local_dir'));
+				$errorList[] = _('Ongeldige user preference waarde (local_dir)');
 			} # if
 		} # if
 
 		# als men Growl wil gebruiken, moet er een host opgegeven worden
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('growl host'));
+				$errorList[] = _('Ongeldige user preference waarde (growl_host)');
 			} # if
 		} # if
 
 		# als men Notify My Android wil gebruiken, moet er een apikey opgegeven worden
 		if ($prefs['notifications']['nma']['enabled']) {
 			if (empty($prefs['notifications']['nma']['api'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('Notify My Android api'));
+				$errorList[] = _('Ongeldige user preference waarde (Notify My Android API)');
 			} # if
 		} # if
 
 		# als men Notifo wil gebruiken, moet er een username & apikey opgegeven worden
 		if ($prefs['notifications']['notifo']['enabled']) {
 			if (empty($prefs['notifications']['notifo']['username'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('notifo username'));
+				$errorList[] = _('Ongeldige user preference waarde (Notifo usernae)');
 			} # if
 			if (empty($prefs['notifications']['notifo']['api'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('notifo api'));
+				$errorList[] = _('Ongeldige user preference waarde (Notifo API)');
 			} # if
 		} # if
 
 		# als men Prowl wil gebruiken, moet er een apikey opgegeven worden
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('prowl apikey'));
+				$errorList[] = _('Ongeldige user preference waarde (Prowl APIkey)');
 			} # if
 		} # if
 
 		# als men Twitter wil gebruiken, moet er er een account zijn geverifieerd
 		if ($prefs['notifications']['twitter']['enabled']) {
 			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
-				$errorList[] = array('validateuser_invalidpreference', array('Er is geen account geverifi&euml;erd voor Twitter notificaties.'));
+				$errorList[] = _('Ongeldige user preference waarde (Er is geen account geverifi&euml;erd voor Twitter notificaties)');
 			} # if
 		} # if
 
@@ -471,46 +478,46 @@ class SpotUserSystem {
 		# Controleer de username
 		if (!$isEdit) {
 			if (!$this->validUsername($user['username'])) {
-				$errorList[] = array('validateuser_invalidusername', array());
+				$errorList[] = ('Geen geldige gebruikersnaam');
 			} # if
 		} # if
 		
 		# controleer de firstname
 		if (strlen($user['firstname']) < 3) {
-			$errorList[] = array('validateuser_invalidfirstname', array());
+			$errorList[] = _('Geen geldige voornaam');
 		} # if
 		
 		# controleer de lastname
 		if (strlen($user['lastname']) < 3) {
-			$errorList[] = array('validateuser_invalidlastname', array());
+			$errorList[] = _('Geen geldige achternaam');
 		} # if
 
 		# controleer het password, als er een opgegeven is
 		if (strlen($user['newpassword1'] > 0)) {
 			if (strlen($user['newpassword1']) < 5){
-				$errorList[] = array('validateuser_passwordtooshort', array());
+				$errorList[] = _('Opgegeven wachtwoord is te kort');
 			} # if 
 		} # if
 
 		# password1 en password2 moeten hetzelfde zijn (password en bevestig password)
 		if ($user['newpassword1'] != $user['newpassword2']) {
-			$errorList[] = array('validateuser_passworddontmatch', array());
+			$errorList[] = _('Wachtwoord velden komen niet overeen');
 		} # if
 
 		# anonymous user editten mag niet
 		if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$errorList[] = array('edituser_cannoteditanonymous', array());
+			$errorList[] = _('Anonymous user kan niet bewerkt worden');
 		} # if
 		
 		# controleer het mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = array('validateuser_invalidmail', array());
+			$errorList[] = _('Geen geldig mailadres');
 		} # if
 
 		# Is er geen andere uset met dezelfde mailaddress?
 		$emailExistResult = $this->_db->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
-			$errorList[] = array('validateuser_mailalreadyexist', array());
+			$errorList[] = _('Mailadres is al ingebruik');
 		} # if
 		
 		return $errorList;
@@ -535,7 +542,7 @@ class SpotUserSystem {
 		# Controleer of er een usergroup opgegeven is en of de 
 		# naam niet te kort is
 		if (strlen($group['name']) < 3) {
-			$errorList[] = array('validatesecgroup_invalidname', array('name'));
+			$errorList[] = _('Ongeldige naam voor de groep');
 		} # if
 		
 		# Vraag nu alle security groepen om, om er zeker van te zijn
@@ -545,7 +552,7 @@ class SpotUserSystem {
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
 				if ($secGroup['id'] != $group['id']) {
-					$errorList[] = array('validatesecgroup_duplicatename', array('name'));
+					$errorList[] = _('Deze naam voor de groep is al in gebruik');
 				} # if
 			} # if
 		} # foreach
@@ -583,7 +590,7 @@ class SpotUserSystem {
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
 				# Dubbele permissie
-				$errorList[] = array('validatesecgroup_duplicatepermission', array('name'));
+				$errorList[] = _('Permissie bestaat al in deze groep');
 			} # if
 		} # foreach
 	
@@ -685,7 +692,7 @@ class SpotUserSystem {
 		
 		// controleer dat deze specifieke permissie niet al in de security groep zit
 		if (strlen($filter['title']) < 3) {
-			$errorList[] = array('validatefilter_invalidtitle', array('name'));
+			$errorList[] = _('Ongeldige naam voor een filter');
 		} # if
 		
 		return array($filter, $errorList);
@@ -1018,6 +1025,42 @@ class SpotUserSystem {
 		
 		return $filterList;
 	} # xmlToFilters
+	
+	/*
+	 * Changes the avatar of this user
+	 */
+	function changeAvatar($userId, $imageFile) {
+		$errorList = array();
+		
+		/* 
+		 * Don't allow images larger than 4000 bytes
+		 */
+		if (strlen($imageFile) > 4000) {
+			$errorList[] = _('An avatar image has a maximum of 4000 bytes');
+		} # if
+		
+		/*
+		 * Make sure the image can be read, and stuff
+		 */
+		$spotImage = new SpotImage($this->_db);
+		if ($spotImage->getImageInfoFromString($imageFile) === false) {
+			$errorList[] = _('Invalid avatar image was supplied');
+		} # if
+
+		if (empty($errorList)) {
+			/*
+			 * We store the images base64 encoded
+			 */
+			$imageFile = base64_encode($imageFile);
+			
+			/*
+			 * and update the database 
+			 */
+			$this->_db->setUserAvatar($userId, $imageFile);
+		} # if
+
+		return $errorList;
+	} # changeAvatar
 	
 	/*
 	 * Blacklist a specific spotter

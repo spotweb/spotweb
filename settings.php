@@ -214,6 +214,7 @@ if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'][] = Array('Gedownload', "download", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "", Array(SpotSecurity::spotsec_keep_own_downloadlist, ''));
 	$settings['quicklinks'][] = Array('Recent bekeken', "eye", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
 	$settings['quicklinks'][] = Array('Mijn spots', "fav", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=MyPostedSpots:0", "", Array(SpotSecurity::spotsec_post_spot, ''));
+	$settings['quicklinks'][] = Array('Statistieken', "stats", "?page=statistics", "", Array(SpotSecurity::spotsec_view_statistics, ''));
 	$settings['quicklinks'][] = Array('Documentatie', "help", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''));
 } # if isset
 

@@ -80,7 +80,7 @@ function openSpot(id,url) {
 		$("body").addClass("spotinfo");
 
 		if($("#overlay").children().size() == 0) {
-			alert("Er is een fout opgetreden bij het laden van de pagina, u wordt automatisch teruggestuurd naar het overzicht...");
+			alert("<t>Error while loading this page, you will be returned automaticly to the mainview</t>");
 			closeDetails(scrollLocation);
 		}
 
@@ -96,7 +96,10 @@ function openSpot(id,url) {
 		postCommentsForm();
 		postReportForm();
 		postBlacklistForm();
-		loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+		
+		if (spotweb_retrieve_commentsperpage > 0) {
+			loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+		} // if
 		loadSpotImage();
 	});
 }
@@ -296,7 +299,7 @@ function loadComments(messageid,perpage,pagenr) {
 	} // if 
 	
 	var xhr = null;
-	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr, function(html) {
+	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr+'&perpage='+perpage, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) {
 			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
@@ -350,12 +353,12 @@ function postCommentsForm() {
 			$("li.addComment div").slideDown(function(){
 				detectScrollbar();
 			});
-			$("li.addComment a.togglePostComment span").addClass("up").parent().attr("title", "Reactie toevoegen (verbergen)");
+			$("li.addComment a.togglePostComment span").addClass("up").parent().attr("title", "<t>Add comment (hide)</t>");
 		} else {
 			$("li.addComment div").slideUp(function(){
 				detectScrollbar();
 			});
-			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "Reactie toevoegen (uitklappen)");
+			$("li.addComment a.togglePostComment span").removeClass("up").parent().attr("title", "<t>Add comment (show)</t>");
 		}
 	});
 
@@ -379,14 +382,18 @@ function postCommentsForm() {
 	});
 
 	function sterStatus(id, rating) {
-		if (id == 1) { ster = 'ster'; } else { ster = 'sterren'; }
+		if (id == 1) { ster = '<t>star</t>'; } else { ster = '<t>stars</t>'; }
 
 		if (id < rating) {
-			$("span#ster"+id).addClass("active").attr('title', 'Geef spot '+id+' '+ster);
+			$("span#ster"+id).addClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);
 		} else if (id == rating) {
-			$("span#ster"+id).addClass("active").attr('title', 'Geen '+ster+' geven');
+			if (id == 1) {
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any star</t>");
+			} else {
+				$("span#ster"+id).addClass("active").attr('title', "<t>Don't give any stars</t>");
+			} // if
 		} else {
-			$("span#ster"+id).removeClass("active").attr('title', 'Geef spot '+id+' '+ster);
+			$("span#ster"+id).removeClass("active").attr('title', '<t>Rate spot</t> '+id+' '+ster);
 		}
 	}
 
@@ -412,7 +419,7 @@ function loadSpotImage() {
 			'width': $("img.spotinfoimage").width(),
 			'height': $("img.spotinfoimage").height()
 		})
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
+		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
 		detectScrollbar();
 	});
 }
@@ -421,9 +428,9 @@ function toggleImageSize() {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
-		$('a.postimage').attr('title', 'Klik om dit plaatje op ware grootte te laten zien (i)');
+		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
 	} else {
-		$('a.postimage').attr('title', 'Klik om plaatje te verkleinen');
+		$('a.postimage').attr('title', '<t>Click image to reduce</t>');
 		$("img.spotinfoimage").addClass("full");
 		$("img.spotinfoimage").css({
 			'max-width': $("div#overlay").width() - 5,
@@ -517,9 +524,9 @@ $(document).ready(function() {
 	$('#twitter_request_auth').click(function(){
 		$('#twitter_result').html(loading);
 		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
-			$('#twitter_result').html('<b>Stap 2</b>:<br />Vul hieronder het PIN-nummer in die je van Twitter hebt gekregen en verifi&euml;er deze<br /><input type="text" name="twitter_pin" id="twitter_pin">');
+			$('#twitter_result').html('<t><b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this.</t><br /><input type="text" name="twitter_pin" id="twitter_pin">');
 		});
-		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="Verifiëer PIN">');
+		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="<t>Validate PIN</t>">');
 	});
 	$('#twitter_verify_pin').live('click', function(){
 		var pin = $("#twitter_pin").val();
@@ -547,10 +554,10 @@ $().ready(function() {
 
 function toggleScrolling(state) {
 	if (state == true || state == 'true') {
-		$('#filterscroll').attr({checked:'checked', title:'Maak sidebar niet altijd zichtbaar'});
+		$('#filterscroll').attr({checked:'checked', title:'<t>Do not always make the sidebar visible</t>'});
 		$('body').addClass('fixed');
 	} else {
-		$('#filterscroll').attr({title:'Maak sidebar altijd zichtbaar'});
+		$('#filterscroll').attr({title:'<t>Make sidebar always visible</t>'});
 		$('body').removeClass('fixed');
 	}
 }
@@ -602,10 +609,10 @@ $(function(){
 	$("input[name='search[unfiltered]']").click(function() {
 		if($("div#tree").is(":visible")) {
 			$("div#tree").hide();
-			$("ul.clearCategories label").html('Categori&euml;n gebruiken');
+			$("ul.clearCategories label").html('<t>Use Categories</t>');
 		} else {
 			$("div#tree").show();
-			$("ul.clearCategories label").html('Categori&euml;n niet gebruiken');
+			$("ul.clearCategories label").html('<t>Disable Catergories</t>');
 		}
 	});
 });
@@ -653,9 +660,9 @@ function toggleSidebarPanel(id) {
 	
 							$("div.login ul.formerrors > li").empty()
 							if(result == "failure") {
-								$("div.login > ul.formerrors").append("<li>Inloggen mislukt</li>");
+								$("div.login > ul.formerrors").append("<li><t>Login Failed</t></li>");
 							} else {
-								$("div.login > ul.forminformation").append("<li>Succesvol ingelogd</li>");
+								$("div.login > ul.forminformation").append("<li><t>Successfully logged in</t></li>");
 								setTimeout( function() { location.reload() }, 2000);
 							}
 						}
@@ -703,9 +710,9 @@ function multinzb() {
 	} else {
 		$('div.notifications').fadeIn();
 		if(count == 1) {
-			$('span.count').html('Download '+count+' spot');
+			$('span.count').html('<t>Download 1 spot</t>');
 		} else {
-			$('span.count').html('Download '+count+' spots');
+			$('span.count').html('<t>Download %1 spots</t>'.replace('%1', count));
 		}
 	}
 }
@@ -763,11 +770,11 @@ function toggleFilter(id) {
 	if($(ul).is(":visible")) {
 		ul.hide();
 		ul.prev().children("span.toggle").css("background-position", "-90px -98px");
-		ul.prev().children("span.toggle").attr("title", "Filter uitklappen");
+		ul.prev().children("span.toggle").attr("title", "<t>Expand filter</t>");
 	} else {
 		ul.show();
 		ul.prev().children("span.toggle").css("background-position", "-77px -98px");
-		ul.prev().children("span.toggle").attr("title", "Filter inklappen");
+		ul.prev().children("span.toggle").attr("title", "<t>Collapse filter</t>");
 	}
 
 	var data = new Array();
@@ -791,7 +798,7 @@ function retrieveSpots() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("Nieuwe spots binnengehaald") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>New spots retrieved</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -801,7 +808,7 @@ function eraseDownloads() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("Download geschiedenis verwijderd") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Erased downloadhistory</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -811,7 +818,7 @@ function markAsRead() {
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("Alles als gelezen gemarkeerd") }, 1000);
+		setTimeout( function() { $("li.info").html("<t>Marked everything as read</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -840,7 +847,7 @@ function userLogout() {
 	$("div.userPanel > a.greyButton").hide();
 	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
 	$.get(url, function(data) {
-		setTimeout( function() { $("span.info").html("Succesvol uitgelogd") }, 1000);
+		setTimeout( function() { $("span.info").html("<t>Successfully logged out</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
 }
@@ -881,8 +888,8 @@ function toggleCreateUser() {
 						if(result == "success") {
 							var user = $(xml).find('user').text();
 							var pass = $(xml).find('password').text();
-							$("div.createUser > ul.forminformation").append("<li>Gebruiker <strong>&quot;"+user+"&quot;</strong> succesvol toegevoegd</li>");
-							$("div.createUser > ul.forminformation").append("<li>Wachtwoord: <strong>&quot;"+pass+"&quot;</strong></li>");
+							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> successfully added</t></li>".replace('%user%', user));
+							$("div.createUser > ul.forminformation").append("<li><t>Password: <strong>&quot;%pass%</strong></t></li>".replace('%pass%', pass));							
 						} else {
 							$('errors', xml).each(function() {
 								$("div.createUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
@@ -939,7 +946,7 @@ function toggleEditUser(userid) {
 						$("div.editUser > ul.forminformation").empty();
 						$("div.editUser > ul.formerrors").empty();
 						if(result == "success") {
-							$("div.editUser > ul.forminformation").append("<li>Gebruiker succesvol gewijzigd</li>");
+							$("div.editUser > ul.forminformation").append("<li><t>User successfully changed</t></li>");
 							
 							if (buttonPressed == 'edituserform[submitresetuserapi]') {
 								$(".apikeyinputfield")[0].value = $(xml).find('newapikey').text();
@@ -1190,9 +1197,9 @@ function updateSabPanel(start,limit) {
 			if(timeOut) {clearTimeout(timeOut)};
 			sabActions(start,limit,state+"queue");
 		});
-		$("table.sabInfo td.diskspace").html("<strong title='Vrije ruimte (complete)'>"+queue.freediskspace+"</strong> / <strong title='Totale ruimte (complete)'>"+queue.totaldiskspace+"</strong> GB");
-		$("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1024).toFixed(2)+"</strong> KB/s");
-		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label>KB/s</label>");
+		$("table.sabInfo td.diskspace").html("<strong title='<t>Free space (complete)</t>'>"+queue.freediskspace+"</strong> / <strong title='<t>Totale space (complete)</t>'>"+queue.totaldiskspace+"</strong> <t>GB</t>");
+		$("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1024).toFixed(2)+"</strong> <t>KB/s</t>");
+		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label><t>KB/s</t></label>");
 		$("td.speedlimit input[name=speedLimit]").focus(function(){
 			$(this).addClass("hasFocus");
 		});
@@ -1222,7 +1229,7 @@ function updateSabPanel(start,limit) {
 		}
 		
 		$("table.sabInfo td.eta").html("<strong>"+eta+"</strong>");
-		$("table.sabInfo td.mb").html("<strong>"+queue.mbremaining+"</strong> / <strong>"+queue.mbsize+"</strong> MB");
+		$("table.sabInfo td.mb").html("<strong>"+queue.mbremaining+"</strong> / <strong>"+queue.mbsize+"</strong> <t>MB</t>");
 
 		// make sure we don't try to show more items than available in the queue
 		while (start > queue.nrofdownloads)	{start -= limit;}
@@ -1233,7 +1240,7 @@ function updateSabPanel(start,limit) {
 		
 		$("table.sabQueue").empty();
 		if(queue.nrofdownloads == 0) {
-			$("table.sabQueue").html("<tr><td class='info'>Geen items in de wachtrij</td></tr>");
+			$("table.sabQueue").html("<tr><td class='info'><t>No items in queue</t></td></tr>");
 		} else {
 			var index = 0;
 			$.each(queue.slots, function(){
@@ -1244,7 +1251,7 @@ function updateSabPanel(start,limit) {
 				{
 					if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
 					
-					$("table.sabQueue").append("<tr class='title "+index+"'><td><span class='move'><a class='up' title='Omhoog'></a><a class='down' title='Omlaag'></a></span><span class='delete'><a title='Verwijder uit de wachtrij'></a></span><strong>"+index+".</strong><span class='title'>"+slot.filename+"</span></td></tr>");
+					$("table.sabQueue").append("<tr class='title "+index+"'><td><span class='move'><a class='up' title='<t>Up</t>'></a><a class='down' title='<t>Down</t>'></a></span><span class='delete'><a title='<t>Delete from queue</t>'></a></span><strong>"+index+".</strong><span class='title'>"+slot.filename+"</span></td></tr>");
 					$("table.sabQueue").append("<tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbremaining+" / "+slot.mbsize+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
 					
 					$("table.sabQueue tr."+index+" a.up").click(function(){
@@ -1268,15 +1275,15 @@ function updateSabPanel(start,limit) {
 		}
 
 		if(queue.nrofdownloads != 0 && queue.nrofdownloads > end) {
-			$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+end+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
 		} else if(queue.nrofdownloads != 0 && end > queue.nrofdownloads) {
 			if(queue.nrofdownloads == 1) {
-				$("table.sabQueue").append("<tr class='nav'><td>Toon 1 resultaat</td></tr>");
+				$("table.sabQueue").append("<tr class='nav'><td><t>Show 1 result</t></td></tr>");
 			} else {
-				$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+queue.nrofdownloads+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+				$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', queue.nrofdownloads).replace('%3', queue.nrofdownloads));
 			}
 		} else if(queue.nrofdownloads != 0 && end == queue.nrofdownloads) {
-			$("table.sabQueue").append("<tr class='nav'><td>Toon "+start+" t/m "+end+" van "+queue.nrofdownloads+" resultaten</td></tr>");
+			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results/t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
 		}
 
 		if(queue.nrofdownloads == 1) {
@@ -1291,10 +1298,10 @@ function updateSabPanel(start,limit) {
 		}
 
 		if(start > 1) {
-			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='Vorige'>&lt;&lt;</a> ");
+			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='<t>Previous</t>'>&lt;&lt;</a> ");
 		}
 		if(queue.nrofdownloads > end) {
-			$("table.sabQueue tr.nav td").append(" <a class='next' title='Volgende'>&gt;&gt;</a>");
+			$("table.sabQueue tr.nav td").append(" <a class='next' title='<t>Next</t>'>&gt;&gt;</a>");
 		}
 
 		$("table.sabQueue tr.nav a").click(function(){
@@ -1400,7 +1407,7 @@ function submitFilterBtn(searchform) {
 } // submitFilterBtn
 	
 function format_size(size) {
-	var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	var sizes = ['<t>B</t>', '<t>KB</t>', '<t>MB</t>', '<t>GB</t>', '<t>TB</t>', '<t>PB</t>', '<t>EB</t>', '<t>ZB</t>', '<t>YB</t>'];
 	var i = 0;
 	while(size >= 1024) {
 		size /= 1024;
@@ -1457,9 +1464,13 @@ function bindSelectedSortableFilter() {
  * Function to load the ?page=catsjson data into an
  * selectbox given by the system
  */
-function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
+function loadCategoryIntoSelectbox(selectId, titleElm, data, async, doClear) {
 	var $selectbox = $("#" + selectId);
-	var $titleElm = $("#" + titleElm);
+	if (titleElm) {
+		var $titleElm = $("#" + titleElm);
+	} else {
+		var $titleElm = null;
+	} // else
 	if ($selectbox.data('fromurl') == $.toJSON(data)) {
 		return ;
 	} // if
@@ -1472,24 +1483,32 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
         dataType: "json",
         success: function(msg) {
 			$selectbox.data('fromurl', $.toJSON(data));
-			$titleElm.text(msg.title);
+			var htmlData = '';
 			
-            $selectbox[0].options.length = 0;
+			if ($titleElm) {
+				$titleElm.text(msg.title);
+			} else {
+				htmlData += '<optgroup label="' + msg.title + '">';
+			} // else
+
+			if (doClear) {
+				$selectbox.empty();
+			} // if
             $.each(msg.items, function(index, item) {
-				var optionElm = new Option(item, index);
-				if (!$selectbox[0].multiple) {
-					optionElm.selected = ($selectbox[0].options.length == 0);
-				} // if
-				
-				$selectbox[0].add(optionElm);
+				htmlData += '<option value="' + index + '">' + item + '</option>';
             });
+			if (!$titleElm) {
+				htmlData += '</optgroup>';
+			} // if
+
+			$selectbox.append(htmlData);
             $selectbox[0].selected = 0;
 			
 			if ($selectbox[0].options.length < 2) {
-				$titleElm.hide();
+				if ($titleElm) { $titleElm.hide(); }
 				$selectbox.hide();
 			} else {
-				$titleElm.show();
+				if ($titleElm) { $titleElm.show(); }
 				$selectbox.show();
 			} // else
         },
@@ -1502,13 +1521,24 @@ function loadCategoryIntoSelectbox(selectId, titleElm, data, async) {
 function categorySelectChanged() {
 	var itm = $("#spotcategoryselectbox")[0];
 
-	loadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false);
+	loadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: 0, rendertype: 'subcatz'}, false, true);
 	var subcatzValue = $("#subcatzselectbox")[0].value;
 	
-	loadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true);
-	loadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true);
-	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true);
-	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true);
+	loadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata'}, true, true);
+	loadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb'}, true, true);
+	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true, true);
+	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true, true);
 } // categorySelectChanged
  
- 
+function downloadMappingTypeChanged() {
+	var itm = $("#spotcategoryselectbox")[0];
+	var $selectbox = $('#subcataselectbox');
+
+	var itmValue = itm.value.split('_')[0].substring(3);
+	var subcatzValue = itm.value.split('_')[1];
+
+ 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcata'}, false, true);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatb'}, false, false);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatc'}, false, false);
+	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatd'}, false, false);
+} // downloadMappingTypeChanged

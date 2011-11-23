@@ -229,7 +229,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
 		} # if
 	} # alterStorageEngine
-	
+
 	/* rename een table */
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("RENAME TABLE " . $tablename . " TO " . $newTableName);

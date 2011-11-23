@@ -40,7 +40,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# geef dan een error
 		if ((empty($spotFilter)) && (isset($this->_editFilterForm['submitchangefilter']))) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = array('validatefilter_filterdoesnotexist', array($this->_filterId));
+			$formMessages['errors'][] = _("Filter doesn't exist");
 		} # if
 		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
@@ -112,16 +112,16 @@ class SpotPage_editfilter extends SpotPage_Abs {
 								$spotUserSystem->setFilterList($this->_currentSession['user']['userid'], $filterList);
 							} catch(Exception $x) {
 								$editResult = array('result' => 'failure');
-								$formMessages['errors'][] = array('validatefilter_invaliduploadxml', array());
+								$formMessages['errors'][] = _('Uploaded Spotwebfilter in invalid');
 							} # catch
 						} else {
 							$editResult = array('result' => 'failure');
-							$formMessages['errors'][] = array('validatefilter_fileuploaderr', array($_FILES['filterimport']['error']));
+							$formMessages['errors'][] = sprintf(_('Error while uploading filter (%s)'), $_FILES['filterimport']['error']);
 						} # if
 					
 					} else {
 						$editResult = array('result' => 'failure');
-						$formMessages['errors'][] = array('validatefilter_nofileupload', array());
+						$formMessages['errors'][] = _("Filter hasn't been uploaded");
 					} # else
 					
 					break;

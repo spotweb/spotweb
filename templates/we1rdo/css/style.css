@@ -60,6 +60,12 @@ form#filterform table.search th {font-weight: bold; text-align: left; padding-le
 form#filterform table.search td {text-align: left; }
 form#filterform table.search td a {color: #bbb; }
 
+form#filterform div#human-filesize,
+form#filterform div#human-reportcount {margin:3px 5px 2px 5px; text-align:center;}
+form#filterform div#slider-filesize,
+form#filterform div#slider-reportcount {margin:0 10px 10px 10px;}
+form#filterform a.greyButton.addFilter {margin:10px auto 0 auto;}
+
 ul.dynatree-container {clear:both; min-height:72px; border:0; margin:0; padding:3px; background-color:#ececec; border:1px solid #d4d4d4; border-left:none; border-top:none; }
 /* IE9 scrolls, see issue #1047 */
 ul.dynatree-container {margin-top: auto; }
@@ -204,7 +210,7 @@ table.spots td.poster a {width:110px;}
 table.spots td.date,
 table.spots th.date {min-width:140px; width:140px;}
 table.spots td.filesize,
-table.spots th.filesize {min-width:62px; width:62px;}
+table.spots th.filesize {min-width:84px; width:84px; }
 table.spots td.filesize {text-align:right;}
 table.spots td.nzb,
 table.spots th.nzb {min-width:26px; width:26px;}
@@ -392,17 +398,18 @@ div.details div.description h4 {background:url(../img/sprite_x.png) repeat-x 0 -
 div.details div.comments h4 span {position:absolute; top:3px; right:4px; display:block; line-height:14px; background-color:#333; margin:0; padding:0 5px; font-size:10px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
 
 div.details div.comments ul {padding:0; margin:0;}
-div.details div.comments li {margin:5px 0 0 0; padding:6px 10px; list-style:none; line-height:16px;}
+div.details div.comments li {margin:5px 0 0 0; padding:6px 10px; list-style:none; line-height:16px; min-height: 52px; }
 div.details div.comments li.nocomments {text-align:center;}
 
 div.details div.comments li.poster span.user {padding:2px 4px; margin:0 2px; color:#fff; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; text-shadow:1px 1px #000000;}
 div.details div.comments li.poster span.user:after {content:' (afzender)'; font-size:10px;}
+div.details div.comments li img.commentavatar {width:32px; height:32px; float:left; margin:4px 10px 0 0;}
 div.details.blue div.comments li.poster span.user {background-color:#008edf;}
 div.details.orange div.comments li.poster span.user {background-color:#e9a213;}
 div.details.green div.comments li.poster span.user {background-color:#00de00;}
 div.details.red div.comments li.poster span.user {background-color:#de2500;}
 
-div.details div.comments a.userid {color:#000;}
+div.details div.comments a.spotterid {color:#000;}
 
 div.details.blue div.comments li.even {background-color:#e6f2ff;}
 div.details.orange div.comments li.even {background-color:#fffce4;}
@@ -417,7 +424,7 @@ div.details div.comments li:last-child {-moz-border-radius:0 0 4px 4px; -webkit-
 div.details div.comments li span.rating {float:right; display:block; width:47px; height:18px; margin:1px 0 1px 5px; background:url(../img/sprite.png) no-repeat 0 -111px;}
 div.details div.comments li span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -127px;}
 
-div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec;}
+div.details div.comments li.addComment {text-align:center; padding:0 0 2px 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background-color:#ececec; min-height: 0; }
 div.details div.comments li.addComment a.togglePostComment {position:relative; display:block; cursor:pointer; font-weight:bold; line-height: 18px;}
 div.details div.comments li.addComment a.togglePostComment span {display:block; position: absolute; top: 0; right: 0; width: 15px; height: 14px; background: url(../img/sprite.png) no-repeat -90px -98px; margin:3px 3px 0 0;}
 div.details div.comments li.addComment a.togglePostComment span.up {background-position: -77px -98px; margin:2px 3px 0 0;}
@@ -438,6 +445,12 @@ div.details form.postreportform fieldset {padding:0; margin:0; border:0;}
 div.details form.postreportform fieldset dl {margin:0;}
 div.details form.postreportform fieldset dd {margin:0;}
 div.details form.postreportform input.greyButton {display:inline; margin: 0;}
+
+/* STATISTIEKEN */
+div.statistics {margin:0 0 0 235px; padding:10px 5px 5px 0; min-width:750px; text-align:center;}
+div.statistics form select {background:url(../img/sprite_x.png) repeat-x 0 0; position:fixed; top:28px; right:3px; color:#000; border:none; -moz-border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0; width:250px; height:20px; font:11px Arial, Helvetica, sans-serif; padding:2px 2px 2px 4px;}
+div.statistics form select option {background-color:#ddd; border-top:1px solid #bbb;}
+div.statistics form select option:checked {background:url(../img/sprite_x.png) repeat-x 0 -20px;}
 
 /* WATCHLIST */
 div.spots.watchlist table.footer td {-moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px;}
