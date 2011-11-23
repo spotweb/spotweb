@@ -681,9 +681,13 @@ function toggleSidebarPanel(id) {
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
 function downloadSabnzbd(id,url) {
 	$(".sab_"+id).removeClass("succes").addClass("loading");
-	$.get(url, function(data) {
+	
+	/* This is a cross-domain request, so success will never be called */
+	$.get(url, function(data, textStatus, jqXHR) {
 		$(".sab_"+id).removeClass("loading").addClass("succes");
 	});
+	
+	setTimeout( function() { $(".sab_"+id).removeClass("loading").addClass("succes"); }, 2000);
 }
 
 // Voorzie de span.newspots van link naar nieuwe spots binnen het filter
