@@ -115,6 +115,10 @@ try {
 	
 	if ($curMsg != 0 && !$retroMode) {
 		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
+		
+		if ($settings_nntp_hdr['buggy']) {
+			$curMsg = max(1, $curMsg - 15000);
+		} # if
 	} # if
 
 	$newSpotCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
@@ -170,6 +174,10 @@ try {
 			$curMsg = $db->getMaxArticleId('comments');
 		} # if
 
+		if ($settings_nntp_hdr['buggy']) {
+			$curMsg = max(1, $curMsg - 15000);
+		} # if
+		
 		if ($curMsg != 0 && !$retroMode) {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
@@ -220,6 +228,10 @@ try {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('reports'));
 		} # if
 
+		if ($settings_nntp_hdr['buggy']) {
+			$curMsg = max(1, $curMsg - 15000);
+		} # if
+		
 		$newReportCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
 		$retriever->quit();
 	} # if
