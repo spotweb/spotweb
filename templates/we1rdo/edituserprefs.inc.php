@@ -51,7 +51,7 @@ include "includes/form-messages.inc.php";
 					<dd>
 						<select name="edituserprefsform[user_language]">
 							<?php foreach($tplHelper->getConfiguredLanguages() as $langkey => $langvalue) { ?>
-								<option <?php if ($edituserprefsform['user_language'] == $langkey) { echo 'selected="selected"'; } ?> value="<?php echo $langkey; ?>"><?php echo _($langvalue); ?></option>
+								<option <?php if ($edituserprefsform['user_language'] == $langkey) { echo 'selected="selected"'; } ?> value="<?php echo $langkey; ?>"><?php echo $langvalue; ?></option>
 							<?php } ?> 
 						</select>
 					</dd>

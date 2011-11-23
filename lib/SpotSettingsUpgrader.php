@@ -13,6 +13,10 @@ class SpotSettingsUpgrader {
 		# we er mee kunnen vergelijken
 		$this->setIfNot("settingsversion", "0.00");
 		$this->setIfNot("securityversion", "0.00");
+
+		if ($this->_settings->get('settingsversion') < 0.15) {
+			$this->remove('system_languages');
+		} # if
 		
 		$this->createServerKeys($this->_settings->get('openssl_cnf_path'));
 		$this->createPasswordSalt();
@@ -31,7 +35,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // Ook al heet deze secret, hij mag geshared worden
 		$this->setIfNot('auditlevel', 0); // No auditing
 		$this->setIfNot('prepare_statistics', true);
-		$this->setIfNot('system_languages', array('nl_NL' => 'Dutch', 'en_US' => 'English'));
+		$this->setIfNot('system_languages', array('nl_NL' => 'Nederlands', 'en_US' => 'English'));
 		$this->updateSettingsVersion();
 	} # update()
 	
