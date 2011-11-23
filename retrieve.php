@@ -325,7 +325,6 @@ if (is_string($settings_external_blacklist) && $settings_external_blacklist == "
 } elseif ($settings_external_blacklist) {
 	try {
 		$spotsOverview = new SpotsOverview($db, $settings);
-
 		# haal de blacklist op
 		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), false, 30*60);
 

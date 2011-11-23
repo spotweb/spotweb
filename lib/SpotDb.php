@@ -2072,7 +2072,7 @@ class SpotDb {
 				if (empty($updatelist[$nbl])) {
 					$updatelist[$nbl] = 1;						# nieuwe spoterids toevoegen 
 				} elseif ($updatelist[$nbl] == 2) {
-					$updatelist[$nbl] = 0;						# spotterid staat nog steeds op de blacklist, niet verwijderen.
+					$updatelist[$nbl] = 3;						# spotterid staat nog steeds op de blacklist, niet verwijderen.
 				} else {
 					$updskipped++;								# dubbel spotterid in blacklist.txt.
 				}
