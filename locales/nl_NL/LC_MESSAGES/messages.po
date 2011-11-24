@@ -967,7 +967,7 @@ msgid "Monday"
 msgstr "Maandag"
 
 msgid "Tuesday"
-msgstr "Disndag"
+msgstr "Dinsdag"
 
 msgid "Wednesday"
 msgstr "Woensdag"

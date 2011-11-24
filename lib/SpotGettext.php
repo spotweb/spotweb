@@ -47,6 +47,19 @@ abstract class SpotGettext
     public abstract function gettext($msg);
 
     /**
+     * Overrides the domain for a single lookup
+     *
+     * If the translation is not found, the original passed message
+     * will be returned.
+     *
+     * @param String $domain The domain to search in
+     * @param String $msg The message to translate
+     * 
+     * @return Translated message
+     */
+    public abstract function dgettext($domain, $msg);
+
+    /**
      * Return a translated string in it's plural form
      *
      * Returns the given $count (e.g second, third,...) plural form of the
@@ -60,6 +73,22 @@ abstract class SpotGettext
      * @return Translated string
      */
     public abstract function ngettext($msg1, $msg2, $count);
+
+    /**
+     * Override the current domain for a single plural message lookup
+     *
+     * Returns the given $count (e.g second, third,...) plural form of the
+     * given string. If the id is not found and $num == 1 $msg is returned,
+     * otherwise $msg_plural
+     *
+     * @param String $domain The domain to search in
+     * @param String $msg The message to search for
+     * @param String $msg_plural A fallback plural form
+     * @param Integer $count Which plural form
+     *
+     * @return Translated string
+     */
+     public abstract function dngettext($domain, $msg1, $msg2, $count);
 
     /**
      * Returns an instance of a gettext implementation depending on
