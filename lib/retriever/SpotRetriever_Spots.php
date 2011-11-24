@@ -128,10 +128,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				 * Only create a new NZB instance if the server differs from the
 				 * header host, else re-use the connection
 				 */
-				if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
+				$settings_nntp_nzb = $this->_settings->get('nntp_nzb'); 
+				if ($this->_server['host'] == $settings_nntp_nzb['host']) {
 					$nntp_nzb = $this->_spotnntp;
 				} else {
-					$nntp_nzb = new SpotNntp($this->_settings->get('nntp_nzb'));
+					$nntp_nzb = new SpotNntp($settings_nntp_nzb);
 				} # else
 			} # if
 			
@@ -407,6 +408,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$this->_db->markSpotModerated($moderateId); 
 						
 						break;
+					} # case 'markspot' 
 					default			: { 
 						$this->_db->deleteSpot($moderateId); 
 						$this->_db->removeComment($moderateId);
