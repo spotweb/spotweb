@@ -1,9 +1,15 @@
 <?php
+	$pagetitle = _('Administration panel');
+	
 	require "includes/header.inc.php";
 ?>
 </div>
+	<div id='toolbar'>
+		<div class="closeadminpanel"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'>[x] <?php echo _('Back to mainview'); ?></a></p>
+		</div>
+	</div>
 
-	<h4><a href='<?php echo $tplHelper->makeBaseUrl('path');?>'>&lt;&lt;&lt; <?php echo _('Back to mainview'); ?></a></h4>
+	<h4></h4>
 	<div id="adminpaneltabs" class="ui-tabs">
 		<ul>
 <!--

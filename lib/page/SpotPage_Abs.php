@@ -62,7 +62,7 @@ abstract class SpotPage_Abs {
 		
 		extract($params, EXTR_REFS);
 		$settings = $this->_settings;
-		$pagetitle = 'SpotWeb - ' . $this->_pageTitle;
+		$pagetitle = $this->_pageTitle;
 		
 		# update the template helper variables
 		$this->_tplHelper->setParams($params);
