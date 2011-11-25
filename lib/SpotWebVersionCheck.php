@@ -7,8 +7,8 @@ define('SPOTWEB_FEATURE_VERSION', '0.02');
  * create an interdependency
  */
 class SpotWebVersionCheck {
-	#const rss_url = 'https://github.com/spotweb/spotweb/notifications.xml';
-	const rss_url = './notifications.xml';
+	const rss_url = 'https://github.com/spotweb/spotweb/notifications.xml';
+	#const rss_url = './notifications.xml';
 
 	private $_xml = null;
 	
