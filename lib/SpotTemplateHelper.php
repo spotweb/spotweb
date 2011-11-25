@@ -116,7 +116,7 @@ class SpotTemplateHelper {
 
 		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 		
-		return $this->_spotsOverview->getSpotComments($msgId, $spotnntp, $start, $length);
+		return $this->_spotsOverview->getSpotComments($this->_currentSession['user']['userid'], $msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
 	/* 

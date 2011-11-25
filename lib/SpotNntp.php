@@ -268,8 +268,8 @@ class SpotNntp {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
 
-			$nzb = $this->_spotParser->unspecialZipStr($nzb);
-			return gzinflate($nzb);
+			$nzb = gzinflate($this->_spotParser->unspecialZipStr($nzb));
+			return $nzb;
 		} # getNzb
 		
 		/*

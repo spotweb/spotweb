@@ -1278,7 +1278,7 @@ class SpotDb {
 	/*
 	 * Vraag de volledige commentaar lijst op, gaat er van uit dat er al een commentsxover entry is
 	 */
-	function getCommentsFull($nntpRef) {
+	function getCommentsFull($userId, $nntpRef) {
 		SpotTiming::start(__FUNCTION__);
 
 		# en vraag de comments daadwerkelijk op
@@ -1296,7 +1296,8 @@ class SpotDb {
 														f.avatar as \"user-avatar\"
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
-													WHERE c.nntpref = '%s'
+													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $userId) . ") OR (bl.ouruserid = -1))) 
+													WHERE c.nntpref = '%s' AND (bl.spotterid IS NULL)
 													ORDER BY c.id", array($nntpRef));
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
