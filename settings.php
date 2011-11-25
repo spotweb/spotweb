@@ -8,7 +8,7 @@ $settings['nntp_nzb']['user'] = 'xx';               # <== Geef hier je username 
 $settings['nntp_nzb']['pass'] = 'yy';               # <== Geef hier je password in
 $settings['nntp_nzb']['enc'] = false;               # <== false|'tls'|'ssl', defaults to false.
 $settings['nntp_nzb']['port'] = 119;                # <== set to 563 in case of encryption
-$settings['nntp_nzb']['buggy'] = false;             # <== Some newsservers lose messages now and then, set this to true to workaround this
+$settings['nntp_nzb']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
 
 # =-=-=-=-=-=-=-=- Als je een aparte 'headers' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
 $settings['nntp_hdr']['host'] = '';
@@ -16,7 +16,7 @@ $settings['nntp_hdr']['user'] = '';
 $settings['nntp_hdr']['pass'] = '';
 $settings['nntp_hdr']['enc'] = false;
 $settings['nntp_hdr']['port'] = 119;
-$settings['nntp_hdr']['buggy'] = false;             # <== Some newsservers lose messages now and then, set this to true to workaround this
+$settings['nntp_hdr']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
 
 # =-=-=-=-=-=-=-=- Als je een aparte 'upload' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
 $settings['nntp_post']['host'] = '';
@@ -24,7 +24,7 @@ $settings['nntp_post']['user'] = '';
 $settings['nntp_post']['pass'] = '';
 $settings['nntp_post']['enc'] = false;
 $settings['nntp_post']['port'] = 119;
-$settings['nntp_post']['buggy'] = false;             # <== Some newsservers lose messages now and then, set this to true to workaround this
+$settings['nntp_post']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
 
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
