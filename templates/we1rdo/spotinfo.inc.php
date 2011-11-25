@@ -32,14 +32,12 @@
 <?php } # if
 	} # if 
 ?>
-<?php if ($allow_blackList) { ?>
 			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeBlacklistAction(); ?>" method="post">
 				<input type="hidden" name="blacklistspotterform[submit]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
 				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['spotterid']); ?>">
 				<input type="hidden" name="blacklistspotterform[origin]" value="Reported via Spotweb for spot <?php echo htmlspecialchars($spot['messageid']); ?>">
 			</form>
-<?php } # if ?>
 
 			<table class="spotheader">
 				<tbody>
@@ -123,7 +121,7 @@ echo "</th>";
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
-								<?php if ($allow_blackList) { ?> <a class="delete" id="blacklistuserlink" title="<?php echo _('Blacklist this spotter'); ?>" onclick="$('form.blacklistspotterform').submit();">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+								<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($spot['spotterid']); ?>" title="<?php echo _('Blacklist this spotter'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($spot['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								</td> </tr>
 								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Search spots with the tag: %s'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
