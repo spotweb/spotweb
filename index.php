@@ -293,6 +293,12 @@ try {
 				break;
 		} # reportpost
 
+		case 'versioncheck' : {
+				$page = new SpotPage_versioncheck($db, $settings, $currentSession, array());
+				$page->render();
+				break;
+		} # versioncheck
+
 		case 'blacklistspotter' : {
 				$page = new SpotPage_blacklistspotter($db, $settings, $currentSession, 
 							Array ('blform' => $req->getForm('blacklistspotterform', array('submit'))));

@@ -47,7 +47,7 @@ class SpotUpgrader {
 			
 			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
 			
-			default					: throw new Exception("Onbekende database engine");
+			default					: throw new Exception("Unknown database engine");
 		} # switch
 		
 		$dbStruct->updateSchema();
@@ -66,7 +66,7 @@ class SpotUpgrader {
 			
 			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
 			
-			default					: throw new Exception("Onbekende database engine");
+			default					: throw new Exception("Unknown database engine");
 		} # switch
 		
 		$dbStruct->analyze();

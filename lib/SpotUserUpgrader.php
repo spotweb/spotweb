@@ -409,6 +409,12 @@ class SpotUserUpgrader {
 		if ($this->_settings->get('securityversion') < 0.24) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(1, " . SpotSecurity::spotsec_view_spotimage . ", 'avatar')");
 		} # if
+
+		# Showing the Spotweb updates is a security setting because it compares the current Spotweb version with the latest one it could be seen as
+		# information disclosure
+		if ($this->_settings->get('securityversion') < 0.25) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(3, " . SpotSecurity::spotsec_view_spotweb_updates . ", '')");
+		} # if
 	} # updateSecurityGroups
 
 	/*

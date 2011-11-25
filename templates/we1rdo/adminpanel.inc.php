@@ -1,5 +1,5 @@
 <?php
-	$pagetitle = _('Administration panel');
+	$pagetitle = _('administration panel');
 	
 	require "includes/header.inc.php";
 ?>
@@ -15,6 +15,9 @@
 <!--
 			<li><a href="#adminpaneltab-1" title="Instellingen"><span>Instellingen</span></a></li>
 -->
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, '')) { ?>
+			<li><a href="?page=versioncheck" title="<?php echo _('Spotweb updates'); ?>"><span><?php echo _('Spotweb updates');?></span></a></li>
+<?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, '')) { ?>
 			<li><a href="?page=render&tplname=listusers" title="<?php echo _('Userlist'); ?>"><span><?php echo _('Userlist');?></span></a></li>
 <?php } ?>
