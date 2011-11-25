@@ -16,7 +16,6 @@ class SpotTranslation {
 			textdomain('messages');
 		} else {
 			global $_gt_obj;
-			
 			$_gt_obj = new Gettext_PHP('locales', 'messages', $lang);
 		} # else
 	} # initialize
@@ -36,7 +35,15 @@ if (!extension_loaded('gettext')) {
 		return $GLOBALS['_gt_obj']->gettext($msg);
 	} # gettext
 
+	function dgettext($domain, $msg) {
+		return $GLOBALS['_gt_obj']->dgettext($domain, $msg);
+	} # dgettext
+
 	function ngettext($msg, $msg_plural, $count) {
 		return $GLOBALS['_gt_obj']->ngettext($msg, $msg_plural, $count);
 	} # ngettext
+
+	function dngettext($domain, $msg, $msg_plural, $count) {
+		return $GLOBALS['_gt_obj']->dngettext($domain, $msg, $msg_plural, $count);
+	} # dngettext
 } # if
