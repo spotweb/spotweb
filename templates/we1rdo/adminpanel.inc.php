@@ -5,7 +5,7 @@
 ?>
 </div>
 	<div id='toolbar'>
-		<div class="closeadminpanel"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'>[x] <?php echo _('Back to mainview'); ?></a></p>
+		<div class="closeadminpanel"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'><?php echo _('Back to mainview'); ?></a></p>
 		</div>
 	</div>
 

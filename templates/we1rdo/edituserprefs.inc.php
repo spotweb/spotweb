@@ -17,7 +17,7 @@ include "includes/form-messages.inc.php";
 ?>
 </div>
 	<div id='toolbar'>
-		<div class="closeuserpreferences"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'>[x] <?php echo _('Back to mainview'); ?></a></p>
+		<div class="closeuserpreferences"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'><?php echo _('Back to mainview'); ?></a></p>
 		</div>
 	</div>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
