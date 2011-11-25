@@ -1,6 +1,6 @@
 # This file is distributed under the same license as the SpotWeb package. 
-msgid ""
-msgstr ""
+msgid "\n"
+msgstr "\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
