@@ -10,6 +10,23 @@
 
 		<item>
 			<title>Introduced Spotweb change updates</title>
+			<description><![CDATA[For spotters (or commentors) which are now on the blacklist their comments will not be shown as well. 
+			<br />
+			<br />
+			For all comments an extra button is added which adds the user to the spotters' blacklist]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>03</guid>
+			<pubDate>Fri, 25 Nov 2011 18:53:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.52</spotweb:schema_version>
+			<spotweb:settings_version>0.15</spotweb:settings_version>
+			<spotweb:security_version>0.24</spotweb:security_version>
+			<spotweb:feature_version>0.02</spotweb:feature_version>
+		</item>
+
+		<item>
+			<title>Introduced Spotweb change updates</title>
 			<description><![CDATA[Major changes from now on will be visible from within the Spotweb's administration panel. This allows you to easier decide whether you want to upgrade your Spotweb or why a particular upgrade is taking a long time.
 			<br />
 			<br />

@@ -328,6 +328,11 @@ function postReportForm() {
 	});	
 }
 
+function blacklistSpotterId(spotterId) {
+	$("input[name='blacklistspotterform[spotterid]']").val(spotterId); 
+	$('form.blacklistspotterform').submit();
+} // blacklistSpotterId
+
 function postBlacklistForm() {
 	$("form.blacklistspotterform").submit(function(){ 
 		formdata = $(this).serialize();
@@ -338,7 +343,7 @@ function postBlacklistForm() {
 			dataType: "xml",
 			data: formdata,
 			success: function(xml) {
-				$("#blacklistuserlink").remove();
+				$(".blacklistuserlink_" + $("input[name='blacklistspotterform[spotterid]']").val()).remove();
 			} // success
 		}); // ajax call om de form te submitten
 		return false;
