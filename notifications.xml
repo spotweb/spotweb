@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+	<channel>
+		<title>Spotweb update notifications</title>
+		<description>Major changes are described in this newsfeed</description>
+		<link>https://github.com/spotweb/spotweb/</link>
+		<lastBuildDate>Mon, 25 Nov 2011 07:04:00 +0200</lastBuildDate>
+		<pubDate>Mon, 25 Nov 2011 07:04:00 +0200</pubDate>
+		<ttl>1800</ttl>
+
+		<item>
+			<title>Introduced Spotweb change updates</title>
+			<description><![CDATA[Major changes from now on will be visible from within the Spotweb's administration panel. This allows you to easier decide whether you want to upgrade your Spotweb or why a particular upgrade is taking a long time.
+			<br />
+			<br />
+			Please note that a lot of minor changes will not be communicated here and we recommend to keep your Spotweb installation always up to date.]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>02</guid>
+			<pubDate>Fri, 25 Nov 2011 07:04:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.52</spotweb:schema_version>
+			<spotweb:settings_version>0.15</spotweb:settings_version>
+			<spotweb:security_version>0.24</spotweb:security_version>
+			<spotweb:feature_version>0.01</spotweb:feature_version>
+		</item>
+
+		<item>
+			<title>Comment moderation</title>
+			<description><![CDATA[Spotweb now also deletes or marks moderated comments in a spot, according to your settings centrally moderated comments will either be marked or just removed. This change requires a change to your database which can take a very long time.]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>01</guid>
+			<pubDate>Wed, 23 Nov 2011 23:00:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.52</spotweb:schema_version>
+			<spotweb:settings_version>0.15</spotweb:settings_version>
+			<spotweb:security_version>0.24</spotweb:security_version>
+			<spotweb:feature_version>0.01</spotweb:feature_version>
+		</item>
+	</channel>
+</rss>
+<!--
+	This feed is maintained manually. If a major (user-visible)change is introduced, or an upgrade-db.php run is required,
+	please add an entry to this RSS feed file detailing the change. If a schema change is required, please add an indication 
+	of the impact of the schemachange (eg: will it touch very large tables or not).
+	
+	
+-->
