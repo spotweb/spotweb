@@ -180,6 +180,7 @@ abstract class NzbHandler_abs
 		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
 											<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
 											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
+
 		$domNzbXml = dom_import_simplexml($nzbXml);
 		foreach($nzbList as $nzb) {
 			$oneNzbFile = simplexml_load_string($nzb['nzb']);

@@ -80,7 +80,7 @@ class SpotsOverview {
 	/*
 	 * Geef de lijst met comments terug 
 	 */
-	function getSpotComments($msgId, $nntp, $start, $length) {
+	function getSpotComments($userId, $msgId, $nntp, $start, $length) {
 		if (!$this->_settings->get('retrieve_comments')) {
 			return array();
 		} # if
@@ -92,7 +92,7 @@ class SpotsOverview {
 
 		# vraag een lijst op met comments welke in de database zitten en
 		# als er een fullcomment voor bestaat, vraag die ook meteen op
-		$fullComments = $this->_db->getCommentsFull($msgId);
+		$fullComments = $this->_db->getCommentsFull($userId, $msgId);
 		
 		# Nu gaan we op zoek naar het eerste comment dat nog volledig opgehaald
 		# moet worden. Niet verified comments negeren we.
@@ -141,7 +141,7 @@ class SpotsOverview {
 			$this->_db->addFullComments($newComments);
 			
 			# en voeg de oude en de nieuwe comments samen
-			$fullComments = $this->_db->getCommentsFull($msgId);
+			$fullComments = $this->_db->getCommentsFull($userId, $msgId);
 		} # foreach
 		
 		# filter de comments op enkel geverifieerde comments
