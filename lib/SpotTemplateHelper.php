@@ -828,7 +828,9 @@ class SpotTemplateHelper {
 			} # if
 			
 			if ($granularity == '0') { break; }
+
 		}
+		
 		return substr($retval, 0, -2);
 	} # time_ago()
 

@@ -13,6 +13,7 @@ class SpotSettingsUpgrader {
 		# we er mee kunnen vergelijken
 		$this->setIfNot("settingsversion", "0.00");
 		$this->setIfNot("securityversion", "0.00");
+		$this->setIfNot("featureversion", "0.00");
 
 		if ($this->_settings->get('settingsversion') < 0.15) {
 			$this->remove('system_languages');

@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.24');
+define('SPOTWEB_SECURITY_VERSION', '0.25');
 
 class SpotSecurity {
 	private $_db;
@@ -63,6 +63,7 @@ class SpotSecurity {
 	const spotsec_post_spot  					= 37;
 	const spotsec_blacklist_spotter				= 38;
 	const spotsec_view_statistics				= 39;
+	const spotsec_view_spotweb_updates			= 40;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -105,7 +106,8 @@ class SpotSecurity {
 		36		=> "Rapporteer spot of gebruiker als spam",
 		37		=> "Een nieuwe spot kunnen posten",
 		38		=> "Een spotter kunnen blacklisten",
-		39		=> "Statistieken mogen bekijken"
+		39		=> "Statistieken mogen bekijken",
+		40		=> "Spotweb updates mogen bekijken (vergeleken met huidige versie)"
 	);
 
 	/*
