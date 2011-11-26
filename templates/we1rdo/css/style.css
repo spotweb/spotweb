@@ -87,9 +87,9 @@ div.closeuserpreferences p a {background:url(../img/sprite.png) no-repeat -88px 
 form.edituserprefsform {padding:5px;}
 form.edituserprefsform fieldset {border:none; padding:0; margin:0;}
 form.edituserprefsform fieldset dl {margin:0;}
-form.edituserprefsform fieldset dt {padding:0 0 4px 10px; background:url(images/ui-icons_222222_256x240.png) no-repeat -152px -2px;}
+form.edituserprefsform fieldset dt {padding:0 0 2px 10px; background:url(images/ui-icons_222222_256x240.png) no-repeat -152px -2px; border-bottom:1px solid #000;}
 form.edituserprefsform fieldset dt label {font-weight:bold;}
-form.edituserprefsform fieldset dd {padding:0 0 10px 0; margin:0 0 0 0;}
+form.edituserprefsform fieldset dd {padding:5px 0 5px 0; margin:0 0 0 0;}
 
 /* SIDEBAR */
 div#filter {width:235px; float:left; left:0; top:0; position:relative;}
