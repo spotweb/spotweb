@@ -234,6 +234,7 @@ class dbeng_mysql extends dbeng_abs {
 			$hasLongEnoughWords = false;
 			$hasStopWords = false;
 			$hasNoStopWords = false;
+			$hasSearchOpAsTerm = false;
 			
 			$searchMode = "match-natural";
 			$searchValue = trim($searchItem['value']);
@@ -268,6 +269,13 @@ class dbeng_mysql extends dbeng_abs {
 				# hoeven we ook niet te zoeken.
 				if (strlen($strippedTerm) < 1) {
 					continue;
+				} # if
+
+				# + and - are only allowed at the beginning of the search to 
+				# enfore it as an search operator. If they are in the 
+				# words themselves, we fall back to LIKE
+				if (strpos($strippedTerm, '-') > 0) {
+					$hasSearchOpAsTerm = true;
 				} # if
 
 				# als er boolean phrases in zitten, is het een boolean search
@@ -310,6 +318,7 @@ class dbeng_mysql extends dbeng_abs {
  			 *		Just Go With It (fallback naar like, enkel stopwoorden of te kort)
 			 *		"Just Go With It" (fallback naar like, en quotes gestripped)
 			 *		+empire +sun
+			 *		x-art (like search becvause it contains an -)
 			 */
 
 /*
@@ -321,16 +330,18 @@ class dbeng_mysql extends dbeng_abs {
 			die();
 */
 			
-			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords)) {
+			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm)) {
 				if ($hasStopWords && !$hasNoStopWords) {
 					$searchMode = 'normal';
 				} else {
 					$searchMode = 'both-' . $searchMode;
 				} # else
-			} elseif (($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) {
+			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm)) {
 				$searchMode = 'normal';
 			} # else
 
+			echo $searchMode;
+			
 			# en bouw de query op
 			$queryPart = '';
 			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') /* || ($searchMode == 'both-match-boolean')*/) {
