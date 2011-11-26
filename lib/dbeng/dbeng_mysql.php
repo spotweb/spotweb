@@ -339,8 +339,6 @@ class dbeng_mysql extends dbeng_abs {
 			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm)) {
 				$searchMode = 'normal';
 			} # else
-
-			echo $searchMode;
 			
 			# en bouw de query op
 			$queryPart = '';
