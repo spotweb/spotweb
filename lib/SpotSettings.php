@@ -35,11 +35,17 @@ class SpotSettings {
 			# de NZB server
 			if ((empty(self::$_settings['nntp_hdr']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
+
+				# Let the UI know this setting is not made explicit
+				self::$_settings['nntp_hdr']['isadummy'] = true;
 			} # if
 
 			# Hetzelfde voor de NNTP upload server
 			if ((empty(self::$_settings['nntp_post']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
+
+				# Let the UI know this setting is not made explicit
+				self::$_settings['nntp_post']['isadummy'] = true;
 			} # if
 		} # if
 		
