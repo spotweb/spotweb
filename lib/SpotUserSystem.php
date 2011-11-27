@@ -12,7 +12,7 @@ class SpotUserSystem {
 	} # ctor
 
 	/*
-	 * Genereer een sessionid
+	 * Generates an unique id, mostly used for sessions
 	 */
 	function generateUniqueId() {
 		$sessionId = '';
@@ -25,22 +25,24 @@ class SpotUserSystem {
 	} # generateUniqueId
 	
 	/*
-	 * Creeer een nieuwe session
+	 * Create a new session for the userid
 	 */
 	private function createNewSession($userid) {
-		# Als de user ingelogged is, creeer een sessie
+		# If this is an actual user, we need to have the user record
 		$tmpUser = $this->getUser($userid);
 		
-		# Als dit een anonieme user is, of als de user nog nooit
-		# ingelogt heeft dan is het laatste bezoek altijd het 
-		# moment van sessie creatie
+		/*
+		 * If this is an anonymous user, or if the user has never
+		 * logged in before, the last visit time is always the 
+		 * session creation time
+		 */
 		if (($userid == SPOTWEB_ANONYMOUS_USERID) || ($tmpUser['lastlogin'] == 0)) {
 			$tmpUser['lastvisit'] = time();
 		} else {
 			$tmpUser['lastvisit'] = $tmpUser['lastlogin'];
 		} # if
 
-		# Creer een session record
+		# Create a new session record
 		$session = array('sessionid' => $this->generateUniqueId(),
 						 'userid' => $userid,
 						 'hitcount' => 1,
@@ -54,7 +56,7 @@ class SpotUserSystem {
 	} # createNewSession
 
 	/* 
-	 * Stuur een cookie met de sessionid mee
+	 * Update the users cookie
 	 */
 	function updateCookie($userSession) {
 		SetCookie("spotsession",
@@ -67,22 +69,23 @@ class SpotUserSystem {
 	} # updateCookie
 	
 	/*
-	 * Verwijdert een sessie
+	 * Removes a session from the database. 
 	 */
 	function removeSession($sessionId) {
 		$this->_db->deleteSession($sessionId);
 	} # removeSession
 	
 	/*
-	 * Verwijdert alle users' sessies
+	 * Removes all users' sessions from the database
 	 */
 	function removeAllUserSessions($userId) {
 		$this->_db->deleteAllUserSessions($userId);
 	} # removeAllUserSessions
 	
 	/*
-	 * Kijk of de user een sessie heeft, als hij die heeft gebruik die dan,
-	 * anders creeeren we een sessie voor de anonieme user
+	 * Checks whether the user already has a session in its cookie. If it 
+	 * has, we use the existing session, else we create a new one for the
+	 * anonymous user.
 	 */
 	function useOrStartSession() {
 		$userSession = false;
@@ -92,20 +95,24 @@ class SpotUserSystem {
 		} # if
 
 		if ($userSession === false) {
-			# als er nu nog geen sessie bestaat, creeer dan een nieuwe
-			# anonieme sessie
-			# userid 1 is altijd onze anonymous user. 
-			# In de settings.php kan de beheerder van Spotweb dit overriden maar
-			# als resultaat van de vele klachten.
+			/*
+			 * If we don't have a session by now, let's create a new 
+			 * anonymous session.
+			 *
+			 * UserID is our default anonymous user, but this can be 
+			 * overriden by the usersystem
+			 */
 			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid') );
 		} # if
 		
-		# initialiseer het security systeem
+		# Initialize the security system
 		$spotSec = new SpotSecurity($this->_db, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 		$userSession['security'] = $spotSec;
 		
-		# update de sessie cookie zodat die niet spontaan gaat
-		# expiren
+		/*
+		 * And always update the cookie even if one already existed,
+		 * this prevents the cookie from expiring all of a sudden
+		 */
 		$this->updateCookie($userSession);
 		
 		return $userSession;
@@ -119,29 +126,34 @@ class SpotUserSystem {
 	} # passToHash
 
 	/*
-	 * Probeert de user aan te loggen met de gegeven credentials,
-	 * geeft user record terug of false als de user niet geauth kan
-	 * worden
+	 * Tries to authenticate the user with the given credentials.
+	 * Returns an user record when authed, or false if the 
+	 * authentication fails
 	 */
 	function login($user, $password) {
-		# Salt het password met het unieke salt in settings.php
+		# Sals the password with the unique salt given in the database
 		$password = $this->passToHash($password);
 
-		# authenticeer de user?
+		# authenticate the user
 		$userId = $this->_db->authUser($user, $password);
 		if ($userId !== false) {
-			# Als de user ingelogged is, creeer een sessie.
-			# Volgorde is hier belangrijk omdat in de newsession
-			# de lastvisit tijd op lastlogon gezet wordt moeten
-			# we eerst de sessie creeeren.
+			/*
+			 * If the user is logged in, create a session.
+			 *
+			 * Order of actions is import here, because
+			 * in a new session the lastvisit time is always
+			 * set to the lastlogon time, therefore we first
+			 * want the session to be created and after that
+			 * we can update the last logon time 
+			 */
 			$userSession = $this->createNewSession($userId);
 			$this->updateCookie($userSession);
 
-			# nu gebruiken we het user record om de lastlogin te fixen
+			# now update the user record with the last logon time
 			$userSession['user']['lastlogin'] = time();
 			$this->_db->setUser($userSession['user']);
 
-			# initialiseer het security systeem
+			# Initialize the security system
 			$userSession['security'] = new SpotSecurity($this->_db, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 
 			return $userSession;
@@ -151,20 +163,24 @@ class SpotUserSystem {
 	} # login
 
 	function verifyApi($apikey) {
-		# authenticeer de user?
+		# try to authenticate the user
 		$userId = $this->_db->authUser(false, $apikey);
+		
 		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID && $apikey != '') {
-			# Waar bij een normale login het aanmaken van
-			# een sessie belangrijk is, doen we het hier
-			# expliciet niet. Daarom halen we de gegevens
-			# van de user direct op.
+			/*
+			 * In a normal logon, we need to have a session.
+			 * For API logons, we do not want a session because
+			 * that would bloat the session table.
+			 *
+			 * We therefore manually retrieve the user record
+			 */
 			$userRecord['user'] = $this->getUser($userId);
 
-			# nu gebruiken we het user record om lastapiusage te fixen
+			# and use the userrecord to update the lastapiusage time
 			$userRecord['user']['lastapiusage'] = time();
 			$this->_db->setUser($userRecord['user']);
 
-			# initialiseer het security systeem
+			# Initialize the security system
 			$userRecord['security'] = new SpotSecurity($this->_db, $this->_settings, $userRecord['user'], $this->determineUsersIpAddress() );
 
 			return $userRecord;
@@ -194,8 +210,8 @@ class SpotUserSystem {
 	} # resetReadStamp
 
 	/*
-	 * Controleert een session cookie, en als de sessie geldig
-	 * is, geeft een user record terug
+	 * Checks whether an given session is valid. If the session
+	 * is valid, this function returns an userrecord
 	 */
 	function validSession($sessionCookie) {
 		$sessionParts = explode(".", $sessionCookie);
@@ -203,29 +219,34 @@ class SpotUserSystem {
 			return false;
 		} # if
 
-		# controleer of de sessie geldig is
+		# Check whether the session is to be found in the database
 		$sessionValid = $this->_db->getSession($sessionParts[0], $sessionParts[1]);
 		if ($sessionValid === false) {
 			return false;
 		} # if
 		
-		# het is een geldige sessie, haal userrecord op
+		# The sessionis valid, let's update the hit counter and retrieve the user
 		$this->_db->hitSession($sessionParts[0]);
 		$userRecord = $this->getUser($sessionValid['userid']);
 		
-		# als het user record niet gevonden kan worden, is het toch geen geldige
-		# sessie
+		/*
+		 * If the user could not be found, the session wasn't valid after all
+		 */
 		if ($userRecord === false) {
 			return false;
 		} # if
-		
-		#
-		# Controleer nu of we de lastvisit timestamp moeten updaten?
-		# 
-		# Als de lasthit (wordt geupdate bij elke hit) langer dan 15 minuten
-		# geleden is, dan updaten we de lastvisit timestamp naar de lasthit time,
-		# en resetten we daarmee effectief de lastvisit time.
-		#
+
+		/*
+		 * Now determine whether we need to update the lastvisit timestamp.
+		 *
+		 * If the *lasthit* is older than 15 minutes, we update the *lastvisit* 
+		 * timestamp to the *lasthit* time. 
+		 *
+		 * Basically this makes sure the 'lastvisit' time is only reset when
+		 * the user wasn't active on Spotweb for 15 minutes. This ensures us
+		 * that we unread count for the user doesn't get unset all of a sudden
+		 * during a browsing session.
+		 */
 		if ($sessionValid['lasthit'] < (time() - 900)) {
 			$userRecord['lastvisit'] = $sessionValid['lasthit'];
 			$this->_db->setUser($userRecord);
@@ -236,13 +257,13 @@ class SpotUserSystem {
 	} # validSession
 	
 	/*
-	 * Geeft een boolean terug die aangeeft of een username geldig is of niet 
+	 * Validates a username
 	 */
 	function validUsername($user) {
 		$invalidNames = array('god', 'mod', 'modje', 'spot', 'spotje', 'spotmod', 
 							  'admin', 'drazix', 'moderator', 'superuser', 'supervisor', 
 							  'spotnet', 'spotnetmod', 'administrator',  'spotweb',
-							  'root', 'anonymous');
+							  'root', 'anonymous', 'spotlite');
 
 		$validUsername = !in_array(strtolower($user), $invalidNames);
 		if ($validUsername) {
@@ -253,55 +274,58 @@ class SpotUserSystem {
 	} # validUsername
 
 	/*
-	 * Voegt een gebruiker toe aan de database 
+	 * Adds a user to the database
 	 */
 	function addUser($user) {
 		if (!$this->validUsername($user['username'])) {
 			throw new Exception("Invalid username");
 		} # if
 
-		# converteer het password naar een pass hash
+		# Convert the password to an passhash
 		$user['passhash'] = $this->passToHash($user['newpassword1']);
 
-		# Creëer een API key
+		# Create an API key
 		$user['apikey'] = md5($this->generateUniqueId());
 
-		# en voeg het record daadwerkelijk toe
+		# and actually add the user to the database
 		$tmpUser = $this->_db->addUser($user);
 		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 		
-		# Geef de user default preferences en settingss
+		/*
+		 * Now copy the preferences from the anonymous user to this
+		 * new user 
+		 */
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
 		$tmpUser = array_merge($anonUser, $tmpUser);
 		$tmpUser['prefs']['newspotdefault_tag'] = $user['username'];
 		$this->_db->setUser($tmpUser);
 		
-		# en geef de gebruiker de nodige groepen
+		# and add the user to the default set of groups as configured
 		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 		
-		# en de nodige filters
+		# now copy the users' filters to the new user
 		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $tmpUser['userid']);
 	} # addUser()
 
 	/*
-	 * Update een gebruikers' group membership
+	 * Update a user's group membership
 	 */
 	function setUserGroupList($user, $groupList) {
 		$this->_db->setUserGroupList($user['userid'], $groupList);
 	} # setUserGroupList
 	 
 	/*
-	 * Update een gebruikers' password
+	 * Update a user's password
 	 */
 	function setUserPassword($user) {
-		# converteer het password naar een pass hash
+		# Convert the password to an passhash
 		$user['passhash'] = $this->passToHash($user['newpassword1']);
 		
 		$this->_db->setUserPassword($user);
 	} # setUserPassword
 
 	/*
-	 * Update een gebruikers' API key
+	 * Update a user's API key
 	 */
 	function resetUserApi($user) {
 		$user['apikey'] = md5($this->generateUniqueId());
@@ -311,11 +335,13 @@ class SpotUserSystem {
 	} # setUserApi
 
 	/* 
-	 * Cleanup van user preferences
+	 * Cleanup of user preferences
 	 */
 	function cleanseUserPreferences($prefs, $tpl) {
-		# we willen nu zeker weten dat er in _editUserPrefsForm geen preferences gegeven zijn
-		# welke we helemaal niet ondersteunen.
+		/*
+		 * Make sure the user didn't try to submit preferences
+		 * we do not support in Spotweb
+		 */
 		foreach(array_diff_key($prefs, $tpl) as $keys => $values) {
 			unset($prefs[$keys]);
 		} # foreach
@@ -324,61 +350,65 @@ class SpotUserSystem {
 	} # cleanseUserPreferences
 	
 	/*
-	 * Valideer de user preferences
+	 * Validate user preferences
 	 */
 	function validateUserPreferences($prefs, $currentPrefs) {
 		$errorList = array();
 		
-		# Definieer een aantal arrays met valid settings
+		# Define several arrays with valid settings
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
 		$validTemplates = array('we1rdo');
 		$validDefaultSorts = array('', 'stamp');
 		$validLanguages = array_keys($this->_settings->get('system_languages'));
 		
-		# Controleer de per page setting
+		# Check per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
-			$errorList[] = _('Ongeldige user preference waarde (perpage)');
+			$errorList[] = _('Invalid preference value (perpage)');
 		} # if
 		
 		# Controleer basis settings
 		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
-			$errorList[] = _('Ongeldige user preference waarde (date_formatting)');
+			$errorList[] = _('Invalid user preference value (date_formatting)');
 		} # if
 		
 		if (in_array($prefs['template'], $validTemplates) === false) { 	
-			$errorList[] = _('Ongeldige user preference waarde (template)');
+			$errorList[] = _('Invalid user preference value (template)');
 		} # if
 
 		if (in_array($prefs['user_language'], $validLanguages) === false) { 	
-			$errorList[] = _('Ongeldige user preference waarde (language)');
+			$errorList[] = _('Invalid user preference value (language)');
 		} # if
 
 		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	
-			$errorList[] = _('Ongeldige user preference waarde (defaultsortfield)');
+			$errorList[] = _('Invalid user preference value (defaultsortfield)');
 		} # if
 		
-		# Als nzbhandling instellingen totaal niet opgegeven zijn, defaulten we naar disable
+		# When nzbhandling settings are not entered at all, we default to disable
 		if (!isset($prefs['nzbhandling'])) {
 			$prefs['nzbhandling'] = array('action' => 'disable',
 										  'prepare_action' => 'merge');										  
 		} # if
 		
-		# als er een sabnzbd host opgegeven is, moet die geldig zijn
+		# when an sabnzbd host is entered, it has to be a valid URL
 		if ( ($prefs['nzbhandling']['action'] == 'client-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
-				$errorList[] = _('Ongeldige user preference waarde (sabnzbd url)');
+				$errorList[] = _('sabnzbd host is not a valid URL');
 			} # if
 			
-			# SABnzbd URL moet altijd eindigen met een slash
+			# SABnzbd URL should always end with a s slash
 			if(substr($prefs['nzbhandling']['sabnzbd']['url'], -1) !== '/') {
 				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
 			} # if
 		} # if
 
-		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
+		/*
+		 * Convert other settings to booleans so we always have a valid result.
+		 * We need to do this because not all browsers post checkboxes in a form in
+		 * the same way.
+		 */
 		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
 		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
 		$prefs['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
@@ -401,69 +431,69 @@ class SpotUserSystem {
 			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
 		}
 
-		# Twitter tokens komen niet binnen via het form, maar mogen per se niet weggegooid worden.
+		# Twitter tokens aren't posted per default using the form, but they shouldn't be tossed out
 		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
 		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];
 		$prefs['notifications']['twitter']['access_token_secret'] = $currentPrefs['notifications']['twitter']['access_token_secret'];
 		$prefs['notifications']['twitter']['request_token'] = $currentPrefs['notifications']['twitter']['request_token'];
 		$prefs['notifications']['twitter']['request_token_secret'] = $currentPrefs['notifications']['twitter']['request_token_secret'];
 
-		# We willen geen megabytes aan custom CSS opslaan, dus controleer dat dit niet te groot is
+		# We don't want to save megabyts of CSS, so put a limit to the size
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
-			$errorList[] = _('Ongeldige user preference waarde (customcss)');
+			$errorList[] = _('Custom CSS is too large');
 		} # if		
 
-		# We willen geen megabytes aan defalt newspot body of tag opslaan
+		# We don't want to save megabytes of default newspot body, so limit it
 		if (strlen($prefs['newspotdefault_tag'] > 90)) { 
-			$errorList[] = _('Ongeldige user preference waarde (newspotdefault_tag)');
+			$errorList[] = _('Default value for a spots\' tag is too long');
 		} # if		
 		
 		if (strlen($prefs['newspotdefault_body'] > 9000)) { 
-			$errorList[] = _('Ongeldige user preference waarde (newspotdefault_body)');
+			$errorList[] = _('Default value for a spots\' body is too long');
 		} # if		
 		
-		# als men runcommand of save wil, moet er een local_dir opgegeven worden
+		# When a 'runcommand' or 'save' action is chosen, 'local_dir' is a mandatry setting
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
 			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = _('Ongeldige user preference waarde (local_dir)');
+				$errorList[] = _('When NZB handling is either "save" or "runcommand" the directory must be entered');
 			} # if
 		} # if
 
-		# als men Growl wil gebruiken, moet er een host opgegeven worden
+		# For the 'growl' notification provider, a host is mandatory
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {
-				$errorList[] = _('Ongeldige user preference waarde (growl_host)');
+				$errorList[] = _('Growl notifications require a growl host to be entered');
 			} # if
 		} # if
 
-		# als men Notify My Android wil gebruiken, moet er een apikey opgegeven worden
+		# 'Notify My Android' requires an API key
 		if ($prefs['notifications']['nma']['enabled']) {
 			if (empty($prefs['notifications']['nma']['api'])) {
-				$errorList[] = _('Ongeldige user preference waarde (Notify My Android API)');
+				$errorList[] = _('"Notify My Android" notifications require an API key');
 			} # if
 		} # if
 
-		# als men Notifo wil gebruiken, moet er een username & apikey opgegeven worden
+		# 'Notifo' requires both a username and apikey
 		if ($prefs['notifications']['notifo']['enabled']) {
 			if (empty($prefs['notifications']['notifo']['username'])) {
-				$errorList[] = _('Ongeldige user preference waarde (Notifo usernae)');
+				$errorList[] = _('"Notifo" notifications require an username to be entered');
 			} # if
 			if (empty($prefs['notifications']['notifo']['api'])) {
-				$errorList[] = _('Ongeldige user preference waarde (Notifo API)');
+				$errorList[] = _('"Notifo" notifications require an api key to be entered');
 			} # if
 		} # if
 
-		# als men Prowl wil gebruiken, moet er een apikey opgegeven worden
+		# 'Prowl' requires an API key
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {
-				$errorList[] = _('Ongeldige user preference waarde (Prowl APIkey)');
+				$errorList[] = _('"Prowl" notifications require an API key to be entered');
 			} # if
 		} # if
 
-		# als men Twitter wil gebruiken, moet er er een account zijn geverifieerd
+		# To use Twitter, an twitter account should be defined
 		if ($prefs['notifications']['twitter']['enabled']) {
 			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
-				$errorList[] = _('Ongeldige user preference waarde (Er is geen account geverifi&euml;erd voor Twitter notificaties)');
+				$errorList[] = _('To use twitter you need to enter and validate a twitter account');
 			} # if
 		} # if
 
@@ -471,90 +501,92 @@ class SpotUserSystem {
 	} # validateUserPreferences
 
 	/*
-	 * Valideer het user record, kan gebruikt worden voor het toegevoegd word of
-	 * geupdate wordt
+	 * Validate the user record. Might be used for both adding and changing
 	 */
 	function validateUserRecord($user, $isEdit) {
 		$errorList = array();
 		
-		# Controleer de username
+		# Make sure the username is valid
 		if (!$isEdit) {
 			if (!$this->validUsername($user['username'])) {
-				$errorList[] = ('Geen geldige gebruikersnaam');
+				$errorList[] = _('Invalid username chosen');
 			} # if
 		} # if
 		
-		# controleer de firstname
-		if (strlen($user['firstname']) < 3) {
-			$errorList[] = _('Geen geldige voornaam');
+		# Check a firstname is entered
+		if (strlen($user['firstname']) < 2) {
+			$errorList[] = _('Not a valid firstname');
 		} # if
 		
-		# controleer de lastname
-		if (strlen($user['lastname']) < 3) {
-			$errorList[] = _('Geen geldige achternaam');
+		# Check a lastname is entered
+		if (strlen($user['lastname']) < 2) {
+			$errorList[] = _('Not a valid lastname');
 		} # if
 
-		# controleer het password, als er een opgegeven is
+		# Make sure a psasword is entered
 		if (strlen($user['newpassword1'] > 0)) {
 			if (strlen($user['newpassword1']) < 5){
-				$errorList[] = _('Opgegeven wachtwoord is te kort');
+				$errorList[] = _('Entered password is too short');
 			} # if 
 		} # if
 
-		# password1 en password2 moeten hetzelfde zijn (password en bevestig password)
+		# and make sure the passwords match
 		if ($user['newpassword1'] != $user['newpassword2']) {
-			$errorList[] = _('Wachtwoord velden komen niet overeen');
+			$errorList[] = _('Passwords do not match');
 		} # if
 
-		# anonymous user editten mag niet
+		# disallow a user from editting the ANONYMOUS user
 		if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$errorList[] = _('Anonymous user kan niet bewerkt worden');
+			$errorList[] = _('You cannot edit the anonymous account');
 		} # if
 		
-		# controleer het mailaddress
+		# check the mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = _('Geen geldig mailadres');
+			$errorList[] = _('Not a valid email address');
 		} # if
 
-		# Is er geen andere uset met dezelfde mailaddress?
+		# and make sure the mailaddress is unique among all users
 		$emailExistResult = $this->_db->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
-			$errorList[] = _('Mailadres is al ingebruik');
+			$errorList[] = _('Mailaddress is alread in use');
 		} # if
 		
 		return $errorList;
 	} # validateUserRecord
 	
 	/*
-	 * Stel de users' public en private keys in
+	 * Set the users' public and private keys
 	 */
 	function setUserRsaKeys($user, $privateKey, $publicKey) {
 		$this->_db->setUserRsaKeys($user['userid'], $privateKey, $publicKey);
 	} # setUserRsaKeys
 	
 	/*
-	 * Valideert een group record
+	 * Validate a group record
 	 */
 	function validateSecGroup($group) {
 		$errorList = array();
 
-		# Verwijder overbodige spaties e.d.
+		# Remove any lingering spaces
 		$group['name'] = trim($group['name']);
 		
-		# Controleer of er een usergroup opgegeven is en of de 
-		# naam niet te kort is
+		# Ensure a gorupname is given and it is not too short
 		if (strlen($group['name']) < 3) {
-			$errorList[] = _('Ongeldige naam voor de groep');
+			$errorList[] = _('Invalid groupname');
 		} # if
-		
-		# Vraag nu alle security groepen om, om er zeker van te zijn
-		# dat deze security groep nog niet voorkomt. Niet het meest efficient
-		# maar het aantal verwachtte securitygroepen zal meevallen
+
+		/*
+		 * Now list all security groups to make sure the groupname
+		 * is unique.
+		 *
+		 * This is not the most efficient way to do stuff, but we 
+		 * do not expect dozens of security groups so this is acceptable
+		 */
 		$secGroupList = $this->_db->getGroupList(null);
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
 				if ($secGroup['id'] != $group['id']) {
-					$errorList[] = _('Deze naam voor de groep is al in gebruik');
+					$errorList[] = _('Name is already in use');
 				} # if
 			} # if
 		} # foreach
@@ -563,40 +595,46 @@ class SpotUserSystem {
 	} # validateSecGroup
 
 	/*
-	 * Verwijdert een permissie uit een security group
+	 * Removes a permission from a securitygroup
 	 */
 	function removePermFromSecGroup($groupId, $perm) {
 		$this->_db->removePermFromSecGroup($groupId, $perm);
 	} # removePermFromSecGroup
 
 	/*
-	 * Set een permissie in een security group op deny of allow
+	 * Sets a speific permission in a group to either allow or deny
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
 		$this->_db->setDenyForPermFromSecGroup($groupId, $perm);
 	} # setDenyForPermFromSecGroup
 	
 	/*
-	 * Voegt een permissie aan een security group toe
+	 * Adds a permission to an security group
 	 */
 	function addPermToSecGroup($groupId, $perm) {
 		$errorList = array();
 		
-		// trim het objectid
+		# Remove any superfluous spaces
 		$perm['objectid'] = trim($perm['objectid']);
 		
-		// controleer dat deze specifieke permissie niet al in de security groep zit
+		/*
+		 * Make sure this specific permission is unique in the group
+		 *
+		 * We do not check the deny here, because we do not want
+		 * groups with both a deny and an allow setting as the results
+		 * would be undefined
+		 */
 		$groupPerms = $this->_db->getGroupPerms($groupId);
 		foreach($groupPerms as $groupPerm) {
 			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
-				# Dubbele permissie
-				$errorList[] = _('Permissie bestaat al in deze groep');
+				# Duplicate permission
+				$errorList[] = _('Permission already exists in this group');
 			} # if
 		} # foreach
 	
-		// voeg de permissie aan de groep
+		# Add the permission to the group
 		if (empty($errorList)) {
 			$this->_db->addPermToSecGroup($groupId, $perm);
 		} # if
@@ -605,21 +643,21 @@ class SpotUserSystem {
 	} # addPermToSecGroup
 	
 	/*
-	 * Update een group record
+	 * Update a group record
 	 */
 	function setSecGroup($group) {
 		$this->_db->setSecurityGroup($group);
 	} # setSecGroup
 
 	/*
-	 * Voegt een group record toe
+	 * Add an security group
 	 */
 	function addSecGroup($group) {
 		$this->_db->addSecurityGroup($group);
 	} # addSecGroup
 	
 	/*
-	 * Geeft een group record terug
+	 * Retrieve a group record 
 	 */
 	function getSecGroup($groupId) {
 		$tmpGroup = $this->_db->getSecurityGroup($groupId);
@@ -631,14 +669,14 @@ class SpotUserSystem {
 	} # getSecGroup
 
 	/*
-	 * Verwijdert een group record
+	 * Removes a group record
 	 */
 	function removeSecGroup($group) {
 		$this->_db->removeSecurityGroup($group);
 	} # removeSecGroup
 
 	/*
-	 * Geeft een user record terug
+	 * Retrieves an user record
 	 */
 	function getUser($userid) {
 		$tmpUser = $this->_db->getUser($userid);
@@ -647,31 +685,30 @@ class SpotUserSystem {
 	} # getUser()
 
 	/*
-	 * Vraagt een ongeformatteerde filterlist op
+	 * Retrieves an unformatted filterlist
 	 */
 	function getPlainFilterList($userId, $filterType) {
 		return $this->_db->getPlainFilterList($userId, $filterType);
 	} # get PlainFilterList
 	
 	/*
-	 * Vraagt een filter list op
+	 * Retrieves a list of filters (in an hierarchical list)
 	 */
 	function getFilterList($userId, $filterType) {
 		return $this->_db->getFilterList($userId, $filterType);
 	} # getFilterList
 	
 	/*
-	 * Vraag een specifieke filter op
+	 * Retrieves one specific filter
 	 */
 	function getFilter($userId, $filterId) {
 		return $this->_db->getFilter($userId, $filterId);
 	} # getFilter
 
 	/*
-	 * Wijzigt de filter waardes.
+	 * Changes the filter values.
 	 *
-	 * Op dit moment ondersteunen we enkel om de volgende waardes
-	 * te wijzigen
+	 * For now only the following values might be changed:
 	 *
 	 *   * Title
 	 *   * Order
@@ -679,35 +716,35 @@ class SpotUserSystem {
 	 */
 	function changeFilter($userId, $filterForm) {
 		return $this->_db->updateFilter($userId, $filterForm);
-	} # getFilter
+	} # changeFilter
 
 
 	/*
-	 * Checkt of een filter geldig is
+	 * Validates a filter
 	 */
 	function validateFilter($filter) {
 		$errorList = array();
 
-		# Verwijder overbodige spaties e.d.
+		# Remove any spaces 
 		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
 		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
 		
-		// controleer dat deze specifieke permissie niet al in de security groep zit
+		# Make sure a filter name is valid
 		if (strlen($filter['title']) < 3) {
-			$errorList[] = _('Ongeldige naam voor een filter');
+			$errorList[] = _('Invalid filter name');
 		} # if
 		
 		return array($filter, $errorList);
 	} # validateFilter
 	
 	/*
-	 * Voegt een userfilter toe
+	 * Adds a filter to a user
 	 */
 	function addFilter($userId, $filter) {
 		$errorList = array();
 		list($filter, $errorList) = $this->validateFilter($filter);
 		
-		/* Geen fouten gevonden? voeg de filter dan toe */
+		# No errors found? add it to the datbase
 		if (empty($errorList)) {
 			$this->_db->addFilter($userId, $filter);
 		} # if
@@ -716,7 +753,7 @@ class SpotUserSystem {
 	} # addFilter
 	
 	/*
-	 * Get the users' index filter
+	 * Retrieves the users' index filter
 	 */
 	function getIndexFilter($userId) {
 		$tmpFilter = $this->_db->getUserIndexFilter($userId);
@@ -731,10 +768,10 @@ class SpotUserSystem {
 	 * Add user's index filter
 	 */
 	function setIndexFilter($userId, $filter) {
-		/* There can only be one */
+		# There can only be one 
 		$this->removeIndexFilter($userId);
 		
-		/* en voeg de index filter toe */
+		# and actually add the index filter
 		$filter['filtertype'] = 'index_filter';
 		$this->_db->addFilter($userId, $filter);
 	} # addIndexFilter
@@ -751,58 +788,63 @@ class SpotUserSystem {
 	} # removeIndexFilter
 
 	/*
-	 * Voegt een userfilter toe
+	 * Removes a userfilter
 	 */
 	function removeFilter($userId, $filterId) {
 		$this->_db->deleteFilter($userId, $filterId, 'filter');
 	} # removeFilter
 	
 	/*
-	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 * Removes all existing filters for a user, and reset its
+	 * filerlist to the one for the 'ANONYMOUS' account
 	 */
 	function resetFilterList($userId) {
-		# Wis de filters
+		# Remove all filters
 		$this->_db->removeAllFilters($userId);
 		
-		# copieer de nodige filters
+		# and copy them back from the userlist
 		$this->_db->copyFilterList(SPOTWEB_ANONYMOUS_USERID, $userId);
 	} # resetFilterList
 
 	/*
-	 * Wist alle bestaande filters, en reset ze naar de opgegeven filterlist
+	 * Set the filterlist as specified
 	 */
 	function setFilterList($userId, $filterList) {
-		# Wis de filters
+		# remove all existing filters
 		$this->_db->removeAllFilters($userId);
 		
-		# copieer de nodige filters
+		# and add the filters from the list
 		foreach($filterList as $filter) {
 			$this->_db->addFilter($userId, $filter);
 		} # foreach
 	} # setFilterList
 	
 	/*
-	 * Wist alle bestaande filters, en reset ze naar de opgegeven id
+	 * Copy the filters from a specific user to be the
+	 * default filters
 	 */
 	function setFiltersAsDefault($userId) {
-		# Wis de filters
+		# Remove all filters for the Anonymous user
 		$this->_db->removeAllFilters(SPOTWEB_ANONYMOUS_USERID);
 		
-		# copieer de nodige filters
+		# and copy them from the specified user to anonymous
 		$this->_db->copyFilterList($userId, SPOTWEB_ANONYMOUS_USERID);
 	} # setFiltersAsDefault
 
 	/*
-	 * Update een user record
+	 * Update a user record (does not change the password)
 	 */
 	function setUser($user) {
-		# We gaan er altijd van uit dat een password nooit gezet wordt
-		# via deze functie dus dat stuk negeren we
+		/*
+		 * We always assume the password is not set using
+		 * this function, hence the password is never updated
+		 * by setUser()
+		 */
 		$this->_db->setUser($user);
 	} # setUser()
 	
 	/*
-	 * Verwijdert een user record
+	 * Removes an user record
 	 */
 	function removeUser($userid) {
 		$this->_db->deleteUser($userid);
@@ -816,13 +858,13 @@ class SpotUserSystem {
 	} # getUserPrivateRsaKey
 	
 	/*
-	 * Converteert een lijst met filters naar een XML record
-	 * welke uitwisselbaar is
+	 * Converts a list of filters to an XML record which should
+	 * be interchangeable
 	 */
 	public function filtersToXml($filterList) {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
-		# Opbouwen XML
+		# create the XML document
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
 
@@ -843,12 +885,11 @@ class SpotUserSystem {
 			$filterElm->appendChild($doc->createElement('order', $filter['torder']));
 
 			/* 
-			 * Voeg nu de boom toe - we krijgen dat als tree aangeleverd maar
-			 * we willen die boom graag een beetje klein houden. We comprimeren
-			 * dus de boom
+			 * Now add the tree. We get the list of filters as a tree, but we 
+			 * want to keep the XML as clean as possible so we try to compress it.
 			 *
-			 * Maar eerst moeten we de tree parseren naar een aparte lijst
-			 * categorieen en strongnots
+			 * First we have to extract the tree to a list of selections, strongnots
+			 * and excludes
 			 */
 			$dynaList = explode(',', $filter['tree']);
 			list($categoryList, $strongNotList) = $spotsOverview->prepareCategorySelection($dynaList);
@@ -856,7 +897,7 @@ class SpotUserSystem {
 			$tree = $doc->createElement('tree');
 			foreach($treeList as $treeItem) { 
 				if (!empty($treeItem)) {
-					# Bepaal wat voor type tree element dit is
+					# determine what type of element this is
 					$treeType = 'include';
 					if ($treeItem[0] == '~') {
 						$treeType = 'strongnot';
@@ -866,7 +907,7 @@ class SpotUserSystem {
 						$treeItem = substr($treeItem, 1);
 					} # else
 					
-					# Creer nu een tree item
+					# and create the XML item
 					$treeElm = $doc->createElement('item', $treeItem);
 					$treeElm->setAttribute('type', $treeType);
 
@@ -878,15 +919,14 @@ class SpotUserSystem {
 			$filterElm->appendChild($tree);
 
 			/* 
-			 * Prepareer de filtervalue list zodat hij bruikbaar is 
-			 * in de XML hieronder
+			 * Prepareer the filtervalue list to make it usable for the XML
 			 */
 			$tmpFilterValues = explode('&', $filter['valuelist']);
 			$filterValueList = array();
 			foreach($tmpFilterValues as $filterValue) {
 				$tmpFilter = explode(':', urldecode($filterValue));
 				
-				# maak de daadwerkelijke filter
+				# and create the actual filter
 				if (count($tmpFilter) >= 3) {
 					$filterValueList[] = Array('fieldname' => $tmpFilter[0],
 											 'operator' => $tmpFilter[1],
@@ -895,12 +935,12 @@ class SpotUserSystem {
 			} # foreach
 
 			/* 
-			 * Voeg nu de filter items (text searches e.d. toe)
+			 * Now add the filter items (text searches etc)
 			 */
 			 if (!empty($filterValueList)) {
 				 $valuesElm = $doc->createElement('values');
 				 foreach($filterValueList as $filterValue) {
-					# Creer nu een tree item
+					# Create the value XML item
 					$itemElm = $doc->createElement('item');
 					$itemElm->appendChild($doc->createElement('fieldname', $filterValue['fieldname']));
 					$itemElm->appendChild($doc->createElement('operator', $filterValue['operator']));
@@ -912,11 +952,11 @@ class SpotUserSystem {
 			} # if
 			 
 			/* 
-			 * Voeg nu de sort items
+			 * Add the sorting items
 			 */
 			if (!empty($filter['sorton'])) {
 				$sortElm = $doc->createElement('sort');
-				# Creer nu een tree item
+
 				$itemElm = $doc->createElement('item');
 				$itemElm->appendChild($doc->createElement('fieldname', $filter['sorton']));
 				$itemElm->appendChild($doc->createElement('direction', $filter['sortorder']));
@@ -934,7 +974,7 @@ class SpotUserSystem {
 	} # filtersToXml 
 
 	/*
-	 * Converteert XML string naar een lijst met filters 
+	 * Translates an XML string back to a list of filters
 	 */
 	public function xmlToFilters($xmlStr) {
 		$filterList = array();
@@ -942,16 +982,16 @@ class SpotUserSystem {
 		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
 		/*
-		 * Parse de XML file
+		 * Parse the XML file
 		 */		
 		$xml = @(new SimpleXMLElement($xmlStr));
 		
-		# Op dit moment kunnen we maar 1 versie van filters parsen
+		# We can only parse version 1.0 of the filters
 		if ( (string) $xml->version != '1.0') {
 			return $filterList;
 		} # if
 
-		# en loop door alle filters heen
+		# and try to process all of the filters
 		foreach($xml->xpath('/spotwebfilter/filters/filter') as $filterItem) {
 			$filter['id'] = (string) $filterItem->id;
 			$filter['title'] = (string) $filterItem->title;
@@ -965,7 +1005,7 @@ class SpotUserSystem {
 			$filter['children'] = array();
 
 			/*
-			 * Parseer de items waarin de tree filters staan
+			 * start with the tree items
 			 */
 			$treeStr = "";
 			foreach($filterItem->xpath('tree/item') as $treeItem) {
@@ -986,7 +1026,7 @@ class SpotUserSystem {
 			$filter['tree'] = $treeStr;
 
 			/*
-			 * Parseer de items waarin de tree filters staan
+			 * now parse the values (textsearches etc)
 			 */
 			$filterValues = array();
 			foreach($filterItem->xpath('values/item') as $valueItem) {
@@ -1003,7 +1043,7 @@ class SpotUserSystem {
 			$filter['valuelist'] = $filterValues;
 
 			/* 
-			 * Sorteer elementen zijn optioneel, kijk of ze bestaan
+			 * Sorting elements are optional
 			 */
 			if ($filterItem->sort) {
 				$filter['sorton'] = (string) $filterItem->sort->item->fieldname;
@@ -1014,9 +1054,9 @@ class SpotUserSystem {
 		} # foreach
 		
 		/*
-		 * Nu gaan we er en boom van maken, we kunnen dit niet op dezelfde
-		 * manier doen als in SpotDb omdat de xpath() functie geen reference
-		 * toestaat 
+		 * Now create a tree out of it. We cannot do this the same way
+		 * as in SpotDb because we cannot create references to the XPATH
+		 * function
 		 */
 		 foreach($filterList as $idx => &$filter) {
 			if ($filter['tparent'] != 0) {

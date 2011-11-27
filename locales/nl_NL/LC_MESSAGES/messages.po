@@ -231,6 +231,9 @@ msgid_plural "This spot has %d stars"
 msgstr[0] "Deze spot heeft %d ster"
 msgstr[1] "Deze spot heeft %d sterren"
 
+msgid "This spot has no rating yet"
+msgstr "Deze spot heeft nog geen rating"
+
 msgid "Report this spot as spam"
 msgstr "Rapporteer deze spot als spam"
 
@@ -358,6 +361,9 @@ msgstr "Zoek spots van %s"
 
 msgid "Add comment (open/close windows)"
 msgstr "Reactie toevoegen (uitklappen)"
+
+msgid "Open \"%s\" panel"
+msgstr "Open \"%s\" paneel"
 
 #: editusersprefs.inc.php
 msgid "Language to use in Spotweb"
@@ -685,6 +691,9 @@ msgstr "Voorkeuren wijzigen"
 msgid "Admin panel"
 msgstr "Admin panel"
 
+msgid "Maintenance"
+msgstr "Onderhoud"
+
 msgid "Log out"
 msgstr "Uitloggen"
 
@@ -739,6 +748,9 @@ msgstr "Niet filteren op aantal reports"
 msgid "Maximum %1 reports"
 msgstr "Maximaal %1 reports"
 
+msgid "Add user"
+msgstr "Gebruiker toevoegen"
+
 #: listfilters.inc.php
 msgid "Download your filters"
 msgstr "Download je filters"
@@ -749,6 +761,90 @@ msgstr "Een avatar mag niet groter dan 4000 bytes zijn"
 
 msgid "Invalid avatar image was supplied"
 msgstr "Opgegeven avatar is geen geldige afbeelding"
+
+msgid "Invalid preference value (perpage)"
+msgstr "Ongeldige user preference waarde (aantal per pagina)"
+
+msgid "Invalid user preference value (date_formatting)"
+msgstr "Ongeldige user preference waarde (datum notatie)"
+
+msgid "Invalid user preference value (template)"
+msgstr "Ongeldige user preference waarde (template)"
+
+msgid "Invalid user preference value (language)"
+msgstr "Ongeldige user preference waarde (taal)"
+
+msgid "Invalid user preference value (defaultsortfield)"
+msgstr "Ongeldige user preference waarde (sorteervolgorde)"
+
+msgid "sabnzbd host is not a valid URL"
+msgstr "Opgegeven sabnzbd host is geen geldige URL"
+
+msgid "Custom CSS is too large"
+msgstr "Custom CSS is te groot"
+
+msgid "Default value for a spots' tag is too long"
+msgstr "De standaard tag waarde voor een nieuwe spot is te lang"
+
+msgid "Default value for a spots' body is too long"
+msgstr "De standaard body waarde voor een nieuwe spot is te lang"
+
+msgid "When NZB handling is either \"save\" or \"runcommand\" the directory must be entered"
+msgstr "Als NZB handeling op \"save\" of \"runcommand\" staat, moet er een directory opgegeven worden"
+
+msgid "Growl notifications require a growl host to be entered"
+msgstr "Growl notificaties vereisen een growl host"
+
+msgid "\"Notify My Android\" notifications require an API key"
+msgstr "\"Notify My Android\" notificaties vereisen een API key"
+
+msgid "\"Notifo\" notifications require a username to be entered"
+msgstr "\"Notify\" notificaties vereisen een gebruikersnaam"
+
+msgid "\"Notifo\" notifications require an api key to be entered"
+msgstr "\"Notify\" notificaties vereisen een APi key"
+
+msgid "\"Prowl\" notifications require an API key to be entered"
+msgstr "\"Prowl\" notificaties vereisen een API key"
+
+msgid "To use twitter you need to enter and validate a twitter account"
+msgstr "Om twitter te gebruiken moet je een twitter account opgeven en valideren"
+
+msgid "Invalid username chosen"
+msgstr "Ongeldige gebruikersnaam gekozen"
+
+msgid "Not a valid firstname"
+msgstr "Voornaam is niet geldig"
+
+msgid "Not a valid lastname"
+msgstr "Achternaam is niet geldig"
+
+msgid "Entered password is too short"
+msgstr "Opgegeven wachtwoord is te kort"
+
+msgid "Passwords do not match"
+msgstr "Wachtwoord velden komen niet overeen"
+
+msgid "You cannot edit the anonymous account"
+msgstr "De anonymous account mag niet bewerkt worden"
+
+msgid "Not a valid email address"
+msgstr "Geen geldig email adres"
+
+msgid "Mailaddress is already in use"
+msgstr "Mailadres is al in gebruik"
+
+msgid "Invalid filter name"
+msgstr "Naam van filter is niet geldig"
+
+msgid "Permission already exists in this group"
+msgstr "Permissie bestaat al in deze group"
+
+msgid "Invalid groupname"
+msgstr "Ongeldige naam voor de groep"
+
+msgid "Name is already in use"
+msgstr "Deze naam is al in gebruik"
 
 # javascript
 #: scripts.js
@@ -875,6 +971,10 @@ msgstr "Markeren als spam is niet gelukt:"
 
 msgid "Calculation of SHA1 hash was not successfull:"
 msgstr "SHA1 hash berekenen niet gelukt:"
+
+msgid "No (verified) comments found."
+msgstr "Geen (geverifieerde) comments gevonden."
+
 
 #: SpotPage_createuser.php
 msgid "'%s' already exists"

@@ -302,7 +302,7 @@ function loadComments(messageid,perpage,pagenr) {
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr+'&perpage='+perpage, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) {
-			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
+			$("#commentslist").append("<li class='nocomments'><t>No (verified) comments found.</t></li>");
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
