@@ -192,7 +192,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 		</div>
 <?php } ?>
 
-		<div class="editprefsButtons">
+		<div class="editSettingsButtons">
 			<input class="greyButton" type="submit" name="editsettingsform[submitedit]" value="<?php echo _('Change'); ?>">
 			<input class="greyButton" type="submit" name="editsettingsform[submitcancel]" value="<?php echo _('Cancel'); ?>">
 			<div class="clear"></div>
