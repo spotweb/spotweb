@@ -270,6 +270,9 @@ if (isset($settings['prefetch_nzb'])) {
 	die("prefetch_nzb is een setting in de database geworden. Haal de prefetch_nzb aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
+if (isset($settings['retrieve_comments')) {
+	die("retrieve_comments is een setting in de database geworden. Haal de retrieve_comments aub weg uit je ownsettings.php" . PHP_EOL);
+}
 if (isset($settings['retrieve_full_comments'])) {
 	die("retrieve_full_comments is een setting in de database geworden. Haal de retrieve_full_comments aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
