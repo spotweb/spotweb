@@ -1371,3 +1371,124 @@ msgstr "Communicatie"
 msgid "Development"
 msgstr "Ontwikkeling"
 
+# SpotSecurity.php
+msgid "Display overview of spots"
+msgstr "Overzicht van spots tonen"
+
+msgid "Log in"
+msgstr "Inloggen"
+
+msgid "Perform a search"
+msgstr "Zoekopdracht uitvoeren"
+
+msgid "View spot in detail"
+msgstr "Spot in detail zien"
+
+msgid "Retrieve NZB file"
+msgstr "NZB file opvragen"
+
+msgid "Download manager integration"
+msgstr "Integratie met download manager"
+
+msgid "Mark spots as read"
+msgstr "Spots markeren als gelezen"
+
+msgid "View image of spot"
+msgstr "Afbeelding van een spot tonen"
+
+msgid "RSS feed"
+msgstr "RSS feed"
+
+msgid "Static resources"
+msgstr "Static resources"
+
+msgid "Create new user"
+msgstr "Nieuwe gebruiker aanmaken"
+
+msgid "Change own preferences"
+msgstr "Eigen voorkeuren wijzigen"
+
+msgid "Change own user settings"
+msgstr "Eigen gebruiker wijzigen"
+
+msgid "List all users"
+msgstr "Eigen gebruiker wijzigen"
+
+msgid "Post comments to a spot"
+msgstr "Commentaar op een spot posten"
+
+msgid "Use downloads manager API "
+msgstr "SABnzbd+ API gebruiken (niet download manager integratie)"
+
+msgid "Keep watchlist"
+msgstr "Watchlist bijhouden"
+
+msgid "Keep downloadlist"
+msgstr "Downloadlist bijhouden"
+
+msgid "Keep seenlist"
+msgstr "Seenlist bijhouden"
+
+msgid "Show new spotcount in list of filters"
+msgstr "Spotcount in filterlijst tonen"
+
+msgid "Display Retrieve new spots button"
+msgstr "Nieuwe spots ophalen knop tonen"
+
+msgid "Display comments of a spot"
+msgstr "Comments op een spot laten zien"
+
+msgid "Let user choose their template"
+msgstr "Eigen template selecteren"
+
+msgid "Use Spotweb using an API key"
+msgstr "SpotWeb gebruiken via API key"
+
+msgid "Change other users"
+msgstr "Andere gebruikers wijzigen"
+
+msgid "Display total amount of spots"
+msgstr "Totaal aantal spots tonen"
+
+msgid "Delete users"
+msgstr "Gebruikers wissen"
+
+msgid "Change users' group membeship" 
+msgstr "Groupen waar een user lid van is wijzigen"
+
+msgid "Display users' group membership"
+msgstr "Groupen waar een user lid van is tonen"
+
+msgid "Change security groups"
+msgstr "Security groupen kunnen wijzigen"
+
+msgid "Send notifications (per service)"
+msgstr "Notificaties versturen (per service)"
+
+msgid "Send notifications (per type)"
+msgstr "Notificaties versturen (per type)"
+
+msgid "Let users create their own CSS"
+msgstr "Eigen CSS stylesheet toestaan per gebruiker"
+
+msgid "Create own Spot filters"
+msgstr "Zelf spotfilters kunnen bewerken"
+
+msgid "Set a set of filters as default for new users"
+msgstr "Filters als standaard in kunnen stellen voor nieuwe gebruikers"
+
+msgid "Report a spot as spam"
+msgstr "Rapporteer spot of gebruiker als spam"
+
+msgid "Post a new spot"
+msgstr "Een nieuwe spot kunnen posten"
+
+msgid "Blacklist a spotter"
+msgstr "Een spotter kunnen blacklisten"
+
+msgid "Display statistics"
+msgstr "Statistieken mogen bekijken"
+
+msgid "Display Spotweb's changelog"
+msgstr "Spotweb updates mogen bekijken (vergeleken met huidige versie)"
+
