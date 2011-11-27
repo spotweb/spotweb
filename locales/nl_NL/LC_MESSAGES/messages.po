@@ -207,6 +207,9 @@ msgstr "Laatste bezoek"
 msgid "Member of group"
 msgstr "Lid van groepen"
 
+msgid "IP address of last visit"
+msgstr "IP address van laatste bezoek"
+
 msgid "Change user"
 msgstr "Wijzig gebruiker"
 
@@ -1367,3 +1370,4 @@ msgstr "Communicatie"
 
 msgid "Development"
 msgstr "Ontwikkeling"
+

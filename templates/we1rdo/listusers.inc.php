@@ -12,6 +12,7 @@
 				<th><?php echo _('Mail'); ?></th>
 				<th><?php echo _('Last visit'); ?></th>
 				<th><?php echo _('Member of group'); ?></th>
+				<th><?php echo _('IP address of last visit'); ?></th>
 			</tr>
 		</thead>
 		<tbody id="userlist">
@@ -55,6 +56,7 @@
 				<td> <?php echo $user['mail']; ?> </td>
 				<td> <?php echo $tplHelper->formatDate($user['lastvisit'], 'userlist'); ?> </td>
 				<td> <?php echo $groupList; ?> </td>
+				<td> <?php echo $user['lastipaddr']; ?> </td>
 			</tr>
 <?php
 	}

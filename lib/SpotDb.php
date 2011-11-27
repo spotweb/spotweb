@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.52');
+define('SPOTDB_SCHEMA_VERSION', '0.53');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -252,7 +252,8 @@ class SpotDb {
 						"SELECT s.sessionid as sessionid,
 								s.userid as userid,
 								s.hitcount as hitcount,
-								s.lasthit as lasthit
+								s.lasthit as lasthit,
+								s.ipaddr as ipaddr
 						FROM sessions AS s
 						WHERE (sessionid = '%s') AND (userid = %d)",
 				 Array($sessionid,
@@ -269,12 +270,13 @@ class SpotDb {
 	 */
 	function addSession($session) {
 		$this->_conn->modify(
-				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit) 
-					VALUES('%s', %d, %d, %d)",
+				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit, ipaddr) 
+					VALUES('%s', %d, %d, %d, '%s')",
 				Array($session['sessionid'],
 					  (int) $session['userid'],
 					  (int) $session['hitcount'],
-					  (int) $session['lasthit']));
+					  (int) $session['lasthit'],
+					  $session['ipaddr']));
 	} # addSession
 
 	/*
@@ -385,6 +387,7 @@ class SpotDb {
 								u.mail AS mail,
 								u.lastlogin AS lastlogin,
 								COALESCE((SELECT MAX(lasthit) FROM sessions WHERE userid = u.id), lastvisit) as lastvisit,
+								(SELECT ipaddr FROM sessions WHERE userid = u.id ORDER BY lasthit DESC LIMIT 1) as lastipaddr,
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
