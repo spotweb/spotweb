@@ -63,8 +63,8 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_nzb][enc][switch]" id="use_encryption_nzb" <?php if ($nntp_nzb['enc']) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_encryption_nzb">
 						<select name="editsettingsform[nntp_nzb][enc][select]">
-							<option <?php if ($nntp_nzb['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 							<option <?php if ($nntp_nzb['enc'] == 'ssl') { echo 'selected="selected"'; } ?> value="ssl">SSL</option>
+							<option <?php if ($nntp_nzb['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 						</select>					
 					</fieldset>
 
@@ -93,8 +93,8 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][enc][switch]" id="use_encryption_hdr" <?php if ($nntp_hdr['enc']) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_encryption_hdr">
 						<select name="editsettingsform[nntp_hdr][enc][select]">
-							<option <?php if ($nntp_hdr['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 							<option <?php if ($nntp_hdr['enc'] == 'ssl') { echo 'selected="selected"'; } ?> value="ssl">SSL</option>
+							<option <?php if ($nntp_hdr['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 						</select>					
 					</fieldset>
 
@@ -123,8 +123,8 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][enc][switch]" id="use_encryption_post" <?php if ($nntp_post['enc']) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_encryption_post">
 						<select name="editsettingsform[nntp_post][enc][select]">
-							<option <?php if ($nntp_post['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 							<option <?php if ($nntp_post['enc'] == 'ssl') { echo 'selected="selected"'; } ?> value="ssl">SSL</option>
+							<option <?php if ($nntp_post['enc'] == 'tls') { echo 'selected="selected"'; } ?> value="tls">TLS</option>
 						</select>					
 					</fieldset>
 
