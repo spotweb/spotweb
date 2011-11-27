@@ -449,6 +449,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'sessions', 'INTEGER', NULL, false, '');
 		$this->validateColumn('hitcount', 'sessions', 'INTEGER', NULL, false, '');
 		$this->validateColumn('lasthit', 'sessions', 'INTEGER', NULL, false, '');
+		$this->validateColumn('ipaddr', 'sessions', "VARCHAR(45)", "''", true, 'ascii');
 		$this->alterStorageEngine("sessions", "InnoDB");
 
 		# ---- securitygroups ----

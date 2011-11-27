@@ -44,7 +44,9 @@ class SpotUserSystem {
 		$session = array('sessionid' => $this->generateUniqueId(),
 						 'userid' => $userid,
 						 'hitcount' => 1,
-						 'lasthit' => time());
+						 'lasthit' => time(),
+						 'ipaddr' => $this->determineUsersIpAddress()
+						 );
 		$this->_db->addSession($session);
 		
 		return array('user' => $tmpUser,
@@ -1075,5 +1077,30 @@ class SpotUserSystem {
 	function isSpotterBlacklisted($ourUserId, $spotterId) {
 		return $this->_db->isSpotterBlacklisted($spotterId, $ourUserId);
 	} # isSpotterBlacklisted	
+	
+	/*
+	 * Returns the users' remote IP address
+	 */
+	function determineUsersIpAddress() {
+		/*
+		 * We now compare the X-Fowarded-For header and it's not clear if this 
+		 * is the right thing to do.
+		 */
+		foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key) {
+			if (array_key_exists($key, $_SERVER) === true) {
+				foreach (explode(',', $_SERVER[$key]) as $ip) {
+					if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+						$remote_addr = $ip;
+					} # if
+				} # foreach
+			} # if
+		} # foreach
+		
+		if (isset($remote_addr)) {
+			return $remote_addr;
+		} else {
+			return "N/A";
+		} # if
+	} # determineUsersIpAddress
 	
 } # class SpotUserSystem

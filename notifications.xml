@@ -9,6 +9,22 @@
 		<ttl>1800</ttl>
 
 		<item>
+			<title>Keeping the IP address for a session</title>
+			<description><![CDATA[In the Spotweb session datbase table we now keep the IP address of the user which created the session.<br /> This requires a
+			database upgrade which should be done rather quick unless your sessions table is very large (which is unlikely).
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>04</guid>
+			<pubDate>Sun, 27 Nov 2011 09:45:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.53</spotweb:schema_version>
+			<spotweb:settings_version>0.15</spotweb:settings_version>
+			<spotweb:security_version>0.24</spotweb:security_version>
+			<spotweb:feature_version>0.02</spotweb:feature_version>
+		</item>
+
+		<item>
 			<title>Introduced Spotweb change updates</title>
 			<description><![CDATA[For spotters (or commentors) which are now on the blacklist their comments will not be shown as well. 
 			<br />
