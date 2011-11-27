@@ -138,6 +138,9 @@ class SpotNotifications {
 	function newMultiMessage($objectId, $notification) {
 		$userArray = $this->_db->listUsers("", 0, 9999999);
 		foreach ($userArray['list'] as $user['user']) {
+			# Create a fake session array
+			$user['session'] = array('ipaddr' => '');
+			
 			$this->newSingleMessage($user, $objectId, 'Multi', $notification);
 		} # foreach
 

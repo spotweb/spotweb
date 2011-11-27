@@ -70,9 +70,13 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) { 
 		die("Access denied");
 	} # if
+	
+	# Add the user's ip addres, we need it for sending notifications
+	$userSession['session'] = array('ipaddr' => '');
 } else {
 	$userSession['user'] = $db->getUser(SPOTWEB_ADMIN_USERID);
 	$userSession['security'] = new SpotSecurity($db, $settings, $userSession['user'], '');
+	$userSession['session'] = array('ipaddr' => '');
 } # if
 
 if ($req->getDef('output', '') == 'xml') {
@@ -268,6 +272,7 @@ if ($settings->get('prepare_statistics') && $newSpotCount) {
 	$spotImage = new SpotImage($db);
 	$spotsOverview->setActiveRetriever(true);
 
+	echo "Starting to create statistics " . PHP_EOL;
 	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
 		# Reset timelimit
 		set_time_limit(60);
