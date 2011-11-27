@@ -4,13 +4,31 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Mon, 25 Nov 2011 07:04:00 +0200</lastBuildDate>
-		<pubDate>Mon, 25 Nov 2011 07:04:00 +0200</pubDate>
+		<lastBuildDate>Sun, 27 Nov 2011 20:45:00 +0100</lastBuildDate>
+		<pubDate>Sun, 27 Nov 2011 20:45:00 +0100</pubDate>
 		<ttl>1800</ttl>
 
 		<item>
+			<title>Introducing settings panel</title>
+			<description><![CDATA[All major settings are now set on the Settings panel inside Spotweb. The database upgrade will be very fast, but you will
+			probably need to manually clean your ownsettings.php file.<br />
+			<br />
+			Please note that the old 'Admin Panel' has been renamed to 'User &amp; group management'.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>05</guid>
+			<pubDate>Sun, 27 Nov 2011 20:45:00 +0100</pubDate>
+			<author>nightspirit81</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.53</spotweb:schema_version>
+			<spotweb:settings_version>0.16</spotweb:settings_version>
+			<spotweb:security_version>0.26</spotweb:security_version>
+			<spotweb:feature_version>0.03</spotweb:feature_version>
+		</item>
+
+		<item>
 			<title>Keeping the IP address for a session</title>
-			<description><![CDATA[In the Spotweb session datbase table we now keep the IP address of the user which created the session.<br /> This requires a
+			<description><![CDATA[In the Spotweb session database table we now keep the IP address of the user which created the session.<br /> This requires a
 			database upgrade which should be done rather quick unless your sessions table is very large (which is unlikely).
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
@@ -20,16 +38,16 @@
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
 			<spotweb:schema_version>0.53</spotweb:schema_version>
 			<spotweb:settings_version>0.15</spotweb:settings_version>
-			<spotweb:security_version>0.24</spotweb:security_version>
+			<spotweb:security_version>0.25</spotweb:security_version>
 			<spotweb:feature_version>0.02</spotweb:feature_version>
 		</item>
 
 		<item>
 			<title>Introduced Spotweb change updates</title>
-			<description><![CDATA[For spotters (or commentors) which are now on the blacklist their comments will not be shown as well. 
+			<description><![CDATA[For spotters (or commenters) which are now on the blacklist their comments will not be shown as well. 
 			<br />
 			<br />
-			For all comments an extra button is added which adds the user to the spotters' blacklist]]></description>
+			For all comments an extra button is added which adds the user to the senders' blacklist]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
 			<guid>03</guid>
 			<pubDate>Fri, 25 Nov 2011 18:53:00 +0100</pubDate>
@@ -38,7 +56,7 @@
 			<spotweb:schema_version>0.52</spotweb:schema_version>
 			<spotweb:settings_version>0.15</spotweb:settings_version>
 			<spotweb:security_version>0.24</spotweb:security_version>
-			<spotweb:feature_version>0.02</spotweb:feature_version>
+			<spotweb:feature_version>0.01</spotweb:feature_version>
 		</item>
 
 		<item>
@@ -69,7 +87,7 @@
 			<spotweb:schema_version>0.52</spotweb:schema_version>
 			<spotweb:settings_version>0.15</spotweb:settings_version>
 			<spotweb:security_version>0.24</spotweb:security_version>
-			<spotweb:feature_version>0.01</spotweb:feature_version>
+			<spotweb:feature_version>0.00</spotweb:feature_version>
 		</item>
 	</channel>
 </rss>
@@ -77,6 +95,4 @@
 	This feed is maintained manually. If a major (user-visible)change is introduced, or an upgrade-db.php run is required,
 	please add an entry to this RSS feed file detailing the change. If a schema change is required, please add an indication 
 	of the impact of the schemachange (eg: will it touch very large tables or not).
-	
-	
 -->

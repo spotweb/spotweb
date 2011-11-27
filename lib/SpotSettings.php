@@ -30,6 +30,17 @@ class SpotSettings {
 
 			# en merge de settings met degene die we door krijgen 
 			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
+
+			# Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
+			# de NZB server
+			if (empty(self::$_settings['nntp_hdr']['host'])) {
+				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
+			} # if
+
+			# Hetzelfde voor de NNTP upload server
+			if (empty(self::$_settings['nntp_post']['host'])) {
+				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
+			} # if
 		} # if
 		
 		return self::$_instance;
@@ -63,7 +74,7 @@ class SpotSettings {
 			return "db";
 		} # if
 	} # getOrigin
-	
+
 	/*
 	 * Set de waarde van de setting, maakt hem ook
 	 * meteen persistent dus mee oppassen
@@ -80,6 +91,87 @@ class SpotSettings {
 		
 		$this->_db->updateSetting($name, $value);
 	} # set
+	
+	/*
+	 * Validate settings
+	 */
+	function validateSettings($settings) {
+		$errorList = array();
+
+		# Define arrays with valid settings
+		$validNntpEnc = array(false, 'ssl', 'tls');
+		$validModerationAction = array('disable', 'act', 'markspot');
+
+		# Get the given value for NNTP encryption
+		$settings['nntp_nzb']['enc'] = (isset($settings['nntp_nzb']['enc']['switch'])) ? $settings['nntp_nzb']['enc']['select'] : false;
+		$settings['nntp_hdr']['enc'] = (isset($settings['nntp_hdr']['enc']['switch'])) ? $settings['nntp_hdr']['enc']['select'] : false;
+		$settings['nntp_post']['enc'] = (isset($settings['nntp_post']['enc']['switch'])) ? $settings['nntp_post']['enc']['select'] : false;
+
+		# Verify settings with the previous declared arrays
+		if (in_array($settings['nntp_nzb']['enc'], $validNntpEnc) === false || in_array($settings['nntp_hdr']['enc'], $validNntpEnc) === false || in_array($settings['nntp_post']['enc'], $validNntpEnc) === false) {
+			$errorList[] = _('Invalid encryption setting');
+		} # if
+		if (in_array($settings['spot_moderation'], $validModerationAction) === false) {
+			$errorList[] = _('Invalid spot moderation setting');
+		} # if
+
+		# Verify settings
+		$settings['retention'] = (int) $settings['retention'];
+		if ($settings['retention'] < 0) {
+			$errorList[] = _('Invalid retention setting');
+		} # if
+
+		$settings['retrieve_newer_than'] = (int) $settings['retrieve_newer_than'];
+		if ($settings['retrieve_newer_than'] < 0 || $settings['retrieve_newer_than'] > time()) {
+			$errorList[] = _('Invalid retrieve_newer_than setting');
+		} # if
+
+		$settings['retrieve_increment'] = (int) $settings['retrieve_increment'];
+		if ($settings['retrieve_increment'] < 1) {
+			$errorList[] = _('Invalid retrieve_increment setting');
+		} # if
+
+		$settings['max_newcount'] = (int) $settings['max_newcount'];
+		if ($settings['max_newcount'] < 0) {
+			$errorList[] = _('Invalid max_newcount setting');
+		} # if
+
+		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
+		$settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
+		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
+		$settings['nntp_nzb']['buggy'] = (isset($settings['nntp_nzb']['buggy'])) ? true : false;
+		$settings['nntp_hdr']['buggy'] = (isset($settings['nntp_hdr']['buggy'])) ? true : false;
+		$settings['nntp_post']['buggy'] = (isset($settings['nntp_post']['buggy'])) ? true : false;
+		$settings['retrieve_full'] = (isset($settings['retrieve_full'])) ? true : false;
+		$settings['prefetch_image'] = (isset($settings['prefetch_image'])) ? true : false;
+		$settings['prefetch_nzb'] = (isset($settings['prefetch_nzb'])) ? true : false;
+		$settings['retrieve_comments'] = (isset($settings['retrieve_comments'])) ? true : false;
+		$settings['retrieve_full_comments'] = (isset($settings['retrieve_full_comments'])) ? true : false;
+		$settings['retrieve_reports'] = (isset($settings['retrieve_reports'])) ? true : false;
+		$settings['prepare_statistics'] = (isset($settings['prepare_statistics'])) ? true : false;
+
+		# Default server settings if they won't be used
+		if (!isset($settings['nntp_hdr']['use'])) { $settings['nntp_hdr'] = array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false); }
+		if (!isset($settings['nntp_post']['use'])) { $settings['nntp_post'] = array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false); }
+		unset($settings['nntp_hdr']['use'], $settings['nntp_post']['use']);
+
+		return array($errorList, $settings);
+	} # validateSettings
+
+	function setSettings($settings) {
+		# If we disable the external blacklist, clear all entries
+		if ($settings['external_blacklist'] == false && $this->_settings->get('external_blacklist') == true) {
+			$this->_db->removeOldBlackList($this->_settings->get('blacklist_url'));
+		} # if
+
+		# clear some stuff we don't need to store
+		unset($settings['xsrfid'], $settings['http_referer'], $settings['buttonpressed']);
+
+		# Store settings
+		foreach ($settings as $key => $value) {
+			$this->set($key, $value);
+		} # foreach
+	} # setSettings
 
 	/* 
 	 * Zijn onze settings versie nog wel geldig?
@@ -89,19 +181,18 @@ class SpotSettings {
 		return ($this->get('settingsversion') == SPOTWEB_SETTINGS_VERSION);
 	} # settingsValid
 
-	
 	/* 
 	 * Bestaat de opgegeven setting ?
 	 */
 	function exists($name) {
 		return isset(self::$_settings[$name]);
 	} # isSet
-	
+
 	/*
 	 * Private constructor, moet altijd via singleton gaan
 	 */
 	private function __construct($db) {
 		$this->_db = $db;
 	} # ctor
-	
+
 } # class SpotSettings
