@@ -77,7 +77,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 
 			<dt><label for="use_nntp_hdr"><?php echo _('Use different server for headers?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (isset($nntp_hdr['host'])) { echo 'checked="checked"'; } ?>></dd>
+			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (!isset($nntp_hdr['host']['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
 			<fieldset id="content_use_nntp_hdr">
 				<dl>
 					<dt><label for="editsettingsform[nntp_hdr][host]"><?php echo _('Hostname'); ?></label></dt>
@@ -107,7 +107,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 
 			<dt><label for="use_nntp_post"><?php echo _('Use different server for posting?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (isset($nntp_post['host'])) { echo 'checked="checked"'; } ?>></dd>
+			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (!isset($nntp_post['host']['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
 			<fieldset id="content_use_nntp_post">
 				<dl>
 					<dt><label for="editsettingsform[nntp_post][host]"><?php echo _('Hostname'); ?></label></dt>
