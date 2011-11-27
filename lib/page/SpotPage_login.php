@@ -29,7 +29,7 @@ class SpotPage_login extends SpotPage_Abs {
 		
 		# zet de page title
 		$this->_pageTitle = "spot: login";
-		
+
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if (isset($this->_loginForm['submit'])) {
 			# submit unsetten we altijd
@@ -42,7 +42,7 @@ class SpotPage_login extends SpotPage_Abs {
 			if (!$tryLogin) {
 				/* Create an audit event */
 				if ($this->_settings->get('auditlevel') != SpotSecurity::spot_secaudit_none) {
-					$spotAudit = new SpotAudit($this->_db, $this->_settings, $this->_currentSession['user']);
+					$spotAudit = new SpotAudit($this->_db, $this->_settings, $this->_currentSession['user'], $this->_currentSession['session']['ipaddr']);
 					$spotAudit->audit(SpotSecurity::spotsec_perform_login, 'incorrect user or pass', false);
 				} # if
 				

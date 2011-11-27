@@ -72,7 +72,7 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 	} # if
 } else {
 	$userSession['user'] = $db->getUser(SPOTWEB_ADMIN_USERID);
-	$userSession['security'] = new SpotSecurity($db, $settings, $userSession['user']);
+	$userSession['security'] = new SpotSecurity($db, $settings, $userSession['user'], '');
 } # if
 
 if ($req->getDef('output', '') == 'xml') {

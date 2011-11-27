@@ -117,7 +117,7 @@ class SpotSecurity {
 	const spot_secaudit_failure			= 1;
 	const spot_secaudit_all				= 2; 
 	
-	function __construct(SpotDb $db, SpotSettings $settings, array $user) {
+	function __construct(SpotDb $db, SpotSettings $settings, array $user, $ipaddr) {
 		$this->_db = $db;
 		$this->_user = $user;
 		$this->_settings = $settings;
@@ -125,7 +125,7 @@ class SpotSecurity {
 		$this->_allAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_all);
 		
 		if (($this->_failAudit) || ($this->_allAudit)) {
-			$this->_spotAudit = new SpotAudit($db, $settings, $user);
+			$this->_spotAudit = new SpotAudit($db, $settings, $user, $ipaddr);
 		} # if
 		
 		$this->_permissions = $db->getPermissions($user['userid']);
