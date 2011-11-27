@@ -263,7 +263,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		$output = $this->querySabnzbd("mode=switch&value=" . $id . "&value2=-1");
 		$response = json_decode($output, true);
 		
-		# Sabnzbd returns the new position. So to verify wether or not the call was successful
+		# Sabnzbd returns the new position. So to verify whether or not the call was successful
 		# we'd need to first query the number of items that are in the queue. This seems to be
 		# a bit over overkill so we'll just asume that the call was successful
 		

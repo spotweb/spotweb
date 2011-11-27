@@ -205,17 +205,26 @@
 					<div class="editUserPrefs"></div>
 	<?php } ?>
 
-<?php if (
+	<?php if (
+			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, ''))
+		 ) { ?>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=editsettings"><?php echo _('Settings'); ?></a></h4>
+					<div class="listUsers"></div>
+	<?php } ?>
+
+	<?php if (
 			($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, ''))
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_edit_securitygroups, ''))
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
 		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=adminpanel"><?php echo _('Admin panel'); ?></a></h4>
+					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=usermanagement"><?php echo _('User &amp; group management'); ?></a></h4>
 					<div class="listUsers"></div>
-<?php } ?>
-					
+	<?php } ?>
+
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 					<h4 class="dropdown"><?php echo _('Log out'); ?></h4>
 					<a onclick="userLogout()" class="greyButton"><?php echo _('Log out'); ?></a>

@@ -33,7 +33,7 @@
 
 					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><?php if ($show_avatars) { ?><img class="commentavatar" src='<?php echo $tplHelper->makeCommenterImageUrl($comment); ?>'><?php } ?><strong> <?php echo $rating; ?><?php echo sprintf(_('Posted by %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
 					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Find spots from %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>
-					<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($comment['spotterid']); ?>" title="<?php echo _('Blacklist this spotter'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($comment['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+					<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($comment['spotterid']); ?>" title="<?php echo _('Blacklist this sender'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($comment['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 					) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> 
 					<br />
 					<?php if ($commentIsModerated) { echo _('This comment is moderated') . '<br /><br />'; } ?>

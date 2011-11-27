@@ -1,31 +1,4 @@
 <?php
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-   WIJZIG ONDERSTAANDE  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-$settings['nntp_nzb']['host'] = 'news.ziggo.nl';    # <== Geef hier je nntp server in
-$settings['nntp_nzb']['user'] = 'xx';               # <== Geef hier je username in
-$settings['nntp_nzb']['pass'] = 'yy';               # <== Geef hier je password in
-$settings['nntp_nzb']['enc'] = false;               # <== false|'tls'|'ssl', defaults to false.
-$settings['nntp_nzb']['port'] = 119;                # <== set to 563 in case of encryption
-$settings['nntp_nzb']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
-
-# =-=-=-=-=-=-=-=- Als je een aparte 'headers' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
-$settings['nntp_hdr']['host'] = '';
-$settings['nntp_hdr']['user'] = '';
-$settings['nntp_hdr']['pass'] = '';
-$settings['nntp_hdr']['enc'] = false;
-$settings['nntp_hdr']['port'] = 119;
-$settings['nntp_hdr']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
-
-# =-=-=-=-=-=-=-=- Als je een aparte 'upload' newsserver nodig hebt, uncomment dan volgende =-=-=-=-=-=-=-=-=-
-$settings['nntp_post']['host'] = '';
-$settings['nntp_post']['user'] = '';
-$settings['nntp_post']['pass'] = '';
-$settings['nntp_post']['enc'] = false;
-$settings['nntp_post']['port'] = 119;
-$settings['nntp_post']['buggy'] = false;             # <== Some newsservers lose messages once in a while, set this to true to workaround this
-
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -37,56 +10,6 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 # Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
 # extensie geinstalleerd hebt
 $settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
-
-# Standaard willen we niet dat robots ons kunnen indexeren, deze setting geeft de *hint* aan
-# robots om ons niet te indexeren, maar dit is geen garantie dat het niet gebeurt.
-$settings['deny_robots'] = true;
-
-#
-# SpotNet ondersteund moderatie van de gepostte spots en reacties, dit gebeurt
-# door middel van moderatie berichten in de nieuwsgroup waar ook de spots worden
-# gepost.
-#
-# SpotWeb ziet deze berichten ook, en zal er iets mee moeten doen. Afhankelijk van
-# wat je wilt moet je onderstaande setting aanpassen naar een van de volgende waardes:
-#
-# 	disable				- 	Doe helemaal niks met de moderatie
-#	act					- 	Wis de gemodereerde spots
-#	markspot			-	Markeer de gemodereerde spots als gemodereerd. Er is op 
-#							dit moment nog geen UI om dit te filteren of iets dergelijks.
-#
-$settings['spot_moderation'] = 'act';
-
-#
-# Moeten de headers door retrieve volledig geladen worden? Als je dit op 'true' zet wordt 
-# het ophalen van headers veel, veel trager. Het staat je dan echter wel toe om te filteren op userid.
-# Bovendien worden comments veel sneller geladen (mocht je deze ook ophalen, zie volgende setting)
-#
-$settings['retrieve_full'] = true;
-
-# moeten wij images tijdens retrieve in cache opslaan?
-# retrieve_full moet hiervoor op true staan!
-$settings['prefetch_image'] = false;
-
-# moeten wij de nzb tijdens retrieve in cache opslaan?
-# retrieve_full moet hiervoor op true staan!
-$settings['prefetch_nzb'] = false;
-
-# moeten wij comments ophalen?
-$settings['retrieve_comments'] = true;
-
-# moeten wij comments volledig ophalen?
-$settings['retrieve_full_comments'] = false;
-
-# moeten wij (spamm) repors ophalen?
-$settings['retrieve_reports'] = true;
-
-# Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen
-$settings['retention'] = 0;
-
-# Zet een minimum datum vanaf wanneer je spots op wilt halen, om alle spots van FTD te skippen geef je hier 1290578400 op
-# Andere data kun je omrekenen op http://www.unixtimestamp.com/
-$settings['retrieve_newer_than'] = 0;
 
 # db
 $settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
@@ -181,21 +104,6 @@ $settings['enable_stacktrace'] = true;
 # dat je ooit hoeft in te loggen.
 $settings['nonauthenticated_userid'] = 1;
 
-
-#
-# Hoeveel verschillende headers (van danwel spots, reports danwel comments) moeten er per keer opgehaald worden? 
-# Als je regelmatig timeouts krijgt van retrieve.php, verlaag dan dit aantal
-#
-$settings['retrieve_increment'] = 1000;
-
-#
-# Externe blacklist
-# 
-$settings['external_blacklist'] = true;	# true = zet de externe blacklist aan, de blacklist wordt opgehaald bij de eerstvolgende retrieve
-										# false = zet het ophalen van de blacklist uit (huidige blackist blijft in de database aanwezig)
-										# "remove" = verwijderd de externe blacklist uit de database
-$settings['blacklist_url'] = "http://jij.haatmij.nl/spotnet/blacklist.txt"; 
-
 #
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
@@ -241,30 +149,11 @@ if (($settings['templates']['autodetect']) &&
 } # else
 $settings['tpl_name'] = str_replace('templates/', '', $settings['tpl_name']);
 
-# Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
-# de NZB server
-#
-if (empty($settings['nntp_hdr']['host'])) {
-	$settings['nntp_hdr'] = $settings['nntp_nzb'];
-} # if
-
-# Hetzelfde voor de NNTP upload server
-if (empty($settings['nntp_post']['host'])) {
-	$settings['nntp_post'] = $settings['nntp_nzb'];
-} # if
-
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen
 if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
 	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file" . PHP_EOL);
 } # if
-
-# enc = true is een veelgemaakte fout, welke door de gebruiker niet duidelijk te traceren is
-foreach (array('nntp_nzb', 'nntp_hdr', 'nntp_post') as $tmp) {
-	if ($settings[$tmp]['enc'] === true) {
-		die("\$settings['" . $tmp . "']['enc'] bevat de waarde true. Wijzig dit in false, 'tls' of 'ssl'" . PHP_EOL);
-	} # if
-} # foreach
 
 # Voeg een sluitende slash toe als die er nog niet is
 if (substr($settings['spotweburl'], -1) != '/') {
@@ -331,6 +220,66 @@ if (isset($settings['filters'])) {
 
 if (isset($settings['index_filter'])) {
 	die("index_filter is een user preference geworden. Haal de index_filter aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retention'])) {
+	die("retention is een setting in de database geworden. Haal de retention aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['deny_robots'])) {
+	die("deny_robots is een setting in de database geworden. Haal de deny_robots aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['external_blacklist'])) {
+	die("external_blacklist is een setting in de database geworden. Haal de external_blacklist aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['blacklist_url'])) {
+	die("blacklist_url is een setting in de database geworden. Haal de blacklist_url aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['nntp_nzb'])) {
+	die("nntp_nzb is een setting in de database geworden. Haal de nntp_nzb aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['nntp_hdr'])) {
+	die("nntp_hdr is een setting in de database geworden. Haal de nntp_hdr aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['nntp_post'])) {
+	die("nntp_post is een setting in de database geworden. Haal de nntp_post aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['spot_moderation'])) {
+	die("spot_moderation is een setting in de database geworden. Haal de spot_moderation aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retrieve_newer_than'])) {
+	die("retrieve_newer_than is een setting in de database geworden. Haal de retrieve_newer_than aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retrieve_full'])) {
+	die("retrieve_full is een setting in de database geworden. Haal de retrieve_full aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['prefetch_image'])) {
+	die("prefetch_image is een setting in de database geworden. Haal de prefetch_image aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['prefetch_nzb'])) {
+	die("prefetch_nzb is een setting in de database geworden. Haal de prefetch_nzb aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retrieve_full_comments'])) {
+	die("retrieve_full_comments is een setting in de database geworden. Haal de retrieve_full_comments aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retrieve_reports'])) {
+	die("retrieve_reports is een setting in de database geworden. Haal de retrieve_reports aub weg uit je ownsettings.php" . PHP_EOL);
+} # if
+
+if (isset($settings['retrieve_increment'])) {
+	die("retrieve_increment is een setting in de database geworden. Haal de retrieve_increment aub weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
 # Controleer op oud type quicklinks (zonder security)

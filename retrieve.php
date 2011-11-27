@@ -336,10 +336,7 @@ try {
 
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
-if (is_string($settings_external_blacklist) && $settings_external_blacklist == "remove") {
-	$db->removeOldBlackList($settings->get('blacklist_url'));
-	echo "Finished removing blacklist" . PHP_EOL;
-} elseif ($settings_external_blacklist) {
+if ($settings_external_blacklist) {
 	try {
 		$spotsOverview = new SpotsOverview($db, $settings);
 		# haal de blacklist op
