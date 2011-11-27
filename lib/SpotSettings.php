@@ -33,12 +33,12 @@ class SpotSettings {
 
 			# Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
 			# de NZB server
-			if (empty(self::$_settings['nntp_hdr']['host'])) {
+			if ((empty(self::$_settings['nntp_hdr']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
 			} # if
 
 			# Hetzelfde voor de NNTP upload server
-			if (empty(self::$_settings['nntp_post']['host'])) {
+			if ((empty(self::$_settings['nntp_post']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
 			} # if
 		} # if
