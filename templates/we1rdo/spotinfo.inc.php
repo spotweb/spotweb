@@ -48,7 +48,7 @@
 						<th class="rating">
 <?php
 	if($spot['rating'] == 0) {
-		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
+		echo '<span class="rating" title="' . _('This spot has no rating yet') . '"><span style="width:0px;"></span></span>';
 	} elseif($spot['rating'] > 0) {
 		echo '<span class="rating" title="' . sprintf(ngettext('This spot thas %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	}

@@ -190,7 +190,7 @@
 					</ul>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
-					<a class="viewState" onclick="toggleCreateUser()"><h4><?php echo _('Gebruiker toevoegen'); ?><span class="createUser down"></span></h4></a>
+					<a class="viewState" onclick="toggleCreateUser()"><h4><?php echo _('Add user'); ?><span class="createUser down"></span></h4></a>
 					<div class="createUser"></div>
 <?php } ?>
 
@@ -333,7 +333,7 @@
 ?>
 					</ul>
 
-					<a class="viewState" onclick="toggleSidebarItem(this)"><h4>Onderhoud<span></span></h4></a>
+					<a class="viewState" onclick="toggleSidebarItem(this)"><h4><?php echo _('Maintenance'); ?><span></span></h4></a>
 					<ul class="filterlist maintenancebox">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) { ?>
 						<li class="info"> <?php echo _('Last update:'); ?> <?php echo $tplHelper->formatDate($tplHelper->getLastSpotUpdates(), 'lastupdate'); ?> </li>
