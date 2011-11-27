@@ -89,7 +89,7 @@ class SpotSettings {
 		# Als de setting uit PHP komt, dan mag die niet geupdate worden
 		# hier omdat we dan niet meer weten wat er gebeurt.
 		if (isset(self::$_phpSettings[$name])) {
-			throw new InvalidSettingsUpdateException();
+			throw new InvalidSettingsUpdateException("InvalidSettingUpdat Exception for '" . $name . '"');
 		} # if
 		
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
