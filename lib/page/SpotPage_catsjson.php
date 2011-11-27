@@ -127,7 +127,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 				foreach(SpotCategories::$_categories[$hcat_key]['z'] as $type_key => $type_value) {
 			
 					if (($type_key !== 'z') && (($this->_params['subcatz'] == $type_key) || ($this->_params['subcatz'] == '*'))) {
-						# Now determine wether we need to enable the checkbox
+						# Now determine whether we need to enable the checkbox
 						$isSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key . ',') !== false ? "true" : "false";
 
 						# Is this strongnot?
@@ -167,7 +167,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 									$val = $valTmp[0];
 									
 									if ((strlen($val) != 0) && (strlen($key) != 0)) {
-										# Now determine wether we need to enable the checkbox
+										# Now determine whether we need to enable the checkbox
 										$isSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key . '_' . $sclist_key.$key . ',') !== false ? true : false;
 										$parentSelected = strpos($compressedCatList, ',cat' . $hcat_key . '_z' . $type_key .',') !== false ? true : false;
 										$isSelected = ($isSelected || $parentSelected) ? 'true' : 'false';
