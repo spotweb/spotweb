@@ -384,7 +384,7 @@ class SpotDb {
 								u.lastname AS lastname,
 								u.mail AS mail,
 								u.lastlogin AS lastlogin,
-								u.lastvisit AS lastvisit,
+								COALESCE((SELECT MAX(lasthit) FROM sessions WHERE userid = u.id), lastvisit) as lastvisit,
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
