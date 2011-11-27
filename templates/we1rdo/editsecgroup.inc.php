@@ -36,7 +36,7 @@ if (empty($editresult)) {
 		for($j = 0; $j < 2 && count($permList) > ($i + $j); $j++) { 
 			$perm = $permList[$i+$j];
 ?>
-				<td> <?php echo $tplHelper->permToString($perm['permissionid']); ?> </td>
+				<td> <?php echo _($tplHelper->permToString($perm['permissionid'])); ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
 				<?php if ($securitygroup['id'] > 3) { ?>
 				<td> 
@@ -93,7 +93,7 @@ if (empty($editresult)) {
 				<select name="editsecgroupform[permissionid]">
 			
 <?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
-					<option value="<?php echo $key; ?>"><?php echo $val; ?></option>
+					<option value="<?php echo $key; ?>"><?php echo _($val); ?></option>
 <?php } ?>
 				</select>
 			</dd>
