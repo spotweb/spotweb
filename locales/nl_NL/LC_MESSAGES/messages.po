@@ -516,11 +516,11 @@ msgstr "Andere server voor headers opgeven?"
 msgid "Use different server for posting?"
 msgstr "Andere server om te posten opgeven?"
 
-msgid "Retrieve spots after... Select 0 to fetch all spots"
-msgstr "Spots ophalen na... Selecteer 0 om alle spots op te halen"
+msgid "Retrieve spots after... Select November 1, 2009 to fetch all spots"
+msgstr "Spots ophalen na... Selecteer 1 november 2009 om alle spots op te halen"
 
-msgid "To skip all FTD spots set this to November 24, 2010"
-msgstr "Om alle spots van FTD over te slaan geef je hier 24 november 2010 op"
+msgid "To skip all FTD spots select November 24, 2010"
+msgstr "Om alle spots van FTD over te slaan selecteer je 24 november 2010"
 
 msgid "Retrieve full spots"
 msgstr "Spots volledig ophalen"
