@@ -11,8 +11,8 @@ include "includes/form-messages.inc.php";
 $nntp_nzb = $this->_settings->get('nntp_nzb');
 $nntp_hdr = $this->_settings->get('nntp_hdr');
 $nntp_post = $this->_settings->get('nntp_post');
-if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1230789600) {
-	$retrieve_newer_than = 1230789600; // 2009-01-01
+if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
+	$retrieve_newer_than = 1254373200; // 2009-10-01
 } # if
 ?>
 </div>
@@ -143,7 +143,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[retention]"><?php echo _('Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots.'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo $this->_settings->get('retention'); ?>"></dd>
 
-					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select 0 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots set this to November 24, 2010'); ?></label></dt>
+					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
 					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
 
 					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots'); ?></label></dt>
@@ -206,7 +206,7 @@ $(function() {
 									nextText: '<?php echo _('Next'); ?>',
 									numberOfMonths: 3,
 									stepMonths: 3,
-									minDate: new Date(2009, 0, 1),
+									minDate: new Date(2009, 10, 1),
 									maxDate: "today" });
 });
 </script>
