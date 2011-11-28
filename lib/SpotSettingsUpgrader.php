@@ -41,6 +41,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('nntp_nzb', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
 		$this->setIfNot('nntp_hdr', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
 		$this->setIfNot('nntp_post', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
+		$this->setIfNot('retrieve_newer_than', 0);
 		$this->setIfNot('retrieve_full', true);
 		$this->setIfNot('prefetch_image', false);
 		$this->setIfNot('prefetch_nzb', false);

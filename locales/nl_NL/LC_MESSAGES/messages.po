@@ -19,6 +19,120 @@ msgstr "Wijzig"
 msgid "Delete"
 msgstr "Verwijder"
 
+msgid "Mo"
+msgstr "Ma"
+
+msgid "Tu"
+msgstr "Di"
+
+msgid "We"
+msgstr "Wo"
+
+msgid "Th"
+msgstr "Do"
+
+msgid "Fr"
+msgstr "Vr"
+
+msgid "Sa"
+msgstr "Za"
+
+msgid "Su"
+msgstr "Zo"
+
+msgid "Monday"
+msgstr "Maandag"
+
+msgid "Tuesday"
+msgstr "Dinsdag"
+
+msgid "Wednesday"
+msgstr "Woensdag"
+
+msgid "Thursday"
+msgstr "Donderdag"
+
+msgid "Friday"
+msgstr "Vrijdag"
+
+msgid "Saturday"
+msgstr "Zaterdag"
+
+msgid "Sunday"
+msgstr "Zondag"
+
+msgid "Jan"
+msgstr "Jan"
+
+msgid "Feb"
+msgstr "Feb"
+
+msgid "Mar"
+msgstr "Maa"
+
+msgid "Apr"
+msgstr "Apr"
+
+msgid "May"
+msgstr "Mei"
+
+msgid "Jun"
+msgstr "Jun"
+
+msgid "Jul"
+msgstr "Jul"
+
+msgid "Aug"
+msgstr "Aug"
+
+msgid "Sep"
+msgstr "Sep"
+
+msgid "Oct"
+msgstr "Okt"
+
+msgid "Nov"
+msgstr "Nov"
+
+msgid "Dec"
+msgstr "Dec"
+
+msgid "January"
+msgstr "Januari"
+
+msgid "February"
+msgstr "Februari"
+
+msgid "March"
+msgstr "Maart"
+
+msgid "April"
+msgstr "April"
+
+#dup msgid "May"
+#dup msgstr "Mei"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "Augustus"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
+
 #: adminpanel.inc.php
 msgid "Back to mainview"
 msgstr "Terug naar overzichtspagina"
@@ -405,8 +519,8 @@ msgstr "Andere server om te posten opgeven?"
 msgid "Retrieve spots after... Select 0 to fetch all spots"
 msgstr "Spots ophalen na... Selecteer 0 om alle spots op te halen"
 
-msgid "To skip all FTD spots set this to 1290578400."
-msgstr "Om alle spots van FTD over te slaan geef je hier 1290578400 op."
+msgid "To skip all FTD spots set this to November 24, 2010"
+msgstr "Om alle spots van FTD over te slaan geef je hier 24 november 2010 op"
 
 msgid "Retrieve full spots"
 msgstr "Spots volledig ophalen"
@@ -1153,63 +1267,6 @@ msgstr "Totaal aantal spots: %d"
 
 msgid "Total new spots: %d"
 msgstr "Aantal nieuwe spots: %d"
-
-msgid "Monday"
-msgstr "Maandag"
-
-msgid "Tuesday"
-msgstr "Dinsdag"
-
-msgid "Wednesday"
-msgstr "Woensdag"
-
-msgid "Thursday"
-msgstr "Donderdag"
-
-msgid "Friday"
-msgstr "Vrijdag"
-
-msgid "Saturday"
-msgstr "Zaterdag"
-
-msgid "Sunday"
-msgstr "Zondag"
-
-msgid "January"
-msgstr "Januari"
-
-msgid "February"
-msgstr "Februari"
-
-msgid "March"
-msgstr "Maart"
-
-msgid "April"
-msgstr "April"
-
-msgid "May"
-msgstr "Mei"
-
-msgid "June"
-msgstr "Juni"
-
-msgid "July"
-msgstr "Juli"
-
-msgid "August"
-msgstr "Augustus"
-
-msgid "September"
-msgstr "September"
-
-msgid "October"
-msgstr "Oktober"
-
-msgid "November"
-msgstr "November"
-
-msgid "December"
-msgstr "December"
 
 msgid "Spots per category"
 msgstr "Spots per categorie"

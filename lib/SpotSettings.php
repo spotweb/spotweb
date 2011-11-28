@@ -127,10 +127,11 @@ class SpotSettings {
 			$errorList[] = _('Invalid retention setting');
 		} # if
 
-		$settings['retrieve_newer_than'] = (int) $settings['retrieve_newer_than'];
-		if ($settings['retrieve_newer_than'] < 0 || $settings['retrieve_newer_than'] > time()) {
+		if (($settings['retrieve_newer_than'] = strtotime($settings['retrieve_newer_than'])) === false || $settings['retrieve_newer_than'] > time()) {
 			$errorList[] = _('Invalid retrieve_newer_than setting');
-		} # if
+		} elseif ($settings['retrieve_newer_than'] < 1230789600) {
+			$settings['retrieve_newer_than'] = 1230789600;
+		} # elseif
 
 		$settings['retrieve_increment'] = (int) $settings['retrieve_increment'];
 		if ($settings['retrieve_increment'] < 1) {
