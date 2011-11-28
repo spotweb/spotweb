@@ -11,6 +11,9 @@ include "includes/form-messages.inc.php";
 $nntp_nzb = $this->_settings->get('nntp_nzb');
 $nntp_hdr = $this->_settings->get('nntp_hdr');
 $nntp_post = $this->_settings->get('nntp_post');
+if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1230789600) {
+	$retrieve_newer_than = 1230789600; // 2009-01-01
+} # if
 ?>
 </div>
 	<div id='toolbar'>
@@ -38,9 +41,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 		<div id="editsettingstab-1" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
-					<dt><label for="editsettingsform[retention]"><?php echo _('Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots.'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo $this->_settings->get('retention'); ?>"></dd>
-
 					<dt><label for="editsettingsform[deny_robots]"><?php echo _('Try to prevent robots from indexing this installation'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[deny_robots]" <?php if ($this->_settings->get('deny_robots')) { echo 'checked="checked"'; } ?>></dd>
 				</dl>
@@ -77,7 +77,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 
 			<dt><label for="use_nntp_hdr"><?php echo _('Use different server for headers?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (!isset($nntp_hdr['host']['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
+			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (!isset($nntp_hdr['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
 			<fieldset id="content_use_nntp_hdr">
 				<dl>
 					<dt><label for="editsettingsform[nntp_hdr][host]"><?php echo _('Hostname'); ?></label></dt>
@@ -107,7 +107,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 
 			<dt><label for="use_nntp_post"><?php echo _('Use different server for posting?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (!isset($nntp_post['host']['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
+			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (!isset($nntp_post['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
 			<fieldset id="content_use_nntp_post">
 				<dl>
 					<dt><label for="editsettingsform[nntp_post][host]"><?php echo _('Hostname'); ?></label></dt>
@@ -140,8 +140,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 		<div id="editsettingstab-3" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
-					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select 0 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots set this to 1290578400.'); ?><br /><a href="http://www.unixtimestamp.com/" target="_blank">Unix timestamp</a> for now, will add calendar later.</label></dt>
-					<dd><input type="text" name="editsettingsform[retrieve_newer_than]" value="<?php echo $this->_settings->get('retrieve_newer_than'); ?>"></dd>
+					<dt><label for="editsettingsform[retention]"><?php echo _('Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots.'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo $this->_settings->get('retention'); ?>"></dd>
+
+					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select 0 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots set this to November 24, 2010'); ?></label></dt>
+					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
 
 					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_full]" id="use_retrieve_full" <?php if ($this->_settings->get('retrieve_full')) { echo 'checked="checked"'; } ?>></dd>
@@ -191,6 +194,22 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 		</div>
 <?php } ?>
+
+<script>
+$(function() {
+	$( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
+									dateFormat: "yy-mm-dd",
+									defaultDate: "<?php echo date("Y-m-d", $retrieve_newer_than); ?>",
+									dayNamesMin: ['<?php echo _('Su'); ?>', '<?php echo _('Mo'); ?>', '<?php echo _('Tu'); ?>', '<?php echo _('We'); ?>', '<?php echo _('Th'); ?>', '<?php echo _('Fr'); ?>', '<?php echo _('Sa'); ?>'],
+									monthNamesShort: ['<?php echo _('Jan'); ?>', '<?php echo _('Feb'); ?>', '<?php echo _('Mar'); ?>', '<?php echo _('Apr'); ?>', '<?php echo _('May'); ?>', '<?php echo _('Jun'); ?>', '<?php echo _('Jul'); ?>', '<?php echo _('Aug'); ?>', '<?php echo _('Sep'); ?>', '<?php echo _('Oct'); ?>', '<?php echo _('Nov'); ?>', '<?php echo _('Dec'); ?>'],
+									prevText: '<?php echo _('Previous'); ?>',
+									nextText: '<?php echo _('Next'); ?>',
+									numberOfMonths: 3,
+									stepMonths: 3,
+									minDate: new Date(2009, 0, 1),
+									maxDate: "today" });
+});
+</script>
 
 		<div class="editSettingsButtons">
 			<input class="greyButton" type="submit" name="editsettingsform[submitedit]" value="<?php echo _('Change'); ?>">
