@@ -4,10 +4,32 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Sun, 27 Nov 2011 20:45:00 +0100</lastBuildDate>
-		<pubDate>Sun, 27 Nov 2011 20:45:00 +0100</pubDate>
+		<lastBuildDate>Tue, 29 Nov 2011 21:57:00 +0100</lastBuildDate>
+		<pubDate>Tue, 29 Nov 2011 21:57:00 +0100</pubDate>
 		<ttl>1800</ttl>
 
+		<item>
+			<title>Optimized spotcounting</title>
+			<description><![CDATA[One of the slowest parts of Spotweb was the counting of new spots in the filterlist. This counting was this slow, that 
+			when a certain amount of spots were exceeded, Spotweb would refrain from counting any newer spots to prevent hanging pages.
+			<br /> <br />
+			In this new version Spotweb uses a slightly less accurate, but much faster, method to determine which spots are new. This requires a very small
+			schema change which will not take a long time to process. <br /> <br />
+			After the database upgrade, a retrieve.php run should be done. This first retrieve run might take a very long time to complete as initial statistics
+			are gathered at that moment. From then on, a very small retrieve.php impact might be shown but should be neglectable. Spotcounts however are not
+			limited anymore and should be much faster.<br />
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>06</guid>
+			<pubDate>Tue, 29 Nov 2011 21:57:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.54</spotweb:schema_version>
+			<spotweb:settings_version>0.16</spotweb:settings_version>
+			<spotweb:security_version>0.26</spotweb:security_version>
+			<spotweb:feature_version>0.04</spotweb:feature_version>
+		</item>
+		
 		<item>
 			<title>Introducing settings panel</title>
 			<description><![CDATA[All major settings are now set on the Settings panel inside Spotweb. The database upgrade will be very fast, but you will

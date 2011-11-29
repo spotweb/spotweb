@@ -497,6 +497,15 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->alterStorageEngine("filters", "InnoDB");
 
+		# ---- filtercounts ----
+		$this->createTable('filtercounts', "utf8"); 
+		$this->validateColumn('userid', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->validateColumn('filterhash', 'filtercounts', 'VARCHAR(40)', "''", true, 'ascii');
+		$this->validateColumn('currentspotcount', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->validateColumn('lastvisitspotcount', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->validateColumn('lastupdate', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->alterStorageEngine("filtercounts", "InnoDB");
+
 		# ---- spotteridblacklist table ---- #
 		$this->createTable('spotteridblacklist', "utf8");
 		$this->validateColumn('spotterid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii');
@@ -674,6 +683,9 @@ abstract class SpotStruct_abs {
 		# ---- Indexen op filters ----
 		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
 
+		# ---- Indexen op filtercounts ----
+		$this->validateIndex("idx_filtercounts_1", "UNIQUE", "filtercounts", array("userid", "filterhash"));
+		
 		# ---- Indexen op spotteridblacklist ----
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
 
