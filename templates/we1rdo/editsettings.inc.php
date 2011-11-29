@@ -12,7 +12,7 @@ $nntp_nzb = $this->_settings->get('nntp_nzb');
 $nntp_hdr = $this->_settings->get('nntp_hdr');
 $nntp_post = $this->_settings->get('nntp_post');
 if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
-	$retrieve_newer_than = 1254373200; // 2009-10-01
+	$retrieve_newer_than = 1254373200; // 2009-11-01
 } # if
 ?>
 </div>
@@ -43,6 +43,12 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 				<dl>
 					<dt><label for="editsettingsform[deny_robots]"><?php echo _('Try to prevent robots from indexing this installation'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[deny_robots]" <?php if ($this->_settings->get('deny_robots')) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="editsettingsform[sendwelcomemail]"><?php echo _('Always send welcome e-mail to new users'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[sendwelcomemail]" <?php if ($this->_settings->get('sendwelcomemail')) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="editsettingsform[cookie_expires]"><?php echo _('Cookie expires after (in days)'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo $this->_settings->get('cookie_expires'); ?>"></dd>
 				</dl>
 			</fieldset>
 		</div>
@@ -179,6 +185,12 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 		<div id="editsettingstab-4" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
+					<dt><label for="editsettingsform[enable_timing]"><?php echo _('Enable timing'); ?><br /><?php echo _('Use this only to identify speed problems within Spotweb.'); ?> <?php echo _('Not suitable for public installations'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[enable_timing]" <?php if ($this->_settings->get('enable_timing')) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="editsettingsform[enable_stacktrace]"><?php echo _('Enable stacktrace'); ?><br /><?php echo _('Stacktraces make identifying problems easy, but may contain sensitive information.'); ?> <?php echo _('Not suitable for public installations'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[enable_stacktrace]" <?php if ($this->_settings->get('enable_stacktrace')) { echo 'checked="checked"'; } ?>></dd>
+
 					<dt><label for="editsettingsform[retrieve_increment]"><?php echo _('Retrieve increment'); ?><br /><?php echo _('Lower this if you get timeouts during retrieve'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[retrieve_increment]" value="<?php echo $this->_settings->get('retrieve_increment'); ?>"></dd>
 

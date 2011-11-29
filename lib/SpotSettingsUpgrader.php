@@ -23,13 +23,13 @@ class SpotSettingsUpgrader {
 		$this->setupNewsgroups();
 		$this->createRsaKeys();
 		$this->createXsrfSecret();
-		$this->setIfNot('cookie_expires', 30);
 		$this->remove('sabnzbdurltpl');
 		$this->remove('sabnzbdurl');
 		$this->remove('recompress_nzb');
 		$this->remove('available_languages');
 		$this->remove('featureversion');
 		$this->remove('max_newcount');
+		$this->setIfNot('cookie_expires', 30);
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
 		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
@@ -54,6 +54,8 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);
 		$this->setIfNot('blacklist_url', 'http://jij.haatmij.nl/spotnet/blacklist.txt');
+		$this->setIfNot('enable_timing', false);
+		$this->setIfNot('enable_stacktrace', true);
 		$this->updateSettingsVersion();
 	} # update()
 	
