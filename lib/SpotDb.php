@@ -2101,7 +2101,8 @@ class SpotDb {
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount)");
+										  AND (f.lastvisitspotcount > t.currentspotcount
+										  AND (t.userid = -1))");
 				break;
 			} # pgsql
 
@@ -2125,7 +2126,8 @@ class SpotDb {
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount)");
+										  AND (f.lastvisitspotcount > t.currentspotcount)
+										  AND (t.userid = -1)");
 			} # default
 		} # switch
 	} # updateCurrentFilterCounts
