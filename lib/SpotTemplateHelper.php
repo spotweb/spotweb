@@ -84,17 +84,6 @@ class SpotTemplateHelper {
 		parse_str(html_entity_decode($filterStr), $query_params);
 		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
 
-		# if the filterstring is 'all new spots', we calculate all new spots
-		if ($query_params['search']['valuelist'] == 'New:0') {
-			$newCount = 0;
-			
-			foreach($this->_cachedSpotCount as $countCache) {
-				$newCount += $countCache['newspotcount'];
-			} # foreach
-			
-			return $newCount;
-		} # if
-		
 		# Make sure we have a tree variable, even if it is an empty one
 		if (!isset($query_params['search']['tree'])) {
 			$query_params['search']['tree'] = '';
