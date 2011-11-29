@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.16');
+define('SPOTWEB_SETTINGS_VERSION', '0.17');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -113,6 +113,11 @@ class SpotSettings {
 		$settings['nntp_hdr']['enc'] = (isset($settings['nntp_hdr']['enc']['switch'])) ? $settings['nntp_hdr']['enc']['select'] : false;
 		$settings['nntp_post']['enc'] = (isset($settings['nntp_post']['enc']['switch'])) ? $settings['nntp_post']['enc']['select'] : false;
 
+		# Trim human-entered text fields
+		$settings['nntp_nzb']['host'] = trim($settings['nntp_nzb']['host']);
+		$settings['nntp_hdr']['host'] = trim($settings['nntp_hdr']['host']);
+		$settings['nntp_post']['host'] = trim($settings['nntp_post']['host']);
+
 		# Verify settings with the previous declared arrays
 		if (in_array($settings['nntp_nzb']['enc'], $validNntpEnc) === false || in_array($settings['nntp_hdr']['enc'], $validNntpEnc) === false || in_array($settings['nntp_post']['enc'], $validNntpEnc) === false) {
 			$errorList[] = _('Invalid encryption setting');
@@ -122,6 +127,11 @@ class SpotSettings {
 		} # if
 
 		# Verify settings
+		$settings['cookie_expires'] = (int) $settings['cookie_expires'];
+		if ($settings['cookie_expires'] < 0) {
+			$errorList[] = _('Invalid cookie_expires setting');
+		} # if
+
 		$settings['retention'] = (int) $settings['retention'];
 		if ($settings['retention'] < 0) {
 			$errorList[] = _('Invalid retention setting');
@@ -145,7 +155,7 @@ class SpotSettings {
 
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
-		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
+		$settings['sendwelcomemail'] = (isset($settings['sendwelcomemail'])) ? true : false;
 		$settings['nntp_nzb']['buggy'] = (isset($settings['nntp_nzb']['buggy'])) ? true : false;
 		$settings['nntp_hdr']['buggy'] = (isset($settings['nntp_hdr']['buggy'])) ? true : false;
 		$settings['nntp_post']['buggy'] = (isset($settings['nntp_post']['buggy'])) ? true : false;
@@ -155,7 +165,10 @@ class SpotSettings {
 		$settings['retrieve_comments'] = (isset($settings['retrieve_comments'])) ? true : false;
 		$settings['retrieve_full_comments'] = (isset($settings['retrieve_full_comments'])) ? true : false;
 		$settings['retrieve_reports'] = (isset($settings['retrieve_reports'])) ? true : false;
+		$settings['enable_timing'] = (isset($settings['enable_timing'])) ? true : false;
+		$settings['enable_stacktrace'] = (isset($settings['enable_stacktrace'])) ? true : false;
 		$settings['prepare_statistics'] = (isset($settings['prepare_statistics'])) ? true : false;
+		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
 
 		# Default server settings if they won't be used
 		if (!isset($settings['nntp_hdr']['use'])) { $settings['nntp_hdr'] = array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false); }

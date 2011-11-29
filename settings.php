@@ -1,4 +1,15 @@
 <?php
+# db
+$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
+$settings['db']['host'] = 'localhost';
+$settings['db']['dbname'] = 'spotweb';
+$settings['db']['user'] = 'spotweb';
+$settings['db']['pass'] = 'spotweb';
+
+# Als je sqlite wilt gebruiken, vul dan onderstaande in
+#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
+#$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
+
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
@@ -10,17 +21,6 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 # Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
 # extensie geinstalleerd hebt
 $settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
-
-# db
-$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
-$settings['db']['host'] = 'localhost';
-$settings['db']['dbname'] = 'spotweb';
-$settings['db']['user'] = 'spotweb';
-$settings['db']['pass'] = 'spotweb';
-
-# Als je sqlite wilt gebruiken, vul dan onderstaande in
-#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
-#$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # waar moeten we de templates vinden?
 # zet eerst de standaard waarden...
@@ -61,10 +61,6 @@ if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_
 	$settings['cookie_host'] = '';
 } # else
 
-# We kunnen een aantal onderdelen van Spotweb laten timen / profilen, zet deze op true om
-# dat ook daadwerkelijk te doen
-$settings['enable_timing'] = false;
-
 # vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
 $settings['sabnzbd']['categories'] = Array(
 		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
@@ -91,12 +87,6 @@ $settings['sabnzbd']['categories'] = Array(
 					 'a15'		=> 'pda')
 	);
 					 
-
-# stacktraces maken het gemakkelijk bij een fout om een probleem te achterhalen, 
-# ze kunnen echter ook gevoelige informatie (bv. je usenet account!) bevatten. Als je
-# je spotweb installatie dus deelt met meerdere mensen, zet deze dan op false.
-$settings['enable_stacktrace'] = true;
-
 # Als een user niet expliciet geauthenticeerd is, dan wordt deze user standaard ingelogged
 # met een userid van 1 -- dit is de builtin anonymous user. Als je je Spotweb installatie
 # helemaal alleen gebruikt, kan je dit eventueel laten herleiden naar een andere user zodat
@@ -162,127 +152,42 @@ if (substr($settings['spotweburl'], -1) != '/') {
 
 # Preferences lokaal niet meer toestaan
 if (isset($settings['prefs']['perpage']) || (isset($settings['prefs']['date_formatting']))) {
-	die("Preferences worden voortaan per user gezet, haal aub de preferences weg uit je ownsettings.php" . PHP_EOL);
+	die("Preferences worden voortaan per user gezet" . PHP_EOL);
 } # if
 
 # deprecated settings niet meer toestaan
-if (isset($settings['cookie_expires'])) {
-	die("Cookie_expires wordt voortaan in de db bijgehouden, haal aub deze weg uit je ownsettings.php" . PHP_EOL);
-} # if
+$ownsettingserror = '';
+$array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation');
+foreach ($array as $value) {
+	if (isset($settings[$value])) {
+		$ownsettingserror .= $value . " wordt voortaan in de db bijgehouden" . PHP_EOL;
+	} # if
+} # foreach
 
-if (isset($settings['allow_user_template'])) {
-	die("allow_user_templates wordt niet meer bijgheouden, dit is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
+$array = array('allow_user_template', 'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb');
+foreach ($array as $value) {
+	if (isset($settings[$value])) {
+		$ownsettingserror .= $value . " is een user preference geworden" . PHP_EOL;
+	} # if
+} # foreach
 
-if (isset($settings['count_newspots'])) {
-	die("count_newspots is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
+$array = array('count_newspots', 'keep_seenlist');
+foreach ($array as $value) {
+	if (isset($settings[$value])) {
+		$ownsettingserror .= $value . " is een user preference geworden (en afschermbaar via het rechtensysteem)" . PHP_EOL;
+	} # if
+} # foreach
 
-if (isset($settings['keep_seenlist'])) {
-	die("keep_seenlist is een user preference geworden (en afschermbaar via het rechtensysteem). Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
+$array = array('show_nzbbutton', 'show_updatebutton');
+foreach ($array as $value) {
+	if (isset($settings[$value])) {
+		$ownsettingserror .= $value . " is een user right geworden" . PHP_EOL;
+	} # if
+} # foreach
 
-if (isset($settings['auto_markasread'])) {
-	die("auto_markasread is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['keep_downloadlist'])) {
-	die("keep_downloadlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['keep_watchlist'])) {
-	die("keep_watchlist is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['show_updatebutton'])) {
-	die("show_updatebutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['show_nzbbutton'])) {
-	die("show_nzbbutton is een user right geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['nzb_search_engine'])) {
-	die("nzb_search_engine is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['show_multinzb'])) {
-	die("show_multinzb is een user preference geworden. Haal dit aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['nzbhandling'])) {
-	die("nzbhandling is een user preference geworden. Haal dit aub weg uit je ownsettings.php (vergeet de settings niet te noteren in het userpreferences scherm!)" . PHP_EOL);
-} # if
-
-if (isset($settings['filters'])) {
-	die("filters zijn een user preference geworden. Haal de filters aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['index_filter'])) {
-	die("index_filter is een user preference geworden. Haal de index_filter aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retention'])) {
-	die("retention is een setting in de database geworden. Haal de retention aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['deny_robots'])) {
-	die("deny_robots is een setting in de database geworden. Haal de deny_robots aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['external_blacklist'])) {
-	die("external_blacklist is een setting in de database geworden. Haal de external_blacklist aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['blacklist_url'])) {
-	die("blacklist_url is een setting in de database geworden. Haal de blacklist_url aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['nntp_nzb'])) {
-	die("nntp_nzb is een setting in de database geworden. Haal de nntp_nzb aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['nntp_hdr'])) {
-	die("nntp_hdr is een setting in de database geworden. Haal de nntp_hdr aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['nntp_post'])) {
-	die("nntp_post is een setting in de database geworden. Haal de nntp_post aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['spot_moderation'])) {
-	die("spot_moderation is een setting in de database geworden. Haal de spot_moderation aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retrieve_newer_than'])) {
-	die("retrieve_newer_than is een setting in de database geworden. Haal de retrieve_newer_than aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retrieve_full'])) {
-	die("retrieve_full is een setting in de database geworden. Haal de retrieve_full aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['prefetch_image'])) {
-	die("prefetch_image is een setting in de database geworden. Haal de prefetch_image aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['prefetch_nzb'])) {
-	die("prefetch_nzb is een setting in de database geworden. Haal de prefetch_nzb aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retrieve_comments'])) {
-	die("retrieve_comments is een setting in de database geworden. Haal de retrieve_comments aub weg uit je ownsettings.php" . PHP_EOL);
-}
-if (isset($settings['retrieve_full_comments'])) {
-	die("retrieve_full_comments is een setting in de database geworden. Haal de retrieve_full_comments aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retrieve_reports'])) {
-	die("retrieve_reports is een setting in de database geworden. Haal de retrieve_reports aub weg uit je ownsettings.php" . PHP_EOL);
-} # if
-
-if (isset($settings['retrieve_increment'])) {
-	die("retrieve_increment is een setting in de database geworden. Haal de retrieve_increment aub weg uit je ownsettings.php" . PHP_EOL);
+if (!empty($ownsettingserror)) {
+	if (isset($_SERVER['SERVER_PROTOCOL'])) { echo "<pre>"; }
+	die($ownsettingserror . PHP_EOL . "Haal bovenstaande settings weg uit je ownsettings.php" . PHP_EOL);
 } # if
 
 # Controleer op oud type quicklinks (zonder security)

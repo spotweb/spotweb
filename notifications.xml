@@ -4,9 +4,24 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Sun, 27 Nov 2011 20:45:00 +0100</lastBuildDate>
-		<pubDate>Sun, 27 Nov 2011 20:45:00 +0100</pubDate>
+		<lastBuildDate>Tue, 29 Nov 2011 19:45:00 +0100</lastBuildDate>
+		<pubDate>Tue, 29 Nov 2011 19:45:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Moving settings to database</title>
+			<description><![CDATA[More settings have been moved from (own)settings.php to the database. This should be the last change for current settings to be moved.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>05</guid>
+			<pubDate>Tue, 29 Nov 2011 19:45:00 +0100</pubDate>
+			<author>nightspirit81</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.53</spotweb:schema_version>
+			<spotweb:settings_version>0.17</spotweb:settings_version>
+			<spotweb:security_version>0.26</spotweb:security_version>
+			<spotweb:feature_version>0.03</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Introducing settings panel</title>
