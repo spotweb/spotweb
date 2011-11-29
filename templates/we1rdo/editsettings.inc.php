@@ -194,9 +194,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[retrieve_increment]"><?php echo _('Retrieve increment'); ?><br /><?php echo _('Lower this if you get timeouts during retrieve'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[retrieve_increment]" value="<?php echo $this->_settings->get('retrieve_increment'); ?>"></dd>
 
-					<dt><label for="editsettingsform[max_newcount]"><?php echo _('Maximum amount of new spots that will show up as new'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[max_newcount]" value="<?php echo $this->_settings->get('max_newcount'); ?>"></dd>
-
 					<dt><label for="editsettingsform[spot_moderation]"><?php echo _('Handling of moderation messages'); ?></label></dt>
 					<dd><select name="editsettingsform[spot_moderation]">
 						<option <?php if ($this->_settings->get('spot_moderation') == 'disable') { echo 'selected="selected"'; } ?> value="disable"><?php echo _('Do nothing'); ?></option>

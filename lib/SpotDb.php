@@ -2047,28 +2047,117 @@ class SpotDb {
 	 * Resets the unread count for a specific user
 	 */
 	function resetFilterCountForUser($userId) {
-		$tmp = $this->_conn->arrayQuery("UPDATE filtercounts f 
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: {
+				$this->_conn->modify("UPDATE filtercounts f
 											SET f.lastvisitspotcount = f.currentspotcount,
-											    f.currentspotcount = t.currentspotcount,
+												f.currentspotcount = t.currentspotcount,
+												f.lastupdate = t.lastupdate
+											FROM filtercounts t
+											WHERE (f.filterhash = t.filterhash) 
+											  AND (t.userid = -1) 
+											  AND (f.userid = %d)",
+								Array((int) $userId) );
+				break;
+			} # pgsql
+
+			default				: {
+				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
+											SET f.lastvisitspotcount = f.currentspotcount,
+												f.currentspotcount = t.currentspotcount,
 												f.lastupdate = t.lastupdate
 											WHERE (f.filterhash = t.filterhash) 
 											  AND (t.userid = -1) 
 											  AND (f.userid = %d)",
 								Array((int) $userId) );
+			} # default
+		} # switch
 	} # resetFilterCountForUser
-	
+
+	 /*
+	 * Updates the last filtercounts for sessions which are active at the moment
+	 */
+	function updateCurrentFilterCounts() {
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: {
+				/*
+  				 * Update the current filter counts if the session
+				 * is still active
+				 */
+				$this->_conn->modify("UPDATE filtercounts f
+										SET f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										FROM filtercounts t 
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+								Array(time() - 900));
+				
+				/*
+				 * Sometimes retrieve removes some sports, make sure
+				 * we do not get confusing results
+				 */
+				$this->_conn->modify("UPDATE filtercounts f
+										SET f.lastvisitspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										FROM filtercounts t 
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (f.lastvisitspotcount > t.currentspotcount)");
+				break;
+			} # pgsql
+
+			default				: {
+				/*
+  				 * Update the current filter counts if the session
+				 * is still active
+				 */
+				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
+										SET f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+								Array(time() - 900));
+
+				/*
+				 * Sometimes retrieve removes some sports, make sure
+				 * we do not get confusing results
+				 */
+				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
+										SET f.lastvisitspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (f.lastvisitspotcount > t.currentspotcount)");
+			} # default
+		} # switch
+	} # updateCurrentFilterCounts
+
 	/*
 	 * Mark all filters as read
 	 */
 	function markFilterCountAsSeen($userId) {
-		 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = f.currentspotcount,
+		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: {
+				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
+										SET f.lastvisitspotcount = t.lastvisitspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1) 
 										  AND (f.userid = %d)",
 							Array( (int) $userId) );
+				break;
+			} # pgsql
+
+			default				: {
+				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
+										SET f.lastvisitspotcount = t.lastvisitspotcount,
+											f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1) 
+										  AND (f.userid = %d)",
+							Array( (int) $userId) );
+			} # default
+		} # switch
 	} # markFilterCountAsSeen
 	
 	/*
