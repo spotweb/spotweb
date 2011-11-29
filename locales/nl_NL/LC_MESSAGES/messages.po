@@ -492,11 +492,14 @@ msgstr "Ophalen"
 msgid "Performance"
 msgstr "Prestaties"
 
-msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
-msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen."
-
 msgid "Try to prevent robots from indexing this installation"
 msgstr "Probeer robots te verhinderen om deze installatie te indexeren"
+
+msgid "Always send welcome e-mail to new users"
+msgstr "Altijd e-mail versturen naar nieuwe gebruikers"
+
+msgid "Cookie expires after (in days)"
+msgstr "Cookie verloopt na (in dagen)"
 
 msgid "Hostname"
 msgstr "Server naam"
@@ -515,6 +518,9 @@ msgstr "Andere server voor headers opgeven?"
 
 msgid "Use different server for posting?"
 msgstr "Andere server om te posten opgeven?"
+
+msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
+msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen."
 
 msgid "Retrieve spots after... Select November 1, 2009 to fetch all spots"
 msgstr "Spots ophalen na... Selecteer 1 november 2009 om alle spots op te halen"
@@ -539,6 +545,21 @@ msgstr "Comments volledig ophalen"
 
 msgid "Retrieve reports"
 msgstr "Reports ophalen"
+
+msgid "Enable timing"
+msgstr "Timing aanzetten"
+
+msgid "Use this only to identify speed problems within Spotweb."
+msgstr "Gebruik dit alleen om snelheidsproblemen in Spotweb te onderzoeken."
+
+msgid "Not suitable for public installations"
+msgstr "Niet geschikt voor openbare installaties"
+
+msgid "Enable stacktrace"
+msgstr "Stacktrace aanzetten"
+
+msgid "Stacktraces make identifying problems easy, but may contain sensitive information."
+msgstr "Stacktraces maken het gemakkelijk om problemen te achterhalen, ze kunnen echter ook gevoelige informatie bevatten."
 
 msgid "Retrieve increment"
 msgstr "Ophalen per..."

@@ -85,6 +85,9 @@ if ($req->getDef('output', '') == 'xml') {
 
 # We vragen de nntp_hdr settings alvast op
 $settings_nntp_hdr = $settings->get('nntp_hdr');
+if (empty($settings_nntp_hdr['host'])) {
+	die("Unable to continue: You did not setup any newsserver yet." . PHP_EOL);
+} # if
 	
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
 if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {

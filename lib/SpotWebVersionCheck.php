@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_FEATURE_VERSION', '0.04');
+define('SPOTWEB_FEATURE_VERSION', '0.05');
 
 /*
  * Spotweb version check needs to have as few dependencies on the
