@@ -29,6 +29,7 @@ class SpotSettingsUpgrader {
 		$this->remove('recompress_nzb');
 		$this->remove('available_languages');
 		$this->remove('featureversion');
+		$this->remove('max_newcount');
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
 		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
@@ -49,7 +50,6 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('retrieve_full_comments', false);
 		$this->setIfNot('retrieve_reports', true);
 		$this->setIfNot('retrieve_increment', 1000);
-		$this->setIfNot('max_newcount', 500);
 		$this->setIfNot('spot_moderation', 'act');
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);

@@ -38,6 +38,9 @@ class SpotUserSystem {
 		 */
 		if (($userid == SPOTWEB_ANONYMOUS_USERID) || ($tmpUser['lastlogin'] == 0)) {
 			$tmpUser['lastvisit'] = time();
+			
+			# Mark everything as read for anonymous users
+			$this->_db->markFilterCountAsSeen($userid);
 		} else {
 			$tmpUser['lastvisit'] = $tmpUser['lastlogin'];
 		} # if
@@ -110,7 +113,7 @@ class SpotUserSystem {
 		$userSession['security'] = $spotSec;
 		
 		/*
-		 * And always update the cookie even if one already existed,
+		 * And always update the cookie even if one already exists,
 		 * this prevents the cookie from expiring all of a sudden
 		 */
 		$this->updateCookie($userSession);
@@ -196,6 +199,9 @@ class SpotUserSystem {
 		$user['lastvisit'] = time();
 		$this->_db->setUser($user);
 
+		# Mark everything as read for this user
+		$this->_db->markFilterCountAsSeen($user['userid']);
+
 		return $user;
 	} # resetLastVisit
 
@@ -206,6 +212,9 @@ class SpotUserSystem {
 		$user['lastread'] = $this->_db->getMaxMessageTime();
 		$this->_db->setUser($user);
 
+		# Mark everything as read for this user
+		$this->_db->markFilterCountAsSeen($user['userid']);
+		
 		return $user;
 	} # resetReadStamp
 
@@ -225,7 +234,7 @@ class SpotUserSystem {
 			return false;
 		} # if
 		
-		# The sessionis valid, let's update the hit counter and retrieve the user
+		# The session is valid, let's update the hit counter and retrieve the user
 		$this->_db->hitSession($sessionParts[0]);
 		$userRecord = $this->getUser($sessionValid['userid']);
 		
@@ -244,12 +253,15 @@ class SpotUserSystem {
 		 *
 		 * Basically this makes sure the 'lastvisit' time is only reset when
 		 * the user wasn't active on Spotweb for 15 minutes. This ensures us
-		 * that we unread count for the user doesn't get unset all of a sudden
+		 * the unread count for the user doesn't get unset all of a sudden
 		 * during a browsing session.
 		 */
 		if ($sessionValid['lasthit'] < (time() - 900)) {
 			$userRecord['lastvisit'] = $sessionValid['lasthit'];
 			$this->_db->setUser($userRecord);
+			
+			# Mark everything as read for this user
+			$this->_db->markFilterCountAsSeen($userRecord['userid']);
 		} # if
 		
 		return array('user' => $userRecord,

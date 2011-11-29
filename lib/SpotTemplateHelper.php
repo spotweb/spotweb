@@ -10,6 +10,8 @@ class SpotTemplateHelper {
 	protected $_params;
 	protected $_nzbhandler;
 	protected $_spotSec;
+	protected $_cachedSpotCount = null;
+	
 	
 	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
 		$this->_settings = $settings;
@@ -39,7 +41,7 @@ class SpotTemplateHelper {
 	/*
 	 * Geef het aantal spots terug
 	 */
-	function getSpotCount($sqlFilter) {
+	private function getSpotCount($sqlFilter) {
 		# Controleer de users' rechten
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) {
 			return $this->_db->getSpotCount($sqlFilter);
@@ -66,45 +68,45 @@ class SpotTemplateHelper {
 		} # if
 	} # getParam
 	
-	/*
- 	 * Geef het aantal spots terug maar dan rekening houdende met het filter
- 	 */
-	function getFilteredSpotCount($filterStr) {
-		# Controleer de users' rechten
-		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_view_spotcount_filtered, '')) {
-			return 0;
-		} # else
-
-		parse_str(html_entity_decode($filterStr), $query_params);
-		
-		$parsedSearch = $this->_spotsOverview->filterToQuery($query_params['search'], array(), $this->_currentSession, array());
-
-		return $this->getSpotCount($parsedSearch['filter']);
-	} # getFilteredSpotCount
 
 	/*
 	 * Geef het aantal spots terug, maar enkel die new zijn
 	 */
 	function getNewCountForFilter($filterStr) {
-		static $skipNewCount = null;
-		if ($skipNewCount) {
-			return '';
-		} # if
+		/*
+		 * If necessary, fill the cache 
+		 */
+		if ($this->_cachedSpotCount == null) {
+			$this->_cachedSpotCount = $this->_db->getNewCountForFilters($this->_currentSession['user']['userid']);
+		 } # if
 
-		$filterStr .= "&search[value][]=New:=:0";
-		$newCount = $this->getFilteredSpotCount($filterStr);
+		# Now parse it to an array as we would get when called from a webpage
+		parse_str(html_entity_decode($filterStr), $query_params);
+		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
 
-		# en geef het aantal terug dat we willen hebben. Inclusief extragratis
-		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
-		# zijn, SpotWeb niet ontzettend traag wordt. 
-		if ($newCount > $this->_settings->get('max_newcount')) {
-			$skipNewCount = true;
-			return '';
-		} elseif ($newCount > 0) {
+		# if the filterstring is 'all new spots', we calculate all new spots
+		if ($query_params['search']['valuelist'] == 'New:0') {
+			$newCount = 0;
+			
+			foreach($this->_cachedSpotCount as $countCache) {
+				$newCount += $countCache['newspotcount'];
+			} # foreach
+			
 			return $newCount;
+		} # if
+		
+		# Make sure we have a tree variable, even if it is an empty one
+		if (!isset($query_params['search']['tree'])) {
+			$query_params['search']['tree'] = '';
+		} # if
+		 
+		$filterHash = sha1($query_params['search']['tree'] . '|' . urldecode($query_params['search']['valuelist']));
+		 
+		if (isset($this->_cachedSpotCount[$filterHash])) {
+			return $this->_cachedSpotCount[$filterHash]['newspotcount'];
 		} else {
-			return '';
-		} # else
+			return -1;
+		 } # if
 	} # getNewCountForFilter
 
 	/*

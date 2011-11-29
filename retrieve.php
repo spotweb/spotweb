@@ -334,6 +334,12 @@ try {
 	die();
 } # catch
 
+## Creating filter counts
+$spotsOverview = new SpotsOverview($db, $settings);
+echo 'Calculating how many spots are new';
+$spotsOverview->cacheNewSpotCount();
+echo ', done.' . PHP_EOL;
+
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
 if ($settings_external_blacklist) {

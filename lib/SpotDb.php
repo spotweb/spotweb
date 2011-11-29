@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.53');
+define('SPOTDB_SCHEMA_VERSION', '0.54');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -1936,7 +1936,141 @@ class SpotDb {
 
 		return $tree;
 	} # getFilterList
+	
+	/*
+	 * Returns a list of all unique filter combinations
+	 */
+	function getUniqueFilterCombinations() {
+		return $this->_conn->arrayQuery("SELECT tree,valuelist FROM filters GROUP BY tree,valuelist ORDER BY tree,valuelist");
+	} # getUniqueFilterCombinations
 
+	/*
+	 * Add a filter count for a specific SHA1 hash
+	 * of a filter for this specific user
+	 */
+	function setCachedFilterCount($userId, $filterHashes) {
+		$maxSpotStamp = $this->getMaxMessageTime();
+		
+		foreach($filterHashes as $filterHash => $filterCount) {
+			/* Remove any existing cached filtercount for this user */		
+			$this->_conn->modify("DELETE FROM filtercounts WHERE (userid = %d) AND (filterhash = '%s')",
+									Array((int) $userId, $filterHash));
+									
+			/* and insert our new filtercount hash */
+			$this->_conn->modify("INSERT INTO filtercounts(userid, filterhash, currentspotcount, lastvisitspotcount, lastupdate) 
+											VALUES(%d, '%s', %d, %d, %d)",
+									Array((int) $userId, $filterHash, $filterCount['currentspotcount'], $filterCount['lastvisitspotcount'], 
+										  $maxSpotStamp ));
+		} # foreach
+	} # setCachedFilterCount
+
+	/*
+	 * Add a filter count for a specific SHA1 hash
+	 * of a filter for this specific user
+	 */
+	function getNewCountForFilters($userId) {
+		$tmp = $this->_conn->arrayQuery("SELECT f.filterhash AS filterhash, 
+												f.currentspotcount AS currentspotcount, 
+												f.lastvisitspotcount AS lastvisitspotcount, 
+												f.lastupdate AS lastupdate,
+												t.currentspotcount - f.lastvisitspotcount AS newspotcount
+										 FROM filtercounts f
+										 INNER JOIN filtercounts t ON (t.filterhash = f.filterhash)
+										 WHERE t.userid = -1 
+										   AND f.userid = %d",
+								Array((int) $userId) );
+								
+		foreach($tmp as $cachedItem) {
+			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
+															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
+															 'newspotcount' => $cachedItem['newspotcount'],
+															 'lastupdate' => $cachedItem['lastupdate']);
+		} # foreach
+		
+		return $filterHashes;
+	} # getNewCountForFilters
+	
+	/*
+	 * Makes sure all registered users have at least counts
+	 * for all existing filters.
+	 */
+	function createFilterCountsForEveryone() {
+		$userIdList = $this->_conn->arrayQuery('SELECT id FROM users WHERE id <> -1');
+		
+		foreach($userIdList as $user) {
+			$userId = $user['id'];
+			
+			/* We can assume userid -1 (baseline) has all the filters which exist */
+			$filterList = $this->getPlainFilterList($userId, '');
+			$cachedList = $this->getCachedFilterCount($userId);
+
+			/* We add a dummy entry for 'all new spots' */
+			$filterList[] = array('id' => 9999, 'userid' => $userId, 'filtertype' => 'dummyfilter', 
+								'title' => 'NewSpots', 'icon' => '', 'torder' => 0, 'tparent' => 0,
+								'tree' => '', 'valuelist' => 'New:0', 'sorton' => '', 'sortorder' => '');
+			
+			foreach($filterList as $filter) {
+				$filterHash = sha1($filter['tree'] . '|' . urldecode($filter['valuelist']));
+				
+				# Do we have a cache entry already for this filter?
+				if (!isset($cachedList[$filterHash])) {
+					/*
+					 * Create the cached count filter
+					 */
+					$filter['currentspotcount'] = 0;
+					$filter['lastvisitspotcount'] = 0;
+					
+					$this->setCachedFilterCount($userId, array($filterHash => $filter));
+				} # if
+			} # foreach
+		} # foreach
+	} # createFilterCountsForEveryone
+	
+	/*
+	 * Retrieves the filtercount for a specific userid
+	 */
+	function getCachedFilterCount($userId) {
+		$filterHashes = array();
+		$tmp = $this->_conn->arrayQuery("SELECT filterhash, currentspotcount, lastvisitspotcount, lastupdate FROM filtercounts WHERE userid = %d",
+								Array( (int) $userId) );
+		
+		foreach($tmp as $cachedItem) {
+			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
+															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
+															 'lastupdate' => $cachedItem['lastupdate']);
+		} # foreach
+
+		return $filterHashes;
+	} # getCachedFilterCount
+	
+	/*
+	 * Resets the unread count for a specific user
+	 */
+	function resetFilterCountForUser($userId) {
+		$tmp = $this->_conn->arrayQuery("UPDATE filtercounts f 
+											SET f.lastvisitspotcount = f.currentspotcount,
+											    f.currentspotcount = t.currentspotcount,
+												f.lastupdate = t.lastupdate
+											WHERE (f.filterhash = t.filterhash) 
+											  AND (t.userid = -1) 
+											  AND (f.userid = %d)",
+								Array((int) $userId) );
+	} # resetFilterCountForUser
+	
+	/*
+	 * Mark all filters as read
+	 */
+	function markFilterCountAsSeen($userId) {
+		 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
+										SET f.lastvisitspotcount = f.currentspotcount,
+											f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1) 
+										  AND (f.userid = %d)",
+							Array( (int) $userId) );
+	} # markFilterCountAsSeen
+	
 	/*
 	 * Create an entry in the auditlog
 	 */
