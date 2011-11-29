@@ -97,7 +97,7 @@ class SpotTemplateHelper {
 		# en geef het aantal terug dat we willen hebben. Inclusief extragratis
 		# lelijke hack om er voor te zorgen dat als er erg veel nieuwe spots
 		# zijn, SpotWeb niet ontzettend traag wordt. 
-		if ($newCount > 500) {
+		if ($newCount > $this->_settings->get('max_newcount')) {
 			$skipNewCount = true;
 			return '';
 		} elseif ($newCount > 0) {
@@ -258,7 +258,19 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=edituser";
 	} # makeEditUserAction
-	
+
+	/*
+	 * Creeert de action url voor het wijzigen van de instellingen (gebruikt in form post actions)
+	 */
+	function makeEditSettingsAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_settings, '')) {
+			return '';
+		} # if
+		
+		return $this->makeBaseUrl("path") . "?page=editsettings";
+	} # makeEditSettingsAction
+
 	/*
 	 * Creeert de action url voor het wijzigen van de users' preferences (gebruikt in form post actions)
 	 */

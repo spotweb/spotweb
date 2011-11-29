@@ -302,7 +302,7 @@ function loadComments(messageid,perpage,pagenr) {
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr+'&perpage='+perpage, function(html) {
 		count = $(html+' > li').length / 2;
 		if (count == 0 && pagenr == 0) {
-			$("#commentslist").append("<li class='nocomments'>Geen (geverifieerde) comments gevonden.</li>");
+			$("#commentslist").append("<li class='nocomments'><t>No (verified) comments found.</t></li>");
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
@@ -1551,3 +1551,30 @@ function downloadMappingTypeChanged() {
 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatc'}, false, false);
 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatd'}, false, false);
 } // downloadMappingTypeChanged
+
+function addFilter(xsrf, filterType, filterValue, filterName) {
+	var formData = 'editfilterform[xsrfid]=' + escape(xsrf);
+	formData += '&editfilterform[filterid]=9999';
+	formData += '&editfilterform[tree]=';
+	formData += '&editfilterform[valuelist]=' + escape(filterType) + ":=:" + escape(filterValue);
+	formData += '&editfilterform[sorton]=date';
+	formData += '&editfilterform[sortorder]=desc';
+	formData += '&editfilterform[title]=' + escape(filterName);
+	formData += '&editfilterform[icon]=application';
+	formData += '&editfilterform[submitaddfilter]=add';
+			
+	// post de data
+	$.ajax({
+		type: "POST",
+		url: '?page=editfilter',
+		dataType: "xml",
+		data: formData,
+		success: function(xml) {
+			var result = $(xml).find('result').text();
+			
+			alert(result);
+			alert(xml);
+		} // success()
+	}); // ajax call om de form te submitten
+			
+} // addFilter

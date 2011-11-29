@@ -48,7 +48,7 @@
 						<th class="rating">
 <?php
 	if($spot['rating'] == 0) {
-		echo '<span class="rating" title="Deze spot heeft nog geen rating"><span style="width:0px;"></span></span>';
+		echo '<span class="rating" title="' . _('This spot has no rating yet') . '"><span style="width:0px;"></span></span>';
 	} elseif($spot['rating'] > 0) {
 		echo '<span class="rating" title="' . sprintf(ngettext('This spot thas %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 	}
@@ -121,9 +121,9 @@ echo "</th>";
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
-								<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($spot['spotterid']); ?>" title="<?php echo _('Blacklist this spotter'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($spot['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+								<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($spot['spotterid']); ?>" title="<?php echo _('Blacklist this sender'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($spot['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								</td> </tr>
-								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Search spots with the tag: %s'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> </td> </tr>
+								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Search spots with the tag: %s'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> <?php if (!empty($spot['tag'])) { ?> <!-- <a href="" onclick="addFilter('<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>', 'Tag', '<?php echo urlencode($spot['tag']); ?>', 'Zoek op tag <?php echo urlencode($spot['tag']); ?>'); return false; "><?php echo _('Add filter for this tag'); ?></a> <?php } ?> --> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Searchengine'); ?></th> <td> <a href='<?php echo $spot['searchurl']; ?>'><?php echo _('Search'); ?></a> </td> </tr>
 <?php if ($show_nzb_button) { ?>		

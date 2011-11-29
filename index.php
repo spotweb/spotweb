@@ -221,6 +221,13 @@ try {
 				break;
 		} # createuser
 
+		case 'editsettings' : {
+				$page = new SpotPage_editsettings($db, $settings, $currentSession,
+							Array('editsettingsform' => $req->getForm('editsettingsform', array('submitedit', 'submitcancel'))));
+				$page->render();
+				break;
+		} # editsettings
+
 		case 'edituserprefs' : {
 				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
 							Array('edituserprefsform' => $req->getForm('edituserprefsform', array('submitedit', 'submitcancel'))));

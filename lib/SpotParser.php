@@ -53,14 +53,24 @@ class SpotParser {
 			);
 			
 			foreach($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
-				$tpl_spot['image']['segment'][] = (string) $seg;
-			} # foreach
-			
+				# Make sure the messageid's are valid so we do not throw an NNTP error
+				if (!$this->validMessageId((string) $seg)) {
+					$tpl_spot['image']['segment'] = array();
+					break;
+				} else {
+					$tpl_spot['image']['segment'][] = (string) $seg;
+				} # if
+			} # foreach			
 		} # else
 
 		# Just stitch together the NZB segments
 		foreach($xml->xpath('/Spotnet/Posting/NZB/Segment') as $seg) {
-			$tpl_spot['nzb'][] = (string) $seg;
+			if (!$this->validMessageId((string) $seg)) {
+				$tpl_spot['nzb'] = array();
+				break;
+			} else {
+				$tpl_spot['nzb'][] = (string) $seg;
+			} # else
 		} # foreach
 
 		# fix the category in the XML array but only for new spots
@@ -621,5 +631,18 @@ class SpotParser {
 
 		return $doc->saveXML($mainElm);
 	} # spotToXml
+	
+	private function validMessageId($messageId) {
+		$invalidChars = '<>';
+		
+		$msgIdLen = strlen($messageId);		
+		for ($i = 0; $i < $msgIdLen; $i++) {
+			if (strpos($invalidChars, $messageId[$i]) !== false) {
+				return false;
+			} # if
+		} # for
+		
+		return true;
+	} # validMessageId
 	
 } # class Spot

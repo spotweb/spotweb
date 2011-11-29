@@ -193,7 +193,7 @@ class SpotUbb_parser {
 
 
 	/**
-	 * returns wether the given element is an empty element
+	 * returns whether the given element is an empty element
 	 */
 	function nonemptycontent($content) {
 		return !( empty($content['tagname']) && 

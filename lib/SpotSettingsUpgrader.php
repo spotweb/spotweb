@@ -13,7 +13,6 @@ class SpotSettingsUpgrader {
 		# we er mee kunnen vergelijken
 		$this->setIfNot("settingsversion", "0.00");
 		$this->setIfNot("securityversion", "0.00");
-		$this->setIfNot("featureversion", "0.00");
 
 		if ($this->_settings->get('settingsversion') < 0.15) {
 			$this->remove('system_languages');
@@ -29,14 +28,32 @@ class SpotSettingsUpgrader {
 		$this->remove('sabnzbdurl');
 		$this->remove('recompress_nzb');
 		$this->remove('available_languages');
+		$this->remove('featureversion');
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
-		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // Ook al heet deze secret, hij mag geshared worden
+		$this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
 		$this->setIfNot('boxcar_api_key', 'pOQM9O2AnEWL0RjSoHln');
-		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // Ook al heet deze secret, hij mag geshared worden
+		$this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // This secret can be shared
 		$this->setIfNot('auditlevel', 0); // No auditing
-		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('system_languages', array('nl_NL' => 'Nederlands', 'en_US' => 'English'));
+		$this->setIfNot('retention', 0);
+		$this->setIfNot('deny_robots', true);
+		$this->setIfNot('nntp_nzb', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
+		$this->setIfNot('nntp_hdr', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
+		$this->setIfNot('nntp_post', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
+		$this->setIfNot('retrieve_newer_than', 0);
+		$this->setIfNot('retrieve_full', true);
+		$this->setIfNot('prefetch_image', false);
+		$this->setIfNot('prefetch_nzb', false);
+		$this->setIfNot('retrieve_comments', true);
+		$this->setIfNot('retrieve_full_comments', false);
+		$this->setIfNot('retrieve_reports', true);
+		$this->setIfNot('retrieve_increment', 1000);
+		$this->setIfNot('max_newcount', 500);
+		$this->setIfNot('spot_moderation', 'act');
+		$this->setIfNot('prepare_statistics', true);
+		$this->setIfNot('external_blacklist', true);
+		$this->setIfNot('blacklist_url', 'http://jij.haatmij.nl/spotnet/blacklist.txt');
 		$this->updateSettingsVersion();
 	} # update()
 	

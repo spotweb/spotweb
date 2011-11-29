@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.25');
+define('SPOTWEB_SECURITY_VERSION', '0.26');
 
 class SpotSecurity {
 	private $_db;
@@ -64,6 +64,7 @@ class SpotSecurity {
 	const spotsec_blacklist_spotter				= 38;
 	const spotsec_view_statistics				= 39;
 	const spotsec_view_spotweb_updates			= 40;
+	const spotsec_edit_settings					= 41;
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -107,7 +108,8 @@ class SpotSecurity {
 		37		=> "Post a new spot",
 		38		=> "Blacklist a spotter",
 		39		=> "Display statistics",
-		40		=> "Display Spotweb's changelog"
+		40		=> "Display Spotweb's changelog",
+		41		=> "Change settings"
 	);
 
 	/*

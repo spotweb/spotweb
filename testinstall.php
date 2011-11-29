@@ -63,13 +63,6 @@
 	<?php } else { ?>
 	<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
 	<?php } ?>
-	<tr> <td> NNTP server </td> <td> <?php showResult(empty($settings['nntp_nzb']['host']) === false, $settings['nntp_nzb']['host'], "No server entered"); ?> </td> </tr>
-	<?php if ($settings['nntp_nzb'] != $settings['nntp_hdr']) { ?>
-	<tr> <td> NNTP server (headers) </td> <td> <?php showResult(empty($settings['nntp_hdr']['host']) === false, $settings['nntp_hdr']['host'], "No server entered"); ?> </td> </tr>
-	<?php }
-	if ($settings['nntp_nzb'] != $settings['nntp_post']) { ?>
-	<tr> <td> NNTP server (post) </td> <td> <?php showResult(empty($settings['nntp_post']['host']) === false, $settings['nntp_post']['host'], "No server entered"); ?> </td> </tr>
-	<?php } ?>
 </table>
 <br />
 
