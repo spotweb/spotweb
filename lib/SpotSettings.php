@@ -148,11 +148,6 @@ class SpotSettings {
 			$errorList[] = _('Invalid retrieve_increment setting');
 		} # if
 
-		$settings['max_newcount'] = (int) $settings['max_newcount'];
-		if ($settings['max_newcount'] < 0) {
-			$errorList[] = _('Invalid max_newcount setting');
-		} # if
-
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
 		$settings['sendwelcomemail'] = (isset($settings['sendwelcomemail'])) ? true : false;
