@@ -261,7 +261,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userRecord);
 			
 			# Mark everything as read for this user
-			$this->_db->markFilterCountAsSeen($userRecord['userid']);
+			$this->_db->resetFilterCountForUser($userRecord['userid']);
 		} # if
 		
 		return array('user' => $userRecord,
