@@ -239,8 +239,6 @@ table.spots th.comments {text-align:center; width:34px; min-width:34px; padding:
 table.spots td.genre,
 table.spots th.genre {min-width:120px; width:120px;}
 table.spots td.poster,
-table.spots th.poster {min-width:110px; width:110px; overflow:hidden;}
-table.spots th.poster {min-width:120px; width:120px;}
 table.spots td.poster {padding:0 0 0 15px;}
 table.spots td.poster a {width:110px;}
 table.spots td.date,
