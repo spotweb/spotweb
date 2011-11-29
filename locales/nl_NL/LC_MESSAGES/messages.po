@@ -1740,3 +1740,6 @@ msgstr "Spotweb updates bekijken (vergeleken met huidige versie)"
 msgid "Change settings"
 msgstr "Instellingen wijzigen"
 
+msgid "Default newsserver"
+msgstr "Standaard nieuwsserver"
+
