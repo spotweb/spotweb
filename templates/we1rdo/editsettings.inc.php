@@ -47,8 +47,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			</fieldset>
 		</div>
 
-		<div id="editsettingstab-2" class="ui-tabs-hide">
+		<div id="editsettingstab-2" class="ui-tabs-hide newsservers">
 			<fieldset>
+				<dt><label for="use_nntp_hdr"><?php echo _('Default newsserver'); ?></label></dt>
+			</fieldset>
+			<fieldset class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_nzb][host]"><?php echo _('Hostname'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_nzb][host]" value="<?php echo $nntp_nzb['host']; ?>"></dd>
@@ -76,9 +79,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 				</dl>
 			</fieldset>
 
-			<dt><label for="use_nntp_hdr"><?php echo _('Use different server for headers?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (!isset($nntp_hdr['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
-			<fieldset id="content_use_nntp_hdr">
+			<fieldset>
+				<dt><label for="use_nntp_hdr"><?php echo _('Use different server for headers?'); ?></label></dt>
+				<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][use]" id="use_nntp_hdr" <?php if (!isset($nntp_hdr['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
+			</fieldset>
+			<fieldset id="content_use_nntp_hdr" class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_hdr][host]"><?php echo _('Hostname'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_hdr][host]" value="<?php echo $nntp_hdr['host']; ?>"></dd>
@@ -106,9 +111,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 				</dl>
 			</fieldset>
 
-			<dt><label for="use_nntp_post"><?php echo _('Use different server for posting?'); ?></label></dt>
-			<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (!isset($nntp_post['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
-			<fieldset id="content_use_nntp_post">
+			<fieldset>
+				<dt><label for="use_nntp_post"><?php echo _('Use different server for posting?'); ?></label></dt>
+				<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][use]" id="use_nntp_post" <?php if (!isset($nntp_post['isadummy'])) { echo 'checked="checked"'; } ?>></dd>
+			</fieldset>
+			<fieldset id="content_use_nntp_post" class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_post][host]"><?php echo _('Hostname'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_post][host]" value="<?php echo $nntp_post['host']; ?>"></dd>
@@ -179,11 +186,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="text" name="editsettingsform[max_newcount]" value="<?php echo $this->_settings->get('max_newcount'); ?>"></dd>
 
 					<dt><label for="editsettingsform[spot_moderation]"><?php echo _('Handling of moderation messages'); ?></label></dt>
-					<select name="editsettingsform[spot_moderation]">
+					<dd><select name="editsettingsform[spot_moderation]">
 						<option <?php if ($this->_settings->get('spot_moderation') == 'disable') { echo 'selected="selected"'; } ?> value="disable"><?php echo _('Do nothing'); ?></option>
 						<option <?php if ($this->_settings->get('spot_moderation') == 'act') { echo 'selected="selected"'; } ?> value="act"><?php echo _('Delete moderated spots'); ?></option>
 						<option <?php if ($this->_settings->get('spot_moderation') == 'markspot') { echo 'selected="selected"'; } ?> value="markspot"><?php echo _('Mark moderated spots as moderated'); ?></option>
-					</select>
+					</select></dd>
 
 					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[prepare_statistics]" <?php if ($this->_settings->get('prepare_statistics')) { echo 'checked="checked"'; } ?>></dd>
