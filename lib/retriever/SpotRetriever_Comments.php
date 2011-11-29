@@ -158,7 +158,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					} # if
 
 					/*
-					 * Determine wether we need to add the header to the database
+					 * Determine whether we need to add the header to the database
 					 * and extract the required fields 
 					 */
 					if (!$header_isInDb) {

@@ -26,7 +26,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# Retrieve the user we want to edit, this is for now always the current user
 		$spotUser = $this->_db->getUser($this->_currentSession['user']['userid']);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = sprintf(_('User cannot be found'), $spotUser['username']);
+			$formMessages['errors'][] = sprintf(_('User %s cannot be found'), $spotUser['username']);
 			$editResult = array('result' => 'failure');
 		} # if
 		
@@ -55,7 +55,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					/*
-					 * We ave a few dummy preferenes -- these are submitted like a checkbox for example
+					 * We have a few dummy preferenes -- these are submitted like a checkbox for example
 					 * but in reality do something completely difference.
 					 *
 					 * Because we use cleanseUserPreferences() those dummies will not end up in the database
