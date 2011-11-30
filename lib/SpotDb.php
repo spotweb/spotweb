@@ -1969,6 +1969,7 @@ class SpotDb {
 	 * of a filter for this specific user
 	 */
 	function getNewCountForFilters($userId) {
+		$filterHashes = array();
 		$tmp = $this->_conn->arrayQuery("SELECT f.filterhash AS filterhash, 
 												f.currentspotcount AS currentspotcount, 
 												f.lastvisitspotcount AS lastvisitspotcount, 
@@ -2089,6 +2090,7 @@ class SpotDb {
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1)
 										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
 								Array(time() - 900));
 				
@@ -2115,7 +2117,8 @@ class SpotDb {
 										SET f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+										  AND (t.userid = -1)
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
 								Array(time() - 900));
 
 				/*
