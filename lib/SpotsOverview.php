@@ -997,11 +997,7 @@ class SpotsOverview {
 				#
 				switch($tmpFilterFieldname) {
 					case 'new' : {
-							if ($currentSession['user']['prefs']['auto_markasread']) {
-								$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe( max($currentSession['user']['lastvisit'],$currentSession['user']['lastread']) ) . ')';
-							} else {
-								$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
-							} # else
+							$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
 							$tmpFilterValue .= ' AND (l.seen IS NULL))';
 							
 							break;
