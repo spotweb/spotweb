@@ -260,6 +260,7 @@ class SpotsOverview {
 		 * users, hence we make sure all these records do exist
 		 */
 		$this->_db->createFilterCountsForEveryone();
+		$this->_db->updateCurrentFilterCounts();
 	} # cacheNewSpotCount
 	
 	/* 
