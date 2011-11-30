@@ -2085,8 +2085,7 @@ class SpotDb {
 				 * is still active
 				 */
 				$this->_conn->modify("UPDATE filtercounts f
-										SET f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
+										SET f.currentspotcount = t.currentspotcount
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1)
@@ -2098,8 +2097,7 @@ class SpotDb {
 				 * we do not get confusing results
 				 */
 				$this->_conn->modify("UPDATE filtercounts f
-										SET f.lastvisitspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
+										SET f.lastvisitspotcount = t.currentspotcount
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (f.lastvisitspotcount > t.currentspotcount
@@ -2126,8 +2124,7 @@ class SpotDb {
 				 * is still active
 				 */
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
-										SET f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
+										SET f.currentspotcount = t.currentspotcount
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1)
 										  AND (f.userid IN (" . $userIdList . "))");
@@ -2137,8 +2134,7 @@ class SpotDb {
 				 * we do not get confusing results
 				 */
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
+										SET f.lastvisitspotcount = t.currentspotcount
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (f.lastvisitspotcount > t.currentspotcount)
 										  AND (t.userid = -1)");

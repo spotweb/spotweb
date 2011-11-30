@@ -188,6 +188,9 @@ class SpotsOverview {
 		 * total amount of spots
 		 */
 		foreach($filterList as $filter) {
+			# Reset the PHP timeout timer
+			set_time_limit(120);
+			
 			# Calculate the filter hash
 			$filter['filterhash'] = sha1($filter['tree'] . '|' . urldecode($filter['valuelist']));
 			$filter['userid'] = -1;
