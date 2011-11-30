@@ -2045,7 +2045,8 @@ class SpotDb {
 	} # getCachedFilterCount
 	
 	/*
-	 * Resets the unread count for a specific user
+	 * Resets the unread count for a specific user, basically
+	 * resets the spotcount since the last version
 	 */
 	function resetFilterCountForUser($userId) {
 		switch ($this->_dbsettings['engine']) {
@@ -2136,13 +2137,13 @@ class SpotDb {
 	} # updateCurrentFilterCounts
 
 	/*
-	 * Mark all filters as read
+	 * Mark all filters as read (resets all counters to zero)
 	 */
 	function markFilterCountAsSeen($userId) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.lastvisitspotcount,
+										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
@@ -2154,7 +2155,7 @@ class SpotDb {
 
 			default				: {
 				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.lastvisitspotcount,
+										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 

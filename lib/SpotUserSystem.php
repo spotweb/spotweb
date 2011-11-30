@@ -260,7 +260,7 @@ class SpotUserSystem {
 			$userRecord['lastvisit'] = $sessionValid['lasthit'];
 			$this->_db->setUser($userRecord);
 			
-			# Mark everything as read for this user
+			# Reset the unread pointer to the last visits unread count
 			$this->_db->resetFilterCountForUser($userRecord['userid']);
 		} # if
 		
