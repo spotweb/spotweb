@@ -1976,8 +1976,7 @@ class SpotDb {
 												f.lastupdate AS lastupdate,
 												t.currentspotcount - f.lastvisitspotcount AS newspotcount
 										 FROM filtercounts f
-										 INNER JOIN filtercounts t ON (t.filterhash = f.filterhash)
-										 WHERE t.userid = -1 
+										 INNER JOIN filtercounts t ON (t.userid = -1) AND (t.filterhash = f.filterhash)
 										   AND f.userid = %d",
 								Array((int) $userId) );
 								
@@ -2056,9 +2055,9 @@ class SpotDb {
 												f.currentspotcount = t.currentspotcount,
 												f.lastupdate = t.lastupdate
 											FROM filtercounts t
-											WHERE (f.filterhash = t.filterhash) 
-											  AND (t.userid = -1) 
-											  AND (f.userid = %d)",
+											WHERE (t.userid = -1) 
+											  AND (f.userid = %d)
+											  AND (t.filterhash = f.filterhash) ",
 								Array((int) $userId) );
 				break;
 			} # pgsql
@@ -2068,9 +2067,9 @@ class SpotDb {
 											SET f.lastvisitspotcount = f.currentspotcount,
 												f.currentspotcount = t.currentspotcount,
 												f.lastupdate = t.lastupdate
-											WHERE (f.filterhash = t.filterhash) 
-											  AND (t.userid = -1) 
-											  AND (f.userid = %d)",
+											WHERE (t.userid = -1) 
+											  AND (f.userid = %d)
+											  AND (t.filterhash = f.filterhash)",
 								Array((int) $userId) );
 			} # default
 		} # switch
@@ -2090,9 +2089,9 @@ class SpotDb {
 										SET f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1)
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+										WHERE (t.userid = -1) 
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))
+										  AND (t.filterhash = f.filterhash)",
 								Array(time() - 900));
 				
 				/*
@@ -2103,9 +2102,9 @@ class SpotDb {
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount
-										  AND (t.userid = -1))");
+										WHERE (t.userid = -1) 
+										  AND (t.filterhash = f.filterhash)
+										  AND (f.lastvisitspotcount > t.currentspotcount)");
 				break;
 			} # pgsql
 
@@ -2117,9 +2116,9 @@ class SpotDb {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
 										SET f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1)
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+										WHERE (t.userid = -1) 
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))
+										  AND (t.filterhash = f.filterhash)",
 								Array(time() - 900));
 
 				/*
@@ -2129,9 +2128,9 @@ class SpotDb {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount)
-										  AND (t.userid = -1)");
+										WHERE (t.userid = -1) 
+										  AND (t.filterhash = f.filterhash)
+										  AND (f.lastvisitspotcount > t.currentspotcount)");
 			} # default
 		} # switch
 	} # updateCurrentFilterCounts
@@ -2146,9 +2145,9 @@ class SpotDb {
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1) 
-										  AND (f.userid = %d)",
+										WHERE (t.userid = 1)
+										  AND (f.userid = %d)
+										  AND (t.filterhash = f.filterhash)",
 							Array( (int) $userId) );
 				break;
 			} # pgsql
@@ -2158,9 +2157,9 @@ class SpotDb {
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1) 
-										  AND (f.userid = %d)",
+										WHERE (t.userid = -1) 	
+										  AND (f.userid = %d)
+										  AND (t.filterhash = f.filterhash)",
 							Array( (int) $userId) );
 			} # default
 		} # switch
