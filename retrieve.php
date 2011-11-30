@@ -338,7 +338,7 @@ try {
 } # catch
 
 ## Creating filter counts
-if ($newSpotCount) {
+if ($newSpotCount > 0) {
 	$spotsOverview = new SpotsOverview($db, $settings);
 	echo 'Calculating how many spots are new';
 	$spotsOverview->cacheNewSpotCount();
