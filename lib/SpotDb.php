@@ -1969,6 +1969,7 @@ class SpotDb {
 	 * of a filter for this specific user
 	 */
 	function getNewCountForFilters($userId) {
+		$filterHashes = array();
 		$tmp = $this->_conn->arrayQuery("SELECT f.filterhash AS filterhash, 
 												f.currentspotcount AS currentspotcount, 
 												f.lastvisitspotcount AS lastvisitspotcount, 
