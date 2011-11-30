@@ -1969,14 +1969,14 @@ class SpotDb {
 	 * of a filter for this specific user
 	 */
 	function getNewCountForFilters($userId) {
-		$filterHashes = array();
 		$tmp = $this->_conn->arrayQuery("SELECT f.filterhash AS filterhash, 
 												f.currentspotcount AS currentspotcount, 
 												f.lastvisitspotcount AS lastvisitspotcount, 
 												f.lastupdate AS lastupdate,
 												t.currentspotcount - f.lastvisitspotcount AS newspotcount
 										 FROM filtercounts f
-										 INNER JOIN filtercounts t ON (t.userid = -1) AND (t.filterhash = f.filterhash)
+										 INNER JOIN filtercounts t ON (t.filterhash = f.filterhash)
+										 WHERE t.userid = -1 
 										   AND f.userid = %d",
 								Array((int) $userId) );
 								
@@ -2044,8 +2044,7 @@ class SpotDb {
 	} # getCachedFilterCount
 	
 	/*
-	 * Resets the unread count for a specific user, basically
-	 * resets the spotcount since the last version
+	 * Resets the unread count for a specific user
 	 */
 	function resetFilterCountForUser($userId) {
 		switch ($this->_dbsettings['engine']) {
@@ -2055,9 +2054,9 @@ class SpotDb {
 												f.currentspotcount = t.currentspotcount,
 												f.lastupdate = t.lastupdate
 											FROM filtercounts t
-											WHERE (t.userid = -1) 
-											  AND (f.userid = %d)
-											  AND (t.filterhash = f.filterhash) ",
+											WHERE (f.filterhash = t.filterhash) 
+											  AND (t.userid = -1) 
+											  AND (f.userid = %d)",
 								Array((int) $userId) );
 				break;
 			} # pgsql
@@ -2067,9 +2066,9 @@ class SpotDb {
 											SET f.lastvisitspotcount = f.currentspotcount,
 												f.currentspotcount = t.currentspotcount,
 												f.lastupdate = t.lastupdate
-											WHERE (t.userid = -1) 
-											  AND (f.userid = %d)
-											  AND (t.filterhash = f.filterhash)",
+											WHERE (f.filterhash = t.filterhash) 
+											  AND (t.userid = -1) 
+											  AND (f.userid = %d)",
 								Array((int) $userId) );
 			} # default
 		} # switch
@@ -2089,9 +2088,9 @@ class SpotDb {
 										SET f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
-										WHERE (t.userid = -1) 
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))
-										  AND (t.filterhash = f.filterhash)",
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1)
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
 								Array(time() - 900));
 				
 				/*
@@ -2102,13 +2101,26 @@ class SpotDb {
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
-										WHERE (t.userid = -1) 
-										  AND (t.filterhash = f.filterhash)
-										  AND (f.lastvisitspotcount > t.currentspotcount)");
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (f.lastvisitspotcount > t.currentspotcount
+										  AND (t.userid = -1))");
 				break;
 			} # pgsql
 
 			default				: {
+				/*
+				 * We do this in two parts because MySQL seems to fall over 
+				 * when we use a subquery
+				 */
+				$sessionList = $this->_conn->arrayQuery("SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid", Array( time() - 900));
+				
+				# bereid de lijst voor met de queries in de where
+				$userIdList = '';
+				foreach($sessionList as $session) {
+					$userIdList .= (int) $this->_conn->safe($session['userid']) . ", ";
+				} # foreach
+				$userIdList = substr($userIdList, 0, -2);
+
 				/*
   				 * Update the current filter counts if the session
 				 * is still active
@@ -2116,10 +2128,9 @@ class SpotDb {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
 										SET f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (t.userid = -1) 
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))
-										  AND (t.filterhash = f.filterhash)",
-								Array(time() - 900));
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1)
+										  AND (f.userid IN (" . $userIdList . "))");
 
 				/*
 				 * Sometimes retrieve removes some sports, make sure
@@ -2128,38 +2139,38 @@ class SpotDb {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
 										SET f.lastvisitspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (t.userid = -1) 
-										  AND (t.filterhash = f.filterhash)
-										  AND (f.lastvisitspotcount > t.currentspotcount)");
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (f.lastvisitspotcount > t.currentspotcount)
+										  AND (t.userid = -1)");
 			} # default
 		} # switch
 	} # updateCurrentFilterCounts
 
 	/*
-	 * Mark all filters as read (resets all counters to zero)
+	 * Mark all filters as read
 	 */
 	function markFilterCountAsSeen($userId) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount,
+										SET f.lastvisitspotcount = t.lastvisitspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (t.userid = 1)
-										  AND (f.userid = %d)
-										  AND (t.filterhash = f.filterhash)",
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1) 
+										  AND (f.userid = %d)",
 							Array( (int) $userId) );
 				break;
 			} # pgsql
 
 			default				: {
 				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount,
+										SET f.lastvisitspotcount = t.lastvisitspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
-										WHERE (t.userid = -1) 	
-										  AND (f.userid = %d)
-										  AND (t.filterhash = f.filterhash)",
+										WHERE (f.filterhash = t.filterhash) 
+										  AND (t.userid = -1) 
+										  AND (f.userid = %d)",
 							Array( (int) $userId) );
 			} # default
 		} # switch
