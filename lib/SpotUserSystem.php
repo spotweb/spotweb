@@ -193,22 +193,10 @@ class SpotUserSystem {
 	} # verifyApi
 
 	/*
-	 * Reset the lastvisit timestamp
-	 */
-	function resetLastVisit($user) {
-		$user['lastvisit'] = time();
-		$this->_db->setUser($user);
-
-		# Mark everything as read for this user
-		$this->_db->markFilterCountAsSeen($user['userid']);
-
-		return $user;
-	} # resetLastVisit
-
-	/*
 	 * Reset the seenstamp timestamp
 	 */
 	function resetReadStamp($user) {
+		$user['lastvisit'] = time();
 		$user['lastread'] = $this->_db->getMaxMessageTime();
 		$this->_db->setUser($user);
 
@@ -258,9 +246,21 @@ class SpotUserSystem {
 		 */
 		if ($sessionValid['lasthit'] < (time() - 900)) {
 			$userRecord['lastvisit'] = $sessionValid['lasthit'];
+			
+			/*
+			 * Update the last read time to the last spot we find in the
+			 * database. Theoreticall this still contains an race condtion
+			 * because the spots could be updated by now.
+			 * 
+			 * We ignore this for now to not cause any performance issues
+			 */
+			if ($userRecord['prefs']['auto_markasread']) {
+				$userRecord['lastread'] = $this->_db->getMaxMessageTime();
+			} # if
+			
 			$this->_db->setUser($userRecord);
 			
-			# Reset the unread pointer to the last visits unread count
+			# Mark everything as read for this user
 			$this->_db->resetFilterCountForUser($userRecord['userid']);
 		} # if
 		

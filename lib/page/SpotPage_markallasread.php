@@ -17,7 +17,6 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 		
 		# reset the lastvisit en lastread timestamp
-		$spotUserSystem->resetLastVisit($this->_currentSession['user']);
 		$spotUserSystem->resetReadStamp($this->_currentSession['user']);
 
 		echo "<xml><return>ok</return></xml>";
