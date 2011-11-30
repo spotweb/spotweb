@@ -2149,7 +2149,7 @@ class SpotDb {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.lastvisitspotcount,
+										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
@@ -2161,7 +2161,7 @@ class SpotDb {
 
 			default				: {
 				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.lastvisitspotcount,
+										SET f.lastvisitspotcount = t.currentspotcount,
 											f.currentspotcount = t.currentspotcount,
 											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
