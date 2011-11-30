@@ -260,7 +260,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_boxcar"><?php echo _('Use Boxcar?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][boxcar][enabled]" id="use_boxcar" <?php if ($edituserprefsform['notifications']['boxcar']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_boxcar">
+				<fieldset id="content_use_boxcar" class="notificationSettings">
 					<dt><label for="edituserprefsform[notifications][boxcar][email]"><?php echo _('Boxcar e-mail address?'); ?></label></dt>
 					<dd><input type="input" name="edituserprefsform[notifications][boxcar][email]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['boxcar']['email']); ?>"></dd>
 
@@ -275,7 +275,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_email"><?php echo _('Send e-mail to') . ' ' . $currentSession['user']['mail']; ?>?</label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_email">
+				<fieldset id="content_use_email" class="notificationSettings">
 					<?php showNotificationOptions('email', $edituserprefsform, $tplHelper); ?>
 				</fieldset>
 			</fieldset>
@@ -287,7 +287,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_growl"><?php echo _('Use Growl?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][growl][enabled]" id="use_growl" <?php if ($edituserprefsform['notifications']['growl']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_growl">
+				<fieldset id="content_use_growl" class="notificationSettings">
 					<dt><label for="edituserprefsform[notifications][growl][host]"><?php echo _('Growl IP-address?'); ?></label></dt>
 					<dd><input type="input" name="edituserprefsform[notifications][growl][host]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['growl']['host']); ?>"></dd>
 
@@ -305,7 +305,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_nma"><?php echo _('Use Notiy My Android?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][nma][enabled]" id="use_nma" <?php if ($edituserprefsform['notifications']['nma']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_nma">
+				<fieldset id="content_use_nma" class="notificationSettings">
 					<dt><label for="edituserprefsform[notifications][nma][api]">Notify My Android <a href="https://www.notifymyandroid.com/account.php"><?php echo _('API key'); ?></a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][nma][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['nma']['api']); ?>"></dd>
 
@@ -320,7 +320,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_notifo"><?php echo _('Use Notifo?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][notifo][enabled]" id="use_notifo" <?php if ($edituserprefsform['notifications']['notifo']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_notifo">
+				<fieldset id="content_use_notifo" class="notificationSettings">
 					<dt><label for="edituserprefsform[notifications][notifo][username]"><?php echo _('Notifo Username?'); ?></label></dt>
 					<dd><input type="input" name="edituserprefsform[notifications][notifo][username]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['notifo']['username']); ?>"></dd>
 
@@ -339,7 +339,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_prowl"><?php echo _('Use Prowl?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][prowl][enabled]" id="use_prowl" <?php if ($edituserprefsform['notifications']['prowl']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_prowl">
+				<fieldset id="content_use_prowl" class="notificationSettings">
 					<dt><label for="edituserprefsform[notifications][prowl][apikey]"><?php echo _('Prowl <a href="https://www.prowlapp.com/api_settings.php">API key'); ?></a>?</label></dt>
 					<dd><input type="text" name="edituserprefsform[notifications][prowl][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['prowl']['apikey']); ?>"></dd>
 
@@ -355,7 +355,7 @@ include "includes/form-messages.inc.php";
 				<dt><label for="use_twitter"><?php echo _('Use Twitter?'); ?></label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][twitter][enabled]" id="use_twitter" <?php if ($edituserprefsform['notifications']['twitter']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
-				<fieldset id="content_use_twitter">
+				<fieldset id="content_use_twitter" class="notificationSettings">
 					<div class="testNotification" id="twitter_result"><b><?php echo _('Click on "Ask permission". This opens a new page with a PIN number.') . '<br />' . _('Attention: If nothing happens please check your pop-up blocker'); ?></b></div>
 					<input type="button" value="Toestemming Vragen" id="twitter_request_auth" />
 	<?php if (!empty($edituserprefsform['notifications']['twitter']['screen_name'])) { ?>

@@ -9,21 +9,6 @@
 		<ttl>1800</ttl>
 
 		<item>
-			<title>Moving settings to database</title>
-			<description><![CDATA[More settings have been moved from (own)settings.php to the database. This should be the last change for current settings to be moved.
-			]]></description>
-			<link>https://github.com/spotweb/spotweb/</link>
-			<guid>07</guid>
-			<pubDate>Tue, 29 Nov 2011 19:45:00 +0100</pubDate>
-			<author>nightspirit81</author>
-			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
-			<spotweb:schema_version>0.54</spotweb:schema_version>
-			<spotweb:settings_version>0.17</spotweb:settings_version>
-			<spotweb:security_version>0.26</spotweb:security_version>
-			<spotweb:feature_version>0.05</spotweb:feature_version>
-		</item>
-		
-		<item>
 			<title>Optimized spotcounting</title>
 			<description><![CDATA[One of the slowest parts of Spotweb was the counting of new spots in the filterlist. This counting was this slow, that 
 			when a certain amount of spots were exceeded, Spotweb would refrain from counting any newer spots to prevent hanging pages.
@@ -41,6 +26,21 @@
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
 			<spotweb:schema_version>0.54</spotweb:schema_version>
 			<spotweb:settings_version>0.16</spotweb:settings_version>
+			<spotweb:security_version>0.26</spotweb:security_version>
+			<spotweb:feature_version>0.05</spotweb:feature_version>
+		</item>
+
+		<item>
+			<title>Moving settings to database</title>
+			<description><![CDATA[More settings have been moved from (own)settings.php to the database. This should be the last change for current settings to be moved.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>07</guid>
+			<pubDate>Tue, 29 Nov 2011 19:45:00 +0100</pubDate>
+			<author>nightspirit81</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.54</spotweb:schema_version>
+			<spotweb:settings_version>0.17</spotweb:settings_version>
 			<spotweb:security_version>0.26</spotweb:security_version>
 			<spotweb:feature_version>0.04</spotweb:feature_version>
 		</item>

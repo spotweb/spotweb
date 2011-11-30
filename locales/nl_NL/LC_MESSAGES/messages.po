@@ -567,9 +567,6 @@ msgstr "Ophalen per..."
 msgid "Lower this if you get timeouts during retrieve"
 msgstr "Verlaag dit als je regelmatig timeouts krijgt tijdens retrieve"
 
-msgid "Maximum amount of new spots that will show up as new"
-msgstr "Maximaal aantal nieuwe spots die als nieuw worden gemarkeerd"
-
 msgid "Handling of moderation messages"
 msgstr "Behandelen van moderatie"
 

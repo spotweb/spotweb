@@ -101,7 +101,7 @@ $settings['nonauthenticated_userid'] = 1;
 # We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
 # je instellingen bewaard blijven.
 #
-if (file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
+if (@file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
 # QuickLinks, we testen eerst of hij niet al door iemand anders is gezet in ownsettings.php en
