@@ -2052,8 +2052,7 @@ class SpotDb {
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f
 											SET f.lastvisitspotcount = f.currentspotcount,
-												f.currentspotcount = t.currentspotcount,
-												f.lastupdate = t.lastupdate
+												f.currentspotcount = t.currentspotcount
 											FROM filtercounts t
 											WHERE (f.filterhash = t.filterhash) 
 											  AND (t.userid = -1) 
@@ -2065,8 +2064,7 @@ class SpotDb {
 			default				: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
 											SET f.lastvisitspotcount = f.currentspotcount,
-												f.currentspotcount = t.currentspotcount,
-												f.lastupdate = t.lastupdate
+												f.currentspotcount = t.currentspotcount
 											WHERE (f.filterhash = t.filterhash) 
 											  AND (t.userid = -1) 
 											  AND (f.userid = %d)",
@@ -2075,7 +2073,7 @@ class SpotDb {
 		} # switch
 	} # resetFilterCountForUser
 
-	 /*
+	/*
 	 * Updates the last filtercounts for sessions which are active at the moment
 	 */
 	function updateCurrentFilterCounts() {
@@ -2086,7 +2084,8 @@ class SpotDb {
 				 * is still active
 				 */
 				$this->_conn->modify("UPDATE filtercounts f
-										SET f.currentspotcount = t.currentspotcount
+										SET f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1)
@@ -2125,7 +2124,8 @@ class SpotDb {
 				 * is still active
 				 */
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
-										SET f.currentspotcount = t.currentspotcount
+										SET f.currentspotcount = t.currentspotcount,
+											f.lastupdate = t.lastupdate
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1)
 										  AND (f.userid IN (" . $userIdList . "))");
