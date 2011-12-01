@@ -255,13 +255,25 @@ class SpotUserSystem {
 			 * We ignore this for now to not cause any performance issues
 			 */
 			if ($userRecord['prefs']['auto_markasread']) {
-				$userRecord['lastread'] = $this->_db->getMaxMessageTime();
+				# Retrieve the last update stamp from the filters
+				$filterHashes = $this->_db->getCachedFilterCount($userRecord['userid']);
+				
+				/* 
+				 * Set the lastread stamp to the last time the spotcount was updated
+				 * in the filtercounts
+				 */
+				if (!empty($filterHashes)) {
+					$filterKeys = array_keys($filterHashes);
+					$userRecord['lastread'] = $filterHashes[$filterKeys[0]]['lastupdate'];
+				} else {
+					$userRecord['lastread'] = $this->_db->getMaxMessageTime();
+				} # else
+				
+				# Mark older spots as read for this user
+				$this->_db->resetFilterCountForUser($userRecord['userid']);
 			} # if
 			
-			$this->_db->setUser($userRecord);
-			
-			# Mark everything as read for this user
-			$this->_db->resetFilterCountForUser($userRecord['userid']);
+			$this->_db->setUser($userRecord);			
 		} # if
 		
 		return array('user' => $userRecord,
