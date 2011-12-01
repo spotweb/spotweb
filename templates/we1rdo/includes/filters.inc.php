@@ -11,7 +11,7 @@
 					<?php } ?>
 				</div>
 
-				<div class="logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Open 'User Panel'"); ?>">
+				<div class="toolbarButton logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Open 'User Panel'"); ?>">
 <?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
 					Inloggen
@@ -23,10 +23,22 @@
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
 		if ($currentSession['user']['userid'] > 2) { ?>
-				<div class="addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
+				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
 <?php 	} 
 	  }
 ?>
+
+				<div class="toolbarButton config dropdown">
+					<ul>
+						<li><p><a>Config</a></p>
+							<ul>
+								<li><a href="#">General settings</a></li>
+								<li><a href="#">Admin settings</a></li>
+								<li><a href="#">User settings</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
 
 				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between nailed or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
 
