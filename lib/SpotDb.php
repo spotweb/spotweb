@@ -2089,7 +2089,7 @@ class SpotDb {
 										FROM filtercounts t 
 										WHERE (f.filterhash = t.filterhash) 
 										  AND (t.userid = -1)
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid ))",
+										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit > f.lastupdate GROUP BY userid ))",
 								Array(time() - 900));
 				
 				/*
@@ -2110,7 +2110,7 @@ class SpotDb {
 				 * We do this in two parts because MySQL seems to fall over 
 				 * when we use a subquery
 				 */
-				$sessionList = $this->_conn->arrayQuery("SELECT userid FROM sessions WHERE lasthit < %d GROUP BY userid", Array( time() - 900));
+				$sessionList = $this->_conn->arrayQuery("SELECT s.userid FROM sessions s INNER JOIN filtercounts f ON (f.userid = s.userid) WHERE lasthit > f.lastupdate GROUP BY s.userid", Array( time() - 900));
 				
 				# bereid de lijst voor met de queries in de where
 				$userIdList = '';
@@ -2123,12 +2123,14 @@ class SpotDb {
   				 * Update the current filter counts if the session
 				 * is still active
 				 */
-				$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
-										SET f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1)
-										  AND (f.userid IN (" . $userIdList . "))");
+				if (!empty($userIdList)) {
+					$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
+											SET f.currentspotcount = t.currentspotcount,
+												f.lastupdate = t.lastupdate
+											WHERE (f.filterhash = t.filterhash) 
+											  AND (t.userid = -1)
+											  AND (f.userid IN (" . $userIdList . "))");
+				} # if
 
 				/*
 				 * Sometimes retrieve removes some sports, make sure
