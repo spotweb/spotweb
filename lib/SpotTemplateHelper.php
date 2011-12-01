@@ -225,6 +225,13 @@ class SpotTemplateHelper {
 	} # makeEditSecGroupAction
 
 	/*
+	 * Creates the URL action for editing a blacklist
+	 */
+	function makeEditBlacklistAction() {
+		return $this->makeBaseUrl("path") . "?page=blacklistspotter";
+	} # makeEditBlacklistAction	
+	
+	/*
 	 * Creeert de action url voor het wijzigen van een filter
 	 */
 	function makeEditFilterAction() {
@@ -909,9 +916,6 @@ class SpotTemplateHelper {
 		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $api . $this->_settings->get('pass_salt'));
 	} # apiToHash 
 	
-	/*
-	 * Converteert een message string uit Spotweb naar een toonbare tekst
-	 */
  	/*
 	 * Geeft de lijst met users terug
 	 */
@@ -921,6 +925,26 @@ class SpotTemplateHelper {
 		
 		return $this->_db->listUsers($username, 0, 9999);
 	} # getUserList
+
+ 	/*
+	 * Returns the list of all spotters on the users' blacklist
+	 */
+	function getSpotterBlacklist() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
+		
+		return $this->_db->getSpotterBlacklist($this->_currentSession['user']['userid']);
+	} # getSpotterBlacklist
+	
+	/*
+	 * Returns the specific blacklist record for one spotterid
+	 */
+	function getBlacklistForSpotterId($spotterId) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
+		
+		return $this->_db->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
+	} # getBlacklistForSpotterId
 	
 	/*
 	 * Wanneer was de spotindex voor het laatst geupdate?
