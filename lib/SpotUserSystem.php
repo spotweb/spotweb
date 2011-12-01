@@ -1136,7 +1136,7 @@ class SpotUserSystem {
 	} # addSpotterToBlacklist	
 
 	/*
-	 * Removes  a specific spotter from the blacklis
+	 * Removes a specific spotter from the blacklis
 	 */
 	function removeSpotterFromBlacklist($ourUserId, $spotterId) {
 		$this->_db->removeSpotterFromBlacklist($spotterId, $ourUserId);

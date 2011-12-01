@@ -35,17 +35,11 @@ class SpotSettings {
 			# de NZB server
 			if ((empty(self::$_settings['nntp_hdr']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
-
-				# Let the UI know this setting is not made explicit
-				self::$_settings['nntp_hdr']['isadummy'] = true;
 			} # if
 
 			# Hetzelfde voor de NNTP upload server
 			if ((empty(self::$_settings['nntp_post']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
-
-				# Let the UI know this setting is not made explicit
-				self::$_settings['nntp_post']['isadummy'] = true;
 			} # if
 		} # if
 		
@@ -166,8 +160,24 @@ class SpotSettings {
 		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
 
 		# Default server settings if they won't be used
-		if (!isset($settings['nntp_hdr']['use'])) { $settings['nntp_hdr'] = array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false); }
-		if (!isset($settings['nntp_post']['use'])) { $settings['nntp_post'] = array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false); }
+		if (!isset($settings['nntp_hdr']['use'])) { 
+			$settings['nntp_hdr'] = array('host' => '', 
+										  'user' => '', 
+										  'pass' => '', 
+										  'enc' => false, 
+										  'port' => 119, 
+										  'buggy' => false); 
+		} # if
+										
+		if (!isset($settings['nntp_post']['use'])) { 
+			$settings['nntp_post'] = array('host' => '', 
+										   'user' => '', 
+										   'pass' => '', 
+										   'enc' => false, 
+										   'port' => 119, 
+										   'buggy' => false); 
+		} # if
+		
 		unset($settings['nntp_hdr']['use'], $settings['nntp_post']['use']);
 
 		return array($errorList, $settings);
@@ -184,6 +194,7 @@ class SpotSettings {
 
 		# Store settings
 		foreach ($settings as $key => $value) {
+			# and write these updated settings to the database
 			$this->set($key, $value);
 		} # foreach
 	} # setSettings
