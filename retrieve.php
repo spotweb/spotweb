@@ -100,6 +100,22 @@ $debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
 ## RETRO MODE! Hiermee kunnen we de fullspots, fullcomments en/of cache achteraf ophalen
 $retroMode = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--retro'));
 
+## Retention cleanup
+try {
+	if ($settings->get('retention') > 0 && !$retroMode) {
+		$db->deleteSpotsRetention($settings->get('retention'));
+	} # if
+} catch(Exception $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo "Fatal error occured while cleaning up messages due to retention:" . PHP_EOL;
+	echo "  " . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
+	die();
+} # catch
+
 ## Spots
 try {
 	$rsaKeys = $settings->get('rsa_keys');
@@ -161,6 +177,14 @@ catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	die();
 } # catch
+
+## Creating filter counts
+if ($newSpotCount > 0) {
+	$spotsOverview = new SpotsOverview($db, $settings);
+	echo 'Calculating how many spots are new';
+	$spotsOverview->cacheNewSpotCount();
+	echo ', done.' . PHP_EOL;
+} # if
 
 ## Comments
 try {
@@ -269,28 +293,6 @@ catch(Exception $x) {
 	die();
 } # catch
 
-## Statistics
-if ($settings->get('prepare_statistics') && $newSpotCount) {
-	$spotsOverview = new SpotsOverview($db, $settings);
-	$spotImage = new SpotImage($db);
-	$spotsOverview->setActiveRetriever(true);
-
-	echo "Starting to create statistics " . PHP_EOL;
-	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
-		# Reset timelimit
-		set_time_limit(60);
-
-		foreach($settings->get('system_languages') as $language => $name) {
-			foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
-				$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
-			} # foreach graph
-		} # foreach language
-		echo "Finished creating statistics " . $limitName . PHP_EOL;
-	} # foreach limit
-
-	echo PHP_EOL;
-} # if
-
 ## SpotStateList cleanup
 try {
 	$db->cleanSpotStateList();
@@ -321,30 +323,6 @@ try {
 	die();
 } # catch
 
-## Retention cleanup
-try {
-	if ($settings->get('retention') > 0 && !$retroMode) {
-		$db->deleteSpotsRetention($settings->get('retention'));
-	} # if
-} catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while cleaning up messages due to retention:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
-
-## Creating filter counts
-if ($newSpotCount > 0) {
-	$spotsOverview = new SpotsOverview($db, $settings);
-	echo 'Calculating how many spots are new';
-	$spotsOverview->cacheNewSpotCount();
-	echo ', done.' . PHP_EOL;
-} # if
-
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
 if ($settings_external_blacklist) {
@@ -370,6 +348,28 @@ if ($settings_external_blacklist) {
 		echo $x->getTraceAsString();
 		echo PHP_EOL . PHP_EOL;
 	}
+} # if
+
+## Statistics
+if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
+	$spotsOverview = new SpotsOverview($db, $settings);
+	$spotImage = new SpotImage($db);
+	$spotsOverview->setActiveRetriever(true);
+
+	echo "Starting to create statistics " . PHP_EOL;
+	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
+		# Reset timelimit
+		set_time_limit(60);
+
+		foreach($settings->get('system_languages') as $language => $name) {
+			foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
+				$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
+			} # foreach graph
+		} # foreach language
+		echo "Finished creating statistics " . $limitName . PHP_EOL;
+	} # foreach limit
+
+	echo PHP_EOL;
 } # if
 
 # Verstuur notificaties
