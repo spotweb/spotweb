@@ -338,8 +338,14 @@ if ($settings_external_blacklist) {
 		} else {
 			# update de blacklist
 			$blacklistarray = explode(chr(10),$blacklist['content']);
-			$updateblacklist = $db->updateExternalBlacklist($blacklistarray);
-			echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
+			
+			# Perform a very small snaity check on the blacklist
+			if ((count($blacklistarray) > 5) && (strlen($blacklistarray[0]) < 10)) {
+				$updateblacklist = $db->updateExternalBlacklist($blacklistarray);
+				echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
+			} else {
+				echo "Blacklist is probably corrupt, skipping" . PHP_EOL;
+			} # else				
 		}
 	} catch(Exception $x) {
 		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
