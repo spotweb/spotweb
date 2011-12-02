@@ -120,7 +120,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
-			 "<td class='date'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
+			 "<td class='date' title='" . $tplHelper->formatDate($spot['stamp'], 'force_spotlist') . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {
 			echo "<td class='filesize'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
