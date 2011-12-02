@@ -12,9 +12,9 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 		
 		# als het geen anonymous user is
-		if ($this->_currentSession['user']['userid'] != 1) {
+		if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
 			$spotUserSystem->removeSession($this->_currentSession['session']['sessionid']);
-			
+
 			echo '<xml><result>OK</result></xml>';
 		} else {
 			echo '<xml><result>ERROR</result></xml>';
