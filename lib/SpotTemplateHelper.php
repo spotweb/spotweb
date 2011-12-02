@@ -844,6 +844,8 @@ class SpotTemplateHelper {
 	function formatDate($stamp, $type) {
 		if (empty($stamp)) {
 			return "onbekend";
+		} elseif (substr($type, 0, 6) == 'force_') {
+			return strftime("%a, %d-%b-%Y (%H:%M)", $stamp);
 		} elseif ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
 			return $this->time_ago($stamp);
 		} else {
