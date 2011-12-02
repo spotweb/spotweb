@@ -47,6 +47,9 @@ include "includes/form-messages.inc.php";
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
 			<li><a href="#edituserpreftab-6"><span><?php echo _('Posting of spots'); ?></span></a></li>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) { ?>
+			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo _('Blacklist spotter'); ?>"><span><?php echo _('Blacklist spotter'); ?></span></a></li>
+<?php } ?>
 	
 		</ul>
 			

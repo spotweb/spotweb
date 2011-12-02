@@ -1725,16 +1725,38 @@ class SpotDb {
 	function addSpotterToBlacklist($spotterId, $ourUserId, $origin) {
 		$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid) VALUES ('%s', '%s', %d)",
 					Array($spotterId, $origin, (int) $ourUserId));
-	} // addSpotterToBlackList
+	} # addSpotterToBlackList
+
+	/*
+	 * Removes a specific spotter from the blacklis
+	 */
+	function removeSpotterFromBlacklist($spotterId, $ourUserId) {
+		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE ouruserid = %d AND spotterid = '%s'",
+					Array((int) $ourUserId, $spotterId));
+	} # addSpotterToBlackList
 	
 	/*
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function getSpotterBlacklist($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+		return $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
 					Array((int) $ourUserId));
 	} # getSpotterBlacklist
 
+	/*
+	 * Returns one specific blacklisted record for a given spotterid
+	 */
+	function getBlacklistForSpotterId($userId, $spotterId) {
+		$tmp = $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d and spotterid = '%s'",
+					Array($userId, $spotterId));
+					
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} else {
+			return false;
+		} # else
+	} # getBlacklistForSpotterId
+	
 	/*
 	 * Geeft alle blacklisted spotterid's terug
 	 */

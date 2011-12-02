@@ -1761,3 +1761,18 @@ msgstr "Instellingen wijzigen"
 msgid "Default newsserver"
 msgstr "Standaard nieuwsserver"
 
+# editspotterblacklist.inc.php
+msgid "Remove spotter from blacklist"
+msgstr "Spotter van blacklist afhalen"
+
+msgid "Spotter ID"
+msgstr "Spotter ID"
+
+msgid "Origin"
+msgstr "Oorsprong"
+
+msgid "Remove spotterid"
+msgstr "Spotterid verwijderen"
+
+
+
