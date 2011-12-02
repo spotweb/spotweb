@@ -28,7 +28,7 @@
 	  }
 ?>
 
-				<div class="toolbarButton config dropdown">
+				<div class="toolbarButton config dropdown left">
 					<ul>
 						<li><p><a>Config</a></p>
 							<ul>
