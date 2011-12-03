@@ -829,13 +829,9 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 } // ajaxSubmitFormWithCb
 
 function userLogout() {
-	var url = '?page=logout';
-
-	$("div.userPanel > a.greyButton").hide();
-	$("div.userPanel > a.greyButton").before("<span class='info'><img src='templates/we1rdo/img/loading.gif' /></span>");
+	var url = createBaseURL() + '?page=logout';
 	$.get(url, function(data) {
-		setTimeout( function() { $("span.info").html("<t>Successfully logged out</t>") }, 1000);
-		setTimeout( function() { location.reload() }, 2000);
+		window.location.reload();
 	});
 } 
 
