@@ -656,15 +656,9 @@ class SpotDb {
 		# vraag eerst het id op
 		$spot = $this->getSpotHeader($messageId);
 
-		/*
-		 * The spot might be empty because - for example, the spot
-		 * is moderated (and hence deleted), the highest spot retrieved
-		 * might be missing from the database because of the spam cleanup.
-		 *
-		 * Ignore this error
-		 */
+		# als deze spot leeg is, is er iets raars aan de hand
 		if (empty($spot)) {
-			return ;
+			throw new Exception("Our highest spot is not in the database!?");
 		} # if
 
 		# en wis nu alles wat 'jonger' is dan deze spot
