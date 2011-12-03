@@ -579,3 +579,41 @@ div.newspotdiv form dt#txtsubcata  { width: auto; margin-right: 6px; }
 div.newspotdiv form div.categorydropdown,
 div.newspotdiv form div.subcategorylistbox { float: left; width: 200px; }
 div.newspotdiv form div.subcategorylistbox select { width: 192px; }
+
+/* jquery UI overrides to make it be more in we1rdo's template style */
+.ui-widget .ui-widget,
+.ui-widget input, 
+.ui-widget select, 
+.ui-widget { font-size: 11px; }
+
+table.ui-widget,
+table.ui-widget-content  {
+	border-collapse: separate;
+	border-spacing:0 0px; 
+	width:100%; 
+	margin:-2px 0 0 0;
+	border: 1px solid black;
+}
+
+table.ui-widget tr,
+table.ui-widget-content  tr {
+	line-height: 20px;
+} 
+
+tr.ui-widget-header {
+	text-align:left; 
+	color:#fff; 
+	background:url(../img/sprite_x.png) repeat-x 0 -40px; 
+	border: none;
+	line-height:20px; 
+	height:20px; 
+	padding:0 0 0 5px; 
+	text-shadow:1px 1px #000;
+	border-spacing: 0;	
+}
+
+   
+tr.ui-widget-header a {
+	color:#fff; 
+	display:inline;
+}
