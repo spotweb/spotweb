@@ -125,10 +125,10 @@ function refreshTab(tabName) {
  * url = url van de content waar deze dialog geladen zou moeten worden
  * formname = naam van het formulier, dit is nodig om de submit buttons te attachen
  * buttonClick = functie welke aangeroepen moe worden als men op de submit button clickt
- * autoClose = moet het formulier automatisch sluiten als het resultaat 'success' was?
+ * successAction = choice of 'autoclose', 'showresultonly', 'reload'
  * closeCb = functie welke aangeroepen moet worden als de dialog gesloten wordt
  */
-function openDialog(divid, title, url, formname, buttonClick, autoClose, closeCb) {
+function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb) {
 	var $dialdiv = $("#" + divid);
   
     if (!$dialdiv.is(".ui-dialog-content")) {
@@ -169,26 +169,37 @@ function openDialog(divid, title, url, formname, buttonClick, autoClose, closeCb
 					var $dialdiv = $("#"+divid)
 					var result = $(xml).find('result').text();
 					
-					if ((result == 'success') && (autoClose)) {
-						$dialdiv.empty();
+					if ((result == 'success') && (successAction == 'autoclose')) {
 						$dialdiv.dialog('close');
+						$dialdiv.empty();
 						
 						if (closeCb) {
 							closeCb();
 						} // if
 					} else {						
 						/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
-						if (!autoClose) {
+						if (successAction == 'reload') {
 							loadDialogContent(false);
 						} // if
+						
+						if ((successAction == 'showresultsonly') && (result == 'success')) {
+							$dialdiv.empty();
+							
+							/* Create the empty elements to show the errors/information in */
+							$dialdiv.html("<ul class='formerrors'></ul><ul class='forminformation'></ul>");
+						} // if
 
-						// voeg nu de errors in de html
 						var $formerrors = $dialdiv.find("ul.formerrors");
 						$formerrors.empty();
-
-						// zet de errors van het formulier in de errorlijst
 						$('errors', xml).each(function() {
 							$formerrors.append("<li>" + $(this).text() + "</li>");
+						}); // each
+
+						// Add the information items to the form
+						var $forminfo = $dialdiv.find("ul.forminformation");
+						$forminfo.empty();
+						$('info', xml).each(function() {
+							$forminfo.append("<li>" + $(this).text() + "</li>");
 						}); // each
 					} // if post was not succesful
 				} // success()

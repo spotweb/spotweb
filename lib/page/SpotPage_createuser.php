@@ -68,12 +68,12 @@ class SpotPage_createuser extends SpotPage_Abs {
 				$spotUserSystem->addUser($spotUser);
 				
 				# als het toevoegen van de user gelukt is, laat het weten
-				$createResult = array('result' => 'success',
-									  'user' => $spotUser['username'],
-									  'password' => $spotUser['newpassword1']);
+				$createResult = array('result' => 'success');
+				$formMessages['info'][] = sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']);
+				$formMessages['info'][] = sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']);
 
 				# verstuur een e-mail naar de nieuwe gebruiker als daar om is gevraagd
-				$sendMail = (isset($this->_createUserForm['sendmail'])) ? true : false;
+				$sendMail = isset($this->_createUserForm['sendmail']);
 				if ($sendMail || $this->_settings->get('sendwelcomemail')) {
 					$spotsNotifications->sendNewUserMail($spotUser);
  				} # if 
