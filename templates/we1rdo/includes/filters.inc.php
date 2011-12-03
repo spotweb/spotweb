@@ -45,7 +45,7 @@
 <?php } ?>
 
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-				<div class="toolbarButton config dropdown"><ul>
+				<div class="toolbarButton config dropdown right"><ul>
 					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
 	<?php if (
