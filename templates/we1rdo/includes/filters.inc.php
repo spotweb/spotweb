@@ -56,7 +56,7 @@
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
 		 ) { ?>
-				<div class="toolbarButton config dropdown left"><ul>
+				<div class="toolbarButton config dropdown right"><ul>
 					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
