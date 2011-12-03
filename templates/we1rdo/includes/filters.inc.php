@@ -27,9 +27,6 @@
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
 						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose',  function() { window.location.reload(); });"><?php echo _('Change user'); ?></a></li>
 	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
-	<?php } ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 						<li><a href="#" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
 	<?php } ?>
@@ -46,8 +43,9 @@
 				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, 'autoclose', null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
 <?php } ?>
 
-<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
-		if (
+<?php if (
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) 
+				||
 			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
 				|| 
 			($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, ''))
@@ -61,6 +59,9 @@
 				<div class="toolbarButton config dropdown"><ul>
 					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
+						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
+	<?php } ?>
 	<?php if (
 			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
 				|| 
@@ -81,7 +82,6 @@
 					</li>
 				</ul></div>
 <?php 
-		}
 	}
 ?>
 			<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between static or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
