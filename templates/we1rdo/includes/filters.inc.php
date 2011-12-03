@@ -20,20 +20,17 @@
 					><?php echo _("Log in"); ?></a></p>
 <?php } ?>
 					<ul>
+<?php if (($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) && ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID)) { ?>
+					<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }); "><?php echo _('Login'); ?></a></li>
+<?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
 						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', 'createuserform', null, 'showresultsonly', null); "><?php echo _('Add user'); ?></a></li>
 <?php } ?>
-<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
 						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose',  function() { window.location.reload(); });"><?php echo _('Change user'); ?></a></li>
-	<?php } ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
+<?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 						<li><a href="#" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
-	<?php } ?>
-<?php } else { ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }); "><?php echo _('Login'); ?></a></li>
-	<?php } ?>
 <?php } ?>
 					</ul></li>
 					</li>
