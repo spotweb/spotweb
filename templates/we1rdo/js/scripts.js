@@ -831,6 +831,9 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 function userLogout() {
 	var url = createBaseURL() + '?page=logout';
 	$.get(url, function(data) {
+		/* Remove the cookie as sometimes there is some kind of timing issue */
+		$.cookie('spotsession', null);
+		
 		window.location.reload();
 	});
 } 
