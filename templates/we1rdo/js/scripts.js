@@ -614,10 +614,10 @@ $(function(){
 	$("input[name='search[unfiltered]']").click(function() {
 		if($("div#tree").is(":visible")) {
 			$("div#tree").hide();
-			$("ul.clearCategories label").html('<t>Use Categories</t>');
+			$("ul.clearCategories label").html('<t>Use categories</t>');
 		} else {
 			$("div#tree").show();
-			$("ul.clearCategories label").html('<t>Disable Catergories</t>');
+			$("ul.clearCategories label").html("<t>Don't use categories</t>");
 		}
 	});
 });
@@ -645,38 +645,6 @@ function toggleSidebarPanel(id) {
 			$(id).fadeIn();
 		}
 
-		if(id == ".userPanel") {
-			$("div.login").load('?page=login', function() {
-				$('form.loginform').submit(function(){ 
-					var xsrfid = $("form.loginform input[name='loginform[xsrfid]']").val();
-					var username = $("form.loginform input[name='loginform[username]']").val();
-					var password = $("form.loginform input[name='loginform[password]']").val();
-					
-					var url = $("form.loginform").attr("action");
-					var dataString = 'loginform[xsrfid]=' + xsrfid + '&loginform[username]=' + username + '&loginform[password]=' + password + '&loginform[submit]=true';
-	
-					$.ajax({
-						type: "POST",
-						url: url,
-						dataType: "xml",
-						data: dataString,
-						success: function(xml) {
-							result = $(xml).find('result').text();
-	
-							$("div.login ul.formerrors > li").empty()
-							if(result == "failure") {
-								$("div.login > ul.formerrors").append("<li><t>Login Failed</t></li>");
-							} else {
-								$("div.login > ul.forminformation").append("<li><t>Successfully logged in</t></li>");
-								setTimeout( function() { location.reload() }, 2000);
-							}
-						}
-					});
-					return false;
-				});	
-			});
-		}
-		
 		if(id == ".sabnzbdPanel") {
 			updateSabPanel(1,5);
 		}
@@ -849,7 +817,6 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	}); // ajax call om de form te submitten
 } // ajaxSubmitFormWithCb
 
-// User systeem
 function userLogout() {
 	var url = '?page=logout';
 
@@ -859,119 +826,7 @@ function userLogout() {
 		setTimeout( function() { $("span.info").html("<t>Successfully logged out</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
 	});
-}
-
-function toggleCreateUser() {
-	var url = '?page=createuser';
-
-	if($("div.createUser").html() && $("div.createUser").is(":visible")) {
-		$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("up").addClass("down");
-		$("div.createUser").hide();
-	} else {
-		if($("div.createUser")) {$("div.createUser").html()}		
-		$("div.createUser").load(url, function() {
-			$("div.createUser").show();
-			$("div.userPanel > a.viewState > h4 > span.createUser").removeClass("down").addClass("up");
-
-			$('form.createuserform').submit(function(){ 
-				var xsrfid = $("form.createuserform input[name='createuserform[xsrfid]']").val();
-				var username = $("form.createuserform input[name='createuserform[username]']").val();
-				var firstname = $("form.createuserform input[name='createuserform[firstname]']").val();
-				var lastname = $("form.createuserform input[name='createuserform[lastname]']").val();
-				var mail = $("form.createuserform input[name='createuserform[mail]']").val();
-				var sendmail = $("form.createuserform input[name='createuserform[sendmail]']").is(':checked');
-
-				var url = $("form.createuserform").attr("action");
-				var dataString = 'createuserform[xsrfid]=' + xsrfid + '&createuserform[username]=' + username + '&createuserform[firstname]=' + firstname + '&createuserform[lastname]=' + lastname + '&createuserform[mail]=' + mail + '&createuserform[sendmail]=' + sendmail + '&createuserform[submit]=true';
-
-				$.ajax({
-					type: "POST",
-					url: url,
-					dataType: "xml",
-					data: dataString,
-					success: function(xml) {
-						var result = $(xml).find('result').text();
-						
-						$("div.createUser > ul.forminformation").empty();
-						$("div.createUser > ul.formerrors").empty();
-						if(result == "success") {
-							var user = $(xml).find('user').text();
-							var pass = $(xml).find('password').text();
-							$("div.createUser > ul.forminformation").append("<li><t>User <strong>&quot;%user%&quot;</strong> successfully added</t></li>".replace('%user%', user));
-							$("div.createUser > ul.forminformation").append("<li><t>Password: <strong>&quot;%pass%</strong></t></li>".replace('%pass%', pass));							
-						} else {
-							$('errors', xml).each(function() {
-								$("div.createUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
-							});
-						}
-					}
-				});
-				return false;
-			});	
-		});
-	}
-}
-
-function toggleEditUser(userid) {
-	var url = '?page=edituser&userid='+userid;
-
-	if($("div.editUser").html() && $("div.editUser").is(":visible")) {
-		$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("up").addClass("down");
-		$("div.editUser").hide();
-	} else {
-		if($("div.editUser")) {$("div.editUser").html()}		
-		$("div.editUser").load(url, function() {
-			$("div.editUser").show();
-			$("div.userPanel > a.viewState > h4 > span.editUser").removeClass("down").addClass("up");
-
-			$(".greyButton").click(function(){
-				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
-			});
-			$(".resetApiSubmit").click(function(){
-				$("form.edituserform input[name='edituserform[buttonpressed]']").val(this.name);
-			});
-
-			$('form.edituserform').submit(function(){
-				var xsrfid = $("form.edituserform input[name='edituserform[xsrfid]']").val();
-				var action = $("form.edituserform input[name='edituserform[action]']").val();
-				var newpassword1 = $("form.edituserform input[name='edituserform[newpassword1]']").val();
-				var newpassword2 = $("form.edituserform input[name='edituserform[newpassword2]']").val();
-				var firstname = $("form.edituserform input[name='edituserform[firstname]']").val();
-				var lastname = $("form.edituserform input[name='edituserform[lastname]']").val();
-				var mail = $("form.edituserform input[name='edituserform[mail]']").val();
-				
-				// determine which button was pressed
-				var buttonPressed = $("form.edituserform input[name='edituserform[buttonpressed]']").val();
-				var dataString = 'edituserform[xsrfid]=' + xsrfid + '&userid=' + userid + '&' + buttonPressed + '=true&edituserform[newpassword1]=' + newpassword1 + '&edituserform[newpassword2]=' + newpassword2 + '&edituserform[firstname]=' + firstname + '&edituserform[lastname]=' + lastname + '&edituserform[mail]=' + mail;
-
-				$.ajax({
-					type: "POST",
-					url: url,
-					dataType: "xml",
-					data: dataString,
-					success: function(xml) {
-						var result = $(xml).find('result').text();
-
-						$("div.editUser > ul.forminformation").empty();
-						$("div.editUser > ul.formerrors").empty();
-						if(result == "success") {
-							$("div.editUser > ul.forminformation").append("<li><t>User successfully changed</t></li>");
-							
-							if (buttonPressed == 'edituserform[submitresetuserapi]') {
-								$(".apikeyinputfield")[0].value = $(xml).find('newapikey').text();
-							} // if
-						} else {
-							$('errors', xml).each(function() {
-								$("div.editUser > ul.formerrors").append("<li>"+$(this).text()+"</li>");
-							});
-						}
-					}
-				});
-				return false;
-			});
-		});
-	}
-}
+} 
 
 // SabNZBd actions
 function sabBaseURL() {
