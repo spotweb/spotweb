@@ -656,9 +656,15 @@ class SpotDb {
 		# vraag eerst het id op
 		$spot = $this->getSpotHeader($messageId);
 
-		# als deze spot leeg is, is er iets raars aan de hand
+		/*
+		 * The spot might be empty because - for example, the spot
+		 * is moderated (and hence deleted), the highest spot retrieved
+		 * might be missing from the database because of the spam cleanup.
+		 *
+		 * Ignore this error
+		 */
 		if (empty($spot)) {
-			throw new Exception("Our highest spot is not in the database!?");
+			return ;
 		} # if
 
 		# en wis nu alles wat 'jonger' is dan deze spot
@@ -1739,7 +1745,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function getSpotterBlacklist($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
 					Array((int) $ourUserId));
 	} # getSpotterBlacklist
 
@@ -1747,7 +1753,7 @@ class SpotDb {
 	 * Returns one specific blacklisted record for a given spotterid
 	 */
 	function getBlacklistForSpotterId($userId, $spotterId) {
-		$tmp = $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d and spotterid = '%s'",
+		$tmp = $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d and spotterid = '%s'",
 					Array($userId, $spotterId));
 					
 		if (!empty($tmp)) {

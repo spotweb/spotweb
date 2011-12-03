@@ -46,7 +46,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			# also replace any internationalisation strings in JS. 
 			# Code copied from:
 			#	http://stackoverflow.com/questions/5069321/preg-replace-and-gettext-problem
-			$fc = preg_replace_callback("%\<t\>([a-zA-Z0-9,\.\\s\(\))]*)\</t\>%is", array($this, 'cbGetText'), $fc); 
+			$fc = preg_replace_callback("%\<t\>([a-zA-Z0-9',\.\\s\(\))]*)\</t\>%is", array($this, 'cbGetText'), $fc); 
 			
 			$tmp .= $fc;
 		} # foreach
