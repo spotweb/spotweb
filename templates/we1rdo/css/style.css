@@ -589,7 +589,7 @@ div.newspotdiv form div.subcategorylistbox select { width: 192px; }
 table.ui-widget,
 table.ui-widget-content  {
 	border-collapse: separate;
-	border-spacing:0 0px; 
+	border-spacing:0 0; 
 	width:100%; 
 	margin:-2px 0 0 0;
 	border: 1px solid black;
