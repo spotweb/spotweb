@@ -15,8 +15,10 @@
 					<li><p><a
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
 					title="<?php echo sprintf(_('Last seen: %s ago'), $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit')); ?>"
-<?php } ?>
 					><?php echo $currentSession['user']['username']; ?></a></p>
+<?php } else { ?>
+					><?php echo _("Log in"); ?></a></p>
+<?php } ?>
 					<ul>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
 						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', 'createuserform', null, 'showresultsonly', null); "><?php echo _('Add user'); ?></a></li>
