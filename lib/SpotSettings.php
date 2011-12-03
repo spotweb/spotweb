@@ -185,8 +185,8 @@ class SpotSettings {
 
 	function setSettings($settings) {
 		# If we disable the external blacklist, clear all entries
-		if ($settings['external_blacklist'] == false && $this->_settings->get('external_blacklist') == true) {
-			$this->_db->removeOldBlackList($this->_settings->get('blacklist_url'));
+		if ($settings['external_blacklist'] == false && $this->get('external_blacklist') == true) {
+			$this->_db->removeOldBlackList($this->get('blacklist_url'));
 		} # if
 
 		# clear some stuff we don't need to store
