@@ -806,13 +806,13 @@ msgstr "MultiNZB"
 msgid "Reset selection"
 msgstr "Reset selectie"
 
-msgid "Open 'User Panel'"
-msgstr "Open 'Gebruikers Paneel'"
-
 msgid "Add spot"
 msgstr "Spot toevoegen"
 
-msgid "Switch between nailed or scrolling sidebar"
+msgid "Config"
+msgstr "Configuratie"
+
+msgid "Switch between static or scrolling sidebar"
 msgstr "Wissel tussen vaste en meescrollende sidebar"
 
 msgid "Search within current filters"
@@ -873,13 +873,13 @@ msgid "1 year"
 msgstr "1 jaar"
 
 msgid "Categories"
-msgstr "Categori&euml;n"
+msgstr "Categorie&euml;n"
 
 msgid "Use categories"
-msgstr "Categori&euml;n gebruiken"
+msgstr "Categorie&euml;n gebruiken"
 
 msgid "Don't use categories"
-msgstr "Categori&euml;n niet gebruiken"
+msgstr "Categorie&euml;n niet gebruiken"
 
 msgid "Number of reports"
 msgstr "Aantal reports"
@@ -890,17 +890,11 @@ msgstr "Voeg een filter toe"
 msgid "Save search as filter"
 msgstr "Sla opdracht op als filter"
 
-msgid "Close 'User panel'"
-msgstr "Sluit 'Gebruikers paneel'"
-
-msgid "User panel"
-msgstr "Gebruikers paneel"
-
 msgid "You are not logged in"
 msgstr "U bent niet ingelogd"
 
-msgid "Last seen: %s"
-msgstr "Laatst gezien: %s"
+msgid "Last seen: %s ago"
+msgstr "Laatst gezien: %s geleden"
 
 msgid "Change preferences"
 msgstr "Voorkeuren wijzigen"
@@ -1109,12 +1103,6 @@ msgstr "Maak sidebar niet altijd zichtbaar"
 
 msgid "Make sidebar always visible"
 msgstr "Maak sidebar altijd zichtbaar"
-
-msgid "Use Categories"
-msgstr "Categori&euml;n gebruiken"
-
-msgid "Disable Catergories"
-msgstr "Categori&euml;n niet gebruiken"
 
 msgid "Login Failed"
 msgstr "Inloggen mislukt"

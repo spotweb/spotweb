@@ -1745,7 +1745,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function getSpotterBlacklist($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
 					Array((int) $ourUserId));
 	} # getSpotterBlacklist
 
@@ -1753,7 +1753,7 @@ class SpotDb {
 	 * Returns one specific blacklisted record for a given spotterid
 	 */
 	function getBlacklistForSpotterId($userId, $spotterId) {
-		$tmp = $this->_conn->arrayQuery("SELECT id, spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d and spotterid = '%s'",
+		$tmp = $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d and spotterid = '%s'",
 					Array($userId, $spotterId));
 					
 		if (!empty($tmp)) {

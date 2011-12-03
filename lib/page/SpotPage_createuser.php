@@ -73,8 +73,8 @@ class SpotPage_createuser extends SpotPage_Abs {
 									  'password' => $spotUser['newpassword1']);
 
 				# verstuur een e-mail naar de nieuwe gebruiker als daar om is gevraagd
-				if (($this->_createUserForm['sendmail'] == "true" || $this->_createUserForm['sendmail'] == "on") || 
-					$this->_settings->get('sendwelcomemail')) {
+				$sendMail = (isset($this->_createUserForm['sendmail'])) ? true : false;
+				if ($sendMail || $this->_settings->get('sendwelcomemail')) {
 					$spotsNotifications->sendNewUserMail($spotUser);
  				} # if 
 
