@@ -29,7 +29,7 @@
 						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
 	<?php } ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
-						<li><a href="" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
+						<li><a href="#" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
 	<?php } ?>
 <?php } else { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
@@ -44,8 +44,19 @@
 				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, 'autoclose', null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
 <?php } ?>
 
-<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-				<div class="toolbarButton config dropdown right"><ul>
+<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
+		if (
+			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, ''))
+				||
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_securitygroups, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
+		 ) { ?>
+				<div class="toolbarButton config dropdown"><ul>
 					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
 	<?php if (
@@ -67,7 +78,10 @@
 					</ul></li>
 					</li>
 				</ul></div>
-<?php } ?>
+<?php 
+		}
+	}
+?>
 			<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between static or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
