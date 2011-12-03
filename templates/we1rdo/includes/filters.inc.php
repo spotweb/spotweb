@@ -23,7 +23,7 @@
 <?php } ?>
 <?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose', null);"><?php echo _('Change user'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose',  function() { window.location.reload(); });"><?php echo _('Change user'); ?></a></li>
 	<?php } ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
 						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
@@ -33,7 +33,7 @@
 	<?php } ?>
 <?php } else { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, true, null); "><?php echo _('Login'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }); "><?php echo _('Login'); ?></a></li>
 	<?php } ?>
 <?php } ?>
 					</ul></li>
