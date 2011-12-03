@@ -11,36 +11,64 @@
 					<?php } ?>
 				</div>
 
-				<div class="toolbarButton logininfo"><p><a onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Open 'User Panel'"); ?>">
-<?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
-					Inloggen
+				<div class="toolbarButton logininfo dropdown right"><ul>
+					<li><p><a
+<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
+					title="<?php echo sprintf(_('Last seen: %s ago'), $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit')); ?>"
+<?php } ?>
+					><?php echo $currentSession['user']['username']; ?></a></p>
+					<ul>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
+						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', 'createuserform', null, 'showresultsonly', null); "><?php echo _('Add user'); ?></a></li>
+<?php } ?>
+<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
+						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose', null);"><?php echo _('Change user'); ?></a></li>
+	<?php } ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
+						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
+	<?php } ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
+						<li><a href="" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
 	<?php } ?>
 <?php } else { ?>
-					<?php echo $currentSession['user']['firstname']; ?>
+	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
+						<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, true, null); "><?php echo _('Login'); ?></a></li>
+	<?php } ?>
 <?php } ?>
-				</a></p></div>
+					</ul></li>
+					</li>
+				</ul></div>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) {
-		if ($currentSession['user']['userid'] > 2) { ?>
-				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, true, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
-<?php 	} 
-	  }
-?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '') && $currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) { ?>
+				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, 'autoclose', null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
+<?php } ?>
 
-				<div class="toolbarButton config dropdown left">
+<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
+				<div class="toolbarButton config dropdown"><ul>
+					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
-						<li><p><a>Config</a></p>
-							<ul>
-								<li><a href="#">General settings</a></li>
-								<li><a href="#">Admin settings</a></li>
-								<li><a href="#">User settings</a></li>
-							</ul>
-						</li>
-					</ul>
-				</div>
-
-				<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between nailed or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
+	<?php if (
+			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, ''))
+	) { ?>
+						<li><a href="?page=editsettings"><?php echo _('Settings'); ?></a></li>
+	<?php } ?>
+	<?php if (
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_edit_securitygroups, ''))
+				|| 
+			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
+		 ) { ?>
+					<li><a href="?page=render&amp;tplname=usermanagement"><?php echo _('User &amp; group management'); ?></a></li>
+	<?php } ?>
+					</ul></li>
+					</li>
+				</ul></div>
+<?php } ?>
+			<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between static or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
 				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
@@ -175,7 +203,7 @@
 						<ul class="search clearCategories onecol">
 							<li> <input type="checkbox" name="search[unfiltered]" value="true" <?php echo $parsedsearch['unfiltered'] == "true" ? 'checked="checked"' : '' ?>>
 							
-							<label><?php if ($parsedsearch['unfiltered'] == 'true') { echo _('Use categories'); } else { echo _('Don\'t use categories'); } ?></label> </li>
+							<label><?php if ($parsedsearch['unfiltered'] == 'true') { echo _("Use categories"); } else { echo _("Don't use categories"); } ?></label> </li>
 						</ul>
 
 <?php if ($settings->get('retrieve_reports')) { ?>
@@ -186,70 +214,11 @@
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 						<h4><?php echo _('Filters'); ?></h4>
-						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Add a filter'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, true, null); " class="greyButton addFilter"><?php echo _('Save search as filter'); ?></a>
+						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Add a filter'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo $tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(); ?>', 'editfilterform', null, 'autoclose', null); " class="greyButton addFilter"><?php echo _('Save search as filter'); ?></a>
 <?php } ?>
 				</div>
 			</form>
 <?php } # if perform search ?>
-
-				<div class="sidebarPanel userPanel">
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.userPanel')" title="<?php echo _("Close 'User panel'"); ?>">[x]</a><?php echo _('User panel'); ?></h4>
-					<ul class="userInfo">
-<?php if ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) { ?>
-						<li><?php echo _('You are not logged in'); ?></li>
-<?php } else { ?>
-						<li><?php echo _('User') . " <strong>" . $currentSession['user']['firstname'] . " " . $currentSession['user']['lastname'] . "</strong>"; ?></li>
-						<li><?php echo sprintf(_('Last seen: %s'), "<strong>" . $tplHelper->formatDate($currentSession['user']['lastvisit'], 'lastvisit') . " geleden</strong>"); ?></li>
-<?php } ?>
-					</ul>
-
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
-					<a class="viewState" onclick="toggleCreateUser()"><h4><?php echo _('Add user'); ?><span class="createUser down"></span></h4></a>
-					<div class="createUser"></div>
-<?php } ?>
-
-<?php if ($currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) { ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
-					<a class="viewState" onclick="toggleEditUser('<?php echo $currentSession['user']['userid'] ?>')"><h4><?php echo _('Change user'); ?><span class="editUser down"></span></h4></a>
-					<div class="editUser"></div>
-	<?php } ?>
-
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
-					<h4 class="dropdown"><a class="editUserPrefs down" href="?page=edituserprefs"><?php echo _('Change preferences'); ?></a></h4>
-					<div class="editUserPrefs"></div>
-	<?php } ?>
-
-	<?php if (
-			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))
-				|| 
-			($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, ''))
-		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=editsettings"><?php echo _('Settings'); ?></a></h4>
-					<div class="listUsers"></div>
-	<?php } ?>
-
-	<?php if (
-			($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, ''))
-				|| 
-			($tplHelper->allowed(SpotSecurity::spotsec_edit_securitygroups, ''))
-				|| 
-			($tplHelper->allowed(SpotSecurity::spotsec_list_all_users, ''))
-		 ) { ?>
-					<h4 class="dropdown"><a class="listUsers down" href="?page=render&amp;tplname=usermanagement"><?php echo _('User &amp; group management'); ?></a></h4>
-					<div class="listUsers"></div>
-	<?php } ?>
-
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
-					<h4 class="dropdown"><?php echo _('Log out'); ?></h4>
-					<a onclick="userLogout()" class="greyButton"><?php echo _('Log out'); ?></a>
-	<?php } ?>
-<?php } else { ?>
-	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) { ?>
-					<h4><?php echo _('Login'); ?></h4>
-					<div class="login"></div>
-	<?php } ?>
-<?php } ?>
-				</div>
 
 				<div class="sidebarPanel sabnzbdPanel">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
