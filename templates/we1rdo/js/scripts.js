@@ -505,7 +505,7 @@ $(document).ready(function() {
 	var BaseURL = createBaseURL();
 	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#edituserpreferencetabs").tabs();
-	$("#adminpaneltabs").tabs();
+	$("#usermanagementtabs").tabs();
 
 	/* VOor de user preferences willen we de filter list sorteerbaar maken
 	   op het moment dat die tab klaar is met laden */
