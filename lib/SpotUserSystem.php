@@ -483,6 +483,13 @@ class SpotUserSystem {
 			} # if
 		} # if
 
+		# When a 'runcommand' action is chosen, 'command' is a mandatry setting
+		if ($prefs['nzbhandling']['action'] == 'runcommand') {
+			if (empty($prefs['nzbhandling']['command'])) {
+				$errorList[] = _('When NZB handling is "runcommand" a command must be entered');
+			} # if
+		} # if
+
 		# For the 'growl' notification provider, a host is mandatory
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {

@@ -1007,7 +1007,10 @@ msgid "Default value for a spots' body is too long"
 msgstr "De standaard body waarde voor een nieuwe spot is te lang"
 
 msgid "When NZB handling is either \"save\" or \"runcommand\" the directory must be entered"
-msgstr "Als NZB handeling op \"save\" of \"runcommand\" staat, moet er een directory opgegeven worden"
+msgstr "Als NZB afhandeling op \"save\" of \"runcommand\" staat, moet er een directory opgegeven worden"
+
+msgid "When NZB handling is \"runcommand\" a command must be entered"
+msgstr "Als NZB afhandeling op \"runcommand\" staat, moet er een commando opgegeven worden"
 
 msgid "Growl notifications require a growl host to be entered"
 msgstr "Growl notificaties vereisen een growl host"
