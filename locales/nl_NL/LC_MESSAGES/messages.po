@@ -683,7 +683,7 @@ msgid "Run SABnzbd through users' browser"
 msgstr "Roep SABnzbd aan via de users' browser"
 
 msgid "Save to file op disk"
-msgstr "Bewaar bestand op schrijf"
+msgstr "Bewaar bestand op schijf"
 
 msgid "Save file to disk and run a command"
 msgstr "Bewaar bestand op schijf en roep een commando aan"
