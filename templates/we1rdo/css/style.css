@@ -502,6 +502,7 @@ div.details form.postreportform fieldset dl {margin:0;}
 div.details form.postreportform fieldset dd {margin:0;}
 div.details form.postreportform input.greyButton {display:inline; margin: 0;}
 
+div.details table.spotinfo a.addspotterasfilter,
 div.details table.spotinfo a.addtagasfilter {background:url(../img/sprite.png) no-repeat -88px -146px; background-color: 0; text-decoration: none; min-width: 16px;  }
 
 /* VERSION CHECK */
