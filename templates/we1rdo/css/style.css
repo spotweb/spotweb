@@ -16,7 +16,7 @@ div.clear {clear:both;}
 
 /* TOOLBAR */
 div#toolbar {background:url(../img/sprite_x.png) repeat-x 0 -80px; height:25px;}
-body.fixed div#toolbar {position:fixed; top:0; left:0; right:0; z-index:3;}
+body.fixed div#toolbar {top:0; left:0; right:0; position:fixed; z-index:3;}
 
 div#toolbar span.scroll {position:absolute; overflow:hidden; top:4px; left:4px;}
 span.scroll:not(.foo) input#filterscroll {opacity:0; position:absolute; left:0; margin:0; width:19px; height:15px; float:left; cursor:pointer;}
