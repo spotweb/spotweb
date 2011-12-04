@@ -15,7 +15,9 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 	} # connect()
 	
 	function safe($s) {
-		return sqlite_escape_string($s);
+		return SQLite3::escapeString($s);
+		// sqlite module is deprecated in more recnt PHP versions, hence wont work
+		// 	return sqlite_escape_string($s);
 	} # safe
 	
 	/*
