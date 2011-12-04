@@ -1417,7 +1417,7 @@ function downloadMappingTypeChanged() {
 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatd'}, false, false);
 } // downloadMappingTypeChanged
 
-function addFilter(xsrf, filterType, filterValue, filterName) {
+function addFilter(xsrf, filterType, filterValue, filterName, addElementClass) {
 	var formData = 'editfilterform[xsrfid]=' + escape(xsrf);
 	formData += '&editfilterform[filterid]=9999';
 	formData += '&editfilterform[tree]=';
@@ -1437,8 +1437,9 @@ function addFilter(xsrf, filterType, filterValue, filterName) {
 		success: function(xml) {
 			var result = $(xml).find('result').text();
 			
-			alert(result);
-			alert(xml);
+			if (result == 'success') {
+				$("." + addElementClass).remove();
+			} // if
 		} // success()
 	}); // ajax call om de form te submitten
 			
