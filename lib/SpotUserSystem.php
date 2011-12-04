@@ -750,8 +750,8 @@ class SpotUserSystem {
 		$errorList = array();
 
 		# Remove any spaces 
-		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
-		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B'\"");
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
+		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
 		
 		# Make sure a filter name is valid
 		if (strlen($filter['title']) < 3) {

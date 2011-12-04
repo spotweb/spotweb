@@ -502,6 +502,8 @@ div.details form.postreportform fieldset dl {margin:0;}
 div.details form.postreportform fieldset dd {margin:0;}
 div.details form.postreportform input.greyButton {display:inline; margin: 0;}
 
+div.details table.spotinfo a.addtagasfilter {background:url(../img/sprite.png) no-repeat -88px -146px; background-color: 0; text-decoration: none; min-width: 16px;  }
+
 /* VERSION CHECK */
 div.versioncheck div.warning {background-color:#fffce4; border:1px solid #e9a213; color:#e9a213; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:2px 5px 3px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 div.versioncheck ul {padding:0; margin:0;}
