@@ -14,7 +14,6 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 	chdir(__DIR__);
 } # if
 
-
 try {
 	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	
