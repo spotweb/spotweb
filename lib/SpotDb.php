@@ -2077,6 +2077,20 @@ class SpotDb {
 	 */
 	function resetFilterCountForUser($userId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite'	: {
+				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, filterhash FROM filtercounts WHERE userid = -1", array());
+				foreach($filterList as $filter) {
+					$this->_conn->modify("UPDATE filtercounts
+												SET lastvisitspotcount = currentspotcount,
+													currentspotcount = %d
+												WHERE (filterhash = '%s') 
+												  AND (userid = %d)",
+									Array((int) $filter['currentspotcount'], $filter['filterhash'], (int) $userId));
+				} # foreach
+				
+				break;
+			} # sqlite
+			
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f
 											SET f.lastvisitspotcount = f.currentspotcount,
@@ -2132,6 +2146,24 @@ class SpotDb {
 				break;
 			} # pgsql
 
+			case 'pdo_sqlite'	: {
+				/*
+  				 * Update the current filter counts if the session
+				 * is still active
+				 */
+				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
+				foreach($filterList as $filter) {
+					$this->_conn->modify("UPDATE filtercounts
+												SET currentspotcount = %d,
+													lastupdate = %d
+												WHERE (filterhash = '%s') 
+												  AND (userid IN (SELECT userid FROM sessions WHERE lasthit > f.lastupdate GROUP BY userid ))",
+									Array((int) $filter['currentspotcount'], (int) $filter['lastupdate'], $filter['filterhash'], (int) $userId));
+				} # foreach
+				
+				break;
+			} # pdo_sqlite
+			
 			default				: {
 				/*
 				 * We do this in two parts because MySQL seems to fall over 
@@ -2181,6 +2213,25 @@ class SpotDb {
 	 */
 	function markFilterCountAsSeen($userId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_sqlite'	: {
+				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
+				foreach($filterList as $filter) {
+					$this->_conn->modify("UPDATE filtercounts
+												SET lastvisitspotcount = %d,
+													currentspotcount = %d,
+													lastupdate = %d
+												WHERE (filterhash = '%s') 
+												  AND (userid = %d)",
+									Array((int) $filter['currentspotcount'],
+										  (int) $filter['currentspotcount'],
+										  (int) $filter['lastupdate'],
+										  $filter['filterhash'], 
+										  (int) $userId));
+				} # foreach
+				
+				break;
+			} # pdo_sqlite
+			
 			case 'pdo_pgsql'	: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
 										SET f.lastvisitspotcount = t.currentspotcount,

@@ -1,6 +1,6 @@
 <?php
 # db
-$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
+$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_pgsql, mysql en pdo_mysql
 $settings['db']['host'] = 'localhost';
 $settings['db']['dbname'] = 'spotweb';
 $settings['db']['user'] = 'spotweb';
