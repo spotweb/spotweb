@@ -62,7 +62,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="checkbox" name="editsettingsform[sendwelcomemail]" <?php if ($this->_settings->get('sendwelcomemail')) { echo 'checked="checked"'; } ?>></dd>
 
 					<dt><label for="editsettingsform[cookie_expires]"><?php echo _('Cookie expires after (in days)'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo $this->_settings->get('cookie_expires'); ?>"></dd>
+					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo htmlspecialchars($this->_settings->get('cookie_expires'), ENT_QUOTES); ?>"></dd>
 				</dl>
 			</fieldset>
 		</div>
@@ -74,13 +74,13 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			<fieldset class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_nzb][host]"><?php echo _('Hostname'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_nzb][host]" value="<?php echo $nntp_nzb['host']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_nzb][host]" value="<?php echo htmlspecialchars($nntp_nzb['host'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_nzb][user]"><?php echo _('Username'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_nzb][user]" value="<?php echo $nntp_nzb['user']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_nzb][user]" value="<?php echo htmlspecialchars($nntp_nzb['user'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_nzb][pass]"><?php echo _('Password'); ?></label></dt>
-					<dd><input type="password" name="editsettingsform[nntp_nzb][pass]" value="<?php echo $nntp_nzb['pass']; ?>"></dd>
+					<dd><input type="password" name="editsettingsform[nntp_nzb][pass]" value="<?php echo htmlspecialchars($nntp_nzb['pass'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="use_encryption_nzb"><?php echo _('Encryption'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_nzb][enc][switch]" id="use_encryption_nzb" <?php if ($nntp_nzb['enc']) { echo 'checked="checked"'; } ?>></dd>
@@ -92,7 +92,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					</fieldset>
 
 					<dt><label for="editsettingsform[nntp_nzb][port]"><?php echo _('Port'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_nzb][port]" value="<?php echo $nntp_nzb['port']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_nzb][port]" value="<?php echo htmlspecialchars($nntp_nzb['port'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_nzb][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_nzb][buggy]" <?php if ($nntp_nzb['buggy']) { echo 'checked="checked"'; } ?>></dd>
@@ -106,13 +106,13 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			<fieldset id="content_use_nntp_hdr" class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_hdr][host]"><?php echo _('Hostname'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_hdr][host]" value="<?php echo $nntp_hdr['host']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_hdr][host]" value="<?php echo htmlspecialchars($nntp_hdr['host'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_hdr][user]"><?php echo _('Username'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_hdr][user]" value="<?php echo $nntp_hdr['user']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_hdr][user]" value="<?php echo htmlspecialchars($nntp_hdr['user'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_hdr][pass]"><?php echo _('Password'); ?></label></dt>
-					<dd><input type="password" name="editsettingsform[nntp_hdr][pass]" value="<?php echo $nntp_hdr['pass']; ?>"></dd>
+					<dd><input type="password" name="editsettingsform[nntp_hdr][pass]" value="<?php echo htmlspecialchars($nntp_hdr['pass'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="use_encryption_hdr"><?php echo _('Encryption'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][enc][switch]" id="use_encryption_hdr" <?php if ($nntp_hdr['enc']) { echo 'checked="checked"'; } ?>></dd>
@@ -124,7 +124,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					</fieldset>
 
 					<dt><label for="editsettingsform[nntp_hdr][port]"><?php echo _('Port'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_hdr][port]" value="<?php echo $nntp_hdr['port']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_hdr][port]" value="<?php echo htmlspecialchars($nntp_hdr['port'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_hdr][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_hdr][buggy]" <?php if ($nntp_hdr['buggy']) { echo 'checked="checked"'; } ?>></dd>
@@ -138,13 +138,13 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			<fieldset id="content_use_nntp_post" class="serverSettings">
 				<dl>
 					<dt><label for="editsettingsform[nntp_post][host]"><?php echo _('Hostname'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_post][host]" value="<?php echo $nntp_post['host']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_post][host]" value="<?php echo htmlspecialchars($nntp_post['host'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_post][user]"><?php echo _('Username'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_post][user]" value="<?php echo $nntp_post['user']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_post][user]" value="<?php echo htmlspecialchars($nntp_post['user'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_post][pass]"><?php echo _('Password'); ?></label></dt>
-					<dd><input type="password" name="editsettingsform[nntp_post][pass]" value="<?php echo $nntp_post['pass']; ?>"></dd>
+					<dd><input type="password" name="editsettingsform[nntp_post][pass]" value="<?php echo htmlspecialchars($nntp_post['pass'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="use_encryption_post"><?php echo _('Encryption'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][enc][switch]" id="use_encryption_post" <?php if ($nntp_post['enc']) { echo 'checked="checked"'; } ?>></dd>
@@ -156,7 +156,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					</fieldset>
 
 					<dt><label for="editsettingsform[nntp_post][port]"><?php echo _('Port'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[nntp_post][port]" value="<?php echo $nntp_post['port']; ?>"></dd>
+					<dd><input type="text" name="editsettingsform[nntp_post][port]" value="<?php echo htmlspecialchars($nntp_post['port'], ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[nntp_post][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_post][buggy]" <?php if ($nntp_post['buggy']) { echo 'checked="checked"'; } ?>></dd>
@@ -168,7 +168,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			<fieldset>
 				<dl>
 					<dt><label for="editsettingsform[retention]"><?php echo _('Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots.'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo $this->_settings->get('retention'); ?>"></dd>
+					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo htmlspecialchars($this->_settings->get('retention'), ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
 					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
@@ -206,7 +206,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dd><input type="checkbox" name="editsettingsform[enable_stacktrace]" <?php if ($this->_settings->get('enable_stacktrace')) { echo 'checked="checked"'; } ?>></dd>
 
 					<dt><label for="editsettingsform[retrieve_increment]"><?php echo _('Retrieve increment'); ?><br /><?php echo _('Lower this if you get timeouts during retrieve'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[retrieve_increment]" value="<?php echo $this->_settings->get('retrieve_increment'); ?>"></dd>
+					<dd><input type="text" name="editsettingsform[retrieve_increment]" value="<?php echo htmlspecialchars($this->_settings->get('retrieve_increment'), ENT_QUOTES); ?>"></dd>
 
 					<dt><label for="editsettingsform[spot_moderation]"><?php echo _('Handling of moderation messages'); ?></label></dt>
 					<dd><select name="editsettingsform[spot_moderation]">
