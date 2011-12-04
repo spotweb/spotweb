@@ -495,6 +495,9 @@ msgstr "Prestaties"
 msgid "Try to prevent robots from indexing this installation"
 msgstr "Probeer robots te verhinderen om deze installatie te indexeren"
 
+msgid "Sender email address"
+msgstr "E-mail adres afzender"
+
 msgid "Always send welcome e-mail to new users"
 msgstr "Altijd e-mail versturen naar nieuwe gebruikers"
 
@@ -680,7 +683,7 @@ msgid "Run SABnzbd through users' browser"
 msgstr "Roep SABnzbd aan via de users' browser"
 
 msgid "Save to file op disk"
-msgstr "Bewaar bestand op schrijf"
+msgstr "Bewaar bestand op schijf"
 
 msgid "Save file to disk and run a command"
 msgstr "Bewaar bestand op schijf en roep een commando aan"
@@ -1004,7 +1007,10 @@ msgid "Default value for a spots' body is too long"
 msgstr "De standaard body waarde voor een nieuwe spot is te lang"
 
 msgid "When NZB handling is either \"save\" or \"runcommand\" the directory must be entered"
-msgstr "Als NZB handeling op \"save\" of \"runcommand\" staat, moet er een directory opgegeven worden"
+msgstr "Als NZB afhandeling op \"save\" of \"runcommand\" staat, moet er een directory opgegeven worden"
+
+msgid "When NZB handling is \"runcommand\" a command must be entered"
+msgstr "Als NZB afhandeling op \"runcommand\" staat, moet er een commando opgegeven worden"
 
 msgid "Growl notifications require a growl host to be entered"
 msgstr "Growl notificaties vereisen een growl host"
