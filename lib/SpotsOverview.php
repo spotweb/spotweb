@@ -625,12 +625,9 @@ class SpotsOverview {
 							if (($typeKey == $typeSelected) || ($typeSelected == '*')) {
 							
 								foreach(SpotCategories::$_categories[$hCat][$subCat] as $x => $y) {
-									/* We kunnen /moeten hier niet de check doen of de category in
-									 * dit subtype valt, anders vallen er namelijk behoorlijk weg
-									 * omdat die niet aan het nieuwe formaat voldoen. */
-									//if (in_array($typeKey, $y[1])) {
-									$tmpStr .= ",cat" . $hCat . "_" . $typeKey . '_' . $subCat . $x;
-									//} # if
+									if (in_array($typeKey, $y[2])) {
+										$tmpStr .= ",cat" . $hCat . "_" . $typeKey . '_' . $subCat . $x;
+									} # if
 								} # foreach
 							} # if
 						} # foreach
@@ -1173,7 +1170,7 @@ class SpotsOverview {
 								# en loop door de subcategorie waardes heen om te zien of er daar missen
 								foreach(SpotCategories::$_categories[$headCatNumber][$subCat] as $subcatValue => $subcatDescription) {
 									# Make sure this subcat is available for this type
-									if (in_array($subCatType, $subcatDescription[1])) {
+									if (in_array($subCatType, $subcatDescription[2])) {
 										# Is de category item in deze hoofdcategory's subcategory beschikbaar
 										if (array_search($subcatValue, $categoryList['cat'][$headCatNumber][$subCatType][$subCat]) === false) {
 											$subcatsMissing[$headCatNumber][$subCatType][$subCat][$subcatValue] = 1;
@@ -1222,7 +1219,7 @@ class SpotsOverview {
 										#
 										$moreFalseThanTrue = (count(@$subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(@SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
-											//if (in_array($subType, $subCatDesc[1])) {
+											if (in_array($subType, $subCatDesc[2])) {
 												if ($moreFalseThanTrue) {
 													if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
 														$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
@@ -1239,7 +1236,7 @@ class SpotsOverview {
 														$compressedList .= '!cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
 													} # if
 												} # if
-											//} # if
+											} # if
 										} # foreach
 									} # else
 								} # if

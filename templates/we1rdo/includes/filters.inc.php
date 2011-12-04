@@ -300,8 +300,8 @@
 			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 
 			# escape the filter vlaues
-			$filter['title'] = htmlentities($filter['title'], ENT_NOQUOTES, 'UTF-8');
-			$filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
+			$filter['title'] = htmlentities($filter['title'], ENT_QUOTES, 'UTF-8');
+			$filter['icon'] = htmlentities($filter['icon'], ENT_QUOTES, 'UTF-8');
 			
 			# Output de HTML
 			echo '<li class="'. $tplHelper->filter2cat($filter['tree']) .'">';
