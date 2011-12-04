@@ -164,6 +164,15 @@ class SpotsOverview {
 	 */
 	function cacheNewSpotCount() {
 		/*
+		 * Update the filter counts for the users.
+		 *
+		 * Basically it compares the lasthit of the session with the lastupdate
+		 * of the filters. If lasthit>lastupdate, it will store the lastupdate as
+		 * last counters read, hence we need to do it here and not at the end.
+		 */
+		$this->_db->updateCurrentFilterCounts();
+		
+		/*
 		 * First we want a unique list of all currently
 		 * created filter combinations so we can determine
 		 * its' spotcount
@@ -263,7 +272,6 @@ class SpotsOverview {
 		 * users, hence we make sure all these records do exist
 		 */
 		$this->_db->createFilterCountsForEveryone();
-		$this->_db->updateCurrentFilterCounts();
 	} # cacheNewSpotCount
 	
 	/* 
