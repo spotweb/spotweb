@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.17');
+define('SPOTWEB_SETTINGS_VERSION', '0.18');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -140,6 +140,11 @@ class SpotSettings {
 		$settings['retrieve_increment'] = (int) $settings['retrieve_increment'];
 		if ($settings['retrieve_increment'] < 1) {
 			$errorList[] = _('Invalid retrieve_increment setting');
+		} # if
+
+		# check the mailaddress
+		if (!filter_var($settings['systemfrommail'], FILTER_VALIDATE_EMAIL)) {
+			$errorList[] = _('Not a valid email address');
 		} # if
 
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt

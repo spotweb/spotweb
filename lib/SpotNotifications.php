@@ -100,7 +100,7 @@ class SpotNotifications {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'welcomemail')) {
 			$notification = $this->_notificationTemplate->template('user_added_email', array('user' => $user, 'adminUser' => $this->_currentSession['user']));
 
-			$user['prefs']['notifications']['email']['sender'] = $this->_currentSession['user']['mail'];
+			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
 			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 			$this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
 			$this->_notificationServices['email']->sendMessage('Single', $notification['title'], implode(PHP_EOL, $notification['body']), $this->_settings->get('spotweburl'));
@@ -168,8 +168,7 @@ class SpotNotifications {
 			$security = new SpotSecurity($this->_db, $this->_settings, $user, '');
 
 			# Om e-mail te kunnen versturen hebben we iets meer data nodig
-			$adminUsr = $this->_db->getUser(SPOTWEB_ADMIN_USERID);
-			$user['prefs']['notifications']['email']['sender'] = $adminUsr['mail'];
+			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
 			$user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 
 			# Twitter heeft ook extra settings nodig

@@ -56,6 +56,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('blacklist_url', 'http://jij.haatmij.nl/spotnet/blacklist.txt');
 		$this->setIfNot('enable_timing', false);
 		$this->setIfNot('enable_stacktrace', true);
+		$this->setIfNot('systemfrommail', 'spotweb@example.com');
 		$this->updateSettingsVersion();
 	} # update()
 	
