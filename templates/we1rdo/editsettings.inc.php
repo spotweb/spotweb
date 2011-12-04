@@ -55,6 +55,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[deny_robots]"><?php echo _('Try to prevent robots from indexing this installation'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[deny_robots]" <?php if ($this->_settings->get('deny_robots')) { echo 'checked="checked"'; } ?>></dd>
 
+					<dt><label for="editsettingsform[systemfrommail]"><?php echo _('Mailadres to use when sending new mail'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[systemfrommail]" value="<?php echo htmlspecialchars($this->_settings->get('systemfrommail'), ENT_QUOTES); ?>"></dd>
+
 					<dt><label for="editsettingsform[sendwelcomemail]"><?php echo _('Always send welcome e-mail to new users'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[sendwelcomemail]" <?php if ($this->_settings->get('sendwelcomemail')) { echo 'checked="checked"'; } ?>></dd>
 
