@@ -163,7 +163,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		SpotTiming::start(__FUNCTION__);
 		$stmt = $this->exec($s, $p);
 		$tmpArray = $stmt->fetchAll();
-		
+
         $stmt->closeCursor();
 		unset($stmt);
 		SpotTiming::stop(__FUNCTION__, array($s,$p));
