@@ -212,7 +212,7 @@ class SpotCategories {
 					  77  => array("Group", array("z3"), array("z3")),
 					  78  => array("POV", array("z3"), array("z3")),
 					  79  => array("Solo", array("z3"), array("z3")),
-					  80  => array("Youngh", array("z3"), array("z3")),
+					  80  => array("Young", array("z3"), array("z3")),
 					  81  => array("Soft", array("z3"), array("z3")),
 					  82  => array("Fetish", array("z3"), array("z3")),
 					  83  => array("Old", array("z3"), array("z3")),

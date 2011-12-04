@@ -163,7 +163,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 
 							$catList = array();
 							foreach(SpotCategories::$_categories[$hcat_key][$sclist_key] as $key => $valTmp) {
-								if (in_array('z' . $type_key, $valTmp[1])) {
+								if (in_array('z' . $type_key, $valTmp[2])) {
 									$val = $valTmp[0];
 									
 									if ((strlen($val) != 0) && (strlen($key) != 0)) {
