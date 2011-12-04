@@ -215,7 +215,7 @@ class SpotNntp {
 				try {
 					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
 										'user-key' => '', 'spotterid' => '', 'verified' => false,
-										'user-avatar' => '');
+										'user-avatar' => '', 'fullxml' => '');
 										
 					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
 					$tmpAr['messageid'] = $comment['messageid'];

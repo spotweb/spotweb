@@ -830,13 +830,17 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 
 function userLogout() {
 	var url = createBaseURL() + '?page=logout';
-	$.get(url, function(data) {
-		/* Remove the cookie as sometimes there is some kind of timing issue */
-		$.cookie('spotsession', null);
-		
-		window.location.reload();
+
+    $.ajax({
+        type: "GET",
+        url: url,
+		async: false,
+        dataType: "xml",
+        success: function(msg) {
+			window.location.reload();
+		}
 	});
-} 
+} // userLogout
 
 // SabNZBd actions
 function sabBaseURL() {
@@ -1417,7 +1421,7 @@ function downloadMappingTypeChanged() {
 	loadCategoryIntoSelectbox('subcataselectbox', null, {category: itmValue, subcatz: subcatzValue, rendertype: 'subcatd'}, false, false);
 } // downloadMappingTypeChanged
 
-function addFilter(xsrf, filterType, filterValue, filterName, addElementClass) {
+function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClass) {
 	var formData = 'editfilterform[xsrfid]=' + escape(xsrf);
 	formData += '&editfilterform[filterid]=9999';
 	formData += '&editfilterform[tree]=';
@@ -1443,4 +1447,4 @@ function addFilter(xsrf, filterType, filterValue, filterName, addElementClass) {
 		} // success()
 	}); // ajax call om de form te submitten
 			
-} // addFilter
+} // addSpotFilter
