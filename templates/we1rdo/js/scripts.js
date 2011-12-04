@@ -830,13 +830,17 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 
 function userLogout() {
 	var url = createBaseURL() + '?page=logout';
-	$.get(url, function(data) {
-		/* Remove the cookie as sometimes there is some kind of timing issue */
-		$.cookie('spotsession', null);
-		
-		window.location.reload();
+
+    $.ajax({
+        type: "GET",
+        url: url,
+		async: false,
+        dataType: "xml",
+        success: function(msg) {
+			window.location.reload();
+		}
 	});
-} 
+} // userLogout
 
 // SabNZBd actions
 function sabBaseURL() {
