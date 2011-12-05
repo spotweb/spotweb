@@ -271,12 +271,14 @@
 				<ul class="filterlist quicklinks">
 <?php foreach($quicklinks as $quicklink) {
 		if ($tplHelper->allowed($quicklink[4][0], $quicklink[4][1])) {
-			$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
+			if (empty($quicklink[5]) || $currentSession['user']['prefs'][$quicklink[5]]) {
+				$newCount = ($count_newspots && stripos($quicklink[2], 'New:0')) ? $tplHelper->getNewCountForFilter($quicklink[2]) : "";
 ?>
 					<li> <a class="filter <?php echo " " . $quicklink[3]; if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<a class="filter <?php if (parse_url($tplHelper->makeSelfUrl("full"), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl("full") . $quicklink[2], PHP_URL_QUERY)) { echo " selected"; } ?>" href="<?php echo $quicklink[2]; ?>">
 					<span class='spoticon spoticon-<?php echo str_replace('images/icons/', '', str_replace('.png', '', $quicklink[1])); ?>'>&nbsp;</span><?php echo $quicklink[0]; if ($newCount > 0) { echo "<span class='newspots'>".$newCount."</span>"; } ?></a>
-<?php 	}
+<?php 		}
+		}
 	} ?>
 					</ul>
 

@@ -109,14 +109,14 @@ if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== d
 # we de keep_watchlist en keep_downloadlist settings.
 if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'] = Array();
-	$settings['quicklinks'][] = Array('Reset filters', "home", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''));
-	$settings['quicklinks'][] = Array('Nieuw', "today", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
-	$settings['quicklinks'][] = Array('Watchlist', "fav", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "", Array(SpotSecurity::spotsec_keep_own_watchlist, ''));
-	$settings['quicklinks'][] = Array('Gedownload', "download", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "", Array(SpotSecurity::spotsec_keep_own_downloadlist, ''));
-	$settings['quicklinks'][] = Array('Recent bekeken', "eye", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''));
-	$settings['quicklinks'][] = Array('Mijn spots', "fav", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=MyPostedSpots:0", "", Array(SpotSecurity::spotsec_post_spot, ''));
-	$settings['quicklinks'][] = Array('Statistieken', "stats", "?page=statistics", "", Array(SpotSecurity::spotsec_view_statistics, ''));
-	$settings['quicklinks'][] = Array('Documentatie', "help", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''));
+	$settings['quicklinks'][] = Array('Reset filters', "home", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''), null);
+	$settings['quicklinks'][] = Array('Nieuw', "today", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=New:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''), 'count_newspots');
+	$settings['quicklinks'][] = Array('Watchlist', "fav", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Watch:0", "", Array(SpotSecurity::spotsec_keep_own_watchlist, ''), 'keep_watchlist');
+	$settings['quicklinks'][] = Array('Gedownload', "download", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Downloaded:0", "", Array(SpotSecurity::spotsec_keep_own_downloadlist, ''), 'keep_downloadlist');
+	$settings['quicklinks'][] = Array('Recent bekeken', "eye", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=Seen:0", "", Array(SpotSecurity::spotsec_keep_own_seenlist, ''), 'keep_seenlist');
+	$settings['quicklinks'][] = Array('Mijn spots', "fav", "?search[tree]=&amp;search[unfiltered]=true&amp;search[value][]=MyPostedSpots:0", "", Array(SpotSecurity::spotsec_post_spot, ''), null);
+	$settings['quicklinks'][] = Array('Statistieken', "stats", "?page=statistics", "", Array(SpotSecurity::spotsec_view_statistics, ''), null);
+	$settings['quicklinks'][] = Array('Documentatie', "help", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''), null);
 } # if isset
 
 #
@@ -192,8 +192,14 @@ if (!empty($ownsettingserror)) {
 
 # Controleer op oud type quicklinks (zonder security)
 foreach($settings['quicklinks'] as $link) {
-	if (count($link) != 5) {
-		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je quicklinks in je settings.php (zie settings.php voor een voorbeeld)");
+	if (count($link) < 5) {
+		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je quicklinks in je (own)settings.php (zie settings.php voor een voorbeeld)");
 	} # if
 } # foreach
 
+# Controleer op oud type quicklinks (zonder preference link)
+foreach($settings['quicklinks'] as $link) {
+	if (count($link) < 6) {
+		die("Quicklinks moeten voortaan ook een voorkeuren check bevatten, wijzig je quicklinks in je (own)settings.php (zie settings.php voor een voorbeeld)");
+	} # if
+} # foreach
