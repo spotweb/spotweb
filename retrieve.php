@@ -208,7 +208,7 @@ try {
 		if ($settings_nntp_hdr['buggy']) {
 			$curMsg = max(1, $curMsg - 15000);
 		} # if
-		
+
 		if ($curMsg != 0 && !$retroMode) {
 			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
 		} # if
