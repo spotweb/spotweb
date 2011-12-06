@@ -26,7 +26,7 @@ try {
 	} # if
 
 	# Controleer eerst of het schema nog wel geldig is
-	if (!$db->schemaValid()) {
+	if (!$settings->schemaValid()) {
 		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
 	} # if
 

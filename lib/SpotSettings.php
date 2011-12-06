@@ -205,6 +205,15 @@ class SpotSettings {
 	} # setSettings
 
 	/* 
+	 * Is onze database versie nog wel geldig?
+	 */
+	function schemaValid() {
+		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin SpotDb
+		return ($this->get('schemaversion') == SPOTDB_SCHEMA_VERSION);
+	} # schemaValid
+	
+	
+	/* 
 	 * Zijn onze settings versie nog wel geldig?
 	 */
 	function settingsValid() {

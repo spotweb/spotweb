@@ -1327,16 +1327,6 @@ class SpotDb {
 		return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
 	} # getSchemaVer
 
-	/* 
-	 * Is onze database versie nog wel geldig?
-	 */
-	function schemaValid() {
-		$schemaVer = $this->getSchemaVer();
-
-		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin dit bestand
-		return ($schemaVer == SPOTDB_SCHEMA_VERSION);
-	} # schemaValid
-	
 	/*
 	 * Removes a comment from the database
 	 */

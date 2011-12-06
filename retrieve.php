@@ -41,13 +41,13 @@ catch(Exception $x) {
 	die("Unable to connect to database: " . $x->getMessage() . PHP_EOL);
 } # catch
 
-# Controleer dat we niet een schema upgrade verwachten
-if (!$db->schemaValid()) {
-	die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
-} # if
-
 # Creer het settings object
 $settings = SpotSettings::singleton($db, $settings);
+
+# Controleer dat we niet een schema upgrade verwachten
+if (!$settings->schemaValid()) {
+	die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+} # if
 
 # Controleer eerst of de settings versie nog wel geldig zijn
 if (!$settings->settingsValid()) {
