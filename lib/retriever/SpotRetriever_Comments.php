@@ -69,7 +69,6 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		function process($hdrList, $curMsg, $endMsg) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
-			$signedCount = 0;
 			$lastProcessedId = '';
 			$commentDbList = array();
 			$fullCommentDbList = array();
@@ -207,6 +206,15 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 						$fullComment = array();
 						try {
 							$fullComment = $this->_spotnntp->getComments(array(array('messageid' => $commentId)));
+							
+							/*
+							 * Some comments are not actual comments but incorreclty posted NZB
+							 * files and stuff. Basically, we limit the length of comments
+							 * if they are too large to prevent memory issues.
+							 */
+							if ((!isset($fullComment[0])) || (strlen(implode('', $fullComment[0]['body'])) > (1024*100))) {
+								continue;
+							} # if
 
 							# Add this comment to the datbase and mark it as such
 							$fullCommentDbList[] = $fullComment;
