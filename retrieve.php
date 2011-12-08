@@ -116,8 +116,16 @@ try {
 	die();
 } # catch
 
+$newSpotCount = 0;
+$newCommentCount = 0;
+$newReportCount = 0;
+$retriever = null;
+
 ## Spots
 try {
+	/*
+	 * Actually retrieve spots from the server
+	 */
 	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
 										 $db, 
 										 $settings,										 
@@ -125,48 +133,18 @@ try {
 										 $debugLog,
 										 $retroMode);
 	$newSpotCount = $retriever->perform();
-} 
-catch(RetrieverRunningException $x) {
-	echo PHP_EOL . PHP_EOL;
-	die("retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL);
-}
-catch(NntpException $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
-	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
 
-	if (isset($retriever)){
-		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
-		$retriever->quit();
-	}
-	die();
-}
-catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured retrieving messages:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
+	## Creating filter counts
+	if ($newSpotCount > 0) {
+		$spotsOverview = new SpotsOverview($db, $settings);
+		echo 'Calculating how many spots are new';
+		$spotsOverview->cacheNewSpotCount();
+		echo ', done.' . PHP_EOL;
+	} # if
 
-## Creating filter counts
-if ($newSpotCount > 0) {
-	$spotsOverview = new SpotsOverview($db, $settings);
-	echo 'Calculating how many spots are new';
-	$spotsOverview->cacheNewSpotCount();
-	echo ', done.' . PHP_EOL;
-} # if
-
-## Comments
-try {
-	$newCommentCount = 0;
+	/*
+	 * Should we retrieve comments?
+	 */
 	if ($settings->get('retrieve_comments')) {
 		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
 												$db,
@@ -176,36 +154,10 @@ try {
 												$retroMode);
 		$newCommentCount = $retriever->perform();
 	} # if
-}
-catch(NntpException $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
-	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
 
-	if (isset($retriever)){
-		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
-		$retriever->quit();
-	}
-	die();
-}
-catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured retrieving comments:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
-
-## Reports
-try {
-	$newReportCount = 0;
+	/*
+	 * Retrieval of reports
+	 */
 	if ($settings->get('retrieve_reports') && !$retroMode) {
 		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
 												$db,
@@ -214,6 +166,19 @@ try {
 												$debugLog);
 		$newReportCount = $retriever->perform();
 	} # if
+	
+	/*
+	 * SpotStateList cleanup
+	 */
+	$db->cleanSpotStateList();
+
+	if (!$retroMode) {
+		$db->cleanCache(30);
+	} # if
+}
+catch(RetrieverRunningException $x) {
+       echo PHP_EOL . PHP_EOL;
+       die("retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL);
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
@@ -224,7 +189,7 @@ catch(NntpException $x) {
 	echo $x->getTraceAsString();
 	echo PHP_EOL . PHP_EOL;
 
-	if (isset($retriever)){
+	if (!empty($retriever)){
 		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
 		$retriever->quit();
 	}
@@ -241,35 +206,6 @@ catch(Exception $x) {
 	die();
 } # catch
 
-## SpotStateList cleanup
-try {
-	$db->cleanSpotStateList();
-} catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while cleaning up lists:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
-
-## cache cleanup
-try {
-	if (!$retroMode) {
-		$db->cleanCache(30);
-	} # if
-} catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while cleaning up cache:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
 
 ## External blacklist
 $settings_external_blacklist = $settings->get('external_blacklist');
