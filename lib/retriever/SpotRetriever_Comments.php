@@ -7,11 +7,11 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $retrieveFull, $debug, $retro) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug, $retro) {
 			parent::__construct($server, $db, $settings, $debug, $retro);
 			
 			$this->_outputType = $outputType;
-			$this->_retrieveFull = $retrieveFull;
+			$this->_retrieveFull = $this->_settings->get('retrieve_full_comments');
 		} # ctor
 		
 		/*
@@ -284,5 +284,30 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
+		
+		/*
+		 * returns the name of the group we are expected to retrieve messages from
+		 */
+		function getGroupName() {
+			return $this->_settings->get('comment_group');
+		} # getGroupName
+		
+		/*
+		 * Highest articleid for the implementation in the database
+		 */
+		function getMaxArticleId() {
+			if ($this->_retro) {
+				return $this->_db->getMaxArticleid('comments_retro');
+			} else {
+				return $this->_db->getMaxArticleid('comments');
+			} # if
+		} # getMaxArticleId
+
+		/*
+		 * Returns the highest messageid in the database
+		 */
+		function getMaxMessageId() {
+			return $this->_db->getMaxMessageId('comments');
+		} # getMaxMessageId
 		
 } # class SpotRetriever_Comments

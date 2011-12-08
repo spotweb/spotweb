@@ -118,35 +118,13 @@ try {
 
 ## Spots
 try {
-	$rsaKeys = $settings->get('rsa_keys');
 	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
 										 $db, 
 										 $settings,										 
-										 $rsaKeys, 
 										 $req->getDef('output', ''),
-										 $settings->get('retrieve_full'),
 										 $debugLog,
 										 $retroMode);
-	$msgdata = $retriever->connect($settings->get('hdr_group'));
-	$retriever->displayStatus('dbcount', $db->getSpotCount(''));
-
-	if ($retroMode) {
-		$curMsg = $db->getMaxArticleId('spots_retro');
-	} else {
-		$curMsg = $db->getMaxArticleId($settings_nntp_hdr['host']);
-	} # if
-	
-	if ($curMsg != 0 && !$retroMode) {
-		$curMsg = $retriever->searchMessageId($db->getMaxMessageId('headers'));
-		
-		if ($settings_nntp_hdr['buggy']) {
-			$curMsg = max(1, $curMsg - 15000);
-		} # if
-	} # if
-
-	$newSpotCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
-	$retriever->quit();
-	$db->setLastUpdate($settings_nntp_hdr['host']);
+	$newSpotCount = $retriever->perform();
 } 
 catch(RetrieverRunningException $x) {
 	echo PHP_EOL . PHP_EOL;
@@ -194,27 +172,9 @@ try {
 												$db,
 												$settings,
 												$req->getDef('output', ''),
-												$settings->get('retrieve_full_comments'),
 												$debugLog,
 												$retroMode);
-		$msgdata = $retriever->connect($settings->get('comment_group'));
-
-		if ($retroMode) {
-			$curMsg = $db->getMaxArticleId('comments_retro');
-		} else {
-			$curMsg = $db->getMaxArticleId('comments');
-		} # if
-
-		if ($settings_nntp_hdr['buggy']) {
-			$curMsg = max(1, $curMsg - 15000);
-		} # if
-
-		if ($curMsg != 0 && !$retroMode) {
-			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('comments'));
-		} # if
-
-		$newCommentCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
-		$retriever->quit();
+		$newCommentCount = $retriever->perform();
 	} # if
 }
 catch(NntpException $x) {
@@ -252,19 +212,7 @@ try {
 												$settings,
 												$req->getDef('output', ''),
 												$debugLog);
-		$msgdata = $retriever->connect($settings->get('report_group'));
-
-		$curMsg = $db->getMaxArticleId('reports');
-		if ($curMsg != 0) {
-			$curMsg = $retriever->searchMessageId($db->getMaxMessageId('reports'));
-		} # if
-
-		if ($settings_nntp_hdr['buggy']) {
-			$curMsg = max(1, $curMsg - 15000);
-		} # if
-		
-		$newReportCount = $retriever->loopTillEnd($curMsg, $settings->get('retrieve_increment'));
-		$retriever->quit();
+		$newReportCount = $retriever->perform();
 	} # if
 }
 catch(NntpException $x) {
