@@ -285,9 +285,9 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			if (strtolower($q['COLUMN_TYPE']) == 'tinyint(1)') {
 				if (is_numeric($q['COLUMN_DEFAULT'])) {
 					if ($q['COLUMN_DEFAULT']) {
-						$q['COLUMN_DEFAULT'] = 'true';
+						$q['COLUMN_DEFAULT'] = '1';
 					} else {
-						$q['COLUMN_DEFAULT'] = 'false';
+						$q['COLUMN_DEFAULT'] = '0';
 					} # if
 				} # if
 			} # if
