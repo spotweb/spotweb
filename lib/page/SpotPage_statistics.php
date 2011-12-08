@@ -21,7 +21,7 @@ class SpotPage_statistics extends SpotPage_Abs {
 		#- display stuff -#
 		$parsedSearch = $spotsOverview->filterToQuery('', array('field' => '', 'direction' => ''), $this->_currentSession, $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
 		$this->template('statistics', array('quicklinks' => $this->_settings->get('quicklinks'),
-											'filters' => $this->_db->getFilterList($this->_currentSession['user']['userid'], 'filter'),
+											'filters' => $spotUserSystem->getFilterList($this->_currentSession['user']['userid'], 'filter'),
 											'parsedsearch' => $parsedSearch,
 											'limit' => $this->_params['limit']));
 	} # render

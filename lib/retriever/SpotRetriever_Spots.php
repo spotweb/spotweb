@@ -10,12 +10,12 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $rsakeys, $outputType, $retrieveFull, $debug, $retro) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug, $retro) {
 			parent::__construct($server, $db, $settings, $debug, $retro);
 			
-			$this->_rsakeys = $rsakeys;
+			$this->_rsakeys = $this->_settings->get('rsa_keys');
 			$this->_outputType = $outputType;
-			$this->_retrieveFull = $retrieveFull;
+			$this->_retrieveFull = $this->_settings->get('retrieve_full');
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
 		} # ctor
@@ -29,7 +29,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				switch($cat) {
 					case 'start'			: echo strftime("Last retrieve at %c") . PHP_EOL .  "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
 					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
-					case 'dbcount'			: echo "Spots in database:	" . $txt . "" . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
@@ -53,7 +52,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				switch($cat) {
 					case 'start'			: echo "<spots>"; break;
 					case 'done'				: echo "</spots>"; break;
-					case 'dbcount'			: echo "<dbcount>" . $txt . "</dbcount>"; break;
 					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
 					case 'skipcount'		: echo "<totalskipped> " . $txt . "</totalskipped>"; break;
 					case 'totalremoved'		: echo "<totalremoved>" . $txt . "</totalremoved>"; break;
@@ -428,5 +426,31 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
-	
+
+		/*
+		 * returns the name of the group we are expected to retrieve messages from
+		 */
+		function getGroupName() {
+			return $this->_settings->get('hdr_group');
+		} # getGroupName
+
+		/*
+		 * Highest articleid for the implementation in the database
+		 */
+		function getMaxArticleId() {
+			if ($this->_retro) {
+				return $this->_db->getMaxArticleid('spots_retro');
+			} else {
+				return $this->_db->getMaxArticleid($this->_server['host']);
+			} # if
+		} # getMaxArticleId
+		
+		/*
+		 * Returns the highest messageid in the database
+		 */
+		function getMaxMessageId() {
+			return $this->_db->getMaxMessageId('headers');
+		} # getMaxMessageId
+
+		
 } # class SpotRetriever_Spots

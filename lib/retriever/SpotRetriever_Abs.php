@@ -26,6 +26,21 @@ abstract class SpotRetriever_Abs {
 		abstract function updateLastRetrieved($highestMessageId);
 		
 		/*
+		 * returns the name of the group we are expected to retrieve messages from
+		 */
+		abstract function getGroupName();
+		
+		/*
+		 * Highest articleid for the implementation in the database
+		 */
+		abstract function getMaxArticleId();
+		
+		/*
+		 * Returns the highest messageid in the database
+		 */
+		abstract function getMaxMessageId();
+		
+		/*
 		 * default ctor 
 		 */
 		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
@@ -177,4 +192,47 @@ abstract class SpotRetriever_Abs {
 			$this->_spotnntp->quit();
 			$this->displayStatus("done", "");
 		} # quit()
+		
+		function perform() {
+			/*
+			 * try to connect to the usenet server and select the group
+			 */
+			$msgdata = $this->connect($this->getGroupName());
+			
+			/*
+			 * Ask the implementation class for the highest articleid
+			 * found on the system
+			 */
+			$curMsg = $this->getMaxArticleId();
+
+			/*
+			 * If this usenet server is new for us, we just assume
+			 * we have to start from zero. Else we do a lookup from
+			 * the messageid to find the correct articlenumber.
+			 *
+			 * We cannot just use the articlenumber because the NNTP
+			 * spec allows a server to renumber of course.
+			 */
+			if (($curMsg != 0) && (!$this->_retro)) {
+				$curMsg = $this->searchMessageId($this->getMaxMessageId());
+				
+				if ($this->_server['buggy']) {
+					$curMsg = max(1, $curMsg - 15000);
+				} # if
+			} # if
+
+			/*
+			 * and actually start looping till we retrieved all headers or articles
+			 */
+			$newProcessedCount = $this->loopTillEnd($curMsg, $this->_settings->get('retrieve_increment'));
+			
+			/* 
+			 * and cleanup
+			 */
+			$this->quit();
+			$this->_db->setLastUpdate( get_class() );
+			
+			return $newProcessedCount;
+		} # perform
+		
 } # class SpotRetriever

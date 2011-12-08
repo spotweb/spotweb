@@ -787,11 +787,17 @@ class SpotUserSystem {
 	 * Retrieves the users' index filter
 	 */
 	function getIndexFilter($userId) {
-		$tmpFilter = $this->_db->getUserIndexFilter($userId);
-		if ($tmpFilter === false) {
+		/*
+		 * The users' index filter is usually retrieved two or 
+		 * thee times for the index page, make sure we don't approach
+		 * the database that many times
+		 */
+		$userIndexFilter = $this->_db->getUserIndexFilter($userId);
+		
+		if ($userIndexFilter === false) {
 			return array('tree' => '');
 		} else {
-			return $tmpFilter;
+			return $userIndexFilter;
 		} # else
 	} # getIndexFilter
 	

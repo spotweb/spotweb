@@ -137,4 +137,25 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
 		
+		/*
+		 * returns the name of the group we are expected to retrieve messages from
+		 */
+		function getGroupName() {
+			return $this->_settings->get('report_group');
+		} # getGroupName
+
+		/*
+		 * Highest articleid for the implementation in the database
+		 */
+		function getMaxArticleId() {
+			return $this->_db->getMaxArticleid('reports');
+		} # getMaxArticleId
+
+		/*
+		 * Returns the highest messageid in the database
+		 */
+		function getMaxMessageId() {
+			return $this->_db->getMaxMessageId('reports');
+		} # getMaxMessageId
+		
 } # class SpotRetriever_Reports
