@@ -230,7 +230,7 @@ abstract class SpotRetriever_Abs {
 			 * and cleanup
 			 */
 			$this->quit();
-			$this->_db->setLastUpdate( get_class() );
+			$this->_db->setLastUpdate($this->_server['host']);
 			
 			return $newProcessedCount;
 		} # perform
