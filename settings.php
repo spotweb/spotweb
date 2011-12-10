@@ -142,7 +142,7 @@ $settings['tpl_name'] = str_replace('templates/', '', $settings['tpl_name']);
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen
 if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
-	die("openssl_cnf_path verwijst niet naar een leesbare OpenSSL configuratie file" . PHP_EOL);
+	throw new InvalidOwnSettingsSettingException("openssl_cnf_path does not contain a readable OpenSSL configuration filepath");
 } # if
 
 # Voeg een sluitende slash toe als die er nog niet is
@@ -152,7 +152,7 @@ if (substr($settings['spotweburl'], -1) != '/') {
 
 # Preferences lokaal niet meer toestaan
 if (isset($settings['prefs']['perpage']) || (isset($settings['prefs']['date_formatting']))) {
-	die("Preferences worden voortaan per user gezet" . PHP_EOL);
+	throw new InvalidOwnSettingsSettingException("Preferences worden voortaan per user gezet");
 } # if
 
 # deprecated settings niet meer toestaan
@@ -160,46 +160,38 @@ $ownsettingserror = '';
 $array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " wordt voortaan in de db bijgehouden" . PHP_EOL;
+		$ownsettingserror .= $value . " has been removed from ownsettings.php" . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('allow_user_template', 'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " is een user preference geworden" . PHP_EOL;
+		$ownsettingserror .= $value . " has become an user preference" . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('count_newspots', 'keep_seenlist');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " is een user preference geworden (en afschermbaar via het rechtensysteem)" . PHP_EOL;
+		$ownsettingserror .= $value . " is a user preference (and deniable using the user rights system)" . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('show_nzbbutton', 'show_updatebutton');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " is een user right geworden" . PHP_EOL;
+		$ownsettingserror .= $value . " has become an user right" . PHP_EOL;
 	} # if
 } # foreach
 
 if (!empty($ownsettingserror)) {
-	if (isset($_SERVER['SERVER_PROTOCOL'])) { echo "<pre>"; }
-	die($ownsettingserror . PHP_EOL . "Haal bovenstaande settings weg uit je ownsettings.php" . PHP_EOL);
+	throw new InvalidOwnSettingsSettingException("Please remove " . $ownsettingserror . " from your 'ownsettings.php' file, this setting is set in the settings panel from within Spotweb itself");
 } # if
-
-# Controleer op oud type quicklinks (zonder security)
-foreach($settings['quicklinks'] as $link) {
-	if (count($link) < 5) {
-		die("Quicklinks moeten voortaan ook een security check bevatten, wijzig je quicklinks in je (own)settings.php (zie settings.php voor een voorbeeld)");
-	} # if
-} # foreach
 
 # Controleer op oud type quicklinks (zonder preference link)
 foreach($settings['quicklinks'] as $link) {
 	if (count($link) < 6) {
-		die("Quicklinks moeten voortaan ook een voorkeuren check bevatten, wijzig je quicklinks in je (own)settings.php (zie settings.php voor een voorbeeld)");
+		throw new InvalidOwnSettingsSettingException("Quicklinks have to have a preferences check as well. Please modify the quickinks in your ownettings.php or remove them from your ownsetings.php");
 	} # if
 } # foreach

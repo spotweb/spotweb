@@ -17,30 +17,47 @@ try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
 
-	# Creer het settings object
+	/*
+	 * Create the setting object as soon as possible because 
+	 * we need it for a lot of stuff
+	 */
 	$settings = SpotSettings::singleton($db, $settings);
 
-	# enable of disable de timer
+	/*
+	 * Disable the timing part as soon as possible because it 
+	 * gobbles memory
+	 */
 	if (!$settings->get('enable_timing')) {
 		SpotTiming::disable();
 	} # if
 
-	# Controleer eerst of het schema nog wel geldig is
+	/*
+	 * The basics has been setup, lets check if the schema needs
+	 * updating
+	 */
 	if (!$settings->schemaValid()) {
-		die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+		throw new SchemaNotUpgradedException();
 	} # if
 
-	# Controleer eerst of de settings versie nog wel geldig zijn
+	/*
+	 * Does our global setting table ned updating? 
+	 */
 	if (!$settings->settingsValid()) {
-		die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+		throw new SettingsNotUpgradedException();
 	} # if
 
-	# Controleer dat er nergens iets mis staat in de ownsettings.php oid dat output
-	# genereerd. Als er output buffering toegepast wordt door PHP dan is deze check niet
-	# voldoende. ob_get_length() geeft false terug als er geen outputbuffering actief is,
-	# of anders 0 als er nog geen headers verstuurd zijn.
+	/*
+	 * Because users are asked to modify ownsettings.php themselves, it is 
+	 * possible they create a mistake and accidentally create output from it.
+	 *
+	 * This output breaks a lot of stuff like download integration, image generation
+	 * and more.
+	 *
+	 * We try to check if any output has been submitted, and if so, we refuse
+	 * to continue to prevent all sorts of confusing bug reports
+	 */
 	if ((headers_sent()) || ((int) ob_get_length() > 0)) {
-		die("ownsettings.php geeft al output, zorg dat je ownsettings.php niet afgesloten is met ?> en dat er niets staat voor de openingstag." . PHP_EOL);
+		throw new OwnsettingsCreatedOutputException();
 	} # if
 	
 	# helper functions for passed variables
@@ -49,7 +66,7 @@ try {
 
 	$page = $req->getDef('page', 'index');
 
-	# Haal het userobject op dat 'ingelogged' is
+	# Retrieve the users object of the user which is logged on
 	SpotTiming::start('auth');
 	$spotUserSystem = new SpotUserSystem($db, $settings);
 	if ($req->doesExist('apikey')) {
@@ -58,19 +75,24 @@ try {
 		$currentSession = $spotUserSystem->useOrStartSession();
 	} # if
 
-	/* Zonder userobject ook geen security systeem, dus dit is altijd fatal */
+	/*
+	 * If thre is no user object, we don't have a security system
+	 * either. Without a security system we cannot boot, so fatal
+	 */
 	if ($currentSession === false) {
 		if ($req->doesExist('apikey')) {
-			throw new Exception("API Key Incorrect");
+			throw new PermissionDeniedException("API Key Incorrect", -1);
 		} else {
-			throw new Exception("Unable to create session");
+			throw new SqlErrorException("Unable to create session");
 		} # else
 	} # if
 	SpotTiming::stop('auth');
 
-	# Controleer nu pas of de securitygroups wel valid zijn
+	/*
+	 * And check if the security groups need updating
+	 */
 	if (!$currentSession['security']->securityValid()) {
-		die("Security settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+		throw new SecurityNotUpgradedException();
 	} # if
 	
 	# User session has been loaded, let's translate the categories
@@ -79,13 +101,20 @@ try {
 	} # if
 	SpotCategories::startTranslation();
 
-	# Nu is het pas veilig rechten te checken op het gebruik van de apikey
+	/*
+	 * Only now it is safe to check wether the user is actually alowed 
+	 * to authenticate with an API key 
+	 */
 	if ($req->doesExist('apikey')) {
-		# Om de API te mogen gebruiken moet je het algemene consume API recht hebben
+		/*
+		 * To use the Spotweb API we need the actual permission
+		 */
 		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
-		
-		# maar ook het pagina specifieke, anders zou je bv. "preferences" kunnen wijzigen
-		# met een apikey
+
+		/*
+		 * but we also need a specific permission, because else things could
+		 * be automated which we simply do not want to be automated
+		 */
 		$currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_consume_api, $page);
 	} # if
 
@@ -377,17 +406,42 @@ try {
 	} # if
 }
 catch(PermissionDeniedException $x) {
-	// Render een permission denied template zodat het eventueel opgevangen kan worden,
-	// als we al een spotpage object hebben dan laten we het over aan de implementatie
-	// specifieke renderer, anders creeeren we zelf een spotpage object.
-	// Dit laat ons toe om bijvoorbeeld voor renderers die XML output geven, ook een XML
-	// error pagina te creeeren
+	/*
+	 * We try to render a permission denied error using the already created
+	 * renderer first. We do this, so pages which are supposed to output 
+	 * XML, can also output their errors using XML.
+	 *
+	 * If no page is initiated just yet, we create an basic renderer object
+	 * to render an error page
+	 */
 	if (! ($page instanceof SpotPage_Abs)) {
 		$page = new SpotPage_render($db, $settings, $currentSession, '', array());
 	} # if
 	
 	$page->permissionDenied($x, $page, $req->getHttpReferer());
 } # PermissionDeniedException
+
+catch(InvalidOwnSettingsSettingException $x) {
+	echo "There is an error in your ownsettings.php<br><br>" . PHP_EOL;
+	echo $x->getMessage();
+} # InvalidOwnSettingsSettingException
+
+catch(OwnsettingsCreatedOutputException $x) {
+	echo "ownsettings.php created output. Please make sure your ownsettings.php does not contain a PHP closing tag ( ?> )<br><br>" . PHP_EOL;
+	echo $x->getMessage();
+} # OwnsettingsCreatedOutputException
+
+catch(SchemaNotUpgradedException $x) {
+	echo "Database schema has been changed. Please run 'upgrade-db.php' from an console window";
+} # SchemaNotUpgradedException
+
+catch(SecurityNotUpgradedException $x) {
+	echo "Spotweb contains updated security settings. Please run 'upgrade-db.php' from a console window";
+} # SecurityNotUpgradedException
+
+catch(SettingsNotUpgradedException $x) {
+	echo "Spotweb contains updated global settings settings. Please run 'upgrade-db.php' from a console window";
+} # SecurityNotUpgradedException
 
 catch(DatabaseConnectionException $x) {
 	echo "Unable to connect to database: " . $x->getMessage() . PHP_EOL . '<br>';
@@ -399,5 +453,5 @@ catch(Exception $x) {
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
-	die($x->getMessage());
+	echo $x->getMessage();
 } # catch

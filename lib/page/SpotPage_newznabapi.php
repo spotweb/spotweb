@@ -17,7 +17,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		# login information but can be executed out of "login session".
 		if ($this->_params['t'] == "caps" || $this->_params['t'] == "c") {
 			$this->caps();
-			die();
+			return ;
 		} # if
 		
 		# Controleer de users' rechten
@@ -53,6 +53,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			# validate input
 			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
 				$this->showApiError(201);
+				
+				return ;
 			} # if
 
 			# fetch remote content
@@ -61,6 +63,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
 				$this->showApiError(300);
+				
+				 return ;
 			} # if
 
 			$dom->loadXML($tvrage['content']);
@@ -68,6 +72,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
 			if (!@$showTitle->item(0)->nodeValue) {
 				$this->showApiError(300);
+				
+				 return ;
 			} # if
 			$tvSearch = $showTitle->item(0)->nodeValue;
 
@@ -76,12 +82,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
+				
+				return ;
 			} # if
 
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
 				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
+				
+				return ;
 			} # if
 
 			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
@@ -95,13 +105,19 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
 				$this->showApiError(200);
+				
+				return ;
 			} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
 				$this->showApiError(201);
+				
+				return ;
 			} # if
 
 			# fetch remote content
 			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
 				$this->showApiError(300);
+				
+				return ;
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span>/ms', $imdb['content'], $movieTitle);
 			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
@@ -289,6 +305,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	function spotDetails($outputtype) {
 		if (empty($this->_params['messageid'])) {
 			$this->showApiError(200);
+			
+			return ;
 		} # if
 
 		# Controleer de users' rechten
@@ -300,6 +318,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 		catch(Exception $x) {
 			$this->showApiError(300);
+			
+			return ;
 		} # catch
 
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
@@ -565,7 +585,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$doc->appendChild($error);
 
 		header('Content-type: text/xml; charset=UTF-8');
-		echo $doc->saveXML(); die();
+		echo $doc->saveXML();
 	} # showApiError
 
 	function categories() {

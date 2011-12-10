@@ -33,15 +33,15 @@ class SpotUserUpgrader {
 			return ;
 		} # if
 
-		# DB connectie
+		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 
-		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
+		# Create an Spotweb API key. It cannot be used but should not be empty
 		$apikey = md5('anonymous');
 		
 		# Create the dummy 'anonymous' user
 		$anonymous_user = array(
-			# 'userid'		=> 1,		<= Moet 1 zijn voor de anonymous user
+			# 'userid'		=> 1,		<= Must be 1 for the anonymous user
 			'username'		=> 'anonymous',
 			'firstname'		=> 'Jane',
 			'passhash'		=> '',
@@ -53,12 +53,12 @@ class SpotUserUpgrader {
 			'deleted'		=> 0);
 		$this->_db->addUser($anonymous_user);
 
-		# update handmatig het userid
+		# Manually update the userid so we can be sure anonymous == userid 1
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
 
-		# Geef de anonieme user de anonymous group
+		# Add the anonymous user to the anonymous security group
 		$dbCon->rawExec("INSERT INTO usergroups(userid, groupid, prio) VALUES(1, 1, 1)");
 	} # createAnonymous
 
@@ -75,13 +75,13 @@ class SpotUserUpgrader {
 		# DB connectie
 		$dbCon = $this->_db->getDbHandle();
 
-		# Vraag de password salt op 
+		# Retrieve the password salt from the settings
 		$passSalt = $this->_settings->get('pass_salt');
 		
-		# Bereken het password van de dummy admin user
+		# calculate the password salt for the admin user
 		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
 		
-		# Maak een apikey aan. Deze kan niet worden gebruikt, maar is bij voorkeur niet leeg
+		# Create an Spotweb API key. It cannot be used but should not be empty
 		$apikey = md5('admin');
 		
 		# Create the dummy 'admin' user
@@ -98,12 +98,12 @@ class SpotUserUpgrader {
 			'deleted'		=> 0);
 		$this->_db->addUser($admin_user);
 
-		# update handmatig het userid
+		# Manually update the userid so we can be sure admin == userid 2
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
 		$dbCon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
 		$dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
 
-		# Geef user 2 (de admin user, naar we van uit gaan) de anon, auth en admin group
+		# Grant the admin user all the necessary security groups
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
 		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
@@ -117,8 +117,10 @@ class SpotUserUpgrader {
 
 		# loop through every user and fix it 
 		foreach($userList['list'] as $user) {
-			# Omdat we vanuit listUsers() niet alle velden meekrijgen
-			# vragen we opnieuw het user record op
+			/*
+			 * Because we do not get all users' properties from
+			 * listUsers(), retrieve the users' settings from scratch
+			 */
 			$user = $this->_db->getUser($user['userid']);
 
 			# set the users' preferences
@@ -180,11 +182,11 @@ class SpotUserUpgrader {
 			# make sure a sort preference is defined. An empty field means relevancy
 			$this->setSettingIfNot($user['prefs'], 'defaultsortfield', '');
 
-			# oude settings verwijderen
+			# Remove deprecated preferences
 			$this->unsetSetting($user['prefs'], 'search_url');
 			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');
 			
-			# controleren dat de user een geldige RSA key heeft
+			# Make sure the user has a valid RSA key
 			if ($user['userid'] > 2) {
 				$rsaKey = $this->_db->getUserPrivateRsaKey($user['userid']);
 				if (empty($rsaKey)) {
@@ -202,17 +204,17 @@ class SpotUserUpgrader {
 	} # update()
 
 	/*
-	 * Creeer de default security groepen
+	 * Create the default security groups
 	 */
 	function createSecurityGroups() {
-		# DB connectie
+		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 		
 		if ($this->_settings->get('securityversion') < 0.01) {
-			/* Truncate de  huidige permissies */
+			/* Truncate the current defined permissions  */
 			$dbCon->rawExec("DELETE FROM securitygroups");
 
-			/* Creeer de security groepen */
+			/* Create the security groepen */
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
 			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");				
@@ -223,7 +225,7 @@ class SpotUserUpgrader {
 	 * Update de 'default' security groepen hun rechten
 	 */
 	function updateSecurityGroupMembership() {
-		# DB connectie
+		# DB connectie	
 		$dbCon = $this->_db->getDbHandle();
 		
 		if ($this->_settings->get('securityversion') < 0.01) {
