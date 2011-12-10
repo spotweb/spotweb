@@ -16,26 +16,6 @@ class SpotUserUpgrader {
 		$this->updateUserPreferences();
 		$this->updateSecurityGroupMembership();
 		$this->updateUserFilters();
-
-		# Fix for a bug introduced by me (3nov2011)
-		if ($this->_settings->get('securityversion') === 'true') {
-			# Reinsert the users' membership of groups
-			$dbCon = $this->_db->getDbHandle();
-			$dbCon->rawExec("INSERT INTO usergroups(userid, groupid, prio) VALUES(1, 1, 1)");
-			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
-			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
-			$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
-			
-			# now for all users, readd them to the default 'authenticated users' membership
-			$userList = $this->_db->listUsers("", 0, 9999999);
-			foreach($userList['list'] as $user) {
-				if ($user['userid'] > 2) {
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 1, 1)");
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 2)");
-				} # if
-			} # foreach
-		} # if
-		
 		$this->updateSecurityVersion();
 	} # update()
 
