@@ -79,11 +79,11 @@ class dbeng_mysql extends dbeng_abs {
 		$this->_conn = mysql_connect($this->_db_host, $this->_db_user, $this->_db_pass);
 		
 		if (!$this->_conn) {
-			throw new Exception("Unable to connect to MySQL server: " . mysql_error());
+			throw new DatabaseConnectionException("Unable to connect to MySQL server: " . mysql_error());
 		} # if 
 				
 		if (!@mysql_select_db($this->_db_db, $this->_conn)) {
-			throw new Exception("Unable to select MySQL db: " . mysql_error($this->_conn));
+			throw new DatabaseConnectionException("Unable to select MySQL db: " . mysql_error($this->_conn));
 			return false;
 		} # if
 		
