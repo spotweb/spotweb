@@ -9,86 +9,95 @@ abstract class SpotStruct_abs {
 	} # __construct
 
 	/*
-	 * optimaliseer/analyseer een aantal tables welke veel veranderen,
-	 * deze functie wijzigt geen data!
+	 * Optimize / analyze (database specific) a number of hightraffic
+	 * tables.
+	 * This function does not modify any schema or data
 	 */
 	abstract function analyze();
 
-	/* converteert een "spotweb" datatype naar een mysql datatype */
+	/*
+	 * Converts a 'spotweb' internal datatype to a 
+	 * database specific datatype
+	 */
 	abstract function swDtToNative($colType);
 
-	/* converteert een mysql datatype naar een "spotweb" datatype */
+	/*
+	 * Converts a database native datatype to a spotweb native
+	 * datatype
+	 */
 	abstract function nativeDtToSw($colInfo);
 	
 	/*
-	 * Add an index, kijkt eerst wel of deze index al bestaat,
-	 * $idxType kan danwel 'UNIQUE' danwel 'FULLTEXT' zijn
+	 * Adds an index, but first checks if the index doesn't
+	 * exist already.
+	 *
+	 * $idxType can be either 'UNIQUE', '' or 'FULLTEXT'
 	 */
 	abstract function addIndex($idxname, $idxType, $tablename, $colList);
 
-	/* dropt een index als deze bestaat */
+	/* drops an index if it exists */
 	abstract function dropIndex($idxname, $tablename);
 
-	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
+	/* adds a column if the column doesn't exist yet */
 	abstract function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation);
 
-	/* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
+	/* alters a column - does not check if the column doesn't adhere to the given definition */
 	abstract function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what);
 
-	/* dropt een kolom (mits db dit ondersteunt) */
+	/* drops a column (dbms allowing) */
 	abstract function dropColumn($colName, $tablename);
 
-	/* controleert of een index bestaat */
+	/* checks if an index exists */
 	abstract function indexExists($idxname, $tablename);
 
-	/* controleert of een kolom bestaat */
+	/* checks if a column exists */
 	abstract function columnExists($tablename, $colname);
 
-	/* controleert of een tabel bestaat */
+	/* checks if a table exists */
 	abstract function tableExists($tablename);
 	
-	/* controleert of een full text index bestaat */
+	/* checks if a fts text index exists */
 	abstract function ftsExists($ftsname, $tablename, $colList);
 	
-	/* maakt een full text index aan */
+	/* creates a full text index */
 	abstract function createFts($ftsname, $tablename, $colList);
 	
-	/* dropt en fulltext index */
+	/* drops a fulltext index */
 	abstract function dropFts($ftsname, $tablename, $colList);
 	
-	/* geeft FTS info terug */
+	/* returns FTS info  */
 	abstract function getFtsInfo($ftsname, $tablename, $colList);
 	
-	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+	/* creates an empty table with onl an ID field. Collation should be either UTF8 or ASCII */
 	abstract function createTable($tablename, $collation);
 
-	/* creeert een foreign key constraint */
+	/* creates a foreign key constraint */
 	abstract function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
 	
-	/* dropped een foreign key constraint */
+	/* drops a foreign key constraint */
 	abstract function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action);
 
-	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	/* alters a storage engine (only mysql knows something about store engines, but well  :P ) */
 	abstract function alterStorageEngine($tablename, $engine);
 
-	/* drop een table */
+	/* drop a table */
 	abstract function dropTable($tablename);
 	
-	/* rename een table */
+	/* rename a table */
 	abstract function renameTable($tablename, $newTableName);
 
-	/* Geeft, in een afgesproken formaat, de index informatie terug */
+	/* Returns in a fixed format, index information */
 	abstract function getIndexInfo($idxname, $tablename);
 	
-	/* Geeft, in een afgesproken formaat, de index formatie terug */
+	/* Returns in a fixed format, column information */
 	abstract function getColumnInfo($tablename, $colname);
 	
-	/* controleert of de index structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
+	/* Checks if a index structure is the same as the requested one. Recreats if not */
 	function validateIndex($idxname, $type, $tablename, $colList) {
 		echo "\tValidating index " . $idxname . PHP_EOL;
 		
 		if (!$this->compareIndex($idxname, $type, $tablename, $colList)) {
-			# Drop de index
+			# Drop the index
 			if ($this->indexExists($idxname, $tablename)) {
 				echo "\t\tDropping index " . $idxname . PHP_EOL;
 				$this->dropIndex($idxname, $tablename);
@@ -96,12 +105,12 @@ abstract class SpotStruct_abs {
 			
 			echo "\t\tAdding index " . $idxname . PHP_EOL;
 			
-			# en creeer hem opnieuw
+			# and recreate the index
 			$this->addIndex($idxname, $type, $tablename, $colList);
 		} # if
 	} # validateIndex
 
-	/* controleert of de fulltext structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
+	/* Checks if a fulltext structure matches the required one. Recreates if not */
 	function validateFts($ftsname, $tablename, $colList) {
 		echo "\tValidating FTS " . $ftsname . PHP_EOL;
 		
@@ -114,12 +123,12 @@ abstract class SpotStruct_abs {
 			
 			echo "\t\tAdding FTS " . $ftsname . PHP_EOL;
 			
-			# en creeer hem opnieuw
+			# and recreate the index
 			$this->createFts($ftsname, $tablename, $colList);
 		} # if
 	} # validateFts
 
-	/* controleert of de index structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
+	/* Checks if a column definition is the same as the requested one. Recreats if not */
 	function validateColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		echo "\tValidating " . $tablename . "(" . $colName . ")" . PHP_EOL;
 
@@ -135,17 +144,17 @@ abstract class SpotStruct_abs {
 		} # if
 	} # validateColumn
 	
-	/* vergelijkt een column met de gewenste structuur */
+	/* Compares a columns' definition */
 	function compareColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
-		# Vraag nu de column informatie op
+		# Retrieve the column information
 		$q = $this->getColumnInfo($tablename, $colName);
 		
-		# Als de column helemaal niet gevonden wordt..
+		# if column is not found at all, it's easy
 		if (empty($q)) {
 			return false;
 		} # if
 		
-		# controleer het type
+		# Check data type
 		if (strtolower($q['COLUMN_TYPE']) != strtolower($this->swDtToNative($colType))) {
 			#var_dump($q);
 			#var_dump($colType);
@@ -154,17 +163,17 @@ abstract class SpotStruct_abs {
 			return 'type';
 		} # if
 
-		# controleer default
+		# check default value
 		if (strtolower($q['COLUMN_DEFAULT']) != strtolower($colDefault)) {
 			return 'default';
 		} # if
 
-		# controleer NOT NULL setting
+		# check the NOT NULL setting
 		if (strtolower($q['NOTNULL']) != $notNull) {
 			return 'not null';
 		} # if
 
-		# controleer NOT NULL setting
+		# Chcek character set setting
 		if ((strtolower($q['CHARACTER_SET_NAME']) != $collation) && ($q['CHARACTER_SET_NAME'] != null)) {
 			return 'charset';
 		} # if
@@ -173,18 +182,20 @@ abstract class SpotStruct_abs {
 	} # compareColumn
 
 	
-	/* vergelijkt een index met de gewenste structuur */
+	/* Compares an index with the requested structure */
 	function compareIndex($idxname, $type, $tablename, $colList) {
-		# Vraag nu de index informatie op
+		# Retrieve index information
 		$q = $this->getIndexInfo($idxname, $tablename);
 		
-		# Als het aantal kolommen niet gelijk is
+		# If the amount of columns in the index don't match...
 		if (count($q) != count($colList)) {
 			return false;
 		} # if
 		
-		# we loopen vervolgens door elke index kolom heen, en vergelijken
-		# dan of ze in dezelfde volgorde staan en dezelfde eigenschappen hebben
+		/*
+		 * We iterate throuhg each column and compare the index order,
+		 * and properties of each index.
+		 */
 		for($i = 0; $i < count($colList); $i++) {
 			$same = true;
 			
@@ -212,18 +223,20 @@ abstract class SpotStruct_abs {
 		return true;
 	} # compareIndex
 	
-	/* vergelijkt een FTS met de gewenste structuur */
+	/* Compares an FTS index with the desired definition */
 	function compareFts($ftsname, $tablename, $colList) {
-		# Vraag nu de FTS informatie op
+		# Retrieves FTS information
 		$q = $this->getFtsInfo($ftsname, $tablename, $colList);
 		
-		# Als het aantal kolommen niet gelijk is
+		# If the amount of columns in the index don't match...
 		if (count($q) != count($colList)) {
 			return false;
 		} # if
 
-		# we loopen vervolgens door elke index kolom heen, en vergelijken
-		# dan of ze in dezelfde volgorde staan en dezelfde eigenschappen hebben
+		/*
+		 * We iterate throuhg each column and compare the index order,
+		 * and properties of each index.
+		 */
 		for($i = 0; $i < count($colList); $i++) {
 			if ($colList[$i + 1] != $q[$i]['column_name']) {
 				return false;
@@ -234,7 +247,7 @@ abstract class SpotStruct_abs {
 	} # compareFts
 
 	function updateSchema() {
-		# drop eventueel FTS indexes op de spotsfull tabel
+		# Drop any older (not used anymore) FTS indexes on the spots full table
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
@@ -242,7 +255,7 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
 
-		# relaties wissen
+		# Drop any non-valid FK relations
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('commentsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -253,7 +266,7 @@ abstract class SpotStruct_abs {
 		$this->dropForeignKey('reportsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
-		# Opschonen data #############################################################################
+		# Cleaning up data ###########################################################################
 		##############################################################################################
 		if (($this instanceof SpotStruct_mysql) && (false)) {
 			echo "Cleaning up old data..." . PHP_EOL;
@@ -513,7 +526,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 
-		# oude cache droppen, converteren gaat te vaak fout
+		# Drop old cache -- converting is too error prone
 		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
 			$this->dropTable('cache');
 		} # if
@@ -542,68 +555,28 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
 		##############################################################################################
-		### deprecation van oude Spotweb versies #####################################################
+		### deprecation of old Spotweb versions ######################################################
 		##############################################################################################
-		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.34)) {
-			if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.30)) {
-				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/da6ba29071c49ae88823cccfefc39375b37e9bee), " . PHP_EOL . 
-									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.51)) {
+			if ($this->_spotdb->getSchemaVer() < 0.30) {
+				throw new SpotwebCannotBeUpgradedTooOldException("da6ba29071c49ae88823cccfefc39375b37e9bee");
 			} # if
 
-			# Tabellen terug samenvoegen in een MyISAM tabel
 			if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
-				throw new Exception("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-									"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/48bc94a63f94959f9fe6b2372b312e35a4d09997), " . PHP_EOL . 
-									"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+				throw new SpotwebCannotBeUpgradedTooOldException("48bc94a63f94959f9fe6b2372b312e35a4d09997");
+			} # if
+
+			if ($this->_spotdb->getSchemaVer() < 0.48) {
+				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
+			} # if
+
+			if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
+				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
 			} # if
 		} # if
 
-		/*
-		 * Convert the information from 'spotsfull' to 'spots' table
-		 */
-		if (($this->_spotdb->getSchemaVer() < 0.48) && ($this->_spotdb->getSchemaVer() > 0.00)) {
-			echo PHP_EOL . PHP_EOL;
-			echo 'Converting your spotsfull data to another format' . PHP_EOL;
-			echo 'Please note - if you had spotsfull enabled, this can take a long time' . PHP_EOL;
-			echo PHP_EOL . PHP_EOL;
-
-			# Empty the blacklist table because the userid column is renamed to spotterid
-			$tmp = $this->_dbcon->rawExec("TRUNCATE spotteridblacklist");
-
-			# Update the spotterid field with the userid field
-			$this->_dbcon->rawExec("UPDATE commentsfull SET spotterid = userid");
-
-			# MySQL specifieke syntax to update the spots
-			if ($this instanceof SpotStruct_mysql) {
-				$this->_dbcon->rawExec("UPDATE spots s, spotsfull f SET s.spotterid = f.userid WHERE (s.messageid = f.messageid)");
-			} # if
-
-			# PostgreSQL (?) specifieke syntax
-			if ($this instanceof SpotStruct_pgsql) {
-				$this->_dbcon->rawExec("UPDATE spots s SET spotterid = spotsfull.userid FROM spotsfull WHERE (s.messageid = spotsfull.messageid)");
-			} # if
-		} # if
-
-		# cache omzetten naar nieuw systeem
-		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
-			$cachetmpCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cachetmp;");
-			if ($cachetmpCount > 7500) {
-				$dbname = $this->_dbcon->singleQuery("SELECT DATABASE();");
-				echo PHP_EOL;
-				echo "Converting the cache is not necessary to continue working with SpotWeb. If you don't want" . PHP_EOL;
-				echo "to wait for this conversion, please enter the following command in MySQL or phpMyAdmin:" . PHP_EOL;
-				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
-				echo "If you like to convert the cache, enter:" . PHP_EOL;
-				echo "\tINSERT INTO " . $dbname . ".cache SELECT resourceid, cachetype, stamp, metadata, serialized, COMPRESS(content) FROM " . $dbname . ".cachetmp;" . PHP_EOL;
-				echo "\tDROP TABLE " . $dbname . ".cachetmp;" . PHP_EOL . PHP_EOL;
-				echo "After this operation you must run upgrade-db.php again." . PHP_EOL . PHP_EOL;
-				die();
-			} # if
-		} # if
-
-		# En creeer de diverse indexen
-		# ---- Indexen op spots -----
+		# Create several indexes
+		# ---- Indexes on spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
@@ -614,86 +587,86 @@ abstract class SpotStruct_abs {
 					      2 => 'title',
 						  3 => 'tag'));
 
-		# ---- Indexen op nntp ----
+		# ---- Indexes on nntp ----
 		$this->validateIndex("idx_nntp_1", "UNIQUE", "nntp", array("server"));
 		
-		# ---- Indexen op spotsfull ----
+		# ---- Indexes on spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));
 
-		# ---- Indexen op commentsfull ----
+		# ---- Indexes on commentsfull ----
 		$this->validateIndex("idx_commentsfull_1", "UNIQUE", "commentsfull", array("messageid"));
 
-		# ---- Indexen op commentsxover ----
+		# ---- Indexes on commentsxover ----
 		$this->validateIndex("idx_commentsxover_1", "UNIQUE", "commentsxover", array("messageid"));
 		$this->validateIndex("idx_commentsxover_2", "", "commentsxover", array("nntpref"));
 
-		# ---- Indexen op reportsxover ----
+		# ---- Indexes on reportsxover ----
 		$this->validateIndex("idx_reportsxover_1", "UNIQUE", "reportsxover", array("messageid"));
 		$this->validateIndex("idx_reportsxover_2", "", "reportsxover", array("nntpref"));
 
-		# ---- Indexen op reportsposted ----
+		# ---- Indexes on reportsposted ----
 		$this->validateIndex("idx_reportsposted_1", "UNIQUE", "reportsposted", array("messageid"));
 		$this->validateIndex("idx_reportsposted_2", "UNIQUE", "reportsposted", array("inreplyto", "ouruserid"));
 		$this->validateIndex("idx_reportspostedrel_1", "", "reportsposted", array("ouruserid"));
 		
-		# ---- Indexen op commentsposted ----
+		# ---- Indexes on commentsposted ----
 		$this->validateIndex("idx_commentsposted_1", "UNIQUE", "commentsposted", array("messageid"));
 		$this->validateIndex("idx_commentspostedrel_1", "", "commentsposted", array("ouruserid"));
 
-		# ---- Indexen op spotsposted ----
+		# ---- Indexes on spotsposted ----
 		$this->validateIndex("idx_spotsposted_1", "UNIQUE", "spotsposted", array("messageid"));
 		$this->validateIndex("idx_spotspostedrel_1", "", "spotsposted", array("ouruserid"));
 
-		# ---- Indexen op settings ----
+		# ---- Indexes on settings ----
 		$this->validateIndex("idx_settings_1", "UNIQUE", "settings", array("name"));
 
-		# ---- Indexen op usersettings ----
+		# ---- Indexes on usersettings ----
 		$this->validateIndex("idx_usersettings_1", "UNIQUE", "usersettings", array("userid"));
 
-		# ---- Indexen op users ----
+		# ---- Indexes on users ----
 		$this->validateIndex("idx_users_1", "UNIQUE", "users", array("username"));
 		$this->validateIndex("idx_users_2", "UNIQUE", "users", array("mail"));
 		$this->validateIndex("idx_users_3", "", "users", array("deleted"));
 		$this->validateIndex("idx_users_4", "UNIQUE", "users", array("apikey"));
 
-		# ---- Indexen op sessions
+		# ---- Indexes on sessions
 		$this->validateIndex("idx_sessions_1", "UNIQUE", "sessions", array("sessionid"));
 		$this->validateIndex("idx_sessions_2", "", "sessions", array("lasthit"));
 		$this->validateIndex("idx_sessions_3", "", "sessions", array("sessionid", "userid"));
 		$this->validateIndex("idx_sessionsrel_1", "", "sessions", array("userid"));
 
-		# ---- Indexen op spotstatelist ----
+		# ---- Indexes on spotstatelist ----
 		$this->validateIndex("idx_spotstatelist_1", "UNIQUE", "spotstatelist", array("messageid", "ouruserid"));
 		$this->validateIndex("idx_spotstatelistrel_1", "", "spotstatelist", array("ouruserid"));
 
-		# ---- Indexen op securitygroups ----
+		# ---- Indexes on securitygroups ----
 		$this->validateIndex("idx_securitygroups_1", "UNIQUE", "securitygroups", array("name"));
 
-		# ---- Indexen op grouppermissions ----
+		# ---- Indexes on grouppermissions ----
 		$this->validateIndex("idx_grouppermissions_1", "UNIQUE", "grouppermissions", array("groupid", "permissionid", "objectid"));
 
-		# ---- Indexen op usergroups ----
+		# ---- Indexes on usergroups ----
 		$this->validateIndex("idx_usergroups_1", "UNIQUE", "usergroups", array("userid", "groupid"));
 		$this->validateIndex("idx_usergroupsrel_1", "", "usergroups", array("groupid"));
 
-		# ---- Indexen op notifications ----
+		# ---- Indexes on notifications ----
 		$this->validateIndex("idx_notifications_1", "", "notifications", array("userid"));
 		$this->validateIndex("idx_notifications_2", "", "notifications", array("sent"));
 
-		# ---- Indexen op filters ----
+		# ---- Indexes on filters ----
 		$this->validateIndex("idx_filters_1", "", "filters", array("userid", "filtertype", 'tparent', 'torder'));
 
-		# ---- Indexen op filtercounts ----
+		# ---- Indexes on filtercounts ----
 		$this->validateIndex("idx_filtercounts_1", "UNIQUE", "filtercounts", array("userid", "filterhash"));
 		
-		# ---- Indexen op spotteridblacklist ----
+		# ---- Indexes on spotteridblacklist ----
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
 
-		# ---- Indexen op cache ----
+		# ---- Indexes on cache ----
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
 		$this->validateIndex("idx_cache_2", "", "cache", array("cachetype", "stamp"));
 
-		# leg foreign keys aan
+		# Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -708,7 +681,7 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		
 		##############################################################################################
-		# Hier droppen we kolommen ###################################################################
+		# Drop old columns ###########################################################################
 		##############################################################################################
 		$this->dropColumn('filesize', 'spotsfull');
 		$this->dropColumn('userid', 'spotsfull');
@@ -716,12 +689,12 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'commentsfull');
 
 		##############################################################################################
-		# Hier droppen we tabellen ###################################################################
+		# Drop old tables ######## ###################################################################
 		##############################################################################################		
 		$this->dropTable('webcache');
 		$this->dropTable('cachetmp');
 
-		# voeg het database schema versie nummer toe
+		# update the database with this specific schemaversion
 		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
 	} # updateSchema
 

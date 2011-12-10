@@ -1,21 +1,29 @@
 <?php
 class SpotStruct_mysql extends SpotStruct_abs {
 
-	/* 
-	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
-	 * deze functie wijzigt geen data!
-  	 */
+	/*
+	 * Optimize / analyze (database specific) a number of hightraffic
+	 * tables.
+	 * This function does not modify any schema or data
+	 */
 	function analyze() { 
-		$this->_dbcon->rawExec("ANALYZE TABLE spotstatelist");
-		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
-		$this->_dbcon->rawExec("ANALYZE TABLE users");
-		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
 		$this->_dbcon->rawExec("ANALYZE TABLE spots");
 		$this->_dbcon->rawExec("ANALYZE TABLE spotsfull");
 		$this->_dbcon->rawExec("ANALYZE TABLE commentsxover");
+		$this->_dbcon->rawExec("ANALYZE TABLE commentsfull");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotstatelist");
+		$this->_dbcon->rawExec("ANALYZE TABLE sessions");
+		$this->_dbcon->rawExec("ANALYZE TABLE filters");
+		$this->_dbcon->rawExec("ANALYZE TABLE spotteridblacklist");
+		$this->_dbcon->rawExec("ANALYZE TABLE filtercounts");
+		$this->_dbcon->rawExec("ANALYZE TABLE users");
+		$this->_dbcon->rawExec("ANALYZE TABLE cache");
 	} # analyze
 	
-	/* converteert een "spotweb" datatype naar een mysql datatype */
+	/*
+	 * Converts a 'spotweb' internal datatype to a 
+	 * database specific datatype
+	 */
 	function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'int(11)'; break;
@@ -29,7 +37,10 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return $colType;
 	} # swDtToNative 
 
-	/* converteert een mysql datatype naar een "spotweb" datatype */
+	/*
+	 * Converts a database native datatype to a spotweb native
+	 * datatype
+	 */
 	function nativeDtToSw($colInfo) {
 		switch(strtolower($colInfo)) {
 			case 'int(11)'				: $colInfo = 'INTEGER'; break;
@@ -43,20 +54,24 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return $colInfo;
 	} # nativeDtToSw 
 	
-	/* controleert of een index bestaat */
+	/* checks if an index exists */
 	function indexExists($idxname, $tablename) {
 		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));
 		return !empty($q);
 	} # indexExists
 
-	/* controleert of een column bestaat */
+	/* checks if a column exists */
 	function columnExists($tablename, $colname) {
 		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = '%s'", Array($colname));
 		return !empty($q);
 	} # columnExists
 
-
-	/* Add an index, kijkt eerst wel of deze index al bestaat */
+	/*
+	 * Adds an index, but first checks if the index doesn't
+	 * exist already.
+	 *
+	 * $idxType can be either 'UNIQUE', '' or 'FULLTEXT'
+	 */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($idxname, $tablename)) {
 			if ($idxType == "UNIQUE") {
@@ -67,7 +82,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addIndex
 
-	/* controleert of een full text index bestaat */
+	/* checks if a fts text index exists */
 	function ftsExists($ftsname, $tablename, $colList) {
 		foreach($colList as $num => $col) {
 			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
@@ -80,7 +95,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return true;
 	} # ftsExists
 			
-	/* maakt een full text index aan */
+	/* creates a full text index */
 	function createFts($ftsname, $tablename, $colList) {
 		foreach($colList as $num => $col) {
 			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
@@ -92,14 +107,14 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # foreach
 	} # createFts
 	
-	/* dropt en fulltext index */
+	/* drops a fulltext index */
 	function dropFts($ftsname, $tablename, $colList) {
 		foreach($colList as $num => $col) {
 			$this->dropIndex($ftsname . '_' . $num, $tablename);
 		} # foreach
 	} # dropFts
 	
-	/* geeft FTS info terug */
+	/* returns FTS info  */
 	function getFtsInfo($ftsname, $tablename, $colList) {
 		$ftsList = array();
 		
@@ -114,10 +129,12 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return $ftsList;
 	} # getFtsInfo
 	
-	/* dropt een index als deze bestaat */
+	/* drops an index if it exists */
 	function dropIndex($idxname, $tablename) {
-		# Check eerst of de tabel bestaat, anders kan
-		# indexExists mislukken en een fatal error geven
+		/*
+		 * Make sure the table exists, else this will return an error
+		 * and return a fatal
+		 */
 		if (!$this->tableExists($tablename)) {
 			return ;
 		} # if
@@ -127,18 +144,18 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # dropIndex
 	
-	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
+	/* adds a column if the column doesn't exist yet */
 	function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		if (!$this->columnExists($tablename, $colName)) {
-			# zet de DEFAULT waarde
+			# set the DEFAULT value
 			if (strlen($colDefault) != 0) {
 				$colDefault = 'DEFAULT ' . $colDefault;
 			} # if
 
-			# converteer het kolom type naar het type dat wij gebruiken
+			# Convert the column type to a type we use in MySQL
 			$colType = $this->swDtToNative($colType);
 
-			# Zet de collation om naar iets dat we begrijpen
+			# change the collation to a MySQL type
 			switch(strtolower($collation)) {
 				case 'utf8'		: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
 				case 'ascii'	: $colSetting = 'CHARACTER SET ascii'; break;
@@ -146,7 +163,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
 			
-			# en zet de 'NOT NULL' om naar een string
+			# and define the 'NOT NULL' part
 			switch($notNull) {
 				case true		: $nullStr = 'NOT NULL'; break;
 				default			: $nullStr = '';
@@ -157,17 +174,17 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addColumn
 	
-	/* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
+	/* alters a column - does not check if the column doesn't adhere to the given definition */
 	function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what) {
-		# zet de DEFAULT waarde
+		# set the DEFAULT value
 		if (strlen($colDefault) != 0) {
 			$colDefault = 'DEFAULT ' . $colDefault;
 		} # if
 
-		# converteer het kolom type naar het type dat wij gebruiken
+		# Convert the column type to a type we use in MySQL
 		$colType = $this->swDtToNative($colType);
 
-		# Zet de collation om naar iets dat we begrijpen
+		# change the collation to a MySQL type
 		switch(strtolower($collation)) {
 			case 'utf8'		: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
 			case 'ascii'	: $colSetting = 'CHARACTER SET ascii'; break;
@@ -175,7 +192,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			default			: throw new Exception("Invalid collation setting");
 		} # switch
 		
-		# en zet de 'NOT NULL' om naar een string
+		# and define the 'NOT NULL' part
 		switch($notNull) {
 			case true		: $nullStr = 'NOT NULL'; break;
 			default			: $nullStr = '';
@@ -186,20 +203,20 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	} # modifyColumn
 
 
-	/* dropt een kolom (mits db dit ondersteunt) */
+	/* drops a column */
 	function dropColumn($colName, $tablename) {
 		if ($this->columnExists($tablename, $colName)) {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP COLUMN " . $colName);
 		} # if
 	} # dropColumn
 
-	/* controleert of een tabel bestaat */
+	/* checks if a table exists */
 	function tableExists($tablename) {
 		$q = $this->_dbcon->arrayQuery("SHOW TABLES LIKE '" . $tablename . "'");
 		return !empty($q);
 	} # tableExists
 
-	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+	/* creates an empty table with only an ID field. Collation should be either UTF8 or ASCII */
 	function createTable($tablename, $collation) {
 		if (!$this->tableExists($tablename)) {
 			switch(strtolower($collation)) {
@@ -212,14 +229,14 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # createTable
 	
-	/* drop een table */
+	/* drop a table */
 	function dropTable($tablename) {
 		if ($this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("DROP TABLE " . $tablename);
 		} # if
 	} # dropTable
 	
-	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	/* alters a storage engine (only mysql knows something about store engines, but well  :P ) */
 	function alterStorageEngine($tablename, $engine) {
 		$q = $this->_dbcon->singleQuery("SELECT ENGINE 
 										FROM information_schema.TABLES 
@@ -230,12 +247,12 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # alterStorageEngine
 
-	/* rename een table */
+	/* rename a table */
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("RENAME TABLE " . $tablename . " TO " . $newTableName);
 	} # renameTable
 
-	/* dropped een foreign key constraint */
+	/* drop a foreign key constraint */
 	function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
 		$q = $this->_dbcon->arrayQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage 
 										WHERE TABLE_SCHEMA = DATABASE() 
@@ -250,7 +267,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # dropForeignKey
 
-	/* creeert een foreign key constraint */
+	/* creates a foreign key constraint */
 	function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
 		$q = $this->_dbcon->arrayQuery("SELECT * FROM information_schema.key_column_usage 
 										WHERE TABLE_SCHEMA = DATABASE() 
@@ -264,7 +281,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		} # if
 	} # addForeignKey
 
-	/* Geeft, in een afgesproken formaat, de index formatie terug */
+	/* Returns in a fixed format, column information */
 	function getColumnInfo($tablename, $colname) {
 		$q = $this->_dbcon->arrayQuery("SELECT COLUMN_NAME, 
 											   COLUMN_DEFAULT, 
@@ -280,8 +297,11 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			$q = $q[0];
 			$q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
-			# MySQL's boolean type is stiekem een tinyint, maar wij verwachten
-			# binnen spotweb een echte boolean. Dus we converteren dat stiekem
+			/* 
+			 * MySQL's boolean type secretly is a tinyint, but in Spotweb we
+			 * use an actual boolean type. We secretly convert all tinyint(1)'s
+			 * to boolean types.
+			 */
 			if (strtolower($q['COLUMN_TYPE']) == 'tinyint(1)') {
 				if (is_numeric($q['COLUMN_DEFAULT'])) {
 					if ($q['COLUMN_DEFAULT']) {
@@ -292,7 +312,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 				} # if
 			} # if
 			
-			# converteer het default waarde naar iets anders
+			# a default value has to given, so make it compareable to what we define
 			if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {	
 				$q['COLUMN_DEFAULT'] = "''";
 			} # if
@@ -301,7 +321,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		return $q;
 	} # getColumnInfo
 	
-	/* Geeft, in een afgesproken formaat, de index informatie terug */
+	/* Returns in a fixed format, index information */
 	function getIndexInfo($idxname, $tablename) {
 		$q = $this->_dbcon->arrayQuery("SELECT 
 											column_name, 
