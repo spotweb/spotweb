@@ -1,17 +1,11 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
+/*
+ * If we are run from another directory, try to change the current
+ * working directory to a directory the script is in
+ */
 if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-	if (!defined('__DIR__')) {
-		class __DIR_CLASS__ {
-			function  __toString() {
-				$backtrace = debug_backtrace();
-				return dirname($backtrace[1]['file']);
-			} # __toString
-		} # __FILE_CLASS__
-		define('__DIR__', new __DIR_CLASS__);
-	} # if
-
 	chdir(__DIR__);
 } # if
 
