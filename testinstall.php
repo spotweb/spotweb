@@ -10,6 +10,7 @@
 	global $_testInstall_Ok;
 
 	$_testInstall_Ok = true;
+	session_start();
 	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -19,84 +20,267 @@
 		table {margin-left:auto; margin-right:auto; font-size:12px; color:#fff; width:800px; background-color:#666; border:0px; border-collapse:collapse; border-spacing:0px;}
 		table td {background-color:#CCC; color:#000; padding:4px; border:1px #fff solid;}
 		table th {background-color:#666; color:#fff; padding:4px; text-align:left; border-bottom:2px #fff solid; font-size:12px; font-weight:bold;} 
+		div#error {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
+		div#success {background-color:#cbffcb; border:1px solid #00ab00; color:#000; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 	</style>
+	<script type='text/javascript'>
+		function toggleNntpField() {
+			var sel = document.getElementById('nntpselectbox');
+			var x = document.getElementById('customnntpfield');
+			if (x == null) { return ; } 
+			
+			if (sel.options[sel.selectedIndex].value == 'custom') { 
+				x.style.display = ''; 
+			} else {
+				x.style.display = 'none'; 
+			} // else
+		} // toggleNntpField
+		
+		toggleNntpField();
+	</script>
 </head>
 <body>
 
 <?php
-function performAndPrintTests() {
-	global $settings;
-	global $_testInstall_Ok;
+	function performAndPrintTests() {
+		global $settings;
+		global $_testInstall_Ok;
 ?>
-	<table summary="PHP settings">
-		<tr> <th> PHP settings </th> <th> Value </th> <th> Result </th> </tr>
-		<tr> <td> PHP version </td> <td> <?php echo phpversion(); ?> </td> <td> <?php showResult((version_compare(PHP_VERSION, '5.3.0') >= 0), true, "", "PHP 5.3 or later is recommended"); ?> </td> </tr>
-		<tr> <td> timezone settings </td> <td> <?php echo ini_get("date.timezone"); ?> </td> <td> <?php showResult(ini_get("date.timezone"), true, "", "Please specify date.timezone in your PHP.ini"); ?> </td> </tr>
-		<tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), true, "", "Not empty, <strong>might</strong> be a problem"); ?> </td> </tr>
-		<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, true, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
-		<tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), true, "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
-		<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), true, "", "memory_limit below 128M"); ?> </td> </tr>
-	</table>
-	<br />
+		<table summary="PHP settings">
+			<tr> <th> PHP settings </th> <th> Value </th> <th> Result </th> </tr>
+			<tr> <td> PHP version </td> <td> <?php echo phpversion(); ?> </td> <td> <?php showResult((version_compare(PHP_VERSION, '5.3.0') >= 0), true, "", "PHP 5.3 or later is recommended"); ?> </td> </tr>
+			<tr> <td> timezone settings </td> <td> <?php echo ini_get("date.timezone"); ?> </td> <td> <?php showResult(ini_get("date.timezone"), true, "", "Please specify date.timezone in your PHP.ini"); ?> </td> </tr>
+			<tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), true, "", "Not empty, <strong>might</strong> be a problem"); ?> </td> </tr>
+			<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, true, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
+			<tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), true, "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
+			<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), true, "", "memory_limit below 128M"); ?> </td> </tr>
+		</table>
+		<br />
 
-	<table summary="PHP extensions">
-		<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-		<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine']), true); ?> </td> </tr>
-		<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext'), false); ?> </td> </tr>
-		<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
-		<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
-	<?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
-		<tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>
-		<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support'], true); ?> </td> </tr>
-		<tr> <td colspan="2"> GIF Read Support </td> <td> <?php showResult($gdInfo['GIF Read Support'], true); ?> </td> </tr>
-		<tr> <td colspan="2"> GIF Create Support </td> <td> <?php showResult($gdInfo['GIF Create Support'], true); ?> </td> </tr>
-		<tr> <td colspan="2"> JPEG Support </td> <td> <?php showResult($gdInfo['JPEG Support'] || $gdInfo['JPG Support'], true); ?> </td> </tr> <!-- Previous to PHP 5.3.0, the JPEG Support attribute was named JPG Support. -->
-		<tr> <td colspan="2"> PNG Support </td> <td> <?php showResult($gdInfo['PNG Support'], true); ?> </td> </tr>
-		<tr> <th colspan="3"> OpenSSL </th> </tr>
-	<?php require_once "lib/SpotSigning.php";
-		$spotSigning = new SpotSigning();
-		$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
-		
-		/* We need either one of those 3 extensions, so set the error flag manually */
-		if ( (!extension_loaded('openssl')) && (!extension_loaded('openssl')) && (!extension_loaded('openssl'))) {
-			$_testInstall_Ok = false;
-		} # if
-		
-	?>	<tr> <td rowspan="3"> At least 1 of these must be OK <br />these modules are sorted from fastest to slowest</td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl'), false); ?> </td> </tr>
-		<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp'), false); ?> </td> </tr>
-		<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath'), false); ?> </td> </tr>
-		<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']), true); ?> </td> </tr>
-	</table>
-	<br />
+		<table summary="PHP extensions">
+			<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
+			<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine']), true); ?> </td> </tr>
+			<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext'), false); ?> </td> </tr>
+			<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
+			<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
+		<?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
+			<tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support'], true); ?> </td> </tr>
+			<tr> <td colspan="2"> GIF Read Support </td> <td> <?php showResult($gdInfo['GIF Read Support'], true); ?> </td> </tr>
+			<tr> <td colspan="2"> GIF Create Support </td> <td> <?php showResult($gdInfo['GIF Create Support'], true); ?> </td> </tr>
+			<tr> <td colspan="2"> JPEG Support </td> <td> <?php showResult($gdInfo['JPEG Support'] || $gdInfo['JPG Support'], true); ?> </td> </tr> <!-- Previous to PHP 5.3.0, the JPEG Support attribute was named JPG Support. -->
+			<tr> <td colspan="2"> PNG Support </td> <td> <?php showResult($gdInfo['PNG Support'], true); ?> </td> </tr>
+			<tr> <th colspan="3"> OpenSSL </th> </tr>
+		<?php require_once "lib/SpotSigning.php";
+			$spotSigning = new SpotSigning();
+			$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
+			
+			/* We need either one of those 3 extensions, so set the error flag manually */
+			if ( (!extension_loaded('openssl')) && (!extension_loaded('openssl')) && (!extension_loaded('openssl'))) {
+				$_testInstall_Ok = false;
+			} # if
+			
+		?>	<tr> <td rowspan="3"> At least 1 of these must be OK <br />these modules are sorted from fastest to slowest</td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl'), false); ?> </td> </tr>
+			<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp'), false); ?> </td> </tr>
+			<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath'), false); ?> </td> </tr>
+			<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']), true); ?> </td> </tr>
+		</table>
+		<br />
 
-	<table summary="Server settings">
-		<tr> <th> Server type </th> <th> Setting </th> </tr>
-		<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
-		<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, true, $settings['db']['path'], "No path entered"); ?> </td> </tr>
-		<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql" || $settings['db']['engine'] == "pdo_pgsql" ) { ?>
-		<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, true, $settings['db']['host'], "No server entered"); ?> </td> </tr>
-		<?php } else { ?>
-		<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
-		<?php } ?>
-	</table>
-	<br />
+		<table summary="Server settings">
+			<tr> <th> Server type </th> <th> Setting </th> </tr>
+			<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
+			<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, true, $settings['db']['path'], "No path entered"); ?> </td> </tr>
+			<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql" || $settings['db']['engine'] == "pdo_pgsql" ) { ?>
+			<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, true, $settings['db']['host'], "No server entered"); ?> </td> </tr>
+			<?php } else { ?>
+			<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
+			<?php } ?>
+		</table>
+		<br />
 
-	<table summary="Include files">
-		<tr> <th> Include files  </th> <th> Result </th> </tr>
-		<tr> <td> Settings file </td> <td> <?php $result=testInclude("settings.php"); echo showResult($result, true, $result); ?> </td> </tr>
-		<tr> <td> Own settings file </td> <td> <?php $result=testInclude("ownsettings.php"); echo showResult($result, true, $result, "optional"); ?> </td> </tr>
-	</table>
-	<br />
+		<table summary="Include files">
+			<tr> <th> Include files  </th> <th> Result </th> </tr>
+			<tr> <td> Settings file </td> <td> <?php $result=testInclude("settings.php"); echo showResult($result, true, $result); ?> </td> </tr>
+			<tr> <td> Own settings file </td> <td> <?php $result=testInclude("ownsettings.php"); echo showResult($result, true, $result, "optional"); ?> </td> </tr>
+		</table>
+		<br />
 
-	</body>
-	</html>
+		</body>
+		</html>
 <?php
 	} # performAndPrintTests
+
+	function askDbSettings() {
+		global $settings;
+		global $_testInstall_Ok;
+
+		$form = array('engine' => 'MySQL',
+					  'host' => 'localhost',
+					  'dbname' => 'spotweb',
+					  'user' => 'spotweb',
+					  'pass' => 'spotweb');
+		if (isset($_POST['dbform'])) {
+			$form = array_merge($form, $_POST['dbform']);
+		} # if
+						
+		/*
+		 * Dit the user press submit? If so, try to
+		 * connect to the database
+		 */
+		$databaseCreated = false;
+		if ($form['submit'] === 'Verify database') {
+			try {
+				$db = new SpotDb($form);
+				$db->connect();
+				$databaseCreated = true;
+				
+				/*
+				 * Store the given database settings in the 
+				 * SESSION object, we need it later to generate
+				 * a 'ownsettings.php' file
+				 */
+				$_SESSION['spotsettings']['db'] = $form;			
+				
+				/*
+				 * and call the next stage in the setup
+				 */
+				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=2');
+			} 
+			catch(Exception $x) {
+	?>
+				<div id='error'><?php echo $x->getMessage(); ?>
+				<br /><br />
+				Please correct the errors in below form and try again
+				</div>
+	<?php			
+			} # exception
+		} # if
+		
+		if (!$databaseCreated) {
+	?>
+			<form name='dbform' method='POST'>
+			<table summary="PHP settings">
+				<tr> <th> Database settings </th> <th> </th> </tr>
+				<tr> <td colspan='2'> Spotweb needs an available MySQL or PostgreSQL database. The database needs to be created and you need to have an user account and password for this database. </td> </tr>
+				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='mysql'>MySQL</option> <option value='PostgreSQL'>PostgreSQL</option> </select> </td> </tr>
+				<tr> <td> server </td> <td> <input type='text' length='40' name='dbform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
+				<tr> <td> database </td> <td> <input type='text' length='40' name='dbform[dbname]' value='<?php echo htmlspecialchars($form['dbname']); ?>' ></input></td> </tr>
+				<tr> <td> username </td> <td> <input type='text' length='40' name='dbform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
+				<tr> <td> password </td> <td> <input type='text' length='40' name='dbform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
+				<tr> <td colspan='2'> <input type='submit' name='dbform[submit]' value='Verify database'> </td> </tr>
+			</table>
+			</form>
+			<br />
+	<?php
+		} # else
+	} # askDbSettings
+
+	function askNntpSettings() {
+		global $settings;
+		global $_testInstall_Ok;
+
+		$serverList = simplexml_load_file('usenetservers.xml');
+		$form = array('name' => 'custom',
+					  'host' => '',
+					  'user' => '',
+					  'pass' => '',
+					  'port' => 119,
+					  'enc' => false);
+		if (isset($_POST['nntpform'])) {
+			$form = array_merge($form, $_POST['nntpform']);
+		} # if
+
+		/*
+		 * Dit the user press submit? If so, try to
+		 * connect to the database
+		 */
+		$nntpVerified = false;
+		if ($form['submit'] === 'Verify usenet server') {
+			try {
+				/*
+				 * Convert the selected NNTP name to an actual
+				 * server record.
+				 */
+				if ($form['name'] == 'custom') {
+				} else {
+					foreach($serverList->usenetservers->server as $server) {
+						if ( (string) $server['name'] == $form['name'] ) {
+							$form['host'] = (string) $server->header;
+							$form['port'] = (int) $server->header['port'];
+							
+							if ( (string) $server->header['ssl'] == 'yes') {
+								$form['enc'] = 'ssl';
+							} # if
+						} # if
+					} # foreach
+				} # else 
+				
+				/* and try to connect to the usenet server */
+				$nntp = new SpotNntp($form);
+				$nntp->connect();
+				$nntp->selectGroup('free.pt');
+
+				$nntpVerified = true;
+				
+				/*
+				 * Store the given NNTP settings in the 
+				 * SESSION object, we need it later to update
+				 * the settings in the database
+				 */
+				$_SESSION['spotsettings']['nntp'] = $form;
+				
+				/*
+				 * and call the next stage in the setup
+				 */
+				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=3');
+			} 
+			catch(Exception $x) {
+	?>
+				<div id='error'><?php echo $x->getMessage(); ?>
+				<br /><br />
+				Please correct the errors in below form and try again
+				</div>
+	<?php			
+			} # exception
+		} # if
+		
+		if (!$nntpVerified) {
+	?>
+			<form name='dbform' method='POST'>
+			<table summary="PHP settings">
+				<tr> <th> Usenet server settings </th> <th> </th> </tr>
+				<tr> <td colspan='2'> Spotweb needs an usenet server. We have several usenet server profiles defined from which you can choose. If your server is not listed, please choose 'custom', more advanced options can be set from within Spotweb itself. </td> </tr>
+				<tr> <td> Usenet server </td> 
+				<td> 
+					<select id='nntpselectbox' name='nntpform[name]' onchange='toggleNntpField();'> 
+	<?php
+					foreach($serverList->usenetservers->server as $server) {
+						echo "<option value='{$server['name']}'" . (($server['name'] == $form['name']) ? "selected='selected'" : '') . ">{$server['name']}</option>";
+					} # foreach
+	?>
+						<option value='custom'>Custom</option>
+					</select> 
+				</td> </tr>
+				<tr id='customnntpfield' style='display: none;'> <td> server </td> <td> <input type='text' length='40' name='nntpform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
+				<tr> <td> username </td> <td> <input type='text' length='40' name='nntpform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
+				<tr> <td> password </td> <td> <input type='text' length='40' name='nntpform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
+				<tr> <td colspan='2'> <input type='submit' name='nntpform[submit]' value='Verify usenet server'> </td> </tr>
+			</table>
+			</form>
+			<br />
+	<?php
+		} # else
+	} # askNntpSettings
+	
+	function askSpotwebSettings() {
+		var_dump($_SESSION);
+	} # askSpotwebSettings
 	
 	function return_bytes($val) {
 		$val = trim($val);
@@ -149,4 +333,15 @@ function performAndPrintTests() {
 		}
 	} # testInclude
 
-	performAndPrintTests();
+	/*
+	 * determine what page of the wizzard we are on, and display that one
+	 */
+	$pageNumber = (isset($_GET['page']) ? $_GET['page'] : 0);
+	
+	switch($pageNumber) {
+		case 1			: askDbSettings(); break; 
+		case 2			: askNntpSettings(); break; 
+		case 3			: askSpotwebSettings(); break;
+		
+		default			: performAndPrintTests(); break;
+	} # switch
