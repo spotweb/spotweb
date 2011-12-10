@@ -37,7 +37,7 @@ try {
 	$db = new SpotDb($settings['db']);
 	$db->connect();
 } 
-catch(Exception $x) {
+catch(DatabaseConnectionException $x) {
 	die("Unable to connect to database: " . $x->getMessage() . PHP_EOL);
 } # catch
 

@@ -80,7 +80,7 @@ class SpotDb {
 	 * Haalt alle settings op uit de database
 	 */
 	function getAllSettings() {
-		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings2');
 		$tmpSettings = array();
 		foreach($dbSettings as $item) {
 			if ($item['serialized']) {

@@ -389,6 +389,11 @@ catch(PermissionDeniedException $x) {
 	$page->permissionDenied($x, $page, $req->getHttpReferer());
 } # PermissionDeniedException
 
+catch(DatabaseConnectionException $x) {
+	echo "Unable to connect to database: " . $x->getMessage() . PHP_EOL . '<br>';
+	echo "<br><br>Please make sure your database server is up and running and your connection parameters are set<br>" . PHP_EOL;
+} # DatabaseConnectionException
+
 catch(Exception $x) {
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL;
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 

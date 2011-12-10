@@ -8,10 +8,14 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
     } # ctor
 
 	function connect() {
-		if (!$this->_conn instanceof PDO) {
-			$this->_conn = new PDO('sqlite:' . $this->_db_path);
-			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } # if		
+		try {
+			if (!$this->_conn instanceof PDO) {
+				$this->_conn = new PDO('sqlite:' . $this->_db_path);
+				$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			} # if		
+		catch(PDOException $e) {
+				throw new DatabaseConnectionException($e->getMessage(), -1);
+		} # catch
 	} # connect()
 	
 	function safe($s) {
@@ -21,32 +25,41 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 	} # safe
 	
 	/*
-	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
-	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 * Constructs a query part to match textfields. Abstracted so we can use
+	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields) {
 		SpotTiming::start(__FUNCTION__);
 
-		# Initialiseer een aantal arrays welke we terug moeten geven aan
-		# aanroeper
+		/*
+		 * Initialize some basic values which are used as return values to
+		 * make sure always return a valid set
+		 */
 		$filterValueSql = array('(idx_fts_spots.rowid = s.rowid)');
 		$additionalTables = array('idx_fts_spots');
 		$matchList = array();
-		
-		# sqlite kan maar 1 where clausule gebruiken voor alle textstrng
-		# matches (anders krijg je een vage error), dus we plakken hier 
-		# gewoon alle textmatches samen
+
+		/*
+		 * sqlite can only use one WHERE clause for all textstring matches,
+		 * if you exceed this it throws an unrelated error and refuses the query
+		 * so we have to collapse all textqueries into one query 
+		 */
 		foreach($searchFields as $searchItem) {
 			$searchValue = trim($searchItem['value']);
-			# omdat we de fieldname in tabel.fieldname krijgen, maar sqlite dat niet
-			# snapt, halen we de tabelnaam weg
+			
+			/*
+			 * The caller usually provides an expiciet table.fieldname 
+			 * for the select, but sqlite doesn't recgnize this in its
+			 * MATCH statement so we remove it and hope there is no
+			 * ambiguity
+			 */
 			$tmpField = explode('.', $searchItem['fieldname']);
 			$field = $tmpField[1];
 			
 			$matchList[] = $field . ':' . $this->safe($searchValue);
 		} # foreach
 		
-		# en voeg nu 1 WHERE filter toe met alle condities hierin
+		# add one WHERE MATCH conditions with all conditions
 		$filterValueSql[] = " (idx_fts_spots MATCH '" . implode(' ', $matchList) . "') ";
 		
 		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalTables));

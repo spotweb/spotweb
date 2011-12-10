@@ -2,11 +2,8 @@
 abstract class dbeng_pdo extends dbeng_abs {
 	
 	/**
-     * Om niet alle queries te hoeven herschrijven heb ik hier een kleine parser
-     * ingebouwd die de queries herschrijft naar PDO formaat.
-     *
-     * De functie bindt ook alle parameters aan het statement met daarbij
-     * behorende PDO::PARAM_*
+     * We don't want to rewrite all queries, so a small parser is written
+	 * which rewrites the queries. Ugly, but it works.
      *
      * @param string $s
      * @param array $p
@@ -35,7 +32,7 @@ abstract class dbeng_pdo extends dbeng_abs {
             } else {
                 switch ($m) {
                     case '%d': {
-						# we converteren expliciet naar strval, omdat PDO anders een 0 naar '' omzet
+						# We convet explicitly to strval because PDO changes a zero to an '' 
                         $stmt->bindParam($idx, strval($p[$idx-1]), PDO::PARAM_INT);
                         break;
 					} 
@@ -59,7 +56,11 @@ abstract class dbeng_pdo extends dbeng_abs {
 	}
 	public function rawExec($s) {
 		SpotTiming::start(__FUNCTION__);
-		$stmt = $this->_conn->query($s);
+		try {
+			$stmt = $this->_conn->query($s);
+		} catch(PDOException $x) {
+			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+		} # catch
 		SpotTiming::stop(__FUNCTION__,array($s));
 		
 		return $stmt;
@@ -77,8 +78,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	} # bool2dt
 
 	/**
-     * Deze functie voert het statement uit en plaatst het aantal rijen in
-     * een var.
+     * Execute the query and saves the rowcount in a property for later retrieval
      *
      * @param string $s
      * @param array $p
@@ -86,8 +86,12 @@ abstract class dbeng_pdo extends dbeng_abs {
      */
     public function exec($s, $p = array()) {
 		SpotTiming::start(__FUNCTION__);
-        $stmt = $this->prepareSql($s, $p);
-        $stmt->execute();
+		try {
+			$stmt = $this->prepareSql($s, $p);
+			$stmt->execute();
+		} catch(PDOException $x) {
+			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+		} # catch
         $this->_rows_changed = $stmt->rowCount();
 		SpotTiming::stop(__FUNCTION__, array($s, $p));
  
@@ -95,7 +99,8 @@ abstract class dbeng_pdo extends dbeng_abs {
     }
 
 	/*
-	 * INSERT or UPDATE statement, geef niets terug
+	 * INSERT or UPDATE statement, doesn't return anything. Exception 
+	 * thrown if a error occurs
 	 */
 	function modify($s, $p = array()) {
 		SpotTiming::start(__FUNCTION__);
@@ -137,7 +142,12 @@ abstract class dbeng_pdo extends dbeng_abs {
 	} # lastInsertId
 	
 	 /**
-     * Fetch alleen het eerste resultaat
+	 * Executes the query with $params as parameters. All parameters are 
+	 * parsed through sthe safe() function to prevent SQL injection.
+	 *
+	 * Returns a single associative array when query succeeds, returns 
+	 * an exception when the query fails.
+	 *
      * @param array $s
      * @param array $p
      * @return array
@@ -154,7 +164,13 @@ abstract class dbeng_pdo extends dbeng_abs {
 	} # singleQuery
 	
 	/**
-     * Fetch alle resultaten
+	 * Executes the query with $params as parameters. All parameters are 
+	 * parsed through sthe safe() function to prevent SQL injection.
+	 *
+	 *
+	 * Returns an array of associative arrays when query succeeds, returns 
+	 * an exception when the query fails.
+	 *
      * @param string $s
      * @param array $p
      * @return array

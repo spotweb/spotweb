@@ -35,9 +35,8 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 			try {
 				$this->_conn = new PDO('pgsql:' . $this->_db_conn . ';dbname=' . $this->_db_db, $this->_db_user, $this->_db_pass);
 			} catch (PDOException $e) {
-				print "Error!: " . $e->getMessage() . "<br/>";
-				die();
-			}
+				throw new DatabaseConnectionException($e->getMessage(), -1);
+			} # catch
 
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} # if
@@ -50,14 +49,16 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 	} # safe
 
 	/*
-	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
-	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 * Constructs a query part to match textfields. Abstracted so we can use
+	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields) {
 		SpotTiming::start(__FUNCTION__);
 
-		# Initialiseer een aantal arrays welke we terug moeten geven aan
-		# aanroeper
+		/*
+		 * Initialize some basic values which are used as return values to
+		 * make sure always return a valid set
+		 */
 		$filterValueSql = array();
 		$additionalFields = array();
 		$sortFields = array();
@@ -66,11 +67,13 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 			$searchValue = trim($searchItem['value']);
 			$field = $searchItem['fieldname'];
 
-			# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
-			# sorteren we ze in de volgorde waarop ze binnenkwamen 
+			/*
+			 * if we get multiple textsearches, we sort them per order
+			 * in the system
+			 */
 			$tmpSortCounter = count($additionalFields);
 			
-			# prepareer de to_tsvector en de to_tsquery strings
+			# Prepare the to_tsvector and to_tsquery strings
 			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
 			$ts_query = "to_tsquery('" . $this->safe(strtolower($searchValue)) . "')";
 			
