@@ -1,20 +1,20 @@
 <?php
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
-require_once "lib/SpotClassAutoload.php";
-require_once "settings.php";
-
-# Verzeker onszelf ervan dat we niet vanuit de webserver uitgevoerd worden
-if (isset($_SERVER['SERVER_PROTOCOL'])) {
-	die("Sorry, db-upgrade.php kan enkel vanuit de server zelf uitgevoerd worden, niet via de webbrowser!");
-} # if
-
-# Risky warning, might trip up some stuff
-if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-	chdir(__DIR__);
-} # if
-
 try {
+	require_once "lib/SpotClassAutoload.php";
+	require_once "settings.php";
+
+	# Verzeker onszelf ervan dat we niet vanuit de webserver uitgevoerd worden
+	if (isset($_SERVER['SERVER_PROTOCOL'])) {
+		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
+	} # if
+
+	# Risky warning, might trip up some stuff
+	if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
+		chdir(__DIR__);
+	} # if
+
 	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	
 	$spotUpgrader = new SpotUpgrader($settings['db']);
@@ -29,12 +29,20 @@ try {
 	echo "Performing basic analysis of database tables" . PHP_EOL;
 	$spotUpgrader->analyze($settings);
 	echo "Basic database optimalisation done" . PHP_EOL;
-} catch(SpotwebCannotBeUpgradedToooldException $x) {
-	die("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
-		"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/" . $x->getMessage() . "), " . PHP_EOL . 
-		"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
+} 
 
-} catch(Exception $x) {
+catch(SpotwebCannotBeUpgradedToooldException $x) {
+	die("Your current Spotweb installation is tooo old to be upgraded to this current version of Spotweb. " . PHP_EOL . 
+		"Please download an earlier version of Spotweb (https://github.com/spotweb/spotweb/zipball/" . $x->getMessage() . "), " . PHP_EOL .
+		"run upgrade-db.php using that version and then upgrade back to this version to run upgrade-db.php once more.");
+} # SpotwebCannotBeUpgradedToooldException
+
+catch(InvalidOwnSettingsSettingException $x) {
+	echo "There is an error in your ownsettings.php" . PHP_EOL . PHP_EOL;
+	echo $x->getMessage() . PHP_EOL;
+} # InvalidOwnSettingsSettingException
+
+catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
 	echo "Database schema of settings upgrade mislukt:" . PHP_EOL;

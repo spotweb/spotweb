@@ -17,7 +17,15 @@ if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
 
 require_once "lib/SpotTranslation.php";
 require_once "lib/SpotClassAutoload.php";
-require_once "settings.php";
+try {
+	require_once "settings.php";
+} 
+catch(InvalidOwnSettingsSettingException $x) {
+	echo "There is an error in your ownsettings.php" . PHP_EOL . PHP_EOL;
+	echo $x->getMessage() . PHP_EOL;
+	die();
+} # InvalidOwnSettingsSetting
+
 require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/exceptions/NntpException.php";

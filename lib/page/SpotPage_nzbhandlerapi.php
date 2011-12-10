@@ -17,8 +17,10 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 		$apikey = $this->_currentSession['user']['apikey'];
 		if ($this->_tplHelper->apiToHash($apikey) != $request['nzbhandlerapikey']) {
 			error_log('API Key Incorrect');
-			die ('API Key Incorrect');
-		}
+			echo 'API Key Incorrect';
+			
+			return ;
+		} # if
 		
 		$nzbHandlerFactory = new NzbHandler_Factory();
 		$this->_nzbHandler = $nzbHandlerFactory->build($this->_settings, 
@@ -101,7 +103,9 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 		else
 		{
 			error_log('The configured NZB handler has no api support');
-			die('The configured NZB handler has no api support');
+			echo 'The configured NZB handler has no api support';
+			
+			return ;
 		}
 		
 		# de nzbhandlerapi output moet niet gecached worden
