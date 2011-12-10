@@ -29,6 +29,10 @@ try {
 	echo "Performing basic analysis of database tables" . PHP_EOL;
 	$spotUpgrader->analyze($settings);
 	echo "Basic database optimalisation done" . PHP_EOL;
+} catch(SpotwebCannotBeUpgradedToooldException $x) {
+	die("Je huidige Spotweb database installatie is te oud om in een keer te upgraden naar deze versie." . PHP_EOL .
+		"Download een eerdere versie van spotweb (https://github.com/spotweb/spotweb/zipball/" . $x->getMessage() . "), " . PHP_EOL . 
+		"draai daarmee upgrade-db.php en als die succesvol is, start dan nogmaals de upgrade via deze versie.");
 
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;

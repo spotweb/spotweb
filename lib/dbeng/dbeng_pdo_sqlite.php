@@ -13,7 +13,7 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 				$this->_conn = new PDO('sqlite:' . $this->_db_path);
 				$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			} # if		
-		catch(PDOException $e) {
+		} catch(PDOException $e) {
 				throw new DatabaseConnectionException($e->getMessage(), -1);
 		} # catch
 	} # connect()

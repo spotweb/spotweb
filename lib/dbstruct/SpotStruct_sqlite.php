@@ -1,17 +1,29 @@
 <?php
 class SpotStruct_sqlite extends SpotStruct_abs {
-	/* 
-	 * optimaliseer/analyseer een aantal tables welke veel veranderen, 
-	 * deze functie wijzigt geen data!
-  	 */
+
+	/*
+	 * Optimize / analyze (database specific) a number of hightraffic
+	 * tables.
+	 * This function does not modify any schema or data
+	 */
 	function analyze() { 
+		$this->_dbcon->rawExec("ANALYZE spots");
+		$this->_dbcon->rawExec("ANALYZE spotsfull");
+		$this->_dbcon->rawExec("ANALYZE commentsxover");
+		$this->_dbcon->rawExec("ANALYZE commentsfull");
 		$this->_dbcon->rawExec("ANALYZE spotstatelist");
 		$this->_dbcon->rawExec("ANALYZE sessions");
+		$this->_dbcon->rawExec("ANALYZE filters");
+		$this->_dbcon->rawExec("ANALYZE spotteridblacklist");
+		$this->_dbcon->rawExec("ANALYZE filtercounts");
 		$this->_dbcon->rawExec("ANALYZE users");
-		$this->_dbcon->rawExec("ANALYZE commentsfull");
+		$this->_dbcon->rawExec("ANALYZE cache");
 	} # analyze
 
-	/* converteert een "spotweb" datatype naar een mysql datatype */
+	/*
+	 * Converts a 'spotweb' internal datatype to a 
+	 * database specific datatype
+	 */
 	public function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'INTEGER'; break;
@@ -25,7 +37,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return $colType;
 	} # swDtToNative
 
-	/* converteert een mysql datatype naar een "spotweb" datatype */
+	/*
+	 * Converts a database native datatype to a spotweb native
+	 * datatype
+	 */
 	public function nativeDtToSw($colInfo) {
 		switch(strtolower($colInfo)) {
 			case 'blob'				: $colInfo = 'MEDIUMBLOB'; break;
@@ -34,13 +49,13 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return $colInfo;
 	} # nativeDtToSw 
 	
-	/* controleert of een index bestaat */
+	/* checks if an index exists */
 	function indexExists($idxname, $tablename) {
 		$q = $this->_dbcon->arrayQuery("PRAGMA index_info(" . $idxname . ")");
 		return !empty($q);
 	} # indexExists
 
-	/* controleert of een column bestaat */
+	/* checks if a column exists */
 	function columnExists($tablename, $colname) {
 		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(" . $tablename . ")");
 		
@@ -56,6 +71,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	} # columnExists
 	
 	/* controleert of een full text index bestaat */
+	/* checks if a fts text index exists */
 	function ftsExists($ftsname, $tablename, $colList) {
 		foreach($colList as $colName) {
 			$colInfo = $this->getColumnInfo($ftsname, $colName);
@@ -66,14 +82,19 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		} # foreach
 	} # ftsExists
 			
-	/* maakt een full text index aan */
+	/* creates a full text index */
 	function createFts($ftsname, $tablename, $colList) {
-		# Drop eerst eventuele tabellen en dergelijke mochten die
-		# al bestaan maar niet aan de voorwaarden voldoen
+		/*
+		 * Drop any tables (fts's are special tables/views in sqlite)
+		 * which are linked to this FTS because we cannot alter those
+		 * tables.
+		 *
+		 * This is rather slow, but it works
+		 */
 		$this->dropTable($ftsname);
 		$this->_dbcon->rawExec("DROP TRIGGER IF EXISTS " . $ftsname . "_insert");
 		
-		# en create de tabel opneiuw
+		# and recreate the virtual table and link the update trigger to it
 		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS3(" . implode(',', $colList) . ", tokenize=porter)");
 
 		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . implode(',', $colList) . ") SELECT rowid," . implode(',', $colList) . " FROM " . $tablename);
@@ -83,12 +104,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 								END");
 	} # createFts
 	
-	/* dropt en fulltext index */
+	/* drops a fulltext index */
 	function dropFts($ftsname, $tablename, $colList) {
 		$this->dropTable($ftsname);
 	} # dropFts
 	
-	/* geeft FTS info terug */
+	/* returns FTS info  */
 	function getFtsInfo($ftsname, $tablename, $colList) {
 		$ftsList = array();
 		
@@ -104,7 +125,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return $ftsList;
 	} # getFtsInfo
 	
-	/* Add an index, kijkt eerst wel of deze index al bestaat */
+	/*
+	 * Adds an index, but first checks if the index doesn't
+	 * exist already.
+	 *
+	 * $idxType can be either 'UNIQUE', '' or 'FULLTEXT'
+	 */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($idxname, $tablename)) {
 			
@@ -117,10 +143,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		} # if
 	} # addIndex
 
-	/* dropt een index als deze bestaat */
+	/* drops an index if it exists */
 	function dropIndex($idxname, $tablename) {
-		# Check eerst of de tabel bestaat, anders kan
-		# indexExists mislukken en een fatal error geven
+		/*
+		 * Make sure the table exists, else this will return an error
+		 * and return a fatal
+		 */
 		if (!$this->tableExists($tablename)) {
 			return ;
 		} # if
@@ -130,21 +158,21 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		} # if
 	} # dropIndex
 	
-	/* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
+	/* adds a column if the column doesn't exist yet */
 	function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation) {
 		if (!$this->columnExists($tablename, $colName)) {
-			# zet de DEFAULT waarde
+			# set the DEFAULT value
 			if (strlen($colDefault) != 0) {
 				$colDefault = 'DEFAULT ' . $colDefault;
 			} # if
 
-			# Collation doen we niet in sqlite
+			# We don't support collation in sqlite
 			$colSetting = '';
 			
-			# converteer het kolom type naar het type dat wij gebruiken
+			# Convert the column type to a type we use in sqlite
 			$colType = $this->swDtToNative($colType);
 			
-			# en zet de 'NOT NULL' om naar een string
+			# and define the 'NOT NULL' part
 			switch($notNull) {
 				case true		: $nullStr = 'NOT NULL'; break;
 				default			: $nullStr = '';
@@ -155,75 +183,81 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		} # if
 	} # addColumn
 	
-	/* dropt een kolom (mits db dit ondersteunt) */
+	/* drops a column */
 	function dropColumn($colName, $tablename) {
 		if ($this->columnExists($tablename, $colName)) {
 			throw new Exception("Dropping of columns is not supported in sqlite");
 		} # if
 	} # dropColumn
 	
-	/* controleert of een tabel bestaat */
+	/* checks if a table exists */
 	function tableExists($tablename) {
 		$q = $this->_dbcon->arrayQuery("PRAGMA table_info(" . $tablename . ")");
 		return !empty($q);
 	} # tableExists
 
-	/* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+	/* creates an empty table with only an ID field. Collation should be either UTF8 or ASCII */
 	function createTable($tablename, $collation) {
 		if (!$this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY ASC)");
 		} # if
 	} # createTable
 	
-	/* drop een table */
+	/* drop a table */
 	function dropTable($tablename) {
 		if ($this->tableExists($tablename)) {
 			$this->_dbcon->rawExec("DROP TABLE " . $tablename);
 		} # if
 	} # dropTable
 
-	/* verandert een storage engine (concept dat enkel mysql kent :P ) */
+	/* changes storage engine (sqlite doesn't know anything about storage engines) */
 	function alterStorageEngine($tablename, $engine) {
 		return ; // null operatie
 	} # alterStorageEngine
 
-	/* creeert een foreign key constraint */
+	/* create a foreign key constraint - not supported in spotweb+sqlite */
 	function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
 		return ; // null
 	} # addForeignKey
 
-	/* dropped een foreign key constraint */
+	/* drop a foreign key constraint */
 	function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action) {
 		return ; // null
 	} # dropForeignKey
 	
-	/* rename een table */
+	/* rename a table */
 	function renameTable($tablename, $newTableName) {
 		$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " RENAME TO " . $newTableName);
 	} # renameTable
 
-	/* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
+	/* alters a column - does not check if the column doesn't adhere to the given definition */
 	function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what) {
-		# als het de NOT NULL is of de charset, dan negeren we de gevraagde wijziging
+		/*
+		 * if the change is either not null, charset or default we ignore the
+		 * change request because these re not worth dropping the whole database
+		 * for
+		 */
 		if (($what == 'not null') || ($what == 'charset') | ($what == 'default')) {
 			return ;
 		} # if
 		
-		# sqlite kent niet echt types, dus ook dat vinden we niet erg
+		# sqlite doesn't adhere types, so we can safely ignore those kind of changes
 		if ($what == 'type') {
 			return ;
 		} # if
 		
-		throw new Exception("sqlite ondersteund het wijzigen van kolommen niet");
+		throw new Exception("sqlite does not support modifying the schema of a column");
 	} # modifyColumn
 	
-	/* Geeft, in een afgesproken formaat, de index formatie terug */
+	/* Returns in a fixed format, column information */
 	function getColumnInfo($tablename, $colname) {
-		# sqlite kent niet echt een manier om deze informatie in z'n geheel terug te geven, 
-		# we vragen dus de index op en manglen hem vervolgens zodat het beeld klopt
+		/*
+		 * sqlite doesn't know a real way to gather this information, so we ask
+		 * the table info and mangle the information in php to return a correct array
+		 */
 		$q = $this->_dbcon->arrayQuery("PRAGMA table_info('" . $tablename . "')");
 		
-		# find the keyname
+		# find the tablename
 		$colIndex = -1;
 		for($i = 0; $i < count($q); $i++) {
 			if ($q[$i]['name'] == $colname) {
@@ -232,12 +266,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			} # if
 		} # for
 		
-		# als de kolom niet gevonden is, geef dit ook terug
+		# when the column cannot be found, it's empty
 		if ($colIndex < 0) {
 			return array();
 		} # if
 		
-		# en vertaal de sqlite info naar het mysql-achtige formaat
+		# translate sqlite tpe of information to the mysql format
 		$colInfo = array();
 		$colInfo['COLUMN_NAME'] = $colname;
 		$colInfo['COLUMN_DEFAULT'] = $q[$colIndex]['dflt_value'];
@@ -249,10 +283,12 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		return $colInfo;
 	} # getColumnInfo
 	
-	/* Geeft, in een afgesproken formaat, de index informatie terug */
+	/* Returns in a fixed format, index information */
 	function getIndexInfo($idxname, $tablename) {
-		# sqlite kent niet echt een manier om deze informatie in z'n geheel terug te geven, 
-		# we vragen dus de index op en manglen hem vervolgens zodat het beeld klopt
+		/*
+		 * sqlite doesn't know a real way to gather this information, so we ask
+		 * the index info and mangle the information in php to return a correct array
+		 */
 		$q = $this->_dbcon->arrayQuery("SELECT * FROM sqlite_master 
 										  WHERE type = 'index' 
 										    AND name = '" . $idxname . "' 
@@ -261,19 +297,19 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 			return array();
 		} # if
 		
-		# er is maar 1 index met die naam
+		# a index name is globally unique in the database
 		$q = $q[0];
 											
-		# eerst kijken we of de index unique gemarkeerd is
+		# unique index?
 		$tmpAr = explode(" ", $q['sql']);
 		$isNotUnique = (strtolower($tmpAr[1]) != 'unique');
 		
-		# vraag nu de kolom lijst op, en explode die op commas
+		# retrieve column list and definition
 		preg_match_all("/\((.*)\)/", $q['sql'], $tmpAr);
 		$colList = explode(",", $tmpAr[1][0]);
 		$colList = array_map('trim', $colList);
 		
-		# en nu bouwen we een array aan het formaat wat er verwacht wordt
+		# and translate column information to the desired format
 		$idxInfo = array();
 		for($i = 0; $i < count($colList); $i++) {
 			$idxInfo[] = array('column_name' => $colList[$i],
