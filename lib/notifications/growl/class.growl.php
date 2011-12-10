@@ -31,7 +31,7 @@
         public function register($connection)
         {
             $this->setConnectionData($connection);
-            
+
             $data         = '';
             $defaults     = '';
             $num_defaults = 0;
@@ -56,7 +56,7 @@
         public function notify($connection, $name, $title, $message, $priority = 0, $sticky = false)
         {
             $this->setConnectionData($connection);
-            
+
             $name     = utf8_encode($name);
             $title    = utf8_encode($title);
             $message  = utf8_encode($message);
@@ -76,16 +76,16 @@
 
         private function send($data)
         {
-            if(function_exists('socket_create') && function_exists('socket_sendto'))
+            if((!defined('GROWL_SOCK') && function_exists('socket_create') && function_exists('socket_sendto')) || (GROWL_SOCK === 'socket'))
             {
-                $sck = ( strlen(inet_pton($this->address)) > 4 && defined('AF_INET6') ) 
-                    ? socket_create(AF_INET6, SOCK_DGRAM, SOL_UDP) 
+                $sck = ( strlen(inet_pton($this->address)) > 4 && defined('AF_INET6') )
+                    ? socket_create(AF_INET6, SOCK_DGRAM, SOL_UDP)
                     : socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
                 socket_sendto($sck, $data, strlen($data), 0x100, $this->address, $this->port);
                 $this->resetConnectionData();
                 return true;
             }
-            elseif(function_exists('fsockopen'))
+            elseif((!defined('GROWL_SOCK') && function_exists('fsockopen')) || (GROWL_SOCK === 'fsock'))
             {
                 $fp = fsockopen('udp://' . $this->address, $this->port);
                 fwrite($fp, $data);
@@ -96,18 +96,18 @@
 
             return false;
         }
-        
+
         private function setConnectionData($connection)
         {
             if(empty($connection['address']))
             {
                 throw new Exception('Address Missing', 'Unable to send notification without ip address.');
             }
-            
+
             $this->address  = $connection['address'];
             $this->password = (!empty($connection['password'])) ? $connection['password'] : '';
         }
-        
+
         private function resetConnectionData()
         {
             $this->address  = null;
