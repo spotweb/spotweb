@@ -88,7 +88,7 @@ class dbeng_mysql extends dbeng_abs {
 		} # if
 		
 		# Set that we will be talking in utf8
-		$this->rawExec("SET NAMES utf8;"); # mysql_set_charset is niet compatible met oude php versies
+		$this->rawExec("SET NAMES utf8;"); # mysql_set_charset is not compatible with older PHP versions
     } # connect()
 		
 	function safe($s) {
@@ -99,7 +99,7 @@ class dbeng_mysql extends dbeng_abs {
 		SpotTiming::start(__FUNCTION__);
 		$tmpRes = mysql_unbuffered_query($s, $this->_conn);
 		if ($tmpRes === false) {
-			throw new Exception("Error executing query: " . mysql_error($this->_conn));
+			throw new SqlErrorException(mysql_error($this->_conn), mysql_errno($this->_conn));
 		} # if
 		SpotTiming::stop(__FUNCTION__, array($s));
 		
@@ -182,14 +182,13 @@ class dbeng_mysql extends dbeng_abs {
 	} # rollback
 	
 	/*
-	 * Utility functie omdat MySQL 0 rows affected teruggeeft als je
-	 * een update uitvoert op een rij die hetzelfde blijft.
+	 * Utility functie because MySQL returns '0 rows affected' when a update
+	 * occurs for a row, while no values change
 	 * 
 	 * Copied from:
 	 *    http://nl.php.net/manual/en/function.mysql-info.php#36008
 	 */
 	function get_mysql_info() {
-		#$startT = microtime(true);
 		$strInfo = mysql_info($this->_conn);
 	   
 		$return = array();
@@ -210,22 +209,28 @@ class dbeng_mysql extends dbeng_abs {
 	} # lastInsertId
 
 	/*
-	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
-	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 * Constructs a query part to match textfields. Abstracted so we can use
+	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields) {
 		SpotTiming::start(__FUNCTION__);
 
-		# Initialiseer een aantal arrays welke we terug moeten geven aan
-		# aanroeper
+		/*
+		 * Initialize some basic values which are used as return values to
+		 * make sure always return a valid set
+		 */
 		$filterValueSql = array();
 		$additionalFields = array();
 		$sortFields = array();
 
-		# MySQL fulltext search kent een minimum aan lengte voor woorden dat het indexeert,
-		# standaard staat dit op 4 en dat betekent bv. dat een zoekstring als 'Top 40' niet gevonden
-		# zal worden omdat zowel Top als 40 onder de 4 karakters zijn. We kijken hier wat de server
-		# instelling is, en vallen eventueel terug op een normale 'LIKE' zoekopdracht.
+		/*
+		 * MySQL's fultxt search has a minimum length of words for indexes. Per default this is 
+		 * a minimum word length of 4. This means that a searchstring like 'Top 40' will not
+		 * be found because both 'Top' and '40' are shorter than 4 characters.
+		 *
+		 * We query the server setting, and if this is the case, we fall back to a basic LIKE
+		 * search because it has no such limitation
+		 */
 		$serverSetting = $this->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
@@ -241,8 +246,10 @@ class dbeng_mysql extends dbeng_abs {
 			$field = $searchItem['fieldname'];
 			$tempSearchValue = str_replace(array('+', '-', 'AND', 'NOT', 'OR'), '', $searchValue);
 
-			# bekijk elk woord individueel, is het korter dan $minWordLen, moeten we ook een LIKE 
-			# search doen
+			/*
+			 * Look at each individual word. If it is shorter than $minWordLen, we have to perform
+			 * a LIKE search as well
+			 */
 			$termList = explode(' ', $tempSearchValue);
 			foreach($termList as $term) {
 				if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
@@ -254,31 +261,51 @@ class dbeng_mysql extends dbeng_abs {
 				} # if
 			} # foreach
 			
-			# Wis dubbele spaties anders vinden we nooit iets
+			/*
+			 * remove any double whitespace because else the MySQL matcher will never
+			 * find anything
+			 */
 			$searchValue = str_replace('  ', ' ', $searchValue);
 			
-			# bekijk elk woord opnieuw individueel, als we een + of - sign aan het begin van een woord
-			# vinden, schakelen we over naar boolean match
+			/*
+			 * MySQL has several types of searches - both boolean and natural matching for
+			 * FTS is possible.
+			 *
+			 * We try some heuristics to select the most appropriate type of search.
+			 * If a word starts with either an '+' or an '-', we switch to boolean match
+			 */
 			$termList = explode(' ', $searchValue);
 			foreach($termList as $term) {
-				# We strippen een aantal karakters omdat dat niet de search 
-				# methode mag beinvloeden, bv. (<test) oid.
+				/*
+				 * We strip some characters because these are valid, but
+				 * can cause the system to not regocnize them as operators.
+				 *
+				 * The string: "(<test)" is such an example -- we only check
+				 * the first character so we need to remove the parenthesis
+				 */
 				$strippedTerm = trim($term, "()'\"");
-			
-				# als na het strippen van de terms er niks over blijft, dan
-				# hoeven we ook niet te zoeken.
+
+				/*
+				 * If after stripping the term of these characters, no string
+				 * is left, make sure we juts abort the matching
+				 */
 				if (strlen($strippedTerm) < 1) {
 					continue;
 				} # if
 
-				# + and - are only allowed at the beginning of the search to 
-				# enfore it as an search operator. If they are in the 
-				# words themselves, we fall back to LIKE
+				/*
+				 * + and - are only allowed at the beginning of the search to 
+				 * enforce it as an search operator. If they are in the 
+				 * words themselves, we fall back to LIKE
+				 */
 				if (strpos($strippedTerm, '-') > 0) {
 					$hasSearchOpAsTerm = true;
 				} # if
 
-				# als er boolean phrases in zitten, is het een boolean search
+				/*
+				 * When there are boolean operators in the string, it's an 
+				 * boolean search
+				 */
 				if (strpos('+-~<>', $strippedTerm[0]) !== false) {
 					$searchMode = 'match-boolean';
 				} # if
@@ -291,20 +318,25 @@ class dbeng_mysql extends dbeng_abs {
 					$searchMode = 'match-boolean';
 				} # if
 
-				# als het een stop word is, dan vallen we ook terug naar de like search
+				/*
+				 * If the term is a stopword (things like: the, it, ...) we have to
+				 * fallback to a like search as well. 
+				 */
 				if (in_array(strtolower($strippedTerm), $this->stop_words) !== false) {
 					$hasStopWords = true;
 				} else {
-					# Deze zekerheid is nodig om ervoor te zorgen dat als men enkel op
-					# stopwoorden of te korte woorden zoekt ("The Top") dat we toch
-					# naar de like search terugvallen
+					/*
+					 * This extra chcek is necessary because when a query was to be done
+					 * for only short of stopwords (eg: "The Top") , we should fall back to
+					 * a like anyway
+					 */
 					if (strlen($term) >= $minWordLen) {
 						$hasNoStopWords = true;
 					} # if
 				} # else
 			} # foreach
 			
-			# Bepaal nu de searchmode
+			# Actually determine the searchmode
 			/* 
 			 * Test cases:
 			 *
@@ -340,14 +372,17 @@ class dbeng_mysql extends dbeng_abs {
 				$searchMode = 'normal';
 			} # else
 			
-			# en bouw de query op
+			/*
+			 * Start constructing the query. Sometimes we construct the quer
+			 * both with a LIKE and with a MATCh statement
+			 */
 			$queryPart = '';
 			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') /* || ($searchMode == 'both-match-boolean')*/) {
 				$filterValueSql[] = ' ' . $field . " LIKE '%" . $this->safe(trim($searchValue, "\"'")) . "%'";
 			} # if
 			
 			if (($searchMode == 'match-natural') || ($searchMode == 'both-match-natural')) {
-				/* Natural language mode is altijd het default in MySQL 5.0 en 5.1, maar kan in 5.0 niet expliciet opgegeven worden */
+				/* Natural language mode altijd default in MySQL 5.0 en 5.1, but cannot be explicitly defined in MySQL 5.0 */
 				$queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "')"; 
 				$filterValueSql[] = $queryPart;
 			} # if 
@@ -356,13 +391,17 @@ class dbeng_mysql extends dbeng_abs {
 				$queryPart = " MATCH(" . $field . ") AGAINST ('" . $this->safe($searchValue) . "' IN BOOLEAN MODE)";
 				$filterValueSql[] = $queryPart;
 			} # if
-			
-			# We voegen deze extended textqueries toe aan de filterlist als
-			# relevancy veld, hiermee kunnen we dan ook zoeken op de relevancy
-			# wat het net wat interessanter maakt
+
+			/*
+			 * We add these extended textqueries as a column to the filterlist
+			 * and use it as a relevance column. This allows us to sort on
+			 * relevance
+			 */
 			if ($searchMode != 'normal') {
-				# We zouden in theorie meerdere van deze textsearches kunnen hebben, dan 
-				# sorteren we ze in de volgorde waarop ze binnenkwamen 
+				/*
+				 * if we get multiple textsearches, we sort them per order
+				 * in the system
+				 */
 				$tmpSortCounter = count($additionalFields);
 				
 				$additionalFields[] = $queryPart . ' AS searchrelevancy' . $tmpSortCounter;

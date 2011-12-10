@@ -4,38 +4,37 @@ abstract class dbeng_abs {
 	private $_error	= '';
 	
 	/*
-	 * Connect/opent de database en creeert indien nodig de nodige tabellen.
-	 *
-	 * Geeft true terug als connectie gelukt is, anders false.
+	 * Connects to the database
 	 */
 	abstract function connect();
 	
 	/*
-	 * Voer query uit en vergeet de output (true indien geen error).
-	 * SQL statements worden niet ge-escaped of iets dergelijks.
+	 * Executes the query and discards any output. Returns true of no
+	 * error was found. No handling of the SQL statement is done
 	 */
 	abstract function rawExec($sql);
 	
 	/*
-	 * Voer query uit met $params aan parameters. Alle parameters worden eerst
-	 * door de safe() functie gehaald om SQL injectie te voorkomen.
+	 * Executes the query with $params as parameters. All parameters are 
+	 * parsed through sthe safe() function to prevent SQL injection.
 	 *
-	 * Geeft een enkele rij terug met resulaten (associative array), of 
-	 * FALSE in geval van een error
+	 * Returns a single associative array when query succeeds, returns 
+	 * an exception when the query fails.
 	 */
 	abstract function singleQuery($sql, $params = array());
 
 	/*
-	 * Voer query uit met $params aan parameters. Alle parameters worden eerst
-	 * door de safe() functie gehaald om SQL injectie te voorkomen.
+	 * Executes the query with $params as parameters. All parameters are 
+	 * parsed through sthe safe() function to prevent SQL injection.
 	 *
-	 * Geeft een array terug met alle resulaten (associative array), of 
-	 * FALSE in geval van een error
+	 *
+	 * Returns an array of associative arrays when query succeeds, returns 
+	 * an exception when the query fails.
 	 */
 	abstract function arrayQuery($sql, $params = array());
 
 	/*
-	 * Voert de database specifieke "safe-parameter" functie uit.
+	 * Database specific 'escape' or 'safe' function to escape strings
 	 */
 	abstract function safe($s);	
 	
@@ -45,7 +44,7 @@ abstract class dbeng_abs {
 	abstract function bool2dt($b);
 
 	/*
-	 * Geef het aantal affected rows terug
+	 * Returns the amount of effected rows
 	 */
 	abstract function rows();
 	
@@ -71,13 +70,13 @@ abstract class dbeng_abs {
 	
 
 	/*
-	 * Prepared de query string door vsprintf() met safe() erover heen te gooien
+	 * Prepares the query string by running vsprintf() met safe() erover heen te gooien
 	 */
 	function prepareSql($s, $p) {
-		#
-		# Als er geen parameters zijn mee gegeven, dan voeren we vsprintf() ook niet
-		# uit, dat zorgt er voor dat we bv. LIKE's kunnen uitvoeren (met %'s) zonder
-		# dat vsprintf() die probeert te interpreteren.
+		/*
+		 * When no parameters are given, we don't run vsprintf(). This makes sure
+		 * we can use arrayQuery() and singleQuery() with for example LIKE statements 
+		 */
 		if (empty($p)) {
 			return $s;
 		} else {
@@ -87,24 +86,24 @@ abstract class dbeng_abs {
 	} # prepareSql()
 
 	/*
-	 * Voer een query uit en geef het resultaat (resource of handle) terug
+	 * Executes the query and returns the (resource or handle)
 	 */
 	function exec($s, $p = array()) {
 		return $this->rawExec($this->prepareSql($s, $p));
 	} # exec()
 
 	/*
-	 * INSERT or UPDATE statement, geef niets terug
+	 * INSERT or UPDATE statement, doesn't return anything. Exception 
+	 * thrown if a error occurs
 	 */
 	abstract function modify($s, $p = array());
 
 	/*
-	 * Construeert een stuk van een query om op text velden te matchen, geabstraheerd
-	 * zodat we eventueel gebruik kunnen maken van FTS systemen in een db
+	 * Constructs a query part to match textfields. Abstracted so we can use
+	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields) {
-		# Initialiseer een aantal arrays welke we terug moeten geven aan
-		# aanroeper
+		# Initialize some basic variables so our return statements are simple
 		$filterValueSql = array();
 
 		foreach($searchFields as $searchItem) {
