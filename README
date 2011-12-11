@@ -1,7 +1,3 @@
 SpotWeb
 =======
-
-SpotWeb is een versie van Spotnet (http://github.com/spotnet) voor het web. 
-Het gebruikt PHP5 om de meeste functies te implementeren en wordt wel eens getest op Linux en FreeBSD.
-
-
+Spotweb is an webbased version of Spotnet (http://github.com/spotnet) and requires PHP5 and either MySQL or PostgreSQL to run on your server.
