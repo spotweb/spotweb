@@ -47,6 +47,7 @@ class SpotPage_login extends SpotPage_Abs {
 				} # if
 				
 				$loginResult = array('result' => 'failure');
+			    $formMessages['errors'][] = _('Invalid username or password');
 			} else {
 				$loginResult = array('result' => 'success');
 				$this->_currentSession = $tryLogin;
