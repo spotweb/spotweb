@@ -3,6 +3,7 @@
 if (!empty($createresult)) {
 	include 'includes/form-xmlresult.inc.php';
 	
+	$this->sendContentTypeHeader('xml');
 	echo formResult2Xml($createresult, $formmessages, $tplHelper);
 } # if
 

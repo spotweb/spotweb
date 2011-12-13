@@ -21,9 +21,9 @@ class SpotPage_sabapi extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		if (stripos($_SERVER['QUERY_STRING'], 'output=xml')) {
-			header('Content-Type:text/xml');
+			$this->sendContentTypeHeader('xml');
 		} elseif (stripos($_SERVER['QUERY_STRING'], 'output=json')) {
-			header('Content-type: application/json');
+			$this->sendContentTypeHeader('json');
 		} # else
 
 		$apicall = array();

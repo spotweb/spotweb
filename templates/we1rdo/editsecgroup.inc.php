@@ -2,6 +2,7 @@
 if (!empty($editresult)) {
 	include 'includes/form-xmlresult.inc.php';
 
+	$this->sendContentTypeHeader('xml');
 	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
 

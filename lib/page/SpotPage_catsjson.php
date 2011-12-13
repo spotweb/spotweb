@@ -5,7 +5,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		
-		$this->sendContentTypeHeader();
+		$this->sendContentTypeHeader('html');
 
 		$this->_params = $params;
 	} # ctor

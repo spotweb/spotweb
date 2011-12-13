@@ -36,8 +36,18 @@ abstract class SpotPage_Abs {
 	 * Stuur een content header, dit zorgt er voor dat de browser
 	 * eventuele content sneller kan parsen
 	 */
-	function sendContentTypeHeader() {
-		Header("Content-Type: text/html; charset=utf-8");
+	function sendContentTypeHeader($type) {
+		switch($type) {
+			case 'xml'		: Header("Content-Type: text/xml; charset=utf-8"); break;
+			case 'rss'		: Header("Content-Type: application/rss+xml; charset=utf-8"); break;
+			case 'json'		: Header("Content-Type: application/json; charset=utf-8"); break;
+			case 'css'		: Header("Content-Type: text/css; charset=utf-8"); break;
+			case 'js'		: Header("Content-Type: application/javascript; charset=utf-8"); break;
+			case 'ico'		: Header("Content-Type: image/x-icon"); break;
+			
+			default 		: Header("Content-Type: text/html; charset=utf-8"); break;
+		} # switch
+		
 	} # sendContentTypeHeader
 
 	
@@ -74,7 +84,7 @@ abstract class SpotPage_Abs {
 
 		# stuur de expire headers
 		$this->sendExpireHeaders(true);
-		$this->sendContentTypeHeader();
+		$this->sendContentTypeHeader('html');
 		
 		# en we spelen de template af
 		require_once('templates/' . $settings->get('tpl_name') . '/' . $tpl . '.inc.php');

@@ -110,7 +110,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 		
 		# de nzbhandlerapi output moet niet gecached worden
 		$this->sendExpireHeaders(true);
-		header('Content-type: application/json');
+		$this->sendContentTypeHeader('json');
 
 		if (($result === true) || ($result === false))
 		{
