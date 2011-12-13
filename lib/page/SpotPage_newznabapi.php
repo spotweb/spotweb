@@ -297,7 +297,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				} # if
 			} # foreach
 
-			header('Content-Type: text/xml; charset=UTF-8');
+			$this->sendContentTypeHeader('xml');
 			echo $doc->saveXML();
 		}
 	} # showResults
@@ -447,7 +447,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$attr->setAttribute('value', $spot['commentcount']);
 			$item->appendChild($attr);
 
-			header('Content-Type: text/xml; charset=UTF-8');
+			$this->sendContentTypeHeader('xml');
 			echo $doc->saveXML();
 		} # if
 	} # spotDetails
@@ -533,7 +533,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # foreach
 		} # foreach
 
-		header('Content-Type: text/xml; charset=UTF-8');
+		$this->sendContentTypeHeader('xml');
 		echo $doc->saveXML();
 	} # caps
 
@@ -584,7 +584,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$error->setAttribute('description', $errtext);
 		$doc->appendChild($error);
 
-		header('Content-type: text/xml; charset=UTF-8');
+		$this->sendContentTypeHeader('xml');
 		echo $doc->saveXML();
 	} # showApiError
 

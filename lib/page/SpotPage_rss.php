@@ -106,7 +106,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		} # foreach
 
 		# XML output
-		header('Content-Type: application/rss+xml; charset=UTF-8');
+		$this->sendContentTypeHeader('rss');
 		echo $doc->saveXML();
 	} # render()
 

@@ -1,6 +1,6 @@
 <?php
 if ((isset($lastformaction) && ($lastformaction == 'exportfilters'))) {
-	Header('Content-Type: text/xml; charset=UTF-8');
+	$this->sendContentTypeHeader('xml');
 	Header('Content-Disposition: attachment; filename="spotwebfilters.xml"');
 	
 	echo $editresult;
