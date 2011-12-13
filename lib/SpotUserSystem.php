@@ -1098,9 +1098,19 @@ class SpotUserSystem {
 		 foreach($filterList as $idx => &$filter) {
 			if ($filter['tparent'] != 0) {
 				$filterList[$filter['tparent']]['children'][] =& $filter;
+			} # if
+		} # foreach
+		
+		/*
+		 * we have to run it in two passes because unsetting it 
+		 * will result in an incorrect result on an nested-nested
+		 * list
+		 */
+		foreach($filterList as $idx => &$filter) {
+			if ($filter['tparent'] != 0) {
 				unset($filterList[$filter['id']]);
 			} # if
-		} # for
+		} # foreach
 		
 		return $filterList;
 	} # xmlToFilters
