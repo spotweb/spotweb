@@ -25,7 +25,8 @@ class SpotNntp {
 			$this->_nntp = new Net_NNTP_Client();
 			$this->_spotParser = new SpotParser();
 		} # ctor
-		
+
+	
 		/*
 		 * Select a group as active group
 		 */
@@ -111,6 +112,22 @@ class SpotNntp {
 			if ($this->_connected) {
 				return ;
 			} # if
+			
+			# if an empty hostname is provided, abort
+			if (empty($this->_server)) {
+				throw new NntpException('Servername is empty', -1);
+			}  # if 
+
+			# if a portnumber is empty, abort
+			if ((!is_numeric($this->_serverport)) || ($this->_serverport < 1)) {
+				throw new NntpException('A server port has to be entered', -1);
+			}  # if 
+
+			# if the type of SSL is invalid, abort
+			if (($this->_serverenc !== false) && (strtolower($this->_serverenc) !== 'ssl') && (strtolower($this->_serverenc) !== 'tls')) {
+				throw new NntpException('Invalid encryption method specified', -1);
+			}  # if 
+			
 			$this->_connected = true;
 
 			/* 
@@ -123,6 +140,10 @@ class SpotNntp {
 			
 			try{
 				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
+				if ($ret === false) {
+					throw new NntpException('Error while connecting to server (server did not respond)', -1);
+				} # if
+				
 				if (!empty($tmpUser)) {
 					$authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
 					
@@ -501,5 +522,19 @@ class SpotNntp {
 
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
 		} # reportSpotAsSpam
+		
+		/*
+		 * validates wether can succesfully connect to the usenet
+		 * server
+		 */
+		function validateServer() {
+			/*
+			 * We need to select a group, because authenticatin
+			 * is not always entered but sometimes required
+			 */
+			$this->selectGroup('free.pt');
+			
+			$this->quit();
+		} # validateServer
 		
 } # class SpotNntp

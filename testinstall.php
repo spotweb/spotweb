@@ -223,8 +223,7 @@
 				
 				/* and try to connect to the usenet server */
 				$nntp = new SpotNntp($form);
-				$nntp->connect();
-				$nntp->selectGroup('free.pt');
+				$nntp->validateNntpServer($form);
 
 				$nntpVerified = true;
 				

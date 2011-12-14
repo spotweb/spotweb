@@ -110,6 +110,23 @@ class SpotTemplateHelper {
 		return $this->_spotsOverview->getSpotComments($this->_currentSession['user']['userid'], $msgId, $spotnntp, $start, $length);
 	} # getSpotComments
 
+	/*
+	 * Validates wether we can connect to a usenet server succesfully
+	 */
+	function validateNntpServer($server) {
+		$result = '';
+		
+		try {
+			$testNntp = new SpotNntp($server);
+			$testNntp->validateServer();
+		} # try
+		catch(Exception $x) {
+			$result = $x->getMessage();
+		} # catch
+		
+		return $result;
+	} # validateNntpServer
+	 
 	/* 
 	 * Geeft terug of een bepaalde actie toegestaan is of niet
 	 */
