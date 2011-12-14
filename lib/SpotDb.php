@@ -1554,7 +1554,7 @@ class SpotDb {
 	function clearSpotStateList($list, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
 		$verifiedList = $this->verifyListType($list);
-		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE ouruserid = %d", array($ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
 	} # clearSpotStatelist
 
