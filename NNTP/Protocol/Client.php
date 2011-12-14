@@ -711,7 +711,7 @@ class Net_NNTP_Protocol_Client
 
 	    	// TODO: Set some variable before return
 
-    	    	return false;
+    	    	return true;
     	        break;
     	    case 400:
     	    	return $this->throwError('Server refused connection', $response, $this->_currentStatusResponse());
