@@ -1,0 +1,57 @@
+<xml>
+	<usenetservers>
+		<server name='Hitnews'>
+			<header ssl='yes' port='593'>ssl.hitnews.eu</header>
+			<nzb ssl='yes' port='593'>ssl.hitnews.eu</nzb>
+			<post ssl='yes' port='593'>upload.hitnews.eu</post>
+		</server>
+		
+		<server name='LightningUsenet'>
+			<header ssl='yes' port='593'>news.LightningUsenet.com</header>
+			<nzb ssl='yes' port='593'>news.LightningUsenet.com</nzb>
+			<post ssl='yes' port='593'>news.LightningUsenet.com</post>
+		</server>
+		
+		<server name='Supernews'>
+			<header ssl='' port='119'>news.eu.supernews.com</header>
+			<nzb ssl='' port='119'>news.eu.supernews.com</nzb>
+			<post ssl='' port='119'>news.eu.supernews.com</post>
+		</server>
+
+		<server name='Giganews'>
+			<header ssl='yes' port='563'>news.giganews.com</header>
+			<nzb ssl='yes' port='563'>news.giganews.com</nzb>
+			<post ssl='yes' port='563'>news.giganews.com</post>
+		</server>
+
+		<server name='Astraweb'>
+			<header ssl='yes' port='563'>ssl-eu.astraweb.com</header>
+			<nzb ssl='yes' port='563'>ssl-eu.astraweb.com</nzb>
+			<post ssl='yes' port='563'>ssl-eu.astraweb.com</post>
+		</server>
+
+		<server name='XSNews'>
+			<header ssl='yes' port='563'>reader.xsnews.nl</header>
+			<nzb ssl='yes' port='563'>reader.xsnews.nl</nzb>
+			<post ssl='yes' port='563'>upload.xsnews.nl</post>
+		</server>
+
+		<server name='Ziggo'>
+			<header ssl='' port='119'>news.ziggo.nl</header>
+			<nzb ssl='' port='119'>news.ziggo.nl</nzb>
+			<post ssl='' port='119'>news.ziggo.nl</post>
+		</server>
+
+		<server name='Eweka'>
+			<header ssl='yes' port='563'>sslreader.eweka.nl</header>
+			<nzb ssl='yes' port='563'>sslreader.eweka.nl</nzb>
+			<post ssl='yes' port='563'>upload.eweka.nl</post>
+		</server>
+			
+		<server name='Easynews'>
+			<header ssl='yes' port='563'>secure.news.eu.easynews.com</header>
+			<nzb ssl='yes' port='563'>secure.news.eu.easynews.com</nzb>
+			<post ssl='yes' port='563'>secure.news.eu.easynews.com</post>
+		</server>		
+	</usenetservers>
+</xml>
