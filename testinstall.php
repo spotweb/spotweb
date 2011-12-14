@@ -223,7 +223,7 @@
 				
 				/* and try to connect to the usenet server */
 				$nntp = new SpotNntp($form);
-				$nntp->validateNntpServer($form);
+				$nntp->validateNntpServer();
 
 				$nntpVerified = true;
 				
