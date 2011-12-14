@@ -96,9 +96,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[nntp_nzb][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_nzb][buggy]" <?php if ($nntp_nzb['buggy']) { echo 'checked="checked"'; } ?>></dd>
-
-					<dt><label for="test_nntp_nzb_server"><?php echo _('Validate entered usenet server'); ?></label></dt>
-					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_nzb');" name="test_nntp_nzb_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_nzb_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_nzb_result'></span></dd>
 				</dl>
 			</fieldset>
 
@@ -131,8 +128,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[nntp_hdr][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_hdr][buggy]" <?php if ($nntp_hdr['buggy']) { echo 'checked="checked"'; } ?>></dd>
-					<dt><label for="test_nntp_hdr_server"><?php echo _('Validate entered usenet server'); ?></label></dt>
-					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_hdr');" name="test_nntp_hdr_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_hdr_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_hdr_result'></span></dd>
 				</dl>
 			</fieldset>
 
@@ -163,9 +158,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[nntp_post][port]"><?php echo _('Port'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_post][port]" value="<?php echo htmlspecialchars($nntp_post['port'], ENT_QUOTES); ?>"></dd>
 
-					<dt><label for="editsettingsform[nntp_post][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
-					<dd><input type="checkbox" name="editsettingsform[nntp_post][buggy]" <?php if ($nntp_post['buggy']) { echo 'checked="checked"'; } ?>></dd>
-					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_post');" name="test_nntp_post_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_post_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_post_result'></span></dd>
+					<input type="hidden" name="editsettingsform[nntp_post][buggy]" value="">
 				</dl>
 			</fieldset>
 			</div>
@@ -179,20 +172,20 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
 					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
 
-					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots. This makes retrieval a lot slower.'); ?></label></dt>
+					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_full]" id="use_retrieve_full" <?php if ($this->_settings->get('retrieve_full')) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_retrieve_full">
-						<dt><label for="editsettingsform[prefetch_image]"><?php echo _('Prefetch images (requires a lot of memory)'); ?></label></dt>
+						<dt><label for="editsettingsform[prefetch_image]"><?php echo _('Prefetch images'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[prefetch_image]" <?php if ($this->_settings->get('prefetch_image')) { echo 'checked="checked"'; } ?>></dd>
 
-						<dt><label for="editsettingsform[prefetch_nzb]"><?php echo _('Prefetch NZB files (requires a lot of memory)'); ?></label></dt>
+						<dt><label for="editsettingsform[prefetch_nzb]"><?php echo _('Prefetch NZB files'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[prefetch_nzb]" <?php if ($this->_settings->get('prefetch_nzb')) { echo 'checked="checked"'; } ?>></dd>
 					</fieldset>
 
 					<dt><label for="editsettingsform[retrieve_comments]"><?php echo _('Retrieve comments'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_comments]" id="use_retrieve_comments" <?php if ($this->_settings->get('retrieve_comments')) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_retrieve_comments">
-						<dt><label for="editsettingsform[retrieve_full_comments]"><?php echo _('Retrieve full comments. This makes retrieval a lot slower.'); ?></label></dt>
+						<dt><label for="editsettingsform[retrieve_full_comments]"><?php echo _('Retrieve full comments'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[retrieve_full_comments]" <?php if ($this->_settings->get('retrieve_full_comments')) { echo 'checked="checked"'; } ?>></dd>
 					</fieldset>
 
