@@ -33,9 +33,11 @@ if (empty($editresult)) {
 			<dt><label for="edituserform[mail]"><?php echo _('E-mail Address'); ?></label></dt>
 			<dd><input type="text" name="edituserform[mail]"  value="<?php echo htmlspecialchars($edituserform['mail']); ?>"></dd>
 
+<?php if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) { ?>
 			<dt><label for="edituserform[apikey]"><?php echo _('API key'); ?></label></dt>
 			<dd><input class="withicon apikeyinputfield" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
 			<input type="image" class="resetApiSubmit" onclick="ajaxSubmitFormWithCb('?page=edituser', this, requestNewUserApiKeyCbHandler); return false; "  src="images/refresh.png" name="edituserform[submitresetuserapi]" value="<?php echo _('Create new API key'); ?>"></dd>
+<?php } ?>
 
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) || ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, ''))) { ?>
 			<!-- Dummy grouplist variable om zeker te zijn dat de grouplist altijd gepost wordt -->
