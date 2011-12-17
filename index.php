@@ -83,7 +83,7 @@ try {
 		if ($req->doesExist('apikey')) {
 			$currentSession = $spotUserSystem->useOrStartSession(true);
 			
-			throw new PermissionDeniedException(SpotSecurity::spotsec_consume_api, -1);
+			throw new PermissionDeniedException(SpotSecurity::spotsec_consume_api, 'invalid API key');
 		} else {
 			throw new SqlErrorException("Unable to create session");
 		} # else
