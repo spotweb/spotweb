@@ -45,7 +45,7 @@
 		<server name='Eweka'>
 			<header ssl='yes' port='563'>sslreader.eweka.nl</header>
 			<nzb ssl='yes' port='563'>sslreader.eweka.nl</nzb>
-			<post ssl='yes' port='563'>upload.eweka.nl</post>
+			<post ssl='' port='119'>upload.eweka.nl</post>
 		</server>
 			
 		<server name='Easynews'>
@@ -53,5 +53,252 @@
 			<nzb ssl='yes' port='563'>secure.news.eu.easynews.com</nzb>
 			<post ssl='yes' port='563'>secure.news.eu.easynews.com</post>
 		</server>		
+		
+		<server name='Download2day'>
+			<header ssl='yes' port='563'>reader.download2day.com</header>
+			<nzb ssl='yes' port='563'>reader.download2day.com</nzb>
+			<post ssl='yes' port='563'>upload.download2day.nl</post>
+		</server>
+		
+		<server name='Newshosting'>
+			<header ssl='yes' port='563'>news.newshosting.com</header>
+			<nzb ssl='yes' port='563'>news.newshosting.com</nzb>
+			<post ssl='yes' port='563'>news.newshosting.com</post>
+		</server>
+		
+		<server name='Usenet4u (4)'>
+			<header ssl='yes' port='563'>news4.usenet4u.nl</header>
+			<nzb ssl='yes' port='563'>news4.usenet4u.nl</nzb>
+			<post ssl='yes' port='563'>news4.usenet4u.nl</post>
+		</server>
+		
+		<server name='Usenet4u (3)'>
+			<header ssl='yes' port='563'>news3.usenet4u.nl</header>
+			<nzb ssl='yes' port='563'>news3.usenet4u.nl</nzb>
+			<post ssl='yes' port='563'>news3.usenet4u.nl</post>
+		</server>
+		
+		<server name='I-Telligent' buggy='true'>
+			<header ssl='yes' port='563'>news.i-telligent.com</header>
+			<nzb ssl='yes' port='563'>news.i-telligent.com</nzb>
+			<post ssl='yes' port='563'>news.i-telligent.com</post>
+		</server>
+
+		<server name='NewsGrabber' buggy='true'>
+			<header ssl='yes' port='563'>news.newsgrabber.nl</header>
+			<nzb ssl='yes' port='563'>news.newsgrabber.nl</nzb>
+			<post ssl='yes' port='563'>news.newsgrabber.nl</post>
+		</server>
+
+		<server name='EasyUsenet'>
+			<header ssl='yes' port='563'>reader.easyusenet.nl</header>
+			<nzb ssl='yes' port='563'>reader.easyusenet.nl</nzb>
+			<post ssl='yes' port='563'>reader.easyusenet.nl</post>
+		</server>
+		
+		<server name='Cheapnews (block)'>
+			<header ssl='yes' port='563'>block.cheapnews.eu</header>
+			<nzb ssl='yes' port='563'>block.cheapnews.eu</nzb>
+			<post ssl='yes' port='563'>block.cheapnews.eu</post>
+		</server>
+		
+		<server name='Cheapnews'>
+			<header ssl='yes' port='563'>news.cheapnews.eu</header>
+			<nzb ssl='yes' port='563'>news.cheapnews.eu</nzb>
+			<post ssl='yes' port='563'>news.cheapnews.eu</post>
+		</server>
+		
+		<server name='YabNews'>
+			<header ssl='yes' port='563'>news.yabnews.nl</header>
+			<nzb ssl='yes' port='563'>news.yabnews.nl</nzb>
+			<post ssl='yes' port='563'>news.yabnews.nl</post>
+		</server>
+		
+		<server name='NewsXS' buggy='true'>
+			<header ssl='yes' port='563'>reader2.newsxs.nl</header>
+			<nzb ssl='yes' port='563'>reader2.newsxs.nl</nzb>
+			<post ssl='yes' port='563'>reader2.newsxs.nl</post>
+		</server>
+
+		<server name='SMSUseNET'>
+			<header ssl='yes' port='563'>news.smsusenet.nl</header>
+			<nzb ssl='yes' port='563'>news.smsusenet.nl</nzb>
+			<post ssl='yes' port='563'>news.smsusenet.nl</post>
+		</server>
+
+		<server name='Usenet Monster'>
+			<header ssl='yes' port='563'>bignews.usenetmonster.com</header>
+			<nzb ssl='yes' port='563'>bignews.usenetmonster.com</nzb>
+			<post ssl='yes' port='563'>bignews.usenetmonster.com</post>
+		</server>
+
+		<server name='Tweaknews'>
+			<header ssl='yes' port='563'>news.tweaknews.nl</header>
+			<nzb ssl='yes' port='563'>news.tweaknews.nl</nzb>
+			<post ssl='yes' port='563'>news.tweaknews.nl</post>
+		</server>
+
+		<server name='TweakDSL'>
+			<header ssl='no' port='119'>news.tweakdsl.nl</header>
+			<nzb ssl='no' port='119'>news.tweakdsl.nl</nzb>
+			<post ssl='no' port='119'>news.tweakdsl.nl</post>
+		</server>
+
+		<server name='TweakFiber'>
+			<header ssl='no' port='119'>news.tweak.nl</header>
+			<nzb ssl='no' port='119'>news.tweak.nl</nzb>
+			<post ssl='no' port='119'>news.tweak.nl</post>
+		</server>
+
+		<server name='Tele2 v1'>
+			<header ssl='no' port='119'>tele2news.tweaknews.nl</header>
+			<nzb ssl='no' port='119'>tele2news.tweaknews.nl</nzb>
+			<post ssl='no' port='119'>tele2news.tweaknews.nl</post>
+		</server>
+
+		<server name='Tele2 v2'>
+			<header ssl='no' port='119'>news.tele2.nl</header>
+			<nzb ssl='no' port='119'>news.tele2.nl</nzb>
+			<post ssl='no' port='119'>news.tele2.nl</post>
+		</server>
+
+		<server name='Newsconnection'>
+			<header ssl='yes' port='563'>news.newsconnection.nl</header>
+			<nzb ssl='yes' port='563'>news.newsconnection.nl</nzb>
+			<post ssl='yes' port='563'>news.newsconnection.nl</post>
+		</server>
+
+		<server name='Usenet-News EU'>
+			<header ssl='yes' port='563'>news.eu.Usenet-News.net</header>
+			<nzb ssl='yes' port='563'>news.eu.Usenet-News.net</nzb>
+			<post ssl='yes' port='563'>news.eu.Usenet-News.net</post>
+		</server>
+
+		<server name='Usenet-News US'>
+			<header ssl='yes' port='563'>news.us.Usenet-News.net</header>
+			<nzb ssl='yes' port='563'>news.us.Usenet-News.net</nzb>
+			<post ssl='yes' port='563'>news.us.Usenet-News.net</post>
+		</server>
+
+		<server name='UsenetXL'>
+			<header ssl='yes' port='563'>reader.usenetxl.nl</header>
+			<nzb ssl='yes' port='563'>reader.usenetxl.nl</nzb>
+			<post ssl='yes' port='563'>upload.usenetxl.nl</post> 
+		</server>
+
+		<server name='Usenet.nl'>
+			<header ssl='yes' port='563'>news1.usenet.nl</header>
+			<nzb ssl='yes' port='563'>news1.usenet.nl</nzb>
+			<post ssl='yes' port='563'>news1.usenet.nl</post>
+		</server>
+
+		<server name='PowerNews'>
+			<header ssl='yes' port='563'>reader.powernews.nl</header>
+			<nzb ssl='yes' port='563'>reader.powernews.nl</nzb>
+			<post ssl='yes' port='563'>reader.powernews.nl</post>
+		</server>
+
+		<server name='Power Usenet'>
+			<header ssl='yes' port='563'>news.powerusenet.com</header>
+			<nzb ssl='yes' port='563'>news.powerusenet.com</nzb>
+			<post ssl='yes' port='563'>news.powerusenet.com</post>
+		</server>
+
+		<server name='4UX' buggy='true'>
+			<header ssl='yes' port='563'>news.4ux.nl</header>
+			<nzb ssl='yes' port='563'>news.4ux.nl</nzb>
+			<post ssl='yes' port='563'>news.4ux.nl</post>
+		</server>
+
+		<server name='UseNetServer'>
+			<header ssl='yes' port='563'>secure.Usenetserver.com</header>
+			<nzb ssl='yes' port='563'>secure.Usenetserver.com</nzb>
+			<post ssl='yes' port='563'>secure.Usenetserver.com</post>
+		</server>
+
+		<server name='FlexNewz'>
+			<header ssl='yes' port='563'>news.flexnewz.com</header>
+			<nzb ssl='yes' port='563'>news.flexnewz.com</nzb>
+			<post ssl='yes' port='563'>news.flexnewz.com</post>
+		</server>
+
+		<server name='Speedplaza' buggy='true'>
+			<header ssl='yes' port='563'>news.speedplaza.net</header>
+			<nzb ssl='yes' port='563'>news.speedplaza.net</nzb>
+			<post ssl='yes' port='563'>news.speedplaza.net</post>
+		</server>
+
+		<server name='SnelNL EU'>
+			<header ssl='yes' port='563'>ssl-news.snelnl.com</header>
+			<nzb ssl='yes' port='563'>ssl-news.snelnl.com</nzb>
+			<post ssl='yes' port='563'>ssl-news.snelnl.com</post>
+		</server>
+
+		<server name='SnelNL US'>
+			<header ssl='yes' port='563'>ssl-news2.snelnl.com</header>
+			<nzb ssl='yes' port='563'>ssl-news2.snelnl.com</nzb>
+			<post ssl='yes' port='563'>ssl-news2.snelnl.com</post>
+		</server>
+
+		<server name='Sunny Usenet'>
+			<header ssl='yes' port='563'>news.sunnyusenet.com</header>
+			<nzb ssl='yes' port='563'>news.sunnyusenet.com</nzb>
+			<post ssl='yes' port='563'>post.sunnyusenet.com</post> 
+		</server>
+
+		<server name='Dommel'>
+			<header ssl='no' port='119'>textnews.dommel.be</header>
+			<nzb ssl='no' port='119'>news.dommel.be</nzb>
+			<post ssl='no' port='119'>news.dommel.be</post>
+		</server>
+
+		<server name='KPN'>
+			<header ssl='no' port='119'>textnews.kpn.nl</header>
+			<nzb ssl='no' port='119'>news.kpn.nl</nzb>
+			<post ssl='no' port='119'>news.kpn.nl</post>
+		</server>
+
+		<server name='Online'>
+			<header ssl='no' port='119'>news.online.nl</header>
+			<nzb ssl='no' port='119'>news.online.nl</nzb> 
+			<post ssl='no' port='119'>news.online.nl</post>
+		</server>
+
+		<server name='Telenet'>
+			<header ssl='no' port='119'>newsgroups.telenet.be</header>
+			<nzb ssl='no' port='119'>newsgroups.telenet.be</nzb>
+			<post ssl='no' port='119'>newsgroups.telenet.be</post>
+		</server>
+
+		<server name='XS4ALL'>
+			<header ssl='no' port='119'>news.xs4all.nl</header>
+			<nzb ssl='no' port='119'>newszilla.xs4all.nl</nzb>
+			<post ssl='no' port='119'>newszilla.xs4all.nl</post>
+		</server>
+
+		<server name='XMS'>
+			<header ssl='yes' port='563'>news.xmsnet.nl</header>
+			<nzb ssl='yes' port='563'>news.xmsnet.nl</nzb>
+			<post ssl='yes' port='563'>news.xmsnet.nl</post>
+		</server>
+
+		<server name='XS Usenet'>
+			<header ssl='yes' port='563'>reader.xsusenet.com</header>
+			<nzb ssl='yes' port='563'>reader.xsusenet.com</nzb>
+			<post ssl='yes' port='563'>reader.xsusenet.com</post>
+		</server>
+
+		<server name='Usenet.Pro'>
+			<header ssl='' port='119'>reader.usenet.pro</header>
+			<nzb ssl='' port='119'>reader.usenet.pro</nzb>
+			<post ssl='' port='119'>reader.usenet.pro</post>
+		</server>   
+		
+
+		<server name='OnsBrabantNet'>
+			<header ssl='' port='119'>news.onsbrabantnet.nl</header>
+			<nzb ssl='' port='119'>news.onsbrabantnet.nl</nzb>
+			<post ssl='' port='119'>news.onsbrabantnet.nl</post>
+		</server>   
 	</usenetservers>
 </xml>
