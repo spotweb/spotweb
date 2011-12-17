@@ -555,6 +555,18 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
 		##############################################################################################
+		### Remove old sessions ######################################################################
+		##############################################################################################
+		# Remove sessions with only one hit, older than one day
+		#
+		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . time() - (60*60*60 * 24) . " AND hitcount = 1");
+		#
+		# and remove sessions older than 180 days 
+		#
+		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . time() - (60*60*60 * 24) * 180);
+		
+
+		##############################################################################################
 		### deprecation of old Spotweb versions ######################################################
 		##############################################################################################
 		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.51)) {
