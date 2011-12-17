@@ -90,10 +90,10 @@ class SpotUserSystem {
 	 * has, we use the existing session, else we create a new one for the
 	 * anonymous user.
 	 */
-	function useOrStartSession() {
+	function useOrStartSession($forceAnonymous) {
 		$userSession = false;
 		
-		if (isset($_COOKIE['spotsession'])) {
+		if ((isset($_COOKIE['spotsession'])) && (!$forceAnonymous)) {
 			$userSession = $this->validSession($_COOKIE['spotsession']);
 		} # if
 
@@ -105,7 +105,7 @@ class SpotUserSystem {
 			 * UserID is our default anonymous user, but this can be 
 			 * overriden by the usersystem
 			 */
-			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid') );
+			$userSession = $this->createNewSession( $this->_settings->get('nonauthenticated_userid'));
 		} # if
 		
 		# Initialize the security system

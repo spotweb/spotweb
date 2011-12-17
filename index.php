@@ -72,7 +72,7 @@ try {
 	if ($req->doesExist('apikey')) {
 		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
 	} else {
-		$currentSession = $spotUserSystem->useOrStartSession();
+		$currentSession = $spotUserSystem->useOrStartSession(false);
 	} # if
 
 	/*
@@ -81,7 +81,9 @@ try {
 	 */
 	if ($currentSession === false) {
 		if ($req->doesExist('apikey')) {
-			throw new PermissionDeniedException("API Key Incorrect", -1);
+			$currentSession = $spotUserSystem->useOrStartSession(true);
+			
+			throw new PermissionDeniedException(SpotSecurity::spotsec_consume_api, -1);
 		} else {
 			throw new SqlErrorException("Unable to create session");
 		} # else
