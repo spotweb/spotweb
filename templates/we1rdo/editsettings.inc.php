@@ -173,20 +173,20 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
 					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
 
-					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots'); ?></label></dt>
+					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots. This makes retrieval a lot slower.'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_full]" id="use_retrieve_full" <?php if ($this->_settings->get('retrieve_full')) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_retrieve_full">
-						<dt><label for="editsettingsform[prefetch_image]"><?php echo _('Prefetch images'); ?></label></dt>
+						<dt><label for="editsettingsform[prefetch_image]"><?php echo _('Prefetch images (requires a lot of memory)'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[prefetch_image]" <?php if ($this->_settings->get('prefetch_image')) { echo 'checked="checked"'; } ?>></dd>
 
-						<dt><label for="editsettingsform[prefetch_nzb]"><?php echo _('Prefetch NZB files'); ?></label></dt>
+						<dt><label for="editsettingsform[prefetch_nzb]"><?php echo _('Prefetch NZB files (requires a lot of memory)'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[prefetch_nzb]" <?php if ($this->_settings->get('prefetch_nzb')) { echo 'checked="checked"'; } ?>></dd>
 					</fieldset>
 
 					<dt><label for="editsettingsform[retrieve_comments]"><?php echo _('Retrieve comments'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_comments]" id="use_retrieve_comments" <?php if ($this->_settings->get('retrieve_comments')) { echo 'checked="checked"'; } ?>></dd>
 					<fieldset id="content_use_retrieve_comments">
-						<dt><label for="editsettingsform[retrieve_full_comments]"><?php echo _('Retrieve full comments'); ?></label></dt>
+						<dt><label for="editsettingsform[retrieve_full_comments]"><?php echo _('Retrieve full comments. This makes retrieval a lot slower.'); ?></label></dt>
 						<dd><input type="checkbox" name="editsettingsform[retrieve_full_comments]" <?php if ($this->_settings->get('retrieve_full_comments')) { echo 'checked="checked"'; } ?>></dd>
 					</fieldset>
 

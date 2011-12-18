@@ -531,20 +531,20 @@ msgstr "Spots ophalen na... Selecteer 1 november 2009 om alle spots op te halen"
 msgid "To skip all FTD spots select November 24, 2010"
 msgstr "Om alle spots van FTD over te slaan selecteer je 24 november 2010"
 
-msgid "Retrieve full spots"
-msgstr "Spots volledig ophalen"
+msgid "Retrieve full spots. This makes retrieval a lot slower."
+msgstr "Spots volledig ophalen. Dit maakt ophalen van spots een stuk langzamer."
 
-msgid "Prefetch images"
-msgstr "Plaatjes prefetchen"
+msgid "Prefetch images (requires a lot of memory)"
+msgstr "Plaatjes prefetchen (vergt veel geheugen)"
 
-msgid "Prefetch NZB files"
-msgstr "NZB bestanden prefetchen"
+msgid "Prefetch NZB files (quires a lot of memory)"
+msgstr "NZB bestanden prefetchen (vergt veel geheugen)"
 
 msgid "Retrieve comments"
 msgstr "Comments ophalen"
 
-msgid "Retrieve full comments"
-msgstr "Comments volledig ophalen"
+msgid "Retrieve full comments. This makes retrieval a lot slower."
+msgstr "Comments volledig ophalen. Dit maakt het ophalen van spots een stuk langzamer."
 
 msgid "Retrieve reports"
 msgstr "Reports ophalen"
