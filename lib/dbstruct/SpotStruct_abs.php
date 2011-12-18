@@ -559,11 +559,11 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		# Remove sessions with only one hit, older than one day
 		#
-		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . time() - (60*60*60 * 24) . " AND hitcount = 1");
+		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . (time() - (60*60*60 * 24)) . " AND hitcount = 1");
 		#
 		# and remove sessions older than 180 days 
 		#
-		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . time() - (60*60*60 * 24) * 180);
+		$this->_dbcon->rawExec("DELETE FROM sessions WHERE lasthit < " . (time() - (60*60*60 * 24) * 180));
 		
 
 		##############################################################################################
