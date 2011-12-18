@@ -24,8 +24,14 @@ require_once "lib/SpotTiming.php";
 require_once "lib/exceptions/ParseSpotXmlException.php";
 require_once "lib/exceptions/NntpException.php";
 
-# disable timing, met alle queries die er draaien loopt dat uit op een te grote memory usage
+/*
+ * disable timing, all queries which are ran by retrieve this would make it use
+ * large amounts of memory
+ */
 SpotTiming::disable();
+
+# Initialize commandline arguments
+SpotCommandline::initialize(array('force', 'debug', 'retro'), array('force' => false, 'debug' => false, 'retro' => false));
 
 # Initialize translation to english 
 SpotTranslation::initialize('en_US');
@@ -63,7 +69,7 @@ $req->initialize($settings);
 # we via de browser aangeroepen worden. Via console halen we altijd
 # het admin-account op
 $spotUserSystem = new SpotUserSystem($db, $settings);
-if (isset($_SERVER['SERVER_PROTOCOL'])) {
+if (!SpotCommandline::isCommandline()) {
 	# Vraag de API key op die de gebruiker opgegeven heeft
 	$apiKey = $req->getDef('apikey', '');
 	
@@ -92,15 +98,15 @@ if (empty($settings_nntp_hdr['host'])) {
 } # if
 	
 ## Als we forceren om de "already running" check te bypassen, doe dat dan
-if ((isset($argc)) && ($argc > 1) && ($argv[1] == '--force')) {
+if (SpotCommandline::get('force')) {
 	$db->setRetrieverRunning($settings_nntp_hdr['host'], false);
 } # if
 
 ## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
-$debugLog = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--debug'));
+$debugLog = SpotCommandline::get('debug');
 
 ## RETRO MODE! Hiermee kunnen we de fullspots, fullcomments en/of cache achteraf ophalen
-$retroMode = ((isset($argc)) && ($argc > 1) && ($argv[1] == '--retro'));
+$retroMode = SpotCommandline::get('retro');
 
 ## Retention cleanup
 try {
