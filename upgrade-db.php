@@ -2,10 +2,7 @@
 error_reporting(E_ALL & ~8192 & ~E_USER_WARNING);	# 8192 == E_DEPRECATED maar PHP < 5.3 heeft die niet
 
 try {
-	require_once "lib/SpotClassAutoload.php";
-	require_once "settings.php";
-
-		/*
+	/*
 	 * If we are run from another directory, try to change the current
 	 * working directory to a directory the script is in
 	 */
@@ -13,6 +10,8 @@ try {
 		chdir(__DIR__);
 	} # if
 
+	require_once "lib/SpotClassAutoload.php";
+	require_once "settings.php";
 
 	/*
 	 * Make sure we are not run from the server, an db upgrade can take too much time and
