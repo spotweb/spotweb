@@ -223,7 +223,7 @@
 				
 				/* and try to connect to the usenet server */
 				$nntp = new SpotNntp($form);
-				$nntp->validateNntpServer();
+				$nntp->validateServer();
 
 				$nntpVerified = true;
 				
@@ -281,7 +281,9 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$form = array('systemtype' => 'public');
+		$form = array('systemtype' => 'public',
+					  'username' => '', 'pass1' => '', 'pass2' => '', 'firstname' => '',
+					  'lastname' => '', 'email' => '');
 		if (isset($_POST['settingsform'])) {
 			$form = array_merge($form, $_POST['settingsform']);
 		} # if
@@ -291,7 +293,7 @@
 		 * connect to the database
 		 */
 		$nntpVerified = false;
-		if ($form['submit'] === 'Create system') {
+		if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {			
 			try {
 				/*
 				 * Store the given NNTP settings in the 
@@ -328,7 +330,7 @@
 				<tr> <td nowrap="nowrap"> <input type="radio" name="settingsform[systemtype]" value="shared">Shared</td> <td> Shared systems are Spotweb installations shared among friends or family members. You do have to logon using an useraccount, but the users who do log on are trusted to have no malicious intentions. </tr>
 				<tr> <td nowrap="nowrap"> <input type="radio" name="settingsform[systemtype]" value="public" checked="checked">Public</td> <td> Public systems are Spotweb installations fully open to the public. Because the installation is fully open, regular users do not have all the features available in Spotweb to help defend against certain malicious users.</tr>
 				<tr> <th colspan='2'> Administrative user </th> </tr>
-				<tr> <td colspan='2'> Spotweb will use below user information to create a user for use by Spotweb. The defined password will also be set as the password for the built-in 'admin' account. Please remember this password carefully. </td> </tr>
+				<tr> <td colspan='2'> Spotweb will use below user information to create a user for use by Spotweb. The defined password will also be set as the password for the built-in 'admin' account. Please make sure to remember this password. </td> </tr>
 				<tr> <td> Username </td> <td> <input type='text' length='40' name='settingsform[username]' value='<?php echo htmlspecialchars($form['username']); ?>'></input> </td> </tr>
 				<tr> <td> Password </td> <td> <input type='text' length='40' name='settingsform[pass1]' value='<?php echo htmlspecialchars($form['pass1']); ?>'></input> </td> </tr>
 				<tr> <td> Password (confirm) </td> <td> <input type='text' length='40' name='settingsform[pass2]' value='<?php echo htmlspecialchars($form['pass2']); ?>'></input> </td> </tr>
