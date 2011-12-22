@@ -565,11 +565,6 @@ class SpotUserSystem {
 		if ($user['newpassword1'] != $user['newpassword2']) {
 			$errorList[] = _('Passwords do not match');
 		} # if
-
-		# disallow a user from editting the ANONYMOUS user
-		if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$errorList[] = _('You cannot edit the anonymous account');
-		} # if
 		
 		# check the mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {

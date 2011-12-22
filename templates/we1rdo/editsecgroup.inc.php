@@ -17,14 +17,14 @@ if (empty($editresult)) {
 			<tr class="ui-widget-header head">
 				<th><?php echo _('Permission'); ?></th> 
 				<th><?php echo _('Object'); ?></th>
-				<?php if ($securitygroup['id'] > 3) { ?>
+				<?php if ($securitygroup['id'] > 5) { ?>
 					<th><?php echo _('Delete'); ?></th>
 					<th><?php echo _('Deny/Allow'); ?></th>
 				<?php } ?>
 				<th>|</th>
 				<th><?php echo _('Permission'); ?></th> 
 				<th><?php echo _('Object'); ?></th>
-				<?php if ($securitygroup['id'] > 3) { ?>
+				<?php if ($securitygroup['id'] > 5) { ?>
 					<th><?php echo _('Delete'); ?></th>
 					<th><?php echo _('Deny/Allow'); ?></th>
 				<?php } ?>
@@ -39,7 +39,7 @@ if (empty($editresult)) {
 ?>
 				<td> <?php echo _($tplHelper->permToString($perm['permissionid'])); ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
-				<?php if ($securitygroup['id'] > 3) { ?>
+				<?php if ($securitygroup['id'] > 5) { ?>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">

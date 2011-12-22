@@ -41,14 +41,9 @@
 				<tr> 
 					<td> 
 <?php 
-	# We kunnen de anonymous user niet editten
-	if ($user['userid'] == SPOTWEB_ANONYMOUS_USERID) { 
-		echo $user['username'];
-	} else {
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
 				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}); ">' .
 				 $user['username'] . '</a>'; 
-	} # else
 ?> 
 				</td>
 				<td> <?php echo $user['firstname']; ?> </td>

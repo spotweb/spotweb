@@ -20,7 +20,7 @@
 			<tr> 
 <?php 
 	# We kunnen de 'built in' groepen niet bewerken
-	if ($group['id'] < 4) {
+	if ($group['id'] < 6) {
 		echo '<td>' . $group['name'] . '</td>';
 		echo '<td></td>';
 		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Show rights in group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', null); "><span class="ui-icon ui-icon-zoomin"></span></a></td>';

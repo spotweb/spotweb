@@ -79,12 +79,6 @@ class SpotPage_edituser extends SpotPage_Abs {
 
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
-			# sta niet toe, dat de anonymous user gewijzigd wordt
-			if ($spotUser['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-				$formMessages['errors'][] = _('Anonymous user can not be edited');
-				$editResult = array('result' => 'failure');
-			} # if
-
 			# sta niet toe, dat de admin user gewist wordt
 			if (($spotUser['userid'] <= SPOTWEB_ADMIN_USERID) && ($formAction == 'delete')) {
 				$formMessages['errors'][] = _('Admin and Anonymous can not be deleted');

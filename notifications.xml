@@ -4,9 +4,32 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Mon, 5 Dec 2011 09:00:00 +0100</lastBuildDate>
-		<pubDate>Mon, 5 Dec 2011 09:00:00 +0100</pubDate>
+		<lastBuildDate>Fri, 23 Dec 2011 00:00:00 +0100</lastBuildDate>
+		<pubDate>Fri, 23 Dec 2011 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Security group reset</title>
+			<description><![CDATA[The balance between an open Spotweb system and an closed Spotweb system is always a conflict of interest during several types of Spotweb users. 
+			<br /><br />
+			In order to facilitate this better, the default Spotweb security groups have been changed adding two types of groups: "Trusted users" and "Anonymous user - closed system",
+			these groups allow you to support more finegrained security permissions without tinkering too much with the settings in Spotweb.
+			<br /><br />
+			Unfortunately this means we have to reset all security groups within Spotweb - this means that if you customized any security settings within Spotweb that you have to check
+			the system does not respond any differently than you want.
+			<br /><br />
+			If you want a closed system, please remove the "Anonymous" user from the "Anonymous user - open system" group, and add it to the "Anonymous user - closed system" securitygroup.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>07</guid>
+			<pubDate>Mon, 5 Dec 2011 09:00:00 +0100</pubDate>
+			<author>nightspirit81</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.54</spotweb:schema_version>
+			<spotweb:settings_version>0.18</spotweb:settings_version>
+			<spotweb:security_version>0.27</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Quick Links linked to user preferences</title>

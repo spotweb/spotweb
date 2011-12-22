@@ -14,7 +14,8 @@ class SpotUserUpgrader {
 		$this->createAdmin('admin', 'user', 'admin', 'spotwebadmin@example.com');
 		
 		$this->updateUserPreferences();
-		$this->updateSecurityGroupMembership();
+		$this->updateSecurityGroups();
+		$this->updateUserGroupMembership(false);
 		$this->updateUserFilters();
 		$this->updateSecurityVersion();
 	} # update()
@@ -57,9 +58,6 @@ class SpotUserUpgrader {
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
-
-		# Add the anonymous user to the anonymous security group
-		$dbCon->rawExec("INSERT INTO usergroups(userid, groupid, prio) VALUES(1, 1, 1)");
 	} # createAnonymous
 
 	/*
@@ -102,12 +100,52 @@ class SpotUserUpgrader {
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
 		$dbCon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
 		$dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
-
-		# Grant the admin user all the necessary security groups
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 1, 1)");
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 2)");
-		$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 3)");
 	} # createAdmin
+
+	/*
+	 * Update all users preferences
+	 */
+	function updateUserGroupMembership($isClosedSystem) {
+		if ($this->_settings->get('securityversion') < 0.27) {
+			# DB connection
+			$dbCon = $this->_db->getDbHandle();
+
+			$userList = $this->_db->listUsers("", 0, 9999999);
+
+			# loop through every user and fix it 
+			foreach($userList['list'] as $user) {
+				/*
+				 * Remove current group membership
+				 */
+				$dbCon->rawExec("DELETE FROM usergroups WHERE userid = " . $user['userid']);
+				
+				/* 
+				 * Actually update the group membership, depending
+				 * on what kind of user this is
+				 */
+				if ($user['userid'] == 1) {
+					# Anonymous user
+					if ($isClosedSystem) {
+						/* Grant the group with only logon rights */
+						$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 1, 1)");
+					} else {
+						/* Grant the group with the view permissions */
+						$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 2, 1)");
+					} # else
+				} elseif ($user['userid'] == 2) {
+					# Admin user
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 1)");
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 2)");
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 3)");
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 5, 4)");
+				} else {
+					# Grant the regular users all the necessary security groups
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 1)");
+				} # else
+			} # foreach
+		} # if
+	} # updateUserGroupMembership
 
 	/*
 	 * Update all users preferences
@@ -210,35 +248,40 @@ class SpotUserUpgrader {
 		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 		
-		if ($this->_settings->get('securityversion') < 0.01) {
+		if ($this->_settings->get('securityversion') < 0.27) {
 			/* Truncate the current defined permissions  */
 			$dbCon->rawExec("DELETE FROM securitygroups");
 
 			/* Create the security groepen */
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Authenticated users')");
-			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Administrators')");				
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(1, 'Anonymous user - closed system')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(2, 'Anonymous user - open system')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(3, 'Authenticated users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(4, 'Trusted users')");
+			$dbCon->rawExec("INSERT INTO securitygroups(id,name) VALUES(5, 'Administrators')");				
 		} # if
 	} # createSecurityGroups
 	
 	/* 
 	 * Update de 'default' security groepen hun rechten
 	 */
-	function updateSecurityGroupMembership() {
+	function updateSecurityGroups() {
 		# DB connectie	
 		$dbCon = $this->_db->getDbHandle();
 		
-		if ($this->_settings->get('securityversion') < 0.01) {
+		if ($this->_settings->get('securityversion') < 0.27) {
 			/* Truncate de  huidige permissies */
 			$dbCon->rawExec("DELETE FROM grouppermissions");
 
+			/* Grant the logon right to the anonymous user - closed system group */
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . SpotSecurity::spotsec_perform_login . ")");
+			
 			/* Default permissions for anonymous users */
 			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
 							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
 							   SpotSecurity::spotsec_view_statics, SpotSecurity::spotsec_create_new_user, SpotSecurity::spotsec_view_comments, 
 							   SpotSecurity::spotsec_view_spotcount_total);
 			foreach($anonPerms as $anonPerm) {
-				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . $anonPerm . ")");
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . $anonPerm . ")");
 			} # foreach
 
 			/* Default permissions for authenticated users */
@@ -246,161 +289,63 @@ class SpotUserUpgrader {
 							   SpotSecurity::spotsec_edit_own_userprefs, SpotSecurity::spotsec_edit_own_user, SpotSecurity::spotsec_post_comment,
 							   SpotSecurity::spotsec_perform_logout, SpotSecurity::spotsec_use_sabapi, SpotSecurity::spotsec_keep_own_watchlist, 
 							   SpotSecurity::spotsec_keep_own_downloadlist, SpotSecurity::spotsec_keep_own_seenlist, SpotSecurity::spotsec_view_spotcount_filtered,
-							   SpotSecurity::spotsec_select_template, SpotSecurity::spotsec_consume_api);
+							   SpotSecurity::spotsec_select_template, SpotSecurity::spotsec_consume_api, SpotSecurity::spotsec_allow_custom_stylesheet,
+							   SpotSecurity::spotsec_keep_own_filters, SpotSecurity::spotsec_report_spam, SpotSecurity::spotsec_post_spot,
+							   SpotSecurity::spotsec_blacklist_spotter, SpotSecurity::spotsec_view_statistics);
 			foreach($authedPerms as $authedPerm) {
-				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . $authedPerm . ")");
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $authedPerm . ")");
 			} # foreach
+
+			/* Viewing of spotweb avatar images is a security right so administrators can globally disable this */
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(2, " . SpotSecurity::spotsec_view_spotimage . ", 'avatar')");
+			
+			/* Allow authenticated users to consume Spotweb using an API */
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_consume_api . ", 'rss')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_consume_api . ", 'newznabapi')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_consume_api . ", 'getnzb')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_consume_api . ", 'getspot')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'disable')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'client-sabnzbd')");
+
+			/* Allow certain notification services */
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'welcomemail')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'email')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'notifo')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'twitter')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'prowl')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'nma')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'boxcar')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_send_notifications_services . ", 'growl')");
+
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'spot_posted')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'nzb_handled')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'report_posted')");
+
+			/* Trusted users are allowed to some additional download integration options etc */
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_download_integration . ", 'push-sabnzbd')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_download_integration . ", 'save')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_download_integration . ", 'runcommand')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_download_integration . ", 'nzbget')");
+			# Being able to erase downloads has become its seperate rights (GH issue #935)
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(4, " . SpotSecurity::spotsec_keep_own_downloadlist . ", 'erasedls')");
 
 			/* Default permissions for administrative users */
-			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users);
+			$adminPerms = array(SpotSecurity::spotsec_list_all_users, SpotSecurity::spotsec_retrieve_spots, SpotSecurity::spotsec_edit_other_users,
+							 SpotSecurity::spotsec_delete_user, SpotSecurity::spotsec_edit_groupmembership, 
+							 SpotSecurity::spotsec_display_groupmembership, SpotSecurity::spotsec_edit_securitygroups,
+							 SpotSecurity::spotsec_set_filters_as_default, SpotSecurity::spotsec_view_spotweb_updates,
+							 SpotSecurity::spotsec_edit_settings);
 			foreach($adminPerms as $adminPerm) {
-				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . $adminPerm . ")");
+				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . $adminPerm . ")");
 			} # foreach
-		} # if
-		
-		# We voegen nog extra security toe voor de logged in user, deze mag gebruik
-		# maken van een aantal paginas via enkel api authenticatie
-		if ($this->_settings->get('securityversion') < 0.02) {
-			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_consume_api . " AND 
-								objectid in ('rss', 'newznabapi', 'getnzb', 'getspot')");
-			
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'rss')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'newznabapi')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzb')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getspot')");
-		} # if
 
-		# We voegen nog extra security toe voor de logged in user, deze mag gebruik
-		# maken van een aantal download integration settings. De admin user mag ze van
-		# allemaal (tot nu toe bekent) gebruik maken.
-		if ($this->_settings->get('securityversion') < 0.03) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_download_integration . ", 'disable')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_download_integration . ", 'client-sabnzbd')");
-
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'push-sabnzbd')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'save')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'runcommand')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_download_integration . ", 'nzbget')");
-		} # if
-
-		# We voegen nog extra security toe voor de admin user, deze mag users wissen en
-		# groepen van users aanpassen
-		if ($this->_settings->get('securityversion') < 0.06) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_delete_user . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_groupmembership . ")");
-		} # if
-
-		# We voegen nog extra security toe voor de admin user, deze mag group membership van
-		# een user tonen, en securitygroepen inhoudelijk wijzigen
-		if ($this->_settings->get('securityversion') < 0.07) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_display_groupmembership . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_securitygroups . ")");
-		} # if
-
-		# We voegen nog extra security toe voor notificaties
-		if ($this->_settings->get('securityversion') < 0.08) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'email')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'growl')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'notifo')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'prowl')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ")");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'nzb_handled')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
-		} # if
-
-		# We voegen nog extra security toe voor custom stylesheets
-		if ($this->_settings->get('securityversion') < 0.09) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_allow_custom_stylesheet . ")");
-		} # if
-
-		# We voegen nog extra security toe voor watchlist notificaties en een vergeten NZB download
-		if ($this->_settings->get('securityversion') < 0.10) {
-			$dbCon->rawExec("DELETE FROM grouppermissions WHERE permissionid = " . SpotSecurity::spotsec_send_notifications_services . " AND objectid = 'libnotify'");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'watchlist_handled')");
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_consume_api . ", 'getnzbmobile')");
-		} # if
-
-		# Twitter toegevoegd
-		if ($this->_settings->get('securityversion') < 0.11) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'twitter')");
-		} # if
-
-		# Zelf filters kunnen wijzigen
-		if ($this->_settings->get('securityversion') < 0.12) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_keep_own_filters . ")");
-		} # if
-
-		# Filters als default in kunnen stellen voor de anonymous user
-		if ($this->_settings->get('securityversion') < 0.13) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_set_filters_as_default . ")");
-		} # if
-
-		# Downloads kunnen wissen is een apart recht geworden (issue #935)
-		if ($this->_settings->get('securityversion') < 0.14) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(3, " . SpotSecurity::spotsec_keep_own_downloadlist . ", 'erasedls')");
-		} # if
-		
-		# Spam reporting toegevoegd
-		if ($this->_settings->get('securityversion') < 0.15) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_report_spam . ")");
-		} # if
-
-		# Nieuwe spot posten toegevoegd
-		if ($this->_settings->get('securityversion') < 0.16) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_post_spot . ")");
-		} # if
-
-		# Notify My Android toegevoegd
-		if ($this->_settings->get('securityversion') < 0.17) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'nma')");
-		} # if
-
-		# Notificatie bij Spot Posten
-		if ($this->_settings->get('securityversion') < 0.18) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'spot_posted')");
-		} # if
-
-		# Notificatie bij Report Posten
-		if ($this->_settings->get('securityversion') < 0.19) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_types . ", 'report_posted')");
-		} # if
-
-		# Spotters kunnen blacklisten
-		if ($this->_settings->get('securityversion') < 0.20) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_blacklist_spotter . ")");
-		} # if
-
-		# Anonymous users mag welcomemail versturen
-		if ($this->_settings->get('securityversion') < 0.21) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(1, " . SpotSecurity::spotsec_send_notifications_services . ", 'welcomemail')");
-		} # if
-
-		# Boxcar toegevoegd
-		if ($this->_settings->get('securityversion') < 0.22) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(2, " . SpotSecurity::spotsec_send_notifications_services . ", 'boxcar')");
-		} # if
-
-		# Statistieken toegevoegd
-		if ($this->_settings->get('securityversion') < 0.23) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(2, " . SpotSecurity::spotsec_view_statistics . ")");
-		} # if
-
-		# Showing of avatars is an security right so administrators could globally disable this
-		if ($this->_settings->get('securityversion') < 0.24) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(1, " . SpotSecurity::spotsec_view_spotimage . ", 'avatar')");
-		} # if
-
-		# Showing the Spotweb updates is a security setting because it compares the current Spotweb version with the latest one it could be seen as
-		# information disclosure
-		if ($this->_settings->get('securityversion') < 0.25) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_view_spotweb_updates . ")");
-		} # if
-
-		# Settings
-		if ($this->_settings->get('securityversion') < 0.26) {
-			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, " . SpotSecurity::spotsec_edit_settings . ")");
+			# Notifications of these are only allowed to be sent to administrators
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(5, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(5, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
 		} # if
 	} # updateSecurityGroups
 
@@ -409,7 +354,7 @@ class SpotUserUpgrader {
 	 */
 	function updateUserFilters() {
 		if (($this->_settings->get('securityversion') < 0.12)) {
-			# DB connectie
+			# DB connection
 			$dbCon = $this->_db->getDbHandle();
 			
 			# delete all existing filters
@@ -471,17 +416,17 @@ class SpotUserUpgrader {
 	} # updateUserFilters
 	
 	/*
-	 * Update de huidige versie van de settings
+	 * Update the current version of the settings
 	 */
 	function updateSecurityVersion() {
-		# Lelijke truc om de class autoloader de SpotSecurity klasse te laten laden
+		# Ugly trick to trigger the autoloader to load the SpotSecurity class
 		if (SpotSecurity::spotsec_perform_login == 0) { } ;
 		
 		$this->_settings->set('securityversion', SPOTWEB_SECURITY_VERSION);
 	} # updateSecurityVersion
 
 	/*
-	 * Set een setting alleen als hij nog niet bestaat
+	 * Put a setting, but only if it doesn't exist
 	 */
 	function setSettingIfNot(&$pref, $name, $value) {
 		if (isset($pref[$name])) {
@@ -492,7 +437,7 @@ class SpotUserUpgrader {
 	} # setSettingIfNot
 	
 	/*
-	 * Verwijdert een gekozen setting
+	 * Removes a setting
 	 */
 	function unsetSetting(&$pref, $name) {
 		if (!isset($pref[$name])) {
