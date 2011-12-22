@@ -40,7 +40,7 @@ try {
 	} # if
 
 	/*
-	 * Does our global setting table ned updating? 
+	 * Does our global setting table need updating? 
 	 */
 	if (!$settings->settingsValid()) {
 		throw new SettingsNotUpgradedException();
@@ -76,7 +76,7 @@ try {
 	} # if
 
 	/*
-	 * If thre is no user object, we don't have a security system
+	 * If three is no user object, we don't have a security system
 	 * either. Without a security system we cannot boot, so fatal
 	 */
 	if ($currentSession === false) {
@@ -425,12 +425,12 @@ catch(PermissionDeniedException $x) {
 
 catch(InvalidOwnSettingsSettingException $x) {
 	echo "There is an error in your ownsettings.php<br><br>" . PHP_EOL;
-	echo $x->getMessage();
+	echo nl2br($x->getMessage());
 } # InvalidOwnSettingsSettingException
 
 catch(OwnsettingsCreatedOutputException $x) {
 	echo "ownsettings.php created output. Please make sure your ownsettings.php does not contain a PHP closing tag ( ?> )<br><br>" . PHP_EOL;
-	echo $x->getMessage();
+	echo nl2br($x->getMessage());
 } # OwnsettingsCreatedOutputException
 
 catch(SchemaNotUpgradedException $x) {
@@ -446,7 +446,8 @@ catch(SettingsNotUpgradedException $x) {
 } # SecurityNotUpgradedException
 
 catch(DatabaseConnectionException $x) {
-	echo "Unable to connect to database: " . $x->getMessage() . PHP_EOL . '<br>';
+	echo "Unable to connect to database:  <br>";
+	echo nl2br($x->getMessage()) . PHP_EOL . '<br>';
 	echo "<br><br>Please make sure your database server is up and running and your connection parameters are set<br>" . PHP_EOL;
 } # DatabaseConnectionException
 
