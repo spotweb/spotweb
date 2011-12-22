@@ -198,7 +198,7 @@ class SpotsOverview {
 		 */
 		foreach($filterList as $filter) {
 			# Reset the PHP timeout timer
-			set_time_limit(240);
+			set_time_limit(960);
 			
 			# Calculate the filter hash
 			$filter['filterhash'] = sha1($filter['tree'] . '|' . urldecode($filter['valuelist']));
