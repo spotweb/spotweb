@@ -33,8 +33,8 @@ $settings['templates']['mobile'] = 'mobile';
 # Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
 # dan standaard lid? 
 $settings['newuser_grouplist'] = array(
-		Array('groupid' => 1, 'prio' => 1),
-		Array('groupid' => 2, 'prio' => 2)
+		Array('groupid' => 2, 'prio' => 1),
+		Array('groupid' => 3, 'prio' => 2)
 	);
 
 # Cookie host

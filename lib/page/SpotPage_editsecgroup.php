@@ -62,7 +62,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 
 		# Als er een van de ingebouwde groepen geprobeerd bewerkt te worden, 
 		# geef dan ook een error.
-		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 4)) { 
+		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 6)) { 
 			$editResult = array('result' => 'failure');
 			$formMessages['errors'][] = _('Build-in groups can not be edited');
 		} # if
