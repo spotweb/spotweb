@@ -9,8 +9,10 @@ class SpotSettingsUpgrader {
 	} # ctor
 
 	function update() {
-		# Zorg dat de diverse versienummers altijd in de db staan zodat
-		# we er mee kunnen vergelijken
+		/* 
+		 * Make sure some versionumbers are always in the db, so
+		 * comparisons always work
+		 */
 		$this->setIfNot("settingsversion", "0.00");
 		$this->setIfNot("securityversion", "0.00");
 
@@ -61,7 +63,7 @@ class SpotSettingsUpgrader {
 	} # update()
 	
 	/*
-	 * Set een setting alleen als hij nog niet bestaat
+	 * Create a setting only if no other value is set
 	 */
 	function setIfNot($name, $value) {
 		if ($this->_settings->exists($name)) {
@@ -72,21 +74,21 @@ class SpotSettingsUpgrader {
 	} # setIfNot
 	 
 	/*
-	 * Verwijder een setting
+	 * Remove a setting, silently fails if not set
 	 */
 	function remove($name) {
 		$this->_settings->remove($name);
 	} # remove
 	
 	/*
-	 * Update de huidige versie van de settings
+	 * Update the current settingsversion number
 	 */
 	function updateSettingsVersion() {
 		$this->_settings->set('settingsversion', SPOTWEB_SETTINGS_VERSION);
 	} # updateSettingsVersion
 	
 	/*
-	 * Creeer de server private en public keys
+	 * Create the server private and public keys
 	 */
 	function createServerKeys($openSslCnfPath) {
 		$spotSigning = new SpotSigning();
@@ -97,13 +99,14 @@ class SpotSettingsUpgrader {
 	} # createServerKeys
 
 	/*
-	 * Creeer de RSA keys
+	 * Create the RSA keys
 	 */
 	function createRsaKeys() {
-		#
-		# RSA keys
-		# Worden gebruikt om te valideren of spots geldig zijn, hoef je normaal niet aan te komen
-		#
+		/*
+		 * RSA Keys
+		 *
+		 * These are used to validate spots and moderator messages
+		 */
 		$rsaKeys = array();
 		$rsaKeys[2] = array('modulo' => 'ys8WSlqonQMWT8ubG0tAA2Q07P36E+CJmb875wSR1XH7IFhEi0CCwlUzNqBFhC+P',
 							'exponent' => 'AQAB');
@@ -124,8 +127,9 @@ class SpotSettingsUpgrader {
 		
 		$this->setIfNot('xsrfsecret', $secret);
 	} # createXsrfSecret
+
 	/*
-	 * Creer de servers' password salt
+	 * Create the servers' password salt
 	 */
 	function createPasswordSalt() {
 		$userSystem = new SpotUserSystem($this->_db, $this->_settings);
@@ -135,7 +139,7 @@ class SpotSettingsUpgrader {
 	} # createPasswordSalt
 
 	/*
-	 * Definieer de standaard SpotNet groepen
+	 * Define the standard Spotnet groups
 	 */
 	function setupNewsgroups() {
 		$this->setIfNot('hdr_group', 'free.pt');

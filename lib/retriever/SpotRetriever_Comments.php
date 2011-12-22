@@ -40,9 +40,9 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 
 				switch($cat) {
 					case 'start'			: echo "<comments>"; break;
-					case 'done'				: echo "</comments>"; break;
-					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
-					default					: break;
+					case 'done'			: echo "</comments>"; break;
+					case 'totalprocessed'		: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
+					default				: break;
 				} # switch
 			} # xml output
 		} # displayStatus
