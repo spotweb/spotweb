@@ -11,7 +11,7 @@ class SpotUserUpgrader {
 	function update() {
 		$this->createSecurityGroups();
 		$this->createAnonymous();
-		$this->createAdmin();
+		$this->createAdmin('admin', 'user', 'admin', 'spotwebadmin@example.com');
 		
 		$this->updateUserPreferences();
 		$this->updateSecurityGroupMembership();
@@ -65,21 +65,21 @@ class SpotUserUpgrader {
 	/*
 	 * Create the admin user 
 	 */
-	function createAdmin() {
+	function createAdmin($firstName, $lastName, $password, $mail) {
 		# if we already have an admin user, exit
 		$adminUser = $this->_db->getUser(2);
 		if ($adminUser !== false) {
 			return ;
 		} # if
 		
-		# DB connectie
+		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 
 		# Retrieve the password salt from the settings
 		$passSalt = $this->_settings->get('pass_salt');
 		
 		# calculate the password salt for the admin user
-		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . 'admin' . $passSalt);
+		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . $password . $passSalt);
 		
 		# Create an Spotweb API key. It cannot be used but should not be empty
 		$apikey = md5('admin');
@@ -87,11 +87,11 @@ class SpotUserUpgrader {
 		# Create the dummy 'admin' user
 		$admin_user = array(
 			# 'userid'		=> 2,		
-			'username'		=> 'admin',
-			'firstname'		=> 'admin',
-			'passhash'		=> $adminPwdHash,
-			'lastname'		=> 'user',
-			'mail'			=> 'spotwebadmin@example.com',
+			'username'	=> 'admin',
+			'firstname'	=> $firstName,
+			'lastname'		=> $lastName,
+			'passhash'	=> $adminPwdHash,
+			'mail'		=> $mail,
 			'apikey'		=> $apikey,
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
