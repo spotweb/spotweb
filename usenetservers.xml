@@ -19,9 +19,9 @@
 		</server>
 
 		<server name='Giganews'>
-			<header ssl='yes' port='563'>news.giganews.com</header>
-			<nzb ssl='yes' port='563'>news.giganews.com</nzb>
-			<post ssl='yes' port='563'>news.giganews.com</post>
+			<header ssl='yes' port='563'>news-europe.giganews.com</header>
+			<nzb ssl='yes' port='563'>news-europe.giganews.com</nzb>
+			<post ssl='yes' port='563'>news-europe.giganews.com</post>
 		</server>
 
 		<server name='Astraweb'>
