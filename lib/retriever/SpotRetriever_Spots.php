@@ -27,25 +27,26 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function displayStatus($cat, $txt) {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
-					case 'start'			: echo strftime("Last retrieve at %c") . PHP_EOL .  "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
-					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
+					case 'start'			: echo "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
+					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
+					case 'done'			: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
-					case 'fullretrieved'	: echo $txt . " full, "; break;
+					case 'fullretrieved'		: echo $txt . " full, "; break;
 					case 'verified'			: echo "verified " . $txt . ", "; break;
-					case 'modcount'			: echo "moderated " . $txt . ", "; break;
+					case 'modcount'		: echo "moderated " . $txt . ", "; break;
 					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
 					case 'loopcount'		: echo $txt . " total messages)"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
-					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
+					case 'totalprocessed'		: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
-					case ''					: echo PHP_EOL; break;
+					case ''				: echo PHP_EOL; break;
 					
-					default					: echo $cat . $txt;
+					default				: echo $cat . $txt;
 				} # switch
 			} else {
 			
