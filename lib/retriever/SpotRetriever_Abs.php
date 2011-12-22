@@ -69,6 +69,7 @@ abstract class SpotRetriever_Abs {
 			$this->_db->setRetrieverRunning($this->_server['host'], true);
 
 			# and fireup the nntp connection
+			$this->displayStatus("lastretrieve", $this->_db->getLastUpdate($this->_server['host']));
 			$this->displayStatus("start", $this->_server['host']);
 			$this->_spotnntp = new SpotNntp($this->_server);
 			$this->_msgdata = $this->_spotnntp->selectGroup($group);

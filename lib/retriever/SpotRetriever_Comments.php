@@ -21,7 +21,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			if ($this->_outputType != 'xml') {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new comments from server " . $txt . "..." . PHP_EOL; break;
-					case 'done'				: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
+					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
+					case 'done'			: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
@@ -29,11 +30,11 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " comments"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
-					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
+					case 'totalprocessed'		: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
-					case ''					: echo PHP_EOL; break;
+					case ''				: echo PHP_EOL; break;
 					
-					default					: echo $cat . $txt;
+					default				: echo $cat . $txt;
 				} # switch
 			} else {
 
