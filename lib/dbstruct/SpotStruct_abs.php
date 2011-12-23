@@ -264,7 +264,9 @@ abstract class SpotStruct_abs {
 		$this->dropForeignKey('commentsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('reportsposted', 'inreplyto', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('reportsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
-		
+		$this->dropForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+
+
 		##############################################################################################
 		# Cleaning up data ###########################################################################
 		##############################################################################################
@@ -463,7 +465,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('hitcount', 'sessions', 'INTEGER', NULL, false, '');
 		$this->validateColumn('lasthit', 'sessions', 'INTEGER', NULL, false, '');
 		$this->validateColumn('ipaddr', 'sessions', "VARCHAR(45)", "''", true, 'ascii');
-		$this->alterStorageEngine("sessions", "InnoDB");
+		$this->alterStorageEngine("sessions", "MyISAM");
 
 		# ---- securitygroups ----
 		$this->createTable('securitygroups', "ascii"); 
@@ -680,7 +682,6 @@ abstract class SpotStruct_abs {
 
 		# Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-		$this->addForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('usergroups', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('usergroups', 'groupid', 'securitygroups', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
