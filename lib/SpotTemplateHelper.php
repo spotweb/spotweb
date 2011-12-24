@@ -570,8 +570,8 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
-		$tmp = htmlentities($tmp, ENT_QUOTES, 'UTF-8');
 		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
+		$tmp = htmlentities($tmp, ENT_QUOTES, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
 		#		http://stackoverflow.com/questions/635844/php-how-to-grab-an-url-out-of-a-chunk-of-text
@@ -775,7 +775,6 @@ class SpotTemplateHelper {
 		// escape de HTML voor de comments
 		$commentCount = count($comments);
 		for($i = 0; $i < $commentCount; $i++ ){
-			$comments[$i]['body'] = array_map('strip_tags', $comments[$i]['body']);
 			$comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, 'UTF-8');
 			
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
@@ -785,7 +784,7 @@ class SpotTemplateHelper {
 			$tmpBody = $this->formatContent($tmpBody);
 			$comments[$i]['body'] = explode("\n", $tmpBody);
 		} # for
-		
+
 		return $comments;
 	} # formatComments
 	
