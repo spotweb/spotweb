@@ -55,6 +55,11 @@ class SpotCommandline {
      */
     static private function parseParameters($noopt = array()) {
         $result = array();
+
+        if (!isset($GLOBALS['argv'])) {
+            return $result;
+        } # if
+        
         $params = $GLOBALS['argv'];
 		
         // could use getopt() here (since PHP 5.3.0), but it doesn't work relyingly
