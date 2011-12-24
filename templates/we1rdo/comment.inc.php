@@ -10,6 +10,9 @@
 	 * in the database
 	 */
 	isset($spot) ? false : $spot = $tplHelper->getFullSpot($messageId, true);
+
+	# is the user allowed to blacklist spotters?
+	$perm_allow_blackList = ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, ''));
 	
 	# Get the spot comments for each $perPage comments
 	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
@@ -22,7 +25,7 @@
 		if ($comment['verified']) {
 			$commenterIsPoster = ($comment['spotterid'] == $spot['spotterid']);
 			$commentIsModerated = ($comment['moderated']);
-			$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!empty($comment['spotterid'])));
+			$allow_blackList = (($perm_allow_blackList) && (!empty($comment['spotterid'])));
 
 			if($comment['spotrating'] == 0) {
 				$rating = '';
