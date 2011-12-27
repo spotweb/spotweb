@@ -23,9 +23,15 @@ class SpotReq {
 		if (isset($_POST[$formName])) {
 			$form = $_POST[$formName]; 
 		} else {
-			return array('http_referer' => $this->getHttpReferer());
+			return array('action' => '', 
+						 'http_referer' => $this->getHttpReferer());
 		} # else
 		
+
+		/* default to an empty form action (eg: not submitted yet) */
+		$form['action'] = '';
+
+		/* and try to see if we have any real form action */
 		foreach($form as $key => $value) {
 			/*
 			 * Extract the submit action so we can check
@@ -34,11 +40,10 @@ class SpotReq {
 			$formSubmitted = (substr($key, 0, strlen('submit')) == 'submit');
 			if ($formSubmitted) {
 				if ($form[$key]) {
-				
-					/* Als er een ongeldige XSRF value is gegeven, moeten we 
-					   alle submit buttons verwijderen */
-					if (!$this->isXsrfValid($formName)) {
-						unset($form[$key]);
+
+					/* pass the chosen action through if the xsrf check passes */				
+					if ($this->isXsrfValid($formName)) {
+						$form['action'] = substr($key, strlen('submit'));
 					} # if
 					
 				} # if non-empty value for formsubmit 
