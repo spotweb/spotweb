@@ -29,12 +29,15 @@ class SpotPage_createuser extends SpotPage_Abs {
 		
 		# zet de page title
 		$this->_pageTitle = "spot: create user";
+
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_createUserForm['action'];
 		
 		# Is dit een submit van een form, of nog maar de aanroep?
-		if (isset($this->_createUserForm['submitcreate'])) {
-			# submit unsetten we altijd
-			unset($this->_createUserForm['submitcreate']);
-			
+		if ($formAction == 'create') {
 			# userid zetten we altijd op false voor het maken van een
 			# nieuwe user, omdat validateUserRecord() anders denkt
 			# dat we een bestaande user aan het bewerken zijn en we bv.

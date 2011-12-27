@@ -57,25 +57,11 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$groupMembership = $this->_db->getGroupList($spotUser['userid']);
 		} # if
 
-		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
-		$formAction = '';
-		if (isset($this->_editUserForm['submitedit'])) {
-			$formAction = 'edit';
-			unset($this->_editUserForm['submitedit']);
-		} elseif (isset($this->_editUserForm['submitdelete'])) {
-			$formAction = 'delete';
-			unset($this->_editUserForm['submitdelete']);
-			
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
-		} elseif (isset($this->_editUserForm['submitresetuserapi'])) {
-			$formAction = 'resetapi';
-			unset($this->_editUserForm['submitresetuserapi']);
-
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
-		} elseif (isset($this->_editUserForm['submitremoveallsessions'])) {
-			$formAction = 'removeallsessions';
-			unset($this->_editUserForm['submitremoveallsessions']);
-		} # else
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_editUserForm['action'];
 
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
@@ -91,6 +77,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'delete' : {
+					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
+
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
 					$spotUserSystem->removeUser($spotUser['userid']);
 					$editResult = array('result' => 'success');
@@ -153,6 +141,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 				} # case 'removeallsessions'
 
 				case 'resetapi' : {
+					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
+
 					$user = $spotUserSystem->resetUserApi($spotUser);
 					$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
 					break;
