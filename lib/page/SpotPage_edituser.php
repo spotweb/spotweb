@@ -72,9 +72,9 @@ class SpotPage_edituser extends SpotPage_Abs {
 			unset($this->_editUserForm['submitresetuserapi']);
 
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
-		} elseif (isset($this->_editUserForm['removeallsessions'])) {
+		} elseif (isset($this->_editUserForm['submitremoveallsessions'])) {
 			$formAction = 'removeallsessions';
-			unset($this->_editUserForm['removeallsessions']);
+			unset($this->_editUserForm['submitremoveallsessions']);
 		} # else
 
 		# Is dit een submit van een form, of nog maar de aanroep?

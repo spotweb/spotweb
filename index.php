@@ -288,7 +288,7 @@ try {
 
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
-							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'removeallsessions')),
+							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'submitremoveallsessions')),
 								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;
