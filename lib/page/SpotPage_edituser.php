@@ -10,8 +10,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 	} # ctor
 	
 	/* 
-	 * Wis niet gewenste velden uit het formulier om te voorkomen dat
-	 * er andere records geupdate kunnen worden
+	 * Erase all fields from the user record which shouldn't
+	 * be in the form anyways 
 	 */
 	function cleanseEditForm($editForm) {
 		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist');
@@ -29,30 +29,30 @@ class SpotPage_edituser extends SpotPage_Abs {
 		$formMessages = array('errors' => array(),
 							  'info' => array());
 							  
-		# Controleer de users' rechten
+		# check the users' permissions
 		if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_user, '');
 		} else {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_other_users, '');
 		} # if
 		
-		# edituser resultaat is standaard niet geprobeerd
+		# per default the result is 'not tried'
 		$editResult = array();
 
-		# Instantieer het Spot user system
+		# Instantiate the spotuser object
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
-		# zet de page title
+		# and create a nic and shiny page title
 		$this->_pageTitle = "spot: edit user";
 		
-		# haal de te editten user op 
+		# retrieve the to-edit user
 		$spotUser = $this->_db->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
 			$formMessages['errors'][] = sprintf(_('User can not be found'), $spotUser['username']);
 			$editResult = array('result' => 'failure');
 		} # if
 		
-		# Vraag group membership van deze user op
+		# request the users' groupmembership
 		if ($spotUser != false) {
 			$groupMembership = $this->_db->getGroupList($spotUser['userid']);
 		} # if
@@ -63,7 +63,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 		 */
 		$formAction = $this->_editUserForm['action'];
 
-		# Is dit een submit van een form, of nog maar de aanroep?
+		# Only perform certain validations when the form is actually submitted
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			# sta niet toe, dat de admin user gewist wordt
 			if (($spotUser['userid'] <= SPOTWEB_ADMIN_USERID) && ($formAction == 'delete')) {
@@ -73,7 +73,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} # if
 
 
-		# Is dit een submit van een form, of nog maar de aanroep?
+		# Only perform certain validations when the form is actually submitted
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'delete' : {
@@ -87,27 +87,31 @@ class SpotPage_edituser extends SpotPage_Abs {
 				} # case delete
 
 				case 'edit'	: {
-					# Verwijder eventueel niet geldige velden uit het formulier
+					# Remove any non-valid fields from the array
 					$this->_editUserForm = $this->cleanseEditForm($this->_editUserForm);
 					
-					# valideer de user
+					# validate the user fields
 					$spotUser = array_merge($spotUser, $this->_editUserForm);
 					$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser, true);
 
 					if (empty($formMessages['errors'])) {
-						# bewerkt de user
+						# actually update the user record
 						$spotUserSystem->setUser($spotUser);
 
-						# als de gebruker een nieuw wachtwoord opgegeven heeft, update dan 
-						# het wachtwoord ook
+						/*
+						 * Update the users' password, but only when
+						 * a new password is given
+						 */
 						if (!empty($spotUser['newpassword1'])) {
 							$spotUserSystem->setUserPassword($spotUser);
 						} # if
-						
-						# Zijn er ook groupmembership lijsten meegestuurd? Zo ja, 
-						# en als de user het recht heeft, update die dan ook
+
+						/*
+						 * Did we get an groupmembership list? If so,
+						 * try to update it as well
+						 */						
 						if (isset($this->_editUserForm['grouplist'])) {
-							# vraag de lijst met usergroepen op
+							# retrieve the list of user groups
 							$groupList = array();
 							foreach($this->_editUserForm['grouplist'] as $val) {
 								if ($val != 'dummy') {
@@ -115,17 +119,53 @@ class SpotPage_edituser extends SpotPage_Abs {
 														'prio' => count($groupList));
 								} # if
 							} # for
-							
-							# zorg er voor dat er meer dan 1 groep overblijft
+
+							# make sure there is at least one group
 							if (count($groupList) < 1) {
 								$formMessages['errors'][] = _('A user must be member of at least one group');
 								$editResult = array('result' => 'failure');
 							} else {
-								$spotUserSystem->setUserGroupList($spotUser, $groupList);
+								# Mangle the current group membership to a common format
+								$currentGroupList = array();
+								foreach($groupList as $value) {
+									$currentGroupList[] = $value['groupid'];
+								} # foreach
+
+								# and mangle the new requested group membership
+								$tobeGroupList = array();
+								foreach($groupMembership as $value) {
+									$tobeGroupList[] = $value['id'];
+								} # foreach
+
+								/*
+								 * Try to compare the grouplist with the current
+								 * grouplist. If the grouplist changes, the user 
+								 * needs change group membership permissions
+								 */
+								sort($currentGroupList, SORT_NUMERIC);
+								sort($tobeGroupList, SORT_NUMERIC);
+
+								/* 
+								 * If the groupmembership list changes, lets make sure
+								 * the user has the specific permission
+								 */
+								$groupDiff = (count($currentGroupList) != count($tobeGroupList));
+								for ($i = 0; $i < count($currentGroupList) && !$groupDiff; $i++) {
+									$groupDiff = ($currentGroupList[$i] != $tobeGroupList[$i]);
+								} # for
+
+								if ($groupDiff) {
+									if ($this->_spotSec->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) {
+										$spotUserSystem->setUserGroupList($spotUser, $groupList);
+									} else {
+										$formMessages['errors'][] = _('Changing group membership is not allowed');
+										$editResult = array('result' => 'failure');										
+									} # else
+								} # if
 							} # if
 						} # if
 
-						# als het toevoegen van de user gelukt is, laat het weten
+						# report success
 						$editResult = array('result' => 'success');
 					} else {
 						$editResult = array('result' => 'failure');
