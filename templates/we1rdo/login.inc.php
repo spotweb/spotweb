@@ -27,7 +27,7 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 			<dt><label for="loginform[password]"><?php echo _('Password'); ?></label></dt>
 			<dd><input type="password" name="loginform[password]" value=""></dd>
 
-			<dd><input class="greyButton" type="submit" name="loginform[submit]" value="<?php echo _('Login'); ?>"></dd>
+			<dd><input class="greyButton" type="submit" name="loginform[submitlogin]" value="<?php echo _('Login'); ?>"></dd>
 		</dl>
 	</fieldset>
 </form>
