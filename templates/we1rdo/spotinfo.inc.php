@@ -23,7 +23,7 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
 		if ($currentSession['user']['userid'] > 2) { ?>
 			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
-				<input type="hidden" name="postreportform[submit]" value="Post">
+				<input type="hidden" name="postreportform[submitpost]" value="Post">
 				<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
 				<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
 				<input type="hidden" name="postreportform[newmessageid]" value="">

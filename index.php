@@ -310,7 +310,7 @@ try {
 
 		case 'postcomment' : {
 				$page = new SpotPage_postcomment($db, $settings, $currentSession,
-							Array('commentform' => $req->getForm('postcommentform', array('submit')),
+							Array('commentform' => $req->getForm('postcommentform', array('submitpost')),
 								  'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
 				break;
@@ -318,14 +318,14 @@ try {
 
 		case 'postspot' : {
 				$page = new SpotPage_postspot($db, $settings, $currentSession,
-							Array('spotform' => $req->getForm('newspotform', array('submit'))));
+							Array('spotform' => $req->getForm('newspotform', array('submitpost'))));
 				$page->render();
 				break;
 		} # postspot
 		
 		case 'reportpost' : {
 				$page = new SpotPage_reportpost($db, $settings, $currentSession, 
-							Array ('reportform' => $req->getForm('postreportform', array('submit')),
+							Array ('reportform' => $req->getForm('postreportform', array('submitpost')),
 								   'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
 				break;

@@ -37,22 +37,22 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_reportForm['submit']);
+			unset($this->_reportForm['submitpost']);
 		} # if
 
 		# Zorg er voor dat reserved usernames geen reports kunnen posten
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_reportForm['submit']);
+			unset($this->_reportForm['submitpost']);
 		} # if
 		
-		if (isset($this->_reportForm['submit'])) {
+		if (isset($this->_reportForm['submitpost'])) {
 			# Notificatiesysteem initialiseren
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
 			# submit unsetten we altijd
-			unset($this->_reportForm['submit']);
+			unset($this->_reportForm['submitpost']);
 			
 			# zorg er voor dat alle variables ingevuld zijn
 			$report = array_merge($report, $this->_reportForm);

@@ -17,7 +17,7 @@ if (empty($postresult)) {
 	<form class="newspotform" name="newspotform" id="newspotform" action="<?php echo $tplHelper->makePostSpotAction(); ?>" method="post"  enctype="multipart/form-data">
 		<input type="hidden" name="newspotform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('newspotform'); ?>">
 		<input type="hidden" name="newspotform[newmessageid]" value="">
-		<input type="hidden" name="newspotform[submit]" value="Post">
+		<input type="hidden" name="newspotform[submitpost]" value="Post">
 		<fieldset>
 
 		<div>
