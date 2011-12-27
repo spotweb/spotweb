@@ -32,7 +32,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		# geef dan een error
 		if ((empty($secGroup)) && (!isset($this->_editSecGroupForm['submitaddgroup']))) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Group does\'n excist');
+			$formMessages['errors'][] = _('Group does\'n exist');
 		} # if
 		
 		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
