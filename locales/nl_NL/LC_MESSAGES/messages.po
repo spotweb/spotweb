@@ -1669,7 +1669,7 @@ msgid "Change own user settings"
 msgstr "Eigen gebruiker wijzigen"
 
 msgid "List all users"
-msgstr "Eigen gebruiker wijzigen"
+msgstr "Overzicht van alle gebruikers kunnen zien"
 
 msgid "Post comments to a spot"
 msgstr "Commentaar op een spot posten"
