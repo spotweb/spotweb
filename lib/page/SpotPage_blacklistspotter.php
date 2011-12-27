@@ -28,7 +28,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		 * bring the forms' action into the local scope for 
 		 * easier access
 		 */
-		$formAction = $this->_editFilterForm['action'];
+		$formAction = $this->_blForm['action'];
 
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
