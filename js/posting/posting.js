@@ -6,7 +6,7 @@ function spotPosting() {
 
 	this.cbHashcashCalculated = function (self, hash) {
 	    self.commentForm['postcommentform[newmessageid]'].value = hash;
-	    self.commentForm['postcommentform[submit]'].value = 'Post';
+	    self.commentForm['postcommentform[submitpost]'].value = 'Post';
 		self.uiDone();
 
 		// convert the processed form to post values
@@ -46,7 +46,7 @@ function spotPosting() {
 		
 	this.rpHashcashCalculated = function (self, hash) {
 			self.reportForm['postreportform[newmessageid]'].value = hash;
-			self.reportForm['postreportform[submit]'].value = 'Post';
+			self.reportForm['postreportform[submitpost]'].value = 'Post';
 			self.uiDone();
 			
 			var dataString2 = $(self.reportForm).serialize()
@@ -76,7 +76,7 @@ function spotPosting() {
 	this.spotHashcashCalculated = function (self, hash) {
 			// and enter the form's inputfields
 			self.newSpotForm['newspotform[newmessageid]'].value = hash;
-			self.newSpotForm['newspotform[submit]'].value = 'Post';
+			self.newSpotForm['newspotform[submitpost]'].value = 'Post';
 			self.uiDone();
 
 			$(self.newSpotForm).ajaxSubmit({
