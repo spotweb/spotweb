@@ -33,7 +33,7 @@
 	} # if 
 ?>
 			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeBlacklistAction(); ?>" method="post">
-				<input type="hidden" name="blacklistspotterform[submit]" value="Blacklist">
+				<input type="hidden" name="blacklistspotterform[submitaddspotterid]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
 				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['spotterid']); ?>">
 				<input type="hidden" name="blacklistspotterform[origin]" value="Reported via Spotweb for spot <?php echo htmlspecialchars($spot['messageid']); ?>">

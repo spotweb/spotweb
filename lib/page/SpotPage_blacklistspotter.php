@@ -27,16 +27,16 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_blForm['submit']);
+			unset($this->_blForm['submitaddspotterid']);
 		} # if
 		
 		/*
 		 * determine which form action to take
 		 */
 		$formAction = '';
-		if (isset($this->_blForm['submit'])) {
+		if (isset($this->_blForm['submitaddspotterid'])) {
 			$formAction = 'add';
-			unset($this->_blForm['submit']);
+			unset($this->_blForm['submitaddspotterid']);
 		} elseif (isset($this->_blForm['submitremovespotterid'])) {
 			$formAction = 'remove';
 			unset($this->_blForm['submitremovespotterid']);

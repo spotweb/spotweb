@@ -339,7 +339,7 @@ try {
 
 		case 'blacklistspotter' : {
 				$page = new SpotPage_blacklistspotter($db, $settings, $currentSession, 
-							Array ('blform' => $req->getForm('blacklistspotterform', array('submit', 'submitremovespotterid'))));
+							Array ('blform' => $req->getForm('blacklistspotterform', array('submitaddspotterid', 'submitremovespotterid'))));
 				$page->render();
 				break;
 		} # blacklistspotter
