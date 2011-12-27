@@ -247,28 +247,28 @@ try {
 
 		case 'createuser' : {
 				$page = new SpotPage_createuser($db, $settings, $currentSession,
-							Array('createuserform' => $req->getForm('createuserform', array('submitcreate'))));
+							Array('createuserform' => $req->getForm('createuserform')));
 				$page->render();
 				break;
 		} # createuser
 
 		case 'editsettings' : {
 				$page = new SpotPage_editsettings($db, $settings, $currentSession,
-							Array('editsettingsform' => $req->getForm('editsettingsform', array('submitedit', 'submitcancel'))));
+							Array('editsettingsform' => $req->getForm('editsettingsform')));
 				$page->render();
 				break;
 		} # editsettings
 
 		case 'edituserprefs' : {
 				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
-							Array('edituserprefsform' => $req->getForm('edituserprefsform', array('submitedit', 'submitcancel'))));
+							Array('edituserprefsform' => $req->getForm('edituserprefsform')));
 				$page->render();
 				break;
 		} # edituserprefs
 
 		case 'editsecgroup' : {
 				$page = new SpotPage_editsecgroup($db, $settings, $currentSession,
-							Array('editsecgroupform' => $req->getForm('editsecgroupform', array('submitaddperm', 'submitremoveperm', 'submitchangename', 'submitaddgroup', 'submitremovegroup', 'submitsetallow', 'submitsetdeny')),
+							Array('editsecgroupform' => $req->getForm('editsecgroupform'),
 							      'groupid' => $req->getDef('groupid', 0)));
 				$page->render();
 				break;
@@ -276,7 +276,7 @@ try {
 
 		case 'editfilter' : {
 				$page = new SpotPage_editfilter($db, $settings, $currentSession,
-							Array('editfilterform' => $req->getForm('editfilterform', array('submitaddfilter', 'submitremovefilter', 'submitchangefilter', 'submitreorder', 'submitdiscardfilters', 'submitsetfiltersasdefault', 'submitexportfilters', 'submitimportfilters')),
+							Array('editfilterform' => $req->getForm('editfilterform'),
 								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
 								  'search' => $req->getDef('search', array()),
 								  'sorton' => $req->getDef('sortby', ''),
@@ -288,7 +288,7 @@ try {
 
 		case 'edituser' : {
 				$page = new SpotPage_edituser($db, $settings, $currentSession,
-							Array('edituserform' => $req->getForm('edituserform', array('submitedit', 'submitdelete', 'submitresetuserapi', 'submitremoveallsessions')),
+							Array('edituserform' => $req->getForm('edituserform'),
 								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;
@@ -302,7 +302,7 @@ try {
 
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
-							Array('loginform' => $req->getForm('loginform', array('submitlogin')),
+							Array('loginform' => $req->getForm('loginform'),
 							      'data' => $req->getDef('data', array())));
 				$page->render();
 				break;
@@ -310,7 +310,7 @@ try {
 
 		case 'postcomment' : {
 				$page = new SpotPage_postcomment($db, $settings, $currentSession,
-							Array('commentform' => $req->getForm('postcommentform', array('submitpost')),
+							Array('commentform' => $req->getForm('postcommentform'),
 								  'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
 				break;
@@ -318,14 +318,14 @@ try {
 
 		case 'postspot' : {
 				$page = new SpotPage_postspot($db, $settings, $currentSession,
-							Array('spotform' => $req->getForm('newspotform', array('submitpost'))));
+							Array('spotform' => $req->getForm('newspotform')));
 				$page->render();
 				break;
 		} # postspot
 		
 		case 'reportpost' : {
 				$page = new SpotPage_reportpost($db, $settings, $currentSession, 
-							Array ('reportform' => $req->getForm('postreportform', array('submitpost')),
+							Array ('reportform' => $req->getForm('postreportform'),
 								   'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
 				break;
@@ -339,7 +339,7 @@ try {
 
 		case 'blacklistspotter' : {
 				$page = new SpotPage_blacklistspotter($db, $settings, $currentSession, 
-							Array ('blform' => $req->getForm('blacklistspotterform', array('submitaddspotterid', 'submitremovespotterid'))));
+							Array ('blform' => $req->getForm('blacklistspotterform')));
 				$page->render();
 				break;
 		} # blacklistspotter

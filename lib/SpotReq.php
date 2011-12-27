@@ -19,27 +19,30 @@ class SpotReq {
 		}
     }    
 	
-	function getForm($formName, $submitNames) {
+	function getForm($formName) {
 		if (isset($_POST[$formName])) {
 			$form = $_POST[$formName]; 
 		} else {
 			return array('http_referer' => $this->getHttpReferer());
 		} # else
 		
-		foreach($submitNames as $submitName) {
-			if (isset($form[$submitName])) {
-				if ($form[$submitName]) {
+		foreach($form as $key => $value) {
+			/*
+			 * Extract the submit action so we can check
+			 * wether the form is actually to be submitted
+			 */
+			$formSubmitted = (substr($key, 0, strlen('submit')) == 'submit');
+			if ($formSubmitted) {
+				if ($form[$key]) {
 				
 					/* Als er een ongeldige XSRF value is gegeven, moeten we 
 					   alle submit buttons verwijderen */
 					if (!$this->isXsrfValid($formName)) {
-						foreach($submitNames as $tmpName) {
-							unset($form[$tmpName]);
-						} # foreach
+						unset($form[$key]);
 					} # if
 					
-				} # if
-			} # if
+				} # if non-empty value for formsubmit 
+			} # if formSubmitted
 		} # foreach
 		
 		# Vul altijd een referer in als die nog niet ingevuld is
@@ -89,12 +92,12 @@ class SpotReq {
 			return false;
 		} # if
 		
-		# if action isn't the action we requested
+		# if the formname ('action' in some sort of way) isn't the action we requested
 		if ($xsrfVals[1] != $form) {
 			return false;
 		} # if
 		
-		# and check the hash
+		# and check the hash so any of the values above couldn't be faked
 		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . self::$_xsrfsecret) != $xsrfVals[2]) {
 			return false;
 		} # if
@@ -105,7 +108,7 @@ class SpotReq {
 	static function generateXsrfCookie($action) {
 		# XSRF cookie contains 3 fields:
 		#   1 - Current timestamp in unixtime
-		#	2 - action (for example, 'login' or 'postcomment')
+		#	2 - formname (for example, 'loginform' or 'postcommentform')
 		#	3 - sha1 of the preceding 2 strings including ':', but the secret key appended as salt
 		$xsrfCookie = time() . ':' . $action;
 		$xsrfCookie .= ':' . sha1($xsrfCookie . self::$_xsrfsecret);
