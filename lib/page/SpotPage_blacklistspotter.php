@@ -24,25 +24,19 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "report: blacklist spotter";
 
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_editFilterForm['action'];
+
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_blForm['submitaddspotterid']);
+
+			$formAction = '';
 		} # if
 		
-		/*
-		 * determine which form action to take
-		 */
-		$formAction = '';
-		if (isset($this->_blForm['submitaddspotterid'])) {
-			$formAction = 'add';
-			unset($this->_blForm['submitaddspotterid']);
-		} elseif (isset($this->_blForm['submitremovespotterid'])) {
-			$formAction = 'remove';
-			unset($this->_blForm['submitremovespotterid']);
-		} # else
-		
-
 		if (!empty($formAction)) {
 			# zorg er voor dat alle variables ingevuld zijn
 			$blackList = array_merge($blackList, $this->_blForm);
@@ -51,15 +45,15 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 			$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 			
 			switch($formAction) {
-				case 'add'		: {
+				case 'addspotterid'		: {
 					$spotUserSystem->addSpotterToBlacklist($this->_currentSession['user']['userid'], $blackList['spotterid'], $blackList['origin']);
 					break;
-				} # case add
+				} # case addspotterid
 				
-				case 'remove'	: {
+				case 'removespotterid'	: {
 					$spotUserSystem->removeSpotterFromBlacklist($this->_currentSession['user']['userid'], $blackList['spotterid']);
 					break;
-				} # case remove
+				} # case removespotterid
 			} # switch
 			
 			$postResult = array('result' => 'success');

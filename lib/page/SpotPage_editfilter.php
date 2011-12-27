@@ -36,42 +36,20 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# haal de te editten filter op 
 		$spotFilter = $spotUserSystem->getFilter($this->_currentSession['user']['userid'], $this->_filterId);
 		
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_editFilterForm['action'];
+
 		# als de te wijzigen security group niet gevonden kan worden,
 		# geef dan een error
-		if ((empty($spotFilter)) && (isset($this->_editFilterForm['submitchangefilter']))) {
+		if ((empty($spotFilter)) && ($formAction == 'changefilter')) {
 			$editResult = array('result' => 'failure');
 			$formMessages['errors'][] = _("Filter doesn't exist");
 		} # if
-		
-		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
-		$formAction = '';
-		if (isset($this->_editFilterForm['submitaddfilter'])) {
-			$formAction = 'addfilter';
-			unset($this->_editFilterForm['submitaddfilter']);
-		} elseif (isset($this->_editFilterForm['submitremovefilter'])) {
-			$formAction = 'removefilter';
-			unset($this->_editFilterForm['submitremovefilter']);
-		} elseif (isset($this->_editFilterForm['submitchangefilter'])) {
-			$formAction = 'changefilter';
-			unset($this->_editFilterForm['submitchangefilter']);
-		} elseif (isset($this->_editFilterForm['submitdiscardfilters'])) {
-			$formAction = 'discardfilters';
-			unset($this->_editFilterForm['submitdiscardfilters']);
-		} elseif (isset($this->_editFilterForm['submitsetfiltersasdefault'])) {
-			$formAction = 'setfiltersasdefault';
-			unset($this->_editFilterForm['submitsetfiltersasdefault']);
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
-		} elseif (isset($this->_editFilterForm['submitexportfilters'])) {
-			$formAction = 'exportfilters';
-			unset($this->_editFilterForm['submitexportfilters']);
-		} elseif (isset($this->_editFilterForm['submitimportfilters'])) {
-			$formAction = 'importfilters';
-			unset($this->_editFilterForm['submitimportfilters']);
-		} elseif (isset($this->_editFilterForm['submitreorder'])) {
-			$formAction = 'reorder';
-			unset($this->_editFilterForm['submitreorder']);
-		} # if
 
+		
 		# Is dit een submit van een form, of nog maar de aanroep?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
@@ -90,6 +68,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'discardfilters'
 				
 				case 'setfiltersasdefault' : {
+					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
+
 					$spotUserSystem->setFiltersAsDefault($this->_currentSession['user']['userid']);
 					$editResult = array('result' => 'success');
 					

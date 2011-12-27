@@ -30,20 +30,12 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			$editResult = array('result' => 'failure');
 		} # if
 		
-		/*
-		 * Determine what action the user choose (which button was pressed in the UI) and 
-		 * set the formaction for this. We cannot use the value of the buttons because those
-		 * must be able to be translated
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
 		 */
-		$formAction = '';
-		if (isset($this->_editUserPrefsForm['submitedit'])) {
-			$formAction = 'edit';
-			unset($this->_editUserPrefsForm['submitedit']);
-		} elseif (isset($this->_editUserPrefsForm['submitcancel'])) {
-			$formAction = 'cancel';
-			unset($this->_editUserPrefsForm['submitcancel']);
-		} # if
-		
+		$formAction = $this->_editUserPrefsForm['action'];
+
 		/*
 		 * We want the annymous' users account so we can use this users' preferences as a
 		 * template. This makes sure all properties are atleast set.

@@ -19,21 +19,13 @@ class SpotPage_editsettings extends SpotPage_Abs {
 		
 		# zet de page title
 		$this->_pageTitle = _('Settings');
-		
-		/*
-		 * Determine what action the user choose (which button was pressed in the UI) and 
-		 * set the formaction for this. We cannot use the value of the buttons because those
-		 * must be able to be translated
-		 */
-		$formAction = '';
-		if (isset($this->_editSettingsForm['submitedit'])) {
-			$formAction = 'edit';
-			unset($this->_editSettingsForm['submitedit']);
-		} elseif (isset($this->_editSettingsForm['submitcancel'])) {
-			$formAction = 'cancel';
-			unset($this->_editSettingsForm['submitcancel']);
-		} # if
 
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_editSettingsForm['action'];
+		
 		# Are we trying to submit this form, or only rendering it?
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {

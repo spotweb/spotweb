@@ -34,26 +34,31 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "report: report spot";
 
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_reportForm['action'];
+
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_reportForm['submitpost']);
+
+			$formAction = '';
 		} # if
 
 		# Zorg er voor dat reserved usernames geen reports kunnen posten
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_reportForm['submitpost']);
+
+			$formAction = '';
 		} # if
 		
-		if (isset($this->_reportForm['submitpost'])) {
+		if ($formAction == 'post') {
 			# Notificatiesysteem initialiseren
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
-			# submit unsetten we altijd
-			unset($this->_reportForm['submitpost']);
-			
 			# zorg er voor dat alle variables ingevuld zijn
 			$report = array_merge($report, $this->_reportForm);
 

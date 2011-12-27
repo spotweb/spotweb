@@ -36,23 +36,26 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "spot: post comment";
 
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_commentForm['action'];
+
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_commentForm['submitpost']);
+			$formAction = '';
 		} # if
 
 		# Zorg er voor dat reserved usernames geen comments kunnen posten
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_commentForm['submitpost']);
+			$formAction = '';
 		} # if
 		
-		if (isset($this->_commentForm['submitpost'])) {
-			# submit unsetten we altijd
-			unset($this->_commentForm['submitpost']);
-			
+		if ($formAction == 'post') {
 			# zorg er voor dat alle variables ingevuld zijn
 			$comment = array_merge($comment, $this->_commentForm);
 

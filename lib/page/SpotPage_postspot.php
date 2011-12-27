@@ -38,20 +38,26 @@ class SpotPage_postspot extends SpotPage_Abs {
 		# postspot verzoek was standaard niet geprobeerd
 		$postResult = array();
 		
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_spotForm['action'];
+
 		# zet de page title
 		$this->_pageTitle = "spot: post";
 
 		# Als de user niet ingelogged is, dan heeft dit geen zin
 		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_spotForm['submitpost']);
+			$formAction = '';
 		} # if
 
 		# Zorg er voor dat reserved usernames geen spots kunnen posten
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
 			$postResult = array('result' => 'notloggedin');
-			unset($this->_spotForm['submitpost']);
+			$formAction = '';
 		} # if
 
 		# zorg er voor dat alle variables ingevuld zijn
@@ -59,38 +65,36 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 
 		# If user tried to submit, validate the file uploads
-		if (isset($spot['submitpost'])) {
+		if ($formAction == 'post') {
 			# Make sure an NZB file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
 				$formMessages['errors'][] = _('Please select NZB file');
 				$postResult = array('result' => 'failure');
-				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
-				unset($spot['submitpost']);
+
+				$formAction = '';
 			} # if
 
 			# Make sure an imgae file was provided
 			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
 				$formMessages['errors'][] = _('Please select a picture');
 				$postResult = array('result' => 'failure');
-				// $xml = file_get_contents($_FILES['filterimport']['tmp_name']);
-				unset($spot['submitpost']);
+
+				$formAction = '';
 			} # if
 		
 			# Make sure the subcategorie are in the proper format
 			if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) { 
 				$formMessages['errors'][] = _('Invalid subcategories given ');
 				$postResult = array('result' => 'failure');
-				unset($spot['submitpost']);
+
+				$formAction = '';
 			} # if				
 		} # if
-		
-		if (isset($spot['submitpost'])) {
+
+		if ($formAction == 'post') {
 			# Notificatiesysteem initialiseren
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
-			# submit unsetten we altijd
-			unset($spot['submitpost']);
-			
 			# en creer een grote lijst met spots
 			$spot['subcatlist'] = array_merge(
 										array($spot['subcata']), 

@@ -27,44 +27,25 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		
 		# haal de te editten securitygroup op 
 		$secGroup = $spotUserSystem->getSecGroup($this->_groupId);
+
+		/* 
+		 * bring the forms' action into the local scope for 
+		 * easier access
+		 */
+		$formAction = $this->_editSecGroupForm['action'];
 		
 		# als de te wijzigen security group niet gevonden kan worden,
 		# geef dan een error
-		if ((empty($secGroup)) && (!isset($this->_editSecGroupForm['submitaddgroup']))) {
+		if ((empty($secGroup)) && ($formAction != 'addgroup')) {
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Group does\'n exist');
-		} # if
-		
-		# Bepaal welke actie er gekozen was (welke knop ingedrukt was)
-		$formAction = '';
-		if (isset($this->_editSecGroupForm['submitaddperm'])) {
-			$formAction = 'addperm';
-			unset($this->_editSecGroupForm['submitaddperm']);
-		} elseif (isset($this->_editSecGroupForm['submitremoveperm'])) {
-			$formAction = 'removeperm';
-			unset($this->_editSecGroupForm['submitremoveperm']);
-		} elseif (isset($this->_editSecGroupForm['submitchangename'])) {
-			$formAction = 'changename';
-			unset($this->_editSecGroupForm['submitchangename']);
-		} elseif (isset($this->_editSecGroupForm['submitaddgroup'])) {
-			$formAction = 'addgroup';
-			unset($this->_editSecGroupForm['submitaddgroup']);
-		} elseif (isset($this->_editSecGroupForm['submitremovegroup'])) {
-			$formAction = 'removegroup';
-			unset($this->_editSecGroupForm['submitremovegroup']);
-		} elseif (isset($this->_editSecGroupForm['submitsetallow'])) {
-			$formAction = 'setallow';
-			unset($this->_editSecGroupForm['submitsetallow']);
-		} elseif (isset($this->_editSecGroupForm['submitsetdeny'])) {
-			$formAction = 'setdeny';
-			unset($this->_editSecGroupForm['submitsetdeny']);
+			$formMessages['errors'][] = _('Group does\'nt exist');
 		} # if
 
 		# Als er een van de ingebouwde groepen geprobeerd bewerkt te worden, 
 		# geef dan ook een error.
 		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 6)) { 
 			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Build-in groups can not be edited');
+			$formMessages['errors'][] = _('Built-in groups can not be edited');
 		} # if
 
 		# Is dit een submit van een form, of nog maar de aanroep?
