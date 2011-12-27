@@ -31,9 +31,9 @@ class SpotPage_createuser extends SpotPage_Abs {
 		$this->_pageTitle = "spot: create user";
 		
 		# Is dit een submit van een form, of nog maar de aanroep?
-		if (isset($this->_createUserForm['submit'])) {
+		if (isset($this->_createUserForm['submitcreate'])) {
 			# submit unsetten we altijd
-			unset($this->_createUserForm['submit']);
+			unset($this->_createUserForm['submitcreate']);
 			
 			# userid zetten we altijd op false voor het maken van een
 			# nieuwe user, omdat validateUserRecord() anders denkt

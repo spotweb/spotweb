@@ -31,7 +31,7 @@ if (empty($createresult)) {
 			<dt><label for="createuserform[sendmail]"><?php echo _('Send e-mail to new user?'); ?></label></dt>
 			<dd><input type="checkbox" name="createuserform[sendmail]"></dd>
 <?php } ?>
-			<dd><input class="greyButton" type="submit" name="createuserform[submit]" value="<?php echo _('Add'); ?>"></dd>
+			<dd><input class="greyButton" type="submit" name="createuserform[submitcreate]" value="<?php echo _('Add'); ?>"></dd>
 		</dl>
 	</fieldset>
 </form>
