@@ -31,9 +31,9 @@ class SpotPage_login extends SpotPage_Abs {
 		$this->_pageTitle = "spot: login";
 
 		# Is dit een submit van een form, of nog maar de aanroep?
-		if (isset($this->_loginForm['submit'])) {
+		if (isset($this->_loginForm['submitlogin'])) {
 			# submit unsetten we altijd
-			unset($this->_loginForm['submit']);
+			unset($this->_loginForm['submitlogin']);
 			
 			# valideer de user
 			$credentials = array_merge($credentials, $this->_loginForm);

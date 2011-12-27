@@ -302,7 +302,7 @@ try {
 
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
-							Array('loginform' => $req->getForm('loginform', array('submit')),
+							Array('loginform' => $req->getForm('loginform', array('submitlogin')),
 							      'data' => $req->getDef('data', array())));
 				$page->render();
 				break;
