@@ -247,7 +247,7 @@ try {
 
 		case 'createuser' : {
 				$page = new SpotPage_createuser($db, $settings, $currentSession,
-							Array('createuserform' => $req->getForm('createuserform', array('submit'))));
+							Array('createuserform' => $req->getForm('createuserform', array('submitcreate'))));
 				$page->render();
 				break;
 		} # createuser
