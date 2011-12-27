@@ -1711,13 +1711,13 @@ msgid "Delete users"
 msgstr "Gebruikers wissen"
 
 msgid "Change users' group membeship" 
-msgstr "Groupen waar een user lid van is wijzigen"
+msgstr "Groepen waar een user lid van is wijzigen"
 
 msgid "Display users' group membership"
-msgstr "Groupen waar een user lid van is tonen"
+msgstr "Groepen waar een user lid van is tonen"
 
 msgid "Change security groups"
-msgstr "Security groupen kunnen wijzigen"
+msgstr "Security groepen kunnen wijzigen"
 
 msgid "Send notifications (per service)"
 msgstr "Notificaties versturen (per service)"
