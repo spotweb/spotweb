@@ -145,7 +145,7 @@ class SpotUserUpgrader {
 			} else {
 				# Grant the regular users all the necessary security groups
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
-				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 1)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 2)");
 			} # else
 		} # foreach
 	} # resetUserGroupMembership

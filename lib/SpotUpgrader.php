@@ -71,6 +71,18 @@ class SpotUpgrader {
 		
 		$dbStruct->analyze();
 	 } # analyze
+
+	/*
+	 * Reset users' group membership
+	 */
+	function resetUserGroupMembership() {
+		include "settings.php";
+		
+		# Creer het settings object
+		$settings = SpotSettings::singleton($this->_db, $settings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$spotUserUpgrader->resetUserGroupMembership(false);
+	} # resetUserGroupMembership
 	 
 } # SpotUpgrader
 
