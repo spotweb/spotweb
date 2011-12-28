@@ -14,7 +14,7 @@ class SpotUserUpgrader {
 		$this->createAdmin('admin', 'user', 'admin', 'spotwebadmin@example.com');
 		
 		$this->updateUserPreferences();
-		$this->updateSecurityGroups();
+		$this->updateSecurityGroups(false);
 
 		/* Reset the users' group membership */
 		if ($this->_settings->get('securityversion') < 0.27) {
@@ -267,11 +267,11 @@ class SpotUserUpgrader {
 	/* 
 	 * Update de 'default' security groepen hun rechten
 	 */
-	function updateSecurityGroups() {
+	function updateSecurityGroups($forceReset) {
 		# DB connectie	
 		$dbCon = $this->_db->getDbHandle();
 		
-		if ($this->_settings->get('securityversion') < 0.27) {
+		if (($forceReset) || ($this->_settings->get('securityversion') < 0.27)) {
 			/* Truncate de  huidige permissies */
 			$dbCon->rawExec("DELETE FROM grouppermissions");
 

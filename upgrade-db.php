@@ -17,7 +17,8 @@ try {
 	 * Make sure we are not run from the server, an db upgrade can take too much time and
 	 * will easily be aborted by either a database, apache or browser timeout
 	 */
-	SpotCommandline::initialize(array('reset-groupmembership'), array('reset-groupmembership' => false));
+	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups'), 
+								array('reset-groupmembership' => false, 'reset-securitygroups' => false));
 	if (!SpotCommandline::isCommandline()) {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
@@ -34,7 +35,17 @@ try {
 	echo "Updating users" . PHP_EOL;
 	echo "Users' update done" . PHP_EOL;
 
-	/* Perform some custom work at the end */
+	/* If the user asked to reset group membership, reset all group memberships */
+	if (SpotCommandline::get('reset-securitygroups')) {
+		echo "Resetting security groups to their default settings" . PHP_EOL;
+		$spotUpgrader->resetSecurityGroups();
+		echo "Reset security groups to their default settings done" . PHP_EOL;
+	} # if
+
+
+	/* 
+	 * If the user asked to reset group membership, reset all group memberships.
+	 */
 	if (SpotCommandline::get('reset-groupmembership')) {
 		echo "Resetting users' group membeship to the default" . PHP_EOL;
 		$spotUpgrader->resetUserGroupMembership();
