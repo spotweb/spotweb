@@ -18,6 +18,9 @@
 		<tbody id="userlist">
 				
 <?php
+	$allow_edit_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '');
+	$allow_display_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '');
+
 	foreach($userlist as $user) {
 		# We vragen nu de group membership op, en geven die mee als string zodat
 		# ze kunnen zien welke groepen een user lid van is
@@ -27,9 +30,9 @@
 			# We maken een link naar het editten van de security groep hier naar toe
 			# dit maakt het simpeler om te zien welke rechten een user heeft
 			if ($group['ismember']) {
-				if ($tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) {
+				if ($allow_edit_groupMembership) {
 					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}); ">' . $group['name'] . '</a>, ';
-				} elseif ($tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '')) { 
+				} elseif ($allow_display_groupMembership) { 
 					$groupList .= $group['name'] . ', ';
 				} # if
 			} # if
