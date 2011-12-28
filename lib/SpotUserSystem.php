@@ -52,7 +52,17 @@ class SpotUserSystem {
 						 'lasthit' => time(),
 						 'ipaddr' => $this->determineUsersIpAddress()
 						 );
-		$this->_db->addSession($session);
+
+		/*
+		 * To prevent flooding the sessions table, we 
+		 * don't actually create the db entry for anonymous 
+	 	 * sessions. We can only do this for 'real' anonymous
+	 	 * users because when this is overriden, the new 
+	 	 * anoonymous user might have given additional features
+	 	 */
+		if ($userid != SPOTWEB_ANONYMOUS_USERID) {
+			$this->_db->addSession($session);
+		} # if
 		
 		return array('user' => $tmpUser,
 					 'session' => $session);
