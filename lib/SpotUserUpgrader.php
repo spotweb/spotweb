@@ -15,7 +15,12 @@ class SpotUserUpgrader {
 		
 		$this->updateUserPreferences();
 		$this->updateSecurityGroups();
-		$this->updateUserGroupMembership(false);
+
+		/* Reset the users' group membership */
+		if ($this->_settings->get('securityversion') < 0.27) {
+			$this->resetUserGroupMembership(false);
+		} # if
+
 		$this->updateUserFilters();
 		$this->updateSecurityVersion();
 	} # update()
@@ -105,47 +110,45 @@ class SpotUserUpgrader {
 	/*
 	 * Update all users preferences
 	 */
-	function updateUserGroupMembership($isClosedSystem) {
-		if ($this->_settings->get('securityversion') < 0.27) {
-			# DB connection
-			$dbCon = $this->_db->getDbHandle();
+	function resetUserGroupMembership($isClosedSystem) {
+		# DB connection
+		$dbCon = $this->_db->getDbHandle();
 
-			$userList = $this->_db->listUsers("", 0, 9999999);
+		$userList = $this->_db->listUsers("", 0, 9999999);
 
-			# loop through every user and fix it 
-			foreach($userList['list'] as $user) {
-				/*
-				 * Remove current group membership
-				 */
-				$dbCon->rawExec("DELETE FROM usergroups WHERE userid = " . $user['userid']);
-				
-				/* 
-				 * Actually update the group membership, depending
-				 * on what kind of user this is
-				 */
-				if ($user['userid'] == 1) {
-					# Anonymous user
-					if ($isClosedSystem) {
-						/* Grant the group with only logon rights */
-						$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 1, 1)");
-					} else {
-						/* Grant the group with the view permissions */
-						$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 2, 1)");
-					} # else
-				} elseif ($user['userid'] == 2) {
-					# Admin user
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 1)");
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 2)");
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 3)");
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 5, 4)");
+		# loop through every user and fix it 
+		foreach($userList['list'] as $user) {
+			/*
+			 * Remove current group membership
+			 */
+			$dbCon->rawExec("DELETE FROM usergroups WHERE userid = " . $user['userid']);
+			
+			/* 
+			 * Actually update the group membership, depending
+			 * on what kind of user this is
+			 */
+			if ($user['userid'] == 1) {
+				# Anonymous user
+				if ($isClosedSystem) {
+					/* Grant the group with only logon rights */
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 1, 1)");
 				} else {
-					# Grant the regular users all the necessary security groups
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
-					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 1)");
+					/* Grant the group with the view permissions */
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 2, 1)");
 				} # else
-			} # foreach
-		} # if
-	} # updateUserGroupMembership
+			} elseif ($user['userid'] == 2) {
+				# Admin user
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 1)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 2)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 3)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 5, 4)");
+			} else {
+				# Grant the regular users all the necessary security groups
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 1)");
+			} # else
+		} # foreach
+	} # resetUserGroupMembership
 
 	/*
 	 * Update all users preferences
