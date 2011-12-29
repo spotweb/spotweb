@@ -1397,7 +1397,7 @@ class SpotDb {
 									(SELECT messageid FROM spots))") ;
 				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM reportsxover WHERE reporsxover.nntpref not in 
+				$this->_conn->modify("DELETE FROM reportsxover WHERE reportsxover.nntpref not in 
 									(SELECT messageid FROM spots)") ;
 				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
 									(SELECT messageid FROM spots)") ;
@@ -2147,8 +2147,8 @@ class SpotDb {
 												SET currentspotcount = %d,
 													lastupdate = %d
 												WHERE (filterhash = '%s') 
-												  AND (userid IN (SELECT userid FROM sessions WHERE lasthit > f.lastupdate GROUP BY userid ))",
-									Array((int) $filter['currentspotcount'], (int) $filter['lastupdate'], $filter['filterhash'], (int) $userId));
+												  AND (userid IN (SELECT userid FROM sessions WHERE lasthit > lastupdate GROUP BY userid ))",
+									Array((int) $filter['currentspotcount'], (int) $filter['lastupdate'], $filter['filterhash']));
 				} # foreach
 				
 				break;
