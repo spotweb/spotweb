@@ -741,10 +741,10 @@ $(function(){
 			$("ul.subfilterlist").parent().eq(value.count).children("ul").css("display", value.state);
 			if(value.state == "block") {
 				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").css("background-position", "-77px -98px");
-				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "Filter inklappen");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "<t>Collapse filter</t>");
 			} else {
 				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").css("background-position", "-90px -98px");
-				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "Filter uitklappen");
+				$("ul.subfilterlist").parent().eq(value.count).children("a").children("span.toggle").attr("title", "<t>Expand filter</t>");
 
 			}
 		});
