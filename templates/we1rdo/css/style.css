@@ -225,6 +225,12 @@ div.filter li.orange span.toggle {background-color:#f2d87c; border:1px solid #cd
 div.filter li.green span.toggle {background-color:#84f484; border:1px solid #00ab00; color:#00ab00;}
 div.filter li.red span.toggle {background-color:#f99797; border:1px solid #ab1c00; color:#ab1c00;}
 
+div.filter li span.inclusive {display:block; float:right; width:15px; line-height:14px; margin:2px;}
+div.filter li.blue span.inclusive {color:#62aefd;}
+div.filter li.orange span.inclusive {color:#f2d87c;}
+div.filter li.green span.inclusive {color:#84f484;}
+div.filter li.red span.inclusive {color:#f99797;}
+
 div.filter li span.newspots,
 div.filter a.selected {background-color:#c8c8c8;}
 div.filter a.external {background-color:#ececec;}

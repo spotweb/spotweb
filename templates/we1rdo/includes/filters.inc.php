@@ -296,7 +296,10 @@
 			} # if
 			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 
-			# escape the filter vlaues
+			/* add the current search terms */
+			$strFilterInclusive = $strFilter . $tplHelper->convertTextFilterToQueryParams();
+
+			# escape the filter values
 			$filter['title'] = htmlentities($filter['title'], ENT_QUOTES, 'UTF-8');
 			$filter['icon'] = htmlentities($filter['icon'], ENT_QUOTES, 'UTF-8');
 			
@@ -318,6 +321,9 @@
 			if (!empty($filter['children'])) {
 				echo '<span class="toggle" title="' . _('Collapse filter') . '" onclick="toggleFilter(this)">&nbsp;</span>';
 			} # if
+
+			# show the inclusive filter
+			echo '<span onclick="gotoFilteredCategory(\'' . $strFilterInclusive . '\')" class="inclusive" title="' . _('Include current search terms') . '">+</span>';
 			
 			echo '</a>';
 			
