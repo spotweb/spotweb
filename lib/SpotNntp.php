@@ -71,6 +71,19 @@ class SpotNntp {
 		} # quit()
 
 		/*
+		 * Sends a no-operation to the usenet server to keep the
+		 * connection alive
+		 */
+		function sendNoop() {
+			if (!$this->_connected) {
+				return ;
+			} # if
+			
+			/* The NNTP protocol has no proper noop command, this will do fine */
+			$this->_nntp->cmdModeReader();	
+		} # sendnoop()
+
+		/*
 		 * Post an article to the server, $article should be an 2-element 
 		 * array with head and body as elements
 		 */
