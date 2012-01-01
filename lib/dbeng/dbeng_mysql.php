@@ -298,7 +298,7 @@ class dbeng_mysql extends dbeng_abs {
 				 * enforce it as an search operator. If they are in the 
 				 * words themselves, we fall back to LIKE
 				 */
-				if (strpos($strippedTerm, '-') > 0) {
+				if ((strpos($strippedTerm, '-') > 0) || (strpos($strippedTerm, '+') > 0) || (strpos($strippedTerm, '/') > 0)) {
 					$hasSearchOpAsTerm = true;
 				} # if
 
@@ -350,15 +350,17 @@ class dbeng_mysql extends dbeng_abs {
  			 *		Just Go With It (fallback naar like, enkel stopwoorden of te kort)
 			 *		"Just Go With It" (fallback naar like, en quotes gestripped)
 			 *		+empire +sun
-			 *		x-art (like search becvause it contains an -)
+			 *		x-art (like search because it contains an -)
+			 *		50/50 (like search because it contains an /)
 			 */
 
-/*
-			var_dump($hasTooShortWords);
-			var_dump($hasStopWords);
-			var_dump($hasLongEnoughWords);
-			var_dump($hasNoStopWords);
-			var_dump($searchMode);
+/* 
+			echo 'HasTooShortWords  : ' . (int) $hasTooShortWords . '<br>';
+			echo 'hasStopWords      : ' . (int) $hasStopWords . '<br>';
+			echo 'hasLongEnoughWords: ' . (int) $hasLongEnoughWords . '<br>';
+			echo 'hasNoStopWords    : ' . (int) $hasNoStopWords . '<br>';
+			echo 'hasSearchOpAsTerm : ' . (int) $hasSearchOpAsTerm . '<br>';
+			echo 'searchmode        : ' . $searchMode . '<br>';
 			die();
 */
 			
