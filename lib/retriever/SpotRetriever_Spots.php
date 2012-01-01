@@ -138,6 +138,16 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			foreach($hdrList as $msgid => $msgheader) {
 				$this->debug('foreach-loop, start. msgId= ' . $msgid);
 
+				/* 
+				 * Keep te usenet server alive when processing is slow.
+				 */
+				if ($hdrsRetrieved %100 == 0) {
+					$this->_spotnntp->sendNoop();
+					if ((isset($nntp_nzb)) && ($nntp_nzb != $this->_spotnntp)) {
+						$nntp_nzb->sendNoop();
+					} # if
+				} # if
+
 				/*
 				 * We keep track whether we actually fetched this header and fullspot
 				 * to add it to the database, because only then we can update the
