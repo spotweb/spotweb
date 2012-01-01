@@ -136,8 +136,8 @@ class SpotNotifications {
 	} # newSingleMessage
 
 	function newMultiMessage($objectId, $notification) {
-		$userArray = $this->_db->listUsers("", 0, 9999999);
-		foreach ($userArray['list'] as $user['user']) {
+		$userArray = $this->_db->getUserList();
+		foreach ($userArray as $user['user']) {
 			# Create a fake session array
 			$user['session'] = array('ipaddr' => '');
 			
@@ -155,14 +155,14 @@ class SpotNotifications {
 
 	function sendMessages($userId) {
 		if ($userId == 0) {
-			$userList = $this->_db->listUsers("", 0, 9999999);
+			$userList = $this->_db->getUserList();
 		} else {
 			$thisUser = $this->_db->getUser($userId);
-			$userList['list'] = array($thisUser);
+			$userList = array($thisUser);
 		} # else
 
-		foreach ($userList['list'] as $user) {
-			# Omdat we vanuit listUsers() niet alle velden meekrijgen
+		foreach ($userList as $user) {
+			# Omdat we vanuit getUserList() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
 			$user = $this->_db->getUser($user['userid']);
 			$security = new SpotSecurity($this->_db, $this->_settings, $user, '');

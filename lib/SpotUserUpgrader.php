@@ -114,10 +114,10 @@ class SpotUserUpgrader {
 		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 
-		$userList = $this->_db->listUsers("", 0, 9999999);
+		$userList = $this->_db->getUserList();
 
 		# loop through every user and fix it 
-		foreach($userList['list'] as $user) {
+		foreach($userList as $user) {
 			/*
 			 * Remove current group membership
 			 */
@@ -154,13 +154,13 @@ class SpotUserUpgrader {
 	 * Update all users preferences
 	 */
 	function updateUserPreferences() {
-		$userList = $this->_db->listUsers("", 0, 9999999);
+		$userList = $this->_db->getUserList();
 
 		# loop through every user and fix it 
-		foreach($userList['list'] as $user) {
+		foreach($userList as $user) {
 			/*
 			 * Because we do not get all users' properties from
-			 * listUsers(), retrieve the users' settings from scratch
+			 * getUserList, retrieve the users' settings from scratch
 			 */
 			$user = $this->_db->getUser($user['userid']);
 
@@ -363,7 +363,7 @@ class SpotUserUpgrader {
 			# delete all existing filters
 			$dbCon->rawExec("DELETE FROM filters WHERE filtertype = 'filter'");
 
-			$userList = $this->_db->listUsers("", 0, 9999999);
+			$userList = $this->_db->getUserList();
 
 			# loop through every user and fix it 
 			foreach($userList['list'] as $user) {

@@ -1,7 +1,6 @@
 <?php
-	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
-	$userlist = $tplHelper->getUserList('');
-	$userlist = $userlist['list'];
+	# We run tis at the top to get the cleanest error handling possible
+	$userlist = $tplHelper->getUserList();
 ?>
 	<table  class="ui-widget ui-widget-content" summary="Users">
 		<thead>
