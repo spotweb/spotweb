@@ -684,6 +684,12 @@ function gotoNew(url) {
 	window.location = url+'&search[value][]=New:0';
 }
 
+// Voorzie de span.newspots van link naar spots binnen het filter
+function gotoFilteredCategory(url) {
+	$("a").click(function(){ return false; });
+	window.location = url;
+}
+
 // Toevoegen en verwijderen van spots aan watchlist
 function toggleWatchSpot(spot,action,spot_id) {
 	// Add/remove watchspot
