@@ -3,11 +3,11 @@ $.address.init(function() {
 }).externalChange(
 		function(event) {
 			basePATH = location.href.replace('#' + $.address.value(), '');
-			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0) {
+			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0 && basePATH.indexOf('/details/') < 0) {
 				closeDetails(0);
 				
 				var currentSpot = $('table.spots tr.active');
-				if (currentSpot) {
+				if ((currentSpot) && (currentSpot.offset() != null)) {
 					if (currentSpot.offset().top > $(window).height()) {
 						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
 					} // if
@@ -40,12 +40,16 @@ function createBaseURL() {
 }
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
-function detectScrollbar() {	
-	if(($("div#details").outerHeight() + $("div#details").offset().top <= $(window).height())) {
-		$("div#details").addClass("noscroll");
-	} else {
-		$("div#details").removeClass("noscroll");
-	}
+function detectScrollbar() {
+	var $divDetails = $("div#details"); 
+		
+	if (($divDetails) && ($divDetails.offset() != null)) {
+		if(($divDetails.outerHeight() + $divDetails.offset().top <= $(window).height())) {
+			$divDetails.addClass("noscroll");
+		} else {
+			$divDetails.removeClass("noscroll");
+		}
+	} // if
 }
 
 // openSpot in overlay
