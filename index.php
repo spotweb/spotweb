@@ -294,12 +294,6 @@ try {
 				break;
 		} # edituser
 
-		case 'listusers' : {
-				$page = new SpotPage_listusers($db, $settings, $currentSession);
-				$page->render();
-				break;
-		} # listusers
-
 		case 'login' : {
 				$page = new SpotPage_login($db, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform'),

@@ -939,11 +939,11 @@ class SpotTemplateHelper {
  	/*
 	 * Geeft de lijst met users terug
 	 */
-	function getUserList($username) {
-		# Controleer de users' rechten
+	function getUserList() {
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
 		
-		return $this->_db->listUsers($username, 0, 9999);
+		return $this->_db->getUserListForDisplay();
 	} # getUserList
 
  	/*

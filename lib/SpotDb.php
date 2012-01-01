@@ -373,11 +373,10 @@ class SpotDb {
 	} # getUser
 
 	/*
-	 * Haalt een user op uit de database 
+	 * Retrieve a list of userids and some basic properties
 	 */
-	function listUsers($username, $pageNr, $limit) {
+	function getUserList() {
 		SpotTiming::start(__FUNCTION__);
-		$offset = (int) $pageNr * (int) $limit;
 		
 		$tmpResult = $this->_conn->arrayQuery(
 						"SELECT u.id AS userid,
@@ -386,32 +385,45 @@ class SpotDb {
 								u.lastname AS lastname,
 								u.mail AS mail,
 								u.lastlogin AS lastlogin,
-								COALESCE((SELECT MAX(lasthit) FROM sessions WHERE userid = u.id), lastvisit) as lastvisit,
-								(SELECT ipaddr FROM sessions WHERE userid = u.id ORDER BY lasthit DESC LIMIT 1) as lastipaddr,
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
-						 WHERE (username LIKE '%" . $this->safe($username) . "%') AND (NOT DELETED)
-					     LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
+						 WHERE (NOT DELETED)");
 		if (!empty($tmpResult)) {
-			# Other preferences worden serialized opgeslagen in de database
+			# Other preferences are stored serialized in the database
 			$tmpResultCount = count($tmpResult);
 			for($i = 0; $i < $tmpResultCount; $i++) {
 				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
 			} # for
 		} # if
 
-		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
-		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
-		$hasMore = (count($tmpResult) > $limit);
-		if ($hasMore) {
-			# verwijder het laatste, niet gevraagde, element
-			array_pop($tmpResult);
-		} # if
+		SpotTiming::stop(__FUNCTION__, array());
+		return $tmpResult;
+	} # getUserList
 
-		SpotTiming::stop(__FUNCTION__, array($username, $pageNr, $limit));
-		return array('list' => $tmpResult, 'hasmore' => $hasMore);
-	} # listUsers
+	/*
+	 * Haalt een user op uit de database 
+	 */
+	function getUserListForDisplay() {
+		SpotTiming::start(__FUNCTION__);
+		
+		$tmpResult = $this->_conn->arrayQuery(
+						"SELECT u.id AS userid,
+								u.username AS username,
+								MAX(u.firstname) AS firstname,
+								MAX(u.lastname) AS lastname,
+								MAX(u.mail) AS mail,
+								MAX(u.lastlogin) AS lastlogin,
+								COALESCE(MAX(ss.lasthit), MAX(u.lastvisit)) AS lastvisit,
+								MAX(ipaddr) AS lastipaddr
+							FROM users AS u
+							LEFT JOIN sessions ss ON (u.id = ss.userid)
+							WHERE (DELETED = '%s')
+							GROUP BY u.id, u.username", array($this->bool2dt(false)));
+
+		SpotTiming::stop(__FUNCTION__, array());
+		return $tmpResult;
+	} # getUserListForDisplay
 
 	/*
 	 * Disable/delete een user. Echt wissen willen we niet 
