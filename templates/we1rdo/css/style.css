@@ -137,6 +137,9 @@ form.edituserprefsform div fieldset fieldset.notificationSettings {background-co
 
 form.newspotform  fieldset dt {padding:0 0 0px 0px; background: none; border-bottom: none; }
 
+form.editsettingsform span.loading {background:transparent url(../img/loading.gif) no-repeat 50% 50%; margin:4px; font-size: 16px; display: none;}
+form.editsettingsform span.servertest_nntp_nzb_result_success { color: #00ab00; }
+form.editsettingsform span.servertest_nntp_nzb_result_fail { color: #ff0000; }
 
 /* SIDEBAR */
 div#filter {width:235px; float:left; left:0; top:0; position:relative;}

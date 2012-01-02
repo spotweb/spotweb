@@ -182,7 +182,7 @@ class SpotSettings {
 										   'port' => 119, 
 										   'buggy' => false); 
 		} # if
-		
+
 		unset($settings['nntp_hdr']['use'], $settings['nntp_post']['use']);
 
 		return array($errorList, $settings);
