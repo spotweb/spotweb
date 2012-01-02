@@ -40,6 +40,7 @@
 		if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '') && ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid'))) {
 			# loginform verwacht deze twee variables door de renderer, dus die faken we
 			$data['performredirect'] = true;
+			$data['showplainmessages'] = true;
 			$loginform = array('username' => '', 'password' => '');
 			
 			require "login.inc.php";
