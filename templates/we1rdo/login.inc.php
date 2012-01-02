@@ -1,7 +1,7 @@
 <?php
 if (!empty($loginresult)) {
 	if ((!isset($data['performredirect'])) || (($loginresult['result'] != 'success'))) {
-		if (isset($data['showplainmessages'])) {
+		if (!isset($data['showplainmessages'])) {
 			include 'includes/form-xmlresult.inc.php';
 		
 			$this->sendContentTypeHeader('xml');
