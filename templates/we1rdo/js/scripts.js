@@ -348,6 +348,52 @@ function blacklistSpotterId(spotterId) {
 	$('form.blacklistspotterform').submit();
 } // blacklistSpotterId
 
+
+
+function validateNntpServerSetting(settingsForm, serverArrayId) {
+	$("#servertest_" + serverArrayId + "_loading").show();
+
+	var formData = 'data[host]=' + settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][host]'].value;
+
+	if (settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][enc][switch]'].checked) {
+		formData += '&data[enc]=' + settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][enc][select]'].value;
+	} // if
+
+	formData += '&data[port]=' + settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][port]'].value;
+	formData += '&data[user]=' + settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][user]'].value;
+	formData += '&data[pass]=' + settingsForm.elements[settingsForm.name + '[' + serverArrayId + '][pass]'].value;
+
+	$.ajax({
+		type: "POST",
+		url: "?page=render&tplname=validatenntp", 
+		dataType: "xml",
+		data: formData,
+		success: function(xml) {
+			var result = $(xml).find('result').text();
+			$("#servertest_" + serverArrayId + "_loading").hide();
+
+			/* Remove existing style and contents from from the string */
+			$("#servertest_" + serverArrayId + "_result")
+				.removeClass("servertest_" + serverArrayId + "_result_success")
+				.removeClass("servertest_" + serverArrayId + "_result_fail")
+				.empty();
+
+					
+			if (result == 'success') {
+				$("#servertest_" + serverArrayId + "_result")
+					.addClass("servertest_" + serverArrayId + "_result_success")
+					.text("OK");
+			} else {
+				$("#servertest_" + serverArrayId + "_result")
+					.addClass("servertest_" + serverArrayId + "_result_fail")
+					.text($(xml).find('error').text());
+			} // else
+		} // success
+	}); // ajax call om de form te submitten
+
+	return false;
+} // validateNntpServerSetting
+
 function postBlacklistForm() {
 	$("form.blacklistspotterform").submit(function(){ 
 		formdata = $(this).serialize();

@@ -96,6 +96,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[nntp_nzb][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_nzb][buggy]" <?php if ($nntp_nzb['buggy']) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="test_nntp_nzb_server"><?php echo _('Validate entered usenet server'); ?></label></dt>
+					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_nzb');" name="test_nntp_nzb_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_nzb_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_nzb_result'></span></dd>
 				</dl>
 			</fieldset>
 
@@ -128,6 +131,8 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[nntp_hdr][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_hdr][buggy]" <?php if ($nntp_hdr['buggy']) { echo 'checked="checked"'; } ?>></dd>
+					<dt><label for="test_nntp_hdr_server"><?php echo _('Validate entered usenet server'); ?></label></dt>
+					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_hdr');" name="test_nntp_hdr_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_hdr_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_hdr_result'></span></dd>
 				</dl>
 			</fieldset>
 
@@ -160,6 +165,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[nntp_post][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_post][buggy]" <?php if ($nntp_post['buggy']) { echo 'checked="checked"'; } ?>></dd>
+					<dd> <input type="submit" class="smallGreyButton" style='display: inline;' onclick="return validateNntpServerSetting(this.form, 'nntp_post');" name="test_nntp_post_server" value="<?php echo _("Test server"); ?>"></input> <span class='loading' id='servertest_nntp_post_loading'>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class='servertest_result' id='servertest_nntp_post_result'></span></dd>
 				</dl>
 			</fieldset>
 			</div>
