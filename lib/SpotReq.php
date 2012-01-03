@@ -6,7 +6,7 @@ class SpotReq {
 	static private $_settings = null;
     
     function initialize($settings) {
-		self::$_merged = array_merge($_POST, $_GET);
+		self::$_merged = array_merge_recursive($_POST, $_GET);
 		self::$_xsrfsecret = $settings->get('xsrfsecret');
 		self::$_settings = $settings;
     }

@@ -18,7 +18,7 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 	} # if
 	include "includes/form-messages.inc.php"; 
 ?>
-<form class="loginform" name="loginform" action="<?php echo $tplHelper->makeLoginAction(); ?>" method="post">
+<form class="loginform" name="loginform" action="<?php echo $tplHelper->getPageUrl('login'); ?>" method="post">
 	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
 	<input type="hidden" name="loginform[http_referer]" value="<?php echo $http_referer; ?>">
 	<?php if (isset($data['performredirect'])) {?>
