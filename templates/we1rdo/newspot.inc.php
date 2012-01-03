@@ -48,7 +48,6 @@ if (empty($postresult)) {
 				</dd>
 			</div>
 		</div>
-
 		<div class='clear'></div>
 	
 		<dt><label for="newspotform[title]"><?php echo _('Titel'); ?></label></dt>
@@ -56,6 +55,7 @@ if (empty($postresult)) {
 
 		<dt><label for="newspotform[body]"><?php echo _('Description'); ?></label></dt>
 		<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="70" rows="8"><?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']); ?></textarea><br />
+
 <?php
 	$smileyList = $tplHelper->getSmileyList();
 	foreach ($smileyList as $name => $image) {

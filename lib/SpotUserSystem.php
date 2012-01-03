@@ -74,7 +74,7 @@ class SpotUserSystem {
 	function updateCookie($userSession) {
 		SetCookie("spotsession",
 				  $userSession['session']['sessionid'] . '.' . $userSession['user']['userid'],
-				  (time()+60*60*24) * $this->_settings->get('cookie_expires'),
+				  (time() + (max(1, (int) $this->_settings->get('cookie_expires')) * 60*60*24)),
 				  '', # path: The default value is the current directory that the cookie is being set in.
 				  $this->_settings->get('cookie_host'),
 				  false,	# Indicates if the cookie should only be transmitted over a secure HTTPS connection from the client.
