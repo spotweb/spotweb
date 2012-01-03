@@ -103,6 +103,13 @@ try {
 	} # if
 	SpotCategories::startTranslation();
 
+
+	/*
+	 * Let the form handler know what userid we are using so
+	 * we can make the CSRF cookie be user-bounded
+	 */
+	$req->setUserId($currentSession['user']['userid']);
+
 	/*
 	 * Only now it is safe to check wether the user is actually alowed 
 	 * to authenticate with an API key 

@@ -4,6 +4,7 @@ class SpotReq {
     static private $_merged = array(); 
 	static private $_xsrfsecret = '';
 	static private $_settings = null;
+	static private $_userid = 0;
     
     function initialize($settings) {
 		self::$_merged = array_merge_recursive($_POST, $_GET);
@@ -88,7 +89,7 @@ class SpotReq {
 		# on the amount of values, exit immediately
 		$xsrfVals = explode(":", $_POST[$form]['xsrfid']);
 		
-		if (count($xsrfVals) != 3) {
+		if (count($xsrfVals) != 4) {
 			return false;
 		} # if
 		
@@ -101,9 +102,14 @@ class SpotReq {
 		if ($xsrfVals[1] != $form) {
 			return false;
 		} # if
+
+		# if the cookie is for another userid, its not valid either
+		if ($xsrfVals[2] != self::$_userid) {
+			return false;
+		} # if
 		
 		# and check the hash so any of the values above couldn't be faked
-		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . self::$_xsrfsecret) != $xsrfVals[2]) {
+		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . ':' . $xsrfVals[2] . self::$_xsrfsecret) != $xsrfVals[3]) {
 			return false;
 		} # if
 		
@@ -114,8 +120,9 @@ class SpotReq {
 		# XSRF cookie contains 3 fields:
 		#   1 - Current timestamp in unixtime
 		#	2 - formname (for example, 'loginform' or 'postcommentform')
-		#	3 - sha1 of the preceding 2 strings including ':', but the secret key appended as salt
-		$xsrfCookie = time() . ':' . $action;
+		# 	3 - Userid
+		#	4 - sha1 of the preceding 3 strings including ':', but the secret key appended as salt
+		$xsrfCookie = time() . ':' . $action . ':' . self::$_userid;
 		$xsrfCookie .= ':' . sha1($xsrfCookie . self::$_xsrfsecret);
 
 		return $xsrfCookie;
@@ -166,4 +173,8 @@ class SpotReq {
 			} # switch
 		} #else
     }
+
+    function setUserId($i) {
+    	self::$_userid = $i;
+    } // #setUserId
 }
