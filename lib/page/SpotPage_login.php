@@ -63,6 +63,7 @@ class SpotPage_login extends SpotPage_Abs {
 		$this->template('login', array('loginform' => $credentials,
 									   'formmessages' => $formMessages,
 									   'loginresult' => $loginResult,
+									   'http_referer' => $this->_loginForm['http_referer'],
 									   'data' => $this->_params['data']));
 	} # render
 	

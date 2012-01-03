@@ -21,7 +21,7 @@
 <?php } ?>
 					<ul>
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) && ($currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID)) { ?>
-					<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }); "><?php echo _('Login'); ?></a></li>
+					<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login&data[htmlheaderssent]=true', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }); "><?php echo _('Login'); ?></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
 						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', 'createuserform', null, 'showresultsonly', null); "><?php echo _('Add user'); ?></a></li>

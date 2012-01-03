@@ -321,7 +321,7 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
-		return $this->makeBaseUrl("path") . "?page=login";
+		return $this->makeBaseUrl("path") . "?page=login&data[htmlheaderssent]=true";
 	} # makeLoginAction
 
 	/*

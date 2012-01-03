@@ -1,7 +1,7 @@
 <?php
 if (!empty($loginresult)) {
 	if ((!isset($data['performredirect'])) || (($loginresult['result'] != 'success'))) {
-		if (!isset($data['showplainmessages'])) {
+		if (!isset($data['renderhtml'])) {
 			include 'includes/form-xmlresult.inc.php';
 		
 			$this->sendContentTypeHeader('xml');
@@ -12,16 +12,20 @@ if (!empty($loginresult)) {
 	} # if
 } # if
 
-if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult)) || (isset($data['showplainmessages']))) {
+if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult)) || (isset($data['renderhtml']))) {
+	if (!isset($data['htmlheaderssent'])) {
+		include "includes/basic-html-header.inc.php";
+	} # if
 	include "includes/form-messages.inc.php"; 
 ?>
 <form class="loginform" name="loginform" action="<?php echo $tplHelper->makeLoginAction(); ?>" method="post">
 	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
+	<input type="hidden" name="loginform[http_referer]" value="<?php echo $http_referer; ?>">
 	<?php if (isset($data['performredirect'])) {?>
 		<input type="hidden" name="data[performredirect]" value="<?php echo $data['performredirect']; ?>">
 	<?php } ?>
-	<?php if (isset($data['showplainmessages'])) {?>
-		<input type="hidden" name="data[showplainmessages]" value="<?php echo $data['showplainmessages']; ?>">
+	<?php if (isset($data['renderhtml'])) {?>
+		<input type="hidden" name="data[renderhtml]" value="<?php echo $data['renderhtml']; ?>">
 	<?php } ?>
 	<fieldset>
 		<dl>
@@ -37,4 +41,9 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 </form>
 <?php
 	}
+
+	if (isset($data['renderhtml'])) {
+		echo "</div></body></html>";
+	} # if
 ?>
+
