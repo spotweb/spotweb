@@ -180,13 +180,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 					break;
 				} # case 'removeallsessions'
 
-				case 'resetapi' : {
+				case 'resetuserapi' : {
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 
 					$user = $spotUserSystem->resetUserApi($spotUser);
 					$editResult = array('result' => 'success', 'newapikey' => $user['apikey']);
 					break;
-				} # case resetapi
+				} # case resetuserapi
 			} # switch
 		} # if
 
