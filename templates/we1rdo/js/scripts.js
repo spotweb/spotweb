@@ -879,10 +879,16 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 		data: formdata,
 		success: function(xml) {
 			// alert(xml);
-			cb();
+			cb(xml);
 		} // success
 	}); // ajax call om de form te submitten
 } // ajaxSubmitFormWithCb
+
+function requestNewUserApiKeyCbHandler(xml) {
+	var result = $(xml).find('newapikey').text();
+
+	$(".apikeyinputfield").val(result);
+} // requestNewUserApiKeyCbHandler
 
 function userLogout() {
 	var url = createBaseURL() + '?page=logout';
