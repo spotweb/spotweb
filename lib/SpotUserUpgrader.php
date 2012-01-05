@@ -21,7 +21,7 @@ class SpotUserUpgrader {
 			$this->resetUserGroupMembership(false);
 		} # if
 
-		$this->updateUserFilters();
+		$this->updateUserFilters(false);
 		$this->updateSecurityVersion();
 	} # update()
 
@@ -355,8 +355,8 @@ class SpotUserUpgrader {
 	/*
 	 * Update user filters
 	 */
-	function updateUserFilters() {
-		if (($this->_settings->get('securityversion') < 0.12)) {
+	function updateUserFilters($forceReset) {
+		if (($this->_settings->get('securityversion') < 0.12) || ($forceReset)) {
 			# DB connection
 			$dbCon = $this->_db->getDbHandle();
 			
@@ -366,7 +366,7 @@ class SpotUserUpgrader {
 			$userList = $this->_db->getUserList();
 
 			# loop through every user and fix it 
-			foreach($userList['list'] as $user) {
+			foreach($userList as $user) {
 				/* Beeld */
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Beeld', 'film', 0, 0, 'cat0_z0')");
 				$beeldFilterId = $dbCon->lastInsertId('filters');

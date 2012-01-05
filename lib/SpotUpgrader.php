@@ -95,6 +95,18 @@ class SpotUpgrader {
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->updateSecurityGroups(true);
 	} # resetSecurityGroups
+
+	/*
+	 * Reset securitygroup settings to their default
+	 */
+	function resetFilters() {
+		include "settings.php";
+		
+		# Creer het settings object
+		$settings = SpotSettings::singleton($this->_db, $settings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$spotUserUpgrader->updateUserFilters(true);
+	} # resetFilters
 	 
 } # SpotUpgrader
 
