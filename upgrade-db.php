@@ -57,7 +57,7 @@ try {
 	 */
 	if (SpotCommandline::get('reset-filters')) {
 		echo "Resetting users' filters to the default" . PHP_EOL;
-		$spotUpgrader->resetUserGroupMembership();
+		$spotUpgrader->resetFilters();
 		echo "Reset of users' filters done" . PHP_EOL;
 	} # if
 
