@@ -9,7 +9,8 @@ class SpotNntp {
 		private $_error;
 		private $_nntp;
 		private $_connected;
-		
+		private $_currentgroup;
+
 		private $_spotParser;
 		
 		function __construct($server) { 
@@ -32,7 +33,9 @@ class SpotNntp {
 		 */
 		function selectGroup($group) {
 			$this->connect();
-			return $this->_nntp->selectGroup($group);
+
+			$this->_currentgroup = $group;
+			return $this->_nntp->selectGroup($this->_currentgroup);
 		} # selectGroup()
 		
 		/*
@@ -80,7 +83,7 @@ class SpotNntp {
 			} # if
 			
 			/* The NNTP protocol has no proper noop command, this will do fine */
-			$this->_nntp->cmdModeReader();	
+			$this->selectGroup($this->_currentgroup);		
 		} # sendnoop()
 
 		/*
