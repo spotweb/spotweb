@@ -83,7 +83,9 @@ class SpotNntp {
 			} # if
 			
 			/* The NNTP protocol has no proper noop command, this will do fine */
-			$this->selectGroup($this->_currentgroup);		
+			if (!empty($this->_currentgroup)) {
+				$this->selectGroup($this->_currentgroup);		
+			} # if
 		} # sendnoop()
 
 		/*
