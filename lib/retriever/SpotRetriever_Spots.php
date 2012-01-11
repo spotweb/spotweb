@@ -132,6 +132,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$nntp_nzb = $this->_spotnntp;
 				} else {
 					$nntp_nzb = new SpotNntp($settings_nntp_nzb);
+					$nntp_nzb->selectGroup($this->_settings->get('nzb_group'));
 				} # else
 			} # if
 			
