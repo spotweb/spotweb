@@ -297,7 +297,7 @@
 			$newCount = ($count_newspots) ? $tplHelper->getNewCountForFilter($strFilter) : "";
 
 			/* add the current search terms */
-			$strFilterInclusive = $strFilter . $tplHelper->convertTextFilterToQueryParams();
+			$strFilterInclusive =  $strFilter . $tplHelper->convertSortToQueryParams() . $tplHelper->convertTextFilterToQueryParams();
 
 			# escape the filter values
 			$filter['title'] = htmlentities($filter['title'], ENT_QUOTES, 'UTF-8');
