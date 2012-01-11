@@ -7,7 +7,7 @@ try {
 	 * working directory to a directory the script is in
 	 */
 	if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-		chdir(__DIR__);
+		chdir(dirname(__FILE__));
 	} # if
 
 	require_once "lib/SpotClassAutoload.php";
