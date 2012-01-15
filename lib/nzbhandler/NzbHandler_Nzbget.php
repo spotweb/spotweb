@@ -34,11 +34,10 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		$content = json_encode($reqarr);
 		
 		# creeer de header
-		$header = "Host: ". $this->_host . "\r\n".
-			"Authorization: Basic " . $this->_credentials . "\r\n".
-			"Content-type: application/json\r\n".
-			"Content-Length: " . strlen($content) . "\r\n" .
-			"\r\n";		
+		$header = array("Host: ". $this->_host,
+			"Authorization: Basic " . $this->_credentials,
+			"Content-type: application/json",
+			"Content-Length: " . strlen($content));
 		
 		$output = $this->sendHttpRequest('POST', $this->_url, $header, $content, $this->_timeout);
 
