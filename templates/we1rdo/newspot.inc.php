@@ -50,32 +50,34 @@ if (empty($postresult)) {
 		</div>
 		<div class='clear'></div>
 	
-		<dt><label for="newspotform[title]"><?php echo _('Titel'); ?></label></dt>
-		<dd><input type="text" name="newspotform[title]" size="60" maxlength="60" value=""></dd>
+		<div>
+			<dt><label for="newspotform[title]"><?php echo _('Titel'); ?></label></dt>
+			<dd><input type="text" name="newspotform[title]" size="60" maxlength="60" value=""></dd>
 
-		<dt><label for="newspotform[body]"><?php echo _('Description'); ?></label></dt>
-		<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="70" rows="8"><?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']); ?></textarea><br />
+			<dt><label for="newspotform[body]"><?php echo _('Description'); ?></label></dt>
+			<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="70" rows="8"><?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']); ?></textarea><br />
 
-<?php
-	$smileyList = $tplHelper->getSmileyList();
-	foreach ($smileyList as $name => $image) {
-		echo "<a onclick=\"addText(' [img=" . $name . "]', 'newspotform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
-	}
-?>
-		</dd>
+	<?php
+		$smileyList = $tplHelper->getSmileyList();
+		foreach ($smileyList as $name => $image) {
+			echo "<a onclick=\"addText(' [img=" . $name . "]', 'newspotform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
+		}
+	?>
+			</dd>
 
-		<dt><label for="newspotform[tag]"><?php echo _('Tag'); ?></label></dt>
-		<dd><input type="text" name="newspotform[tag]" size="94" maxlength="99" value="<?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_tag']); ?>"></dd>
+			<dt><label for="newspotform[tag]"><?php echo _('Tag'); ?></label></dt>
+			<dd><input type="text" name="newspotform[tag]" size="94" maxlength="99" value="<?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_tag']); ?>"></dd>
 
-		<dt><label for="newspotform[website]"><?php echo _('Website'); ?></label></dt>
-		<dd><input type="text" name="newspotform[website]" size="94" maxlength="255" value=""></dd>
+			<dt><label for="newspotform[website]"><?php echo _('Website'); ?></label></dt>
+			<dd><input type="text" name="newspotform[website]" size="94" maxlength="255" value=""></dd>
 
-		<dt><label for="newspotform[nzbfile]"><?php echo _('NZB file'); ?></label></dt>
-		<dd><input name="newspotform[nzbfile]" size="82" type="file" /></dd>
+			<dt><label for="newspotform[nzbfile]"><?php echo _('NZB file'); ?></label></dt>
+			<dd><input name="newspotform[nzbfile]" size="82" type="file" /></dd>
 
-		<dt><label for="newspotform[imagefile]"><?php echo _('Picture'); ?></label></dt>
-		<dd><input name="newspotform[imagefile]" size="82" type="file" /></dd>
-
+			<dt><label for="newspotform[imagefile]"><?php echo _('Picture'); ?></label></dt>
+			<dd><input name="newspotform[imagefile]" size="82" type="file" /></dd>
+		</div>
+		
 		<div class='clear'></div>
 
 		<div>
