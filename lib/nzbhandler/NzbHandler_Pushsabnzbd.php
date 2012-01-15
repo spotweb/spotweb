@@ -36,7 +36,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		#	http://stackoverflow.com/questions/4003989/upload-a-file-using-file-get-contents
 
 		# creeer de header
-		$header = 'Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY;
+		$header = array('Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY);
 
 		# bouw nu de content
 		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
