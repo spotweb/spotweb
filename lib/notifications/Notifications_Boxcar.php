@@ -17,7 +17,7 @@ class Notifications_Boxcar extends Notifications_abs {
 	} # register
 
 	function sendMessage($type, $title, $body, $sourceUrl) {
-		$this->boxcarObj->notify($this->_dataArray['email'], $title, null, null, null, $sourceUrl);
+		$this->boxcarObj->notify($this->_dataArray['email'], $this->_appName, $body, null, null, $sourceUrl);
 	} # sendMessage
 
 } # Notifications_Boxcar
