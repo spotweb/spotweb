@@ -195,7 +195,7 @@ class SpotSettings {
 		} # if
 
 		# clear some stuff we don't need to store
-		unset($settings['xsrfid'], $settings['http_referer'], $settings['buttonpressed']);
+		unset($settings['xsrfid'], $settings['http_referer'], $settings['buttonpressed'], $settings['action'], $settings['submitedit']);
 
 		# Store settings
 		foreach ($settings as $key => $value) {

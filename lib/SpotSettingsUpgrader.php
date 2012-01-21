@@ -31,6 +31,8 @@ class SpotSettingsUpgrader {
 		$this->remove('available_languages');
 		$this->remove('featureversion');
 		$this->remove('max_newcount');
+		$this->remove('action');
+		$this->remove('submitedit');
 		$this->setIfNot('cookie_expires', 30);
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
