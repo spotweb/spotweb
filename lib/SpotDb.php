@@ -2122,32 +2122,7 @@ class SpotDb {
 	 */
 	function updateCurrentFilterCounts() {
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: {
-				/*
-  				 * Update the current filter counts if the session
-				 * is still active
-				 */
-				$this->_conn->modify("UPDATE filtercounts f
-										SET f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
-										FROM filtercounts t 
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1)
-										  AND (f.userid IN (SELECT userid FROM sessions WHERE lasthit > f.lastupdate GROUP BY userid ))", array());
-				
-				/*
-				 * Sometimes retrieve removes some sports, make sure
-				 * we do not get confusing results
-				 */
-				$this->_conn->modify("UPDATE filtercounts f
-										SET f.lastvisitspotcount = t.currentspotcount
-										FROM filtercounts t 
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount
-										  AND (t.userid = -1))");
-				break;
-			} # pgsql
-
+			case 'pdo_pgsql'	: 
 			case 'pdo_sqlite'	: {
 				/*
   				 * Update the current filter counts if the session
@@ -2215,7 +2190,8 @@ class SpotDb {
 	 */
 	function markFilterCountAsSeen($userId) {
 		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite'	: {
+			case 'pdo_sqlite'	: 
+			case 'pdo_pgsql'	: {
 				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
 				foreach($filterList as $filter) {
 					$this->_conn->modify("UPDATE filtercounts
@@ -2233,18 +2209,6 @@ class SpotDb {
 				
 				break;
 			} # pdo_sqlite
-			
-			case 'pdo_pgsql'	: {
-				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount,
-											f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1) 
-										  AND (f.userid = %d)",
-							Array( (int) $userId) );
-				break;
-			} # pgsql
 
 			default				: {
 				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
