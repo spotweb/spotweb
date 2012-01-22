@@ -565,10 +565,8 @@ class SpotUserSystem {
 		} # if
 
 		# Make sure a psasword is entered
-		if (strlen($user['newpassword1'] > 0)) {
-			if (strlen($user['newpassword1']) < 5){
-				$errorList[] = _('Entered password is too short');
-			} # if 
+		if (strlen($user['newpassword1']) < 5){
+			$errorList[] = _('Entered password is too short');
 		} # if
 
 		# and make sure the passwords match
@@ -584,7 +582,7 @@ class SpotUserSystem {
 		# and make sure the mailaddress is unique among all users
 		$emailExistResult = $this->_db->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
-			$errorList[] = _('Mailaddress is alread in use');
+			$errorList[] = _('Mailaddress is already in use');
 		} # if
 		
 		return $errorList;
