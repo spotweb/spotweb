@@ -304,7 +304,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 								Array($tablename, $colname, $reftable, $refcolumn));
 		if (!empty($q)) {
 			foreach($q as $res) {
-				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP FOREIGN KEY " . $res['CONSTRAINT_NAME']);
+				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP CONSTRAINT " . $res['constraint_name']);
 			} # foreach
 		} # if
 	} # dropForeignKey
