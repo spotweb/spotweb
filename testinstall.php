@@ -282,8 +282,8 @@
 		global $_testInstall_Ok;
 
 		$form = array('systemtype' => 'public',
-					  'username' => '', 'pass1' => '', 'pass2' => '', 'firstname' => '',
-					  'lastname' => '', 'email' => '');
+					  'username' => '', 'newpassword1' => '', 'newpassword2' => '', 'firstname' => '',
+					  'lastname' => '', 'mail' => '', 'userid' => -1);
 		if (isset($_POST['settingsform'])) {
 			$form = array_merge($form, $_POST['settingsform']);
 		} # if
@@ -292,18 +292,50 @@
 		 * Dit the user press submit? If so, try to
 		 * connect to the database
 		 */
-		$nntpVerified = false;
+		$userVerified = false;
 		if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {			
 			try {
 				/*
-				 * Store the given NNTP settings in the 
+				 * Store the given user settings in the 
 				 * SESSION object, we need it later to update
 				 * the settings in the database
 				 */
 				$_SESSION['spotsettings']['settings'] = $form;
-				
-				var_dump($_SESSION);
-				die();
+			
+				/*
+				 * Very ugly hack. We create an empty SpotSettings class
+				 * so this will satisfy the contstructor in the system.
+				 * It's ugly, i know.
+				 */
+				class SpotSettings { } ;
+
+				/*
+				 * Override the SpotDb class so we can override userEmailExists()
+				 * to not require database access.
+				 */
+				class DbLessSpotDb extends SpotDb {
+					function userEmailExists($s) {
+						return (($s == 'john@example.com') || ($s == 'spotwebadmin@example.com'));
+					} # userEmailExists
+				} #  class DbLessSpotDb
+				  
+
+				/*
+				 * Create an DbLessSpotDb object to satisfy the user subsystem
+				 */
+				$db = new DbLessSpotDb($_SESSION['spotsettings']['db']);
+				$db->connect();
+
+				/*
+				 * And initiate the user system, this allows us to use
+				 * validateUserRecord() 
+				 */
+				$spotUserSystem = new SpotUserSystem($db, new SpotSettings(array()));				
+				$errorList = $spotUserSystem->validateUserRecord($form, false);
+
+				if (!empty($errorList)) {
+					throw new Exception($errorList[0]);
+				} # if
 				
 				/*
 				 * and call the next stage in the setup
@@ -320,7 +352,7 @@
 			} # exception
 		} # if
 		
-		if (!$nntpVerified) {
+		if (!$userVerified) {
 	?>
 			<form name='settingsform' method='POST'>
 			<table summary="PHP settings">
@@ -332,11 +364,11 @@
 				<tr> <th colspan='2'> Administrative user </th> </tr>
 				<tr> <td colspan='2'> Spotweb will use below user information to create a user for use by Spotweb. The defined password will also be set as the password for the built-in 'admin' account. Please make sure to remember this password. </td> </tr>
 				<tr> <td> Username </td> <td> <input type='text' length='40' name='settingsform[username]' value='<?php echo htmlspecialchars($form['username']); ?>'></input> </td> </tr>
-				<tr> <td> Password </td> <td> <input type='text' length='40' name='settingsform[pass1]' value='<?php echo htmlspecialchars($form['pass1']); ?>'></input> </td> </tr>
-				<tr> <td> Password (confirm) </td> <td> <input type='text' length='40' name='settingsform[pass2]' value='<?php echo htmlspecialchars($form['pass2']); ?>'></input> </td> </tr>
+				<tr> <td> Password </td> <td> <input type='text' length='40' name='settingsform[newpassword1]' value='<?php echo htmlspecialchars($form['newpassword1']); ?>'></input> </td> </tr>
+				<tr> <td> Password (confirm) </td> <td> <input type='text' length='40' name='settingsform[newpassword2]' value='<?php echo htmlspecialchars($form['newpassword2']); ?>'></input> </td> </tr>
 				<tr> <td> First name </td> <td> <input type='text' length='40' name='settingsform[firstname]' value='<?php echo htmlspecialchars($form['firstname']); ?>'></input> </td> </tr>
 				<tr> <td> Last name </td> <td> <input type='text' length='40' name='settingsform[lastname]' value='<?php echo htmlspecialchars($form['lastname']); ?>'></input> </td> </tr>
-				<tr> <td> Email address </td> <td> <input type='text' length='40' name='settingsform[email]' value='<?php echo htmlspecialchars($form['email']); ?>'></input> </td> </tr>
+				<tr> <td> Email address </td> <td> <input type='text' length='40' name='settingsform[mail]' value='<?php echo htmlspecialchars($form['mail']); ?>'></input> </td> </tr>
 				<tr> <td colspan='2'> <input type='submit' name='settingsform[submit]' value='Create system'> </td> </tr>
 			</table>
 			</form>
