@@ -75,7 +75,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 			
 			# Prepare the to_tsvector and to_tsquery strings
 			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
-			$ts_query = "to_tsquery('" . $this->safe(strtolower($searchValue)) . "')";
+			$ts_query = "plainto_tsquery('" . $this->safe(strtolower($searchValue)) . "')";
 			
 			$filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
 			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
