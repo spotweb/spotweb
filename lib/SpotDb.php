@@ -2079,6 +2079,7 @@ class SpotDb {
 	 */
 	function resetFilterCountForUser($userId) {
 		switch ($this->_dbsettings['engine']) {
+			case 'pdo_pgsql'	: 
 			case 'pdo_sqlite'	: {
 				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, filterhash FROM filtercounts WHERE userid = -1", array());
 				foreach($filterList as $filter) {
@@ -2092,18 +2093,6 @@ class SpotDb {
 				
 				break;
 			} # sqlite
-			
-			case 'pdo_pgsql'	: {
-				$this->_conn->modify("UPDATE filtercounts f
-											SET f.lastvisitspotcount = f.currentspotcount,
-												f.currentspotcount = t.currentspotcount
-											FROM filtercounts t
-											WHERE (f.filterhash = t.filterhash) 
-											  AND (t.userid = -1) 
-											  AND (f.userid = %d)",
-								Array((int) $userId) );
-				break;
-			} # pgsql
 
 			default				: {
 				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
