@@ -1768,5 +1768,5 @@ msgstr "Oorsprong"
 msgid "Remove spotterid"
 msgstr "Spotterid verwijderen"
 
-msgid "%s commented earlier"
-msgstr "%s schreef eerder"
+msgid "%s commented earlier:"
+msgstr "%s schreef eerder:"
