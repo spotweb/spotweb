@@ -50,6 +50,14 @@
 								  'allowedchildren' => Array(''),
 								  'handler' => Array('TagHandler', 'handle_url') )
 							  
+					),
+
+			/* ------- q ------------------- */
+				'q'	=>
+					Array('quote' =>
+						Array('closetags' => Array('quote'),
+							  'allowedchildren' => Array(NULL),
+							  'handler' => Array('TagHandler', 'handle_quote'))
 					)
                 );
 
@@ -151,6 +159,14 @@
 							 'content' => $origAppend,
 							 'append' => '');
 		} // handle_img
+
+		/* handle the quote tag */
+		static function handle_quote($params, $contents) {
+				# quote it
+				return Array('prepend' => '<blockquote><strong>' . sprintf(_("%s commented earlier:"), substr($params['originalparams'], 1)). '</strong><br>',
+							 'content' => $contents,
+							 'append' => '</blockquote>');
+		} // handle_quote
 
 		/* handle the img tag */
 		static function handle_url($params, $contents) {

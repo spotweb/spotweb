@@ -239,16 +239,17 @@ class SpotUbb_parser {
 				} // else
 			
 			} else if ($this->startofubbtag()) {
-				if (($tagcfg !== NULL) && ($tagcfg['closetags'] === Array(NULL))) {
-					$this->seekback();
-					break;
-				} // if
-
 				$tmptag = $this->fetchopeningtag();
 
 				/* To properly process this tag, it should not be null */
 				if (TagHandler::gettagconfig($tmptag['tagname']) !== NULL) {
-					$tmptag['content'] = $this->tokenize($tmptag);
+					$tmpTagCfg = TagHandler::gettagconfig($tmptag['tagname']);
+
+					if ($tmpTagCfg['closetags'] !== Array(NULL)) {
+						$tmptag['content'] = $this->tokenize($tmptag);
+					} else {
+						$tmptag['content'] = '';
+					}
 					$contents[++$curcnt] = $tmptag;
 
 					/* and be done with this tag */
