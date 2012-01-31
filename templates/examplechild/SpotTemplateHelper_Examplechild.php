@@ -21,4 +21,20 @@ class SpotTemplateHelper_Examplechild extends SpotTemplateHelper_We1rdo {
 	} // getParentTemplates
 
 
+	function getStaticFiles($type) {
+		$tmpList = parent::getStaticFiles($type);
+
+		switch($type) {
+			case 'css'	: {
+				$tmpList[] = 'templates/examplechild/css/extraspoticons.css';
+				
+				break;
+			} # case css
+		} # switch
+
+		return $tmpList;
+	} # getStaticFiles
+							 
+
+
 } # SpotTemplateHelper_ExampleChild
