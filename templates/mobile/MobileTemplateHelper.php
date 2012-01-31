@@ -1,5 +1,5 @@
 <?php
-class CustomTplHelper extends SpotTemplateHelper {
+class MobileTemplateHelper extends SpotTemplateHelper {
 
 	function cat2color($spot) {
 		if (is_array($spot)) {
@@ -31,4 +31,4 @@ class CustomTplHelper extends SpotTemplateHelper {
 		} # else
 	} # filter2cat 
 	
-} # class CustomTplHelper
+} # class MobileTemplateHelper
