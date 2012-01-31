@@ -189,6 +189,13 @@ if (!empty($ownsettingserror)) {
 	throw new InvalidOwnSettingsSettingException("Please remove " . $ownsettingserror . " from your 'ownsettings.php' file, this setting is set in the settings panel from within Spotweb itself");
 } # if
 
+# Make sure the template name in ownsettings.php doesn't end with a slash
+foreach($settings['template'] as $x => $y) {
+	if (substr($y, -1) == '/') {
+		throw new InvalidOwnSettingsSettingException("Please remove the trailing slash for the template name " . $x . " in your ownsettings.php");
+	} # if
+} # if
+
 # Controleer op oud type quicklinks (zonder preference link)
 foreach($settings['quicklinks'] as $link) {
 	if (count($link) < 6) {
