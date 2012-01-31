@@ -17,6 +17,11 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
+		case 'SpotTemplateHelper' : {
+			$tpl_name = substr($class_name, strlen('SpotTemplateHelper_'));
+			
+			require_once "templates/" . strtolower($tpl_name) . "/" . "SpotTemplateHelper_" . ucfirst($tpl_name) . ".php";
+		} # SpotTemplateHelper
 		case 'Net'			: { 
 			$class_name = substr($class_name, 4);
 			
@@ -41,7 +46,7 @@ function __autoload($class_name) {
 				require_once "lib/exceptions/" . $class_name . ".php";
 				return ;
 			} # if
-			
+
 			require_once 'lib/' . $class_name . '.php';
 		} # default
 	} # switch

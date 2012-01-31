@@ -1,4 +1,4 @@
-span.spoticon {background-image:url(../images/iconsprite.png); background-repeat: no-repeat; float:left; display:block; width:16px; height:16px; margin:2px 5px 0 5px;}
+span.spoticon {background-image:url(../img/iconsprite.png); background-repeat: no-repeat; float:left; display:block; width:16px; height:16px; margin:2px 5px 0 5px;}
 
 .spoticon-application {background-position: 0 0;}
 .spoticon-bluray {background-position: 0 -16px;}
