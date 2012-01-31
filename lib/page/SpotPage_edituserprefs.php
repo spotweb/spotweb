@@ -1,10 +1,12 @@
 <?php
 class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_editUserPrefsForm;
+	private $_userIdToEdit;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_editUserPrefsForm = $params['edituserprefsform'];
+		$this->_userIdToEdit = $params['userid'];
 	} # ctor
 
 	function render() {
@@ -12,7 +14,11 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 							  'info' => array());
 							  
 		# Validate proper permissions
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_userprefs, '');
+		if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_userprefs, '');
+		} else {
+			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_other_users, '');
+		} # if
 		
 		# Make sure the editresult is set to 'not comitted' per default
 		$editResult = array();
@@ -23,10 +29,10 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "spot: edit user preferences";
 		
-		# Retrieve the user we want to edit, this is for now always the current user
-		$spotUser = $this->_db->getUser($this->_currentSession['user']['userid']);
+		# retrieve the to-edit user
+		$spotUser = $this->_db->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = sprintf(_('User %d cannot be found'), $this->_currentSession['user']['userid']);
+			$formMessages['errors'][] = sprintf(_('User %d can not be found'), $this->_userIdToEdit);
 			$editResult = array('result' => 'failure');
 		} # if
 		
@@ -69,6 +75,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 						$spotUserSystem->removeIndexFilter($spotUser['userid']);
 					} # if
 
+					# Save the current' user preferences because we need them before cleansing 
+					$savePrefs = $spotUser['prefs'];
+					
 					/*
 					 * We do not want any user preferences to be submitted which aren't in the anonuser preferences,
 					 * as this would allow garbage preferences or invalid settings for non-existing preferences.
@@ -80,7 +89,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
 
 					# Validate all preferences
-					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $this->_currentSession['user']['prefs']);
+					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
 
 					if (empty($formMessages['errors'])) {
 						# Make sure an NZB file was provided
@@ -97,7 +106,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 							
 							if ($uploadError == UPLOAD_ERR_OK) {
 								$formMessages['errors'] = $spotUserSystem->changeAvatar(
-																$this->_currentSession['user']['userid'], 
+																$spotUser['userid'], 
 																file_get_contents($_FILES['edituserprefsform']['tmp_name']['avatar']));
 							} # if
 						} # if
@@ -115,9 +124,13 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 
 					/*
 					 * We have the register Spotweb with the notification providers (growl, prowl, etc) atleast once. 
-					 * The safes option is to just do this wih each preferences submit
+					 * The safes option is to just do this wih each preferences submit. But first we create a fake
+					 * session for this user.
 					 */
-					$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+					$fakeSession = $spotUserSystem->createNewSession($spotUser['userid']);
+					$fakeSession['security'] = new SpotSecurity($this->_db, $this->_settings, $fakeSession['user'], '');
+
+					$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $fakeSession);
 					$spotsNotifications->register();
 					
 					break;

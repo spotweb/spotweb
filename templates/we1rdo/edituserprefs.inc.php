@@ -24,7 +24,7 @@ include "includes/form-messages.inc.php";
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
-	<input type="hidden" name="userid" value="<?php echo $spotuser['userid']; ?>">
+	<input type="hidden" name="userid" value="<?php echo htmlspecialchars($spotuser['userid']); ?>">
 	
 	<div id="edituserpreferencetabs" class="ui-tabs">
 		<ul>

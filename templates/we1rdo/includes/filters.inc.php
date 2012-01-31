@@ -53,7 +53,7 @@
 					<li><p><a><?php echo _('Config'); ?></a></p>
 					<ul>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>"><?php echo _('Change preferences'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid']); ?>"><?php echo _('Change preferences'); ?></a></li>
 	<?php } ?>
 	<?php if (
 			($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, ''))

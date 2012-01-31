@@ -27,7 +27,7 @@ class SpotUserSystem {
 	/*
 	 * Create a new session for the userid
 	 */
-	private function createNewSession($userid) {
+	public function createNewSession($userid) {
 		# If this is an actual user, we need to have the user record
 		$tmpUser = $this->getUser($userid);
 		
