@@ -14,7 +14,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_userprefs, '');
 		
-		# Make sure the editresult is set to 'not comited' per default
+		# Make sure the editresult is set to 'not comitted' per default
 		$editResult = array();
 
 		# Instantiat the user system as necessary for the management of user preferences
@@ -48,7 +48,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 				case 'edit'	: {
 					/*
 					 * We have a few dummy preferenes -- these are submitted like a checkbox for example
-					 * but in reality do something completely difference.
+					 * but in reality do something completely different.
 					 *
 					 * Because we use cleanseUserPreferences() those dummies will not end up in the database
 					 */
@@ -71,9 +71,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 
 					/*
 					 * We do not want any user preferences to be submitted which aren't in the anonuser preferences,
-					 * as this would alow garbage preferences or invalid settings for non-existing preferences.
+					 * as this would allow garbage preferences or invalid settings for non-existing preferences.
 					 *
-					 * A simple recursive merge with the anonuer preferences is not possible because some browsers
+					 * A simple recursive merge with the anonuser preferences is not possible because some browsers
 					 * just don't submit the values of a checkbox when the checkbox is deselected, in that case the
 					 * anonuser's settings would be set instead of the false setting as it should be.
 					 */
