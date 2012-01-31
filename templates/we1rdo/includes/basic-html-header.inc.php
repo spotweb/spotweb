@@ -38,6 +38,8 @@
 				color: #cd0a0a;
 				list-style: none;
 			}
+
+			<?php echo $settings->get('customcss'); ?>
 		</style>
 	</head>
 
