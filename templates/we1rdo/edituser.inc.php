@@ -18,11 +18,16 @@ if (empty($editresult)) {
 			<dt><label for="edituserform[username]"><?php echo _('Username'); ?></label></dt>
 			<dd><input type="text" disabled="disabled" value="<?php echo htmlspecialchars($edituserform['username']); ?>"></dd>
 
+<?php if ($edituserform['userid'] > SPOTWEB_ANONYMOUS_USERID) { ?>
 			<dt><label for="edituserform[newpassword1]"><?php echo _('New password'); ?></label></dt>
 			<dd><input type="password" name="edituserform[newpassword1]" value=""></dd>
 
 			<dt><label for="edituserform[newpassword2]"><?php echo _('Confirm new password'); ?></label></dt>
 			<dd><input type="password" name="edituserform[newpassword2]" value=""></dd>
+<?php } else { ?>
+			<input type="hidden" name="edituserform[newpassword1]" value="dummyvalue">
+			<input type="hidden" name="edituserform[newpassword2]" value="dummyvalue">
+<?php } ?>
 
 			<dt><label for="edituserform[firstname]"><?php echo _('Firstname'); ?></label></dt>
 			<dd><input type="text" name="edituserform[firstname]" value="<?php echo htmlspecialchars($edituserform['firstname']); ?>"></dd>
@@ -33,7 +38,7 @@ if (empty($editresult)) {
 			<dt><label for="edituserform[mail]"><?php echo _('E-mail Address'); ?></label></dt>
 			<dd><input type="text" name="edituserform[mail]"  value="<?php echo htmlspecialchars($edituserform['mail']); ?>"></dd>
 
-<?php if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) { ?>
+<?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID) { ?>
 			<dt><label for="edituserform[apikey]"><?php echo _('API key'); ?></label></dt>
 			<dd><input class="withicon apikeyinputfield" type="text" readonly="readonly" value="<?php echo $edituserform['apikey']; ?>">
 			<input type="image" class="resetApiSubmit" onclick="ajaxSubmitFormWithCb('?page=edituser', this, requestNewUserApiKeyCbHandler); return false; "  src="images/refresh.png" name="edituserform[submitresetuserapi]" value="<?php echo _('Create new API key'); ?>"></dd>
