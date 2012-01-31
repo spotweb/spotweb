@@ -41,7 +41,14 @@ class SpotTemplateHelper {
 	} # ctor
 
 	/*
-	 * Geef het aantal spots terug
+	 * Returns an array of parent template paths
+	 */
+	function getParentTemplates() {
+		return array();
+	} // getParentTemplates
+
+	/*
+	 * Returns the amount of spot based on the given filter
 	 */
 	private function getSpotCount($sqlFilter) {
 		# Controleer de users' rechten
@@ -53,14 +60,14 @@ class SpotTemplateHelper {
 	} # getSpotCount
 
 	/*
-	 * Set params - update de gehele lijst van parameters
+	 * Set params - update de template list of parameters
 	 */
 	function setParams($params) {
 		$this->_params = $params;
 	} # setParams
 	
 	/* 
-	 * Geeft de waarde van een parameter terug
+	 * Returns a paraemter value
 	 */
 	function getParam($name) {
 		if (isset($this->_params[$name])) {
@@ -72,7 +79,7 @@ class SpotTemplateHelper {
 	
 
 	/*
-	 * Geef het aantal spots terug, maar enkel die new zijn
+	 * Returns te amount of spots (for a specific filter) which are new for this user
 	 */
 	function getNewCountForFilter($filterStr) {
 		/*
@@ -101,7 +108,7 @@ class SpotTemplateHelper {
 	} # getNewCountForFilter
 
 	/*
-	 * Geeft een aantal comments terug
+	 * Rturn the actual comments for a specific spot
 	 */
 	function getSpotComments($msgId, $start, $length) {
 		# Controleer de users' rechten
@@ -130,14 +137,14 @@ class SpotTemplateHelper {
 	} # validateNntpServer
 	 
 	/* 
-	 * Geeft terug of een bepaalde actie toegestaan is of niet
+	 * Thin wrapper around the permission allowed function
 	 */
 	function allowed($perm, $object) {
 		return $this->_spotSec->allowed($perm, $object);
 	} # allowed
 	
 	/*
-	 * Geeft een full spot terug
+	 * Returns a spot in full including all the information we have available
 	 */
 	function getFullSpot($msgId, $markAsRead) {
 		# Controleer de users' rechten
