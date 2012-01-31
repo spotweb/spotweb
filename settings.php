@@ -160,28 +160,28 @@ $ownsettingserror = '';
 $array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " has been removed from ownsettings.php" . PHP_EOL;
+		$ownsettingserror .= ' * ' . $value . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('allow_user_template', 'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " has become an user preference" . PHP_EOL;
+		$ownsettingserror .= ' * ' . $value . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('count_newspots', 'keep_seenlist');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " is a user preference (and deniable using the user rights system)" . PHP_EOL;
+		$ownsettingserror .= ' * ' . $value . PHP_EOL;
 	} # if
 } # foreach
 
 $array = array('show_nzbbutton', 'show_updatebutton');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
-		$ownsettingserror .= $value . " has become an user right" . PHP_EOL;
+		$ownsettingserror .= ' * ' . $value . PHP_EOL;
 	} # if
 } # foreach
 
