@@ -17,6 +17,35 @@ if (!empty($editresult)) {
 	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
 
+$filterIcons = array(
+				'application'		=> _('Application'),
+				'bluray'			=> _('Blu-Ray'),
+				'book'				=> _('Book'),
+				'controller'		=> _('Game'),
+				'custom'			=> _('Plain'),
+				'divx'				=> _('DivX'),
+				'female'			=> _('Erotica'),
+				'film'				=> _('Movie'),
+				'hd'				=> _('HD'),
+				'ipod'				=> _('iPod'),
+				'linux'				=> _('Linux'),
+				'apple'				=> _('Apple'),
+				'mpg'				=> _('MPEG'),
+				'music'				=> _('Music'),
+				'nintendo_ds'		=> _('Nintendo DS'),
+				'nintendo_wii'		=> _('Nintendo Wii'),
+				'phone'				=> _('Phone'),
+				'picture'			=> _('Picture'),
+				'playstation'		=> _('Playstation'),
+				'tv'				=> _('TV'),
+				'vista'				=> _('Vista'),
+				'windows'			=> _('Windows'),
+				'wmv'				=> _('WMV'),
+				'xbox'				=> _('Xbox'),
+				'dvd'				=> _('DVD'),
+				'pda'				=> _('PDA')
+);
+
 
 if (empty($editresult)) {
 	# is form voor het toevoegen van een groep ipv wijzigen van een
@@ -57,32 +86,11 @@ if (empty($editresult)) {
 			<dt><label for="editfilterform[icon]"><?php echo _('Icon'); ?></label></dt>
 			<dd>
 				<select name="editfilterform[icon]">
-					<option <?php if ($filter['icon'] == 'application') { echo ' selected="selected" '; } ?> value='application'>Applicatie</option>
-					<option <?php if ($filter['icon'] == 'bluray') { echo ' selected="selected" '; } ?> value='bluray'>Blu-Ray</option>
-					<option <?php if ($filter['icon'] == 'book') { echo ' selected="selected" '; } ?> value='book'>Boek</option>
-					<option <?php if ($filter['icon'] == 'controller') { echo ' selected="selected" '; } ?> value='controller'>Game</option>
-					<option <?php if ($filter['icon'] == 'custom') { echo ' selected="selected" '; } ?> value='custom'>Eigen</option>
-					<option <?php if ($filter['icon'] == 'divx') { echo ' selected="selected" '; } ?> value='divx'>DivX</option>
-					<option <?php if ($filter['icon'] == 'female') { echo ' selected="selected" '; } ?> value='female'>Erotiek</option>
-					<option <?php if ($filter['icon'] == 'film') { echo ' selected="selected" '; } ?> value='film'>Film</option>
-					<option <?php if ($filter['icon'] == 'hd') { echo ' selected="selected" '; } ?> value='hd'>HD</option>
-					<option <?php if ($filter['icon'] == 'ipod') { echo ' selected="selected" '; } ?> value='ipod'>iPod</option>
-					<option <?php if ($filter['icon'] == 'linux') { echo ' selected="selected" '; } ?> value='linux'>Linux</option>
-					<option <?php if ($filter['icon'] == 'mac') { echo ' selected="selected" '; } ?> value='mac'>Apple</option>
-					<option <?php if ($filter['icon'] == 'mpg') { echo ' selected="selected" '; } ?> value='mpg'>MPEG</option>
-					<option <?php if ($filter['icon'] == 'music') { echo ' selected="selected" '; } ?> value='music'>Muziek</option>
-					<option <?php if ($filter['icon'] == 'nintendo_ds') { echo ' selected="selected" '; } ?> value='nintendo_ds'>Nintendo DS</option>
-					<option <?php if ($filter['icon'] == 'nintendo_wii') { echo ' selected="selected" '; } ?> value='nintendo_wii'>Nintendo Wii</option>
-					<option <?php if ($filter['icon'] == 'phone') { echo ' selected="selected" '; } ?> value='phone'>Telefoon</option>
-					<option <?php if ($filter['icon'] == 'picture') { echo ' selected="selected" '; } ?> value='picture'>Afbeelding</option>
-					<option <?php if ($filter['icon'] == 'playstation') { echo ' selected="selected" '; } ?> value='playstation'>Playstation</option>
-					<option <?php if ($filter['icon'] == 'tv') { echo ' selected="selected" '; } ?> value='tv'>TV</option>
-					<option <?php if ($filter['icon'] == 'vista') { echo ' selected="selected" '; } ?> value='vista'>Vista</option>
-					<option <?php if ($filter['icon'] == 'windows') { echo ' selected="selected" '; } ?> value='windows'>Windows</option>
-					<option <?php if ($filter['icon'] == 'wmv') { echo ' selected="selected" '; } ?> value='wmv'>WMV</option>
-					<option <?php if ($filter['icon'] == 'xbox') { echo ' selected="selected" '; } ?> value='xbox'>Xbox</option>
-					<option <?php if ($filter['icon'] == 'dvd') { echo ' selected="selected" '; } ?> value='dvd'>DVD</option>
-					<option <?php if ($filter['icon'] == 'pda') { echo ' selected="selected" '; } ?> value='pda'>PDA</option>
+<?php
+				foreach($filterIcons as $icon => $desc) {
+					echo "<option " . ($filter['icon'] == $icon ? 'selected="selected"' : '') . "value='" . $icon . "'>" . $desc . "</option>";
+				} # foreach
+?>
 				</select>
 			</dd>
 			
