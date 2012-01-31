@@ -17,35 +17,9 @@ if (!empty($editresult)) {
 	echo formResult2Xml($editresult, $formmessages, $tplHelper);
 } # if
 
-$filterIcons = array(
-				'application'		=> _('Application'),
-				'bluray'			=> _('Blu-Ray'),
-				'book'				=> _('Book'),
-				'controller'		=> _('Game'),
-				'custom'			=> _('Plain'),
-				'divx'				=> _('DivX'),
-				'female'			=> _('Erotica'),
-				'film'				=> _('Movie'),
-				'hd'				=> _('HD'),
-				'ipod'				=> _('iPod'),
-				'linux'				=> _('Linux'),
-				'apple'				=> _('Apple'),
-				'mpg'				=> _('MPEG'),
-				'music'				=> _('Music'),
-				'nintendo_ds'		=> _('Nintendo DS'),
-				'nintendo_wii'		=> _('Nintendo Wii'),
-				'phone'				=> _('Phone'),
-				'picture'			=> _('Picture'),
-				'playstation'		=> _('Playstation'),
-				'tv'				=> _('TV'),
-				'vista'				=> _('Vista'),
-				'windows'			=> _('Windows'),
-				'wmv'				=> _('WMV'),
-				'xbox'				=> _('Xbox'),
-				'dvd'				=> _('DVD'),
-				'pda'				=> _('PDA')
-);
 
+# Retrieve a list of icons available
+$filterIcons = $tplHelper->getFilterIcons();
 
 if (empty($editresult)) {
 	# is form voor het toevoegen van een groep ipv wijzigen van een
