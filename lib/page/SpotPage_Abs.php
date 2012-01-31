@@ -53,9 +53,13 @@ abstract class SpotPage_Abs {
 	
 	# Geef the tpl helper terug
 	function getTplHelper($params) {
-		if (file_exists('templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php')) {
-			require_once 'templates/' . $this->_settings->get('tpl_name') . '/CustomTplHelper.php';
-			$tplHelper = new CustomTplHelper($this->_settings, $this->_currentSession, $this->_db, $params);
+		$tplName = $this->_settings->get('tpl_name');
+
+		if (file_exists('templates/' . $tplName . '/' . ucfirst($tplName) . 'TemplateHelper.php')) {
+			require_once 'templates/' . $tplName . '/' . ucfirst($tplName) . 'TemplateHelper.php';
+			
+			$className = ucfirst($tplName) . 'TemplateHelper';
+			$tplHelper = new $className($this->_settings, $this->_currentSession, $this->_db, $params);
 		} else {
 			$tplHelper = new SpotTemplateHelper($this->_settings, $this->_currentSession, $this->_db, $params);
 		} # else

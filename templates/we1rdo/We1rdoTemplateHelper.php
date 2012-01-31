@@ -1,5 +1,5 @@
 <?php
-class CustomTplHelper extends SpotTemplateHelper {
+class We1rdoTemplateHelper extends SpotTemplateHelper {
 
 	function cat2color($spot) {
 		switch( (int) $spot['category']) {
@@ -98,4 +98,4 @@ class CustomTplHelper extends SpotTemplateHelper {
 		return array();
 	} # getStaticFiles 
 	
-} # class CustomTplHelper
+} # class We1rdoTemplateHelper
