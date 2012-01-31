@@ -150,34 +150,17 @@ if (substr($settings['spotweburl'], -1) != '/') {
 } # if
 
 # Preferences lokaal niet meer toestaan
-if (isset($settings['prefs']['perpage']) || (isset($settings['prefs']['date_formatting']))) {
+if (isset($settings['prefs'])) {
 	throw new InvalidOwnSettingsSettingException("Preferences worden voortaan per user gezet");
 } # if
 
 # deprecated settings niet meer toestaan
 $ownsettingserror = '';
-$array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation');
-foreach ($array as $value) {
-	if (isset($settings[$value])) {
-		$ownsettingserror .= ' * ' . $value . PHP_EOL;
-	} # if
-} # foreach
-
-$array = array('allow_user_template', 'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb');
-foreach ($array as $value) {
-	if (isset($settings[$value])) {
-		$ownsettingserror .= ' * ' . $value . PHP_EOL;
-	} # if
-} # foreach
-
-$array = array('count_newspots', 'keep_seenlist');
-foreach ($array as $value) {
-	if (isset($settings[$value])) {
-		$ownsettingserror .= ' * ' . $value . PHP_EOL;
-	} # if
-} # foreach
-
-$array = array('show_nzbbutton', 'show_updatebutton');
+$array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 
+	'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 
+	'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation', 'allow_user_template', 
+	'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb',
+	'count_newspots', 'keep_seenlist', 'show_nzbbutton', 'show_updatebutton');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
 		$ownsettingserror .= ' * ' . $value . PHP_EOL;
