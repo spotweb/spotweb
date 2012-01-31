@@ -15,6 +15,8 @@ if (!empty($loginresult)) {
 if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult)) || (isset($data['renderhtml']))) {
 	if (!isset($data['htmlheaderssent'])) {
 		include "includes/basic-html-header.inc.php";
+
+		$data['renderhtml'] = true;
 	} # if
 	include "includes/form-messages.inc.php"; 
 ?>
