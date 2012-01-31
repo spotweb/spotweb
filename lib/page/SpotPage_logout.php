@@ -2,17 +2,20 @@
 class SpotPage_logout extends SpotPage_Abs {
 	
 	function render() {
-		# Controleer de users' rechten
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
 							  
-		# Instantieer het Spot user system
+		# Instanatiate the spotweb user system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
-		# logout mag niet gecached worden
+		# make sure the logout isn't cached
 		$this->sendExpireHeaders(true);
+
+		# send the appropriate content-type header
+		$this->sendContentTypeHeader('xml');
 		
-		# als het geen anonymous user is
-		if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
+		# and remove the users' session if the user isn't the anonymous one
+		if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
 			$spotUserSystem->removeSession($this->_currentSession['session']['sessionid']);
 
 			echo '<xml><result>OK</result></xml>';

@@ -291,6 +291,26 @@ class SpotUserSystem {
 	} # validSession
 	
 	/*
+	 * Is this user allowed to post content like spam reports etc?
+	 */
+	function allowedToPost($user) {
+		/*
+		 * When an invalid (reserved) username is used, prevent
+		 * posting 
+		 */
+		if (!$this->validUsername($user['username'])) {
+			return false;
+		} # if
+
+		# Als de user niet ingelogged is, dan heeft dit geen zin
+		if ($this->_currentSession['user']['userid'] <= SPOTWEB_ADMIN_USERID) {
+			return false;
+		} # if
+
+		return true;
+	} # allowedToPost
+
+	/*
 	 * Validates a username
 	 */
 	function validUsername($user) {
@@ -349,7 +369,7 @@ class SpotUserSystem {
 	} # setUserGroupList
 	 
 	/*
-	 * Update a user's password
+	 * Update a userid's password
 	 */
 	function setUserPassword($user) {
 		# Convert the password to an passhash

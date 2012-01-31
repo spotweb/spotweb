@@ -54,7 +54,7 @@ class SpotPage_login extends SpotPage_Abs {
 			} # else
 		} else {
 			# Als de user al een sessie heeft, voeg een waarschuwing toe
-			if ($this->_currentSession['user']['userid'] != SPOTWEB_ANONYMOUS_USERID) {
+			if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
 				$loginResult = array('result' => 'alreadyloggedin');
 			} # if
 		} # else

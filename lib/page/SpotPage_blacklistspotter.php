@@ -30,8 +30,9 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		 */
 		$formAction = $this->_blForm['action'];
 
-		# Als de user niet ingelogged is, dan heeft dit geen zin
-		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
+		# Make sure the anonymous user and reserved usernames cannot post content
+		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		if (!$spotUserSystem->allowedToPost($this->_currentSession['user'])) {
 			$postResult = array('result' => 'notloggedin');
 
 			$formAction = '';
@@ -41,9 +42,6 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 			# zorg er voor dat alle variables ingevuld zijn
 			$blackList = array_merge($blackList, $this->_blForm);
 
-			# Instantieer het Spot user system
-			$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-			
 			switch($formAction) {
 				case 'addspotterid'		: {
 					$spotUserSystem->addSpotterToBlacklist($this->_currentSession['user']['userid'], $blackList['spotterid'], $blackList['origin']);

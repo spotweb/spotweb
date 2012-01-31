@@ -47,22 +47,16 @@ class SpotPage_postspot extends SpotPage_Abs {
 		# zet de page title
 		$this->_pageTitle = "spot: post";
 
-		# Als de user niet ingelogged is, dan heeft dit geen zin
-		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$postResult = array('result' => 'notloggedin');
-			$formAction = '';
-		} # if
-
-		# Zorg er voor dat reserved usernames geen spots kunnen posten
+		# Make sure the anonymous user and reserved usernames cannot post content
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
+		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
 			$postResult = array('result' => 'notloggedin');
+
 			$formAction = '';
 		} # if
 
 		# zorg er voor dat alle variables ingevuld zijn
 		$spot = array_merge($spot, $this->_spotForm);
-
 
 		# If user tried to submit, validate the file uploads
 		if ($formAction == 'post') {
