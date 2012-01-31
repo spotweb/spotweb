@@ -23,7 +23,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		$spotSigning = new SpotSigning();
 		
 		# creeer een default report
-		$report = array('body' => 'Dit is SPAM!',
+		$report = array('body' => 'This is SPAM!',
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
 						 'randomstr' => '');
@@ -40,16 +40,9 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		 */
 		$formAction = $this->_reportForm['action'];
 
-		# Als de user niet ingelogged is, dan heeft dit geen zin
-		if ($this->_currentSession['user']['userid'] == SPOTWEB_ANONYMOUS_USERID) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
-
-		# Zorg er voor dat reserved usernames geen reports kunnen posten
+		# Make sure the anonymous user and reserved usernames cannot post content
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->validUsername($this->_currentSession['user']['username'])) {
+		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
 			$postResult = array('result' => 'notloggedin');
 
 			$formAction = '';
