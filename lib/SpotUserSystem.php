@@ -564,8 +564,15 @@ class SpotUserSystem {
 			$errorList[] = _('Not a valid lastname');
 		} # if
 
-		# Make sure a psasword is entered
-		if (strlen($user['newpassword1']) < 5){
+		# Make sure a valid password is entered for existing users
+		if ((strlen($user['newpassword1'] > 0)) && ($isEdit)) {
+			if (strlen($user['newpassword1']) < 5){
+				$errorList[] = _('Entered password is too short');
+			} # if
+		} # if
+
+		# Make sure a valid password is entered for new users
+		if ((strlen($user['newpassword1'] < 5)) && (!$isEdit)) {
 			$errorList[] = _('Entered password is too short');
 		} # if
 
