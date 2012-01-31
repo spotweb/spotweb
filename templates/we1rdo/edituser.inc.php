@@ -12,7 +12,7 @@ if (empty($editresult)) {
 <form class="edituserform" name="edituserform" action="<?php echo $tplHelper->makeEditUserAction(); ?>" method="post">
 	<input type="hidden" name="edituserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserform'); ?>">
 	<input type="hidden" name="edituserform[buttonpressed]" value="">
-	<input type="hidden" name="userid" value="<?php echo $edituserform['userid']; ?>">
+	<input type="hidden" name="userid" value="<?php echo htmlspecialchars($edituserform['userid']); ?>">
 	<fieldset>
 		<dl>
 			<dt><label for="edituserform[username]"><?php echo _('Username'); ?></label></dt>

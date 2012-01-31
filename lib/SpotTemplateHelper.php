@@ -320,6 +320,18 @@ class SpotTemplateHelper {
 	} # makeEditUserUrl
 
 	/*
+	 * Creeert de url voor het bewerken van een bestaande users' preferences
+	 */
+	function makeEditUserPrefsUrl($userid) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) {
+			return '';
+		} # if
+		
+		return $this->makeBaseUrl("path") . "?page=edituserprefs&amp;userid=" . ((int) $userid);
+	} # makeEditUserPrefsUrl
+
+	/*
 	 * Creeert de action url voor het inloggen van een user
 	 */
 	function makeLoginAction() {

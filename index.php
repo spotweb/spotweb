@@ -268,7 +268,8 @@ try {
 
 		case 'edituserprefs' : {
 				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
-							Array('edituserprefsform' => $req->getForm('edituserprefsform')));
+							Array('edituserprefsform' => $req->getForm('edituserprefsform'),
+								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;
 		} # edituserprefs

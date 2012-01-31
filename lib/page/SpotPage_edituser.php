@@ -48,7 +48,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 		# retrieve the to-edit user
 		$spotUser = $this->_db->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = sprintf(_('User can not be found'), $spotUser['username']);
+			$formMessages['errors'][] = sprintf(_('User %d can not be found'), $this->_userIdToEdit);
 			$editResult = array('result' => 'failure');
 		} # if
 		
