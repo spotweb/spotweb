@@ -190,7 +190,7 @@ if (!empty($ownsettingserror)) {
 } # if
 
 # Make sure the template name in ownsettings.php doesn't end with a slash
-foreach($settings['template'] as $x => $y) {
+foreach($settings['templates'] as $x => $y) {
 	if (substr($y, -1) == '/') {
 		throw new InvalidOwnSettingsSettingException("Please remove the trailing slash for the template name " . $x . " in your ownsettings.php");
 	} # if
