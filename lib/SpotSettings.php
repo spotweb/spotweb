@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.18');
+define('SPOTWEB_SETTINGS_VERSION', '0.19');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -146,6 +146,11 @@ class SpotSettings {
 		if (!filter_var($settings['systemfrommail'], FILTER_VALIDATE_EMAIL)) {
 			$errorList[] = _('Not a valid email address');
 		} # if
+
+		# We don't want to save megabyts of CSS, so put a limit to the size
+		if (strlen($settings['customcss'] > 1024 * 10)) { 
+			$errorList[] = _('Custom CSS is too large');
+		} # if		
 
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
 		$settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
