@@ -1,5 +1,5 @@
 <?php
-class We1rdoTemplateHelper extends SpotTemplateHelper {
+class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 
 	function cat2color($spot) {
 		switch( (int) $spot['category']) {
@@ -114,7 +114,7 @@ class We1rdoTemplateHelper extends SpotTemplateHelper {
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
 							 'templates/we1rdo/css/jquery-ui-1.8.13.custom.css',
-							 'css/spoticons.css',
+							 'templates/we1rdo/css/spoticons.css',
 							 'templates/we1rdo/css/style.css'
 							 );
 				break;
