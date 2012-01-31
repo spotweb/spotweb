@@ -14,6 +14,9 @@
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 		<script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 <?php } ?>
+		<style type="text/css" media="screen,handheld,projection">
+			<?php echo $settings->get('customcss'); ?>
+		</style>		
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
 		<style type="text/css" media="screen,handheld,projection">
 			<?php echo $tplHelper->getUserCustomCss(); ?>

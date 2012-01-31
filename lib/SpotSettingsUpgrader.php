@@ -61,6 +61,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('enable_timing', false);
 		$this->setIfNot('enable_stacktrace', true);
 		$this->setIfNot('systemfrommail', 'spotweb@example.com');
+		$this->setIfNot('customcss', '');
 		$this->updateSettingsVersion();
 	} # update()
 	

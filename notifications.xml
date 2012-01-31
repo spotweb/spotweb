@@ -4,9 +4,27 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Fri, 23 Dec 2011 00:00:00 +0100</lastBuildDate>
-		<pubDate>Fri, 23 Dec 2011 00:00:00 +0100</pubDate>
+		<lastBuildDate>Tue, 31 Jan 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Tue, 31 Jan 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Security group reset</title>
+			<description><![CDATA[Users could already specify their own CustomCSS but for some multi-user systems a systemwide
+				custom CSS would be more interesting. Support for this has been added but it requires a small update to the 
+				settings database table hence this notice.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>07</guid>
+			<pubDate>Tue, 31 Jan 2012 10:30:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.54</spotweb:schema_version>
+			<spotweb:settings_version>0.19</spotweb:settings_version>
+			<spotweb:security_version>0.27</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
+
 
 		<item>
 			<title>Security group reset</title>
