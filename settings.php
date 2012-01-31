@@ -137,7 +137,6 @@ if (($settings['templates']['autodetect']) &&
 } else {
 	$settings['tpl_name'] = $settings['templates']['default'];
 } # else
-$settings['tpl_name'] = str_replace('templates/', '', $settings['tpl_name']);
 
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen
@@ -193,6 +192,13 @@ if (!empty($ownsettingserror)) {
 foreach($settings['templates'] as $x => $y) {
 	if (substr($y, -1) == '/') {
 		throw new InvalidOwnSettingsSettingException("Please remove the trailing slash for the template name " . $x . " in your ownsettings.php");
+	} # if
+} # if
+
+# Make sure the template name in ownsettings.php doesn't contain a path
+foreach($settings['templates'] as $x => $y) {
+	if (strpos($y, '/') !== false) {
+		throw new InvalidOwnSettingsSettingException("Please remove the path to the template " . $x . " in your ownsettings.php (only include the name)");
 	} # if
 } # if
 
