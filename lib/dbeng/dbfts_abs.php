@@ -32,6 +32,8 @@ abstract class dbfts_abs {
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields) {
+		throw new NotImplementedException("createTextQuery() is running unoptimized while it shouldnt. Please report to the author");
+		
 		# Initialize some basic variables so our return statements are simple
 		$filterValueSql = array();
 
