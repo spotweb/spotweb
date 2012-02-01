@@ -623,7 +623,8 @@ class SpotDb {
 	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
 	 */
 	function createTextQuery($fieldList) {
-		return $this->_conn->createTextQuery($fieldList);
+		$ftsEng = dbfts_abs::Factory($this->_conn);
+		return $ftsEng->createTextQuery($fieldList);
 	} # createTextQuery()
 
 	/*
