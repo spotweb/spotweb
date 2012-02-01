@@ -106,8 +106,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 
 						# prepare the spot to be added to the server
 						$reportDbList[] = array('messageid' => $reportId,
-												 'fromhdr' => $msgheader['From'],
-												 'keyword' => $msgheader['keyword'],
+												 'fromhdr' => utf8_encode($msgheader['From']),
+												 'keyword' => utf8_encode($msgheader['keyword']),
 												 'nntpref' => $msgheader['References']);
 					} # if
 
