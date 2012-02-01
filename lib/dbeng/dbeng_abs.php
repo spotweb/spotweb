@@ -98,25 +98,4 @@ abstract class dbeng_abs {
 	 */
 	abstract function modify($s, $p = array());
 
-	/*
-	 * Constructs a query part to match textfields. Abstracted so we can use
-	 * a database specific FTS engine if one is provided by the DBMS
-	 */
-	function createTextQuery($searchFields) {
-		# Initialize some basic variables so our return statements are simple
-		$filterValueSql = array();
-
-		foreach($searchFields as $searchItem) {
-			$searchValue = trim($searchItem['value']);
-			$field = $searchItem['fieldname'];
-			
-			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE '%"  . $this->safe($searchValue) . "%') ";
-		} # foreach
-
-		return array('filterValueSql' => $filterValueSql,
-					 'additionalTables' => array(),
-					 'additionalFields' => array(),
-					 'sortFields' => array());
-	} # createTextQuery
-
 } # dbeng_abs

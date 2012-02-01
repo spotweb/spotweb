@@ -52,4 +52,5 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		return str_replace($search, $replace, $s);
 	} # safe
 
+
 } # class

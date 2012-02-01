@@ -8,6 +8,7 @@ function __autoload($class_name) {
 		case 'SpotStruct'	: require_once 'lib/dbstruct/' . $class_name . '.php'; break;
 		case 'SpotRetriever': require_once 'lib/retriever/' . $class_name . '.php'; break;
 		case 'dbeng'		: require_once 'lib/dbeng/' . $class_name . '.php'; break;
+		case 'dbfts'		: require_once 'lib/dbeng/' . $class_name . '.php'; break;
 		case 'NzbHandler'	: require_once 'lib/nzbhandler/' . $class_name . '.php'; break;
 		case 'Notifications': require_once 'lib/notifications/' . $class_name . '.php'; break;
 		case 'Gettext'		: require_once 'lib/gettext/' . $class_name . '.php'; break;
