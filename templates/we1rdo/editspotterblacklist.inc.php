@@ -17,7 +17,7 @@
 ?>
 				<td> <?php echo $bannedspotter['spotterid']; ?> </td>
 				<td> <?php echo $bannedspotter['origin']; ?> </td>
-				<td><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Remove spotter from blacklist') ?>', '?page=render&tplname=editspotterblacklistdelete&data[spotterid]=<?php echo $bannedspotter['spotterid']; ?>', 'blacklistspotterform', null, 'autoclose', function() { refreshTab('edituserpreferencetabs')}); "><span class="ui-icon ui-icon-circle-close"></span></a></td>
+				<td><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Remove spotter from blacklist') ?>', '?page=render&tplname=editspotterblacklistdelete&data[spotterid]=<?php echo $bannedspotter['spotterid']; ?>', 'blacklistspotterform', null, 'autoclose', function() { refreshTab('edituserpreferencetabs')}, null); "><span class="ui-icon ui-icon-circle-close"></span></a></td>
 			</tr>
 <?php
 	}
