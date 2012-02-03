@@ -68,11 +68,26 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			$formMessages['errors'] = $spotPosting->postComment($this->_currentSession['user'], $comment);
 			
 			if (empty($formMessages['errors'])) {
+				/* Format the body so we can have smilies and stuff be shown in the template */
+				$tmpBody = $this->_tplHelper->formatContent($comment['body']);
+
+				/* Try to create the avatar */
+				if (!empty($this->_currentSession['user']['avatar'])) {
+					$comment['user-avatar'] = $this->_currentSession['user']['avatar'];
+				} else {
+					$spotSigning = new SpotSigning();
+					$tmpKey = $spotSigning->getPublicKey($this->_currentSession['user']['privatekey']);
+					$comment['user-key'] = $tmpKey['publickey'];
+				} # else
+				$commentImage = $this->_tplHelper->makeCommenterImageUrl($comment);
+
+				/* and return the result to the system */
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
 									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'rating' => $comment['rating'],
-									'body' => $comment['body']);
+									'body' => $tmpBody,
+									'commentimage' => $commentImage);
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else
