@@ -30,7 +30,7 @@
 			# dit maakt het simpeler om te zien welke rechten een user heeft
 			if ($group['ismember']) {
 				if ($allow_edit_groupMembership) {
-					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}); ">' . $group['name'] . '</a>, ';
+					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' . $group['name'] . '</a>, ';
 				} elseif ($allow_display_groupMembership) { 
 					$groupList .= $group['name'] . ', ';
 				} # if
@@ -44,7 +44,7 @@
 					<td> 
 <?php 
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}); ">' .
+				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' .
 				 $user['username'] . '</a>'; 
 ?> 
 				</td>
@@ -54,11 +54,6 @@
 				<td> <?php echo $tplHelper->formatDate($user['lastvisit'], 'userlist'); ?> </td>
 				<td> <?php echo $groupList; ?> </td>
 				<td> <?php echo $user['lastipaddr']; ?> </td>
-<?php 
-		echo '<td><a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user preferences') . '\', \'?page=edituserprefs&userid=' . $user['userid'] . '&dialogembedded=1\', \'edituserprefsform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}); ">' .
-				 $user['username'] . '</a></td>'; 
-?> 
 			</tr>
 <?php
 	}

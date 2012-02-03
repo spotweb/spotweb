@@ -121,18 +121,18 @@ function refreshTab(tabName) {
 
 	
 /*
- * Helper functie om een dialog te openen, er moeten een aantal parameters 
- * meegegeven worden:
+ * Helper function to open a dialog, a couple of parameters are required.
  *
- * divid = id van een div welke geburikt wordt om om te vormen tot een dialog.
- * title = title van de dialogbox
- * url = url van de content waar deze dialog geladen zou moeten worden
- * formname = naam van het formulier, dit is nodig om de submit buttons te attachen
- * buttonClick = functie welke aangeroepen moe worden als men op de submit button clickt
+ * divid = id of a dummy div which should be used to create a dialog
+ * title = title of the dialogbox
+ * url = URL of the HTML content to load into the dialog
+ * formname = Formname, necessary to attach the submit buttons
+ * buttonClick = Function to be called when the submit button is pressed
  * successAction = choice of 'autoclose', 'showresultonly', 'reload'
- * closeCb = functie welke aangeroepen moet worden als de dialog gesloten wordt
+ * closeCb = Function which should be called when the dialog is closed
+ * openCb = Function which should be called when the HTML content of the dialog is loaded
  */
-function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb) {
+function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb, openCb) {
 	var $dialdiv = $("#" + divid);
   
     if (!$dialdiv.is(".ui-dialog-content")) {
@@ -244,6 +244,11 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 				//var $buttons = $("form." + formname + " input[type='submit']"); 
 				var $buttons = $("#" + divid + " input[type='submit']"); 
 				$buttons.click(buttonClick)
+
+				// Call the open callback
+				if (openCb) {
+					openCb();
+				} // if
 				
 				// en toon de dialog
 				$dialdiv.dialog('open');
