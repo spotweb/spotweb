@@ -2,11 +2,13 @@
 class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_editUserPrefsForm;
 	private $_userIdToEdit;
+	private $_dialogembedded;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
 		$this->_editUserPrefsForm = $params['edituserprefsform'];
 		$this->_userIdToEdit = $params['userid'];
+		$this->_dialogembedded = $params['dialogembedded'];
 	} # ctor
 
 	function render() {
@@ -146,6 +148,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		$this->template('edituserprefs', array('edituserprefsform' => $spotUser['prefs'],
 										    'formmessages' => $formMessages,
 											'spotuser' => $spotUser,
+											'dialogembedded' => $this->_dialogembedded,
 											'http_referer' => $this->_editUserPrefsForm['http_referer'],
 											'edituserprefsresult' => $editResult));
 	} # render
