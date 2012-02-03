@@ -1230,6 +1230,9 @@ msgstr "Een gebruiker moet in minstens &eacute;&eacute;n groep zitten"
 msgid "User %s cannot be found"
 msgstr "Gebruiker %s kan niet gevonden worden"
 
+msgid "Editting user preferences for '%s'"
+msgstr "Gebruikersvoorkeuren wijzigen voor '%s'"
+
 #: SpotPage_postspot.php
 msgid "Please select NZB file"
 msgstr "Geen NZB bestand opgegeven"

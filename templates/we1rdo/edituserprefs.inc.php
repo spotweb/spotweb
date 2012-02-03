@@ -11,15 +11,27 @@ if (!empty($edituserprefsresult)) {
 	} # if
 } # if
 
-require "includes/header.inc.php";
+/* If we run embedded in a dialog, dont run the HTML header as that messes up things */
+if (!$dialogembedded) {
+	require "includes/header.inc.php";
+	echo '</div>';
+} # if
 include "includes/form-messages.inc.php";
 
+if ($dialogembedded) {
 ?>
-</div>
+	<div id='toolbar'>
+		<div class="closeuserpreferences"><p><?php echo vsprintf(_("Editting user preferences for '%s'"), $spotuser['username']); ?></p>
+		</div>
+	</div>
+<?php } else {
+?>
 	<div id='toolbar'>
 		<div class="closeuserpreferences"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'><?php echo _('Back to mainview'); ?></a></p>
 		</div>
 	</div>
+<?php } # else 
+?>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">

@@ -54,6 +54,11 @@
 				<td> <?php echo $tplHelper->formatDate($user['lastvisit'], 'userlist'); ?> </td>
 				<td> <?php echo $groupList; ?> </td>
 				<td> <?php echo $user['lastipaddr']; ?> </td>
+<?php 
+		echo '<td><a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
+				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user preferences') . '\', \'?page=edituserprefs&userid=' . $user['userid'] . '&dialogembedded=1\', \'edituserprefsform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}); ">' .
+				 $user['username'] . '</a></td>'; 
+?> 
 			</tr>
 <?php
 	}
@@ -61,4 +66,3 @@
 		</tbody>
 	</table>
 
-	
