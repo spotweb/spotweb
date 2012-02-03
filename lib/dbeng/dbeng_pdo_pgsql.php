@@ -1,4 +1,3 @@
-
 <?php
 class dbeng_pdo_pgsql extends dbeng_pdo {
 	private $_db_host;
