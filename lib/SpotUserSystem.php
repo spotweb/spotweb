@@ -306,7 +306,7 @@ class SpotUserSystem {
 		} # if
 
 		# Als de user niet ingelogged is, dan heeft dit geen zin
-		if ($this->_currentSession['user']['userid'] <= SPOTWEB_ADMIN_USERID) {
+		if ($user['userid'] <= SPOTWEB_ADMIN_USERID) {
 			return false;
 		} # if
 
