@@ -9,7 +9,7 @@
 			
 			# Output de HTML
 			echo '<li class="sortable-element-class ' . $tplHelper->filter2cat($filter['tree']) . '" id="orderfilterslist_' . $filter['id'];
-			echo '"><div><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Edit filter') . '\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', null, \'autoclose\', function() { refreshTab(\'edituserpreferencetabs\')}, null);">';
+			echo '"><div><a href="" onclick="return openDialog(\'editfilterdialogdiv\', \'' . _('Edit filter') . '\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', null, \'autoclose\', function() { refreshTab(\'edituserpreferencetabs\')}, null);">';
 			echo '<span class="spoticon spoticon-' . str_replace('.png', '', $filter['icon']) . '">&nbsp;</span>' . $filter['title'] . '</a>';
 			echo '</div>';
 			
@@ -28,6 +28,8 @@
 ?>
 			</ul>
 
+			<!-- We need our own editdialogdiv because this form can be embedded into another dialog as a whole -->
+			<div id='editfilterdialogdiv'></div>
 			<br>
 			
 			<form class="editfilterform" name="editfilterform" action="<?php echo $tplHelper->makeEditFilterAction(); ?>" method="post" enctype="multipart/form-data">

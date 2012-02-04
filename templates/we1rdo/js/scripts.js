@@ -555,20 +555,17 @@ function spotNav(direction) {
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
 }
 
-// Edit user preference tabs
-$(document).ready(function() {
-	var BaseURL = createBaseURL();
-	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+/*
+ * Initializes the user preferences screen
+ */
+function initializeUserPreferencesScreen() {
 	$("#edituserpreferencetabs").tabs();
-	$("#usermanagementtabs").tabs();
-	$("#editsettingstab").tabs();
 
-	/* VOor de user preferences willen we de filter list sorteerbaar maken
-	   op het moment dat die tab klaar is met laden */
+	/* If the user preferences tab is loaded, make the filters sortable */
 	$('#edituserpreferencetabs').bind('tabsload', function(event, ui) {
 		bindSelectedSortableFilter();
 	});	
-	
+
 	$('#nzbhandlingselect').change(function() {
 	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
 	   
@@ -581,17 +578,8 @@ $(document).ready(function() {
 	// roep de change handler aan zodat alles goed staat
 	$('#nzbhandlingselect').change();
 
-    $(".enabler").each(function(){
-        if (!$(this).prop('checked'))
-            $('#content_'+$(this).attr('id')).hide();
-    });
-
-	$(".enabler").click(function() {
-		if ($(this).prop('checked'))
-			$('#content_'+$(this).attr('id')).show();
-		else
-			$('#content_'+$(this).attr('id')).hide();
-	});
+	/* Attach the hide/show functionalitity to the checkboxes who want it */
+	attachEnablerBehaviour();
 
 	$('#twitter_request_auth').click(function(){
 		$('#twitter_result').html(loading);
@@ -609,6 +597,35 @@ $(document).ready(function() {
 		$('#twitter_result').html(loading);
 		$.get(BaseURL+"?page=twitteroauth", {'action': 'remove'}, function(data){ $('#twitter_result').html(data); });
 	});
+} // initializeUserPreferencesScreen
+
+
+/*
+ * Some checkboxes behave as an 'hide/show' button for extra settings
+ * we want to add the behaviour to those buttons
+ */
+function attachEnablerBehaviour() {
+    $(".enabler").each(function(){
+        if (!$(this).prop('checked'))
+            $('#content_'+$(this).attr('id')).hide();
+    });
+
+	$(".enabler").click(function() {
+		if ($(this).prop('checked'))
+			$('#content_'+$(this).attr('id')).show();
+		else
+			$('#content_'+$(this).attr('id')).hide();
+	});	
+} // attachEnablerBehaviour
+
+
+$(document).ready(function() {
+	var BaseURL = createBaseURL();
+	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+	$("#usermanagementtabs").tabs();
+	$("#editsettingstab").tabs();
+	attachEnablerBehaviour();
+	initializeUserPreferencesScreen();
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)
