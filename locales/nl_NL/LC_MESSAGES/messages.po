@@ -327,6 +327,9 @@ msgstr "IP address van laatste bezoek"
 msgid "Change user"
 msgstr "Wijzig gebruiker"
 
+msgid "Edit preferences"
+msgstr "Wijzig voorkeuren"
+
 #: spotinfo.inc.php
 msgid "This spot is not verified, the name of the sender has not been confirmed"
 msgstr "Deze spot is niet geverifi&euml;erd, de naam van de poster is niet bevestigd!"

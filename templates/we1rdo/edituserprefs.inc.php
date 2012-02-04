@@ -1,42 +1,45 @@
 <?php
 $pagetitle = _('Change user preferences');
 
-if (!empty($edituserprefsresult)) {
-	//include 'includes/form-xmlresult.inc.php';
-	//echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
-	
-	if ($edituserprefsresult['result'] == 'success') {
-		$tplHelper->redirect($http_referer);
+/* If we run embedded in a dialog, dont run the HTML header as that messes up things */
+if (!$dialogembedded) {
+
+	/* Redirect to the callingpage */
+	if (!empty($edituserprefsresult)) {
+		if ($edituserprefsresult['result'] == 'success') {
+			$tplHelper->redirect($http_referer);
+
+			return ;
+		} # if
+	} # if
+
+	require "includes/header.inc.php";
+	echo '</div>';
+} else {
+	/* Return the XML result */
+	if (!empty($edituserprefsresult)) {
+		include 'includes/form-xmlresult.inc.php';
+		echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
+
 		return ;
 	} # if
 } # if
-
-/* If we run embedded in a dialog, dont run the HTML header as that messes up things */
-if (!$dialogembedded) {
-	require "includes/header.inc.php";
-	echo '</div>';
-} # if
 include "includes/form-messages.inc.php";
 
-if ($dialogembedded) {
-?>
-	<div id='toolbar'>
-		<div class="closeuserpreferences"><p><?php echo vsprintf(_("Editting user preferences for '%s'"), $spotuser['username']); ?></p>
-		</div>
-	</div>
-<?php } else {
-?>
+if (!$dialogembedded) { ?>
 	<div id='toolbar'>
 		<div class="closeuserpreferences"><p><a class='toggle' href='<?php echo $tplHelper->makeBaseUrl('path');?>'><?php echo _('Back to mainview'); ?></a></p>
 		</div>
 	</div>
-<?php } # else 
-?>
+<?php } ?>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
 	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
 	<input type="hidden" name="userid" value="<?php echo htmlspecialchars($spotuser['userid']); ?>">
+<?php if ($dialogembedded) { ?>
+	<input type="hidden" name="dialogembedded" value="1">
+<?php } ?>
 	
 	<div id="edituserpreferencetabs" class="ui-tabs">
 		<ul>
@@ -423,7 +426,9 @@ if ($dialogembedded) {
 
 		<div class="editprefsButtons">
 			<input class="greyButton" type="submit" name="edituserprefsform[submitedit]" value="<?php echo _('Change'); ?>">
+<?php if (!$dialogembedded) { ?>
 			<input class="greyButton" type="submit" name="edituserprefsform[submitcancel]" value="<?php echo _('Cancel'); ?>">
+<?php } ?>
 			<div class="clear"></div>
 		</div>
 	</div>
@@ -490,4 +495,6 @@ if ($dialogembedded) {
 		echo "</fieldset>" . PHP_EOL;
 	} # notificationOptions
 
+if (!$dialogembedded) {
 	require_once "includes/footer.inc.php";
+} # if
