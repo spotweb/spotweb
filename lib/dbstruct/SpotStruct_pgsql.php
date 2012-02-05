@@ -171,8 +171,9 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			 * we ignore this 
 			 */
 			switch(strtolower($collation)) {
-				case 'utf8'		: 
-				case 'ascii'	: 
+				case 'utf8'			: 
+				case 'ascii'		: 
+				case 'ascii_bin'	: 
 				case ''			: $colSetting = ''; break;
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
@@ -203,8 +204,9 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		 * we ignore this 
 		 */
 		switch(strtolower($collation)) {
-			case 'utf8'		: 
-			case 'ascii'	: 
+			case 'utf8'			: 
+			case 'ascii'		: 
+			case 'ascii_bin'	: 
 			case ''			: $colSetting = ''; break;
 			default			: throw new Exception("Invalid collation setting");
 		} # switch
