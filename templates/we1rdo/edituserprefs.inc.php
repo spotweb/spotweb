@@ -48,7 +48,9 @@ if (!$dialogembedded) { ?>
 			<li><a href="#edituserpreftab-2"><span><?php echo _('NZB handeling'); ?></span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
+	<?php if (!$dialogembedded) { ?>
 			<li><a href="?page=render&tplname=listfilters" title="<?php echo _('Filters'); ?>"><span><?php echo _('Filters'); ?></span></a></li>
+	<?php } ?>
 <!--
 			<li><a href="?page=render&tplname=cat2dlmapping" title="<?php echo _('Download categories'); ?>"><span><?php echo _('Download categories'); ?></span></a></li>
 -->
@@ -63,7 +65,9 @@ if (!$dialogembedded) { ?>
 			<li><a href="#edituserpreftab-6"><span><?php echo _('Posting of spots'); ?></span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) { ?>
+	<?php if (!$dialogembedded) { ?>
 			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo _('Blacklist spotter'); ?>"><span><?php echo _('Blacklist spotter'); ?></span></a></li>
+	<?php } ?>
 <?php } ?>
 	
 		</ul>
