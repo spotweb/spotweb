@@ -290,7 +290,7 @@ if (!$dialogembedded) { ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'email')) { ?>
 <!-- E-mail -->
 			<fieldset>
-				<dt><label for="use_email"><?php echo _('Send e-mail to') . ' ' . $currentSession['user']['mail']; ?>?</label></dt>
+				<dt><label for="use_email"><?php echo _('Send e-mail to') . ' ' . $spotuser['mail']; ?>?</label></dt>
 				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][email][enabled]" id="use_email" <?php if ($edituserprefsform['notifications']['email']['enabled']) { echo 'checked="checked"'; } ?>></dd>
 
 				<fieldset id="content_use_email" class="notificationSettings">
