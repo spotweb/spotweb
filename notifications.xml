@@ -4,12 +4,29 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Tue, 31 Jan 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Tue, 31 Jan 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Mon, 6 Feb 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
 
 		<item>
-			<title>Security group reset</title>
+			<title>Database changes</title>
+			<description><![CDATA[There was a small bug in the way Spotweb stores the spotterid causing it to sometimes create a duplicate key. This change affects the largest tables of your Spotweb installation so upgrading may take quiete a while.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>07</guid>
+			<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
+			<author>MassD67</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.55</spotweb:schema_version>
+			<spotweb:settings_version>0.19</spotweb:settings_version>
+			<spotweb:security_version>0.27</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
+
+
+
+		<item>
+			<title>Systemwide Custom CSS</title>
 			<description><![CDATA[Users could already specify their own CustomCSS but for some multi-user systems a systemwide
 				custom CSS would be more interesting. Support for this has been added but it requires a small update to the 
 				settings database table hence this notice.
