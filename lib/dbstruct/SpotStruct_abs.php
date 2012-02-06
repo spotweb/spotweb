@@ -174,7 +174,10 @@ abstract class SpotStruct_abs {
 		} # if
 
 		# Chcek character set setting
-		if ((strtolower($q['CHARACTER_SET_NAME']) != $collation) && ($q['CHARACTER_SET_NAME'] != null)) {
+		if ((strtolower($q['COLLATION_NAME']) != $collation) && ($q['COLLATION_NAME'] != null)) {
+			# var_dump($q);
+			# var_dump($collation);
+			# die();
 			return 'charset';
 		} # if
 		
