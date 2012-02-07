@@ -1118,15 +1118,16 @@ class SpotDb {
 			$insertArray = array();
 
 			foreach($comments as $comment) {
-				$insertArray[] = vsprintf("('%s', '%s', %d)",
+				$insertArray[] = vsprintf("('%s', '%s', %d, %d)",
 						 Array($this->safe($comment['messageid']),
 							   $this->safe($comment['nntpref']),
-							   $this->safe($comment['rating'])));
+							   $this->safe($comment['rating']),
+							   $this->safe($comment['stamp'])));
 			} # foreach
 
 			# Actually insert the batch
 			if (!empty($insertArray)) {
-				$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating)
+				$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp)
 									  VALUES " . implode(',', $insertArray), array());
 			} # if
 		} # foreach

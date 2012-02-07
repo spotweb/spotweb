@@ -129,12 +129,12 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					 */
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
+					$msgheader['stamp'] = strtotime($msgheader['Date']);
 
 					/*
 					 * Don't add older comments than specified for the retention stamp
 					 */
-					$commentStamp = strtotime($msgheader['Date']);
-					if (($retentionStamp > 0 && $commentStamp < $retentionStamp) || $commentStamp < $this->_settings->get('retrieve_newer_than')) {
+					if (($retentionStamp > 0 && $msgheader['stamp'] < $retentionStamp) || $msgheader['stamp'] < $this->_settings->get('retrieve_newer_than')) {
 						continue;
 					} # if
 
@@ -164,6 +164,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					if (!$header_isInDb) {
 						$commentDbList[] = array('messageid' => $commentId,
 												 'nntpref' => $msgheader['References'],
+												 'stamp' => $msgheader['stamp'],
 												 'rating' => $msgheader['rating']);
 
 						/*
