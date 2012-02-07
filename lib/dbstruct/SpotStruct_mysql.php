@@ -323,6 +323,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 					case 'ascii_general_ci'		: $q['COLLATION_NAME'] = 'ascii'; break;
 					case 'ascii_bin'			: $q['COLLATION_NAME'] = 'ascii_bin'; break;
 					case 'utf8_unicode_ci'		: $q['COLLATION_NAME'] = 'utf8'; break;
+					case 'utf8_general_ci'		: $q['COLLATION_NAME'] = 'utf8'; break;
 
 					default 					: throw new Exception("Invalid collation setting for varchar: " . $q['COLLATION_NAME']);
 				} # switch
