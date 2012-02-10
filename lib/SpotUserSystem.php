@@ -595,7 +595,7 @@ class SpotUserSystem {
 		} # if
 
 		# Make sure a valid password is entered for new users
-		if ((strlen($user['newpassword1'] < 5)) && (!$isEdit)) {
+		if ((strlen($user['newpassword1']) < 5) && (!$isEdit)) {
 			$errorList[] = _('Entered password is too short');
 		} # if
 
