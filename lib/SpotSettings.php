@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.19');
+define('SPOTWEB_SETTINGS_VERSION', '0.20');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -168,6 +168,7 @@ class SpotSettings {
 		$settings['enable_stacktrace'] = (isset($settings['enable_stacktrace'])) ? true : false;
 		$settings['prepare_statistics'] = (isset($settings['prepare_statistics'])) ? true : false;
 		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
+		$settings['external_whitelist'] = (isset($settings['external_whitelist'])) ? true : false;
 
 		# Default server settings if they won't be used
 		if (!isset($settings['nntp_hdr']['use'])) { 
@@ -197,6 +198,11 @@ class SpotSettings {
 		# If we disable the external blacklist, clear all entries
 		if ($settings['external_blacklist'] == false && $this->get('external_blacklist') == true) {
 			$this->_db->removeOldBlackList($this->get('blacklist_url'));
+		} # if
+
+		# If we disable the external whitelist, clear all entries
+		if ($settings['external_whitelist'] == false && $this->get('external_whitelist') == true) {
+			$this->_db->removeOldWhiteList($this->get('whitelist_url'));
 		} # if
 
 		# clear some stuff we don't need to store

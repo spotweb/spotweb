@@ -80,6 +80,14 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			$markSpot = '';
 		}
 		
+		if($spot['whitelisted']) {
+			$markSpot = '<span class="markGreen">W</span>' . $markSpot;
+		}
+		
+		if($spot['blacklisted']) {
+			$markSpot = '<span class="markSpot">B</span>' . $markSpot;
+		}
+		
 		$reportSpam = '';
 		if ($show_spamreports && $spot['reportcount'] != 0) {
 			if($spot['reportcount'] == 1) {

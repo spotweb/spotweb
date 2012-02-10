@@ -100,6 +100,7 @@ function openSpot(id,url) {
 		postCommentsForm();
 		postReportForm();
 		postBlacklistForm();
+		postWhitelistForm();
 		
 		if (spotweb_retrieve_commentsperpage > 0) {
 			loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
@@ -353,6 +354,10 @@ function blacklistSpotterId(spotterId) {
 	$('form.blacklistspotterform').submit();
 } // blacklistSpotterId
 
+function whitelistSpotterId(spotterId) {
+	$("input[name='whitelistspotterform[spotterid]']").val(spotterId); 
+	$('form.whitelistspotterform').submit();
+} // whitelistSpotterId
 
 
 function validateNntpServerSetting(settingsForm, serverArrayId) {
@@ -416,6 +421,22 @@ function postBlacklistForm() {
 	}); // submit
 } // postBlacklistForm
 
+function postWhitelistForm() {
+	$("form.whitelistspotterform").submit(function(){ 
+		formdata = $(this).serialize();
+		
+		$.ajax({
+			type: "POST",
+			url: this.action, 
+			dataType: "xml",
+			data: formdata,
+			success: function(xml) {
+				$(".whitelistuserlink_" + $("input[name='whitelistspotterform[spotterid]']").val()).remove();
+			} // success
+		}); // ajax call om de form te submitten
+		return false;
+	}); // submit
+} // postWhitelistForm
 
 // Load post comment form
 function postCommentsForm() {

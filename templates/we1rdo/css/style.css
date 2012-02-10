@@ -309,6 +309,7 @@ table.spots tr td.category a {color:#fff;}
 
 table.spots tr td.new {font-weight:bold;}
 table.spots tr td span.markSpot {float:right; display:block; background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; padding:0 4px; margin:3px 0 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
+table.spots tr td span.markGreen {float:right; display:block; background-color:#3be31a; border:1px solid #1cab00; color:#fff; padding:0 4px; margin:3px 0 0 0; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold; line-height:12px;}
 table.spots tr td span.rating {float:right; display:block; width:47px; height:18px; margin:1px 0 1px 5px; background:url(../img/sprite.png) no-repeat 0 -111px;}
 table.spots tr td span.rating span {display:block; height:10px; margin:4px 0 0 3px; background:url(../img/sprite_x.png) repeat-x 0 -127px;}
 table.spots tr td span.reportedSpam {display:block; float:right; width:25px; height:16px; background:url(../img/sprite.png) no-repeat 0 -143px; margin:2px 2px 0 5px; padding:0 0 0 18px;}
@@ -405,6 +406,7 @@ div.details table.spotdetails td.img a.loading:before {content: "Loading Image";
 div.details table.spotdetails td.info {width:100%;}
 
 div.details div.warning {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:2px 5px 3px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
+div.details div.announce {background-color:#3be31a; border:1px solid #1cab00; color:#fff; line-height:18px; padding:0; text-align:center; vertical-align:top; margin:2px 5px 3px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 body.fixed div#overlay table.spotheader {margin-left:235px; top:25px;}
 div.details.external table.spotheader,
 div.details.noscroll table.spotheader {margin:0 0 0 0;}
@@ -457,6 +459,7 @@ div.details table.spotinfo td.rating.stars span {cursor:default !important;}
 div.details table.spotinfo a {color:#000; text-decoration:underline;}
 
 div.details table.spotinfo a.delete {background:url(../img/sprite.png) no-repeat -36px -129px; text-decoration: none; width:11px; height:13px; display:inline; cursor:pointer;}
+div.details table.spotinfo a.whitelist {background:url(../img/sprite.png) no-repeat -44px -129px; text-decoration: none; width:11px; height:13px; display:inline; cursor:pointer;}
 
 div.details div.description {clear:both; padding:10px 5px 0 5px;}
 div.details div.description pre {overflow:hidden; white-space:pre-wrap; margin:10px 10px 0;}
@@ -479,6 +482,7 @@ div.details.orange div.comments li.poster span.user {background-color:#e9a213;}
 div.details.green div.comments li.poster span.user {background-color:#00de00;}
 div.details.red div.comments li.poster span.user {background-color:#de2500;}
 div.details div.comments li  a.delete {background:url(../img/sprite.png) no-repeat -36px -129px; text-decoration: none; width:11px; height:13px; display:inline; cursor:pointer;}
+div.details div.comments li  a.whitelist {background:url(../img/sprite.png) no-repeat -44px -129px; text-decoration: none; width:11px; height:13px; display:inline; cursor:pointer;}
 
 div.details div.comments blockquote {
 	border: 1px solid #cecece;

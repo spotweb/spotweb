@@ -258,6 +258,13 @@ class SpotTemplateHelper {
 	} # makeEditBlacklistAction	
 	
 	/*
+	 * Creates the URL action for editing a whitelist
+	 */
+	function makeEditWhitelistAction() {
+		return $this->makeBaseUrl("path") . "?page=whitelistspotter";
+	} # makeEditBlacklistAction	
+	
+	/*
 	 * Creeert de action url voor het wijzigen van een filter
 	 */
 	function makeEditFilterAction() {
@@ -378,11 +385,30 @@ class SpotTemplateHelper {
 	} # makeBlacklistAction
 	
 	/*
+	 * Creeert de action url voor het whitelisten van een spotter
+	 */
+	function makeWhitelistAction() {
+		if(!$this->_spotSec->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) {
+			return '';
+		}
+		
+		return $this->makeBaseUrl("path") . "?page=whitelistspotter";
+	} # makeBlacklistAction
+	
+	/*
 	 * Geeft terug of een spotter geblacklist is voor deze user
 	 */
 	function isSpotterBlacklisted($spotterId) {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		return $spotUser->isSpotterBlacklisted($this->_currentSession['user']['userid'], $spotterId);
+	} # isSpotterBlacklisted
+	
+	/*
+	 * Geeft terug of een spotter gewhitelist is voor deze user
+	 */
+	function isSpotterWhitelisted($spotterId) {
+		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		return $spotUser->isSpotterWhitelisted($this->_currentSession['user']['userid'], $spotterId);
 	} # isSpotterBlacklisted
 	
 	/*
@@ -975,6 +1001,16 @@ class SpotTemplateHelper {
 		return $this->_db->getSpotterBlacklist($this->_currentSession['user']['userid']);
 	} # getSpotterBlacklist
 	
+ 	/*
+	 * Returns the list of all spotters on the users' whitelist
+	 */
+	function getSpotterWhitelist() {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
+		
+		return $this->_db->getSpotterWhitelist($this->_currentSession['user']['userid']);
+	} # getSpotterWhitelist
+	
 	/*
 	 * Returns the specific blacklist record for one spotterid
 	 */
@@ -984,6 +1020,16 @@ class SpotTemplateHelper {
 		
 		return $this->_db->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
 	} # getBlacklistForSpotterId
+	
+	/*
+	 * Returns the specific whitelist record for one spotterid
+	 */
+	function getWhitelistForSpotterId($spotterId) {
+		# Controleer de users' rechten
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
+		
+		return $this->_db->getWhitelistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
+	} # getWhitelistForSpotterId
 	
 	/*
 	 * Wanneer was de spotindex voor het laatst geupdate?
