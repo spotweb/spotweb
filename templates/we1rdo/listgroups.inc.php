@@ -23,7 +23,7 @@
 	if ($group['id'] < 6) {
 		echo '<td>' . $group['name'] . '</td>';
 		echo '<td></td>';
-		echo '<td><a href="" onclick="return (\'editdialogdiv\', \'' . _('Show rights in group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', null, null); "><span class="ui-icon ui-icon-zoomin"></span></a></td>';
+		echo '<td><a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Show rights in group') . '\', \'?page=editsecgroup&groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', null, null); "><span class="ui-icon ui-icon-zoomin"></span></a></td>';
 		echo '<td></td>';
 	} else {
 		echo '<td>' . $group['name'] . '</td>';

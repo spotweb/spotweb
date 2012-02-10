@@ -82,7 +82,7 @@ if (empty($editresult)) {
 	<br >
 	
 	<!-- Security recht toevoegen -->
-<?php if ($securitygroup['id'] > 3) { ?>
+<?php if ($securitygroup['id'] > 5) { ?>
 	<form class="editsecgroupform" name="editsecgroupform" action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 		<input type="hidden" name="editsecgroupform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsecgroupform'); ?>">
 		<input type="hidden" name="editsecgroupform[http_referer]" value="<?php echo $http_referer; ?>">
