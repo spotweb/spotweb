@@ -347,6 +347,13 @@ try {
 				break;
 		} # blacklistspotter
 		
+		case 'whitelistspotter' : {
+				$page = new SpotPage_whitelistspotter($db, $settings, $currentSession, 
+							Array ('blform' => $req->getForm('whitelistspotterform')));
+				$page->render();
+				break;
+		} # whitelistspotter
+		
 		case 'logout' : {
 				$page = new SpotPage_logout($db, $settings, $currentSession);
 				$page->render();

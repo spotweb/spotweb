@@ -1192,10 +1192,24 @@ class SpotUserSystem {
 	} # addSpotterToBlacklist	
 
 	/*
+	 * Blacklist a specific spotter
+	 */
+	function addSpotterToWhitelist($ourUserId, $spotterId, $origin) {
+		$this->_db->addSpotterToWhitelist($spotterId, $ourUserId, $origin);
+	} # addSpotterToBlacklist	
+
+	/*
 	 * Removes a specific spotter from the blacklis
 	 */
 	function removeSpotterFromBlacklist($ourUserId, $spotterId) {
 		$this->_db->removeSpotterFromBlacklist($spotterId, $ourUserId);
+	} # removeSpotterFromBlacklist
+	
+	/*
+	 * Removes a specific spotter from the blacklis
+	 */
+	function removeSpotterFromWhitelist($ourUserId, $spotterId) {
+		$this->_db->removeSpotterFromWhitelist($spotterId, $ourUserId);
 	} # removeSpotterFromBlacklist
 	
 	/*
@@ -1204,6 +1218,13 @@ class SpotUserSystem {
 	function isSpotterBlacklisted($ourUserId, $spotterId) {
 		return $this->_db->isSpotterBlacklisted($spotterId, $ourUserId);
 	} # isSpotterBlacklisted	
+	
+	/*
+	 * Returns if an spotter is whitelisted
+	 */
+	function isSpotterWhitelisted($ourUserId, $spotterId) {
+		return $this->_db->isSpotterWhitelisted($spotterId, $ourUserId);
+	} # isSpotterWhitelisted	
 	
 	/*
 	 * Returns the users' remote IP address

@@ -1,5 +1,5 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.55');
+define('SPOTDB_SCHEMA_VERSION', '0.56');
 
 class SpotDb {
 	private $_dbsettings = null;
@@ -923,7 +923,7 @@ class SpotDb {
 		$offset = (int) $pageNr * (int) $limit;
 
 		# je hebt de zoek criteria (category, titel, etc)
-		$criteriaFilter = ' WHERE (bl.spotterid IS NULL)';
+		$criteriaFilter = ' WHERE ((bl.spotterid IS NULL) OR ((bl.spotterid = wl.spotterid) AND (wl.ouruserid != -1)))';
 		if (!empty($parsedSearch['filter'])) {
 			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
 		} # if 
@@ -993,14 +993,17 @@ class SpotDb {
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
 												s.spotterid AS spotterid,
-												f.verified AS verified
+												f.verified AS verified,
+												(NOT(wl.spotterid IS NULL)) AS whitelisted,
+												(NOT(bl.spotterid IS NULL)) AS blacklisted
 												" . $extendedFieldList . "
 									 FROM spots AS s " . 
 									 $additionalTableList . 
 									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
-									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1))) " .
+									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)))
+									 LEFT JOIN spotteridwhitelist as wl ON ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $ourUserId) . " AND wl.doubled = 0) OR (wl.ouruserid = -1))) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
@@ -1316,11 +1319,14 @@ class SpotDb {
 														f.verified AS verified,
 														c.spotrating AS spotrating,
 														c.moderated AS moderated,
-														f.avatar as \"user-avatar\"
+														f.avatar as \"user-avatar\",
+														(NOT(bl.spotterid IS NULL)) AS blacklisted,
+														(NOT(wl.spotterid IS NULL)) AS whitelisted
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
 													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $userId) . ") OR (bl.ouruserid = -1))) 
-													WHERE c.nntpref = '%s' AND (bl.spotterid IS NULL)
+													LEFT JOIN spotteridwhitelist as wl ON ((wl.spotterid = f.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $userId) . " AND wl.doubled = 0) OR (wl.ouruserid = -1))) 
+													WHERE c.nntpref = '%s' AND ((bl.spotterid IS NULL) OR ((bl.spotterid = wl.spotterid) AND (wl.ouruserid != -1)))
 													ORDER BY c.id", array($nntpRef));
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
@@ -1738,12 +1744,28 @@ class SpotDb {
 	} # addSpotterToBlackList
 
 	/*
-	 * Removes a specific spotter from the blacklis
+	 * Voegt een spotterid toe aan de whitelist
+	 */
+	function addSpotterToWhitelist($spotterId, $ourUserId, $origin) {
+		$this->_conn->modify("INSERT INTO spotteridwhitelist(spotterid, origin, ouruserid) VALUES ('%s', '%s', %d)",
+					Array($spotterId, $origin, (int) $ourUserId));
+	} # addSpotterToWhitelist
+
+	/*
+	 * Removes a specific spotter from the blacklist
 	 */
 	function removeSpotterFromBlacklist($spotterId, $ourUserId) {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE ouruserid = %d AND spotterid = '%s'",
 					Array((int) $ourUserId, $spotterId));
 	} # addSpotterToBlackList
+	
+	/*
+	 * Removes a specific spotter from the whitelist
+	 */
+	function removeSpotterFromWhitelist($spotterId, $ourUserId) {
+		$this->_conn->modify("DELETE FROM spotteridwhitelist WHERE ouruserid = %d AND spotterid = '%s'",
+					Array((int) $ourUserId, $spotterId));
+	} # addSpotterToWhiteList
 	
 	/*
 	 * Geeft alle blacklisted spotterid's terug
@@ -1752,6 +1774,14 @@ class SpotDb {
 		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
 					Array((int) $ourUserId));
 	} # getSpotterBlacklist
+
+	/*
+	 * Geeft alle whitelisted spotterid's terug
+	 */
+	function getSpotterWhitelist($ourUserId) {
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridwhitelist WHERE ouruserid = %d",
+					Array((int) $ourUserId));
+	} # getSpotterWhitelist
 
 	/*
 	 * Returns one specific blacklisted record for a given spotterid
@@ -1768,6 +1798,20 @@ class SpotDb {
 	} # getBlacklistForSpotterId
 	
 	/*
+	 * Returns one specific blacklisted record for a given spotterid
+	 */
+	function getWhitelistForSpotterId($userId, $spotterId) {
+		$tmp = $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridwhitelist WHERE ouruserid = %d and spotterid = '%s'",
+					Array($userId, $spotterId));
+					
+		if (!empty($tmp)) {
+			return $tmp[0];
+		} else {
+			return false;
+		} # else
+	} # getWhitelistForSpotterId
+	
+	/*
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function isSpotterBlacklisted($spotterId, $ourUserId) {
@@ -1775,6 +1819,15 @@ class SpotDb {
 							Array((int) $ourUserId, $spotterId));
 		return (!empty($blacklistResult));
 	} # getSpotterBlacklist
+	
+	/*
+	 * Geeft alle whitelisted spotterid's terug
+	 */
+	function isSpotterWhitelisted($spotterId, $ourUserId) {
+		$whitelistResult = $this->_conn->arrayQuery("SELECT spotterid FROM spotteridwhitelist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (spotterid = '%s')",
+							Array((int) $ourUserId, $spotterId));
+		return (!empty($whitelistResult));
+	} # getSpotterWhitelist
 	
 	/*
 	 * Verwijder een filter en de children toe (recursive)
@@ -2350,6 +2403,11 @@ class SpotDb {
 		$this->_conn->modify("DELETE FROM cache WHERE (resourceid = '%s') AND (cachetype = '%s')", Array(md5($blacklistUrl), SpotCache::Web));
 	} # removeOldBlackList
 	
+	function removeOldWhiteList($whitelistUrl) {
+		$this->_conn->modify("DELETE FROM spotteridwhitelist WHERE (ouruserid = -1) AND (origin = 'external')");
+		$this->_conn->modify("DELETE FROM cache WHERE (resourceid = '%s') AND (cachetype = '%s')", Array(md5($whitelistUrl), SpotCache::Web));
+	} # removeOldBlackList
+	
 	function updateExternalBlacklist($newblacklist) {
 		$updatelist = array();
 		$updskipped = 0;
@@ -2391,5 +2449,52 @@ class SpotDb {
 		}
 		return array('added' => $countnewblacklistspotterid,'removed' => $countdelblacklistspotterid,'skipped' => $updskipped);
 	} # updateExternalBlacklist
+	
+	function updateExternalWhitelist($newwhitelist) {
+		$updatelist = array();
+		$updskipped = 0;
+		$countnewwhitelistspotterid = 0;
+		$countdelwhitelistspotterid = 0;
+		/* Haal de oude whitelist op*/
+		$oldwhitelist = $this->_conn->arrayQuery("SELECT spotterid
+												FROM spotteridwhitelist 
+												WHERE ouruserid = -1 AND origin = 'external'");
+		foreach ($oldwhitelist as $obl) {
+			$updatelist[$obl['spotterid']] = 2;  # 'oude' spotterid eerst op verwijderen zetten.
+		}
+		/* verwerk de nieuwe whitelist */
+		foreach ($newwhitelist as $nwl) {
+			$nwl = trim($nwl);									# Enters en eventuele spaties wegfilteren
+			if ((strlen($nwl) >= 3) && (strlen($nwl) <= 6)) {	# de lengte van een spotterid is tussen 3 en 6 karakters groot (tot op heden)
+				if (empty($updatelist[$nwl])) {
+					$updatelist[$nwl] = 1;						# nieuwe spoterids toevoegen 
+				} elseif ($updatelist[$nwl] == 2) {
+					$updatelist[$nwl] = 3;						# spotterid staat nog steeds op de whitelist, niet verwijderen.
+				} else {
+					$updskipped++;								# dubbel spotterid in whitelist.txt.
+				}
+			} else {
+				$updskipped++;									# er is iets mis met het spotterid (bijvoorbeeld een lege regel in whitelist.txt)
+			}
+		}
+		$updwhitelist = array_keys($updatelist);
+		foreach ($updwhitelist as $updl) {
+			if ($updatelist[$updl] == 1) {
+				# voeg nieuwe spotterid's toe aan de whitelist
+				$countnewwhitelistspotterid++;
+				$this->_conn->modify("INSERT INTO spotteridwhitelist (spotterid,ouruserid,origin) VALUES ('%s','-1','external')", Array($updl));
+				$this->_conn->modify("UPDATE spotteridwhitelist set doubled = 1 where (spotterid = '%s') AND (ouruserid != -1)", Array($updl));
+			} elseif ($updatelist[$updl] == 2) {
+				# verwijder spotterid's die niet meer op de whitelist staan
+				$countdelwhitelistspotterid++;
+				$this->_conn->modify("DELETE FROM spotteridwhitelist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
+				$this->_conn->modify("UPDATE spotteridwhitelist set doubled = 0 where (spotterid = '%s') AND (ouruserid != -1)", Array($updl));
+			} else {
+				$this->_conn->modify("UPDATE spotteridwhitelist set doubled = 1 where (spotterid = '%s') AND (ouruserid != -1)", Array($updl));
+			}
+		}
+		$this->_conn->modify("UPDATE spotteridwhitelist SET doubled = 0 WHERE (spotterid IN (SELECT sw.spotterid FROM spotteridblacklist sw WHERE sw.ouruserid = -1)) AND (ouruserid != -1)");
+		return array('added' => $countnewwhitelistspotterid,'removed' => $countdelwhitelistspotterid,'skipped' => $updskipped);
+	} # updateExternalWhitelist
 	
 } # class db

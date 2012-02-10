@@ -25,7 +25,8 @@
 		if ($comment['verified']) {
 			$commenterIsPoster = ($comment['spotterid'] == $spot['spotterid']);
 			$commentIsModerated = ($comment['moderated']);
-			$allow_blackList = (($perm_allow_blackList) && (!empty($comment['spotterid'])));
+			$allow_blackList = (($perm_allow_blackList) && (!empty($comment['spotterid'])) && (!$comment['blacklisted']));
+			$allow_whiteList = (($perm_allow_blackList) && (!empty($comment['spotterid'])) && (!$comment['whitelisted']));
 
 			if($comment['spotrating'] == 0) {
 				$rating = '';
@@ -37,7 +38,9 @@
 					<li<?php if ($commenterIsPoster) { echo ' class="poster"'; } ?>><?php if ($show_avatars) { ?><img class="commentavatar" src='<?php echo $tplHelper->makeCommenterImageUrl($comment); ?>'><?php } ?><strong> <?php echo $rating; ?><?php echo sprintf(_('Posted by %s'), '<span class="user">' . $comment['fromhdr'] . '</span>'); ?>
 					(<a class="spotterid" target = "_parent" href="<?php echo $tplHelper->makeSpotterIdUrl($comment); ?>" title='<?php echo sprintf(_('Find spots from %s'), $comment['fromhdr']); ?>'><?php echo $comment['spotterid']; ?></a>
 					<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($comment['spotterid']); ?>" title="<?php echo _('Blacklist this sender'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($comment['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+					<?php if ($allow_whiteList) { ?> <a class="whitelist whitelistuserlink_<?php echo htmlspecialchars($comment['spotterid']); ?>" title="<?php echo _('Whitelist this sender'); ?>" onclick="whitelistSpotterId('<?php echo htmlspecialchars($comment['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 					) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> 
+					<?php if ($comment['blacklisted']) { echo ' (' . _('This spotter is already blacklisted') . ')' . '<br /><br />'; } ?>
 					<br />
 					<?php if ($commentIsModerated) { echo _('This comment is moderated') . '<br /><br />'; } ?>
 					<?php echo join("<br>", $comment['body']); ?>
