@@ -645,7 +645,13 @@ class SpotsOverview {
 				
 				# en voeg hem toe aan een strong NOT list (~cat0_z0_d12)
 				$strongNotTmp = explode("_", $dynaList[$i], 2);
-				$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
+
+				/* To deny a whole category, we have to take an other shortcut */
+				if (count($strongNotTmp) == 1) {
+					$strongNotList[(int) substr($strongNotTmp[0], 4)][] = '';
+				} else {
+					$strongNotList[(int) substr($strongNotTmp[0], 4)][] = $strongNotTmp[1];
+				} # else
 			} else {
 				$newTreeQuery .= "," . $dynaList[$i];
 			} # else
@@ -828,23 +834,31 @@ class SpotsOverview {
 		#
 		foreach(array_keys($strongNotList) as $strongNotCat) {
 			foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
-				$subcats = explode('_', $strongNotSubcat);
+				/*
+				 * When the strongnot is for a whole category (eg: cat0), we can
+				 * make the NOT even simpler
+				 */
+				if (empty($strongNotSubcat)) {
+					$strongNotSql[] = "(NOT (s.Category = " . (int) $strongNotCat . "))";
+				} else {
+					$subcats = explode('_', $strongNotSubcat);
 
-				# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-				# equality ipv like doen
-				if (count($subcats) == 1) {
-					if (in_array($subcats[0][0], array('a', 'z'))) { 
-						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
-					} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
-						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
-					} # if
-				} elseif (count($subcats) == 2) {
-					if (in_array($subcats[1][0], array('a', 'z'))) { 
-						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
-					} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
-						$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
-					} # if
-				} # else
+					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
+					# equality ipv like doen
+					if (count($subcats) == 1) {
+						if (in_array($subcats[0][0], array('a', 'z'))) { 
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
+						} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
+						} # if
+					} elseif (count($subcats) == 2) {
+						if (in_array($subcats[1][0], array('a', 'z'))) { 
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
+						} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
+						} # if
+					} # else
+				} # else not whole subcat
 			} # foreach				
 		} # forEach
 
