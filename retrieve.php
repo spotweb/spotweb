@@ -233,7 +233,7 @@ if ($settings_external_blacklist) {
 			
 			# Perform a very small snaity check on the blacklist
 			if ((count($blacklistarray) > 5) && (strlen($blacklistarray[0]) < 10)) {
-				$updateblacklist = $db->updateExternalBlacklist($blacklistarray);
+				$updateblacklist = $db->updateExternallist($blacklistarray,1);
 				echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
 			} else {
 				echo "Blacklist is probably corrupt, skipping" . PHP_EOL;
@@ -241,6 +241,39 @@ if ($settings_external_blacklist) {
 		}
 	} catch(Exception $x) {
 		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
+		echo "  " . $x->getMessage() . PHP_EOL;
+		echo PHP_EOL . PHP_EOL;
+		echo $x->getTraceAsString();
+		echo PHP_EOL . PHP_EOL;
+	}
+} # if
+
+## External whitelist
+$settings_external_whitelist = $settings->get('external_whitelist');
+if ($settings_external_whitelist) {
+	try {
+		$spotsOverview = new SpotsOverview($db, $settings);
+		# haal de whitelist op
+		list($http_code, $whitelist) = $spotsOverview->getFromWeb($settings->get('whitelist_url'), false, 30*60);
+
+		if ($http_code == 304) {
+			echo "Whitelist not modified, no need to update" . PHP_EOL;
+		} elseif (strpos($whitelist['content'],">")) {
+			echo "Error, whitelist does not have expected layout!" . PHP_EOL;
+		} else {
+			# update de whitelist
+			$whitelistarray = explode(chr(10),$whitelist['content']);
+			
+			# Perform a very small snaity check on the whitelist
+			if ((count($whitelistarray) > 5) && (strlen($whitelistarray[0]) < 10)) {
+				$updatewhitelist = $db->updateExternallist($whitelistarray,2);
+				echo "Finished updating whitelist. Added " . $updatewhitelist['added'] . ", removed " . $updatewhitelist['removed'] . ", skipped " . $updatewhitelist['skipped'] . " of " . count($whitelistarray) . " lines." . PHP_EOL;
+			} else {
+				echo "Whitelist is probably corrupt, skipping" . PHP_EOL;
+			} # else				
+		}
+	} catch(Exception $x) {
+		echo "Fatal error occured while updating whitelist:" . PHP_EOL;
 		echo "  " . $x->getMessage() . PHP_EOL;
 		echo PHP_EOL . PHP_EOL;
 		echo $x->getTraceAsString();

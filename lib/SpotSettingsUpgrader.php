@@ -58,6 +58,8 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);
 		$this->setIfNot('blacklist_url', 'http://jij.haatmij.nl/spotnet/blacklist.txt');
+		$this->setIfNot('external_whitelist', true);
+		$this->setIfNot('whitelist_url', 'http://jij.haatmij.nl/spotnet/whitelist.txt');
 		$this->setIfNot('enable_timing', false);
 		$this->setIfNot('enable_stacktrace', true);
 		$this->setIfNot('systemfrommail', 'spotweb@example.com');

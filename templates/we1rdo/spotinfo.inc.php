@@ -8,8 +8,10 @@
 						 ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, ''))
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
-	$isBlacklisted = $tplHelper->isSpotterBlacklisted($spot['spotterid']);
+	$isBlacklisted = $tplHelper->isSpotterListed($spot['spotterid'], 1);
+	$isWhitelisted = $tplHelper->isSpotterListed($spot['spotterid'], 2);
 	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$isBlacklisted) && (!empty($spot['spotterid'])));
+	$allow_whiteList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && (!$isWhitelisted) && (!empty($spot['spotterid'])));
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -32,11 +34,12 @@
 <?php } # if
 	} # if 
 ?>
-			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeBlacklistAction(); ?>" method="post">
+			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeListAction(); ?>" method="post">
 				<input type="hidden" name="blacklistspotterform[submitaddspotterid]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
 				<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo htmlspecialchars($spot['spotterid']); ?>">
 				<input type="hidden" name="blacklistspotterform[origin]" value="Reported via Spotweb for spot <?php echo htmlspecialchars($spot['messageid']); ?>">
+				<input type="hidden" name="blacklistspotterform[idtype]" value="1">
 			</form>
 
 			<table class="spotheader">
@@ -103,6 +106,11 @@ echo "</th>";
 	}
 	echo "</div>";
 } ?>
+<?php if ($isWhitelisted) {
+	echo "<div class='announce'>";
+	echo _('This spotter is already whitelisted') . "<br>";
+	echo "</div>";
+} ?>
 						<table class="spotinfo">
 							<tbody>
 								<tr><th> <?php echo _('Category'); ?> </th> <td><a href="<?php echo $tplHelper->makeCatUrl($spot); ?>" title='<?php echo _('Find spots in this category'); ?> "<?php echo $spot['catname']; ?>"'><?php echo $spot['catname']; ?></a></td> </tr>
@@ -123,6 +131,7 @@ echo "</th>";
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
 								<?php if ($allow_blackList) { ?> <a class="delete blacklistuserlink_<?php echo htmlspecialchars($spot['spotterid']); ?>" title="<?php echo _('Blacklist this sender'); ?>" onclick="blacklistSpotterId('<?php echo htmlspecialchars($spot['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
+								<?php if ($allow_whiteList) { ?> <a class="whitelist blacklistuserlink_<?php echo htmlspecialchars($spot['spotterid']); ?>" title="<?php echo _('Whitelist this sender'); ?>" onclick="whitelistSpotterId('<?php echo htmlspecialchars($spot['spotterid']); ?>');">&nbsp;&nbsp;&nbsp;</a><?php } ?>
 								<?php if ((!empty($spot['spotterid'])) && ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, ''))) { ?> <a href="" class="addspotterasfilter" title="<?php echo _("Add filter for this spotter"); ?>" onclick="addSpotFilter('<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>', 'SpotterID', '<?php echo urlencode($spot['spotterid']); ?>', 'Zoek spots van &quot;<?php echo urlencode($spot['poster']); ?>&quot;', 'addspotterasfilter'); return false; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a> <?php } ?> 
 								</td> </tr>
 								<tr> <th> <?php echo _('Tag'); ?> </th> <td> <a href="<?php echo $tplHelper->makeTagUrl($spot); ?>" title='<?php echo sprintf(_('Search spots with the tag: %s'), $spot['tag']); ?>'><?php echo $spot['tag']; ?></a> 

@@ -529,9 +529,16 @@ abstract class SpotStruct_abs {
 		$this->createTable('spotteridblacklist', "utf8");
 		$this->validateColumn('spotterid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii_bin');
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
+		$this->validateColumn('idtype', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
+		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', "0", true, '');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
-
+		
+		# Update old blacklisttable
+		if ($this->_spotdb->getSchemaVer() < 0.56) {
+			$this->_dbcon->rawExec("UPDATE spotteridblacklist SET idtype = 1");
+		}
+		
 		# Drop old cache -- converting is too error prone
 		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
 			$this->dropTable('cache');
@@ -679,6 +686,8 @@ abstract class SpotStruct_abs {
 		
 		# ---- Indexes on spotteridblacklist ----
 		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
+		$this->validateIndex("idx_spotteridblacklist_2", "", "spotteridblacklist", array("idtype"));
+		$this->validateIndex("idx_spotteridblacklist_3", "", "spotteridblacklist", array("doubled"));
 
 		# ---- Indexes on cache ----
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
