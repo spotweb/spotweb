@@ -44,12 +44,13 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 
 			switch($formAction) {
 				case 'addspotterid'		: {
-					$spotUserSystem->addSpotterToBlacklist($this->_currentSession['user']['userid'], $blackList['spotterid'], $blackList['origin']);
+					$spotUserSystem->addSpotterToList($this->_currentSession['user']['userid'], $blackList['spotterid'], $blackList['origin'], $blackList['idtype']);
 					break;
 				} # case addspotterid
 				
 				case 'removespotterid'	: {
-					$spotUserSystem->removeSpotterFromBlacklist($this->_currentSession['user']['userid'], $blackList['spotterid']);
+					$idtyPe = $blackList['idtype'];
+					$spotUserSystem->removeSpotterFromList($this->_currentSession['user']['userid'], $blackList['spotterid']);
 					break;
 				} # case removespotterid
 			} # switch

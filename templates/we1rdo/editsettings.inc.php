@@ -220,6 +220,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[external_blacklist]"><?php echo _('Fetch the external blacklist during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[external_blacklist]" <?php if ($this->_settings->get('external_blacklist')) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="editsettingsform[external_whitelist]"><?php echo _('Fetch the external whitelist during retrieve'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[external_whitelist]" <?php if ($this->_settings->get('external_whitelist')) { echo 'checked="checked"'; } ?>></dd>
 				</dl>
 			</fieldset>
 		</div>

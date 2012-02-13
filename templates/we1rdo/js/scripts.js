@@ -353,6 +353,13 @@ function blacklistSpotterId(spotterId) {
 	$('form.blacklistspotterform').submit();
 } // blacklistSpotterId
 
+function whitelistSpotterId(spotterId) {
+	$("input[name='blacklistspotterform[spotterid]']").val(spotterId);
+	$("input[name='blacklistspotterform[idtype]']").val('2');
+	$("input[name='blacklistspotterform[origin]']").val('Whitelisted by user');
+	$('form.blacklistspotterform').submit();
+} // blacklistSpotterId
+
 
 
 function validateNntpServerSetting(settingsForm, serverArrayId) {

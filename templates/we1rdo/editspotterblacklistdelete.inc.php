@@ -12,6 +12,7 @@
 		<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeEditBlacklistAction(); ?>" method="post">
 			<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
 			<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo $blSpotter['spotterid']; ?>">
+			<input type="hidden" name="blacklistspotterform[idtype]" value="1">
 
 			<dt>
 				Bevestig

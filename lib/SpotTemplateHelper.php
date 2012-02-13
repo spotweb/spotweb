@@ -369,20 +369,20 @@ class SpotTemplateHelper {
 	/*
 	 * Creeert de action url voor het blacklisten van een spotter
 	 */
-	function makeBlacklistAction() {
+	function makeListAction() {
 		if(!$this->_spotSec->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) {
 			return '';
 		}
 		
 		return $this->makeBaseUrl("path") . "?page=blacklistspotter";
-	} # makeBlacklistAction
+	} # makeListAction
 	
 	/*
 	 * Geeft terug of een spotter geblacklist is voor deze user
 	 */
-	function isSpotterBlacklisted($spotterId) {
+	function isSpotterListed($spotterId, $iDtype) {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->isSpotterBlacklisted($this->_currentSession['user']['userid'], $spotterId);
+		return $spotUser->isSpotterListed($this->_currentSession['user']['userid'], $spotterId, $iDtype);
 	} # isSpotterBlacklisted
 	
 	/*
@@ -968,12 +968,12 @@ class SpotTemplateHelper {
  	/*
 	 * Returns the list of all spotters on the users' blacklist
 	 */
-	function getSpotterBlacklist() {
+	function getSpotterList() {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 		
-		return $this->_db->getSpotterBlacklist($this->_currentSession['user']['userid']);
-	} # getSpotterBlacklist
+		return $this->_db->getSpotterList($this->_currentSession['user']['userid']);
+	} # getSpotterList
 	
 	/*
 	 * Returns the specific blacklist record for one spotterid

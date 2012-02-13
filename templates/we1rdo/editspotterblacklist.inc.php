@@ -1,6 +1,6 @@
 <?php
 	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
-	$blacklist = $tplHelper->getSpotterBlacklist();
+	$blacklist = $tplHelper->getSpotterList();
 ?>
 	<!-- We need our own editdialogdiv because this form can be embedded into another dialog as a whole -->
 	<div id='editblacklistdialogdiv'></div>

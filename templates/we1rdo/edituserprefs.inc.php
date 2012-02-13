@@ -66,7 +66,7 @@ if (!$dialogembedded) { ?>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) { ?>
 	<?php if (!$dialogembedded) { ?>
-			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo _('Blacklist spotter'); ?>"><span><?php echo _('Blacklist spotter'); ?></span></a></li>
+			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo _('Listed spotters'); ?>"><span><?php echo _('Listed spotters'); ?></span></a></li>
 	<?php } ?>
 <?php } ?>
 	

@@ -25,7 +25,7 @@
 		if ($comment['verified']) {
 			$commenterIsPoster = ($comment['spotterid'] == $spot['spotterid']);
 			$commentIsModerated = ($comment['moderated']);
-			$allow_blackList = (($perm_allow_blackList) && (!empty($comment['spotterid'])));
+			$allow_blackList = (($perm_allow_blackList) && (!empty($comment['spotterid'])) && ($comment['idtype'] != 1));
 
 			if($comment['spotrating'] == 0) {
 				$rating = '';
