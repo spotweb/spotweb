@@ -13,6 +13,12 @@ class SpotDb {
 	const spotstate_Watch	= 1;
 	const spotstate_Seen	= 2;
 
+	/*
+	 * Constants used for updating the black/whitelist
+	 */
+	const spotterlist_Black = 1;
+	const spotterlist_White = 2;
+
 	function __construct($db) {
 		$this->_dbsettings = $db;
 	} # __ctor
@@ -923,7 +929,7 @@ class SpotDb {
 		$offset = (int) $pageNr * (int) $limit;
 
 		# je hebt de zoek criteria (category, titel, etc)
-		$criteriaFilter = ' WHERE ((bl.spotterid IS NULL) OR (((bl.ouruserid = ' . $this->safe( (int) $ourUserId) . ') OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))';
+		$criteriaFilter = ' WHERE ((bl.spotterid IS NULL) OR (((bl.ouruserid = ' . $this->safe( (int) $ourUserId) . ') OR (bl.ouruserid = -1)) AND (bl.idtype = ' . SpotDb::spotterlist_White . ')))';
 		if (!empty($parsedSearch['filter'])) {
 			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
 		} # if 
@@ -1737,15 +1743,15 @@ class SpotDb {
 	function addSpotterToList($spotterId, $ourUserId, $origin, $idType) {
 		$existInList = $this->_conn->singleQuery("SELECT idtype FROM spotteridblacklist WHERE spotterid = '%s' AND ouruserid = %d", Array($spotterId, (int) $ourUserId));
 		if (empty($existInList)) {
-			$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid, idtype) VALUES ('%s', '%s', %d, %s)",
-						Array($spotterId, $origin, (int) $ourUserId, $idType));
+			$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid, idtype) VALUES ('%s', '%s', %d, %d)",
+						Array($spotterId, $origin, (int) $ourUserId, (int) $idType));
 		} else {
-			$this->_conn->modify("UPDATE spotteridblacklist SET idtype = %s, origin = '%s' WHERE spotterid = '%s' AND ouruserid = %d", Array($idType, $origin, $spotterId, (int) $ourUserId));
+			$this->_conn->modify("UPDATE spotteridblacklist SET idtype = %d, origin = '%s' WHERE spotterid = '%s' AND ouruserid = %d", Array( (int) $idType, $origin, $spotterId, (int) $ourUserId));
 		}
 	} # addSpotterToList
 
 	/*
-	 * Removes a specific spotter from the blacklis
+	 * Removes a specific spotter from the blacklist
 	 */
 	function removeSpotterFromList($spotterId, $ourUserId) {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE ouruserid = %d AND spotterid = '%s'",
@@ -1756,7 +1762,7 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function getSpotterList($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE ouruserid = %d",
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid, idtype FROM spotteridblacklist WHERE ouruserid = %d ORDER BY idtype",
 					Array((int) $ourUserId));
 	} # getSpotterList
 
@@ -1778,10 +1784,10 @@ class SpotDb {
 	 * Geeft alle blacklisted spotterid's terug
 	 */
 	function isSpotterListed($spotterId, $ourUserId, $idtype) {
-		$blacklistResult = $this->_conn->arrayQuery("SELECT spotterid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (spotterid = '%s') AND (idtype = %s)",
-							Array((int) $ourUserId, $spotterId, $idtype));
+		$blacklistResult = $this->_conn->arrayQuery("SELECT spotterid FROM spotteridblacklist WHERE ((ouruserid = %d) OR (ouruserid = -1)) AND (spotterid = '%s') AND (idtype = %d)",
+							Array((int) $ourUserId, $spotterId, (int) $idtype));
 		return (!empty($blacklistResult));
-	} # getSpotterBlacklist
+	} # isSpotterListed
 	
 	/*
 	 * Verwijder een filter en de children toe (recursive)
@@ -2397,13 +2403,13 @@ class SpotDb {
 			if ($updatelist[$updl] == 1) {
 				# voeg nieuwe spotterid's toe aan de lijst
 				$countnewlistspotterid++;
-				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%s,'external')", Array($updl,$idtype));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 1 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %s", Array($updl,$idtype));
+				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%d,'external')", Array($updl, (int) $idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 1 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 2) {
 				# verwijder spotterid's die niet meer op de lijst staan
 				$countdellistspotterid++;
 				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 0 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %s", Array($updl,$idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 0 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 4) {
 				$countnewlistspotterid++;
 				$this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));

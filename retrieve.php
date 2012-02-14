@@ -233,7 +233,7 @@ if ($settings_external_blacklist) {
 			
 			# Perform a very small snaity check on the blacklist
 			if ((count($blacklistarray) > 5) && (strlen($blacklistarray[0]) < 10)) {
-				$updateblacklist = $db->updateExternallist($blacklistarray,1);
+				$updateblacklist = $db->updateExternallist($blacklistarray, SpotDb::spotterlist_Black);
 				echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
 			} else {
 				echo "Blacklist is probably corrupt, skipping" . PHP_EOL;
@@ -266,7 +266,7 @@ if ($settings_external_whitelist) {
 			
 			# Perform a very small snaity check on the whitelist
 			if ((count($whitelistarray) > 5) && (strlen($whitelistarray[0]) < 10)) {
-				$updatewhitelist = $db->updateExternallist($whitelistarray,2);
+				$updatewhitelist = $db->updateExternallist($whitelistarray, SpotDb::spotterlist_White);
 				echo "Finished updating whitelist. Added " . $updatewhitelist['added'] . ", removed " . $updatewhitelist['removed'] . ", skipped " . $updatewhitelist['skipped'] . " of " . count($whitelistarray) . " lines." . PHP_EOL;
 			} else {
 				echo "Whitelist is probably corrupt, skipping" . PHP_EOL;
