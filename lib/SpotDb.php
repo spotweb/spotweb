@@ -1007,7 +1007,7 @@ class SpotDb {
 									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
-									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.doubled = 0)) " .
+									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.doubled = " . $this->bool2dt(false) . ")) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
@@ -1327,9 +1327,9 @@ class SpotDb {
 														bl.idtype AS idtype
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
-													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = 0))
+													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = '%s'))
 													WHERE c.nntpref = '%s' AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = " . $this->safe( (int) $userId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
-													ORDER BY c.id", array($nntpRef));
+													ORDER BY c.id", array($this->bool2dt(false), $nntpRef));
 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
@@ -2404,12 +2404,12 @@ class SpotDb {
 				# voeg nieuwe spotterid's toe aan de lijst
 				$countnewlistspotterid++;
 				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%d,'external')", Array($updl, (int) $idtype));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 1 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($updl, (int) $idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($this->bool2dt(true), $updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 2) {
 				# verwijder spotterid's die niet meer op de lijst staan
 				$countdellistspotterid++;
 				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = 0 WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($updl, (int) $idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d", Array($this->bool2dt(true), $updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 4) {
 				$countnewlistspotterid++;
 				$this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
