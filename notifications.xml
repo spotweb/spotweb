@@ -4,16 +4,33 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Mon, 6 Feb 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Mon, 14 Feb 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Mon, 14 Feb 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Database changes</title>
+			<description><![CDATA[Added both automatic (from an external source) as user-specified whitelisting. The update on te 
+				database is very small and will process rather quick on most common systems.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
+			<author>MassD67</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.56</spotweb:schema_version>
+			<spotweb:settings_version>0.20</spotweb:settings_version>
+			<spotweb:security_version>0.27</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
+
 
 		<item>
 			<title>Database changes</title>
 			<description><![CDATA[There was a small bug in the way Spotweb stores the spotterid causing it to sometimes create a duplicate key. This change affects the largest tables of your Spotweb installation so upgrading may take quiete a while.
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
-			<guid>07</guid>
+			<guid>10</guid>
 			<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
 			<author>MassD67</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
@@ -32,7 +49,7 @@
 				settings database table hence this notice.
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
-			<guid>07</guid>
+			<guid>09</guid>
 			<pubDate>Tue, 31 Jan 2012 10:30:00 +0100</pubDate>
 			<author>spotweb</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
@@ -56,7 +73,7 @@
 			If you want a closed system, please remove the "Anonymous" user from the "Anonymous user - open system" group, and add it to the "Anonymous user - closed system" securitygroup.
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
-			<guid>07</guid>
+			<guid>08</guid>
 			<pubDate>Mon, 23 Dec 2011 00:00:00 +0100</pubDate>
 			<author>spotweb</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
