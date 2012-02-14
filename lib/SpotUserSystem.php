@@ -1188,6 +1188,11 @@ class SpotUserSystem {
 	 * Blacklist a specific spotter
 	 */
 	function addSpotterToList($ourUserId, $spotterId, $origin, $idtype) {
+		if (($idtype < 0) || ($idtype > 2)) {
+			/* Invalid id type, dont allow this */
+			return ;
+		} # if
+
 		$this->_db->addSpotterToList($spotterId, $ourUserId, $origin, $idtype);
 	} # addSpotterToList	
 
@@ -1196,14 +1201,14 @@ class SpotUserSystem {
 	 */
 	function removeSpotterFromList($ourUserId, $spotterId) {
 		$this->_db->removeSpotterFromList($spotterId, $ourUserId);
-	} # removeSpotterFromBlacklist
+	} # removeSpotterFromList
 	
 	/*
 	 * Returns if an spotter is blacklisted
 	 */
 	function isSpotterListed($ourUserId, $spotterId, $idType) {
 		return $this->_db->isSpotterListed($spotterId, $ourUserId, $idType);
-	} # isSpotterBlacklisted	
+	} # isSpotterListed	
 	
 	/*
 	 * Returns the users' remote IP address
