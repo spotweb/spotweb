@@ -531,7 +531,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('idtype', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
-		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', "0", true, '');
+		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 		
 		# Update old blacklisttable
