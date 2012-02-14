@@ -340,6 +340,9 @@ msgstr "Deze spot is als mogelijk onwenselijk gemodereerd!"
 msgid "This spotter is already blacklisted"
 msgstr "De spotter staat op een blacklist!"
 
+msgid "This spotter is already whitelisted"
+msgstr "De spotter staat op je whitelist"
+
 msgid "Back to mainview (ESC / U)"
 msgstr "Ga terug naar het overzicht (esc / u)"
 
