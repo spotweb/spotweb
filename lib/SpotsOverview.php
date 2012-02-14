@@ -1200,7 +1200,7 @@ class SpotsOverview {
 				} # foreach
 
 //var_dump($categoryList);
-//var_dump($subcatsMissing);
+//var_dump(expression)($subcatsMissing);
 //die();
 
 				#
