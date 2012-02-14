@@ -257,7 +257,7 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_spotsfull_2", "spotsfull"); # Index on userid
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
-
+		
 		# Drop any non-valid FK relations
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('spotstatelist', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -685,9 +685,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_filtercounts_1", "UNIQUE", "filtercounts", array("userid", "filterhash"));
 		
 		# ---- Indexes on spotteridblacklist ----
-		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "ouruserid"));
-		$this->validateIndex("idx_spotteridblacklist_2", "", "spotteridblacklist", array("idtype"));
-		$this->validateIndex("idx_spotteridblacklist_3", "", "spotteridblacklist", array("doubled"));
+		$this->validateIndex("idx_spotteridblacklist_1", "UNIQUE", "spotteridblacklist", array("spotterid", "idtype", "ouruserid"));
+		$this->validateIndex("idx_spotteridblacklist_2", "", "spotteridblacklist", array("spotterid", "doubled"));
+		$this->validateIndex("idx_spotteridblacklist_3", "", "spotteridblacklist", array("spotterid", "ouruserid"));
 
 		# ---- Indexes on cache ----
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
