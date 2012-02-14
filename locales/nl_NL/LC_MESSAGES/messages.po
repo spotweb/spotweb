@@ -1768,6 +1768,9 @@ msgstr "Standaard nieuwsserver"
 msgid "Remove spotter from blacklist"
 msgstr "Spotter van blacklist afhalen"
 
+msgid "Remove spotter from whitelist"
+msgstr "Spotter van whitelist afhalen"
+
 msgid "Spotter ID"
 msgstr "Spotter ID"
 
