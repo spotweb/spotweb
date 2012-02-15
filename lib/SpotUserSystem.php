@@ -1204,13 +1204,6 @@ class SpotUserSystem {
 	} # removeSpotterFromList
 	
 	/*
-	 * Returns if an spotter is blacklisted
-	 */
-	function isSpotterListed($ourUserId, $spotterId, $idType) {
-		return $this->_db->isSpotterListed($spotterId, $ourUserId, $idType);
-	} # isSpotterListed	
-	
-	/*
 	 * Returns the users' remote IP address
 	 */
 	function determineUsersIpAddress() {

@@ -9,8 +9,8 @@
 						);
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$allowedToPost = $tplHelper->allowedToPost();
-	$isBlacklisted = $tplHelper->isSpotterListed($spot['spotterid'], 1);
-	$isWhitelisted = $tplHelper->isSpotterListed($spot['spotterid'], 2);
+	$isBlacklisted = ($spot['listidtype'] == 1);
+	$isWhitelisted = ($spot['listidtype'] == 2); 
 	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!empty($spot['spotterid'])));
 	$allow_whiteList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isWhitelisted) && (!empty($spot['spotterid'])));
 

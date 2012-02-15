@@ -1087,9 +1087,13 @@ class SpotDb {
 												f.usersignature AS \"user-signature\",
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
-												f.fullxml AS fullxml
+												f.fullxml AS fullxml,
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
+												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
+												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
@@ -1781,15 +1785,6 @@ class SpotDb {
 			return false;
 		} # else
 	} # getBlacklistForSpotterId
-	
-	/*
-	 * Geeft alle blacklisted spotterid's terug
-	 */
-	function isSpotterListed($spotterId, $ourUserId, $idtype) {
-		$blacklistResult = $this->_conn->arrayQuery("SELECT spotterid FROM spotteridblacklist WHERE (spotterid = '%s') AND ((ouruserid = %d) OR (ouruserid = -1))  AND (idtype = %d)",
-							Array($spotterId, (int) $ourUserId, (int) $idtype));
-		return (!empty($blacklistResult));
-	} # isSpotterListed
 	
 	/*
 	 * Verwijder een filter en de children toe (recursive)
