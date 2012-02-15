@@ -384,14 +384,6 @@ class SpotTemplateHelper {
 		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
 		return $spotUser->allowedToPost($this->_currentSession['user']);	
 	} # allowedToPost
-
-	/*
-	 * Geeft terug of een spotter geblacklist is voor deze user
-	 */
-	function isSpotterListed($spotterId, $idType) {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->isSpotterListed($this->_currentSession['user']['userid'], $spotterId, $idType);
-	} # isSpotterListed
 	
 	/*
 	 * Creeert een linkje naar een specifieke nzb
