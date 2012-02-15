@@ -1009,7 +1009,7 @@ class SpotDb {
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
-									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (wl.idtype = 2)) " .
+									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2)) " .
 									 $criteriaFilter . " 
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
