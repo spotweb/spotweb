@@ -28,7 +28,7 @@ class dbfts_pgsql extends dbfts_abs {
 			
 			# Prepare the to_tsvector and to_tsquery strings
 			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
-			$ts_query = "plainto_tsquery('" . $this->_db->safe(strtolower($searchValue)) . "')";
+			$ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
 			
 			$filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
 			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
