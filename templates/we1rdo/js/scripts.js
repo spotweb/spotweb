@@ -16,6 +16,7 @@ $.address.init(function() {
 		});
 
 $(function(){
+	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
@@ -285,6 +286,7 @@ function closeDetails(scrollLocation) {
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
+	//ready
 	var pagenr = $('#nextPage').val();
 	$(window).scroll(function() {
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
@@ -519,21 +521,24 @@ function toggleImageSize() {
 
 // Bind keys to functions
 $(function(){
+	//ready
 	$('table.spots tbody tr').first().addClass('active');
-	$(document).bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
-	$(document).bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
-	$(document).bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
-	$(document).bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
-	$(document).bind('keydown', 'u', function(){$("a.closeDetails").click()});
-	$(document).bind('keydown', 'esc', function(){$("a.closeDetails").click()});
-	$(document).bind('keydown', 'i', toggleImageSize);
-	$(document).bind('keydown', 's', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
-	$(document).bind('keydown', 'n', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {location.href = $("#details a.nzb").attr('href')} else if($("th.nzb").is(":visible")) {location.href = $("tr.active a.nzb").attr('href')}});
-	$(document).bind('keydown', 'w', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
-	$(document).bind('keydown', 't', function(){openNewWindow()});
-	$(document).bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
-	$(document).bind('keydown', 'm', downloadMultiNZB);
-	$(document).bind('keydown', 'c', checkMultiNZB);
+
+	var $document = $(document);
+	$document.bind('keydown', 'k', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('prev')}});
+	$document.bind('keydown', 'j', function(){if(!($("div#overlay").hasClass("loading"))) {spotNav('next')}});
+	$document.bind('keydown', 'o', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
+	$document.bind('keydown', 'return', function(){if($("#overlay").is(':hidden')){$('table.spots tbody tr.active .title a.spotlink').click()}});
+	$document.bind('keydown', 'u', function(){$("a.closeDetails").click()});
+	$document.bind('keydown', 'esc', function(){$("a.closeDetails").click()});
+	$document.bind('keydown', 'i', toggleImageSize);
+	$document.bind('keydown', 's', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details a.sabnzbd-button").click()} else {$("tr.active a.sabnzbd-button").click()}});
+	$document.bind('keydown', 'n', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {location.href = $("#details a.nzb").attr('href')} else if($("th.nzb").is(":visible")) {location.href = $("tr.active a.nzb").attr('href')}});
+	$document.bind('keydown', 'w', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
+	$document.bind('keydown', 't', function(){openNewWindow()});
+	$document.bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
+	$document.bind('keydown', 'm', downloadMultiNZB);
+	$document.bind('keydown', 'c', checkMultiNZB);
 });
 
 // Keyboard navigation functions
@@ -627,6 +632,7 @@ function attachEnablerBehaviour() {
 
 
 $(document).ready(function() {
+	//ready
 	var BaseURL = createBaseURL();
 	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
 	$("#usermanagementtabs").tabs();
@@ -637,6 +643,7 @@ $(document).ready(function() {
 
 // Regel positie en gedrag van sidebar (fixed / relative)
 $().ready(function() {
+	//ready
 	$('#filterscroll').bind('change', function() {
 		var scrolling = $(this).is(':checked');
 		$.cookie('scrolling', scrolling, { path: '', expires: $COOKIE_EXPIRES, domain: '$COOKIE_HOST' });
@@ -669,6 +676,7 @@ function getSidebarState() {
 }
 
 $(function(){
+	//ready
 	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	if(data == null) {
 		getSidebarState();
@@ -695,6 +703,7 @@ function toggleSidebarItem(id) {
 
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
 $(function(){
+	//ready
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
 			toggleSidebarPanel('.advancedSearch');
@@ -715,6 +724,7 @@ $(function(){
 
 // Pas sorteervolgorde aan voor datum
 $(function(){
+	//ready
 	$("ul.sorting input").click(function() {
 		if($(this).val() == 'stamp' || $(this).val() == 'commentcount' || $(this).val() == 'spotrating') {
 			$("div.advancedSearch input[name=sortdir]").attr("value", "DESC");
@@ -821,6 +831,7 @@ function downloadMultiNZB() {
 
 // Toggle filter visibility
 $(function(){
+	//ready
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
 	if(data != null) {
 		$.each(data, function(i, value) {
