@@ -364,6 +364,7 @@
 
 	<script>
 	$(function() {
+		// console.time("11th-ready");
 		$( "#slider-filesize" ).slider({
 			range: true,
 			min: 0,
@@ -408,5 +409,6 @@
 		} else {
 			$( "#human-reportcount" ).text( "<?php echo _('Maximum %1 reports'); ?>".replace("%1", reportSlideValue));
 		} // if
+		// console.timeEnd("11th-ready");
 	});
 	</script>

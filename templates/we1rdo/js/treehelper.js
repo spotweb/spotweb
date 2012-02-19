@@ -1,4 +1,6 @@
 		$(function(){
+			// console.time("12th-ready");
+
 			// Attach the dynatree widget to an existing <div id="tree"> element
 			// and pass the tree options as an argument to the dynatree() function:
 			$("div#tree").dynatree({
@@ -67,6 +69,7 @@
 
 				return true;
 			});
+			// console.timeEnd("12th-ready");
 		});
 		
 		// Select or Deselect All checkboxes
