@@ -391,6 +391,31 @@ class SpotUserSystem {
 		return $user;
 	} # setUserApi
 
+	/*
+	 * Merge an array recursively, overwriting
+	 * existing values
+	 *
+	 * Code copied from 
+	 *    http://nl3.php.net/manual/en/function.array-merge-recursive.php#106985
+	 */
+	function array_merge_recursive_overwrite() {
+		$arrays = func_get_args();
+		$base = array_shift($arrays);
+
+		foreach ($arrays as $array) {
+			reset($base); //important
+			while (list($key, $value) = @each($array)) {
+				if (is_array($value) && @is_array($base[$key])) {
+					$base[$key] = $this->array_merge_recursive_overwrite($base[$key], $value);
+				} else {
+					$base[$key] = $value;
+				} # else
+			} # while
+		} # foreach
+
+		return $base;
+	} # array_merge_recursive_overwrite
+
 	/* 
 	 * Cleanup of user preferences
 	 */
@@ -451,8 +476,7 @@ class SpotUserSystem {
 		 * expect it to do and merge embedded arrays by combining them
 		 * instead of overwriting key values...
 		 */ 
-		// $prefs = array_merge_recursive($tpl, $prefs);
-		$prefs = $tpl + $prefs;
+		$prefs = $this->array_merge_recursive_overwrite($tpl, $prefs);
 
 		return $prefs;
 	} # cleanseUserPreferences
