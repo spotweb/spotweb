@@ -396,13 +396,64 @@ class SpotUserSystem {
 	 */
 	function cleanseUserPreferences($prefs, $tpl) {
 		/*
-		 * Make sure the user didn't try to submit preferences
-		 * we do not support in Spotweb
+		 * We do not want any user preferences to be submitted which aren't in the anonuser preferences,
+		 * as this would allow garbage preferences or invalid settings for non-existing preferences.
+		 *
+		 * A simple recursive merge with the anonuser preferences is not possible because some browsers
+		 * just don't submit the values of a checkbox when the checkbox is deselected, in that case the
+		 * anonuser's settings would be set instead of the false setting as it should be.
+		 *
+		 * We solve this by simply setting the values of all the checkboxes and then performing
+		 * a recursive merge
+		 *
+		 * Convert other settings to booleans so we always have a valid result.
+		 * We need to do this because not all browsers post checkboxes in a form in
+		 * the same way.
+		 */
+		$tpl['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
+		$tpl['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
+		$tpl['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
+		$tpl['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
+		$tpl['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
+		$tpl['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
+		$tpl['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
+		$tpl['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
+		$tpl['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
+		$tpl['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
+		
+		$notifProviders = Notifications_Factory::getActiveServices();
+		foreach ($notifProviders as $notifProvider) {
+			$tpl['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['report_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['report_posted'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
+			$tpl['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
+		} # foreac
+
+		# When nzbhandling settings are not entered at all, we default to disable
+		if (!isset($prefs['nzbhandling'])) {
+			$tpl['nzbhandling'] = array('action' => 'disable',
+										  'prepare_action' => 'merge');										  
+		} # if
+
+		/*
+		 * Unset any keys in the preferences which aren't available 
+		 * in the preferences template (anonyuser)
 		 */
 		foreach(array_diff_key($prefs, $tpl) as $keys => $values) {
 			unset($prefs[$keys]);
 		} # foreach
-		
+
+		/* 
+		 * Of course array_merge_recursive doesn't do what one would
+		 * expect it to do and merge embedded arrays by combining them
+		 * instead of overwriting key values...
+		 */ 
+		// $prefs = array_merge_recursive($tpl, $prefs);
+		$prefs = $tpl + $prefs;
+
 		return $prefs;
 	} # cleanseUserPreferences
 	
@@ -441,12 +492,6 @@ class SpotUserSystem {
 			$errorList[] = _('Invalid user preference value (defaultsortfield)');
 		} # if
 		
-		# When nzbhandling settings are not entered at all, we default to disable
-		if (!isset($prefs['nzbhandling'])) {
-			$prefs['nzbhandling'] = array('action' => 'disable',
-										  'prepare_action' => 'merge');										  
-		} # if
-		
 		# when an sabnzbd host is entered, it has to be a valid URL
 		if ( ($prefs['nzbhandling']['action'] == 'client-sabnzbd') || ($prefs['nzbhandling']['action'] == 'push-sabnzbd') ) {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
@@ -460,33 +505,6 @@ class SpotUserSystem {
 				$prefs['nzbhandling']['sabnzbd']['url'] .= '/';
 			} # if
 		} # if
-
-		/*
-		 * Convert other settings to booleans so we always have a valid result.
-		 * We need to do this because not all browsers post checkboxes in a form in
-		 * the same way.
-		 */
-		$prefs['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
-		$prefs['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
-		$prefs['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
-		$prefs['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
-		$prefs['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
-		$prefs['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
-		$prefs['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
-		$prefs['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
-		$prefs['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
-		$prefs['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
-		
-		$notifProviders = Notifications_Factory::getActiveServices();
-		foreach ($notifProviders as $notifProvider) {
-			$prefs['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['report_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['report_posted'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
-			$prefs['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
-		}
 
 		# Twitter tokens are never posted by the form, but they shouldn't be tossed out
 		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
