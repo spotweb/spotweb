@@ -16,6 +16,7 @@ $.address.init(function() {
 		});
 
 $(function(){
+// console.time("10th-ready");
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
@@ -29,6 +30,7 @@ $(function(){
 			return true;
 		}
     });	
+// console.timeEnd("10th-ready");
 });
 
 // createBaseURL
@@ -287,6 +289,7 @@ function closeDetails(scrollLocation) {
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
 $(function(){
 	//ready
+// console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
 	$(window).scroll(function() {
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
@@ -312,6 +315,7 @@ $(function(){
 			}
 		}
 	});
+// console.timeEnd("2nd-ready");
 });
 
 // Haal de comments op en zet ze per batch op het scherm
@@ -521,6 +525,7 @@ function toggleImageSize() {
 
 // Bind keys to functions
 $(function(){
+// console.time("3rd-ready");
 	//ready
 	$('table.spots tbody tr').first().addClass('active');
 
@@ -539,6 +544,7 @@ $(function(){
 	$document.bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
 	$document.bind('keydown', 'm', downloadMultiNZB);
 	$document.bind('keydown', 'c', checkMultiNZB);
+// console.timeEnd("3rd-ready");
 });
 
 // Keyboard navigation functions
@@ -632,6 +638,7 @@ function attachEnablerBehaviour() {
 
 
 $(document).ready(function() {
+// console.time("4th-ready");
 	//ready
 	var BaseURL = createBaseURL();
 	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
@@ -639,10 +646,12 @@ $(document).ready(function() {
 	$("#editsettingstab").tabs();
 	attachEnablerBehaviour();
 	initializeUserPreferencesScreen();
+// console.timeEnd("4th-ready");
 });
 
 // Regel positie en gedrag van sidebar (fixed / relative)
 $().ready(function() {
+// console.time("5th-ready");
 	//ready
 	$('#filterscroll').bind('change', function() {
 		var scrolling = $(this).is(':checked');
@@ -653,6 +662,7 @@ $().ready(function() {
 
 	var scrolling = $.cookie("scrolling");
 	toggleScrolling(scrolling);
+// console.timeEnd("5th-ready");
 });
 
 function toggleScrolling(state) {
@@ -676,6 +686,7 @@ function getSidebarState() {
 }
 
 $(function(){
+// console.time("6th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	if(data == null) {
@@ -690,6 +701,7 @@ $(function(){
 			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("up").addClass("down");
 		}
 	});
+// console.timeEnd("6th-ready");
 });
 
 function toggleSidebarItem(id) {
@@ -703,6 +715,7 @@ function toggleSidebarItem(id) {
 
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
 $(function(){
+// console.time("7th-ready");
 	//ready
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
@@ -720,10 +733,12 @@ $(function(){
 			$("ul.clearCategories label").html("<t>Don't use categories</t>");
 		}
 	});
+// console.timeEnd("7th-ready");
 });
 
 // Pas sorteervolgorde aan voor datum
 $(function(){
+// console.time("8th-ready");
 	//ready
 	$("ul.sorting input").click(function() {
 		if($(this).val() == 'stamp' || $(this).val() == 'commentcount' || $(this).val() == 'spotrating') {
@@ -732,6 +747,7 @@ $(function(){
 			$("div.advancedSearch input[name=sortdir]").attr("value", "ASC");
 		}
 	});
+// console.timeEnd("8th-ready");
 });
 
 // sidebarPanel zichtbaar maken / verbergen
@@ -831,6 +847,7 @@ function downloadMultiNZB() {
 
 // Toggle filter visibility
 $(function(){
+// console.time("9th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
 	if(data != null) {
@@ -846,6 +863,7 @@ $(function(){
 			}
 		});
 	}
+// console.timeEnd("9th-ready");
 });
 
 function toggleFilter(id) {

@@ -12,8 +12,15 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_statics, '')) { ?>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
+		<script type='text/javascript'>
+			// console.time("parse-js");
+		</script>
 		<script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 <?php } ?>
+		<script type='text/javascript'>
+			// console.timeEnd("parse-js");
+			/// console.time("parse-css");
+		</script>
 		<style type="text/css" media="screen,handheld,projection">
 			<?php echo $settings->get('customcss'); ?>
 		</style>		
@@ -22,6 +29,9 @@
 			<?php echo $tplHelper->getUserCustomCss(); ?>
 		</style>		
 <?php } ?>
+		<script type='text/javascript'>
+			// console.timeEnd("parse-css");
+		</script>
 		<script type='text/javascript'>
 			// Define some global variables showing or hiding specific parts of the UI
 			// based on users' security rights
