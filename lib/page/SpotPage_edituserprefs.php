@@ -79,15 +79,6 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 
 					# Save the current' user preferences because we need them before cleansing 
 					$savePrefs = $spotUser['prefs'];
-					
-					/*
-					 * We do not want any user preferences to be submitted which aren't in the anonuser preferences,
-					 * as this would allow garbage preferences or invalid settings for non-existing preferences.
-					 *
-					 * A simple recursive merge with the anonuser preferences is not possible because some browsers
-					 * just don't submit the values of a checkbox when the checkbox is deselected, in that case the
-					 * anonuser's settings would be set instead of the false setting as it should be.
-					 */
 					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
 
 					# Validate all preferences
