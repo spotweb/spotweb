@@ -5,7 +5,7 @@ class NzbHandler_Factory
 	{
 		# Nieuwe handlers voegen we expliciet toe omdat we anders
 		# niet weten wat we includen in combinate met __autoload()
-		switch ($action) 
+		switch ($action)
 		{
 			case 'disable'			: $handler = new NzbHandler_Disable($settings, $nzbHandling); break;
 			case 'save'	  			: $handler = new NzbHandler_Save($settings, $nzbHandling); break;
@@ -15,6 +15,10 @@ class NzbHandler_Factory
 			case 'nzbget'			: $handler = new NzbHandler_Nzbget($settings, $nzbHandling); break;
 			default					: $handler = new NzbHandler_Display($settings, $nzbHandling); break;
 		} # switch
+
+                if (!$handler instanceof NzbHandler_Disable && $handler->isAvailable()!==true) {
+                    $handler = new NzbHandler_Disable($settings, $nzbHandling);
+                }
 
 		return $handler;
 	} # build()
