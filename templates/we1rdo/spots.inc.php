@@ -67,6 +67,16 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
+
+		$catMap = array();
+		foreach($spot['subcatlist'] as $sub) {
+			$subcatType = substr($sub, 0, 1);
+			$subCatDesc = SpotCategories::SubcatDescription($spot['category'], $subcatType);
+			$catDesc = SpotCategories::Cat2Desc($spot['category'], $sub);
+			$catMap[$subCatDesc] =  $catDesc;
+		}
+
+		$catData = json_encode($catMap);
 	
 		if($spot['rating'] == 0) {
 			$rating = '';
@@ -113,7 +123,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} # if
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . "'><a data-cats='" . $catData. "'onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
@@ -126,7 +136,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $spot['commentcount'] . "</a></td>";
 		} # if
 		
-		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in catergory %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
+		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
 			 "<td class='date' title='" . $tplHelper->formatDate($spot['stamp'], 'force_spotlist') . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
