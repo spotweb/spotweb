@@ -48,18 +48,6 @@ class SpotTemplateHelper {
 	} // getParentTemplates
 
 	/*
-	 * Returns the amount of spot based on the given filter
-	 */
-	private function getSpotCount($sqlFilter) {
-		# Controleer de users' rechten
-		if ($this->_spotSec->allowed(SpotSecurity::spotsec_view_spotcount_total, '')) {
-			return $this->_db->getSpotCount($sqlFilter);
-		} else {
-			return 0;
-		} # else
-	} # getSpotCount
-
-	/*
 	 * Set params - update de template list of parameters
 	 */
 	function setParams($params) {
