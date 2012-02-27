@@ -10,7 +10,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	function __construct(SpotSettings $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'NZBGet', 'D/L', $nzbHandling);
-				
+
 		$nzbget = $nzbHandling['nzbget'];
 		$this->_host = $nzbget['host'];
 		$this->_timeout = $nzbget['timeout'];
@@ -22,7 +22,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		$filename = $this->cleanForFileSystem($fullspot['title']) . '.nzb';
 		# nzbget does not support zip files, must merge
-		$nzb = $this->mergeNzbList($nzblist); 
+		$nzb = $this->mergeNzbList($nzblist);
 		$category = $this->convertCatToSabnzbdCat($fullspot);
 
 		return $this->uploadNzb($filename, $category, false, $nzb);
@@ -32,13 +32,13 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		$reqarr = array('version' => '1.1', 'method' => $method, 'params' => $args);
 		$content = json_encode($reqarr);
-		
+
 		# creeer de header
 		$header = array("Host: ". $this->_host,
 			"Authorization: Basic " . $this->_credentials,
 			"Content-type: application/json",
 			"Content-Length: " . strlen($content));
-		
+
 		$output = $this->sendHttpRequest('POST', $this->_url, $header, $content, $this->_timeout);
 
 		if ($output === false)
@@ -57,12 +57,26 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		{
 			$response = $response['result'];
 		}
-		
+
 		return $response;
 	} # sendRequest
-	
+
 	# NzbHandler API functions
-	
+
+        /**
+         * Check if handler is available
+         * @return boolean
+         */
+        public function isAvailable()
+        {
+            try {
+                $this -> getStatus ( );
+            } catch ( Exception $e ) {
+                return false;
+            }
+            return true;
+        }
+
 	/*
 	 * Return the supported API functions for this NzbHandler imlementation
 	 */
@@ -70,19 +84,19 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		$api = "getStatus,pauseQueue,resumeQueue,setSpeedLimit,moveDown,moveUp"
 			. ",moveTop,moveBottom,setCategory,delete,pause,resume,getVersion";
-				
+
 		// add functions for NZBGet v0.8.0 and higher
 		if ($this->getVersion() >= "0.8.0")
 		{
 			$api .= ",setPriority,rename";
 		}
-		
+
 		return $api;
 	} # hasApiSupport
 
 	/*
 	 * NZBGet API method: append
-	 * Add an NZB file to download queue 
+	 * Add an NZB file to download queue
 	 */
 	public function uploadNzb($filename, $category, $addToTop, $nzb)
 	{
@@ -90,13 +104,13 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		return $this->sendrequest('append', $args);
 	} # nzbgetApi_append
-	
+
 	/*
 	 * NZBGet API method: status
 	 * The getStatus() method returns a JSON object containing the following
 	 * name/value pairs:
 	 *
-	 * queue.status	
+	 * queue.status
 	 * queue.paused
 	 * queue.speedlimit
 	 * queue.freediskspace
@@ -118,9 +132,9 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		$status = $this->sendrequest('status', null);
 		$listgroups = $this->sendrequest('listgroups', null);
-		
+
 		$result = array();
-		
+
 		if ($status['ServerPaused'] != true)
 		{
 			$result['queue']['status'] = ($status['ServerStandBy'] == true)?"Idle":"Active";
@@ -129,7 +143,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		{
 			$result['queue']['status'] = 'Paused';
 		}
-		
+
 		$result['queue']['paused'] = $status['ServerPaused'];
 		$result['queue']['speedlimit'] = round($status['DownloadLimit']/1024);
 		$result['queue']['freediskspace'] = "-";
@@ -137,7 +151,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		$result['queue']['bytepersec'] = $status['DownloadRate'];
 		$result['queue']['mbsize'] = 0;
 		$result['queue']['mbremaining'] = $status['RemainingSizeMB'];
-		
+
 		$secondsremaining = 0;
 		if ($status['DownloadRate'] != 0)
 		{
@@ -150,9 +164,9 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 				$secondsremaining = $status['RemainingSizeLo'] / $status['DownloadRate'];
 			}
 		}
-		
-		$result['queue']['secondsremaining'] = (int)($secondsremaining); 
-	
+
+		$result['queue']['secondsremaining'] = (int)($secondsremaining);
+
 		$downloads = array();
 		for ($i = 0; $i < count($listgroups); $i++)
 		{
@@ -169,12 +183,12 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 				$downloads[$i]['percentage'] = round((($listgroups[$i]['FileSizeMB'] - $listgroups[$i]['RemainingSizeMB']) / $listgroups[$i]['FileSizeMB']) * 100);
 			}
 
-			$result['queue']['mbsize'] = $result['queue']['mbsize'] + $downloads[$i]['mbsize']; 
+			$result['queue']['mbsize'] = $result['queue']['mbsize'] + $downloads[$i]['mbsize'];
 		}
 
 		$result['queue']['slots'] = $downloads;
-		$result['queue']['nrofdownloads'] = count($downloads);		
-		
+		$result['queue']['nrofdownloads'] = count($downloads);
+
 		return $result;
 	} # getStatus
 
@@ -206,7 +220,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		return $this->sendrequest('rate', $args);
 	} # setSpeedLimit
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Move a download one position down in the queue
@@ -214,10 +228,10 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function moveDown($id)
 	{
 		$args = array('groupmoveoffset', (int)1, '', (int)$id);
-		
+
 		return $this->sendrequest('editqueue', $args);
 	} # moveDown
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Move a download one position up in the queue
@@ -225,7 +239,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function moveUp($id)
 	{
 		$args = array('groupmoveoffset', (int)-1, '', (int)$id);
-		
+
 		return $this->sendrequest('editqueue', $args);
 	} # moveUp
 
@@ -236,7 +250,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function moveTop($id)
 	{
 		$args = array('groupmovetop', 0, '', (int)$id);
-		
+
 		return $this->sendrequest('editqueue', $args);
 	} # moveTop
 
@@ -247,10 +261,10 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function moveBottom($id)
 	{
 		$args = array('groupmovebottom', 0, '', (int)$id);
-		
+
 		return $this->sendrequest('editqueue', $args);
 	} # moveBottom
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Set the category for a download
@@ -270,7 +284,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function setPriority($id, $priority)
 	{
 		if ($this->getVersion() < "0.8.0") return false;
-		
+
 		# parse integer value a string
 		$priority = '' + $priority;
 		$args = array('groupsetpriority', (int)0, $priority, (int)$id);
@@ -288,7 +302,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		return false;
 	} # setPassword
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Delete a download from the queue
@@ -299,7 +313,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		return $this->sendrequest('editqueue', $args);
 	} # delete
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Rename a download
@@ -308,14 +322,14 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	public function rename($id, $name)
 	{
 		if ($this->getVersion() < "0.8.0") return false;
-		
+
 		$name = cleanForFileSystem($name);
 
 		$args = array('groupsetname', (int)0, $name, (int)$id);
 
-		return $this->sendrequest('editqueue', $args);		
+		return $this->sendrequest('editqueue', $args);
 	} # rename
-	
+
 	/*
 	 * NZBGet API method: editqueue
 	 * Pause a download in the queue
@@ -353,7 +367,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 
 		// allow adding of adhoc categories
 		$result['readonly'] = false;
-		
+
 		return $result;
 	} # getCategories
 
@@ -365,5 +379,5 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		return $this->sendrequest('version', null);
 	} # getVersion
-	
+
 } # class NzbHandler_Nzbget
