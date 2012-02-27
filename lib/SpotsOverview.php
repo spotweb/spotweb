@@ -882,11 +882,12 @@ class SpotsOverview {
 		#		  nemen we aan dat de EQ operator bedoelt is.
 		#
 		#		- Speciale soorten lijsten - er zijn een aantal types welke een speciale betekenis hebben:
-		#				New:0 			(nieuwe posts)
-		#				Downloaded:0 	(spots welke gedownload zijn door deze account)
-		#				Watch:0 		(spots die op de watchlist staan van deze account)
-		#				Seen:0 			(spots die al geopend zijn door deze account)
-		#				MyPostedSpots:0 (spots die gepost zijn door die user)
+		#				New:0 					(nieuwe posts)
+		#				Downloaded:0 			(spots welke gedownload zijn door deze account)
+		#				Watch:0 				(spots die op de watchlist staan van deze account)
+		#				Seen:0 					(spots die al geopend zijn door deze account)
+		#				MyPostedSpots:0 		(spots die gepost zijn door die user)
+		#				WhitelistedSpotters:0   (spots posted by a whitelisted spotter)
 		#				
 		#
 		if (isset($search['type'])) {
@@ -969,6 +970,7 @@ class SpotsOverview {
 								  'commentcount' => 's.commentcount',
 								  'downloaded' => 'downloaded', 
 								  'mypostedspots' => 'mypostedspots',
+								  'whitelistedspotters' => 'whitelistedspotters',
 								  'watch' => 'watch', 
 								  'seen' => 'seen');
 
@@ -1009,7 +1011,7 @@ class SpotsOverview {
 				# en creeeren de textfilter later in 1 keer.
 				#
 				$textSearchFields[] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
-			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots'))) {
+			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots', 'whitelistedspotters'))) {
 				# 
 				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
 				# met de spotstatelist. Deze veldnamen behandelen we hier
@@ -1021,6 +1023,12 @@ class SpotsOverview {
 							
 							break;
 					} # case 'new' 
+
+					case 'whitelistedspotters' : {
+						$tmpFilterValue = ' (wl.spotterid IS NOT NULL)';
+
+						break;
+					} # case 'whitelistedspotters'
 					
 					case 'mypostedspots' : {
 						$additionalJoins[] = array('tablename' => 'spotsposted',
