@@ -4,9 +4,25 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Mon, 14 Feb 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Mon, 14 Feb 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Mon, 27 Feb 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Mon, 27 Feb 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Database changes</title>
+			<description><![CDATA[If certain reports in the reporting newsgroup contain UTF-8 characters in the 'From' header, it 
+				could throw an err trying to insert this data.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Mon, 27 Feb 2012 00:00:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.20</spotweb:settings_version>
+			<spotweb:security_version>0.27</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Database changes</title>
@@ -18,7 +34,7 @@
 			<pubDate>Mon, 6 Feb 2012 00:00:00 +0100</pubDate>
 			<author>MassD67</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
-			<spotweb:schema_version>0.56</spotweb:schema_version>
+			<spotweb:schema_version>0.57</spotweb:schema_version>
 			<spotweb:settings_version>0.20</spotweb:settings_version>
 			<spotweb:security_version>0.27</spotweb:security_version>
 			<spotweb:feature_version>0.06</spotweb:feature_version>
