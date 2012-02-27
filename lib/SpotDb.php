@@ -762,7 +762,8 @@ class SpotDb {
 			$query = "SELECT COUNT(1) FROM spots AS s 
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
-						WHERE " . $sqlFilter;
+						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
+						WHERE " . $sqlFilter . " AND (bl.spotterid IS NULL)";
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
 		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
