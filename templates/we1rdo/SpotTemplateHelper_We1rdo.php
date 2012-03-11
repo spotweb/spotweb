@@ -106,7 +106,8 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 								'templates/we1rdo/js/scripts.js',
 								'templates/we1rdo/js/we1rdopost.js',
 								'templates/we1rdo/js/treehelper.js',
-								'templates/we1rdo/js/jquery.ui.nestedSortable.js'
+								'templates/we1rdo/js/jquery.ui.nestedSortable.js',
+								'templates/we1rdo/js/jquery.tipTip.minified.js'
 								);
 				break;
 			} # case js
@@ -115,7 +116,8 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
 							 'templates/we1rdo/css/jquery-ui-1.8.13.custom.css',
 							 'templates/we1rdo/css/spoticons.css',
-							 'templates/we1rdo/css/style.css'
+							 'templates/we1rdo/css/style.css',
+							 'templates/we1rdo/css/tipTip.css'
 							 );
 				break;
 			} # case css
