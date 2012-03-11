@@ -19,6 +19,7 @@ $(function(){
 // console.time("10th-ready");
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
+	$('a.spotlink').each(applyTipTip);
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 	
@@ -307,6 +308,7 @@ $(function(){
 					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
 					$("div#overlay").empty();
 					$("a.spotlink").click(function(e) { e.preventDefault(); });
+					$("a.spotlink").each(applyTipTip);
 					
 					pagenr++;
 					$("td.next > a").attr("href", url);
@@ -1569,3 +1571,18 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 	}); // ajax call om de form te submitten
 			
 } // addSpotFilter
+
+function applyTipTip(){
+	var categories = $(this).data('cats');
+	if(!categories) return;
+	var $dl = $("<ul/>")
+	var list = $.map(categories, function(value, key){
+		if(value) {
+			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+		}
+	});
+
+	$dl.append.apply($dl, list);
+	$(this).attr("title", "");
+	$(this).tipTip({defaultPosition: 'bottom', maxWidth: 'auto', content: $dl});
+}
