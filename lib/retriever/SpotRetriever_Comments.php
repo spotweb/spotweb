@@ -210,7 +210,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					/*
 					 * Don't add older fullcomments than specified for the retention stamp
 					 */
-					if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp)) {
+					if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
 						continue;
 					} # if
 					

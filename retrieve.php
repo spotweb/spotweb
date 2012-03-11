@@ -122,7 +122,7 @@ try {
 
 		if ($settings->get('retentiontype') == 'everything') {
 			$db->deleteSpotsRetention($settings->get('retention'));
-		} elseif ($settings->get('retentiontype') == 'fullonly')) {
+		} elseif ($settings->get('retentiontype') == 'fullonly') {
 			$db->expireCache($settings->get('retention'));
 			$db->expireCommentsFull($settings->get('retention'));
 			$db->expireSpotsFull($settings->get('retention'));
