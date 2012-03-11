@@ -42,6 +42,7 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('auditlevel', 0); // No auditing
 		$this->setIfNot('system_languages', array('nl_NL' => 'Nederlands', 'en_US' => 'English'));
 		$this->setIfNot('retention', 0);
+		$this->setIfNot('retentiontype', 'fullonly');
 		$this->setIfNot('deny_robots', true);
 		$this->setIfNot('nntp_nzb', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
 		$this->setIfNot('nntp_hdr', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));

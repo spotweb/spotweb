@@ -486,7 +486,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$limits->setAttribute('default', $this->_currentSession['user']['prefs']['perpage']);
 		$caps->appendChild($limits);
 
-		if ($this->_settings->get('retention') > 0) {
+		if (($this->_settings->get('retention') > 0) && ($this->_settings->get('retentiontype') == 'everything')) {
 			$ret = $doc->createElement('retention');
 			$ret->setAttribute('days', $this->_settings->get('retention'));
 			$caps->appendChild($ret);

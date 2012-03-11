@@ -108,10 +108,27 @@ $debugLog = SpotCommandline::get('debug');
 ## RETRO MODE! Hiermee kunnen we de fullspots, fullcomments en/of cache achteraf ophalen
 $retroMode = SpotCommandline::get('retro');
 
-## Retention cleanup
+/*
+ * Retention cleanup. Basically when we ask for Spotweb to only
+ * keep spots for 'xx' days (eg: 30 days), we either have to delete
+ * everyting older than 'xx' days, or delete all 'full' resources
+ * older than the specified time period.
+ *
+ * The full resources are everything beyond the bare minimum to 
+ * display the spots, so we delete nzb's, images, comments, etc.
+ */
 try {
 	if ($settings->get('retention') > 0 && !$retroMode) {
-		$db->deleteSpotsRetention($settings->get('retention'));
+
+		if ($settings->get('retentiontype') == 'everything') {
+			$db->deleteSpotsRetention($settings->get('retention'));
+		} elseif ($settings->get('retentiontype') == 'fullonly')) {
+			$db->expireCache($settings->get('retention'));
+			$db->expireCommentsFull($settings->get('retention'));
+			$db->expireSpotsFull($settings->get('retention'));
+		} else {
+			throw new NotImplementedException("Unknown retentiontype specified");
+		}
 	} # if
 } catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
@@ -181,7 +198,7 @@ try {
 	$db->cleanSpotStateList();
 
 	if (!$retroMode) {
-		$db->cleanCache(30);
+		$db->expireCache(30);
 	} # if
 }
 catch(RetrieverRunningException $x) {

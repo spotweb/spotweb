@@ -170,6 +170,12 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 					<dt><label for="editsettingsform[retention]"><?php echo _('Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots.'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[retention]" value="<?php echo htmlspecialchars($this->_settings->get('retention'), ENT_QUOTES); ?>"></dd>
 
+					<dt><label for="editsettingsform[retentiontype]"><?php echo _('Retention is for either everything or only the cached data'); ?></label></dt>
+						<select name="editsettingsform[retentiontype]">
+							<option <?php if ($this->_settings->get('retentiontype') == 'everything') { echo 'selected="selected"'; } ?> value="everything"><?php echo _('Remove everything'); ?></option>
+							<option <?php if ($this->_settings->get('retentiontype') == 'fullonly') { echo 'selected="selected"'; } ?> value="fullonly"><?php echo _('Only extra data but keep spots'); ?></option>
+						</select>					
+
 					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
 					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
 

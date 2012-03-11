@@ -216,8 +216,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						/*
 						 * Don't add spots older than specified for the retention stamp
 						 */
-						if ($retentionStamp > 0 && $spot['stamp'] < $retentionStamp) {
-							$skipCount++;
+						if (($retentionStamp > 0) && ($spot['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+							continue;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
 							$skipCount++;
 						} else {
@@ -261,6 +261,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				if ($header_isInDb &&			# header must be in the db
 					!$fullspot_isInDb)	 		# but the fullspot should not
 				   {
+					/*
+					 * Don't add older fullspots than specified for the retention stamp
+					 */
+					if (($retentionStamp > 0) && ($spot['stamp'] < $retentionStamp)) { 
+						continue;
+					} # if
+
 					if ($this->_retrieveFull) {
 						$fullSpot = array();
 						try {

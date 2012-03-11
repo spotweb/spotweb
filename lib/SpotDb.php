@@ -2234,16 +2234,39 @@ class SpotDb {
 								Array(time(), (int) $userid, (int) $perm, $objectid, $this->bool2dt($allowed), $ipaddr));
 	} # addAuditEntry
 
-	function cleanCache($expireDays) {
+	/*
+	 * Removes items from the cache older than a specific amount of days
+	 */
+	function expireCache($expireDays) {
 		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics, SpotCache::StatisticsData,(int) time()-$expireDays*24*60*60));
-	} # cleanCache
+	} # expireCache
 
+	/*
+	 * Removes items from te commentsfull table older than a specific amount of days
+	 */
+	function expireCommentsFull($expireDays) {
+		return $this->_conn->modify("DELETE FROM commentsfull WHERE stamp < %d", Array((int) time() - ($expireDays*24*60*60)));
+	} # expireCommentsFull
+
+	/*
+	 * Removes items from te commentsfull table older than a specific amount of days
+	 */
+	function expireSpotsFull($expireDays) {
+		return $this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
+	} # expireCommentsFull
+
+	/*
+	 * Retrieves wether a specific resourceid is cached
+	 */
 	function isCached($resourceid, $cachetype) {
 		$tmpResult = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
 
 		return (!empty($tmpResult));
 	} # isCached
 
+	/*
+	 * Returns the resource from the cache table, if we have any
+	 */
 	function getCache($resourceid, $cachetype) {
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql' : {
@@ -2278,10 +2301,16 @@ class SpotDb {
 		return false;
 	} # getCache
 
+	/*
+	 * Refreshen the cache timestamp to prevent it from being stale
+	 */
 	function updateCacheStamp($resourceid, $cachetype) {
 		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
 
+	/*
+	 * Add a resource to the cache
+	 */
 	function saveCache($resourceid, $cachetype, $metadata, $content) {
 		if (is_array($content)) {
 			$serialize = true;
