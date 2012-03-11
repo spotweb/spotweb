@@ -1097,7 +1097,7 @@ class SpotUserSystem {
 		 * Parse the XML file
 		 */		
 		$xml = @(new SimpleXMLElement($xmlStr));
-		
+
 		# We can only parse version 1.0 of the filters
 		if ( (string) $xml->version != '1.0') {
 			return $filterList;

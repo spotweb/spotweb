@@ -134,7 +134,11 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					/*
 					 * Don't add older comments than specified for the retention stamp
 					 */
-					if (($retentionStamp > 0 && $msgheader['stamp'] < $retentionStamp) || $msgheader['stamp'] < $this->_settings->get('retrieve_newer_than')) {
+					if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+						continue;
+					} # if
+
+					if ($msgheader['stamp'] < $this->_settings->get('retrieve_newer_than')) {
 						continue;
 					} # if
 
@@ -203,7 +207,13 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				if (($header_isInDb) &&			# header should be in the db
 					(!$fullcomment_isInDb))		# but if we already have the full comment, skip
 				   {
-
+					/*
+					 * Don't add older fullcomments than specified for the retention stamp
+					 */
+					if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp)) {
+						continue;
+					} # if
+					
 					if ($this->_retrieveFull) {
 						$fullComment = array();
 						try {

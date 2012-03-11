@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.20');
+define('SPOTWEB_SETTINGS_VERSION', '0.21');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
@@ -101,6 +101,7 @@ class SpotSettings {
 		# Define arrays with valid settings
 		$validNntpEnc = array(false, 'ssl', 'tls');
 		$validModerationAction = array('disable', 'act', 'markspot');
+		$validRetentionTypes = array('fullonly', 'everything');
 
 		# Get the given value for NNTP encryption
 		$settings['nntp_nzb']['enc'] = (isset($settings['nntp_nzb']['enc']['switch'])) ? $settings['nntp_nzb']['enc']['select'] : false;
@@ -118,6 +119,9 @@ class SpotSettings {
 		} # if
 		if (in_array($settings['spot_moderation'], $validModerationAction) === false) {
 			$errorList[] = _('Invalid spot moderation setting');
+		} # if
+		if (in_array($settings['retentiontype'], $validRetentionTypes) === false) {
+			$errorList[] = _('Invalid spot retentiontype setting');
 		} # if
 
 		# Verify settings
