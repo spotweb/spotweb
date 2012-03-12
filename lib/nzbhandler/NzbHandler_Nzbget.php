@@ -214,7 +214,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	 * NZBGet API method: rate
 	 * Set the maximum download rate
 	 */
-	public function setSpeedLimit($limit)
+	public function setSpeedLimit(int $limit)
 	{
 		$args = array((int)$limit);
 
