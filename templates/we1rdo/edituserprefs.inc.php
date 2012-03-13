@@ -126,11 +126,14 @@ if (!$dialogembedded) { ?>
 					</dd>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_filtered, '')) { ?>					
-					<dt><label for="edituserprefsform[count_newspots]"><?php echo _('Count new spots in filterd list'); ?></label></dt>
+					<dt><label for="edituserprefsform[count_newspots]"><?php echo _('Count new spots in filter list'); ?></label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[count_newspots]" <?php if ($edituserprefsform['count_newspots']) { echo 'checked="checked"'; } ?>></dd>
 <?php } ?>
-					
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>					
+
+                    <dt><label for="edituserprefsform[mouseover_subcats]"><?php echo _('Show subcats on mouseover in spots list'); ?></label></dt>
+                    <dd><input type="checkbox" name="edituserprefsform[mouseover_subcats]" <?php if ($edituserprefsform['mouseover_subcats']) { echo 'checked="checked"'; } ?>></dd>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) { ?>
 					<dt><label for="edituserprefsform[keep_seenlist]"><?php echo _('Track what you\'re watching'); ?></label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[keep_seenlist]" <?php if ($edituserprefsform['keep_seenlist']) { echo 'checked="checked"'; } ?>></dd>
 <?php } ?>

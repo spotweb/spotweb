@@ -19,7 +19,7 @@ $(function(){
 // console.time("10th-ready");
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-	$('a.spotlink').each(applyTipTip);
+	$('.showTipTip a.spotlink').each(applyTipTip);
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
 	
