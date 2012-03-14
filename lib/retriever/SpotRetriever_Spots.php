@@ -264,7 +264,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					/*
 					 * Don't add older fullspots than specified for the retention stamp
 					 */
-					if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp)) { 
+					if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
 						continue;
 					} # if
 
