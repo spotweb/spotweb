@@ -14,10 +14,21 @@
 		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
 		<script src='js/jquery.mobile-1.0a3/jquery.mobile-1.0a3.min.js' type='text/javascript'></script>
 		<style>
-		th{text-align:left;}
+		    th{text-align:left;}
 		</style>
 		<script type='text/javascript'>
-		$(function(){ });
+//		    $(function(){ });
+		    $( document ).ready ( function ( ) {
+			$( 'a#anchorLoginControl' ).click ( function ( ) {
+			    $.ajax ( {
+				type: "GET",
+				url: 'index.php?page=logout',
+				async: false,
+				dataType: "xml",
+				success: function( msg ) { window.location.reload ( ); }
+			    } );
+			} );
+		    } );
 		</script>
 	</head>
 <body>
