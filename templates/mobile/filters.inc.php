@@ -1,8 +1,8 @@
 <?php 	$setpath = $tplHelper->makeBaseUrl("path"); ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Zoek</h1>
-
+	<h1>Zoek<?php require "logincontrol.inc.php"; ?></h1>
+	
 	<div data-role="navbar">
 		<ul>
 			<li><a href="#spots" data-icon="grid" >Spots</a></li>
@@ -32,7 +32,7 @@
  </div>
 <div data-role="page" id="filters"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Spotweb</h1>
+	<h1>Spotweb<?php require "logincontrol.inc.php"; ?></h1>
 
 	<div data-role="navbar">
 		<ul>
