@@ -436,6 +436,7 @@ class SpotUserSystem {
 		 * the same way.
 		 */
 		$tpl['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
+        $tpl['mouseover_subcats'] = (isset($prefs['mouseover_subcats'])) ? true : false;
 		$tpl['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
 		$tpl['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
 		$tpl['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
