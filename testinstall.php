@@ -124,7 +124,8 @@
 					  'host' => 'localhost',
 					  'dbname' => 'spotweb',
 					  'user' => 'spotweb',
-					  'pass' => 'spotweb');
+					  'pass' => 'spotweb',
+					  'submit' => '');
 		if (isset($_POST['dbform'])) {
 			$form = array_merge($form, $_POST['dbform']);
 		} # if
@@ -172,7 +173,7 @@
 				<tr> <td> server </td> <td> <input type='text' length='40' name='dbform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
 				<tr> <td> database </td> <td> <input type='text' length='40' name='dbform[dbname]' value='<?php echo htmlspecialchars($form['dbname']); ?>' ></input></td> </tr>
 				<tr> <td> username </td> <td> <input type='text' length='40' name='dbform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
-				<tr> <td> password </td> <td> <input type='text' length='40' name='dbform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
+				<tr> <td> password </td> <td> <input type='password' length='40' name='dbform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
 				<tr> <td colspan='2'> <input type='submit' name='dbform[submit]' value='Verify database'> </td> </tr>
 			</table>
 			</form>
@@ -191,7 +192,8 @@
 					  'user' => '',
 					  'pass' => '',
 					  'port' => 119,
-					  'enc' => false);
+					  'enc' => false,
+					  'submit' => '');
 		if (isset($_POST['nntpform'])) {
 			$form = array_merge($form, $_POST['nntpform']);
 		} # if
@@ -208,21 +210,50 @@
 				 * server record.
 				 */
 				if ($form['name'] == 'custom') {
+						$form['buggy'] = false;
+
+
+						$form['hdr'] = $form;
+						$form['nzb'] = $form;
+						$form['post'] = $form;
 				} else {
 					foreach($serverList->usenetservers->server as $server) {
 						if ( (string) $server['name'] == $form['name'] ) {
-							$form['host'] = (string) $server->header;
-							$form['port'] = (int) $server->header['port'];
-							
+							# Header usenet server
+							$form['hdr']['host'] = (string) $server->header;
+							$form['hdr']['user'] = $form['user'];
+							$form['hdr']['pass'] = $form['pass'];
 							if ( (string) $server->header['ssl'] == 'yes') {
-								$form['enc'] = 'ssl';
+								$form['hdr']['enc'] = 'ssl';
 							} # if
+							$form['hdr']['port'] = (int) $server->header['port'];
+							$form['hdr']['buggy'] = (boolean) $server['buggy'];
+
+							# NZB usenet server
+							$form['nzb']['host'] = (string) $server->nzb;
+							$form['nzb']['user'] = $form['user'];
+							$form['nzb']['pass'] = $form['pass'];
+							if ( (string) $server->nzb['ssl'] == 'yes') {
+								$form['nzb']['enc'] = 'ssl';
+							} # if
+							$form['nzb']['port'] = (int) $server->nzb['port'];
+							$form['nzb']['buggy'] = (boolean) $server['buggy'];
+
+							# Posting usenet server
+							$form['post']['host'] = (string) $server->post;
+							$form['post']['user'] = $form['user'];
+							$form['post']['pass'] = $form['pass'];
+							if ( (string) $server->post['ssl'] == 'yes') {
+								$form['post']['enc'] = 'ssl';
+							} # if
+							$form['post']['port'] = (int) $server->post['port'];
+							$form['post']['buggy'] = (boolean) $server['buggy'];
 						} # if
 					} # foreach
 				} # else 
 				
 				/* and try to connect to the usenet server */
-				$nntp = new SpotNntp($form);
+				$nntp = new SpotNntp($form['hdr']);
 				$nntp->validateServer();
 
 				$nntpVerified = true;
@@ -268,7 +299,7 @@
 				</td> </tr>
 				<tr id='customnntpfield' style='display: none;'> <td> server </td> <td> <input type='text' length='40' name='nntpform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
 				<tr> <td> username </td> <td> <input type='text' length='40' name='nntpform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
-				<tr> <td> password </td> <td> <input type='text' length='40' name='nntpform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
+				<tr> <td> password </td> <td> <input type='password' length='40' name='nntpform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
 				<tr> <td colspan='2'> <input type='submit' name='nntpform[submit]' value='Verify usenet server'> </td> </tr>
 			</table>
 			</form>
@@ -300,11 +331,11 @@
 				 * SESSION object, we need it later to update
 				 * the settings in the database
 				 */
-				$_SESSION['spotsettings']['settings'] = $form;
+				$_SESSION['spotsettings']['adminuser'] = $form;
 			
 				/*
 				 * Very ugly hack. We create an empty SpotSettings class
-				 * so this will satisfy the contstructor in the system.
+				 * so this will satisfy the constructor in the system.
 				 * It's ugly, i know.
 				 */
 				class SpotSettings { } ;
@@ -340,7 +371,7 @@
 				/*
 				 * and call the next stage in the setup
 				 */
-				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=4');
+				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=99');
 			} 
 			catch(Exception $x) {
 	?>
@@ -364,8 +395,8 @@
 				<tr> <th colspan='2'> Administrative user </th> </tr>
 				<tr> <td colspan='2'> Spotweb will use below user information to create a user for use by Spotweb. The defined password will also be set as the password for the built-in 'admin' account. Please make sure to remember this password. </td> </tr>
 				<tr> <td> Username </td> <td> <input type='text' length='40' name='settingsform[username]' value='<?php echo htmlspecialchars($form['username']); ?>'></input> </td> </tr>
-				<tr> <td> Password </td> <td> <input type='text' length='40' name='settingsform[newpassword1]' value='<?php echo htmlspecialchars($form['newpassword1']); ?>'></input> </td> </tr>
-				<tr> <td> Password (confirm) </td> <td> <input type='text' length='40' name='settingsform[newpassword2]' value='<?php echo htmlspecialchars($form['newpassword2']); ?>'></input> </td> </tr>
+				<tr> <td> Password </td> <td> <input type='password' length='40' name='settingsform[newpassword1]' value='<?php echo htmlspecialchars($form['newpassword1']); ?>'></input> </td> </tr>
+				<tr> <td> Password (confirm) </td> <td> <input type='password' length='40' name='settingsform[newpassword2]' value='<?php echo htmlspecialchars($form['newpassword2']); ?>'></input> </td> </tr>
 				<tr> <td> First name </td> <td> <input type='text' length='40' name='settingsform[firstname]' value='<?php echo htmlspecialchars($form['firstname']); ?>'></input> </td> </tr>
 				<tr> <td> Last name </td> <td> <input type='text' length='40' name='settingsform[lastname]' value='<?php echo htmlspecialchars($form['lastname']); ?>'></input> </td> </tr>
 				<tr> <td> Email address </td> <td> <input type='text' length='40' name='settingsform[mail]' value='<?php echo htmlspecialchars($form['mail']); ?>'></input> </td> </tr>
@@ -376,7 +407,78 @@
 	<?php
 		} # else
 	} # askSpotwebSettings
+
+	function createSystem() {
+		global $settings;
+		global $_testInstall_Ok;
+
+var_dump($_SESSION);
+
+		/*
+		 * The settings system is used to create a lot of output,
+		 * we swallow it all
+		 */
+		ob_start();
+
+		/*
+		 * Now create the database ...
+		 */
+		$settings['db'] = $_SESSION['spotsettings']['db'];
+		$spotUpgrader = new SpotUpgrader($settings['db']);
+		$spotUpgrader->database();
+
+		/*
+		 * and create all the different settings (only the default) ones
+		 */
+		$spotUpgrader->settings($settings);
+
+		/*
+		 * Create the users
+		 */
+		$spotUpgrader->users($settings);
+
+		/*
+		 * print all the output as HTML comment for debugging
+		 */
+		$dbCreateOutput = ob_get_contents();
+		ob_end_clean();
+
+		/*
+		 * Now it is time to do something with
+		 * the information the user has given to us
+		 */
+		$db = new SpotDb($_SESSION['spotsettings']['db']);
+		$db->connect();
+
+		$spotSettings = SpotSettings::singleton($db, $settings);
+
+		/*
+		 * Update the NNTP settings in the databas
+		 */
+		$spotSettings->set('nntp_nzb', $_SESSION['spotsettings']['nntp']['nzb']);
+		$spotSettings->set('nntp_hdr', $_SESSION['spotsettings']['nntp']['hdr']);
+		$spotSettings->set('nntp_post', $_SESSION['spotsettings']['nntp']['post']);
+		
+		/*
+		 * Create the given user
+		 */
+		$spotUserSystem = new SpotUserSystem($db, $spotSettings);
+		$spotUser = $_SESSION['spotsettings']['adminuser'];
+
+		# Create a private/public key pair for this user
+		$spotSigning = new SpotSigning();
+		$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
+		$spotUser['publickey'] = $userKey['public'];
+		$spotUser['privatekey'] = $userKey['private'];
+
+		$spotUserSystem->addUser($spotUser);
+
+		# Public system or not
+		# Our own user's ID ?!
+	} # createSystem
 	
+
+
 	function return_bytes($val) {
 		$val = trim($val);
 		$last = strtolower($val[strlen($val)-1]);
@@ -437,6 +539,7 @@
 		case 1			: askDbSettings(); break; 
 		case 2			: askNntpSettings(); break; 
 		case 3			: askSpotwebSettings(); break;
+		case 99			: createSystem(); break;
 		
 		default			: performAndPrintTests(); break;
 	} # switch
