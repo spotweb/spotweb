@@ -170,7 +170,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	 * SABnzbd API method: config
 	 * Set the maximum download rate
 	 */
-	public function setSpeedLimit($limit)
+	public function setSpeedLimit(int $limit)
 	{
 		$output = $this->querySabnzbd("mode=config&name=speedlimit&value=" . $limit . "&output=json");
 		$response = json_decode($output, true);
