@@ -1010,7 +1010,10 @@ class SpotsOverview {
 				# function aanroep. We zoeken hier dus alle fulltext searchable velden samen
 				# en creeeren de textfilter later in 1 keer.
 				#
-				$textSearchFields[] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
+				if (!isset($textSearchFields[$filterFieldMapping[$tmpFilterFieldname]])) {
+					$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]] = array();
+				} # if
+				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots', 'whitelistedspotters'))) {
 				# 
 				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
@@ -1116,12 +1119,19 @@ class SpotsOverview {
 		# optimaliseren.
 		#
 		if (!empty($textSearchFields)) {
-			$parsedTextQueryResult = $this->_db->createTextQuery($textSearchFields);
+			foreach($textSearchFields as $searchField => $searches) {
+				$parsedTextQueryResult = $this->_db->createTextQuery($searches);
 
-			$filterValueSql['AND'] = array_merge($filterValueSql['AND'], $parsedTextQueryResult['filterValueSql']);
-			$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
-			$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);
-			$sortFields = array_merge($sortFields, $parsedTextQueryResult['sortFields']);
+				if (in_array($tmpFilterFieldname, array('poster', 'tag'))) {
+					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';
+				} else {
+					$filterValueSql['AND'][] = ' (' . implode(' AND ', $parsedTextQueryResult['filterValueSql']) . ') ';
+				} # if
+
+				$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
+				$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);
+				$sortFields = array_merge($sortFields, $parsedTextQueryResult['sortFields']);
+			} # foreach
 		} # if
 
 		
