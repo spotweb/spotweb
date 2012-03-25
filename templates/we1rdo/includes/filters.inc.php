@@ -365,16 +365,20 @@
 	<script>
 	$(function() {
 		// console.time("11th-ready");
+		var max = (1024*1024*1024)*350;
+		
 		$( "#slider-filesize" ).slider({
 			range: true,
 			min: 0,
-			max: 375809638400,
-			step: 1048576,
+			max: max,
+			step: ((1024*1024*1024)*350) / 1024,
 			values: [ <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>, <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?> ],
 			slide: function( event, ui ) {
-				$( "#min-filesize" ).val( "filesize:>:" + ui.values[ 0 ] );
-				$( "#max-filesize" ).val( "filesize:<:" + ui.values[ 1 ] );
-				$( "#human-filesize" ).text( "Tussen " + format_size( ui.values[ 0 ] ) + " en " + format_size( ui.values[ 1 ] ) );
+				var minSize = Math.round((ui.values[0] / max * ((ui.values[0] / max))) * max);
+				var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
+				$( "#min-filesize" ).val( "filesize:>:" + minSize );
+				$( "#max-filesize" ).val( "filesize:<:" + maxSize );
+				$( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
 			}
 		});
 		
