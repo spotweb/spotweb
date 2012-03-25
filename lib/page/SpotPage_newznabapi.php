@@ -642,6 +642,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 1060: return 'cat2_a7';
 
 			case 2000: return 'cat0_z0';
+			case 2010: 
 			case 2030: return 'cat0_a0,~cat0_z1,~cat0_z2,~cat0_z3';
 			case 2040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3';
 			case 2060: return 'cat0_d18';
