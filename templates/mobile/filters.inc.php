@@ -68,7 +68,7 @@
 			
 			# Output de HTML
 			echo '<li>';
-			echo '	<img src="templates/mobile/icons/' . $filter['icon'] . '" class="ui-li-icon" />';
+			echo '	<img src="templates/mobile/icons/' . $filter['icon'] . '.png" class="ui-li-icon" />';
 			echo '	<h3><a href="' . $strFilter . '#spots" rel="external">' . $filter['title'] . '</a></h3>';
 			echo '</li>';
 			
