@@ -128,7 +128,7 @@ class SpotParser {
 
 
 		/*
-		 * De "From" header is created using the following system:
+		 * The "From" header is created using the following system:
 		 *
 		 *   From: [Nickname] <[RANDOM or PUBLICKEY]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 		 *		or
@@ -390,20 +390,6 @@ class SpotParser {
 		return $strInput;
 	} # specialZipstr
 	
-	private function splitBySizEx($strInput, $iSize) {
-		$length = strlen($strInput);
-		$index = 0;
-		$tmp = array();
-
-		for ($i = 0; ($i + $iSize) <= ($length + $iSize); $i += $iSize) {
-			$tmp[$index] = substr($strInput, $i, $iSize);
-			$index++;
-		} # for
-
-		return $tmp;
-	} # splitBySizEx
-
-
 	function parseEncodedWord($inputStr) {
 		$str = '';
 		$builder = '';

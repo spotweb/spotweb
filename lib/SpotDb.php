@@ -68,7 +68,7 @@ class SpotDb {
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
 							   break;
 
-			default			: throw new Exception('Unknown DB engine specified, please choose pdo_sqlite, mysql or pdo_mysql');
+			default			: throw new Exception('Unknown DB engine specified, please choose pdo_pgsql, mysql or pdo_mysql');
 		} # switch
 
 		$this->_conn->connect();
