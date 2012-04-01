@@ -1,22 +1,22 @@
 <?php
 
 class SpotReq {
-    static private $_merged = array(); 
-	static private $_xsrfsecret = '';
-	static private $_settings = null;
-	static private $_userid = 0;
+    private $_merged = array(); 
+	private $_xsrfsecret = '';
+	private $_settings = null;
+	private $_userid = 0;
     
     function initialize($settings) {
-		self::$_merged = array_merge_recursive($_POST, $_GET);
-		self::$_xsrfsecret = $settings->get('xsrfsecret');
-		self::$_settings = $settings;
+		$this->_merged = array_merge_recursive($_POST, $_GET);
+		$this->_xsrfsecret = $settings->get('xsrfsecret');
+		$this->_settings = $settings;
     }
     
     function get($varName, $escapeType = 'none') {
 		if( is_array($varName) ) {
-			return self::escape(self::$_merged[$varName[0]][$varName[1]], $escapeType);
+			return $this->escape($this->_merged[$varName[0]][$varName[1]], $escapeType);
 		} else {
-			return self::escape(self::$_merged[$varName], $escapeType);
+			return $this->escape($this->_merged[$varName], $escapeType);
 		}
     }    
 	
@@ -63,7 +63,7 @@ class SpotReq {
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			return $_SERVER['HTTP_REFERER'];
 		} else {
-			return self::$_settings->get('spotweburl');
+			return $this->_settings->get('spotweburl');
 		} # else
 	} # getHttpReferer
 	
@@ -104,12 +104,12 @@ class SpotReq {
 		} # if
 
 		# if the cookie is for another userid, its not valid either
-		if ($xsrfVals[2] != self::$_userid) {
+		if ($xsrfVals[2] != $this->_userid) {
 			return false;
 		} # if
 		
 		# and check the hash so any of the values above couldn't be faked
-		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . ':' . $xsrfVals[2] . self::$_xsrfsecret) != $xsrfVals[3]) {
+		if (sha1($xsrfVals[0] . ':' . $xsrfVals[1] . ':' . $xsrfVals[2] . $this->_xsrfsecret) != $xsrfVals[3]) {
 			return false;
 		} # if
 		
@@ -122,32 +122,32 @@ class SpotReq {
 		#	2 - formname (for example, 'loginform' or 'postcommentform')
 		# 	3 - Userid
 		#	4 - sha1 of the preceding 3 strings including ':', but the secret key appended as salt
-		$xsrfCookie = time() . ':' . $action . ':' . self::$_userid;
-		$xsrfCookie .= ':' . sha1($xsrfCookie . self::$_xsrfsecret);
+		$xsrfCookie = time() . ':' . $action . ':' . $this->_userid;
+		$xsrfCookie .= ':' . sha1($xsrfCookie . $this->_xsrfsecret);
 
 		return $xsrfCookie;
 	} # generateXsrfCookie
    
     function doesExist($varName) {
 		if( is_array($varName) ) {
-			return isset(self::$_merged[$varName[0]][$varName[1]]);
+			return isset($this->_merged[$varName[0]][$varName[1]]);
 		}
 		else {
-			return isset(self::$_merged[$varName]);
+			return isset($this->_merged[$varName]);
 		}
     } 
  
     function getDef($varName, $defValue, $escapeType = 'none') {
-		if( !isset(self::$_merged[$varName]) ) {
+		if( !isset($this->_merged[$varName]) ) {
 			return $defValue;
 		} else {
-			return self::get($varName, $escapeType);
+			return $this->get($varName, $escapeType);
 		}
     }
 
     function getSrvVar($varName, $defValue = '', $escapeType = 'none') {
 		if( isset($_SERVER[$varName]) ) {
-			return self::escape($_SERVER[$varName], $escapeType);
+			return $this->escape($_SERVER[$varName], $escapeType);
 		} else {
 			return $defValue;
 		}
@@ -156,7 +156,7 @@ class SpotReq {
     function escape($var, $escapeType) {
 		if( is_array($var) ) {
 			foreach($var as $key => $value) {
-				$var[$key] = self::escape($value, $escapeType);
+				$var[$key] = $this->escape($value, $escapeType);
 			}
     
 			return $var;
@@ -175,6 +175,6 @@ class SpotReq {
     }
 
     function setUserId($i) {
-    	self::$_userid = $i;
+    	$this->_userid = $i;
     } // #setUserId
 }
