@@ -172,7 +172,7 @@ class SpotNntp {
 		} # connect()
 		
 		/*
-		 * Returns a full article dividded between an
+		 * Returns a full article divided between an
 		 * header and body part
 		 */
 		function getArticle($msgId) {

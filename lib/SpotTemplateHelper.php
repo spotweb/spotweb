@@ -4,7 +4,6 @@
 class SpotTemplateHelper {	
 	protected $_settings;
 	protected $_db;
-	protected $_spotnzb;
 	protected $_spotsOverview;
 	protected $_currentSession;
 	protected $_params;
@@ -20,11 +19,6 @@ class SpotTemplateHelper {
 		$this->_db = $db;
 		$this->_params = $params;
 		
-		# We initialiseren hier een SpotNzb object omdat we die
-		# voor het maken van de sabnzbd categorieen nodig hebben.
-		# Door die hier aan te maken verplaatsen we een boel allocaties
-		$this->_spotnzb = new SpotNzb($db, $settings);
-
 		# We hebben SpotsOverview altijd nodig omdat we die ook voor het
 		# maken van de sorturl nodig hebben, dus maken we deze hier aan
 		$this->_spotsOverview = new SpotsOverview($db, $settings);
