@@ -33,7 +33,8 @@ abstract class dbeng_pdo extends dbeng_abs {
                 switch ($m) {
                     case '%d': {
 						# We convet explicitly to strval because PDO changes a zero to an '' 
-                        $stmt->bindParam($idx, strval($p[$idx-1]), PDO::PARAM_INT);
+						$tmpVal = strval($p[$idx-1]);
+                        $stmt->bindParam($idx, $tmpVal, PDO::PARAM_INT);
                         break;
 					} 
 					case "'%b'": {
