@@ -39,7 +39,11 @@ class SpotTiming {
 		echo '<table style="border: 1px solid black; border-collapse: collapse;" border=1><tr><th>Name</th><th>Time</th><th>Extra</th></tr>';
 		
 		foreach(array_reverse(self::$_timings) as $values) {
-			echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td>' . serialize($values['extra']) . '</td></tr>' . PHP_EOL;
+			try {
+				echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td>' . serialize($values['extra']) . '</td></tr>' . PHP_EOL;
+			} catch(Exception $x) {
+				echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
+			} # catch
 		} # foreach
 	
 		echo '</table><br><br><br><br>';
