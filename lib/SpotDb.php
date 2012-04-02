@@ -1062,7 +1062,7 @@ class SpotDb {
 	 * geeft dit NULL terug
 	 */
 	function getFullSpot($messageId, $ourUserId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start('SpotDb::' . __FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -1108,7 +1108,7 @@ class SpotDb {
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($messageId, $ourUserId));
+		SpotTiming::stop('SpotDb::' . __FUNCTION__, array($messageId, $ourUserId));
 		return $tmpArray;		
 	} # getFullSpot()
 
