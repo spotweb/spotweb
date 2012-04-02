@@ -381,6 +381,7 @@ try {
 		} # statistics
 
 		default : {
+				SpotTiming::start('renderpage->case-default');
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
 					$page = new SpotPage_getimage($db, $settings, $currentSession,
 							Array('messageid' => $req->getDef('messageid', ''),
@@ -396,6 +397,7 @@ try {
 								  'data'	=> $req->getDef('data', array()))
 					);
 				} # if
+				SpotTiming::stop('renderpage->case-default');
 				$page->render();
 				break;
 		} # default
