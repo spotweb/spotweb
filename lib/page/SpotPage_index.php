@@ -3,6 +3,7 @@ class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
+		SpotTiming::start('SpotPage_Index::ctor');
 		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
@@ -12,6 +13,7 @@ class SpotPage_index extends SpotPage_Abs {
 			$action = '';
 		}
 		$this->_action = $action;		
+		SpotTiming::stop('SpotPage_Index::ctor');
 	} # ctor
 
 	function render() {
