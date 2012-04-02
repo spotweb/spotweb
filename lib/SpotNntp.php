@@ -499,6 +499,8 @@ class SpotNntp {
 		 * Retrieve the fullspot from the NNTP server
 		 */
 		function getFullSpot($msgId) {
+			SpotTiming::start('SpotNntp::' . __FUNCTION__);
+
 			# initialize some variables
 			$spotSigning = new SpotSigning();
 			
@@ -512,13 +514,19 @@ class SpotNntp {
 						  'moderated' => 0,
 						  'user-avatar' => '');
 			# Vraag de volledige article header van de spot op
+			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->getHeader()');
 			$header = $this->getHeader('<' . $msgId . '>');
+			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->getHeader()', array($header));
 
 			# Parse de header
+			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->parseHeader()');
 			$spot = array_merge($spot, $this->parseHeader($header, $spot));
+			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->parseHeader()', array($spot));
 			
 			# Valideer de signature van de XML, deze is gesigned door de user zelf
+			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->verifyFullSpot()');
 			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
+			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->verifyFullSpot()', array($spot));
 			
 			# als de spot verified is, toon dan de spotterid van deze user
 			if ($spot['verified']) {
@@ -526,7 +534,11 @@ class SpotNntp {
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
+			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->parseFull()');
 			$spot = array_merge($this->_spotParser->parseFull($spot['fullxml']), $spot);
+			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->parseFull()', array($spot));
+			
+			SpotTiming::stop('SpotNntp::' . __FUNCTION__, array($spot));
 			
 			return $spot;
 		} # getFullSpot 
