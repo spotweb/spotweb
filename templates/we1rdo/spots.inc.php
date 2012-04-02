@@ -13,7 +13,6 @@
 	$show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	$show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
-
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">

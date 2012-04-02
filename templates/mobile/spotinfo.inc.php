@@ -20,7 +20,7 @@
 	
 	</div>
 	<div data-role="content">
-   	<img class="spotinfoimage" src="<?php echo $spot['image']; ?>" height="150">
+   	<img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 150, 150); ?>" height="150">
 <p>
 <?php
 	if (!$spot['verified']) {
