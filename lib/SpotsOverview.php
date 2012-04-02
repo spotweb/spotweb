@@ -20,6 +20,8 @@ class SpotsOverview {
 	 * Geef een volledig Spot array terug
 	 */
 	function getFullSpot($msgId, $ourUserId, $nntp) {
+		SpotTiming::start('SpotsOverview::' . __FUNCTION__);
+
 		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
@@ -66,6 +68,7 @@ class SpotsOverview {
 		if (empty($fullSpot)) {
 			throw new Exception("Spot is not in our Spotweb database");
 		} # if
+		SpotTiming::stop('SpotsOverview::' . __FUNCTION__, array($msgId, $ourUserId, $nntp, $fullSpot));
 		
 		return $fullSpot;
 	} # getFullSpot
