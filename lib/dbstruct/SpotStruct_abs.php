@@ -515,6 +515,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
+		$this->validateColumn('enablenotify', 'filters', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
 		$this->alterStorageEngine("filters", "InnoDB");
 
 		# ---- filtercounts ----

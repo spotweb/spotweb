@@ -17,6 +17,7 @@ class SpotNotifications {
 	const notifytype_report_posted			= 'report_posted';
 	const notifytype_spot_posted			= 'spot_posted';
 	const notifytype_user_added				= 'user_added';
+	const notifytype_newspots_for_filter	= 'newspots_for_filter';
 
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
 		$this->_db = $db;
@@ -68,6 +69,17 @@ class SpotNotifications {
 		
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $notification);
 	} # sendNzbHandled
+
+	function sendNewSpotsForFilter($userId, $filterTitle, $newSpotCount) {
+		$notification = $this->_notificationTemplate->template('newspots_for_filter', array('filtertitle' => $filterTitle, 'newCount' => $newSpotCount)); 
+
+echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle . ', it has ' . $newSpotCount . ' new spots' . PHP_EOL;
+
+		/* and send the message */
+		$user = array('user' => array('userid' => $userId),
+					  'session' => array('ipaddr' => '127.0.0.1'));
+		$this->newSingleMessage($user, SpotNotifications::notifytype_newspots_for_filter, 'Single', $notification);
+	} # sendNewSpotsForFilter
 
 	function sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount) {
 		if ($newSpotCount > 0) {

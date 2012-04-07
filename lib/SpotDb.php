@@ -1809,8 +1809,8 @@ class SpotDb {
 	 * Voegt een filter en de children toe (recursive)
 	 */
 	function addFilter($userId, $filter) {
-		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder)
-								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s')",
+		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder, enablenotify)
+								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s', '%s')",
 							Array((int) $userId,
 								  $filter['filtertype'],
 								  $filter['title'],
@@ -1820,7 +1820,8 @@ class SpotDb {
 								  $filter['tree'],
 								  implode('&', $filter['valuelist']),
 								  $filter['sorton'],
-								  $filter['sortorder']));
+								  $filter['sortorder'],
+								  $this->bool2dt($filter['enablenotify'])));
 		$parentId = $this->_conn->lastInsertId('filters');
 
 		foreach($filter['children'] as $tmpFilter) {
@@ -1862,7 +1863,8 @@ class SpotDb {
 													  tree,
 													  valuelist,
 													  sorton,
-													  sortorder 
+													  sortorder,
+													  enablenotify 
 												FROM filters 
 												WHERE userid = %d AND id = %d",
 					Array((int) $userId, (int) $filterId));
@@ -1888,7 +1890,8 @@ class SpotDb {
 													  tree,
 													  valuelist,
 													  sorton,
-													  sortorder 
+													  sortorder,
+													  enablenotify 
 												FROM filters 
 												WHERE userid = %d AND filtertype = 'index_filter'",
 					Array((int) $userId));
@@ -1909,12 +1912,14 @@ class SpotDb {
 												SET title = '%s',
 												    icon = '%s',
 													torder = %d,
-													tparent = %d
+													tparent = %d,
+													enablenotify = '%s'
 												WHERE userid = %d AND id = %d",
 					Array($filter['title'], 
 						  $filter['icon'], 
 						  (int) $filter['torder'], 
 						  (int) $filter['tparent'], 
+						  $this->bool2dt($filter['enablenotify']),
 						  (int) $userId, 
 						  (int) $filter['id']));
 	} # updateFilter
@@ -1941,7 +1946,8 @@ class SpotDb {
 											  tree,
 											  valuelist,
 											  sorton,
-											  sortorder 
+											  sortorder,
+											  enablenotify 
 										FROM filters 
 										WHERE userid = %d " . $filterTypeFilter . "
 										ORDER BY tparent,torder", /* was: id, tparent, torder */
@@ -1986,6 +1992,14 @@ class SpotDb {
 	function getUniqueFilterCombinations() {
 		return $this->_conn->arrayQuery("SELECT tree,valuelist FROM filters GROUP BY tree,valuelist ORDER BY tree,valuelist");
 	} # getUniqueFilterCombinations
+
+	/*
+	 * Returns the user ids for this filter combination
+	 */
+	function getUsersForFilter($tree, $valuelist) {
+		return $this->_conn->arrayQuery("SELECT title, userid FROM filters WHERE tree = '%s' AND valuelist = '%s'",
+				 Array($tree, $valuelist));
+	} # getUsersForFilter
 
 	/*
 	 * Add a filter count for a specific SHA1 hash
@@ -2051,7 +2065,8 @@ class SpotDb {
 			/* We add a dummy entry for 'all new spots' */
 			$filterList[] = array('id' => 9999, 'userid' => $userId, 'filtertype' => 'dummyfilter', 
 								'title' => 'NewSpots', 'icon' => '', 'torder' => 0, 'tparent' => 0,
-								'tree' => '', 'valuelist' => 'New:0', 'sorton' => '', 'sortorder' => '');
+								'tree' => '', 'valuelist' => 'New:0', 'sorton' => '', 'sortorder' => '',
+								'enablenotify' => false);
 			
 			foreach($filterList as $filter) {
 				$filterHash = sha1($filter['tree'] . '|' . urldecode($filter['valuelist']));

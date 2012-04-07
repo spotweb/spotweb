@@ -166,6 +166,8 @@ class SpotsOverview {
 	 * Pre-calculates the amount of new spots
 	 */
 	function cacheNewSpotCount() {
+		$statisticsUpdate = array();
+
 		/*
 		 * Update the filter counts for the users.
 		 *
@@ -229,9 +231,9 @@ class SpotsOverview {
 			 */
 			$strFilter = '&amp;search[tree]=' . $filter['tree'];
 
-			$filter['valuelist'] = explode('&', $filter['valuelist']);
-			if (!empty($filter['valuelist'])) {
-				foreach($filter['valuelist'] as $value) {
+			$valueArray = explode('&', $filter['valuelist']);
+			if (!empty($valueArray)) {
+				foreach($valueArray as $value) {
 					$strFilter .= '&amp;search[value][]=' . $value;
 				} # foreach
 			} # if
@@ -268,6 +270,16 @@ class SpotsOverview {
 			$filter['currentspotcount'] += $spotCount;
 			
 			$this->_db->setCachedFilterCount(-1, array($filter['filterhash'] => $filter));
+
+			/*
+			 * Now determine the users wich actually have this filter
+			 */
+			$usersWithThisFilter = $this->_db->getUsersForFilter($filter['tree'], $filter['valuelist']);
+			foreach($usersWithThisFilter as $thisFilter) {
+				$statisticsUpdate[$thisFilter['userid']][] = array('title' => $thisFilter['title'],
+				  											   'newcount' => $spotCount,
+				  											   'enablenotify' => $thisFilter['enablenotify']);
+			} # foreach
 		} # foreach
 
 		/*
@@ -275,6 +287,8 @@ class SpotsOverview {
 		 * users, hence we make sure all these records do exist
 		 */
 		$this->_db->createFilterCountsForEveryone();
+
+		return $statisticsUpdate;
 	} # cacheNewSpotCount
 	
 	/* 

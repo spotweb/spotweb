@@ -219,6 +219,7 @@ class SpotUserUpgrader {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'report_posted', false);		
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'spot_posted', false);		
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'user_added', false);		
+				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider]['events'], 'newspots_for_filter', false);		
 			} // foreach
 
 			# make sure a sort preference is defined. An empty field means relevancy
@@ -350,6 +351,13 @@ class SpotUserUpgrader {
 			# Notifications of these are only allowed to be sent to administrators
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(5, " . SpotSecurity::spotsec_send_notifications_types . ", 'retriever_finished')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(5, " . SpotSecurity::spotsec_send_notifications_types . ", 'user_added')");
+		} # if
+
+		########################################################################
+		## Security level 0.28
+		########################################################################
+		if (($forceReset) || ($this->_settings->get('securityversion') < 0.28)) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'newspots_for_filter')");
 		} # if
 	} # updateSecurityGroups
 

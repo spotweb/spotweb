@@ -499,6 +499,15 @@ if (!$dialogembedded) { ?>
 			echo "></dd>" . PHP_EOL . PHP_EOL;
 		} # if
 
+		if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, 'newspots_for_filter')) {
+			echo "<dt><label for=\"edituserprefsform[notifications][" . $provider . "][events][newspots_for_filter]\">" . _('Send message when an enabled filter has new spots available?') . "</label></dt>" . PHP_EOL;
+			echo "<dd><input type=\"checkbox\" name=\"edituserprefsform[notifications][" . $provider . "][events][newspots_for_filter]\"";
+			if ($edituserprefsform['notifications'][$provider]['events']['newspots_for_filter']) {
+				echo "checked=\"checked\"";
+			} # if
+			echo "></dd>" . PHP_EOL . PHP_EOL;
+		} # if
+
 		echo "</fieldset>" . PHP_EOL;
 	} # notificationOptions
 
