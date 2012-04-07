@@ -54,12 +54,12 @@ $settings = SpotSettings::singleton($db, $settings);
 
 # Controleer dat we niet een schema upgrade verwachten
 if (!$settings->schemaValid()) {
-	die("Database schema is gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+	die("Database schema has been changed, please run upgrade-db.php" . PHP_EOL);
 } # if
 
 # Controleer eerst of de settings versie nog wel geldig zijn
 if (!$settings->settingsValid()) {
-	die("Globale settings zijn gewijzigd, draai upgrade-db.php aub" . PHP_EOL);
+	die("Global settings have been changed, please run upgrade-db.php" . PHP_EOL);
 } # if
 
 $req = new SpotReq();
