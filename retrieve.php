@@ -163,7 +163,7 @@ try {
 	if ($newSpotCount > 0) {
 		$spotsOverview = new SpotsOverview($db, $settings);
 		echo 'Calculating how many spots are new';
-		$spotsOverview->cacheNewSpotCount();
+		$notifyNewArray = $spotsOverview->cacheNewSpotCount();
 		echo ', done.' . PHP_EOL;
 	} # if
 
@@ -322,6 +322,15 @@ if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
 
 # Verstuur notificaties
 $spotsNotifications = new SpotNotifications($db, $settings, $userSession);
+if (!empty($notifyNewArray)) {
+	foreach($notifyNewArray as $userId => $newSpotInfo) {
+		foreach($newSpotInfo as $filterInfo) {
+			if (($filterInfo['newcount'] > 0) && ($filterInfo['enablenotify'])) {
+				$spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
+			} # if
+		} # foreach
+	} # foreach
+} # if
 $spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
 
 if ($req->getDef('output', '') == 'xml') {

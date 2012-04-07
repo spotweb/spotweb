@@ -43,7 +43,7 @@ if (empty($editresult)) {
 		<form class="editfilterform" name="editfilterform" action="<?php echo $tplHelper->makeEditFilterAction(); ?>" method="post">
 			<input type="hidden" name="editfilterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editfilterform'); ?>">
 <?php if (!$isNew) { ?>			
-			<input type="hidden" name="filterid" value="<?php echo $filter['id']; ?>">
+			<input type="hidden" name="filterid" value="<?php echo (int) $filter['id']; ?>">
 <?php } else {  ?>
 			<input type="hidden" name="filterid" value="9999">
 			<input type="hidden" name="editfilterform[tree]" value="<?php echo (isset($search['tree']) ? htmlspecialchars($search['tree'], ENT_QUOTES, "UTF-8") : ""); ?>"></input>
@@ -66,6 +66,11 @@ if (empty($editresult)) {
 				} # foreach
 ?>
 				</select>
+			</dd>
+
+			<dt><label for="editfilterform[enablenotify]"><?php echo _('Notify me when this filter has new spots?'); ?></label></dt>
+			<dd>
+				<input type="checkbox" name="editfilterform[enablenotify]" <?php if ($filter['enablenotify']) { echo 'checked="checked" '; } ?>></input>
 			</dd>
 			
 			<dd>

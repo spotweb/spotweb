@@ -456,7 +456,8 @@ class SpotUserSystem {
 			$tpl['notifications'][$notifProvider]['events']['report_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['report_posted'])) ? true : false;
 			$tpl['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
 			$tpl['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
-		} # foreac
+			$tpl['notifications'][$notifProvider]['events']['newspots_for_filter'] = (isset($prefs['notifications'][$notifProvider]['events']['newspots_for_filter'])) ? true : false;
+		} # foreach
 
 		# When nzbhandling settings are not entered at all, we default to disable
 		if (!isset($prefs['nzbhandling'])) {
@@ -996,6 +997,7 @@ class SpotUserSystem {
 			$filterElm->appendChild($doc->createElement('icon', $filter['icon']));
 			$filterElm->appendChild($doc->createElement('parent', $filter['tparent']));
 			$filterElm->appendChild($doc->createElement('order', $filter['torder']));
+			$filterElm->appendChild($doc->createElement('enablenotify', $filter['enablenotify']));
 
 			/* 
 			 * Now add the tree. We get the list of filters as a tree, but we 
@@ -1115,6 +1117,7 @@ class SpotUserSystem {
 			$filter['sorton'] = '';
 			$filter['sortorder'] = '';
 			$filter['tree'] = '';
+			$filter['enablenotify'] = (boolean) $filterItem->enablenotify;
 			$filter['children'] = array();
 
 			/*

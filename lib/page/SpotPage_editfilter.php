@@ -117,6 +117,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					$filter['filtertype'] = 'filter';
 					$filter['sorton'] = $filter['sorton'];
 					$filter['sortorder'] = $filter['sortorder'];
+					$filter['enablenotify'] = $filter['enablenotify'];
 						
 					# en probeer de filter toe te voegen
 					$formMessages['errors'] = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
