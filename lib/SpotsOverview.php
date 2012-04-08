@@ -1196,6 +1196,7 @@ class SpotsOverview {
 	 * precies betekent
 	 */
 	function compressCategorySelection($categoryList, $strongNotList) {
+		SpotTiming::start(__FUNCTION__);
 		$compressedList = '';
 
 		#
@@ -1309,6 +1310,8 @@ class SpotsOverview {
 				} # foreach
 			} # foreach
 		} # if
+
+		SpotTiming::stop(__FUNCTION__, array($compressedList));
 
 		return $compressedList;
 	} # compressCategorySelection
