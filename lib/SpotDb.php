@@ -1997,7 +1997,7 @@ class SpotDb {
 	 * Returns the user ids for this filter combination
 	 */
 	function getUsersForFilter($tree, $valuelist) {
-		return $this->_conn->arrayQuery("SELECT title, userid FROM filters WHERE tree = '%s' AND valuelist = '%s'",
+		return $this->_conn->arrayQuery("SELECT title, userid, enablenotify FROM filters WHERE tree = '%s' AND valuelist = '%s'",
 				 Array($tree, $valuelist));
 	} # getUsersForFilter
 
