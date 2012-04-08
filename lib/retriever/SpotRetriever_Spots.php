@@ -90,6 +90,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
+			$msgCounter = 0;
 			$modCount = 0;
 			$skipCount = 0;
 			$lastProcessedId = '';
@@ -97,6 +98,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$spotDbList = array();
 			$moderationList = array();
 			$timer = microtime(true);
+			$processingStartTime = time();
 
 			/*
 			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to 
@@ -135,24 +137,28 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$nntp_nzb->selectGroup($this->_settings->get('nzb_group'));
 				} # else
 			} # if
-			
-			foreach($hdrList as $msgid => $msgheader) {
-				$this->debug('foreach-loop, start. msgId= ' . $msgid);
+
+
+			foreach($hdrList as $msgheader) {
+				$msgCounter++;
+				$this->debug('foreach-loop, start. msgId= ' . $msgCounter);
 
 				/* 
 				 * Keep te usenet server alive when processing is slow.
 				 */
-				if ($hdrsRetrieved %100 == 0) {
+				if (($processingStartTime - time()) > 30) {
 					$this->_spotnntp->sendNoop();
 					if ((isset($nntp_nzb)) && ($nntp_nzb != $this->_spotnntp)) {
 						$nntp_nzb->sendNoop();
 					} # if
+
+					$processingStartTime = time();
 				} # if
 
 				/*
 				 * We keep track whether we actually fetched this header and fullspot
 				 * to add it to the database, because only then we can update the
-				 * titel from the spots titel or rely on our database to fetch
+				 * titel from the spots title or rely on our database to fetch
 				 * the fullspot
 				 */
 				$didFetchHeader = false;
@@ -183,13 +189,13 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				 */
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
-					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgid);
+					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
 					$spot = $spotParser->parseXover($msgheader['Subject'], 
 													$msgheader['From'], 
 													$msgheader['Date'],
 													$msgheader['Message-ID'],
 													$this->_rsakeys);
-					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgid);
+					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
 					 * When a parse error occured, we ignore the spot, also unverified
@@ -229,7 +235,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 								/*
 								 * Some buggy NNTP servers give us the same messageid
-								 * in once XOVER statement, hence we update the list of
+								 * in one XOVER statement, hence we update the list of
 								 * messageid's we already have retrieved and are ready
 								 * to be added to the database
 								 */
@@ -385,7 +391,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					} # catch
 				} # if prefetch image and/or nzb
 
-				$this->debug('foreach-loop, done. msgId= ' . $msgid);
+				$this->debug('foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
 
 			if (count($hdrList) > 0) {

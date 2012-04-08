@@ -126,7 +126,6 @@ class SpotParser {
 		# Initialize an empty array, we create a basic template in a few
 		$spot = array();
 
-
 		/*
 		 * The "From" header is created using the following system:
 		 *
