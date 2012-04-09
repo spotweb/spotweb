@@ -6,7 +6,7 @@ class SpotCommandline {
 
 	/*
 	 * $noopt is the list of parameters without value
-	 * $defaults is hte list of default values for parameters
+	 * $defaults is the list of default values for parameters
 	 *
 	 */
 	static public function initialize($noopt, $defaults) {
