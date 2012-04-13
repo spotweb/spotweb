@@ -409,7 +409,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$this->displayStatus("skipcount", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
-			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			/* 
 			 * Add the spots to the database and update the last article
@@ -449,6 +448,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			} # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
 			
+			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
+
 			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
 		} # process()
 
