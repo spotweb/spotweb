@@ -71,7 +71,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 								  'filtertype' => 'index_filter',
 								  'sorton' => '',
 								  'sortorder' => '',
-								  'enablenotifty' => false,
+								  'enablenotify' => false,
 								  'icon' => 'spotweb.png',
 								  'tree' => '~cat0_z3'));
 					} else {
