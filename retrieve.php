@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(2147483647);
 
 /*
  * If we are run from another directory, try to change the current

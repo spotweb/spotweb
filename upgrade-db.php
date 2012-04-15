@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(2147483647);
 
 try {
 	/*
@@ -67,7 +67,7 @@ try {
 } 
 
 catch(SpotwebCannotBeUpgradedToooldException $x) {
-	die("Your current Spotweb installation is tooo old to be upgraded to this current version of Spotweb. " . PHP_EOL . 
+	die("Your current Spotweb installation is too old to be upgraded to this current version of Spotweb. " . PHP_EOL . 
 		"Please download an earlier version of Spotweb (https://github.com/spotweb/spotweb/zipball/" . $x->getMessage() . "), " . PHP_EOL .
 		"run upgrade-db.php using that version and then upgrade back to this version to run upgrade-db.php once more.");
 } # SpotwebCannotBeUpgradedToooldException

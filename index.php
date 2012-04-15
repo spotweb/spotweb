@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(2147483647);
 
 require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotTranslation.php";
