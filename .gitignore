@@ -5,9 +5,15 @@ nntpdb.sqlite3-journal
 ownsettings.php
 server-settings.php
 retrieve.sh
+tests/*.jpg
+tests/*.nzb
 .htaccess
 .htpasswd
 .buildpath
 .project
 .settings/
+<<<<<<< HEAD
 .DS_Store
+=======
+.DS_Store
+>>>>>>> b22c79e468feeda549092e01939658411088fe9e
