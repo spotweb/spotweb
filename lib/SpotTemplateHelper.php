@@ -577,13 +577,8 @@ class SpotTemplateHelper {
 		# Code gecopieerd vanaf 
 		#		http://stackoverflow.com/questions/635844/php-how-to-grab-an-url-out-of-a-chunk-of-text
 		# converteert linkjes naar bb code
-<<<<<<< HEAD
 		$pattern = "(([^=])((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*))";
 		$tmp = preg_replace($pattern, '\1[url=\2]\2[/url]', $tmp);
-=======
-		$pattern = "(([^=])(https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)";
-		$tmp = preg_replace($pattern, '[url=\0]\0[/url]', $tmp);
->>>>>>> b22c79e468feeda549092e01939658411088fe9e
 
 		# initialize ubb parser
 		$parser = new SpotUbb_parser($tmp);
