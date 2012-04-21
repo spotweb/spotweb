@@ -25,10 +25,5 @@ try {
 } catch(Exception $x) {
 		var_dump($x);
 }
-=======
-$r = $nntp->getHeader('<s7HqJl4Gi2MgyyITwozre@spot.net>');
->>>>>>> b22c79e468feeda549092e01939658411088fe9e
-
 var_dump($r);
-
 

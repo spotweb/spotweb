@@ -12,8 +12,4 @@ tests/*.nzb
 .buildpath
 .project
 .settings/
-<<<<<<< HEAD
 .DS_Store
-=======
-.DS_Store
->>>>>>> b22c79e468feeda549092e01939658411088fe9e
