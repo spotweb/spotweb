@@ -18,7 +18,12 @@ $server = array('host' => $argv[1],
 
 $nntp = new SpotNntp($server);
 $nntp->selectGroup('free.pt');
-$r = $nntp->getHeader('<s7HqJl4Gi2MgyyITwozre@spot.net>');
+try {
+	$r = $nntp->getHeader('<s7HqJl4Gi2MgyyITwozre@spot.net>');
+	$r = $nntp->getHeader('<t8Dr5H2vZ4czjmITwAK6D@spot.net>');
+} catch(Exception $x) {
+		var_dump($x);
+}
 
 var_dump($r);
 
