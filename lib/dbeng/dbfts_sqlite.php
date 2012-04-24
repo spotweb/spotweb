@@ -1,6 +1,6 @@
 <?php
 
-class dbfts_pgsql extends dbfts_abs {
+class dbfts_sqlite extends dbfts_abs {
 	/*
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
@@ -47,4 +47,4 @@ class dbfts_pgsql extends dbfts_abs {
 					 'sortFields' => array());
 	} # createTextQuery()
 
-} # dbfts_abs
+} # dbfts_sqlite
