@@ -423,8 +423,8 @@ class SpotDb {
 								COALESCE(MAX(ss.lasthit), MAX(u.lastvisit)) AS lastvisit,
 								MAX(ipaddr) AS lastipaddr
 							FROM users AS u
-							LEFT JOIN sessions ss ON (u.id = ss.userid)
-							WHERE (DELETED = '%s')
+							LEFT JOIN (SELECT userid, lasthit, ipaddr FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
+							WHERE (deleted = '%s')
 							GROUP BY u.id, u.username", array($this->bool2dt(false)));
 
 		SpotTiming::stop(__FUNCTION__, array());
