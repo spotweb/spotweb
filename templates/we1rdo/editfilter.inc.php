@@ -26,11 +26,11 @@ if (empty($editresult)) {
 	$isNew = (isset($data['isnew']));
 	
 	# vraag de opgegeven filter op
-	if (!$isNew) {
+	if ((!$isNew) && (isset($data['filterid']))) {
 		$filter = $tplHelper->getUserFilter($data['filterid']);
 	} else {
-		$filter = array('title' => '', 'icon' => '');
-	}# if
+		$filter = array('id' => 9999, 'title' => '', 'icon' => '');
+	} # if
 
 	# bereid alvast een UL voor voor de errors e.d., worden er later
 	# via AJAX ingegooid

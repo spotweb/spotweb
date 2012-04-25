@@ -270,6 +270,7 @@ try {
 				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
 							Array('edituserprefsform' => $req->getForm('edituserprefsform'),
 								  'userid' => $req->getDef('userid', ''),
+								  'data' => $req->getDef('data', array()),
 								  'dialogembedded' => $req->getDef('dialogembedded', 0)));
 				$page->render();
 				break;
@@ -290,7 +291,8 @@ try {
 								  'search' => $req->getDef('search', array()),
 								  'sorton' => $req->getDef('sortby', ''),
 								  'sortorder' => $req->getDef('sortdir', ''),
-							      'filterid' => $req->getDef('filterid', 0)));
+							      'filterid' => $req->getDef('filterid', 0),
+							      'data' => $req->getDef('data', array())));
 				$page->render();
 				break;
 		} # editfilter

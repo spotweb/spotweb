@@ -6,6 +6,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 	private $_search;
 	private $_sorton;
 	private $_sortorder;
+	private $_data;
 	
 	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($db, $settings, $currentSession);
@@ -15,6 +16,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		$this->_search = $params['search'];
 		$this->_sorton = $params['sorton'];
 		$this->_sortorder = $params['sortorder'];
+		$this->_data = $params['data'];
 	} # ctor
 
 	function render() {
@@ -85,7 +87,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				case 'importfilters': {
 					if (isset($_FILES['filterimport'])) {
 						
-						if ($_FILES['filterimport']['error'] == UPLOAD_ERR_OK) {
+						if ($_FILES['filterimport']['error'] === UPLOAD_ERR_OK) {
 							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 							try {
 								$filterList = $spotUserSystem->xmlToFilters($xml);
@@ -171,6 +173,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 											'sortdir' => $this->_sortorder,
 											'lastformaction' => $formAction,
 										    'formmessages' => $formMessages,
+										    'data' => $this->_data,
 											'http_referer' => $this->_editFilterForm['http_referer'],
 											'editresult' => $editResult));
 	} # render

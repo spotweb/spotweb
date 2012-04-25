@@ -1175,7 +1175,7 @@ class SpotUserSystem {
 		 * function
 		 */
 		 foreach($filterList as $idx => &$filter) {
-			if ($filter['tparent'] != 0) {
+			if (($filter['tparent'] != 0) && (isset($filterList[$filter['tparent']]))) {
 				$filterList[$filter['tparent']]['children'][] =& $filter;
 			} # if
 		} # foreach
@@ -1186,7 +1186,7 @@ class SpotUserSystem {
 		 * list
 		 */
 		foreach($filterList as $idx => &$filter) {
-			if ($filter['tparent'] != 0) {
+			if (($filter['tparent'] != 0) && (isset($filterList[$filter['tparent']]))) {
 				unset($filterList[$filter['id']]);
 			} # if
 		} # foreach

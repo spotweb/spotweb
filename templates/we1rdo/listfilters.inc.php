@@ -44,7 +44,7 @@
 				</fieldset>
 				<fieldset class="uploadFilters">
 					<dt><label><?php echo _('Upload filters'); ?></label></dt>
-					<dd><input type="hidden" name="MAX_FILE_SIZE" value="30720" />
+					<dd><input type="hidden" name="MAX_FILE_SIZE" value="3072000" />
 					<input name="filterimport" type="file" />
 					<input class="greyButton" type="submit" name="editfilterform[submitimportfilters]" value="<?php echo _('Upload filters'); ?>"></dd>
 				</fieldset>
