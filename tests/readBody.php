@@ -19,7 +19,7 @@ $server = array('host' => $argv[1],
 $nntp = new SpotNntp($server);
 $nntp->selectGroup('free.pt');
 try {
-	$r = $nntp->getBody('OrjrHBeG9BQRrhPTwAhnJ@spot.net>');
+	$r = $nntp->getBody('<OrjrHBeG9BQRrhPTwAhnJ@spot.net>');
 } catch(Exception $x) {
 		var_dump($x);
 }
