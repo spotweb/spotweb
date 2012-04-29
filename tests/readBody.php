@@ -19,9 +19,16 @@ $server = array('host' => $argv[1],
 $nntp = new SpotNntp($server);
 $nntp->selectGroup('free.pt');
 try {
-	$r = $nntp->getBody('<OrjrHBeG9BQRrhPTwAhnJ@spot.net>');
+	$r1 = array();
+	$r2 = array();
+
+	$r1 = $nntp->getBody('<s7HqJl4Gi2MgyyITwozre@spot.net>');
+	$r2 = $nntp->getBody('<OrjrHBeG9BQRrhPTwAhnJ@spot.net>');
 } catch(Exception $x) {
 		var_dump($x);
 }
-var_dump($r);
+var_dump($r1);
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=" . PHP_EOL;
+var_dump($r2);
+
 
