@@ -362,6 +362,8 @@ class SpotUserSystem {
 		
 		# now copy the users' filters to the new user
 		$this->_db->copyFilterList($this->_settings->get('nonauthenticated_userid'), $tmpUser['userid']);
+
+		return $tmpUser['userid'];
 	} # addUser()
 
 	/*
