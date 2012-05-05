@@ -16,7 +16,7 @@ class SpotUpgrader {
 	function settings($settings) {
 		include "settings.php";
 		
-		# Creer het settings object
+		# Create the settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
 		$spotSettingsUpgrader->update();
@@ -28,7 +28,7 @@ class SpotUpgrader {
 	function users() {
 		include "settings.php";
 		
-		# Creer het settings object
+		# Create the settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->update();
@@ -78,7 +78,7 @@ class SpotUpgrader {
 	function resetUserGroupMembership() {
 		include "settings.php";
 		
-		# Creer het settings object
+		# Create the settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
@@ -90,7 +90,7 @@ class SpotUpgrader {
 	function resetSecurityGroups() {
 		include "settings.php";
 		
-		# Creer het settings object
+		# Create the settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->updateSecurityGroups(true);
@@ -102,11 +102,29 @@ class SpotUpgrader {
 	function resetFilters() {
 		include "settings.php";
 		
-		# Creer het settings object
+		# Create the settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->updateUserFilters(true);
 	} # resetFilters
 	 
+	/*
+	 * Reset a systems' type to the given setting
+	 */
+	function resetSystemType($systemType) {
+		include "settings.php";
+		
+		# Create the settings object
+		$settings = SpotSettings::singleton($this->_db, $settings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
+
+		# change the systems' type
+		$spotSettingsUpgrader->setSystemType($systemType);
+		
+		# and reset all the users' group memberships for all users to match
+		$spotUserUpgrader->resetUserGroupMembership($systemType);
+	} # resetSystemType
+
 } # SpotUpgrader
 
