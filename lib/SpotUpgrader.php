@@ -81,7 +81,7 @@ class SpotUpgrader {
 		# Creer het settings object
 		$settings = SpotSettings::singleton($this->_db, $settings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
-		$spotUserUpgrader->resetUserGroupMembership(false);
+		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
 
 	/*
