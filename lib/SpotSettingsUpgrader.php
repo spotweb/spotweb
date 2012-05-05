@@ -167,35 +167,32 @@ class SpotSettingsUpgrader {
 	 * Change a systems' systemtype
 	 */
 	function setSystemType($systemType) {
-		# Update the systems' type to our given setting
-		$this->set('systemtype', $systemType);
-
-				/*
+		/*
 		 * Depending on the system type, we will have to make some additional
 		 * adjustments.
 		 */
 		switch($systemType) { 
 			case 'public' : {
 				# Public sites should be indexable by a search engine
-				$this->setIfNot('deny_robots', false);
+				$this->_settings->set('deny_robots', false);
 
 				# Reset the new users' group membership, id 2 is anonymous, 3 = authenticated
-				$this->setIfNot('newuser_grouplist', array( Array('groupid' => 2, 'prio' => 1), Array('groupid' => 3, 'prio' => 2) ));
+				$this->_settings->set('newuser_grouplist', array( Array('groupid' => 2, 'prio' => 1), Array('groupid' => 3, 'prio' => 2) ));
 
 				/*
 				 * The default anonymous user should be set to 1
 				 */
-				$this->setIfNot('nonauthenticated_userid', 1);
+				$this->_settings->set('nonauthenticated_userid', 1);
 
 				break;
 			} # public
 
 			case 'shared' : {
 				# Shared sites might be indexable by a search engine
-				$this->setIfNot('deny_robots', false);
+				$this->_settings->set('deny_robots', false);
 
 				# Reset the new users' group membership, id 2 is anonymous, 3 = authenticated, 4 = trusted
-				$this->setIfNot('newuser_grouplist', array( 
+				$this->_settings->set('newuser_grouplist', array( 
 						Array('groupid' => 2, 'prio' => 1), 
 						Array('groupid' => 3, 'prio' => 2),
 						Array('groupid' => 4, 'prio' => 3)
@@ -205,17 +202,17 @@ class SpotSettingsUpgrader {
 				 * The default anonymous user should be set to 1, and this user is only placed
 				 * into the closed system group
 				 */
-				$this->setIfNot('nonauthenticated_userid', 1);
+				$this->_settings->set('nonauthenticated_userid', 1);
 
 				break;
 			} # shared
 
 			case 'single' : {
 				# Private/single owner sites should not be indexable by a search engine
-				$this->setIfNot('deny_robots', true);
+				$this->_settings->set('deny_robots', true);
 
 				# Reset the new users' group membership, id 2 is anonymous, 3 = authenticated, 4 = trusted, 5 = admin
-				$this->setIfNot('newuser_grouplist', array( 
+				$this->_settings->set('newuser_grouplist', array( 
 						Array('groupid' => 2, 'prio' => 1), 
 						Array('groupid' => 3, 'prio' => 2),
 						Array('groupid' => 4, 'prio' => 3),
@@ -223,7 +220,7 @@ class SpotSettingsUpgrader {
 				));
 
 				# The default anonymous user should be set to the custom admin use
-				$this->setIfNot('nonauthenticated_userid', $settings->get('custom_admin_userid'));
+				$this->_settings->set('nonauthenticated_userid', $this->_settings->get('custom_admin_userid'));
 
 				break;
 			} # single
@@ -231,6 +228,8 @@ class SpotSettingsUpgrader {
 			default : throw new Exception("Unknown system type defined: '" . $systemType . "'");
 		} # switch
 
+		# Update the systems' type to our given setting
+		$this->_settings->set('systemtype', $systemType);
 	} # setSystemType
 	
 

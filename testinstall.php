@@ -483,7 +483,7 @@ var_dump($_SESSION);
 		$spotSettings->set('systemtype', $spotUser['systemtype']);
 
 		# Set the system type
-		$spotUpgrader->setSystemType($spotUser['systemtype']);
+		$spotUpgrader->resetSystemType($spotUser['systemtype']);
 	} # createSystem
 	
 
