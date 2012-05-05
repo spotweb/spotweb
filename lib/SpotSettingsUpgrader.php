@@ -217,7 +217,7 @@ class SpotSettingsUpgrader {
 				# Reset the new users' group membership, id 2 is anonymous, 3 = authenticated, 4 = trusted, 5 = admin
 				$this->setIfNot('newuser_grouplist', array( 
 						Array('groupid' => 2, 'prio' => 1), 
-						Array('groupid' => 3, 'prio' => 2)
+						Array('groupid' => 3, 'prio' => 2),
 						Array('groupid' => 4, 'prio' => 3),
 						Array('groupid' => 5, 'prio' => 4)
 				));
@@ -228,7 +228,7 @@ class SpotSettingsUpgrader {
 				break;
 			} # single
 
-			default : throw new Exception("Unknown system type defined: '" . $systemType . "'")
+			default : throw new Exception("Unknown system type defined: '" . $systemType . "'");
 		} # switch
 
 	} # setSystemType
