@@ -18,7 +18,7 @@ class SpotUserUpgrader {
 
 		/* Reset the users' group membership */
 		if ($this->_settings->get('securityversion') < 0.27) {
-			$this->resetUserGroupMembership(false);
+			$this->resetUserGroupMembership($this->_settings->get('systemtype'));
 		} # if
 
 		$this->updateUserFilters(false);
@@ -110,7 +110,7 @@ class SpotUserUpgrader {
 	/*
 	 * Update all users preferences
 	 */
-	function resetUserGroupMembership($isClosedSystem) {
+	function resetUserGroupMembership($systemType) {
 		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 
@@ -129,7 +129,7 @@ class SpotUserUpgrader {
 			 */
 			if ($user['userid'] == 1) {
 				# Anonymous user
-				if ($isClosedSystem) {
+				if ($systemType == 'shared') {
 					/* Grant the group with only logon rights */
 					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 1, 1)");
 				} else {
@@ -146,6 +146,16 @@ class SpotUserUpgrader {
 				# Grant the regular users all the necessary security groups
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 2)");
+
+				# For a shared and single system, all users are trusted
+				if (($systemType == 'shared') || ($systemType == 'single')) {
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 4, 3)");
+				} # if
+
+				# For a single system, all users are administrators as well (there should only be one additional user)
+				if ($systemType == 'single') {
+					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 5, 4)");
+				} # if
 			} # else
 		} # foreach
 	} # resetUserGroupMembership

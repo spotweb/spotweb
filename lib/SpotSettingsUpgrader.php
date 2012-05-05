@@ -66,6 +66,12 @@ class SpotSettingsUpgrader {
 		$this->setIfNot('systemfrommail', 'spotweb@example.com');
 		$this->setIfNot('customcss', '');
 		$this->setIfNot('systemtype', 'public');
+		$this->setIfNot('newuser_grouplist', 
+				array(
+						Array('groupid' => 2, 'prio' => 1),		// Group ID 2 == Anonymous users, open system
+						Array('groupid' => 3, 'prio' => 2)		// Group ID 3 == Authenticated users
+				));
+
 		$this->updateSettingsVersion();
 	} # update()
 	
