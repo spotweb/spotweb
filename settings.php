@@ -30,13 +30,6 @@ $settings['templates']['autodetect'] = true;
 $settings['templates']['default'] = 'we1rdo';
 $settings['templates']['mobile'] = 'mobile';
 
-# Als er een nieuwe user aangemaakt wordt, tot welke groepen maken we deze
-# dan standaard lid? 
-$settings['newuser_grouplist'] = array(
-		Array('groupid' => 2, 'prio' => 1),
-		Array('groupid' => 3, 'prio' => 2)
-	);
-
 # Cookie host
 if (isset($_SERVER['HTTP_HOST'])) {
 	// Strip leading periods
@@ -87,13 +80,6 @@ $settings['sabnzbd']['categories'] = Array(
 					 'a15'		=> 'pda')
 	);
 					 
-# Als een user niet expliciet geauthenticeerd is, dan wordt deze user standaard ingelogged
-# met een userid van 1 -- dit is de builtin anonymous user. Als je je Spotweb installatie
-# helemaal alleen gebruikt, kan je dit eventueel laten herleiden naar een andere user zodat
-# je Spotweb volledig kan gebruiken (inclusief posten van comments en dergelijke) zonder
-# dat je ooit hoeft in te loggen.
-$settings['nonauthenticated_userid'] = 1;
-
 #
 # Include eventueel eigen settings, dit is ook een PHP file. 
 # Settings welke hierin staan zullen de instellingen van deze file overiden.
@@ -160,7 +146,7 @@ $array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktr
 	'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 
 	'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation', 'allow_user_template', 
 	'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb',
-	'count_newspots', 'keep_seenlist', 'show_nzbbutton', 'show_updatebutton');
+	'count_newspots', 'keep_seenlist', 'show_nzbbutton', 'show_updatebutton', 'newuser_grouplist', 'nonauthenticated_userid');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
 		$ownsettingserror .= ' * ' . $value . PHP_EOL;
