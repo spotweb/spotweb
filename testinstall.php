@@ -465,16 +465,25 @@ var_dump($_SESSION);
 		$spotUserSystem = new SpotUserSystem($db, $spotSettings);
 		$spotUser = $_SESSION['spotsettings']['adminuser'];
 
-		# Create a private/public key pair for this user
+		/*
+		 * Create a private/public key pair for this user
+		 */
 		$spotSigning = new SpotSigning();
 		$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
 		$spotUser['publickey'] = $userKey['public'];
 		$spotUser['privatekey'] = $userKey['private'];
 
-		$spotUserSystem->addUser($spotUser);
+		/*
+		 * and actually add the user
+		 */
+		$userId = $spotUserSystem->addUser($spotUser);
 
-		# Public system or not
-		# Our own user's ID ?!
+		# update the settings with our system type and our admin id
+		$spotSettings->set('custom_admin_userid', $userId);
+		$spotSettings->set('systemtype', $spotUser['systemtype']);
+
+		# Set the system type
+		$spotUpgrader->setSystemType($spotUser['systemtype']);
 	} # createSystem
 	
 
