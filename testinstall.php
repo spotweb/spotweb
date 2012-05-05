@@ -478,6 +478,11 @@ var_dump($_SESSION);
 		 */
 		$userId = $spotUserSystem->addUser($spotUser);
 
+		# Change the administrators' account password to that of this created user
+		$adminUser = $spotUserSystem->getUser(SPOTWEB_ADMIN_USERID);
+		$adminUser['newpassword1'] = $spotUser['newpassword1'];
+		$spotUserSystem->setUserPassword($adminUser);
+
 		# update the settings with our system type and our admin id
 		$spotSettings->set('custom_admin_userid', $userId);
 		$spotSettings->set('systemtype', $spotUser['systemtype']);
