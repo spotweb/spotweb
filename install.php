@@ -553,7 +553,7 @@
 				<tr> 
 						<td> &rarr; </td>
 						<td> 
-							You need to create a textfil with the database settings in it. Please copy & paste the below
+								You need to create a textfile with the database settings in it. Please copy & paste the below
 							exactly in a file called <i>dbsettings.inc.php</i>.
 							<pre><?php echo "&lt;?php " . PHP_EOL . $dbConnectionString; ?>
 							</pre>
