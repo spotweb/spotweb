@@ -7,9 +7,9 @@
 		</server>
 		
 		<server name='LightningUsenet'>
-			<header ssl='yes' port='593'>news.LightningUsenet.com</header>
-			<nzb ssl='yes' port='593'>news.LightningUsenet.com</nzb>
-			<post ssl='yes' port='593'>news.LightningUsenet.com</post>
+			<header ssl='yes' port='563'>news.LightningUsenet.com</header>
+			<nzb ssl='yes' port='563'>news.LightningUsenet.com</nzb>
+			<post ssl='yes' port='563'>news.LightningUsenet.com</post>
 		</server>
 		
 		<server name='Supernews'>
