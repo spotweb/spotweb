@@ -1,14 +1,4 @@
 <?php
-# db
-$settings['db']['engine'] = 'mysql';				# <== keuze uit pdo_pgsql, mysql en pdo_mysql
-$settings['db']['host'] = 'localhost';
-$settings['db']['dbname'] = 'spotweb';
-$settings['db']['user'] = 'spotweb';
-$settings['db']['pass'] = 'spotweb';
-
-# Als je sqlite wilt gebruiken, vul dan onderstaande in
-#$settings['db']['engine'] = 'pdo_sqlite'; 			# <== keuze uit pdo_sqlite, pdo_pgsql, mysql en pdo_mysql
-#$settings['db']['path'] = './nntpdb.sqlite3';	# <== als je geen SQLite3 gebruikt, kan dit weg	
 
 # Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
 # sabnzbd integratie. Let op de afsluitende slash "/"!
@@ -177,3 +167,24 @@ foreach($settings['quicklinks'] as $link) {
 		throw new InvalidOwnSettingsSettingException("Quicklinks have to have a preferences check as well. Please modify the quickinks in your ownettings.php or remove them from your ownsetings.php");
 	} # if
 } # foreach
+
+/*
+ * First make sure no database settings are left in the main ownsettings.php anymore, as this is the first
+ * part to deprecating the kludge that settings.php has become completely.
+ */
+if (!empty($settings['db'])) {
+		throw new InvalidOwnSettingsSettingException("You need to remove the database settings from your ownsettings.php file and open install.php from your webbrowser. If you are upgrading, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
+} # if
+
+/*
+ * Allow database settings to be entered in dbsettings.inc.php
+ */
+@include "dbsettings.inc.php";
+if (empty($dbsettings)) {
+		throw new InvalidOwnSettingsSettingException("No databasesettings have been entered, please use the 'install.php' wizard to install and configure Spotweb" . PHP_EOL . 
+									"If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
+} else {
+	$settings['db'] = $dbsettings;
+} # else
+
+if (file_exists('reallymyownsettings.php')) { include_once('reallymyownsettings.php'); }

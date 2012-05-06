@@ -36,9 +36,5 @@ Installation is the toughest part of Spotweb. Depending on your platform you sho
 3. Ensure you have a webserver running and PHP is configured for this webserver
 3. Download Spotweb 
 4. Unpack Spotweb to a directory of your choosing
-5. Create an 'ownsettings.php' file and entering the database credentials
-6. Run 'testinstall.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
-7. Run 'upgrade-db.php' from the commandline to create the database
-8. Schedule 'retrieve.php' to be ran each 30 minutes using your operating systems' features
-9. Run 'retrieve.php' once to download all data
-10. Create a new user from within Spotweb itself in order to post spots and comments and enjoy other features
+5. Run 'install.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
+6. Follow the wizard and perform the instructions as given by the wizard.

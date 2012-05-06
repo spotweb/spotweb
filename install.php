@@ -1,6 +1,11 @@
 <?php
 	require_once "lib/SpotClassAutoload.php";
-	@include('settings.php');
+	try {
+		@include('settings.php');
+	}
+	catch(Exception $x) {
+		// ignore errors
+	} # catch
 	set_error_handler("ownWarning",E_WARNING);
 	
 	/*
@@ -17,11 +22,15 @@
 <head>
 	<title>Test your Installation</title>
 	<style type='text/css'>
-		table {margin-left:auto; margin-right:auto; font-size:12px; color:#fff; width:800px; background-color:#666; border:0px; border-collapse:collapse; border-spacing:0px;}
+ 		* { font-family: Arial, Helvetica, sans-serif; }
+ 		table {margin-left:auto; margin-right:auto; font-size:12px; color:#fff; width:800px; background-color:#666; border:0px; border-collapse:collapse; border-spacing:0px;}
 		table td {background-color:#CCC; color:#000; padding:4px; border:1px #fff solid;}
 		table th {background-color:#666; color:#fff; padding:4px; text-align:left; border-bottom:2px #fff solid; font-size:12px; font-weight:bold;} 
 		div#error {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 		div#success {background-color:#cbffcb; border:1px solid #00ab00; color:#000; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
+
+		.button { padding: 4px; padding-left: 10px; padding-right: 10px; margin: 0px; border: 1px solid black; background-color: #fff; color: #666; text-decoration: none; }
+		table.tableresult tr { height: 34px; }
 	</style>
 	<script type='text/javascript'>
 		function toggleNntpField() {
@@ -59,7 +68,6 @@
 
 		<table summary="PHP extensions">
 			<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-			<tr> <td colspan="2"> DB::<?php echo $settings['db']['engine']; ?> </td> <td> <?php showResult(extension_loaded($settings['db']['engine']), true); ?> </td> </tr>
 			<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
@@ -68,6 +76,12 @@
 			<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
 			<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
+
+			<tr> <th colspan="2"> Database support </th> <td> <?php showResult(extension_loaded('mysql') || extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> DB::mysql </td> <td> <?php showResult(extension_loaded('mysql'), false); ?> </td> </tr>
+			<tr> <td colspan="2"> DB::pdo_mysql </td> <td> <?php showResult(extension_loaded('pdo_mysql'), false); ?> </td> </tr>
+			<tr> <td colspan="2"> DB::pgsql </td> <td> <?php showResult(extension_loaded('pdo_pgsql'), false); ?> </td> </tr>
+
 		<?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
 			<tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support'], true); ?> </td> </tr>
@@ -92,24 +106,27 @@
 		</table>
 		<br />
 
-		<table summary="Server settings">
-			<tr> <th> Server type </th> <th> Setting </th> </tr>
-			<?php if ($settings['db']['engine'] == "pdo_sqlite") { ?>
-			<tr> <td> SQLite </td> <td> <?php showResult(empty($settings['db']['path']) === false, true, $settings['db']['path'], "No path entered"); ?> </td> </tr>
-			<?php } elseif ($settings['db']['engine'] == "mysql" || $settings['db']['engine'] == "pdo_mysql" || $settings['db']['engine'] == "pdo_pgsql" ) { ?>
-			<tr> <td> MySQL server </td> <td> <?php showResult(empty($settings['db']['host']) === false, true, $settings['db']['host'], "No server entered"); ?> </td> </tr>
-			<?php } else { ?>
-			<tr> <td> Database </td> <td> NOT OK (No valid database engine given) </td> </tr>
-			<?php } ?>
-		</table>
-		<br />
-
 		<table summary="Include files">
 			<tr> <th> Include files  </th> <th> Result </th> </tr>
 			<tr> <td> Settings file </td> <td> <?php $result=testInclude("settings.php"); echo showResult($result, true, $result); ?> </td> </tr>
 			<tr> <td> Own settings file </td> <td> <?php $result=testInclude("ownsettings.php"); echo showResult($result, true, $result, "optional"); ?> </td> </tr>
 		</table>
 		<br />
+
+		<?php if ($_testInstall_Ok) { ?>
+			<table summary="result" class="tableresult">
+				<tr> 
+						<th colspan="2"> Please continue to setup Spotweb </th> 
+						<th> <a href="?page=1" class="button" >Next</a> </th>
+				</tr>
+			</table>
+			<br />
+		<?php } else { ?>			
+			<table summary="result">
+				<tr> <th> Please fix above errors before you can continue to install Spotweb </th> </tr>
+			</table>
+			<br />
+		<?php }  ?>			
 
 		</body>
 		</html>
@@ -169,7 +186,7 @@
 			<table summary="PHP settings">
 				<tr> <th> Database settings </th> <th> </th> </tr>
 				<tr> <td colspan='2'> Spotweb needs an available MySQL or PostgreSQL database. The database needs to be created and you need to have an user account and password for this database. </td> </tr>
-				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='mysql'>MySQL</option> <option value='PostgreSQL'>PostgreSQL</option> </select> </td> </tr>
+				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='mysql'>MySQL</option> <option value='postgresql'>PostgreSQL</option> </select> </td> </tr>
 				<tr> <td> server </td> <td> <input type='text' length='40' name='dbform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
 				<tr> <td> database </td> <td> <input type='text' length='40' name='dbform[dbname]' value='<?php echo htmlspecialchars($form['dbname']); ?>' ></input></td> </tr>
 				<tr> <td> username </td> <td> <input type='text' length='40' name='dbform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
@@ -412,83 +429,158 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-var_dump($_SESSION);
+		try {
 
-		/*
-		 * The settings system is used to create a lot of output,
-		 * we swallow it all
-		 */
-		ob_start();
+			/*
+			 * The settings system is used to create a lot of output,
+			 * we swallow it all
+			 */
+			ob_start();
 
-		/*
-		 * Now create the database ...
-		 */
-		$settings['db'] = $_SESSION['spotsettings']['db'];
-		$spotUpgrader = new SpotUpgrader($settings['db']);
-		$spotUpgrader->database();
+			/*
+			 * Now create the database ...
+			 */
+			$settings['db'] = $_SESSION['spotsettings']['db'];
+			$spotUpgrader = new SpotUpgrader($settings['db'], $settings);
+			$spotUpgrader->database();
 
-		/*
-		 * and create all the different settings (only the default) ones
-		 */
-		$spotUpgrader->settings($settings);
+			/*
+			 * and create all the different settings (only the default) ones
+			 */
+			$spotUpgrader->settings();
 
-		/*
-		 * Create the users
-		 */
-		$spotUpgrader->users($settings);
+			/*
+			 * Create the users
+			 */
+			$spotUpgrader->users();
 
-		/*
-		 * print all the output as HTML comment for debugging
-		 */
-		$dbCreateOutput = ob_get_contents();
-		ob_end_clean();
+			/*
+			 * print all the output as HTML comment for debugging
+			 */
+			$dbCreateOutput = ob_get_contents();
+			ob_end_clean();
 
-		/*
-		 * Now it is time to do something with
-		 * the information the user has given to us
-		 */
-		$db = new SpotDb($_SESSION['spotsettings']['db']);
-		$db->connect();
+			/*
+			 * Now it is time to do something with
+			 * the information the user has given to us
+			 */
+			$db = new SpotDb($_SESSION['spotsettings']['db']);
+			$db->connect();
 
-		$spotSettings = SpotSettings::singleton($db, $settings);
+			/* 
+			 * add the database settings to the main settings array for now
+			 */
+			$settings['db'] = $_SESSION['spotsettings']['db'];;
 
-		/*
-		 * Update the NNTP settings in the databas
-		 */
-		$spotSettings->set('nntp_nzb', $_SESSION['spotsettings']['nntp']['nzb']);
-		$spotSettings->set('nntp_hdr', $_SESSION['spotsettings']['nntp']['hdr']);
-		$spotSettings->set('nntp_post', $_SESSION['spotsettings']['nntp']['post']);
-		
-		/*
-		 * Create the given user
-		 */
-		$spotUserSystem = new SpotUserSystem($db, $spotSettings);
-		$spotUser = $_SESSION['spotsettings']['adminuser'];
+			/* and create the database settings */
+			$spotSettings = SpotSettings::singleton($db, $settings);
 
-		/*
-		 * Create a private/public key pair for this user
-		 */
-		$spotSigning = new SpotSigning();
-		$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
-		$spotUser['publickey'] = $userKey['public'];
-		$spotUser['privatekey'] = $userKey['private'];
+			/*
+			 * Update the NNTP settings in the databas
+			 */
+			$spotSettings->set('nntp_nzb', $_SESSION['spotsettings']['nntp']['nzb']);
+			$spotSettings->set('nntp_hdr', $_SESSION['spotsettings']['nntp']['hdr']);
+			$spotSettings->set('nntp_post', $_SESSION['spotsettings']['nntp']['post']);
+			
+			/*
+			 * Create the given user
+			 */
+			$spotUserSystem = new SpotUserSystem($db, $spotSettings);
+			$spotUser = $_SESSION['spotsettings']['adminuser'];
 
-		/*
-		 * and actually add the user
-		 */
-		$userId = $spotUserSystem->addUser($spotUser);
+			/*
+			 * Create a private/public key pair for this user
+			 */
+			$spotSigning = new SpotSigning();
+			$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
+			$spotUser['publickey'] = $userKey['public'];
+			$spotUser['privatekey'] = $userKey['private'];
 
-		# Change the administrators' account password to that of this created user
-		$adminUser = $spotUserSystem->getUser(SPOTWEB_ADMIN_USERID);
-		$adminUser['newpassword1'] = $spotUser['newpassword1'];
-		$spotUserSystem->setUserPassword($adminUser);
+			/*
+			 * and actually add the user
+			 */
+			$userId = $spotUserSystem->addUser($spotUser);
 
-		# update the settings with our system type and our admin id
-		$spotSettings->set('custom_admin_userid', $userId);
-		$spotSettings->set('systemtype', $spotUser['systemtype']);
+			# Change the administrators' account password to that of this created user
+			$adminUser = $spotUserSystem->getUser(SPOTWEB_ADMIN_USERID);
+			$adminUser['newpassword1'] = $spotUser['newpassword1'];
+			$spotUserSystem->setUserPassword($adminUser);
 
-		# Set the system type
-		$spotUpgrader->resetSystemType($spotUser['systemtype']);
+			# update the settings with our system type and our admin id
+			$spotSettings->set('custom_admin_userid', $userId);
+			$spotSettings->set('systemtype', $spotUser['systemtype']);
+
+			# Set the system type
+			$spotUpgrader->resetSystemType($spotUser['systemtype']);
+
+			/* 
+			 * Create the necessary database connection information
+			 */
+			$dbConnectionString = '';
+			switch ($_SESSION['spotsettings']['db']['engine']) {
+				case 'mysql' 	: {
+					$dbConnectionString .= "\$dbsettings['engine'] = 'mysql';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['host'] = '" . $_SESSION['spotsettings']['db']['host'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['dbname'] = '" . $_SESSION['spotsettings']['db']['dbname'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['user'] = '" . $_SESSION['spotsettings']['db']['user'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['pass'] = '" . $_SESSION['spotsettings']['db']['pass'] . "';" . PHP_EOL;
+
+					break;
+				} # mysql
+
+				case 'postgresql' : {
+					$dbConnectionString .= "\$dbsettings['engine'] = 'pdo_pgsql';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['host'] = '" . $_SESSION['spotsettings']['db']['host'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['dbname'] = '" . $_SESSION['spotsettings']['db']['dbname'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['user'] = '" . $_SESSION['spotsettings']['db']['user'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['pass'] = '" . $_SESSION['spotsettings']['db']['pass'] . "';" . PHP_EOL;
+
+					break;
+				} # postgresql
+			} # switch
+
+			# Try to create the dbsettings.inc.php file for the user
+			@file_put_contents("dbsettings.inc.php", "<?php" . PHP_EOL . $dbConnectionString);
+			$createdDbSettings = file_exists("dbsettings.inc.php");
+
+?>
+
+			<table summary="PHP settings">
+				<tr> <th colspan='2'> Installation succesful </th> </tr>
+				<tr> <td colspan='2'> Spotweb has been installed succesfuly! </td> </tr>
+				<tr> <td colspan='2'> &nbsp; </td> </tr>
+<?php if (!$createdDbSettings) { ?>
+				<tr> 
+						<td> &rarr; </td>
+						<td> 
+							You need to create a textfil with the database settings in it. Please copy & paste the below
+							exactly in a file called <i>dbsettings.inc.php</i>.
+							<pre><?php echo "&lt;?php " . PHP_EOL . $dbConnectionString; ?>
+							</pre>
+				 		</td> 
+				</tr>
+<?php } ?>
+				<tr> 
+						<td> &rarr; </td>
+						<td> 
+							Spotweb retrieves its information from the newsservers, this is called "retrieving" or retrieval of Spots.
+							You need to schedule a retrieval job to run <i>retrieve.php</i> on a regular basis. The first time retrieval
+							is run this can take up to several hours before completion.
+				 		</td> 
+				</tr>
+			</table>
+
+			<?php echo '<!-- ' . $dbCreateOutput . ' -->'; ?>
+<?php		
+		}  # try
+		catch(Exception $x) {
+	?>
+			<div id='error'><?php echo $x->getMessage(); ?>
+				<?php echo $x->getTraceAsString(); ?>
+			<br /><br />
+			</div>
+	<?php			
+		} # exception
 	} # createSystem
 	
 
@@ -543,6 +635,14 @@ var_dump($_SESSION);
 			}
 		}
 	} # testInclude
+
+	/*
+	 * Only run the wizard when no database settings have been entered yet, to prevent
+	 * any information disclosure
+	 */
+	if ((isset($settings['db'])) && (isset($_GET['page']))) {
+		die("Spotweb has already been setup. If you want to run this wizard again, please remove the file 'dbsettings.inc.php'");
+	} # if
 
 	/*
 	 * determine what page of the wizzard we are on, and display that one

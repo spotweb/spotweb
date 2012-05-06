@@ -26,11 +26,11 @@ try {
 
 	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	
-	$spotUpgrader = new SpotUpgrader($settings['db']);
+	$spotUpgrader = new SpotUpgrader($settings['db'], $settings);
 	$spotUpgrader->database();
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
-	$spotUpgrader->settings($settings);
+	$spotUpgrader->settings();
 	echo "Settings update done" . PHP_EOL;
 	$spotUpgrader->users($settings);
 	echo "Updating users" . PHP_EOL;
@@ -83,7 +83,7 @@ catch(SpotwebCannotBeUpgradedToooldException $x) {
 } # SpotwebCannotBeUpgradedToooldException
 
 catch(InvalidOwnSettingsSettingException $x) {
-	echo "There is an error in your ownsettings.php" . PHP_EOL . PHP_EOL;
+	echo "There is an error in your settings. Please open install.php to configure Spotweb" . PHP_EOL . PHP_EOL;
 	echo $x->getMessage() . PHP_EOL;
 } # InvalidOwnSettingsSettingException
 

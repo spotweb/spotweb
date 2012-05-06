@@ -12,18 +12,16 @@ Please run 'testinstall.php' from within your browser before attempting anything
 all items are checked 'OK'.
 	
 == Installation instructions ==
-1. Make sure the required dependencies are met
-2. Create a new, empty, spotweb database in MySQL/PostgreSQL and create a user with all rights to this database
-3. Extract the sourcecode to a directory in your webroot
-4. Edit or create an 'ownsettings.php' and paste in your database settings (copy the structure from settings.php)
-   into this file.
-5. Run 'upgrade-db.php' to create the database structure and default users
-6. Run 'retrieve.php' from within an console and let it run for several hours
-7. Now you can visit Spotweb and use it as you like.
-8. Schedule to run retrieve.php on regular times to update your Spotweb database with new spots.
+1. Ensure you have an database server installed (either MySQL or PostgreSQL)
+2. Create an empty 'spotweb' database
+3. Ensure you have a webserver running and PHP is configured for this webserver
+3. Download Spotweb 
+4. Unpack Spotweb to a directory of your choosing
+5. Run 'install.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
+6. Follow the wizard and perform the instructions as given by the wizard.
 
 == Troubleshooting ==
 When a white page appears instead of your Spotweb installation, this usually indicates an typing error in either
-your ownsettings.php or a configuration error in your webserver.
+your ownsettings.php, dbsettings.inc.php or a configuration error in your webserver.
 
 Please consult your Apache's errorlog for the exact error and fix it.

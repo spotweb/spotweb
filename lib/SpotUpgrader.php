@@ -4,20 +4,19 @@ class SpotUpgrader {
 	private $_db;
 	private $_dbEngine;
 	
-	function __construct($dbSettings) {
+	function __construct($dbSettings, $phpSettings) {
 		$this->_db = new SpotDb($dbSettings);
 		$this->_db->connect();
 		$this->_dbEngine = $dbSettings['engine'];
+		$this->_phpSettings = $phpSettings;
 	} # ctor
 	
 	/*
 	 * Upgrade de settings
 	 */
-	function settings($settings) {
-		include "settings.php";
-		
+	function settings() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
 		$spotSettingsUpgrader->update();
 	} # settings
@@ -26,10 +25,8 @@ class SpotUpgrader {
 	 * Upgrade de users
 	 */
 	function users() {
-		include "settings.php";
-		
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->update();
 	} # users
@@ -76,10 +73,8 @@ class SpotUpgrader {
 	 * Reset users' group membership
 	 */
 	function resetUserGroupMembership() {
-		include "settings.php";
-		
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
@@ -88,10 +83,8 @@ class SpotUpgrader {
 	 * Reset securitygroup settings to their default
 	 */
 	function resetSecurityGroups() {
-		include "settings.php";
-		
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->updateSecurityGroups(true);
 	} # resetSecurityGroups
@@ -100,10 +93,8 @@ class SpotUpgrader {
 	 * Reset securitygroup settings to their default
 	 */
 	function resetFilters() {
-		include "settings.php";
-		
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotUserUpgrader->updateUserFilters(true);
 	} # resetFilters
@@ -112,10 +103,8 @@ class SpotUpgrader {
 	 * Reset a systems' type to the given setting
 	 */
 	function resetSystemType($systemType) {
-		include "settings.php";
-		
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
 		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
 

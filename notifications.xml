@@ -4,9 +4,26 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Mon, 27 Feb 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Mon, 27 Feb 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Sun, 6 May 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Sun, 6 May 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Installer changes</title>
+			<description><![CDATA[Spotweb now contains an installer (install.php). In order to be able to safely support this (eg: not every user should be able to run this for an already installed Spotweb) and to allow for multiple type of installations within Spotweb this requires some manual intervention.
+				<br />
+			First, you need to remove the database information from your "ownsettings.php" file for now. You can either run the Spotweb installation wizard (recommended way) but this will create a new user and reset group membership for all users. An alternative way is to create an own <i>dbsettings.inc.php</i> file. Please consult the <a href="https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions">Spotweb wiki</a> for more information about creating this dbsettings.inc.php file.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Sun, 6 May 2012 00:00:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.23</spotweb:settings_version>
+			<spotweb:security_version>0.28</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Database changes</title>
