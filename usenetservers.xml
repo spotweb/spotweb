@@ -96,6 +96,12 @@
 			<post ssl='' port='119'>upload.eweka.nl</post>
 		</server>
 
+		<server name='Extreme Usenet'>
+			<header ssl='yes' port='563'>reader.extremeusenet.nl</header>
+			<nzb ssl='yes' port='563'>reader.extremeusenet.nl</nzb>
+			<post ssl='yes' port='563'>reader.extremeusenet.nl</post>
+		</server>
+
 		<server name='FlexNewz'>
 			<header ssl='yes' port='563'>news.flexnewz.com</header>
 			<nzb ssl='yes' port='563'>news.flexnewz.com</nzb>
