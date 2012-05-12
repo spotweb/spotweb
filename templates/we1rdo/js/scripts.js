@@ -308,7 +308,7 @@ $(function(){
 					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
 					$("div#overlay").empty();
 					$("a.spotlink").click(function(e) { e.preventDefault(); });
-					$("a.spotlink").each(applyTipTip);
+					$(".showTipTip a.spotlink").each(applyTipTip);
 					
 					pagenr++;
 					$("td.next > a").attr("href", url);
