@@ -176,6 +176,9 @@ class SpotSettingsUpgrader {
 				# Public sites should be indexable by a search engine
 				$this->_settings->set('deny_robots', false);
 
+				# Public systems should not show a public visible stack trace either
+				$this->setIfNot('enable_stacktrace', true);
+
 				# Reset the new users' group membership, id 2 is anonymous, 3 = authenticated
 				$this->_settings->set('newuser_grouplist', array( Array('groupid' => 2, 'prio' => 1), Array('groupid' => 3, 'prio' => 2) ));
 
