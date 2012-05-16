@@ -136,7 +136,7 @@ class SpotUserUpgrader {
 					/* Grant the group with the view permissions */
 					$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(1, 2, 1)");
 				} # else
-			} elseif ($user['userid'] == 2) {
+			} elseif (($user['userid'] == 2) || ($user['userid'] == $this->_settings->get('custom_admin_userid'))) {
 				# Admin user
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 1)");
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 2)");
