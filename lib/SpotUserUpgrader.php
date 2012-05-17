@@ -138,10 +138,10 @@ class SpotUserUpgrader {
 				} # else
 			} elseif (($user['userid'] == 2) || ($user['userid'] == $this->_settings->get('custom_admin_userid'))) {
 				# Admin user
-				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 2, 1)");
-				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 3, 2)");
-				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 4, 3)");
-				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(2, 5, 4)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 3, 2)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 4, 3)");
+				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 5, 4)");
 			} else {
 				# Grant the regular users all the necessary security groups
 				$dbCon->rawExec("INSERT INTO usergroups(userid,groupid,prio) VALUES(" . $user['userid'] . ", 2, 1)");
