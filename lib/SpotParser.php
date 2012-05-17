@@ -196,11 +196,15 @@ class SpotParser {
 		if ((empty($spot['user-signature'])) || (empty($spot['selfsignedpubkey']))) {
 			$spot['spotterid'] = '';
 		} else {
+			/*
+			 * Newer spots contain the full publickey in the header so we have 
+			 * a lot more information. Use this information.
+			 */
 			$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
 			$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
 									  'exponent' => 'AQAB');
 			/* 
-			 * The spot contains the signature of the header in the 
+			 * The spot contains the signature in the header of the spot
 			 */
 			$spot['verified'] = $this->_spotSigning->verifyFullSpot($spot);
 		} # else
