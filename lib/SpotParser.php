@@ -304,58 +304,63 @@ class SpotParser {
 			return $spot;
 		} # if
 
-		/* 
-		 * For any recentkey ( >1) or spots created after year-2010, we require the spot
-		 * to be signed
+		/*
+		 * Don't verify spots which are already verified
 		 */
-		$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
-		if ($mustbeSigned) {
-			$spot['headersign'] = $fields[count($fields) - 1];
+		if (!$spot['verified']) {
+			/* 
+			 * For any recentkey ( >1) or spots created after year-2010, we require the spot
+			 * to be signed
+			 */
+			$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
+			if ($mustbeSigned) {
+				$spot['headersign'] = $fields[count($fields) - 1];
 
-			if (strlen($spot['headersign']) != 0) {
-				# the signature this header is signed with
-				$signature = $this->unspecialString($spot['headersign']);
+				if (strlen($spot['headersign']) != 0) {
+					# the signature this header is signed with
+					$signature = $this->unspecialString($spot['headersign']);
 
-				$spot['wassigned'] = true;
-
-				/*
-				 * KeyID 7 has a special meaning, it defines a self-signed spot and
-				 * requires a hashcash
-				 */
-				if ($spot['keyid'] == 7) {
-					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+					$spot['wassigned'] = true;
 
 					/*
-					 * Create a fake RSA keyarray so we can validate it using our standard
-					 * infrastructure
+					 * KeyID 7 has a special meaning, it defines a self-signed spot and
+					 * requires a hashcash
 					 */
-					 if ($spot['verified']) {
-						$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
-													   'exponent' => 'AQAB'));
-													   
+					if ($spot['keyid'] == 7) {
+						$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+						$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+
 						/*
-						 * We cannot use this as a full measure to check the spot's validness yet, 
-						 * because at least one Spotnet client feeds us invalid date for now
+						 * Create a fake RSA keyarray so we can validate it using our standard
+						 * infrastructure
 						 */
-						if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
-							/* 
-							 * The users' public key (modulo) is posted in the header, lets 
-							 * try this.
+						 if ($spot['verified']) {
+							$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
+														   'exponent' => 'AQAB'));
+														   
+							/*
+							 * We cannot use this as a full measure to check the spot's validness yet, 
+							 * because at least one Spotnet client feeds us invalid data for now
 							 */
-							$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+							if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+								/* 
+								 * The users' public key (modulo) is posted in the header, lets 
+								 * try this.
+								 */
+								$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+							} # if
+							
 						} # if
-						
-					} # if
-				} elseif (isset($rsaKeys[$spot['keyid']])) {
-					$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
-				} # else
-			} # if
-		} # if must be signed
-		else {
-			$spot['verified'] = true;
-			$spot['wassigned'] = false;
-		} # if doesnt need to be signed, pretend that it is
+					} elseif (isset($rsaKeys[$spot['keyid']])) {
+						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+					} # else
+				} # if
+			} # if must be signed
+			else {
+				$spot['verified'] = true;
+				$spot['wassigned'] = false;
+			} # if doesnt need to be signed, pretend that it is
+		} # if
 
 		/*
 		 * We convert the title and other fields to UTF8, we cannot
