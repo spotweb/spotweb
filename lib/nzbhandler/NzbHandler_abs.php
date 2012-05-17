@@ -7,7 +7,7 @@ abstract class NzbHandler_abs
 	protected $_nzbHandling = null;
 	protected $_settings = null;
 
-	function __construct($settings, $name, $nameShort, array $nzbHandling)
+	function __construct(SpotSettings $settings, $name, $nameShort, array $nzbHandling)
 	{
 		$this->_settings = $settings;
 		$this->_nzbHandling = $nzbHandling;
