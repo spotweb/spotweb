@@ -203,7 +203,7 @@ try {
 }
 catch(RetrieverRunningException $x) {
        echo PHP_EOL . PHP_EOL;
-       die("retriever.php draait al, geef de parameter '--force' mee om te forceren." . PHP_EOL);
+       die("retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL);
 }
 catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
