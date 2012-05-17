@@ -95,7 +95,7 @@
 			$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 			
 			/* We need either one of those 3 extensions, so set the error flag manually */
-			if ( (!extension_loaded('openssl')) && (!extension_loaded('openssl')) && (!extension_loaded('openssl'))) {
+			if ( (!extension_loaded('openssl')) && (!extension_loaded('gmp')) && (!extension_loaded('bcmath'))) {
 				$_testInstall_Ok = false;
 			} # if
 			
@@ -234,8 +234,14 @@
 						$form['nzb'] = $form;
 						$form['post'] = $form;
 				} else {
-					foreach($serverList->usenetservers->server as $server) {
-						if ( (string) $server['name'] == $form['name'] ) {
+					foreach($serverList->usenetservers->server as $provider) {
+						if (extension_loaded('openssl') && isset($provider->ssl)) {
+							$server = $provider->ssl;
+						} else {
+							$server = $provider->plain;
+						} # if
+
+						if ( (string) $provider['name'] == $form['name'] ) {
 							# Header usenet server
 							$form['hdr']['host'] = (string) $server->header;
 							$form['hdr']['user'] = $form['user'];
@@ -274,7 +280,6 @@
 				$nntp->validateServer();
 
 				$nntpVerified = true;
-				
 				/*
 				 * Store the given NNTP settings in the 
 				 * SESSION object, we need it later to update
@@ -307,8 +312,19 @@
 				<td> 
 					<select id='nntpselectbox' name='nntpform[name]' onchange='toggleNntpField();'> 
 	<?php
-					foreach($serverList->usenetservers->server as $server) {
-						echo "<option value='{$server['name']}'" . (($server['name'] == $form['name']) ? "selected='selected'" : '') . ">{$server['name']}</option>";
+					foreach($serverList->usenetservers->server as $provider) {
+						$server = '';
+
+						/* Make sure the server is supported, eg filter out ssl only servers when openssl is not loaded */
+						if (extension_loaded('openssl') && isset($provider->ssl)) {
+							$server = $provider->ssl;
+						} elseif (isset($provider->plain)) {
+							$server = $provider->plain;
+						} # if
+
+						if (!empty($server)) {
+							echo "<option value='{$provider['name']}'" . (($provider['name'] == $form['name']) ? "selected='selected'" : '') . ">{$provider['name']}</option>";
+						} # if
 					} # foreach
 	?>
 						<option value='custom'>Custom</option>
