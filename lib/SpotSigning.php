@@ -94,7 +94,7 @@ class SpotSigning {
 		 *
 		 */
 		if (empty($privatekey)) {
-			throw new Exception("Given privatekey is invalid, please correct (eg: run upgrade-db.php when install.php is without errors)");
+			throw new InvalidPrivateKeyException();
 		} # if
 		 
 		$rsa = new Crypt_RSA();
