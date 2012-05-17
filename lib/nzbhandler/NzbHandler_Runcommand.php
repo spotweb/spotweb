@@ -13,7 +13,7 @@ class NzbHandler_Runcommand extends NzbHandler_abs
 		$this->_cmdToRun = $nzbHandling['command'];
 		if (empty($this->_cmdToRun))
 		{
-			throw new Exception("command in handler is leeg maar 'runcommand' gekozen!");
+			throw new Exception("command in handler is empty but 'runcommand' option chosen!");
 		} # if
 
 		$this->_localDir = $nzbHandling['local_dir'];
