@@ -127,7 +127,7 @@ if (substr($settings['spotweburl'], -1) != '/') {
 
 # Preferences lokaal niet meer toestaan
 if (isset($settings['prefs'])) {
-	throw new InvalidOwnSettingsSettingException("Preferences worden voortaan per user gezet");
+	throw new InvalidOwnSettingsSettingException("Preferences are set per user, not in your ownsettings.php");
 } # if
 
 # deprecated settings niet meer toestaan

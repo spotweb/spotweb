@@ -422,7 +422,7 @@ catch(PermissionDeniedException $x) {
 	 *
 	 * If no page is initiated just yet, we create an basic renderer object
 	 * to render an error page
-	 */
+	 */	
 	if (! ($page instanceof SpotPage_Abs)) {
 		$page = new SpotPage_render($db, $settings, $currentSession, '', array());
 	} # if
@@ -436,7 +436,7 @@ catch(InvalidOwnSettingsSettingException $x) {
 } # InvalidOwnSettingsSettingException
 
 catch(OwnsettingsCreatedOutputException $x) {
-	echo "ownsettings.php created output. Please make sure your ownsettings.php does not contain a PHP closing tag ( ?> )<br><br>" . PHP_EOL;
+	echo "ownsettings.php or dbsettings.inc.php created output. Please make sure theese files do not contain a PHP closing tag ( ?> ) and no information before the PHP opening tag ( <?php )<br><br>" . PHP_EOL;
 	echo nl2br($x->getMessage());
 } # OwnsettingsCreatedOutputException
 
