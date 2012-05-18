@@ -36,5 +36,5 @@ Installation is the toughest part of Spotweb. Depending on your platform you sho
 3. Ensure you have a webserver running and PHP is configured for this webserver
 3. Download Spotweb 
 4. Unpack Spotweb to a directory of your choosing
-5. Run 'install.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
+5. Open 'install.php' in your browser until everything is 'OK'. Fix the parts which aren't OK.
 6. Follow the wizard and perform the instructions as given by the wizard.
