@@ -67,13 +67,12 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg) {
+		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
 			$lastProcessedId = '';
 			$commentDbList = array();
 			$fullCommentDbList = array();
-			$timer = microtime(true);
 
 			/*
 			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to 

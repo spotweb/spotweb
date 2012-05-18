@@ -83,7 +83,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg) {
+		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 
 			$spotParser = new SpotParser();
@@ -97,7 +97,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			$fullSpotDbList = array();
 			$spotDbList = array();
 			$moderationList = array();
-			$timer = microtime(true);
 			$processingStartTime = time();
 
 			/*
@@ -422,23 +421,21 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			 * Actually act on the moderation settings. We cannot process this inline
 			 * because a spot can be added and moderated within the same iteration
 			 */
-			foreach($moderationList as $moderateId) {
-				switch($this->_settings->get('spot_moderation')) {
-					case 'disable'	: break;
-					case 'markspot'	: {
-						$this->_db->markCommentModerated($moderateId); 
-						$this->_db->markSpotModerated($moderateId); 
-						
-						break;
-					} # case 'markspot' 
-					default			: { 
-						$this->_db->deleteSpot($moderateId); 
-						$this->_db->removeComment($moderateId);
-						
-						break;
-					} # default
-				} # switch
-			} # foreach
+			switch($this->_settings->get('spot_moderation')) {
+				case 'disable'	: break;
+				case 'markspot'	: {
+					$this->_db->markCommentsModerated($moderationList); 
+					$this->_db->markSpotsModerated($moderationList); 
+					
+					break;
+				} # case 'markspot' 
+				default			: { 
+					$this->_db->removeSpots($moderationList); 
+					$this->_db->removeComments($moderationList);
+					
+					break;
+				} # default
+			} # switch
 			
 			# update the maximum article id
 			if ($this->_retro) {

@@ -65,13 +65,12 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg) {
+		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
 			$signedCount = 0;
 			$lastProcessedId = '';
 			$reportDbList = array();
-			$timer = microtime(true);
 
 			/**
 			 * We ask the database to match our messageid's we just retrieved with

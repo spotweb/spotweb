@@ -17,7 +17,7 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * Actual processing of the headers
 		 */
-		abstract function process($hdrList, $curMsg, $increment);
+		abstract function process($hdrList, $curMsg, $increment, $timer);
 		
 		/*
 		 * Remove any extraneous reports from the database because we assume
@@ -151,6 +151,8 @@ abstract class SpotRetriever_Abs {
 			$this->displayStatus("", "");
 
 			while ($curMsg < $this->_msgdata['last']) {
+				$timer = microtime(true);
+				
 				# get the list of headers (XOVER)
 				$hdrList = $this->_spotnntp->getOverview($curMsg, ($curMsg + $increment));
 
@@ -164,7 +166,7 @@ abstract class SpotRetriever_Abs {
 				} # else
 				
 				# run the processing method
-				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg);
+				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg, $timer);
 				$processed += $processOutput['count'];
 				$headersProcessed += $processOutput['headercount'];
 				$highestMessageId = $processOutput['lastmsgid'];

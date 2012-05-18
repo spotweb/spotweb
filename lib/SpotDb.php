@@ -1359,26 +1359,48 @@ class SpotDb {
 	/*
 	 * Removes a comment from the database
 	 */
-	function removeComment($msgId) {
-		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid = '%s'", Array($msgId));
-		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid = '%s'", Array($msgId));
-	} # removeComment
+	function removeComments($commentMsgIdList) {
+		if (count($commentMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($commentMsgIdList as $spotMsgId => $v) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
+		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
+	} # removeComments
 
 	/*
 	 * Verwijder een spot uit de db
 	 */
-	function deleteSpot($msgId) {
+	function removeSpots($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId => $v) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_pgsql'  : 
 			case 'pdo_sqlite' : {
-				$this->_conn->modify("DELETE FROM spots WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref= '%s')", Array($msgId));
-				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto = '%s'", Array($msgId));
-				$this->_conn->modify("DELETE FROM cache WHERE resourceid = '%s'", Array($msgId));
+				$this->_conn->modify("DELETE FROM spots WHERE messageid IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid  IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref IN  IN (" . $msgIdList . "))");
+				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref  IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
+				$this->_conn->modify("DELETE FROM cache WHERE resourceid  IN (" . $msgIdList . ")");
 				break; 
 			} # pdo_sqlite
 			
@@ -1390,24 +1412,46 @@ class SpotDb {
 									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 									LEFT JOIN cache ON spots.messageid=cache.resourceid
-									WHERE spots.messageid = '%s'", Array($msgId));
+									WHERE spots.messageid  IN (" . $msgIdList . ")");
 			} # default
 		} # switch
-	} # deleteSpot
+	} # removeSpots
 
 	/*
 	 * Markeer een spot in de db moderated
 	 */
-	function markSpotModerated($msgId) {
-		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid = '%s'", Array($this->bool2dt(true), $msgId));
-	} # markSpotModerated
+	function markSpotsModerated($spotMsgIdList) {
+		if (count($spotMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($spotMsgIdList as $spotMsgId => $v) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->bool2dt(true)));
+	} # markSpotsModerated
 
 	/*
 	 * Markeer een comment in de db moderated
 	 */
-	function markCommentModerated($msgId) {
-		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid = '%s'", Array($this->bool2dt(true), $msgId));
-	} # markCommentModerated
+	function markCommentsModerated($commentMsgIdList) {
+		if (count($commentMsgIdList) == 0) {
+			return;
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($commentMsgIdList as $spotMsgId => $v) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->bool2dt(true)));
+	} # markCommentsModerated
 
 	/*
 	 * Verwijder oude spots uit de db
