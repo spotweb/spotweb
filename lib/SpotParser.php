@@ -190,25 +190,9 @@ class SpotParser {
 		$spot['subcatd'] = '';
 		$spot['subcatz'] = '';
 		$spot['wassigned'] = false;
+		$spot['spotterid'] = '';
 		$isRecentKey = $spot['keyid'] <> 1;
 		
-		# If the user signature is known, calculate the spotterid
-		if ((empty($spot['user-signature'])) || (empty($spot['selfsignedpubkey']))) {
-			$spot['spotterid'] = '';
-		} else {
-			/*
-			 * Newer spots contain the full publickey in the header so we have 
-			 * a lot more information. Use this information.
-			 */
-			$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
-			$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
-									  'exponent' => 'AQAB');
-			/* 
-			 * The spot contains the signature in the header of the spot
-			 */
-			$spot['verified'] = $this->_spotSigning->verifyFullSpot($spot);
-		} # else
-
 		/* 
 		 * If the keyid is invalid, abort trying to parse it
 		 */
@@ -304,63 +288,117 @@ class SpotParser {
 			return $spot;
 		} # if
 
+		/* 
+		 * For any recentkey ( >1) or spots created after year-2010, we require the spot
+		 * to be signed
+		 */
+		$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
+		if ($mustbeSigned) {
+			$spot['headersign'] = $fields[count($fields) - 1];
+			$spot['wassigned'] = (strlen($spot['headersign']) != 0);
+		} # if must be signed
+		else {
+			$spot['verified'] = true;
+			$spot['wassigned'] = false;
+		} # if doesnt need to be signed, pretend that it is
+
 		/*
 		 * Don't verify spots which are already verified
 		 */
-		if (!$spot['verified']) {
-			/* 
-			 * For any recentkey ( >1) or spots created after year-2010, we require the spot
-			 * to be signed
+		if ($spot['wassigned']) {
+			/*
+			 * There are currently two known methods to which Spots are signed,
+			 * each having different charachteristics, making it a bit difficult
+			 * to work with this.
+			 *
+			 * The oldest method uses a secret private key and a signing server, we
+			 * name this method SPOTSIGN_V1. The users' public key is only available
+			 * in the XML header, not in the From header. This is the preferred method.
+			 *
+			 * The second method uses a so-called "self signed" spot (the spotter signs
+			 * the spots, posts the public key in the header and a hashcash is used to
+			 * prevent spamming). This method is called SPOTSIGN_V2.
+			 *
 			 */
-			$mustbeSigned = $isRecentKey | ($spot['stamp'] > 1293870080);
-			if ($mustbeSigned) {
-				$spot['headersign'] = $fields[count($fields) - 1];
+			if ($spot['keyid'] == 7) {
+				/*
+				 * KeyID 7 has a special meaning, it defines a self-signed spot and
+				 * requires a hashcash
+				 */
+				$signingMethod = 2;
+			} else {
+				$signingMethod = 1;
+			} # else
 
-				if (strlen($spot['headersign']) != 0) {
+
+			switch($signingMethod) {
+				case 1 : {
+					# the signature this header is signed with
+					$signature = $this->unspecialString($spot['headersign']);
+			
+					/*
+					 * Make sure the key specified is an actual known key 
+					 */
+					if (isset($rsaKeys[$spot['keyid']])) {
+						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+					} # if
+
+					break;
+				} # SPOTSIGN_V1
+
+				case 2 : {
 					# the signature this header is signed with
 					$signature = $this->unspecialString($spot['headersign']);
 
-					$spot['wassigned'] = true;
+					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
 
 					/*
-					 * KeyID 7 has a special meaning, it defines a self-signed spot and
-					 * requires a hashcash
+					 * Create a fake RSA keyarray so we can validate it using our standard
+					 * infrastructure
 					 */
-					if ($spot['keyid'] == 7) {
-						$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-						$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
-
+					 if ($spot['verified']) {
+						$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
+													   'exponent' => 'AQAB'));
+													   
 						/*
-						 * Create a fake RSA keyarray so we can validate it using our standard
-						 * infrastructure
+						 * We cannot use this as a full measure to check the spot's validness yet, 
+						 * because at least one Spotnet client feeds us invalid data for now
 						 */
-						 if ($spot['verified']) {
-							$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
-														   'exponent' => 'AQAB'));
-														   
-							/*
-							 * We cannot use this as a full measure to check the spot's validness yet, 
-							 * because at least one Spotnet client feeds us invalid data for now
+						if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+							/* 
+							 * The users' public key (modulo) is posted in the header, lets 
+							 * try this.
 							 */
-							if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
-								/* 
-								 * The users' public key (modulo) is posted in the header, lets 
-								 * try this.
-								 */
-								$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
-							} # if
-							
+							$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
 						} # if
-					} elseif (isset($rsaKeys[$spot['keyid']])) {
-						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
-					} # else
-				} # if
-			} # if must be signed
-			else {
-				$spot['verified'] = true;
-				$spot['wassigned'] = false;
-			} # if doesnt need to be signed, pretend that it is
-		} # if
+					} # if
+
+					break;
+				} # SPOTSIGN_V2
+			} # switch
+
+			/*
+			 * Even more recent spots, contain the users' full publickey
+			 * in the header. This allows us to uniquely identify and verify
+			 * the poster of the spot.
+			 *
+			 * Try to extract this information.
+			 */
+			if (($spot['verified']) && (!empty($spot['user-signature'])) && (empty($spot['selfsignedpubkey']))) {
+				/*
+				 * Extract the public key
+				 */
+				$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+				$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
+										  'exponent' => 'AQAB');
+				/* 
+				 * The spot contains the signature in the header of the spot
+				 */
+				$spot['verified'] = $this->_spotSigning->verifyFullSpot($spot);
+			} # if
+
+		} # if was signed
 
 		/*
 		 * We convert the title and other fields to UTF8, we cannot
