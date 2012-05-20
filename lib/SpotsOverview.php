@@ -518,90 +518,90 @@ class SpotsOverview {
 	} # loadSpots()
 
 	/*
-	 * Bereid een string met daarin categorieen voor en 'expand' 
-	 * die naar een complete string met alle subcategorieen daarin
+	 * When passed an array with categories, this array is expanded \
+	 * to contain the fully qualified categories and subcategories.
 	 */
 	public function prepareCategorySelection($dynaList) {
 		$strongNotList = array();
 		$categoryList = array();
 		
-		# 
-		# De Dynatree jquery widget die we gebruiken haalt zijn data uit ?page=catsjson,
-		# voor elke node in de boom geven wij een key mee.
-		# Stel je de boom als volgt voor, met tussen haakjes de unieke key:
-		#
-		# - Beeld (cat0)
-		# +-- Film (cat0_z0)
-		# +--- Formaat (cat0_z0_a)
-		# +----- DivX (cat0_z0_a0)
-		# +----- WMV (cat0_z0_a1)
-		# +-- Series (cat0_z1)
-		# +--- Formaat (cat0_z1_a)
-		# +----- DivX (cat0_z1_a0)
-		# +----- WMV (cat0_z1_a1)
-		# +--- Bron (cat0_z1_b)
-		# - Applicaties (cat3)
-		# +-- Formaat (cat1_zz_a / cat1_a)
-		# 
-		# Oftewel - je hebt een hoofdcategory nummer, daaronder heb je een type, daaronder 
-		# een subcategory type (a,b,c etc), en daaronder heb je dan weer een nummer welke subcategory het is.
-		#
-		# Als je in bovenstaand voorbeeld dus Film in DivX wilt selecteren, dan is de keywaarde simpelweg cat0_z0_a0, 
-		# wil je echter heel 'Beeld' selecteren dan is 'cat0' al genoeg. Als je echter in de Dynatree boom
-		# zelf het item 'Beeld' zou selecteren, dan zal Dynatree enkel de parentitem doorsturen, dus cat0_z0
-		#
-		# Als we gebruikers handmatig de category willen laten opgeven (bv. door een entry in settings.php)
-		# dan is het bijzonder onhandig als ze al die categorieen individueel moeten opgeven. Om dit op te
-		# lossen hebben we een aantal shorthands toegevoegd aan de filter taal welke dan door Spotweb zelf
-		# weer 'uitgepakt' worden naar een volledige zoekopdracht.
-		#
-		# In een 'settings-zoekopdracht' zijn de volgende shortcuts toegestaan voor het automatisch uitvouwen van
-		# de boom:
-		#
-		# cat0						- Zal uitgebreid worden naar alle subcategorieen van category 0
-		# cat0_z0_a					- Zal uitgebreid worden naar alle subcategorieen 'A' van category 0, type z0.
-		# !cat0_z0_a1				- Zal cat0_z0_a1 verwijderen uit de lijst (volgorde van opgeven is belangrijk)
-		# ~cat0_z0_a1				- 'Verbied' dat een spot in cat0_z0_a1 zit
-		# cat0_a					- Alles in a voor hoofdcategorie 0 kiezen
-		#
+		/*
+		 * The Dynatree jquery widget which we use, retrieves its data from ?page=catsjson,
+		 * for each node in the dynatree we provide a key. The tree could be seen as follows,
+		 * with the unique key within parenthesis.
+		 *
+		 * - Image (cat0)
+		 * +-- Film (cat0_z0)
+		 * +--- Format (cat0_z0_a)
+		 * +----- DivX (cat0_z0_a0)
+		 * +----- WMV (cat0_z0_a1)
+		 * +-- Series (cat0_z1)
+		 * +--- Format (cat0_z1_a)
+		 *+----- DivX (cat0_z1_a0)
+		 * +----- WMV (cat0_z1_a1)
+		 * +--- Source (cat0_z1_b)
+		 * - Applications (cat3)
+		 * +-- Format (cat1_zz_a / cat1_a)
+		 *
+		 * Basially, you have a headcategory number, then you have a categorytype, then a subcategorytype (a,b,c,d, ...)
+		 * then the subcategorynumber follows.
+		 *
+		 * When you want to select, in above example, a Film in DivX, the keyvalue is simply cat0_z0_a0.
+		 * However, when you want to select the whole of 'Image', keyvalue 'cat0' would suffice. 
+		 *
+		 * If users would select categories manually (for example a manually constructed search), it would
+		 * be more convienent for them to be able to provide shorthands, allowing one to select common category
+		 * groups more easily. Spotweb wil expand those category selection items to contain the full selection.
+		 *
+		 * The following shorthands are allowed:
+		 *		 
+		 * cat0						- Will be expanded to all subcategoies of category 0
+		 * cat0_z0_a				- Will be expanded to subcategory A of category 0, but the type must be z0
+		 * !cat0_z0_a1				- Will remove cat0_z0_a1 from the list (order in the list is important)
+		 * ~cat0_z0_a1				- 'Forbids' cat0_z0_a1 to be in the list (a NOT will be applied to it)
+		 * cat0_a					- Select everything from subcategory A in category 0 (all z-types)
+		 *
+		 */
 		$newTreeQuery = '';
 		
-		# We lopen nu door elk item in de lijst heen, en expanden die eventueel naar
-		# een volledige category met subcategorieen indien nodig.
+		/*
+		 * Process each item in the list, and expand it where necessary
+		 */
 		$dynaListCount = count($dynaList);
 		for($i = 0; $i < $dynaListCount; $i++) {
-			# De opgegeven category kan in drie soorten voorkomen:
-			#     cat1_z0_a			==> Alles van cat1, type z0, en daar alles van 'a' selecteren
-			#     cat1_z0			==> Alles van cat1, type z0
-			# 	  cat1_a			==> Alles van cat1, alles van 'a' selecteren
-			#	  cat1				==> Heel cat1 selecteren
-			#
-			# Omdat we in deze code de dynatree emuleren, voeren we deze lelijke hack uit.
+			/*
+			 * The given category can be one of the following four types:
+			 *    cat1_z0_a			==> Everything of cat1, type z0, and then everything of subcategory a
+			 *    cat1_z0			==> Everything of cat1, type z0
+			 * 	  cat1_a			==> Everything of cat1 which is of 'subcategory a'
+			 * 	  cat1				==> Select the whole of cat1
+			 *
+			 */
 			if ((strlen($dynaList[$i]) > 0) && ($dynaList[$i][0] == 'c')) {
 				$hCat = (int) substr($dynaList[$i], 3, 1);
 				
-				# was een type + subcategory gespecificeerd? (cat1_z0_a)
+				# Was a type + global subcategory selected? (cat1_z0_a)
 				if (strlen($dynaList[$i]) == 9) {
 					$typeSelected = substr($dynaList[$i], 5, 2);
 					$subCatSelected = substr($dynaList[$i], 8);
-				# was enkel een category gespecificeerd? (cat1)
+				# Was only as category selected (cat1)
 				} elseif (strlen($dynaList[$i]) == 4) {
 					$typeSelected = '*';
 					$subCatSelected = '*';
-				# was een category en type gespecificeerd? (cat1_z0)
+				# Was a category and type selected (cat1_z0)
 				} elseif ((strlen($dynaList[$i]) == 7) && ($dynaList[$i][5] === 'z')) {
 					$typeSelected = substr($dynaList[$i], 5, 2);
 					$subCatSelected = '*';
-				# was een category en subcategorie gespecificeerd, oude style? (cat1_a3)
+				# Was a category and subcateory specified, old stype? (cat1_a3)
 				} elseif (((strlen($dynaList[$i]) == 7) || (strlen($dynaList[$i]) == 8)) && ($dynaList[$i][5] !== 'z')) {
-					# Zet die oude style om naar de verschillende expliciete categorieen
+					# Convert the old style to explicit categories (cat1_z0_a3, cat1_z1_a3, cat1_z2_a3, ... )
 					foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
 						$newTreeQuery .= "," . substr($dynaList[$i], 0, 4) . '_z' . $typeKey . '_' . substr($dynaList[$i], 5);
 					} # foreach
 					
 					$typeSelected = '';
 					$subCatSelected = '';
-				# was een subcategory gespecificeerd? (cat1_a)
+				# was a subcategory specified? (cat1_a)
 				} elseif (strlen($dynaList[$i]) == 6) {
 					$typeSelected = '*';
 					$subCatSelected = substr($dynaList[$i], 5, 1);
@@ -612,23 +612,23 @@ class SpotsOverview {
 					$subCatSelected = '';
 				} # else
 
-				#
-				# creeer een string die alle subcategories bevat
-				#
-				# we loopen altijd door alle subcategorieen heen zodat we zowel voor complete category selectie
-				# als voor enkel subcategory selectie dezelfde code kunnen gebruiken.
-				#
+				/*
+				 * Createa a string containing all subcategories.
+				 *
+				 * We always loop through all subcategories so we can reuse this bit of code
+				 * both for complete category selection as subcategory selection.
+				 */
 				$tmpStr = '';
 				foreach(SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
-				
+
 					/*
-					 * We kunnen vier gevallen hebben:
+					 * There are four possible cases:
 					 *
-					 *  $subCatSelected bevat een lege string, dan matched het op niets
-					 * 	$subCatSelected bevat een sterretje, dan matchen we alle subcategorieen
-					 *	$typeSelected bevat een lege string, dan matched het op niets
-					 *  $typeSelected bevat een sterretje, dan matched het op alle subcategorieen
-					 */
+					 *   $subcatSelected contains an empty string, it matches to nothing.
+					 *   $subcatSelected contains an asterisk, it matches all subcategories.
+					 *   $typeSelected contains an empty string, it matches nothing.
+					 *   $typeSelected contains an asterisk, it matches all types.
+					 */				
 					if ($subCatSelected == '*') {
 						foreach(SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
 							$typeKey = 'z' . $typeKey;
@@ -653,14 +653,17 @@ class SpotsOverview {
 
 				$newTreeQuery .= $tmpStr;
 			} elseif (substr($dynaList[$i], 0, 1) == '!') {
-				# als het een NOT is, haal hem dan uit de lijst
+				# For a not, we just remove / exclude it from the list.
 				$newTreeQuery = str_replace(',' . substr($dynaList[$i], 1), "", $newTreeQuery);
 			} elseif (substr($dynaList[$i], 0, 1) == '~') {
-				# als het een STRONG NOT is, zorg dat hij in de lijst blijft omdat we die moeten
-				# meegeven aan de nextpage urls en dergelijke.
+				/*
+				 * For a STRONG NOT, we cannot remove it from the list because want to explicitly
+				 * remove those results from the query and we have to pass it in other URL's and the 
+				 * likes
+				 */
 				$newTreeQuery .= "," . $dynaList[$i];
 				
-				# en voeg hem toe aan een strong NOT list (~cat0_z0_d12)
+				# and add it to the strongNotList array for usage later on
 				$strongNotTmp = explode("_", $dynaList[$i], 2);
 
 				/* To deny a whole category, we have to take an other shortcut */
@@ -677,19 +680,27 @@ class SpotsOverview {
 			$newTreeQuery = substr($newTreeQuery, 1); 
 		} # if
 
-		#
-		# Vanaf hier hebben we de geprepareerde lijst - oftewel de lijst met categorieen 
-		# die al helemaal in het formaat is zoals Dynatree hem ons ook zou aanleveren.
-		# 
-		# We vertalen de string met subcategorieen hier netjes naar een array met alle
-		# individuele subcategorieen zodat we die later naar SQL kunnen omzetten.
+		/*
+		 * 
+		 * Starting from here, we have a prepared list - meaning, a list with all
+		 * categories fully expanded.
+		 *
+		 * We now translate this list to an nested list of elements which is easier
+		 * to convert to SQL. The format of the array is fairly typical:
+		 *
+		 * list['cat']
+		 *            [cat]							 -> Head category, eg: 0 for Images
+		 *                 [type]					 -> Type, eg: 0 for z0 
+		 *                       [subcattype]		 -> Subcategory type, eg: a 
+		 *                                   = value -> eg 1 for in total cat0_z0_a1
+		 */     
 		$dynaList = explode(',', $newTreeQuery);
 
 		foreach($dynaList as $val) {
 			if (substr($val, 0, 3) == 'cat') {
-				# 0e element is hoofdcategory
-				# 1e element is type
-				# 2e element is category
+				# 0 element is headcategory
+				# 1st element is type
+				# 2ndelement is category
 				$val = explode('_', (substr($val, 3) . '_'));
 
 				$catVal = $val[0];
@@ -701,14 +712,14 @@ class SpotsOverview {
 					$categoryList['cat'][$catVal][$typeVal][$subCatIdx][] = $subCatVal;
 				} # if
 			} elseif (substr($val, 0, 3) == 'sub') {
-				# 0e element is hoofdcategory
-				# 1e element is type
+				# 0 element is headcategory
+				# 1st element is type
 				$val = explode('_', (substr($val, 3) . '_'));
 
 				$catVal = $val[0];
 				$typeVal = $val[1];
 
-				# Creer de z-category in de categorylist
+				# Create the z-category in the categorylist
 				if (count($val) == 3) {
 					if (!isset($categoryList['cat'][$catVal][$typeVal])) {
 						$categoryList['cat'][$catVal][$typeVal] = array();
@@ -721,58 +732,54 @@ class SpotsOverview {
 	} # prepareCategorySelection
 
 	/*
-	 * Converteert een lijst met subcategorieen 
-	 * naar een lijst met daarin SQL where filters
+	 * Converts a list of categories to an SQL filter
 	 */
 	private function categoryListToSql($categoryList) {
 		$categorySql = array();
 
-		# controleer of de lijst geldig is
+		# Make sure we were passed a valid filter
 		if ((!isset($categoryList['cat'])) || (!is_array($categoryList['cat']))) {
 			return $categorySql;
 		} # if
 
-		# 
-		# We vertalen nu de lijst met sub en hoofdcategorieen naar een SQL WHERE statement, we 
-		# doen dit in twee stappen waarbij de uiteindelijke category filter een groot filter is.
-		# 
-		#
-		# Testset met filters:
-		#   cat0_z0_a9,cat0_z1_a9,cat0_z3_a9, ==> HD beeld
-		#	cat0_z0_a9,cat0_z0_b3,cat0_z0_c1,cat0_z0_c2,cat0_z0_c6,cat0_z0_c11,~cat0_z1,~cat0_z2,~cat0_z3 ==> Nederlands ondertitelde films
-		# 	cat0_a9 ==> Alles in x264HD
-		#	cat1_z0,cat1_z1,cat1_z2,cat1_z3 ==> Alle muziek, maar soms heeft muziek geen genre ingevuld!
-		#
-		# De categoryList array is als volgt opgebouwd:
-		#
-		#	array(1) {
-		#	  ["cat"]=>
-		#	  array(1) {								
-		#		[1]=>									<== Hoofdcategory nummer (cat1)
-		#		array(4) {
-		#		  ["z0"]=>								<== Type (subcatz) nummer (cat1_z0)
-		#		  array(4) {
-		#			["a"]=>								<== Subcategorieen (cat1_z0_a)
-		#			array(9) {
-		#			  [0]=>								
-		#			  string(1) "0"						<== Geselecteerde subcategory (in totaal dus cat1_z0_a0)
-		#			}
-		#			["b"]=>
-		#			array(7) {
-		#			  [0]=>
-		#			  string(1) "0"
-		#
-		#
+		/*
+		 * We have to translate the list of sub- and headcategories to an SQL WHERE statement in 
+		 * multiple steps, where the 'category' is the basis for our filter.
+		 *
+		 * A testste for filters could be the following:
+		 *   cat0_z0_a9,cat0_z1_a9,cat0_z3_a9, ==> HD beeld
+		 *   cat0_z0_a9,cat0_z0_b3,cat0_z0_c1,cat0_z0_c2,cat0_z0_c6,cat0_z0_c11,~cat0_z1,~cat0_z2,~cat0_z3 ==> Nederlands ondertitelde films
+		 *   cat0_a9 ==> Alles in x264HD
+		 *   cat1_z0,cat1_z1,cat1_z2,cat1_z3 ==> Alle muziek, maar soms heeft muziek geen genre ingevuld!
+		 * 
+		 * The category list structure is:
+		 *
+		 *	array(1) {
+		 *	  ["cat"]=>
+		 *	  array(1) {								
+		 *		[1]=>									<== Headcategory number (cat1)
+		 *		array(4) {
+		 *		  ["z0"]=>								<== Type (subcatz) number (cat1_z0)
+		 *		  array(4) {
+		 *			["a"]=>								<== Subcategorylist (cat1_z0_a)
+		 *			array(9) {
+		 *			  [0]=>								
+		 *			  string(1) "0"						<== Selected subcategory (so: cat1_z0_a0)
+		 *			}
+		 *			["b"]=>
+		 *			array(7) {
+		 *			  [0]=>
+		 *			  string(1) "0"
+		 *
+		 */
+
 		foreach($categoryList['cat'] as $catid => $cat) {
-			#
-			# Voor welke category die we hebben, gaan we alle subcategorieen 
-			# af en proberen die vervolgens te verwerken.
-			#
+			/*
+			 * Each category we have, we try to procss all subcategories
+			 * and convert it to a filter
+			 */
 			if ((is_array($cat)) && (!empty($cat))) {
-				#
-				# Uiteraard is een LIKE query voor category search niet super schaalbaar
-				# maar het is in de praktijk een hele performante manier
-				#
+
 				foreach($cat as $type => $typeValues) {
 					$catid = (int) $catid;
 					$tmpStr = "((s.category = " . (int) $catid . ")";
@@ -787,10 +794,10 @@ class SpotsOverview {
 						$subcatValues = array();
 						
 						foreach($subcatItem as $subcatValue) {
-							#
-							# een spot heeft maar 1 a en z subcat, dus dan kunnen we gewoon
-							# equality ipv like doen
-							#
+							/*
+							 * A spot can only contain one 'A' and 'Z' subcategory value, so we
+							 * can perform an equality filter instead of a LIKE
+							 */
 							if ($subcat == 'a')  {
 								$subcatValues[] = "(s.subcata = '" . $subcat . $subcatValue . "|') ";
 							} elseif (in_array($subcat, array('b', 'c', 'd'))) {
@@ -798,32 +805,35 @@ class SpotsOverview {
 							} # if
 						} # foreach
 
-						# 
-						# We voegen alle subcategorieen items binnen dezelfde subcategory en binnen dezelfde category
-						# (bv. alle formaten films) samen met een OR. Dus je kan kiezen voor DivX en WMV als formaat.
-						#
+						/*
+						 *
+						 * We add all subactegories within the same subcategory together (for example all
+						 * formats of a movie) with an OR. This means you can pick between DivX and WMV as 
+						 * a format
+						 *
+						 */
 						if (count($subcatValues) > 0) {
 							$subcatItems[] = " (" . join(" OR ", $subcatValues) . ") ";
 						} # if
 					} # foreach subcat
 
-					#
-					# Hierna voegen we binnen de hoofdcategory and type (Beeld + Film, Geluid), de subcategorieen filters die hierboven
-					# zijn samengesteld weer samen met een AND, bv. genre: actie, type: divx.
-					#
-					# Je krijgt dus een filter als volgt:
-					#
-					# (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
-					# 
-					# Dit zorgt er voor dat je wel kan kiezen voor meerdere genres, maar dat je niet bv. een Linux actie game
-					# krijgt (ondanks dat je Windows filterde) alleen maar omdat het een actie game is waar je toevallig ook
-					# op filterde.
-					#
+					/*
+					 * After this, same headcategory and type (Image + Movie, Sound) filters for
+					 * subcategories are merged together with an AND.
+					 * 
+					 * This results in a filter like:
+					 * 
+					 * (((category = 0) AND ( ((subcata = 'a0|') ) AND ((subcatd LIKE '%d0|%')
+					 *
+					 * This makes sure you are able to pick multiple genres within the same category/subcategory,
+					 * but you will not get unpredictable results by getting an 'Action' game for Linux when you
+					 * accidentally asked for either 'Action' or 'Romance'.
+					 */
 					if (count($subcatItems) > 0) {
 						$tmpStr .= " AND (" . join(" AND ", $subcatItems) . ") ";
 					} # if
 					
-					# Sluit het haakje af
+					# Finish of the query
 					$tmpStr .= ")";
 					$categorySql[] = $tmpStr;
 				} # foreach type
@@ -835,8 +845,8 @@ class SpotsOverview {
 	} # categoryListToSql 
 	
 	/*
-	 * Zet een lijst met "strong nots" om naar de daarbij
-	 * behorende SQL where statements
+	 * Converts a list of "strong nots" to the corresponding
+	 * SQL statements
 	 */
 	private function strongNotListToSql($strongNotList) {
 		$strongNotSql = array();
@@ -845,10 +855,10 @@ class SpotsOverview {
 			return array();
 		} # if
 
-		#
-		# Voor elke strong not die we te zien krijgen, creer de daarbij
-		# behorende SQL WHERE filter
-		#
+		/*
+		 * Each STRONG NOT is to be converted individually to a NOT 
+		 * SQL WHERE filter
+		 */
 		foreach(array_keys($strongNotList) as $strongNotCat) {
 			foreach($strongNotList[$strongNotCat] as $strongNotSubcat) {
 				/*
@@ -860,8 +870,10 @@ class SpotsOverview {
 				} else {
 					$subcats = explode('_', $strongNotSubcat);
 
-					# category a en z mogen maar 1 keer voorkomen, dus dan kunnen we gewoon
-					# equality ipv like doen
+					/*
+					 * A spot can only contain one 'A' and 'Z' subcategory value, so we
+					 * can perform an equality filter instead of a LIKE
+					 */
 					if (count($subcats) == 1) {
 						if (in_array($subcats[0][0], array('a', 'z'))) { 
 							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
@@ -887,34 +899,39 @@ class SpotsOverview {
 	 */
 	private function prepareFilterValues($search) {
 		$filterValueList = array();
-		
-		# We hebben drie soorten filters:
-		#		- Oude type waarin je een search[type] hebt met als waarden stamp,titel,tag etc en search[text] met 
-		#		  de waarde waar je op wilt zoeken. Dit beperkt je tot maximaal 1 type filter wat het lastig maakt.
-		#
-		# 		  We converteren deze oude type zoekopdrachten automatisch naar het nieuwe type.
-		#
-		#		- Nieuw type waarin je een search[value] array hebt, hierin zitten values in de vorm: type:operator:value, dus
-		#		  bijvoorbeeld tag:=:spotweb. Er is ook een shorthand beschikbaar, als je de operator weglaat (dus: tag:spotweb),
-		#		  nemen we aan dat de EQ operator bedoelt is.
-		#
-		#		- Speciale soorten lijsten - er zijn een aantal types welke een speciale betekenis hebben:
-		#				New:0 					(nieuwe posts)
-		#				Downloaded:0 			(spots welke gedownload zijn door deze account)
-		#				Watch:0 				(spots die op de watchlist staan van deze account)
-		#				Seen:0 					(spots die al geopend zijn door deze account)
-		#				MyPostedSpots:0 		(spots die gepost zijn door die user)
-		#				WhitelistedSpotters:0   (spots posted by a whitelisted spotter)
-		#				
-		#
+
+		/*
+		 * We have drie kinds of filters:
+		 *		- Old type where you have a search[type] with the values stamp,title,tag and an search[text]
+		 *		  containing the value to search for. This limits you to a maximum of one filter which is not
+		 *		  sufficient.
+		 *
+		 *		  We automatically convert these kind of searches to the new type.
+		 *
+		 *
+		 *		- New type where there is a search[value] array, which contain values in the following shape:
+		 *		  type:operator:value. 
+		 *        For example, tag:=:spotweb. A shorthand is also available when the operator is left out (eg: tag:spotweb),
+		 *		  we assume the EQ operator was intended.
+		 *
+		 *		- Special kind of lists, there are a few values with a special meaning:
+		 * 				New:0 					(new spots)
+		 * 				Downloaded:0 			(spots which are downloaded by this account)
+		 * 				Watch:0 				(spots on the watchlist of this account)
+		 * 				Seen:0 					(spots which have already been opened by this account)
+		 * 				MyPostedSpots:0 		(spots posted by this account)
+		 * 				WhitelistedSpotters:0   (spots posted by a whitelisted spotter)
+		 * 				
+		 */
 		if (isset($search['type'])) {
 			if (!isset($search['text'])) {
 				$search['text'] = '';
 			} # if
-			
-			# Een combinatie van oude filters en nieuwe kan voorkomen, we 
-			# willen dan niet met deze conversie de normaal soorten filters
-			# overschrijven.
+		
+			/*
+			 * We can be provided a set of old and new filters, we don't want to
+			 * overwrite the regular filters, so we take care to append to them
+			 */	
 			if ((!isset($search['value'])) || (!is_array($search['value']))) {
 				$search['value'] = array();
 			} # if
@@ -922,34 +939,36 @@ class SpotsOverview {
 			unset($search['type']);
 		} # if
 
-		# Zorg er voor dat we altijd een array hebben waar we door kunnen lopen
+		# Make sure that we always have something to iterate through
 		if ((!isset($search['value'])) || (!is_array($search['value']))) {
 			$search['value'] = array();
 		} # if
 
-		# en we converteren het nieuwe type (field:operator:value) naar een array zodat we er makkelijk door kunnen lopen
+		# Now we transform the new query (field:operator:value pair) to an exploded array for easier iteration
 		foreach($search['value'] as $value) {
 			if (!empty($value)) {
 				$tmpFilter = explode(':', $value);
-				
-				# als er geen comparison operator is opgegeven, dan
-				# betekent dat een '=' operator, dus fix de array op
-				# die manier.
+
+				# Default to an '=' operator when none is given				
 				if (count($tmpFilter) < 3) {
 					$tmpFilter = array($tmpFilter[0],
 									   '=',
 									   $tmpFilter[1]);
 				} # if
 				
-				# maak de daadwerkelijke filter
+				/*
+				 * Create the actual filter, we add the array_slice part to
+				 * allow for an ':' in the actual search value.
+				 */
 				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
 										 'operator' => $tmpFilter[1],
 										 'value' => join(":", array_slice($tmpFilter, 2)));
 										 
-				# en creeer een filtervaluelist, we checken eeerst
-				# of een gelijkaardig item niet al voorkomt in de lijst
-				# met filters - als je namelijk twee keer dezelfde filter
-				# toevoegt wil MySQL wel eens onverklaarbaar traag worden
+				/*
+				 * and create the actual filter list. Before appending it,
+				 * we want to make sure no identical filter is already
+				 * in the list, because this might make MySQL very slow.
+				 */
 				if (!in_array($filterValueTemp, $filterValueList)) {
 					$filterValueList[] = $filterValueTemp;
 				} # if
@@ -958,9 +977,9 @@ class SpotsOverview {
 		
 		return $filterValueList;
 	} # prepareFilterValues
-	
+
 	/*
-	 * Converteert meerdere user opgegeven 'text' filters naar SQL statements
+	 * Converts one or multiple userprovided txt filters to SQL statements
 	 */
 	private function filterValuesToSql($filterValueList, $currentSession) {
 		# Add a list of possible text searches
@@ -972,7 +991,7 @@ class SpotsOverview {
 		$sortFields = array();
 		$textSearchFields = array();
 		
-		# Een lookup tabel die de zoeknaam omzet naar een database veldnaam
+		# Lookp table from 'friendly' name to fully qualified one
 		$filterFieldMapping = array('filesize' => 's.filesize',
 								  'date' => 's.stamp',
 								  'stamp' => 's.stamp',
@@ -981,6 +1000,7 @@ class SpotsOverview {
 								  'moderated' => 's.moderated',
 								  'poster' => 's.poster',
 								  'titel' => 's.title',
+								  'title' => 's.title',
 								  'tag' => 's.tag',
 								  'new' => 'new',
 								  'reportcount' => 's.reportcount',
@@ -996,46 +1016,47 @@ class SpotsOverview {
 			$tmpFilterOperator = $filterRecord['operator'];
 			$tmpFilterValue = $filterRecord['value'];
 
-			# We proberen nu het opgegeven veldnaam te mappen naar de database
-			# kolomnaam. Als dat niet kan, gaan we er van uit dat het een 
-			# ongeldige zoekopdracht is, en dan interesseert ons heel de zoek
-			# opdracht niet meer.
+			# When no match for friendly name -> column name is found, ignore the search
 			if (!isset($filterFieldMapping[$tmpFilterFieldname])) {
 				break;
 			} # if
 
-			# valideer eerst de operatoren
+			# make sure the operators are valid
 			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '=', '!='))) {
 				break;
 			} # if
 
-			# een lege zoekopdracht negeren we gewoon, 'empty' kunnen we niet
-			# gebruiken omdat empty(0) ook true geeft, en 0 is wel een waarde
-			# die we willen testen
+			/* 
+			 * Ignore empty searches. We cannot use the empty() operator, 
+			 * because empty(0) evaluates to true but is an valid 
+			 * value to search for
+			 */
 			if (strlen($tmpFilterValue) == 0) {
 				continue;
 			} # if
 
-			#
-			# als het een pure textsearch is, die we potentieel kunnen optimaliseren,
-			# met een fulltext search (engine), voer dan dit pad uit zodat we de 
-			# winst er mee nemen.
-			#
+			/*
+			 * When the search is pure textsearch, it might be able to be optimized
+			 * by utilizing the fulltext search (engine). If so, we take this path
+			 * to gain the most performance.
+			 */
 			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
-				#
-				# Sommige databases (sqlite bv.) willen al hun fulltext searches in een
-				# function aanroep. We zoeken hier dus alle fulltext searchable velden samen
-				# en creeeren de textfilter later in 1 keer.
-				#
+				/*
+				 * Some databases (sqlite for example), want to have all their fulltext
+				 * searches available in one SQL function call. 
+				 *
+				 * To be able to do this, we append all fulltext searches for now, so we
+				 * can create the actual fulltext search later on.
+				 */
 				if (!isset($textSearchFields[$filterFieldMapping[$tmpFilterFieldname]])) {
 					$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]] = array();
 				} # if
 				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots', 'whitelistedspotters'))) {
-				# 
-				# Er zijn speciale veldnamen welke we gebruiken als dummies om te matchen 
-				# met de spotstatelist. Deze veldnamen behandelen we hier
-				#
+				/*
+				 * Some fieldnames are mere dummy fields which map to actual
+				 * functionality. Those dummiefields are processed below
+				 */
 				switch($tmpFilterFieldname) {
 					case 'new' : {
 							$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
@@ -1043,13 +1064,11 @@ class SpotsOverview {
 							
 							break;
 					} # case 'new' 
-
 					case 'whitelistedspotters' : {
 						$tmpFilterValue = ' (wl.spotterid IS NOT NULL)';
 
 						break;
 					} # case 'whitelistedspotters'
-					
 					case 'mypostedspots' : {
 						$additionalJoins[] = array('tablename' => 'spotsposted',
 												   'tablealias' => 'spost',
@@ -1062,7 +1081,6 @@ class SpotsOverview {
 											  'friendlyname' => null);
 						break;
 					} # case 'mypostedspots'
-
 					case 'downloaded' : { 
 						$tmpFilterValue = ' (l.download IS NOT NULL)'; 	
 						$sortFields[] = array('field' => 'downloadstamp',
@@ -1087,22 +1105,20 @@ class SpotsOverview {
 					} # case 'seen'
 				} # switch
 				
-				# en creeer de query string
+				# append the created query string to be an AND filter
 				$filterValueSql['AND'][] = $tmpFilterValue;
 			} else {
-				# Anders is het geen textsearch maar een vergelijkings operator, 
-				# eerst willen we de vergelijking eruit halen.
-				#
-				# De filters komen in de vorm: Veldnaam:Operator:Waarde, bv: 
-				#   filesize:>=:4000000
-				#
+				/*
+				 * No FTS, no dummyfield, it must be some sort of comparison then.
+				 *
+				 * First we want to extract the field we are filtering on.
+				 */
 				if ($tmpFilterFieldname == 'date') {
 					$tmpFilterValue = date("U",  strtotime($tmpFilterValue));
 				} elseif ($tmpFilterFieldname == 'stamp') {
 					$tmpFilterValue = (int) $tmpFilterValue;
 				} elseif (($tmpFilterFieldname == 'filesize') && (is_numeric($tmpFilterValue) === false)) {
-					# We casten expliciet naar float om een afrondings bug in PHP op het 32-bits
-					# platform te omzeilen.
+					# Explicitly cast to float to workaroun a rounding bug in PHP on x86
 					$val = (float) trim(substr($tmpFilterValue, 0, -1));
 					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
 					switch($last) {
@@ -1113,14 +1129,17 @@ class SpotsOverview {
 					$tmpFilterValue = round($val, 0);
 				} # if
 					
-				# als het niet numeriek is, zet er dan een quote by
+				/*
+				 * add quotes around it when not numeric. We cannot blankly always add quotes
+				 * as postgresql doesn't like that of course
+				 */
 				if (!is_numeric($tmpFilterValue)) {
 					$tmpFilterValue = "'" . $this->_db->safe($tmpFilterValue) . "'";
 				} else {
 					$tmpFilterValue = $this->_db->safe($tmpFilterValue);
 				} # if
 
-				# en creeer de query string
+				# depending on the type of search, we either add the filter as an AND or an OR
 				if (in_array($tmpFilterFieldname, array('spotterid', 'userid'))) {
 					$filterValueSql['OR'][] = ' (' . $filterFieldMapping[$tmpFilterFieldname] . ' ' . $tmpFilterOperator . ' '  . $tmpFilterValue . ') ';
 				} else {
@@ -1129,12 +1148,13 @@ class SpotsOverview {
 			} # if
 		} # foreach
 
-		# 
-		# Nu controleren we of we een of meer $textSearchFields hebben waarop we 
-		# eventueel een fulltext search zouden kunnen loslaten. Als we die hebben
-		# vragen we aan de specifiek database engine om deze zoekopdracht te 
-		# optimaliseren.
-		#
+		/*
+		 * When all filters are processed, we want to check wether we actually
+		 * have to process any of the $textSearchFields for which we could run
+		 * the db specific FTS engine.
+		 *
+		 * If so, ask the FTS engin to process the query.
+		 */
 		if (!empty($textSearchFields)) {
 			foreach($textSearchFields as $searchField => $searches) {
 				$parsedTextQueryResult = $this->_db->createTextQuery($searches);
@@ -1156,7 +1176,7 @@ class SpotsOverview {
 	} # filterValuesToSql
 
 	/*
-	 * Genereert de lijst met te sorteren velden
+	 * Converts the sorting as asked to an intermediate format ready for processing
 	 */
 	private function prepareSortFields($sort, $sortFields) {
 		$VALID_SORT_FIELDS = array('category' => 1, 
@@ -1169,17 +1189,21 @@ class SpotsOverview {
 								   'commentcount' => 1);
 
 		if ((!isset($sort['field'])) || (!isset($VALID_SORT_FIELDS[$sort['field']]))) {
-			# We sorteren standaard op stamp, we voegen die sortering als laatste toe
-			# zodat alle andere (eventueel expliciete) sorteringen voorrang krijgt
+			/*
+			 * Add an extra sort on stamp. It might be that a FTS engine or something else,
+			 * has added a requested sorting as well, so make sure we add it to the end of
+			 * sortfields.
+			 */
 			$sortFields[] = array('field' => 's.stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null);
 		} else {
 			if (strtoupper($sort['direction']) != 'ASC') {
 				$sort['direction'] = 'DESC';
 			} # if
-			
-			# Omdat deze sortering expliciet is opgegeven door de user, geven we deze voorrang
-			# boven de automatisch toegevoegde sorteringen en zetten hem dus aan het begin
-			# van de sorteer lijst.
+
+			/*
+			 * Explicit requested sorts, are prepended to the beginning of the array, so
+			 * the user requested sorting always is preferred above any other sorting
+			 */			
 			array_unshift($sortFields, array('field' => 's.' . $sort['field'], 
 											 'direction' => $sort['direction'], 
 											 'autoadded' => false, 
@@ -1191,23 +1215,29 @@ class SpotsOverview {
 	
 	
 	/*
-	 * Comprimeert een expanded category list naar een gecomprimeerd formaat.
-	 * Zie de comments bij prepareCategorySelection() voor uitleg wat dit
-	 * precies betekent
+	 * "Compresses" an expanded category list. It tries to search for the smallest
+	 * (in string length) match which contains the same information.
+	 *
+	 * This function, for example, will translate cat0_z0_a1,cat0_z0_a2,... to a 
+	 * simple cat0_z0_a string and other nifty tricks.
+	 *
+	 * This is wanted to get cleaner urls, to be more efficient when parsing and
+	 * to be able to lessen the change we will hit the GET HTTP url limit.
+	 *
 	 */
 	function compressCategorySelection($categoryList, $strongNotList) {
 		SpotTiming::start(__FUNCTION__);
 		$compressedList = '';
 
-		#
-		# Nu, we gaan feitelijk elke category die we hebben en elke subcategory daaronder
-		# aflopen om te zien of alle vereiste elementen er zijn. Als die er zijn, dan unsetten we
-		# die in $categoryList en voegen de compressede manier toe.
-		#
+		/*
+		 * We process each category, and the matching subcategories, to make sure all
+		 * required elments are set. If so, we remove the individual elements and
+		 * add the shorthand for it.
+		 */
 		foreach(SpotCategories::$_head_categories as $headCatNumber => $headCatValue) {
 			$subcatsMissing = array();
 
-			# loop door elke subcategorie heen 
+			# match each subcategory
 			if (isset($categoryList['cat'][$headCatNumber])) {
 				$subcatsMissing[$headCatNumber] = array();
 
@@ -1217,11 +1247,11 @@ class SpotsOverview {
 					foreach(SpotCategories::$_categories[$headCatNumber] as $subCat => $subcatValues) {
 						if ($subCat !== 'z') {
 							if (isset($categoryList['cat'][$headCatNumber][$subCatType][$subCat])) {
-								# en loop door de subcategorie waardes heen om te zien of er daar missen
+								# process all subcategory values to see if any are missing
 								foreach(SpotCategories::$_categories[$headCatNumber][$subCat] as $subcatValue => $subcatDescription) {
-									# Make sure this subcat is available for this type
+									# Make sure the subcategory is actually avaialble for this type
 									if (in_array($subCatType, $subcatDescription[2])) {
-										# Is de category item in deze hoofdcategory's subcategory beschikbaar
+										# and if the subcat element is missing, add it to the missing list
 										if (array_search($subcatValue, $categoryList['cat'][$headCatNumber][$subCatType][$subCat]) === false) {
 											$subcatsMissing[$headCatNumber][$subCatType][$subCat][$subcatValue] = 1;
 										} # if
@@ -1239,34 +1269,42 @@ class SpotsOverview {
 //var_dump(expression)($subcatsMissing);
 //die();
 
-				#
-				# Niet de hele hoofdgroep is geselecteerd, dan selecteren we met de hand
-				# handmatig de verschillende subcategorieen.
-				#
+				/*
+				 * If not the complete headcategory has been selected, we have to
+				 * do a tiny bit more work to get the exact match
+				 */
 				if (!empty($subcatsMissing[$headCatNumber])) {
-					# Er kunnen drie situaties zijn:
-					# - de subcategorie bestaat helemaal niet, dan selecteren we heel de subcategorie.
-					# - de subcategorie bestaat maar is leeg, dan willen we er niets uit hebben
-					# - de subcategorie bestaat, maar is niet leeg. Dan bevat het de items die we NIET willen hebben
+					/*
+					 * There are three possible situations:
+					 *
+					 * - the subcategory does not exist at all, we select the complete subcategory
+					 * - the subcategory exists, but is empty. It means we do not want anything out of it
+					 * - the subcategory exists, and is not empty. The items in it, are the items we do not want
+					 */
 					foreach($categoryList['cat'][$headCatNumber] as $subType => $subTypeValue) {
-						#
-						# Is heel de hoofdcat+subtype (cat0_z0, cat0_z1) geselecteerd?
-						#
+						/*
+						 * Check wether the complete headcat+subtype (cat0_z0, cat0_z1) is selected
+						 */
 						if (!empty($subcatsMissing[$headCatNumber][$subType])) {
 							foreach(SpotCategories::$_subcat_descriptions[$headCatNumber] as $subCatKey => $subCatValue) {
 								if ($subCatKey !== 'z') {
 									if (!isset($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
 										// $compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
 									} elseif (empty($subcatsMissing[$headCatNumber][$subType][$subCatKey])) {
-										# Als de subcategorie helemaal leeg is, dan wil de 
-										# gebruiker er niets uit hebben
+										/*
+										 * If the subcategory is completely empty, the user doesn't
+										 * want anything from it
+										 */
 									} else {
-										# De subcategorie bestaat, maar bevat enkele items die de
-										# gebruiker niet wil hebben. Die pikken we er hier uit.
-										#
-										# Afhankelijk of de user meer dan de helft wel of niet 
-										# geselecteerd heeft, voegen we hier not's toe of juist niet
-										#
+										/*
+										 * The subcategory does exist, but contains only items
+										 * the user doesn't want or need. We deselected them here.
+										 *
+										 * We can either add the whole category, and add a few 
+										 * "NOT"'s (!cat0_z0_a1) or just selected the individual 
+										 * items. We determine this whether the majority is 
+										 * selected or excluded.
+										 */
 										$moreFalseThanTrue = (count(@$subcatsMissing[$headCatNumber][$subType][$subCatKey]) > (count(@SpotCategories::$_categories[$headCatNumber][$subCatKey][$subCatValue]) / 2));
 										foreach(SpotCategories::$_categories[$headCatNumber][$subCatKey] as $subCatValue => $subCatDesc) {
 											if (in_array($subType, $subCatDesc[2])) {
@@ -1276,13 +1314,15 @@ class SpotsOverview {
 													} # if
 												} else {
 													if (isset($subcatsMissing[$headCatNumber][$subType][$subCatKey][$subCatValue])) {
-														# We moeten zeker er van zijn dat heel de categorie geselecteerd is, dus daar
-														# checken we extra op
+														/*
+														 * We have to make sure the whole category is selected, so we perform an
+														 * extra check for it
+														 */
 														if (strpos(',' . $compressedList . ',', ',cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',') === false) {
 															$compressedList .= 'cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . ',';
 														} # if
 														
-														# en 'deselecteer' nu de category
+														# and start deselecting the subcategories
 														$compressedList .= '!cat' . $headCatNumber . '_' . $subType . '_' . $subCatKey . $subCatValue . ',';
 													} # if
 												} # if
@@ -1302,7 +1342,7 @@ class SpotsOverview {
 			} # if
 		} # foreach
 
-		# en voeg de strong not lijst toe
+		# and of course, add the strong not list
 		if (!empty($strongNotList)) {
 			foreach($strongNotList as $headCat => $subcatList) {
 				foreach($subcatList as $subcatValue) {
@@ -1317,8 +1357,8 @@ class SpotsOverview {
 	} # compressCategorySelection
 
 	/*
-	 * Converteer een array met search termen (tree, type en value) naar een SQL
-	 * statement dat achter een WHERE geplakt kan worden.
+	 * Converts an array with search terms (tree, type, valus) to an SQL statement
+	 * to be glued to an SQL WHERE query
 	 */
 	function filterToQuery($search, $sort, $currentSession, $indexFilter) {
 		SpotTiming::start(__FUNCTION__);
@@ -1339,7 +1379,7 @@ class SpotsOverview {
 		$additionalJoins = array();
 		$sortFields = array();
 		
-		# Als er geen enkele filter opgegeven is, filteren we niets
+		# Take the easy way out of no filters have been given
 		if (empty($search)) {
 			return array('filter' => '',
 						 'search' => array(),
@@ -1353,36 +1393,39 @@ class SpotsOverview {
 					     'sortFields' => array(array('field' => 'stamp', 'direction' => 'DESC', 'autoadded' => true, 'friendlyname' => null)));
 		} # if
 
-		#
-		# Verwerk de parameters in $search (zowel legacy parameters, als de nieuwe 
-		# type filter waardes), naar een array met filter waarden
-		#
+		/*
+		 * Process the parameters in $search, legacy parameters are converted
+		 * to a common format by prepareFilterValues, this list is then
+		 * converted to SQL
+		 */
 		$filterValueList = $this->prepareFilterValues($search);
 		list($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields) = $this->filterValuesToSql($filterValueList, $currentSession);
 
-		# als er gevraagd om de filters te vergeten (en enkel op het woord te zoeken)
-		# resetten we gewoon de boom
+		/*
+		 * When asked to forget all category filters (and only search for a word/typefilter)
+		 * we simply reset the filter by overwriting $search with $indexfilter
+		 */
 		if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
 			$search = array_merge($search, $indexFilter);
 			$isUnfiltered = true;
 		} # if
-		
-		# 
-		# Vertaal nu een eventueel opgegeven boom naar daadwerkelijke subcategorieen
-		# en dergelijke
-		#
+
+		/*
+		 * If a tree was given, convert it to subcategories etc. 
+		 * prepareCategorySelection() makes sure all categories eventually
+		 * are in a common format
+		 */		
 		if (!empty($search['tree'])) {
 			# explode the dynaList
 			$dynaList = explode(',', $search['tree']);
 			list($categoryList, $strongNotList) = $this->prepareCategorySelection($dynaList);
 
-			# en converteer de lijst met subcategorieen naar een lijst met SQL
-			# filters
+			# and convert to SQL
 			$categorySql = $this->categoryListToSql($categoryList);
 			$strongNotSql = $this->strongNotListToSql($strongNotList);
 		} # if
 
-		# Kijk nu of we nog een expliciete sorteermethode moeten meegeven 
+		# Check for an explicit sorting convention
 		$sortFields = $this->prepareSortFields($sort, $sortFields);
 
 		$endFilter = array();
@@ -1414,4 +1457,4 @@ class SpotsOverview {
 		$this->_activeRetriever = $b;
 	} # setActiveRetriever
 
-} # class SpotOverview
+} # class SpotsOverview
