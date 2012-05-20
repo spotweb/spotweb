@@ -397,7 +397,7 @@ msgid "Sort on title [0-Z]"
 msgstr "Sorteren op titel [0-Z]"
 
 msgid "Sort on title [Z-0]"
-msgstr "Sorten op titel [Z-0]"
+msgstr "Sorteren op titel [Z-0]"
 
 msgid "Sort on age [ascending]"
 msgstr "Sorteren op Leeftijd [oplopend]"
@@ -406,10 +406,10 @@ msgid "Sort on age [descending]"
 msgstr "Sorteren op Leeftijd [aflopend]"
 
 msgid "Sort on size [ascending]"
-msgstr "Sorteren op omvang [aflopend]"
+msgstr "Sorteren op omvang [oplopend]"
 
 msgid "Sort on size [descending]"
-msgstr "Sorten op omvang [aflopend]"
+msgstr "Sorteren op omvang [aflopend]"
 
 msgid "Number of comments"
 msgstr "Aantal reacties"
