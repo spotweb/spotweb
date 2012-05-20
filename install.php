@@ -248,7 +248,9 @@
 							$form['hdr']['pass'] = $form['pass'];
 							if ( (string) $server->header['ssl'] == 'yes') {
 								$form['hdr']['enc'] = 'ssl';
-							} # if
+							} else {
+								$form['hdr']['enc'] = false;
+							} # else
 							$form['hdr']['port'] = (int) $server->header['port'];
 							$form['hdr']['buggy'] = (boolean) $server['buggy'];
 
@@ -258,7 +260,9 @@
 							$form['nzb']['pass'] = $form['pass'];
 							if ( (string) $server->nzb['ssl'] == 'yes') {
 								$form['nzb']['enc'] = 'ssl';
-							} # if
+							} else {
+								$form['nzb']['enc'] = false;
+							} # else
 							$form['nzb']['port'] = (int) $server->nzb['port'];
 							$form['nzb']['buggy'] = (boolean) $server['buggy'];
 
@@ -268,7 +272,9 @@
 							$form['post']['pass'] = $form['pass'];
 							if ( (string) $server->post['ssl'] == 'yes') {
 								$form['post']['enc'] = 'ssl';
-							} # if
+							} else {
+								$form['post']['enc'] = false;
+							} # else
 							$form['post']['port'] = (int) $server->post['port'];
 							$form['post']['buggy'] = (boolean) $server['buggy'];
 						} # if
