@@ -651,8 +651,8 @@ class SpotTemplateHelper {
 		} # if
 		
 		# Bouwen de search[tree] value op
-		return '&amp;search[tree]=' . $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
-														$this->_params['parsedsearch']['strongNotList']);
+		return '&amp;search[tree]=' . urlencode($this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+														$this->_params['parsedsearch']['strongNotList']));
 	} # convertTreeFilterToQueryParams
 
 	/*
@@ -667,7 +667,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . $value['fieldname'] . ':' . $value['operator'] . ':' . htmlspecialchars($value['value'], ENT_QUOTES, "utf-8");
+			$filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . urlencode(htmlspecialchars($value['value'], ENT_QUOTES, "utf-8"));
 		} # foreach
 
 		return $filterStr;
@@ -709,7 +709,7 @@ class SpotTemplateHelper {
 		$activeSort = $this->getActiveSorting();
 		
 		if (!empty($activeSort['field'])) {
-			return '&amp;sortby=' . $activeSort['friendlyname'] . '&amp;sortdir=' . $activeSort['direction'];
+			return '&amp;sortby=' . urlencode($activeSort['friendlyname']) . '&amp;sortdir=' . urlencode($activeSort['direction']);
 		} # if
 		
 		return '';
