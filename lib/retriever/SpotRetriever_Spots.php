@@ -211,7 +211,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 
-						# is this one of the defined valid comments?
+						# is this one of the defined valid commands?
 						if (in_array($commandAr[0], $validCommands) !== false) {
 							$moderationList[] = $commandAr[1];
 							$modCount++;

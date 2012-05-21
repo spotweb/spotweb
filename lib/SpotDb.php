@@ -1366,7 +1366,7 @@ class SpotDb {
 
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId => $v) {
+		foreach($commentMsgIdList as $spotMsgId) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
@@ -1385,7 +1385,7 @@ class SpotDb {
 
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId => $v) {
+		foreach($spotMsgIdList as $spotMsgId) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
@@ -1427,7 +1427,7 @@ class SpotDb {
 
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId => $v) {
+		foreach($spotMsgIdList as $spotMsgId) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
@@ -1445,7 +1445,7 @@ class SpotDb {
 
 		# bereid de lijst voor met de queries in de where
 		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId => $v) {
+		foreach($commentMsgIdList as $spotMsgId) {
 			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
 		} # foreach
 		$msgIdList = substr($msgIdList, 0, -2);
