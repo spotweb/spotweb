@@ -643,8 +643,11 @@ msgstr "Menselijk"
 msgid "Template"
 msgstr "Template"
 
-msgid "Count new spots in filterd list"
+msgid "Count new spots in filter list"
 msgstr "Nieuwe Spots tellen in de lijst met filters"
+
+msgid "Show subcats on mouseover in spots list"
+msgstr "Subcategorieen tonen in lijst met spots"
 
 msgid "Track what you're watching"
 msgstr "Bijhouden wat je bekijkt"
@@ -807,6 +810,9 @@ msgstr "Bericht versturen wanneer een gebruiker is toegevoegd?"
 
 msgid "Show avatars in the comments?"
 msgstr "Avatars tonen in de reacties?"
+
+msgid "Avatar image to use in posting of comments (maximum 4000 bytes)"
+msgstr "Avatar afbeelding om te gebruiken bij het plaatsen van comments (maximum 4000 bytes)"
 
 #: filters.inc.php
 msgid "MultiNZB"
