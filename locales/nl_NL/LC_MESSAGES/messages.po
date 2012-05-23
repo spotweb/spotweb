@@ -531,6 +531,9 @@ msgstr "Andere server om te posten opgeven?"
 msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
 msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen."
 
+msgid "Retention is for either everything or only the cached data"
+msgstr "Retentie op spots is voor alles, of alleen voor de gecachede data"
+
 msgid "Retrieve spots after... Select November 1, 2009 to fetch all spots"
 msgstr "Spots ophalen na... Selecteer 1 november 2009 om alle spots op te halen"
 
@@ -546,11 +549,20 @@ msgstr "Plaatjes prefetchen (vergt veel geheugen)"
 msgid "Prefetch NZB files (quires a lot of memory)"
 msgstr "NZB bestanden prefetchen (vergt veel geheugen)"
 
+msgid "Retrieve full spots"
+msgstr "Spots volledig ophalen"
+
+msgid "Prefetch images"
+msgstr "Afbeeldingen van te voren ophalen"
+
+msgid "Prefetch NZB files"
+msgstr "NZB bestanden van te voren ophalen"
+
 msgid "Retrieve comments"
 msgstr "Comments ophalen"
 
-msgid "Retrieve full comments. This makes retrieval a lot slower."
-msgstr "Comments volledig ophalen. Dit maakt het ophalen van spots een stuk langzamer."
+msgid "Retrieve full comments"
+msgstr "Comments volledig ophalen"
 
 msgid "Retrieve reports"
 msgstr "Reports ophalen"
@@ -593,6 +605,9 @@ msgstr "Statistieken voorbereiden tijdens spots ophalen"
 
 msgid "Fetch the external blacklist during retrieve"
 msgstr "Externe blacklist bijwerken tijdens spots ophalen"
+
+msgid "Fetch the external whitelist during retrieve"
+msgstr "Externe whitelist bijwerken tijdens spots ophalen"
 
 #: editusersprefs.inc.php
 msgid "Language to use in Spotweb"
