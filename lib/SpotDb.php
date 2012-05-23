@@ -326,11 +326,9 @@ class SpotDb {
 	/*
 	 * Checkt of een username al bestaat
 	 */
-	function usernameExists($username) {
-		$tmpResult = $this->_conn->singleQuery("SELECT username FROM users WHERE username = '%s'", Array($username));
-		
-		return (!empty($tmpResult));
-	} # usernameExists
+	function findUserIdForName($username) {
+		return $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($username));
+	} # findUserIdForName
 
 	/*
 	 * Checkt of een emailaddress al bestaat

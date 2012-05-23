@@ -19,7 +19,7 @@ try {
 	 */
 	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups', 'reset-filters'), 
 								array('reset-groupmembership' => false, 'reset-securitygroups' => false, 'reset-filters' => false,
-									  'set-systemtype' => false));
+									  'set-systemtype' => false, 'reset-password' => false));
 	if (!SpotCommandline::isCommandline()) {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
@@ -43,6 +43,15 @@ try {
 		echo "Resetting the system type of Spotweb to " . SpotCommandline::get('set-systemtype') . PHP_EOL;
 		$spotUpgrader->resetSystemType(SpotCommandline::get('set-systemtype'));
 		echo "System type changed" . PHP_EOL;
+	} # if
+
+	/* 
+	 * If the user asked to reset the password of a user
+	 */
+	if (SpotCommandline::get('reset-password')) {
+		echo "Resetting the password of '". SpotCommandline::get('reset-password') . "' to 'spotweb'" . PHP_EOL;
+		$spotUpgrader->resetPassword(SpotCommandline::get('reset-password'));
+		echo "Password changed" . PHP_EOL;
 	} # if
 
 	/* If the user asked to reset group membership, reset all group memberships */

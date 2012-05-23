@@ -115,5 +115,17 @@ class SpotUpgrader {
 		$spotUserUpgrader->resetUserGroupMembership($systemType);
 	} # resetSystemType
 
+	/*
+	 * Reset a users' password
+	 */
+	function resetPassword($username) {
+		# Create the settings object
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+
+		# retrieve the userid
+		$spotUserUpgrader->resetUserPassword($username, 'spotweb');
+	} # resetPassword
+
 } # SpotUpgrader
 

@@ -66,6 +66,32 @@ class SpotUserUpgrader {
 	} # createAnonymous
 
 	/*
+	 * Create a password hash. Duplicate with
+	 * SpotUserSystem but we cannot rely on that one
+	 * to be available for the moment
+	 */
+	function passToHash($password) {
+		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $password . $this->_settings->get('pass_salt'));
+	} # passToHash
+
+
+	/*
+	 * Resets a given users' password
+	 */
+	function resetUserPassword($username, $password) {
+		$userId = $this->_db->findUserIdForName($username);
+		if (empty($userId)) {
+			throw new Exception("Username cannot be found to reset password for");
+		} # if
+
+		# Retrieve the actual userid
+		$user = $this->_db->getUser($userId);
+
+		# update the password
+		$user['passhash'] = $this->passToHash($password);
+		$this->_db->setUserPassword($user);
+	} # resetUserPassword
+	/*
 	 * Create the admin user 
 	 */
 	function createAdmin($firstName, $lastName, $password, $mail) {
@@ -78,11 +104,8 @@ class SpotUserUpgrader {
 		# DB connection
 		$dbCon = $this->_db->getDbHandle();
 
-		# Retrieve the password salt from the settings
-		$passSalt = $this->_settings->get('pass_salt');
-		
 		# calculate the password salt for the admin user
-		$adminPwdHash = sha1(strrev(substr($passSalt, 1, 3)) . $password . $passSalt);
+		$adminPwdHash = $this->passToHash($password);
 		
 		# Create an Spotweb API key. It cannot be used but should not be empty
 		$apikey = md5('admin');

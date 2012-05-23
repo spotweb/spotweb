@@ -135,7 +135,9 @@ class SpotUserSystem {
 	} # useOrStartSession
 
 	/*
-	 * Password to hash
+	 * Password to hash. Duplicated in SpotUserUpgrader
+	 * but we cannot rely on this class always being available
+	 * already
 	 */
 	function passToHash($password) {
 		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $password . $this->_settings->get('pass_salt'));
