@@ -534,6 +534,12 @@ msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecte
 msgid "Retention is for either everything or only the cached data"
 msgstr "Retentie op spots is voor alles, of alleen voor de gecachede data"
 
+msgid "Remove everything"
+msgstr "Verwijder alles"
+
+msgid "Only extra data but keep spots"
+msgstr "Alleen extra data maar behoud spots"
+
 msgid "Retrieve spots after... Select November 1, 2009 to fetch all spots"
 msgstr "Spots ophalen na... Selecteer 1 november 2009 om alle spots op te halen"
 
