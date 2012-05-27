@@ -1562,6 +1562,18 @@ class SpotDb {
 	} # addSpot()
 
 	/*
+	 * Update the spots table with some information contained in the 
+	 * fullspots information. 
+	 *
+	 * Some information in the fullspot is more reliable because 
+	 * more fidelity encoding.
+	 */
+	function updateSpotInfoFromFull($fullSpot) {
+		$this->_conn->modify("UPDATE spots SET title = '%s', spotterid = '%s' WHERE messageid = '%s'",
+							Array($fullSpot['title'], $fullSpot['spotterid'], $fullSpot['messageid']));
+	} # updateSpotInfoFromFull
+
+	/*
 	 * Voeg enkel de full spot toe aan de database, niet gebruiken zonder dat er een entry in 'spots' staat
 	 * want dan komt deze spot niet in het overzicht te staan.
 	 */

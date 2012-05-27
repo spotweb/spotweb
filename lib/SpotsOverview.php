@@ -59,6 +59,11 @@ class SpotsOverview {
 		if ((empty($fullSpot['spotterid'])) && ($fullSpot['verified'])) {
 			$spotSigning = new SpotSigning($this->_db, $this->_settings);
 			$fullSpot['spotterid'] = $spotSigning->calculateSpotterId($fullSpot['user-key']['modulo']);
+
+			/* 
+			 * Update the spotterid in the spots table so it can be filtered later on
+			 */
+			$this->_db->updateSpotInfoFromFull($fullSpot);
 		} # if
 
 		/*
