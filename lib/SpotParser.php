@@ -385,7 +385,7 @@ class SpotParser {
 			 *
 			 * Try to extract this information.
 			 */
-			if (($spot['verified']) && (!empty($spot['user-signature'])) && (empty($spot['selfsignedpubkey']))) {
+			if (($spot['verified']) && (!empty($spot['user-signature'])) && (!empty($spot['selfsignedpubkey']))) {
 				/*
 				 * Extract the public key
 				 */
