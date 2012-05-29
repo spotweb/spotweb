@@ -495,7 +495,7 @@ class SpotUserSystem {
 		
 		# Define several arrays with valid settings
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
-		$validTemplates = array('we1rdo');
+		$validTemplates = array_keys($this->_settings->get('valid_templates'));
 		$validDefaultSorts = array('', 'stamp');
 		$validLanguages = array_keys($this->_settings->get('system_languages'));
 		

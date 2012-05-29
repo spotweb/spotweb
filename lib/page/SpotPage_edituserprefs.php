@@ -85,6 +85,11 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					# Validate all preferences
 					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
 
+					# Make sure user has permission to select this template
+					if ($spotUser['prefs']['template'] == $savePrefs['template']) {
+						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['template']);
+					} # if
+
 					if (empty($formMessages['errors'])) {
 						# Make sure an NZB file was provided
 						if (isset($_FILES['edituserprefsform'])) {

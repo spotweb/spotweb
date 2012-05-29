@@ -1142,4 +1142,11 @@ class SpotTemplateHelper {
 		return $this->_settings->get('system_languages');
 	} # getConfiguredLanguages
 
+	/*
+	 * Returns an array with configured templates for this system
+	 */
+	function getConfiguredTemplates() {
+		return $this->_settings->get('valid_templates');
+	} # getConfiguredTemplates
+
 } # class SpotTemplateHelper

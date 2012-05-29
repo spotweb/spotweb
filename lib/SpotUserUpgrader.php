@@ -392,6 +392,14 @@ class SpotUserUpgrader {
 		if (($forceReset) || ($this->_settings->get('securityversion') < 0.28)) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_types . ", 'newspots_for_filter')");
 		} # if
+
+		########################################################################
+		## Security level 0.29
+		########################################################################
+		if (($forceReset) || ($this->_settings->get('securityversion') < 0.29)) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'we1rdo')");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'mobile')");
+		} # if
 	} # updateSecurityGroups
 
 	/*

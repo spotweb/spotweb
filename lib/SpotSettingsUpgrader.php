@@ -73,6 +73,10 @@ class SpotSettingsUpgrader {
 				));
 		$this->setIfNot('nonauthenticated_userid', 1);
 		$this->setIfNot('custom_admin_userid', 2); 
+		$this->setIfNot('valid_templates', 
+				array(
+						'we1rdo' => 'we1rdo'
+				));; 
 
 		$this->updateSettingsVersion();
 	} # update()

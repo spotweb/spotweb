@@ -4,9 +4,28 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Sun, 6 May 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Sun, 6 May 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Tue, 29 May 2012 00:00:00 +0100</lastBuildDate>
+		<pubDate>Tue, 29 May 2012 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+
+		<item>
+			<title>Added permissions for specific templates</title>
+			<description><![CDATA[Selecting a template can now be restricted by permissions. For each template a user is allowed
+				to be selected it has to have permission 23 with the appropriate permission id.<br />
+				After a run of <i>upgrade-db.php</i> the permissions for the default templates are automaticaly added. 
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Sun, 29 May 2012 00:00:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.23</spotweb:settings_version>
+			<spotweb:security_version>0.29</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
+
 
 		<item>
 			<title>Installer changes</title>

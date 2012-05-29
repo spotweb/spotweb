@@ -112,18 +112,18 @@ if (!$dialogembedded) { ?>
 						</select>
 					</dd>
 					
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_select_template, '')) { ?>					
 					<dt><label for="edituserprefsform[template]"><?php echo _('Template');?></label></dt>
 					<dd>
 						<select name="edituserprefsform[template]">
-							<option <?php if ($edituserprefsform['template'] == 'we1rdo') { echo 'selected="selected"'; } ?> value="we1rdo" selected>we1rdo (standaard)</option>
-<!--
-	Deze zijn uitgecommentarieerd omdat als je deze kiest, je niet meer terug kan aangezien beide
-	templates geen edit-preferences geimplementeerd hebben
-	
-							<option value="mobile">Mobile</option>
--->
+							<?php foreach($tplHelper->getConfiguredTemplates() as $tplkey => $tplvalue) { ?>
+								<?php if ($tplHelper->allowed(SpotSecurity::spotsec_select_template, $tplkey)) { ?>					
+									<option <?php if ($edituserprefsform['template'] == $tplkey) { echo 'selected="selected"'; } ?> value="<?php echo $tplkey; ?>"><?php echo $tplvalue; ?></option>
+								<?php } ?> 
+							<?php } ?> 
 						</select>
 					</dd>
+<?php } ?>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotcount_filtered, '')) { ?>					
 					<dt><label for="edituserprefsform[count_newspots]"><?php echo _('Count new spots in filter list'); ?></label></dt>
