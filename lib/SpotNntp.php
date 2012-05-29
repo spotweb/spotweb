@@ -384,7 +384,7 @@ class SpotNntp {
 				 * Create an unique messageid and store it so we can return it
 				 * for the actual Spot creation
 				 */
-				$message['newmessageid'] = $spotSigning->makeRandomStr(25) . '@spot.net';
+				$message['newmessageid'] = $spotSigning->makeRandomStr(32) . '@spot.net';
 				$message['title'] = md5($message['body']);
 
 				$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";

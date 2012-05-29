@@ -18,6 +18,7 @@ if (empty($postresult)) {
 		<input type="hidden" name="newspotform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('newspotform'); ?>">
 		<input type="hidden" name="newspotform[newmessageid]" value="">
 		<input type="hidden" name="newspotform[submitpost]" value="Post">
+		<input type="hidden" name="newspotform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(12); ?>">
 		<fieldset>
 
 		<div>
