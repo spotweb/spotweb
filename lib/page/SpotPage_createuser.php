@@ -53,7 +53,8 @@ class SpotPage_createuser extends SpotPage_Abs {
 			$formMessages['errors'] = $spotUserSystem->validateUserRecord($spotUser, false);
 
 			# Is er geen andere user met dezelfde username?
-			if (!empty($this->_db->findUserIdForName($spotUser['username']))) {
+			$userIdForName = $this->_db->findUserIdForName($spotUser['username']);
+			if (!empty($userIdForName)) {
 				$formMessages['errors'][] = sprintf(_("'%s' already exists"), $spotUser['username']);
 			} # if
 			
