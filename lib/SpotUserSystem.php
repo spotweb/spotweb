@@ -53,7 +53,8 @@ class SpotUserSystem {
 						 'userid' => $userid,
 						 'hitcount' => 1,
 						 'lasthit' => time(),
-						 'ipaddr' => $this->determineUsersIpAddress()
+						 'ipaddr' => $this->determineUsersIpAddress(),
+						 'devicetype' => $this->determineDeviceType()
 						 );
 
 		/*
@@ -125,6 +126,15 @@ class SpotUserSystem {
 		$spotSec = new SpotSecurity($this->_db, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 		$userSession['security'] = $spotSec;
 		
+		/* 
+		 * Determine the users' template name
+		 */
+		switch($userSession['session']['devicetype']) {
+			case 'mobile'	: $userSession['active_tpl'] = $userSession['user']['prefs']['mobile_template']; break; 
+			case 'tablet'	: $userSession['active_tpl'] = $userSession['user']['prefs']['tablet_template']; break; 
+			default			: $userSession['active_tpl'] = $userSession['user']['prefs']['normal_template']; break; 
+		} # switch
+
 		/*
 		 * And always update the cookie even if one already exists,
 		 * this prevents the cookie from expiring all of a sudden
@@ -225,7 +235,7 @@ class SpotUserSystem {
 	 * Checks whether an given session is valid. If the session
 	 * is valid, this function returns an userrecord
 	 */
-	function validSession($sessionCookie) {
+	private function validSession($sessionCookie) {
 		$sessionParts = explode(".", $sessionCookie);
 		if (count($sessionParts) != 2) {
 			return false;
@@ -510,7 +520,15 @@ class SpotUserSystem {
 			$errorList[] = _('Invalid user preference value (date_formatting)');
 		} # if
 		
-		if (in_array($prefs['template'], $validTemplates) === false) { 	
+		if (in_array($prefs['normal_template'], $validTemplates) === false) { 	
+			$errorList[] = _('Invalid user preference value (template)');
+		} # if
+
+		if (in_array($prefs['mobile_template'], $validTemplates) === false) { 	
+			$errorList[] = _('Invalid user preference value (template)');
+		} # if
+
+		if (in_array($prefs['tablet_template'], $validTemplates) === false) { 	
 			$errorList[] = _('Invalid user preference value (template)');
 		} # if
 
@@ -1277,5 +1295,20 @@ class SpotUserSystem {
 			return "N/A";
 		} # if
 	} # determineUsersIpAddress
+
+	/* 
+	 * Returns a string depending on the device type.
+	 */
+	 function determineDeviceType() {
+	 	$mobDetect = new Mobile_Detect();
+
+	 	if ($mobDetect->isMobile()) {
+	 		return "mobile";
+	 	} elseif ($mobDetect->isTablet()) {
+	 		return "tablet";
+	 	} else {
+	 		return "full";
+	 	} # else
+	} # determineDeviceType
 	
 } # class SpotUserSystem

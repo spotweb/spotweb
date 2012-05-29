@@ -259,7 +259,8 @@ class SpotDb {
 								s.userid as userid,
 								s.hitcount as hitcount,
 								s.lasthit as lasthit,
-								s.ipaddr as ipaddr
+								s.ipaddr as ipaddr,
+								s.devicetype as devicetype
 						FROM sessions AS s
 						WHERE (sessionid = '%s') AND (userid = %d)",
 				 Array($sessionid,
@@ -276,13 +277,14 @@ class SpotDb {
 	 */
 	function addSession($session) {
 		$this->_conn->modify(
-				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit, ipaddr) 
-					VALUES('%s', %d, %d, %d, '%s')",
+				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit, ipaddr, devicetype) 
+					VALUES('%s', %d, %d, %d, '%s', '%s')",
 				Array($session['sessionid'],
 					  (int) $session['userid'],
 					  (int) $session['hitcount'],
 					  (int) $session['lasthit'],
-					  $session['ipaddr']));
+					  $session['ipaddr'],
+					  $session['devicetype']));
 	} # addSession
 
 	/*
@@ -421,7 +423,7 @@ class SpotDb {
 								COALESCE(MAX(ss.lasthit), MAX(u.lastvisit)) AS lastvisit,
 								MAX(ipaddr) AS lastipaddr
 							FROM users AS u
-							LEFT JOIN (SELECT userid, lasthit, ipaddr FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
+							LEFT JOIN (SELECT userid, lasthit, ipaddr, devicetype FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
 							WHERE (deleted = '%s')
 							GROUP BY u.id, u.username", array($this->bool2dt(false)));
 

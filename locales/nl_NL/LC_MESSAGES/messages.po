@@ -661,8 +661,14 @@ msgstr "Opmaak van datums"
 msgid "Human"
 msgstr "Menselijk"
 
-msgid "Template"
-msgstr "Template"
+msgid "Template for non-mobile devices"
+msgstr "Template voor niet-mobiele apparaten"
+
+msgid "Template for mobiles"
+msgstr "Template voor telefoons"
+
+msgid "Template for tablets"
+msgstr "Template voor tablets"
 
 msgid "Count new spots in filter list"
 msgstr "Nieuwe Spots tellen in de lijst met filters"

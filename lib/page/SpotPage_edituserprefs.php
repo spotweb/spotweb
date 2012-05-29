@@ -86,8 +86,16 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
 
 					# Make sure user has permission to select this template
-					if ($spotUser['prefs']['template'] == $savePrefs['template']) {
-						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['template']);
+					if ($spotUser['prefs']['normal_template'] == $savePrefs['normal_template']) {
+						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['normal_template']);
+					} # if
+
+					if ($spotUser['prefs']['mobile_template'] == $savePrefs['mobile_template']) {
+						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['mobile_template']);
+					} # if
+
+					if ($spotUser['prefs']['tablet_template'] == $savePrefs['tablet_template']) {
+						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['tablet_template']);
 					} # if
 
 					if (empty($formMessages['errors'])) {

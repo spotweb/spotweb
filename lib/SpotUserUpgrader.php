@@ -200,7 +200,9 @@ class SpotUserUpgrader {
 			# set the users' preferences
 			$this->setSettingIfNot($user['prefs'], 'perpage', 25);
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
-			$this->setSettingIfNot($user['prefs'], 'template', 'we1rdo');
+			$this->setSettingIfNot($user['prefs'], 'normal_template', 'we1rdo');
+			$this->setSettingIfNot($user['prefs'], 'mobile_template', 'we1rdo');
+			$this->setSettingIfNot($user['prefs'], 'tablet_template', 'we1rdo');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
             $this->setSettingIfNot($user['prefs'], 'mouseover_subcats', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_seenlist', true);
@@ -260,6 +262,7 @@ class SpotUserUpgrader {
 
 			# Remove deprecated preferences
 			$this->unsetSetting($user['prefs'], 'search_url');
+			$this->unsetSetting($user['prefs'], 'template');
 			$this->unsetSetting($user['prefs']['notifications'], 'libnotify');
 			
 			# Make sure the user has a valid RSA key

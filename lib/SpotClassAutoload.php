@@ -18,9 +18,16 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
+		case 'Mobile'		: {
+			if ($class_name == 'Mobile_Detect') {
+				require_once "Mobile_Detect.php";
+			} # if
+
+			break;
+		} # 'Mobile'
 		case 'SpotTemplateHelper' : {
 			$tpl_name = substr($class_name, strlen('SpotTemplateHelper_'));
-			
+
 			require_once "templates/" . strtolower($tpl_name) . "/" . "SpotTemplateHelper_" . ucfirst($tpl_name) . ".php";
 		} # SpotTemplateHelper
 		case 'Net'			: { 

@@ -12,14 +12,6 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
 # extensie geinstalleerd hebt
 $settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
 
-# waar moeten we de templates vinden?
-# zet eerst de standaard waarden...
-# deze kunnen in de ownsettings nog worden aangepast.
-# het detecteren komt pas na het laden van de ownsettings.
-$settings['templates']['autodetect'] = true;
-$settings['templates']['default'] = 'we1rdo';
-$settings['templates']['mobile'] = 'mobile';
-
 # Cookie host
 if (isset($_SERVER['HTTP_HOST'])) {
 	// Strip leading periods
@@ -95,25 +87,6 @@ if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'][] = Array('Documentation', "help", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''), null);
 } # if isset
 
-#
-# Ga nu de template zetten
-#
-
-if (($settings['templates']['autodetect']) && 
-	(isset($_SERVER['HTTP_USER_AGENT'])) &&
-	(isset($_SERVER['HTTP_ACCEPT'])) ) {
-		include_once('Mobile_Detect.php');
-		$detect = new Mobile_Detect();
-
-		if ($detect->isMobile()) {
-			$settings['tpl_name'] = $settings['templates']['mobile']; 
-		} else { 
-			$settings['tpl_name'] = $settings['templates']['default']; 
-		} # else
-} else {
-	$settings['tpl_name'] = $settings['templates']['default'];
-} # else
-
 # Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
 # leesbare configuratie file wijzen
 if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
@@ -136,7 +109,8 @@ $array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktr
 	'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 
 	'retrieve_increment', 'retrieve_newer_than', 'retrieve_reports', 'sendwelcomemail', 'spot_moderation', 'allow_user_template', 
 	'auto_markasread', 'filters', 'index_filter', 'keep_downloadlist', 'keep_watchlist', 'nzb_search_engine', 'nzbhandling', 'show_multinzb',
-	'count_newspots', 'keep_seenlist', 'show_nzbbutton', 'show_updatebutton', 'newuser_grouplist', 'nonauthenticated_userid');
+	'count_newspots', 'keep_seenlist', 'show_nzbbutton', 'show_updatebutton', 'newuser_grouplist', 'nonauthenticated_userid',
+	'templates');
 foreach ($array as $value) {
 	if (isset($settings[$value])) {
 		$ownsettingserror .= ' * ' . $value . PHP_EOL;
@@ -145,20 +119,6 @@ foreach ($array as $value) {
 
 if (!empty($ownsettingserror)) {
 	throw new InvalidOwnSettingsSettingException("Please remove " . $ownsettingserror . " from your 'ownsettings.php' file, this setting is set in the settings panel from within Spotweb itself");
-} # if
-
-# Make sure the template name in ownsettings.php doesn't end with a slash
-foreach($settings['templates'] as $x => $y) {
-	if (substr($y, -1) == '/') {
-		throw new InvalidOwnSettingsSettingException("Please remove the trailing slash for the template name " . $x . " in your ownsettings.php");
-	} # if
-} # if
-
-# Make sure the template name in ownsettings.php doesn't contain a path
-foreach($settings['templates'] as $x => $y) {
-	if (strpos($y, '/') !== false) {
-		throw new InvalidOwnSettingsSettingException("Please remove the path to the template " . $x . " in your ownsettings.php (only include the name)");
-	} # if
 } # if
 
 # Controleer op oud type quicklinks (zonder preference link)
