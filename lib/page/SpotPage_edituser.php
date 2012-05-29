@@ -14,7 +14,8 @@ class SpotPage_edituser extends SpotPage_Abs {
 	 * be in the form anyways 
 	 */
 	function cleanseEditForm($editForm) {
-		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist');
+		/* Make sure the preferences aren't set using this page as it might override security */
+		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist', 'preferences');
 		foreach($editForm as $key => $value) {
 			if (in_array($key, $validFields) === false) {
 				unset($editForm[$key]);
