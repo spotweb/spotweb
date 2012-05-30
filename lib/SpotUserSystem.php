@@ -212,7 +212,7 @@ class SpotUserSystem {
 			$userRecord['security'] = new SpotSecurity($this->_db, $this->_settings, $userRecord['user'], $this->determineUsersIpAddress() );
 
 			# always use the default template
-			$userSession['active_tpl'] = $userRecord['user']['prefs']['normal_template'];
+			$userRecord['active_tpl'] = $userRecord['user']['prefs']['normal_template'];
 
 			return $userRecord;
 		} else {
