@@ -32,6 +32,20 @@ class SpotsOverview {
 			$this->_db->addFullSpots( array($newFullSpot) );
 			
 			/*
+			 * If the current spotterid is empty, we probably now
+			 * have a spotterid because we have the fullspot.
+			 */
+			if ((empty($fullSpot['spotterid'])) && ($newFullSpot['verified'])) {
+				$spotSigning = new SpotSigning($this->_db, $this->_settings);
+				$newFullSpot['spotterid'] = $spotSigning->calculateSpotterId($newFullSpot['user-key']['modulo']);
+
+				/* 
+				 * Update the spotterid in the spots table so it can be filtered later on
+				 */
+				$this->_db->updateSpotInfoFromFull($newFullSpot);
+			} # if
+			
+			/*
 			 * We ask our DB to retrieve the fullspot again, this ensures
 			 * us all information is present and in always the same format
 			 */
@@ -51,21 +65,6 @@ class SpotsOverview {
 		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
 		$fullSpot = array_merge($parsedXml, $fullSpot);
 		$fullSpot['title'] = $parsedXml['title'];
-		
-		/*
-		 * If the current spotterid is empty, we probably now
-		 * have a spotterid because we have the fullspot.
-		 */
-		if ((empty($fullSpot['spotterid'])) && ($fullSpot['verified'])) {
-			$spotSigning = new SpotSigning($this->_db, $this->_settings);
-			$fullSpot['spotterid'] = $spotSigning->calculateSpotterId($fullSpot['user-key']['modulo']);
-
-			/* 
-			 * Update the spotterid in the spots table so it can be filtered later on
-			 */
-			$this->_db->updateSpotInfoFromFull($fullSpot);
-		} # if
-
 		/*
 		 * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
 		 * causes us to never get the spot, hence we throw this exception
