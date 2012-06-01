@@ -56,7 +56,7 @@ class SpotPage_statics extends SpotPage_Abs {
 	} # mergeFiles
 	
 	function render() {
-		$tplHelper = $this->getTplHelper(array());
+		$tplHelper = $this->_tplHelper;
 
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statics, '');

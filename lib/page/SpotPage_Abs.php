@@ -63,7 +63,7 @@ abstract class SpotPage_Abs {
 
 	
 	# Geef the tpl helper terug
-	function getTplHelper($params) {
+	private function getTplHelper($params) {
 		$tplName = $this->_currentSession['active_tpl'];
 
 		$className = 'SpotTemplateHelper_' . ucfirst($tplName);
