@@ -1,4 +1,6 @@
 <?php
+	error_reporting(2147483647);
+
 	require_once "lib/SpotClassAutoload.php";
 	try {
 		@include('settings.php');
