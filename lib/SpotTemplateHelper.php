@@ -1149,4 +1149,18 @@ class SpotTemplateHelper {
 		return $this->_settings->get('valid_templates');
 	} # getConfiguredTemplates
 
+/*
+	 * Return a list of preferences specific for this template.
+	 *
+	 * When a user changes their template, and changes their
+	 * preferences these settings are lost.
+	 *
+	 * Settings you want to be able to set must always be 
+	 * present in this array with a sane default value, else
+	 * the setting will not be saved.
+	 */
+	function getTemplatePreferences() {
+		return array();
+	} # getTemplatePreferences
+
 } # class SpotTemplateHelper

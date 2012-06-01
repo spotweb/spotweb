@@ -80,7 +80,9 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 
 					# Save the current' user preferences because we need them before cleansing 
 					$savePrefs = $spotUser['prefs'];
-					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, $anonUser['prefs']);
+					$spotUser['prefs'] = $spotUserSystem->cleanseUserPreferences($this->_editUserPrefsForm, 
+												$anonUser['prefs'],
+												$this->_tplHelper->getTemplatePreferences());
 
 					# Validate all preferences
 					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);

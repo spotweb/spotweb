@@ -436,7 +436,7 @@ class SpotUserSystem {
 	/* 
 	 * Cleanup of user preferences
 	 */
-	function cleanseUserPreferences($prefs, $tpl) {
+	function cleanseUserPreferences($prefs, $anonSkel, $tmplSkel) {
 		/*
 		 * We do not want any user preferences to be submitted which aren't in the anonuser preferences,
 		 * as this would allow garbage preferences or invalid settings for non-existing preferences.
@@ -452,41 +452,49 @@ class SpotUserSystem {
 		 * We need to do this because not all browsers post checkboxes in a form in
 		 * the same way.
 		 */
-		$tpl['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
-        $tpl['mouseover_subcats'] = (isset($prefs['mouseover_subcats'])) ? true : false;
-		$tpl['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
-		$tpl['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
-		$tpl['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
-		$tpl['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
-		$tpl['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
-		$tpl['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
-		$tpl['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
-		$tpl['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
-		$tpl['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
+		$anonSkel['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
+        $anonSkel['mouseover_subcats'] = (isset($prefs['mouseover_subcats'])) ? true : false;
+		$anonSkel['keep_seenlist'] = (isset($prefs['keep_seenlist'])) ? true : false;
+		$anonSkel['auto_markasread'] = (isset($prefs['auto_markasread'])) ? true : false;
+		$anonSkel['keep_downloadlist'] = (isset($prefs['keep_downloadlist'])) ? true : false;
+		$anonSkel['keep_watchlist'] = (isset($prefs['keep_watchlist'])) ? true : false;
+		$anonSkel['show_filesize'] = (isset($prefs['show_filesize'])) ? true : false;
+		$anonSkel['show_reportcount'] = (isset($prefs['show_reportcount'])) ? true : false;
+		$anonSkel['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
+		$anonSkel['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
+		$anonSkel['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
 		
 		$notifProviders = Notifications_Factory::getActiveServices();
 		foreach ($notifProviders as $notifProvider) {
-			$tpl['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['report_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['report_posted'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
-			$tpl['notifications'][$notifProvider]['events']['newspots_for_filter'] = (isset($prefs['notifications'][$notifProvider]['events']['newspots_for_filter'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['enabled'] = (isset($prefs['notifications'][$notifProvider]['enabled'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['watchlist_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['watchlist_handled'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['nzb_handled'] = (isset($prefs['notifications'][$notifProvider]['events']['nzb_handled'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['retriever_finished'] = (isset($prefs['notifications'][$notifProvider]['events']['retriever_finished'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['report_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['report_posted'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['spot_posted'] = (isset($prefs['notifications'][$notifProvider]['events']['spot_posted'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['user_added'] = (isset($prefs['notifications'][$notifProvider]['events']['user_added'])) ? true : false;
+			$anonSkel['notifications'][$notifProvider]['events']['newspots_for_filter'] = (isset($prefs['notifications'][$notifProvider]['events']['newspots_for_filter'])) ? true : false;
 		} # foreach
 
 		# When nzbhandling settings are not entered at all, we default to disable
 		if (!isset($prefs['nzbhandling'])) {
-			$tpl['nzbhandling'] = array('action' => 'disable',
+			$anonSkel['nzbhandling'] = array('action' => 'disable',
 										  'prepare_action' => 'merge');										  
 		} # if
+
+		/*
+		 * We add the users' template specific settings to the basic
+		 * skeleton of settings so those settings aren't removed.
+		 */
+		unset($anonSkel['template_specific']);
+		$tmplSkel = array('template_specific' => $tmplSkel);
+		$anonSkel = $this->array_merge_recursive_overwrite($tmplSkel, $anonSkel);
 
 		/*
 		 * Unset any keys in the preferences which aren't available 
 		 * in the preferences template (anonyuser)
 		 */
-		foreach(array_diff_key($prefs, $tpl) as $keys => $values) {
+		foreach(array_diff_key($prefs, $anonSkel) as $keys => $values) {
 			unset($prefs[$keys]);
 		} # foreach
 
@@ -495,7 +503,7 @@ class SpotUserSystem {
 		 * expect it to do and merge embedded arrays by combining them
 		 * instead of overwriting key values...
 		 */ 
-		$prefs = $this->array_merge_recursive_overwrite($tpl, $prefs);
+		$prefs = $this->array_merge_recursive_overwrite($anonSkel, $prefs);
 
 		return $prefs;
 	} # cleanseUserPreferences

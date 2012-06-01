@@ -1,6 +1,22 @@
 <?php
 class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 
+	/*
+	 * Return a list of preferences specific for this template.
+	 *
+	 * When a user changes their template, and changes their
+	 * preferences these settings are lost.
+	 *
+	 * Settings you want to be able to set must always be 
+	 * present in this array with a sane default value, else
+	 * the setting will not be saved.
+	 */
+	function getTemplatePreferences() {
+		return array('we1rdo' =>
+						array('example_setting' => 1)
+					);
+	} # getTemplatePreferences
+
 	function cat2color($spot) {
 		switch( (int) $spot['category']) {
 			case 0: return 'blue'; break;
