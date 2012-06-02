@@ -62,7 +62,7 @@ class SpotUserSystem {
 		 * don't actually create the db entry for anonymous 
 	 	 * sessions. We can only do this for 'real' anonymous
 	 	 * users because when this is overriden, the new 
-	 	 * anoonymous user might have given additional features
+	 	 * anonymous user might have given additional features
 	 	 */
 		if ($userid != SPOTWEB_ANONYMOUS_USERID) {
 			$this->_db->addSession($session);
