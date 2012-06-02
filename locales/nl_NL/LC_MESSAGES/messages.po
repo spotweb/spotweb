@@ -461,6 +461,12 @@ msgid_plural "There are %d spamreports found for this spot"
 msgstr[0] "Er is %d spam report gevonden op deze spot"
 msgstr[1] "Er zijn %d spam reports gevonden op deze spot"
 
+msgid "downloaded on"
+msgstr "gedownload op"
+
+msgid "opened on"
+msgstr "geopent op"
+
 msgid "Go to category '%s'"
 msgstr "Ga naar de categorie '%s'"
 

@@ -68,6 +68,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
         $tipTipClass = $show_mouseover_subcats ? 'showTipTip' : '';
+		$dateTitleText = $tplHelper->formatDate($spot['stamp'], 'force_spotlist');
 
 		$catMap = array();
 		foreach($spot['subcatlist'] as $sub) {
@@ -122,9 +123,13 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		echo "<tr class='" . $tplHelper->cat2color($spot);
 		if ($spot['hasbeendownloaded']) {
 			echo " downloadedspot";
-		} # if
+			
+			$dateTitleText .= "\r\n " . _("downloaded on") . ' ' . $tplHelper->formatDate($spot['downloadstamp'], 'force_spotlist');
+ 		} # if
 		if ($spot['hasbeenseen']) {
 			echo " seenspot";
+
+			$dateTitleText .= "\r\n " . _("opened on") . ' ' . $tplHelper->formatDate($spot['seenstamp'], 'force_spotlist');
 		} # if
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
@@ -143,7 +148,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
 			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
-			 "<td class='date' title='" . $tplHelper->formatDate($spot['stamp'], 'force_spotlist') . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
+			 "<td class='date' title='" . $dateTitleText . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {
 			echo "<td class='filesize'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
