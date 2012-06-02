@@ -133,7 +133,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} # if
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "'onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+			 "<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
