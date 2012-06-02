@@ -1350,6 +1350,37 @@ class SpotDb {
 	} # getCommentsFull
 
 	/*
+	 * Returns the amount of new comments since 'stamp' for all 
+	 * comments belonging to spot 'nntpRefList'
+	 */
+	function getNewCommentCountFor($nntpRefList, $stamp) {
+		if (count($nntpRefList) == 0) {
+			return array();
+		} # if
+
+		# bereid de lijst voor met de queries in de where
+		$msgIdList = '';
+		foreach($nntpRefList as $spotMsgId) {
+			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
+		} # foreach
+		$msgIdList = substr($msgIdList, 0, -2);
+
+		/*
+		 * Actually run the query
+		 */
+		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover 
+									WHERE nntpref IN (" . $msgIdList . ") AND stamp > %d
+								   GROUP BY nntpref",
+								   Array((int) $stamp));
+		$commentCount = array();
+		foreach($tmp as $cCount) {
+			$commentCount[$cCount['nntpref']] = $cCount['ccount'];
+		} # foreach
+		
+		return $commentCount;
+	} # getNewCommentCountFor
+
+	/*
 	 * Geeft huidig database schema versie nummer terug
 	 */
 	function getSchemaVer() {

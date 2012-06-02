@@ -60,6 +60,8 @@
 			} # if
 			if (!empty($filter['sorton'])) {
 				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
+			} else {
+				$sortType = $currentSession['user']['prefs']['defaultsortfield'];
 			} # if
 
 			# escape the filter vlaues

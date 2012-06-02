@@ -13,6 +13,19 @@
 	$show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	$show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
+	$newCommentCount = array();
+	$noResults = (count($spots) == 0);
+
+	/*
+	 * For Seen, Watched en MyPosted-spots we want to show a list of
+	 * comments users haven't seen yet. We check whether this is such
+	 * a list by checking for the existence of any of these fields
+	 */
+	if (!$noResults) { 
+		if ( (isset($spots[0]['mypostedspot'])) || (isset($spots[0]['myseenspot'])) || (isset($spots[0]['mywatchedspot'])) ) {
+			$newCommentCount = $tplHelper->getNewCommentCountFor($spots);
+		} # if
+	} # if
 ?>
 			<div class="spots">
 				<table class="spots" summary="Spots">
@@ -50,7 +63,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 					</thead>
 					<tbody id="spots">
 <?php
-	if (count($spots) == 0) {
+	if ($noResults) {
 		$colSpan = 5;
 		$nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 		if ($show_comments) { $colSpan++; }
@@ -69,6 +82,10 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
         $tipTipClass = $show_mouseover_subcats ? 'showTipTip' : '';
 		$dateTitleText = $tplHelper->formatDate($spot['stamp'], 'force_spotlist');
+		$commentCountValue = $spot['commentcount'];
+		if (isset($newCommentCount[$spot['messageid']])) {
+			$commentCountValue .= '*';
+		} # if
 
 		$catMap = array();
 		foreach($spot['subcatlist'] as $sub) {
@@ -143,7 +160,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		if ($show_comments) {
-			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $spot['commentcount'] . "</a></td>";
+			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $commentCountValue . "</a></td>";
 		} # if
 		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .

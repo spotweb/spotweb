@@ -1103,6 +1103,7 @@ class SpotsOverview {
 											  'friendlyname' => null);
 					} # case 'watch'
 					case 'seen' 	  : {
+						$additionalFields[] = '1 AS myseenspot';
 						$tmpFilterValue = ' (l.seen IS NOT NULL)'; 	break;
 						$sortFields[] = array('field' => 'seenstamp',
 											  'direction' => 'DESC',

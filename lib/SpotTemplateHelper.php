@@ -788,6 +788,20 @@ class SpotTemplateHelper {
 
 		return $comments;
 	} # formatComments
+
+	/*
+	 * Returns a list of nntprefs' with new commentcounts 
+	 */
+	function getNewCommentCountFor($spotList) {
+		# Prepare the spotlisting with an list of nntp items
+		$nntpRefList = array();
+		foreach($spotList as $spot) {
+			$nntpRefList[] = $spot['messageid'];
+		} # foreach
+
+		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastread']);
+	} # getNewCommentCountFor
+
 	
 	/*
 	 * Omdat we geen zin hebben elke variabele te controleren of hij bestaat,
