@@ -1074,6 +1074,7 @@ class SpotsOverview {
 						break;
 					} # case 'whitelistedspotters'
 					case 'mypostedspots' : {
+						$additionalFields[] = '1 AS mypostedspot';
 						$additionalJoins[] = array('tablename' => 'spotsposted',
 												   'tablealias' => 'spost',
 												   'jointype' => 'LEFT',
@@ -1094,6 +1095,7 @@ class SpotsOverview {
 						break;
 					} # case 'downloaded'
 					case 'watch' 	  : { 
+						$additionalFields[] = '1 AS mywatchedspot';
 						$tmpFilterValue = ' (l.watch IS NOT NULL)'; break;
 						$sortFields[] = array('field' => 'watchstamp',
 											  'direction' => 'DESC',
