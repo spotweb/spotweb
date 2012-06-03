@@ -41,7 +41,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			# het volledig parsen van de content van de CSS file dus
 			# is het het overwegen waard.
 			$this->_currentCssFile = $file;
-			$fc = preg_replace_callback('/url\((.+)\)/i', array($this, 'cbFixCssUrl'), $fc);
+			$fc = preg_replace_callback('/url\(([^)]+)\)/i', array($this, 'cbFixCssUrl'), $fc);
 			
 			# also replace any internationalisation strings in JS. 
 			# Code copied from:
