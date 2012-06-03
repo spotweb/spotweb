@@ -99,6 +99,8 @@ abstract class SpotPage_Abs {
 		foreach($this->_templatePaths as $tplPath) {
 			if (file_exists($tplPath . $tpl . '.inc.php')) {
 				require_once($tplPath . $tpl . '.inc.php');
+
+				break;
 			} # if
 		} # foreach
 		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
