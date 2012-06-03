@@ -119,7 +119,7 @@ class SpotCategories {
 					  1 => array("(S)VCD", array(), array("z0", "z1", "z3")),
 					  2 => array("Promo", array(), array("z0", "z1", "z3")),
 					  3 => array("Retail", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
-					  4 => array("TV", array("z0", "z2"), array("z0", "z1", "z3")),
+					  4 => array("TV", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
 					  5 => array("", array(), array()),
 					  6 => array("Satelite", array(), array("z0", "z1", "z3")),
 					  7 => array("R5", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
