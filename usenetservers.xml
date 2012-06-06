@@ -291,19 +291,6 @@
 			</plain>
 		</server>
 
-		<server name='LightningUsenet'>
-			<ssl>
-				<header ssl='yes' port='563'>news.LightningUsenet.com</header>
-				<nzb ssl='yes' port='563'>news.LightningUsenet.com</nzb>
-				<post ssl='yes' port='563'>news.LightningUsenet.com</post>
-			</ssl>
-			<plain>
-				<header ssl='' port='119'>news.LightningUsenet.com</header>
-				<nzb ssl='' port='119'>news.LightningUsenet.com</nzb>
-				<post ssl='' port='119'>news.LightningUsenet.com</post>
-			</plain>
-		</server>
-
 		<server name='Multiweb'>
 			<plain>
 				<header ssl='' port='119'>news.quicknet.nl</header>
