@@ -140,11 +140,13 @@ class SpotTemplateHelper {
 		if ($markAsRead) {
 			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
 				if ($this->_currentSession['user']['prefs']['keep_seenlist']) {
-					if ($fullSpot['seenstamp'] == NULL) {
-						$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
-													$msgId, 
-													$this->_currentSession['user']['userid']);
-					} # if
+					/*
+					 * Always update the seen stamp, this is used for viewing new comments
+					 * and the likes
+					 */
+					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
+												$msgId, 
+												$this->_currentSession['user']['userid']);
 				} # if
 				
 			} # if allowed
@@ -799,7 +801,7 @@ class SpotTemplateHelper {
 			$nntpRefList[] = $spot['messageid'];
 		} # foreach
 
-		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
+		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['id']);
 	} # getNewCommentCountFor
 
 	

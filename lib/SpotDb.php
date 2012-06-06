@@ -1353,7 +1353,7 @@ class SpotDb {
 	 * Returns the amount of new comments since 'stamp' for all 
 	 * comments belonging to spot 'nntpRefList'
 	 */
-	function getNewCommentCountFor($nntpRefList, $stamp) {
+	function getNewCommentCountFor($nntpRefList, $ourUserId) {
 		if (count($nntpRefList) == 0) {
 			return array();
 		} # if
@@ -1368,10 +1368,13 @@ class SpotDb {
 		/*
 		 * Actually run the query
 		 */
-		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover 
-									WHERE nntpref IN (" . $msgIdList . ") AND stamp > %d
+		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
+									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
+												AND ((cx.stamp > sl.seen) OR (sl.seen IS NULL)) 
+												AND (sl.ouruserid = %d)
+									WHERE nntpref IN (" . $msgIdList . ") 
 								   GROUP BY nntpref",
-								   Array((int) $stamp));
+								   Array((int) $ourUserId));
 		$commentCount = array();
 		foreach($tmp as $cCount) {
 			$commentCount[$cCount['nntpref']] = $cCount['ccount'];
