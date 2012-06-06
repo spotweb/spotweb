@@ -1101,6 +1101,7 @@ class SpotsOverview {
 											  'direction' => 'DESC',
 											  'autoadded' => true,
 											  'friendlyname' => null);
+						break;
 					} # case 'watch'
 					case 'seen' 	  : {
 						$additionalFields[] = '1 AS myseenspot';
@@ -1109,6 +1110,7 @@ class SpotsOverview {
 											  'direction' => 'DESC',
 											  'autoadded' => true,
 											  'friendlyname' => null);
+						break;
 					} # case 'seen'
 				} # switch
 				
