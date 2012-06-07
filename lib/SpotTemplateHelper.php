@@ -801,7 +801,7 @@ class SpotTemplateHelper {
 			$nntpRefList[] = $spot['messageid'];
 		} # foreach
 
-		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['id']);
+		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['userid']);
 	} # getNewCommentCountFor
 
 	
