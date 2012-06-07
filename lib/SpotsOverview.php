@@ -1096,7 +1096,7 @@ class SpotsOverview {
 					} # case 'downloaded'
 					case 'watch' 	  : { 
 						$additionalFields[] = '1 AS mywatchedspot';
-						$tmpFilterValue = ' (l.watch IS NOT NULL)'; break;
+						$tmpFilterValue = ' (l.watch IS NOT NULL)'; 
 						$sortFields[] = array('field' => 'watchstamp',
 											  'direction' => 'DESC',
 											  'autoadded' => true,
@@ -1105,7 +1105,7 @@ class SpotsOverview {
 					} # case 'watch'
 					case 'seen' 	  : {
 						$additionalFields[] = '1 AS myseenspot';
-						$tmpFilterValue = ' (l.seen IS NOT NULL)'; 	break;
+						$tmpFilterValue = ' (l.seen IS NOT NULL)'; 	
 						$sortFields[] = array('field' => 'seenstamp',
 											  'direction' => 'DESC',
 											  'autoadded' => true,
