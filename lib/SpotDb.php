@@ -1370,8 +1370,8 @@ class SpotDb {
 		 */
 		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
 									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
-												AND ((cx.stamp > sl.seen) OR (sl.seen IS NULL)) 
 												AND (sl.ouruserid = %d)
+												AND (cx.stamp > sl.seen) 
 									WHERE nntpref IN (" . $msgIdList . ") 
 								   GROUP BY nntpref",
 								   Array((int) $ourUserId));
