@@ -172,7 +172,7 @@ function spotPosting() {
 				
 		this.uiStart();
 		
-		var randomstr = reportForm['postreportform[randomstr]'].value;
+		var randomstr = newSpotForm['postreportform[randomstr]'].value;
 		
 		this.calculateCommentHashCash('<' + randomstr, '@spot.net>', 0, this.spotHashcashCalculated);
 	} // postNewSpot
