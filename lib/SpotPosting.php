@@ -25,21 +25,21 @@ class SpotPosting {
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = _('Hash is niet goed berekend, ongeldige post');
+			$errorList[] = _('Hash was not calculated properly');
 		} # if
 
 		# Body mag niet leeg zijn of heel kort
 		$comment['body'] = trim($comment['body']);
 		if (strlen($comment['body']) < 2) {
-			$errorList[] = _('Geef een reactie');
+			$errorList[] = _('Please enter a comment');
 		} # if
 		if (strlen($comment['body']) > 9000) {
-			$errorList[] = _('Reactie is te lang');
+			$errorList[] = _('Comment is too long');
 		} # if
 		
 		# Rating mag niet uit de range vallen
 		if (($comment['rating'] > 10) || ($comment['rating'] < 0)) {
-			$errorList[] = _('Gegeven rating is niet geldig');
+			$errorList[] = _('Invalid rating');
 		} # if
 		
 		# controleer dat de messageid waarop we replyen overeenkomt
@@ -92,7 +92,7 @@ class SpotPosting {
 	
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = _('Hash is niet goed berekend, ongeldige spot');
+			$errorList[] = _('Hash was not calculated properly');
 		} # if
 
 		# Read the contents of image so we can check it
@@ -100,7 +100,7 @@ class SpotPosting {
 
 		# the image should be below 1MB
 		if (strlen($imageContents) > 1024*1024) {
-			$errorList[] = _('Opgegeven afbeelding is te groot (maximum 1MB)');
+			$errorList[] = _('Uploaded image is too large (maximum 1MB)');
 		} # if
 
 		/*
@@ -109,7 +109,7 @@ class SpotPosting {
 		 */
 		$tmpGdImageSize = getimagesize($imageFilename);
 		if ($tmpGdImageSize === false) {
-			$errorList[] = _('Opgegeven afbeelding is niet herkend als afbeelding');
+			$errorList[] = _('Uploaded image was not recognized as an image');
 		} else {
 			$imageInfo = array('width' => $tmpGdImageSize[0],
 					  	       'height' => $tmpGdImageSize[1]);
@@ -118,21 +118,21 @@ class SpotPosting {
 		# Body cannot be empty, very short or too long
 		$spot['body'] = trim($spot['body']);
 		if (strlen($spot['body']) < 30) {
-			$errorList[] = _('Geef een omschrijving');
+			$errorList[] = _('Please enter an description');
 		} # if
 		if (strlen($spot['body']) > 9000) {
-			$errorList[] = _('Omschrijving is te lang');
+			$errorList[] = _('Entered description is too long');
 		} # if
 
 		# Title cannot be empty or very short
 		$spot['title'] = trim($spot['title']);
 		if (strlen($spot['title']) < 5) {
-			$errorList[] = _('Geef een titel');
+			$errorList[] = _('Enter a title');
 		} # if
 		
 		# Subcategory should be valid
 		if (($spot['category'] < 0) || ($spot['category'] > count(SpotCategories::$_head_categories))) {
-			$errorList[] = sprintf(_('Ongeldige hoofdcategory (%s)'), $spot['category']);
+			$errorList[] = sprintf(_('Incorrect headcategory (%s)'), $spot['category']);
 		} # if
 		
 		/*
@@ -145,7 +145,7 @@ class SpotPosting {
 
 		# Do some basic sanity checking for some required NZB elements
 		if (empty($nzbXml->file)) {
-			$errorList[] = _('Ongeldig NZB bestand');
+			$errorList[] = _('Incorrect NZB file');
 		} # if
 		
 		# and determine the total filesize
@@ -193,14 +193,14 @@ class SpotPosting {
 			$subcats = explode('_', $subCat);
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $subCat);
+				$errorList[] = sprintf(_('Incorrect subcategories (%s)'), $subCat);
 			} else {
 				$subCatLetter = substr($subcats[2], 0, 1);
 				
 				$subCatSplitted[$subCatLetter][] = $subCat;
 				
 				if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-					$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1));
+					$errorList[] = sprintf(_('Incorrect subcategories (%s)'), $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1));
 				} # if
 			} # else
 		} # foreach	
@@ -215,7 +215,7 @@ class SpotPosting {
 			
 			# If not in our format
 			if (count($subcats) != 3) {
-				$errorList[] = sprintf(_('Ongeldige subcategorieen (%s)'), $spot['subcatlist'][$i]);
+				$errorList[] = sprintf(_('Incorrect subcateories (%s)'), $spot['subcatlist'][$i]);
 			} else {
 				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
 				
@@ -229,22 +229,22 @@ class SpotPosting {
 
 		# Make sure the spot isn't being posted in many categories
 		if (count($subCatSplitted['a']) > 1) {
-			$errorList[] = _('Een spot kan maar 1 formaat hebben');
+			$errorList[] = _('You can only specify one format for a spot');
 		} # if
 
 		# Make sure the spot has at least a format
 		if (count($subCatSplitted['a']) < 1) {
-			$errorList[] = _('Een spot moet een formaat hebben');
+			$errorList[] = _('You need to specify a format for a spot');
 		} # if
 		
 		# Make sure the spot isn't being posted for too many categories
 		if (count($spot['subcatlist']) > 10) {
-			$errorList[] = _('Teveel categorieen opgegeven');
+			$errorList[] = _('Too many categories');
 		} # if
 
 		# Make sure the spot isn't being posted for too many categories
 		if (count($spot['subcatlist']) < 2) {
-			$errorList[] = _('Geef een aantal categorieen op');
+			$errorList[] = _('At least one category need to be selected');
 		} # if
 
 		# en post daadwerkelijk de spot
@@ -285,7 +285,7 @@ class SpotPosting {
 
 		# Controleer eerst of de user al een report heeft aangemaakt, dan kunnen we gelijk stoppen.
 		if ($this->_db->isReportPlaced($report['inreplyto'], $user['userid'])) {
-			$errorList[] = _('Deze spot heb je al gemarkeerd als spam');
+			$errorList[] = _('This spot has already been marked as spam');
 		} # if
 		
 		# haal de spot op waar dit een reply op is
@@ -294,13 +294,13 @@ class SpotPosting {
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $report['newmessageid'] . '>'), 0, 4) != '0000') {
-			$errorList[] = _('Hash is niet goed berekend, ongeldige report');
+			$errorList[] = _('Hash was not calculated properly');
 		} # if
 
 		# Body mag niet leeg zijn of heel kort
 		$report['body'] = trim($report['body']);
 		if (strlen($report['body']) < 2) {
-			$errorList[] = _('Geef een reactie');
+			$errorList[] = _('Please provide a comment');
 		} # if
 		
 		# controleer dat de messageid waarop we replyen overeenkomt
