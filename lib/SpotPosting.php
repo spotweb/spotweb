@@ -57,6 +57,11 @@ class SpotPosting {
 			$errorList[] = _('Replay attack!?');
 		} # if
 
+		# Make sure a newmessageid contains a certain length
+		if (strlen($comment['newmessageid']) < 10) {
+			$errorList[] = _('MessageID too short!?');
+		} # if
+
 		# Add the title as a comment property
 		$comment['title'] = 'Re: ' . $fullSpot['title'];
 		
@@ -89,7 +94,7 @@ class SpotPosting {
 		$hdr_newsgroup = 'alt.test';
 		$bin_newsgroup = 'alt.test';
 */
-	
+
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
 			$errorList[] = _('Hash was not calculated properly');
@@ -163,6 +168,11 @@ class SpotPosting {
 		 */
 		if (!$this->_db->isNewSpotMessageIdUnique($spot['newmessageid'])) {
 			$errorList[] = _('Replay attack!?');
+		} # if
+
+		# Make sure a newmessageid contains a certain length
+		if (strlen($spot['newmessageid']) < 10) {
+			$errorList[] = _('MessageID too short!?');
 		} # if
 
 		# We require the keyid 7 because it is selfsigned
@@ -316,6 +326,11 @@ class SpotPosting {
 		# steeds herberekend wordt voor het volspammen van 1 spot).
 		if (!$this->_db->isReportMessageIdUnique($report['newmessageid'])) {
 			$errorList[] = _('Replay attack!?');
+		} # if
+
+		# Make sure a newmessageid contains a certain length
+		if (strlen($report['newmessageid']) < 10) {
+			$errorList[] = _('MessageID too short!?');
 		} # if
 
 		# Body komt vanuit het form als UTF-8, maar moet verzonden worden als ISO-8859-1
