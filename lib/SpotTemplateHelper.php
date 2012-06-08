@@ -801,7 +801,7 @@ class SpotTemplateHelper {
 			$nntpRefList[] = $spot['messageid'];
 		} # foreach
 
-		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['userid']);
+		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
 	} # getNewCommentCountFor
 
 	
@@ -842,6 +842,9 @@ class SpotTemplateHelper {
 		if ($spot['category']==0){
 			$spot['cleantitle'] = preg_replace('/(([Ss][uU][Bb][Ss]) ([Mm][Aa][Dd][Ee]\s)?([bB][yY])\s?:?.{0,15}\S)|(~.+~)|( \S{2,}( ?/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|(\(\w+(\s\w+)?\))|(\S*([Ss][Uu][Bb](([Ss])|([Bb][Ee][Dd])))\S*)|((-\S+)$)|([Nn][Ll])|([\s\/][Ee][Nn][Gg]?[\s\/])|(AC3)|(DD(5.1)?)|([Xx][Vv][Ii][Dd])|([Dd][Ii][Vv][Xx])|([Tt][Ss])|(\d+\s([Mm]|[Kk]|[Gg])[Bb])|([Mm][Kk][Vv])|([xX]\d{3}([Hh][Dd])?)|([Dd][Ll])|([Bb][Ll][Uu]([Ee])?\s?-?[Rr][Aa][Yy])|([Rr][Ee][Aa][Dd]\s?[Nn][Ff][Oo])|(([Hh][Dd])([Tt][Vv])?)|(R\d)|(S\d+E\d+)|(2[Hh][Dd])|(5 1)|([Dd][Tt][Ss]-?[Hh][Dd])|([Aa][Vv][Cc])|(([Bb][Dd])?[Rr][Ee][Mm][Uu][Xx])|([Nn][Tt][Ss][Cc])|([Pp][Aa][Ll])|(\S+(\.\S+)+)|([Cc][Uu][Ss][Tt][Oo][Mm])|([Mm][Pp][Ee]?[Gg]-([Hh][Dd])?)/', "", $spot['title']);
 			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
+			if (empty(preg_replace('\s', "", $spot['cleantitle']))){
+				// Use $spot['title'] if my regex screws up..
+				$spot['cleantitle']=$spot['title'];
 		} else {
 			// Prevent gigantic failures from happening.
 			$spot['cleantitle'] = $spot['title'];
@@ -1011,7 +1014,7 @@ class SpotTemplateHelper {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls');
 		
-		$this->_db->clearDownloadList($this->_currentSession['user']['userid']);
+		$this->_db->clearSpotStateList(SpotDb::spotstate_Down, $this->_currentSession['user']['userid']);
 	} # clearDownloadList
 	
 	/*
