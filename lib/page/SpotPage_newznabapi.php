@@ -456,7 +456,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
 			$spot = $this->_db->getFullSpot($this->_params['messageid'], $this->_currentSession['user']['userid']);
 			if ($spot['watchstamp'] !== NULL) {
-				$this->_db->removeFromSpotStateList(SpotDb::spotstate_Watch, $this->_params['messageid'], $this->_currentSession['user']['userid']);
+				$this->_db->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
 				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 				$spotsNotifications->sendWatchlistHandled('remove', $this->_params['messageid']);
 			} # if

@@ -1648,8 +1648,14 @@ class SpotDb {
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
 		SpotTiming::start(__FUNCTION__);
-		$verifiedList = $this->verifyListType($list);
 		if (empty($stamp)) { $stamp = time(); }
+
+		switch($list) {
+			case self::spotstate_Down	: $verifiedList = 'download'; break;
+			case self::spotstate_Watch	: $verifiedList = 'watch'; break;
+			case self::spotstate_Seen	: $verifiedList = 'seen'; break;
+			default						: throw new Exception("Invalid listtype given!");
+		} # switch
 
 		switch ($this->_dbsettings['engine']) {
 			case 'pdo_mysql'	:
@@ -1670,37 +1676,41 @@ class SpotDb {
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
 	} # addToSpotStateList
 
-	function clearSpotStateList($list, $ourUserId) {
+	/*
+	 * Mark all as read can perform different functions, 
+	 * depending on the state of the system. 
+	 *
+	 * If only 'seen' is kept, in the statelist, we just set
+	 * seen to NULL to mark it as not explicitly seen.
+	 *
+	 * If either 'download' or 'watch' is also set, we update
+	 * the seen timestamp, this allows us to show any new
+	 * comments from the last time the spot was viewed
+	 */
+	function markAllAsRead($ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$verifiedList = $this->verifyListType($list);
-		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET seen = NULL WHERE (ouruserid = %d) AND (download IS NULL) AND (watch IS NULL) ", array( (int) $ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET seen = %d WHERE (ouruserid = %d) AND (download IS NOT NULL) OR (watch IS NOT NULL) ", array( (int) time(), (int) $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
-	} # clearSpotStatelist
+	} # markAllAsRead
+
+	function clearDownloadList($ourUserId) {
+		SpotTiming::start(__FUNCTION__);
+		$this->_conn->modify("UPDATE spotstatelist SET download = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
+		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
+	} # clearDownloadList
 
 	function cleanSpotStateList() {
 		$this->_conn->rawExec("DELETE FROM spotstatelist WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
 	} # cleanSpotStateList
 
-	function removeFromSpotStateList($list, $messageid, $ourUserId) {
+	function removeFromWatchList($messageid, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$verifiedList = $this->verifyListType($list);
-		$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
+		$this->_conn->modify("UPDATE spotstatelist SET watch = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
 				Array($messageid, (int) $ourUserId));
 		SpotTiming::stop(__FUNCTION__, array($list, $messageid, $ourUserId));
-	} # removeFromSpotStateList
+	} # removeFromWatchList
 
-	function verifyListType($list) {
-		switch($list) {
-			case self::spotstate_Down	: $verifiedList = 'download'; break;
-			case self::spotstate_Watch	: $verifiedList = 'watch'; break;
-			case self::spotstate_Seen	: $verifiedList = 'seen'; break;
-			default						: throw new Exception("Invalid listtype given!");
-		} # switch
-
-		return $verifiedList;
-	} # verifyListType
-	
-	
 	/* 
 	 * Geeft de permissies terug van een bepaalde groep
 	 */

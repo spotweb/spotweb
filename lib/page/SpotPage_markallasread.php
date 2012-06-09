@@ -10,7 +10,7 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		
 		# clear the spotstate list als dit toegestaan is
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
-			$this->_db->clearSpotStateList(SpotDb::spotstate_Seen, $this->_currentSession['user']['userid']);
+			$this->_db->markAllAsRead($this->_currentSession['user']['userid']);
 		} # if
 
 		# we willen niet dat dit gecached wordt
