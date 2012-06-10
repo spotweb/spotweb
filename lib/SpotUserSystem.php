@@ -1313,10 +1313,10 @@ class SpotUserSystem {
 	 function determineDeviceType() {
 	 	$mobDetect = new Mobile_Detect();
 
-	 	if ($mobDetect->isMobile()) {
-	 		return "mobile";
-	 	} elseif ($mobDetect->isTablet()) {
+	 	if ($mobDetect->isTablet()) {
 	 		return "tablet";
+	 	} elseif ($mobDetect->isMobile()) {
+	 		return "mobile";
 	 	} else {
 	 		return "full";
 	 	} # else
