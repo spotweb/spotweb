@@ -447,10 +447,6 @@ class SpotUserSystem {
 		 *
 		 * We solve this by simply setting the values of all the checkboxes and then performing
 		 * a recursive merge
-		 *
-		 * Convert other settings to booleans so we always have a valid result.
-		 * We need to do this because not all browsers post checkboxes in a form in
-		 * the same way.
 		 */
 		$anonSkel['count_newspots'] = (isset($prefs['count_newspots'])) ? true : false;
         $anonSkel['mouseover_subcats'] = (isset($prefs['mouseover_subcats'])) ? true : false;
