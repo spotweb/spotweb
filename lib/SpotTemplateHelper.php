@@ -853,9 +853,11 @@ class SpotTemplateHelper {
 											   "", 
 											   $spot['title']);
 			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
-			if (empty(preg_replace('\s', "", $spot['cleantitle']))){
+			$spot['cleantitle'] = preg_replace('\s', "", $spot['cleantitle']);
+			if (empty($spot['cleantitle'])) {
 				// Use $spot['title'] if my regex screws up..
-				$spot['cleantitle'] = $spot['title'];
+				$spot['cleantitle']=$spot['title'];
+			} # if
 		} else {
 			// Prevent gigantic failures from happening.
 			$spot['cleantitle'] = $spot['title'];
