@@ -1,5 +1,5 @@
 <?php
 
-interface BlackWhiteListDao {
+interface Dao_BlackWhiteList {
 	
-} # BlackWhiteListDao
+} # Dao_BlackWhiteList

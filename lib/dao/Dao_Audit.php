@@ -1,5 +1,5 @@
 <?php
 
-interface AuditDao {
+interface Dao_Audit {
 	
-} # AuditDao
+} # Dao_Audit

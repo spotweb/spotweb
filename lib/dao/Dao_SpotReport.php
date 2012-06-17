@@ -1,5 +1,5 @@
 <?php
 
-interface SpotReportDao {
+interface Dao_SpotReport {
 	
-} # SpotReportDao
+} # Dao_SpotReport

@@ -1,5 +1,5 @@
 <?php
 
-interface CommentDao {
+interface Dao_Comment {
 	
-} # CommentDao
+} # Dao_Comment

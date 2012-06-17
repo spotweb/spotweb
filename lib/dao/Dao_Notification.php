@@ -1,5 +1,5 @@
 <?php
 
-interface NotificationDao {
+interface Dao_Notification {
 	
-} # NotificationDao
+} # Dao_Notification

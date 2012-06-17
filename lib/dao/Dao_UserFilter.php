@@ -1,5 +1,5 @@
 <?php
 
-interface UserFilterDao {
+interface Dao_UserFilter {
 	
-} # UserFilterDao
+} # Dao_UserFilter

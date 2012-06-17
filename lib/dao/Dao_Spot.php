@@ -1,6 +1,6 @@
 <?php
 
-interface SpotDao {
+interface Dao_Spot {
 	public function isSpotMessageIdUnique($messageId);							// isNewSpotMessageIdUnique($messageid);
 	public function addPostedSpot($userId, $spot, $fullXml);					// addPostedSpot($userId, $spot, $fullXml);
 
@@ -30,5 +30,5 @@ interface SpotDao {
 	public function getSpotCountPerHour($limit);								// getSpotCountPerHour
 	public function getSpotCountPerWeekday($limit);								// getSpotCountPerWeekday
 	public function getSpotCountPerCategory($limit);							// getSpotCountPerCategory
-} # SpotDao
+} # Dao_Spot
 

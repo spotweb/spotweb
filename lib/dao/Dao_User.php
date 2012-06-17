@@ -1,6 +1,6 @@
 <?php
 
-interface UserDao {
+interface Dao_User {
 	public function findUserIdForName($username);
 	public function userEmailExists($mail);
 	public function getUser($userid);
@@ -26,4 +26,4 @@ interface UserDao {
 	public function addSecurityGroup($group);
 	public function removeSecurityGroup($group);
 	public function setUserGroupList($userId, $groupList);
-} # UserDao
+} # Dao_User

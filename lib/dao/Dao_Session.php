@@ -1,5 +1,5 @@
 <?php
 
-interface SessionDao {
+interface Dao_Session {
 	
-} # SessionDao
+} # Dao_Session

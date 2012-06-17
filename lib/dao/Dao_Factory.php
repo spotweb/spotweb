@@ -1,6 +1,9 @@
 <?php
 
-abstract class DaoFactory {
+abstract class Dao_Factory {
+	abstract public function setConnection($conn);
+	abstract public function getConnection();
+
 	abstract public function getSpotDao();
 	abstract public function getSpotSearchDao();
 	abstract public function getUserDao();
@@ -27,4 +30,4 @@ abstract class DaoFactory {
 		} // switch
 	} # getDayFactory()
 
-} // DaoFactory
+} // Dao_Factory

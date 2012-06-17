@@ -1,5 +1,5 @@
 <?php
 
-interface CacheDao {
+interface Dao_Cache {
 	
-} # CacheDao
+} # Dao_Cache
