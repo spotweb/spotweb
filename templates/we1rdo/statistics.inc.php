@@ -5,7 +5,8 @@
 	$validGraphs = $tplHelper->getValidStatisticsGraphs();
 
 	if (!array_key_exists($limit, $validLimits)) {
-		$limit = array_shift(array_keys($validLimits));
+		$limitKeys = array_keys($validLimits);
+		$limit = array_shift($limitKeys);
 	} # if
 ?>
 <div id="statistics" class="statistics">
