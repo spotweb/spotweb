@@ -2,6 +2,8 @@
 define('SPOTDB_SCHEMA_VERSION', '0.58');
 
 class SpotDb {
+	private $_auditDao;
+
 	private $_dbsettings = null;
 	private $_conn = null;
 	private $_maxPacketSize = null;
@@ -51,25 +53,32 @@ class SpotDb {
 												$tmpUser,
 												$tmpPass,
 												$this->_dbsettings['dbname']); 
+							  $daoFactory = Dao_Factory::getDAOFactory("mysql");
 							  break;
 
 			case 'pdo_mysql': $this->_conn = new dbeng_pdo_mysql($this->_dbsettings['host'],
 												$tmpUser,
 												$tmpPass,
 												$this->_dbsettings['dbname']);
+							  $daoFactory = Dao_Factory::getDAOFactory("mysql");
 							  break;
 							  
 			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
 												$tmpUser,
 												$tmpPass,
 												$this->_dbsettings['dbname']);
+							  $daoFactory = Dao_Factory::getDAOFactory("postgresql");
 							  break;
 							
 			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
+							  $daoFactory = Dao_Factory::getDAOFactory("sqlite");
 							   break;
 
 			default			: throw new Exception('Unknown DB engine specified (' . $this->_dbsettings['engine'] . ', please choose pdo_pgsql, mysql or pdo_mysql');
 		} # switch
+
+		$daoFactory->setConnection($this->_conn);
+		$this->_auditDao = $daoFactory->getAuditDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -2351,15 +2360,6 @@ class SpotDb {
 			} # default
 		} # switch
 	} # markFilterCountAsSeen
-	
-	/*
-	 * Create an entry in the auditlog
-	 */
-	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
-		return $this->_conn->modify("INSERT INTO permaudit(stamp, userid, permissionid, objectid, result, ipaddr) 
-										VALUES(%d, %d, %d, '%s', '%s', '%s')",
-								Array(time(), (int) $userid, (int) $perm, $objectid, $this->bool2dt($allowed), $ipaddr));
-	} # addAuditEntry
 
 	/*
 	 * Removes items from the cache older than a specific amount of days
@@ -2573,5 +2573,11 @@ class SpotDb {
 		}
 		return array('added' => $countnewlistspotterid,'removed' => $countdellistspotterid,'skipped' => $updskipped);
 	} # updateExternallist
+
+	/* --------------------------- */
+	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
+		return $this->_auditDao->addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr);
+	} # addAuditEntry
+
 	
 } # class db
