@@ -60,7 +60,7 @@
 	} # getCommentDao
 
 	public function getSpotReportDao() {
-		return new Dao_Postgresql_Report($this->_conn);
+		return new Dao_Postgresql_SpotReport($this->_conn);
 	} # getSpotReportDao
 
 	public function getSettingDao() {

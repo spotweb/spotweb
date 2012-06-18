@@ -60,7 +60,7 @@
 	} # getCommentDao
 
 	public function getSpotReportDao() {
-		return new Dao_Mysql_Report($this->_conn);
+		return new Dao_Mysql_SpotReport($this->_conn);
 	} # getSpotReportDao
 
 	public function getSettingDao() {

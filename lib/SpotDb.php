@@ -9,6 +9,7 @@ class SpotDb {
 	private $_notificationDao;
 	private $_sessionDao;
 	private $_settingDao;
+	private $_spotReportDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -90,6 +91,7 @@ class SpotDb {
 		$this->_notificationDao = $daoFactory->getNotificationDao();
 		$this->_sessionDao = $daoFactory->getSessionDao();
 		$this->_settingDao = $daoFactory->getSettingDao();
+		$this->_spotReportDao = $daoFactory->getSpotReportDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -555,22 +557,6 @@ class SpotDb {
 	} # removeExtraSpots
 
 	/*
-	 * Remove extra comments
-	 */
-	function removeExtraReports($messageId) {
-		# vraag eerst het id op
-		$reportId = $this->_conn->singleQuery("SELECT id FROM reportsxover WHERE messageid = '%s'", Array($messageId));
-		
-		# als deze report leeg is, is er iets raars aan de hand
-		if (empty($reportId)) {
-			throw new Exception("Our highest report is not in the database!?");
-		} # if
-
-		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->modify("DELETE FROM reportsxover WHERE id > %d", Array($reportId));
-	} # removeExtraReports
-	
-	/*
 	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
 	 */
 	function setLastUpdate($server) {
@@ -648,35 +634,6 @@ class SpotDb {
 		return $rs;
 	} # getOldestSpotTimestamp
 
-
-	/*
-	 * Match set of reports
-	 */
-	function matchReportMessageIds($hdrList) {
-		$idList = array();
-
-		# geen message id's gegeven? vraag het niet eens aan de db
-		if (count($hdrList) == 0) {
-			return $idList;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($hdrList as $hdr) {
-			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# en vraag alle comments op die we kennen
-		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $msgIdList . ")");
-
-		# geef hier een array terug die kant en klaar is voor array_search
-		foreach($rs as $msgids) {
-			$idList[$msgids['messageid']] = 1;
-		} # foreach
-		
-		return $idList;
-	} # matchReportMessageIds
 	
 	/*
 	 * Match set of spots
@@ -908,40 +865,6 @@ class SpotDb {
 	} # getFullSpot()
 
 
-	/*
-	 * Insert addReportRef, 
-	 *   messageid is het werkelijke commentaar id
-	 *   nntpref is de id van de spot
-	 */
-	function addReportRefs($reportList) {
-		$this->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$chunks = array_chunk($reportList, 1);
-		} else {
-			$chunks = array_chunk($reportList, 100);
-		} # else
-
-		foreach($chunks as $reportList) {
-			$insertArray = array();
-			
-			foreach($reportList as $report) {
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s')",
-						Array($this->safe($report['messageid']),
-							  $this->safe($report['fromhdr']),
-							  $this->safe($report['keyword']),
-							  $this->safe($report['nntpref'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref)
-									VALUES " . implode(',', $insertArray), array());
-		} # foreach
-
-		$this->commitTransaction();
-	} # addReportRefs
 
 	/*
 	 * Update een lijst van messageid's met de gemiddelde spotrating
@@ -2035,4 +1958,14 @@ class SpotDb {
 	public function getSchemaVer() {
 		return $this->_settingDao->getSchemaVer();
 	}
+	function removeExtraReports($messageId) {
+		return $this->_spotReportDao->removeExtraReports($messageId);
+	}
+	function matchReportMessageIds($hdrList) {
+		return $this->_spotReportDao->matchReportMessageIds($hdrList);
+	}
+	function addReportRefs($reportList) {
+		return $this->_spotReportDao->addReportRefs($reportList);
+	}
+
 } # class db
