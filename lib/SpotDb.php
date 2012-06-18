@@ -11,6 +11,7 @@ class SpotDb {
 	private $_settingDao;
 	private $_spotReportDao;
 	private $_userFilterCountDao;
+	private $_userFilterDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -94,6 +95,7 @@ class SpotDb {
 		$this->_settingDao = $daoFactory->getSettingDao();
 		$this->_spotReportDao = $daoFactory->getSpotReportDao();
 		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
+		$this->_userFilterDao = $daoFactory->getUserFilterDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -1346,221 +1348,6 @@ class SpotDb {
 	
 	
 	/*
-	 * Verwijder een filter en de children toe (recursive)
-	 */
-	function deleteFilter($userId, $filterId, $filterType) {
-		$filterList = $this->getFilterList($userId, $filterType);
-		foreach($filterList as $filter) {
-		
-			if ($filter['id'] == $filterId) {
-				foreach($filter['children'] as $child) {
-					$this->deleteFilter($userId, $child['id'], $filterType);
-				} # foreach
-			} # if
-			
-			$this->_conn->modify("DELETE FROM filters WHERE userid = %d AND id = %d", 
-					Array($userId, $filterId));
-		} # foreach
-	} # deleteFilter
-	
-	/*
-	 * Voegt een filter en de children toe (recursive)
-	 */
-	function addFilter($userId, $filter) {
-		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder, enablenotify)
-								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s', '%s')",
-							Array((int) $userId,
-								  $filter['filtertype'],
-								  $filter['title'],
-								  $filter['icon'],
-								  (int) $filter['torder'],
-								  (int) $filter['tparent'],
-								  $filter['tree'],
-								  implode('&', $filter['valuelist']),
-								  $filter['sorton'],
-								  $filter['sortorder'],
-								  $this->bool2dt($filter['enablenotify'])));
-		$parentId = $this->_conn->lastInsertId('filters');
-
-		foreach($filter['children'] as $tmpFilter) {
-			$tmpFilter['tparent'] = $parentId;
-			$this->addFilter($userId, $tmpFilter);
-		} # foreach
-	} # addFilter
-	
-	/*
-	 * Copieert de filterlijst van een user naar een andere user
-	 */
-	function copyFilterList($srcId, $dstId) {
-		$filterList = $this->getFilterList($srcId, '');
-		
-		foreach($filterList as $filterItems) {
-			$this->addFilter($dstId, $filterItems);
-		} # foreach
-	} # copyFilterList
-	
-	/*
-	 * Verwijdert alle ingestelde filters voor een user
-	 */
-	function removeAllFilters($userId) {
-		$this->_conn->modify("DELETE FROM filters WHERE userid = %d", Array((int) $userId));
-	} # removeAllfilters
-
-	/*
-	 * Get a specific filter
-	 */
-	function getFilter($userId, $filterId) {
-		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->arrayQuery("SELECT id,
-													  userid,
-													  filtertype,
-													  title,
-													  icon,
-													  torder,
-													  tparent,
-													  tree,
-													  valuelist,
-													  sorton,
-													  sortorder,
-													  enablenotify 
-												FROM filters 
-												WHERE userid = %d AND id = %d",
-					Array((int) $userId, (int) $filterId));
-		if (!empty($tmpResult)) {
-			return $tmpResult[0];
-		} else {
-			return false;
-		} # else
-	} # getFilter
-
-	/*
-	 * Get a specific index filter 
-	 */
-	function getUserIndexFilter($userId) {
-		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->arrayQuery("SELECT id,
-													  userid,
-													  filtertype,
-													  title,
-													  icon,
-													  torder,
-													  tparent,
-													  tree,
-													  valuelist,
-													  sorton,
-													  sortorder,
-													  enablenotify 
-												FROM filters 
-												WHERE userid = %d AND filtertype = 'index_filter'",
-					Array((int) $userId));
-		if (!empty($tmpResult)) {
-			return $tmpResult[0];
-		} else {
-			return false;
-		} # else
-	} # getUserIndexFilter
-	
-	
-	/*
-	 * Get a specific filter
-	 */
-	function updateFilter($userId, $filter) {
-		/* Haal de lijst met filter values op */
-		$tmpResult = $this->_conn->modify("UPDATE filters 
-												SET title = '%s',
-												    icon = '%s',
-													torder = %d,
-													tparent = %d,
-													enablenotify = '%s'
-												WHERE userid = %d AND id = %d",
-					Array($filter['title'], 
-						  $filter['icon'], 
-						  (int) $filter['torder'], 
-						  (int) $filter['tparent'], 
-						  $this->bool2dt($filter['enablenotify']),
-						  (int) $userId, 
-						  (int) $filter['id']));
-	} # updateFilter
-
-	/* 
-	 * Haalt de filterlijst op als een platte lijst
-	 */
-	function getPlainFilterList($userId, $filterType) {
-		/* willen we een specifiek soort filter hebben? */
-		if (empty($filterType)) {
-			$filterTypeFilter = '';
-		} else {
-			$filterTypeFilter = " AND filtertype = 'filter'"; 
-		} # else
-		
-		/* Haal de lijst met filter values op */
-		return $this->_conn->arrayQuery("SELECT id,
-											  userid,
-											  filtertype,
-											  title,
-											  icon,
-											  torder,
-											  tparent,
-											  tree,
-											  valuelist,
-											  sorton,
-											  sortorder,
-											  enablenotify 
-										FROM filters 
-										WHERE userid = %d " . $filterTypeFilter . "
-										ORDER BY tparent,torder", /* was: id, tparent, torder */
-				Array($userId));
-	} # getPlainFilterList
-	
-	/*
-	 * Haalt de filter lijst op en formatteert die in een boom
-	 */
-	function getFilterList($userId, $filterType) {
-		$tmpResult = $this->getPlainFilterList($userId, $filterType);
-		$idMapping = array();
-		foreach($tmpResult as &$tmp) {
-			$idMapping[$tmp['id']] =& $tmp;
-		} # foreach
-		
-		/* Hier zetten we het om naar een daadwerkelijke boom */
-		$tree = array();
-		foreach($tmpResult as &$filter) {
-			if (!isset($filter['children'])) {
-				$filter['children'] = array();
-			} # if
-			
-			# de filter waardes zijn URL encoded opgeslagen 
-			# en we gebruiken de & om individuele filterwaardes
-			# te onderscheiden
-			$filter['valuelist'] = explode('&', $filter['valuelist']);
-			
-			if ($filter['tparent'] == 0) {
-				$tree[$filter['id']] =& $filter;
-			} else {
-				$idMapping[$filter['tparent']]['children'][] =& $filter;
-			} # else
-		} # foreach
-
-		return $tree;
-	} # getFilterList
-	
-	/*
-	 * Returns a list of all unique filter combinations
-	 */
-	function getUniqueFilterCombinations() {
-		return $this->_conn->arrayQuery("SELECT tree,valuelist FROM filters GROUP BY tree,valuelist ORDER BY tree,valuelist");
-	} # getUniqueFilterCombinations
-
-	/*
-	 * Returns the user ids for this filter combination
-	 */
-	function getUsersForFilter($tree, $valuelist) {
-		return $this->_conn->arrayQuery("SELECT title, userid, enablenotify FROM filters WHERE tree = '%s' AND valuelist = '%s'",
-				 Array($tree, $valuelist));
-	} # getUsersForFilter
-
-
-	/*
 	 * Removes items from te commentsfull table older than a specific amount of days
 	 */
 	function expireSpotsFull($expireDays) {
@@ -1739,6 +1526,39 @@ class SpotDb {
 	}
 	function markFilterCountAsSeen($userId) {
 		return $this->_userFilterCountDao->markFilterCountAsSeen($userId);
+	}
+	function deleteFilter($userId, $filterId, $filterType) {
+		return $this->_userFilterDao->deleteFilter($userId, $filterId, $filterType);
+	}
+	function addFilter($userId, $filter) {
+		return $this->_userFilterDao->addFilter($userId, $filter);
+	}
+	function copyFilterList($srcId, $dstId) {
+		return $this->_userFilterDao->copyFilterList($srcId, $dstId);
+	}
+	function removeAllFilters($userId) {
+		return $this->_userFilterDao->removeAllFilters($userId);
+	}
+	function getFilter($userId, $filterId) {
+		return $this->_userFilterDao->getFilter($userId, $filterId);
+	}
+	function getUserIndexFilter($userId) {
+		return $this->_userFilterDao->getUserIndexFilter($userId);
+	}
+	function updateFilter($userId, $filter) {
+		return $this->_userFilterDao->updateFilter($userId, $filter);
+	}	
+	function getPlainFilterList($userId, $filterType) {
+		return $this->_userFilterDao->getPlainFilterList($userId, $filterType);
+	}
+	function getFilterList($userId, $filterType) {
+		return $this->_userFilterDao->getFilterList($userId, $filterType);
+	}
+	function getUniqueFilterCombinations() {
+		return $this->_userFilterDao->getUniqueFilterCombinations();
+	}
+	function getUsersForFilter($tree, $valuelist) {
+		return $this->_userFilterDao->getUsersForFilter($tree, $valuelist);
 	}
 
 } # class db
