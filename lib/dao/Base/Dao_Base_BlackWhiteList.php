@@ -1,7 +1,7 @@
 <?php
 
 class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
-	private $_conn;
+	protected $_conn;
 
 	/*
 	 * constructs a new Dao_Base_BlackWhiteList object, 
@@ -65,12 +65,12 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 				# voeg nieuwe spotterid's toe aan de lijst
 				$countnewlistspotterid++;
 				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%d,'external')", Array($updl, (int) $idtype));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s'AND ouruserid != -1  AND idtype = %d ", Array($this->bool2dt(true), $updl, (int) $idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s'AND ouruserid != -1  AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 2) {
 				# verwijder spotterid's die niet meer op de lijst staan
 				$countdellistspotterid++;
 				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d ", Array($this->bool2dt(true), $updl, (int) $idtype));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 4) {
 				$countnewlistspotterid++;
 				$this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));

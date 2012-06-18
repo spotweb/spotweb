@@ -4,10 +4,12 @@ define('SPOTDB_SCHEMA_VERSION', '0.58');
 class SpotDb {
 	private $_auditDao;
 	private $_blackWhiteListDao;
+	private $_cacheDao;
+	private $_commentDao;
+	private $_notificationDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
-	private $_maxPacketSize = null;
 
 	/*
 	 * Constants used for updating the SpotStateList
@@ -81,6 +83,9 @@ class SpotDb {
 		$daoFactory->setConnection($this->_conn);
 		$this->_auditDao = $daoFactory->getAuditDao();
 		$this->_blackWhiteListDao = $daoFactory->getBlackWhiteListDao();
+		$this->_cacheDao = $daoFactory->getCacheDao();
+		$this->_commentDao = $daoFactory->getCommentDao();
+		$this->_notificationDao = $daoFactory->getNotificationDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -109,23 +114,6 @@ class SpotDb {
 		
 		return $tmpSettings;
 	} # getAllSettings
-
-	function getMaxPacketSize() {
-		if ($this->_maxPacketSize == null) {
-			$packet = -1;
-			
-			switch ($this->_dbsettings['engine']) {
-				case 'mysql'		:
-				case 'pdo_mysql'	: $packet = $this->_conn->arrayQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"); 
-									  $packet = $packet[0]['Value'];
-									  break;
-			} # switch
-			
-			$this->_maxPacketSize = $packet;
-		} # if
-		
-		return $this->_maxPacketSize;
-	} # getMaxPacketSize
 
 	/* 
 	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
@@ -166,17 +154,6 @@ class SpotDb {
 	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
 	 * te posten
 	 */
-	function isCommentMessageIdUnique($messageid) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'",
-						Array($messageid));
-		
-		return (empty($tmpResult));
-	} # isCommentMessageIdUnique
-	
-	/* 
-	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
-	 * te posten
-	 */
 	function isReportMessageIdUnique($messageid) {
 		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
 						Array($messageid));
@@ -193,21 +170,6 @@ class SpotDb {
 		return (!empty($tmpResult));
 	} #isReportPlaced
 	
-	/*
-	 * Sla het gepostte comment op van deze user
-	 */
-	function addPostedComment($userId, $comment) {
-		$this->_conn->modify(
-				"INSERT INTO commentsposted(ouruserid, messageid, inreplyto, randompart, rating, body, stamp)
-					VALUES('%d', '%s', '%s', '%s', '%d', '%s', %d)", 
-				Array((int) $userId,
-					  $comment['newmessageid'],
-					  $comment['inreplyto'],
-					  $comment['randomstr'],
-					  (int) $comment['rating'],
-					  $comment['body'],
-					  (int) time()));
-	} # addPostedComment
 	
 	/*
 	 * Sla het gepostte report op van deze user
@@ -718,23 +680,6 @@ class SpotDb {
 	/*
 	 * Remove extra comments
 	 */
-	function removeExtraComments($messageId) {
-		# vraag eerst het id op
-		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
-		
-		# als deze spot leeg is, is er iets raars aan de hand
-		if (empty($commentId)) {
-			throw new Exception("Our highest comment is not in the database!?");
-		} # if
-
-		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
-	} # removeExtraComments
-
-
-	/*
-	 * Remove extra comments
-	 */
 	function removeExtraReports($messageId) {
 		# vraag eerst het id op
 		$reportId = $this->_conn->singleQuery("SELECT id FROM reportsxover WHERE messageid = '%s'", Array($messageId));
@@ -826,44 +771,6 @@ class SpotDb {
 		return $rs;
 	} # getOldestSpotTimestamp
 
-	/*
-	 * Match set of comments
-	 */
-	function matchCommentMessageIds($hdrList) {
-		# We negeren commentsfull hier een beetje express, als die een 
-		# keer ontbreken dan fixen we dat later wel.
-		$idList = array('comment' => array(), 'fullcomment' => array());
-
-		# geen message id's gegeven? vraag het niet eens aan de db
-		if (count($hdrList) == 0) {
-			return $idList;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($hdrList as $hdr) {
-			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# Omdat MySQL geen full joins kent, doen we het zo
-		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
-											UNION
-					 				    SELECT '' as comment, messageid AS fullcomment FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
-
-		# en lossen we het hier op
-		foreach($rs as $msgids) {
-			if (!empty($msgids['comment'])) {
-				$idList['comment'][$msgids['comment']] = 1;
-			} # if
-
-			if (!empty($msgids['fullcomment'])) {
-				$idList['fullcomment'][$msgids['fullcomment']] = 1;
-			} # if
-		} # foreach
-
-		return $idList;
-	} # matchCommentMessageIds
 
 	/*
 	 * Match set of reports
@@ -1123,87 +1030,6 @@ class SpotDb {
 		return $tmpArray;		
 	} # getFullSpot()
 
-	/*
-	 * Insert commentref, 
-	 *   messageid is het werkelijke commentaar id
-	 *   nntpref is de id van de spot
-	 */
-	function addComments($comments, $fullComments = array()) {
-		$this->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$chunks = array_chunk($comments, 1);
-		} else {
-			$chunks = array_chunk($comments, 100);
-		} # else
-
-		foreach($chunks as $comments) {
-			$insertArray = array();
-
-			foreach($comments as $comment) {
-				$insertArray[] = vsprintf("('%s', '%s', %d, %d)",
-						 Array($this->safe($comment['messageid']),
-							   $this->safe($comment['nntpref']),
-							   $this->safe($comment['rating']),
-							   $this->safe($comment['stamp'])));
-			} # foreach
-
-			# Actually insert the batch
-			if (!empty($insertArray)) {
-				$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp)
-									  VALUES " . implode(',', $insertArray), array());
-			} # if
-		} # foreach
-		$this->commitTransaction();
-
-		if (!empty($fullComments)) {
-			$this->addFullComments($fullComments);
-		} # if
-	} # addComments
-
-	/*
-	 * Insert commentfull, gaat er van uit dat er al een commentsxover entry is
-	 */
-	function addFullComments($fullComments) {
-		$this->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$chunks = array_chunk($fullComments, 1);
-		} else {
-			$chunks = array_chunk($fullComments, 100);
-		} # else
-
-		foreach($chunks as $fullComments) {
-			$insertArray = array();
-
-			foreach($fullComments as $comment) {
-				# Kap de verschillende strings af op een maximum van 
-				# de datastructuur, de unique keys kappen we expres niet af
-				$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
-
-				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
-						Array($this->safe($comment['messageid']),
-							  $this->safe($comment['fromhdr']),
-							  $this->safe($comment['stamp']),
-							  $this->safe($comment['user-signature']),
-							  $this->safe(serialize($comment['user-key'])),
-							  $this->safe($comment['spotterid']),
-							  $this->safe(implode("\r\n", $comment['body'])),
-							  $this->bool2dt($comment['verified']),
-							  $this->safe($comment['user-avatar'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar)
-								  VALUES " . implode(',', $insertArray), array());
-		} # foreach
-
-		$this->commitTransaction();
-	} # addFullComments
 
 	/*
 	 * Insert addReportRef, 
@@ -1324,101 +1150,11 @@ class SpotDb {
 	} # updateSpotReportCount
 
 	/*
-	 * Vraag de volledige commentaar lijst op, gaat er van uit dat er al een commentsxover entry is
-	 */
-	function getCommentsFull($userId, $nntpRef) {
-		SpotTiming::start(__FUNCTION__);
-
-		# en vraag de comments daadwerkelijk op
-		$commentList = $this->_conn->arrayQuery("SELECT c.messageid AS messageid, 
-														(f.messageid IS NOT NULL) AS havefull,
-														f.fromhdr AS fromhdr, 
-														f.stamp AS stamp, 
-														f.usersignature AS \"user-signature\", 
-														f.userkey AS \"user-key\", 
-														f.spotterid AS spotterid, 
-														f.body AS body, 
-														f.verified AS verified,
-														c.spotrating AS spotrating,
-														c.moderated AS moderated,
-														f.avatar as \"user-avatar\",
-														bl.idtype AS idtype
-													FROM commentsfull f 
-													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
-													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = '%s'))
-													WHERE c.nntpref = '%s' AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = " . $this->safe( (int) $userId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
-													ORDER BY c.id", array($this->bool2dt(false), $nntpRef));
-		$commentListCount = count($commentList);
-		for($i = 0; $i < $commentListCount; $i++) {
-			if ($commentList[$i]['havefull']) {
-				$commentList[$i]['user-key'] = unserialize($commentList[$i]['user-key']);
-				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
-			} # if
-		} # for
-
-		SpotTiming::stop(__FUNCTION__);
-		return $commentList;
-	} # getCommentsFull
-
-	/*
-	 * Returns the amount of new comments since 'stamp' for all 
-	 * comments belonging to spot 'nntpRefList'
-	 */
-	function getNewCommentCountFor($nntpRefList, $ourUserId) {
-		if (count($nntpRefList) == 0) {
-			return array();
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($nntpRefList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		/*
-		 * Actually run the query
-		 */
-		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
-									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
-												AND (sl.ouruserid = %d)
-									WHERE nntpref IN (" . $msgIdList . ") 
- 										  AND (cx.stamp > sl.seen) 
-								   GROUP BY nntpref",
-								   Array((int) $ourUserId));
-		$commentCount = array();
-		foreach($tmp as $cCount) {
-			$commentCount[$cCount['nntpref']] = $cCount['ccount'];
-		} # foreach
-		
-		return $commentCount;
-	} # getNewCommentCountFor
-
-	/*
 	 * Geeft huidig database schema versie nummer terug
 	 */
 	function getSchemaVer() {
 		return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
 	} # getSchemaVer
-
-	/*
-	 * Removes a comment from the database
-	 */
-	function removeComments($commentMsgIdList) {
-		if (count($commentMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
-		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
-	} # removeComments
 
 	/*
 	 * Verwijder een spot uit de db
@@ -1479,24 +1215,6 @@ class SpotDb {
 
 		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->bool2dt(true)));
 	} # markSpotsModerated
-
-	/*
-	 * Markeer een comment in de db moderated
-	 */
-	function markCommentsModerated($commentMsgIdList) {
-		if (count($commentMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->bool2dt(true)));
-	} # markCommentsModerated
 
 	/*
 	 * Verwijder oude spots uit de db
@@ -1830,30 +1548,6 @@ class SpotDb {
 						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
 		} # foreach
 	} # setUserGroupList
-	
-	/*
-	 * Voegt een nieuwe notificatie toe
-	 */
-	function addNewNotification($userId, $objectId, $type, $title, $body) {
-		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s')",
-					Array($userId, (int) time(), $objectId, $type, $title, $body, $this->bool2dt(false)));
-	} # addNewNotification
-	
-	/*
-	 * Haalt niet-verzonden notificaties op van een user
-	 */
-	function getUnsentNotifications($userId) {
-		return $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
-					Array($userId));
-	} # getUnsentNotifications
-
-	/* 
-	 * Een notificatie updaten
-	 */
-	function updateNotification($msg) {
-		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = '%s' WHERE id = %d",
-					Array($msg['title'], $msg['body'], $this->bool2dt($msg['sent']), $msg['id']));
-	} // updateNotification
 	
 	
 	/*
@@ -2322,125 +2016,12 @@ class SpotDb {
 	} # markFilterCountAsSeen
 
 	/*
-	 * Removes items from the cache older than a specific amount of days
-	 */
-	function expireCache($expireDays) {
-		return $this->_conn->modify("DELETE FROM cache WHERE (cachetype = %d OR cachetype = %d OR cachetype = %d) AND stamp < %d", Array(SpotCache::Web, SpotCache::Statistics, SpotCache::StatisticsData,(int) time()-$expireDays*24*60*60));
-	} # expireCache
-
-	/*
-	 * Removes items from te commentsfull table older than a specific amount of days
-	 */
-	function expireCommentsFull($expireDays) {
-		return $this->_conn->modify("DELETE FROM commentsfull WHERE stamp < %d", Array((int) time() - ($expireDays*24*60*60)));
-	} # expireCommentsFull
-
-	/*
 	 * Removes items from te commentsfull table older than a specific amount of days
 	 */
 	function expireSpotsFull($expireDays) {
 		return $this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
 	} # expireCommentsFull
 
-	/*
-	 * Retrieves wether a specific resourceid is cached
-	 */
-	function isCached($resourceid, $cachetype) {
-		$tmpResult = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
-
-		return (!empty($tmpResult));
-	} # isCached
-
-	/*
-	 * Returns the resource from the cache table, if we have any
-	 */
-	function getCache($resourceid, $cachetype) {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql' : {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
-				if (!empty($tmp)) {
-					$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);
-				} # if
-				
-				break;
-			} # case 'pdo_pgsql'
-
-			case 'mysql'		:
-			case 'pdo_mysql'	: { 
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, UNCOMPRESS(content) AS content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
-				break;
-			} # mysql
-
-			default		: {
-				$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
-			} # default
-		} # switch
-
-		if (!empty($tmp)) {
-			if ($tmp[0]['serialized'] == 1) {
-				$tmp[0]['content'] = unserialize($tmp[0]['content']);
-			} # if
-
-			$tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
-			return $tmp[0];
-		} # if
-
-		return false;
-	} # getCache
-
-	/*
-	 * Refreshen the cache timestamp to prevent it from being stale
-	 */
-	function updateCacheStamp($resourceid, $cachetype) {
-		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
-	} # updateCacheStamp
-
-	/*
-	 * Add a resource to the cache
-	 */
-	function saveCache($resourceid, $cachetype, $metadata, $content) {
-		if (is_array($content)) {
-			$serialize = true;
-			$content = serialize($content);
-		} else {
-			$serialize = false;
-		} # else
-
-		if ($metadata) {
-			$metadata = serialize($metadata);
-		} # if
-
-		if ($this->getMaxPacketsize() > 0 && (strlen($content)*1.15)+115 > $this->getMaxPacketSize()) {
-			return;
-		} # if
-
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = '%b' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', '%b')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
-					} # if
-					break;
-			} # pgsql
-
-			case 'mysql'		:
-			case 'pdo_mysql'	: { 
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = COMPRESS('%s') WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', COMPRESS('%s'))", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
-					} # if
-					break;
-			} # mysql
-
-			default				: {
-					$this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', serialized = '%s', content = '%s' WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $metadata, $this->bool2dt($serialize), $content, $resourceid, $cachetype));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata,serialized,content) VALUES ('%s', '%s', %d, '%s', '%s', '%s')", Array($resourceid, $cachetype, time(), $metadata, $this->bool2dt($serialize), $content));
-					} # if
-			} # default
-		} # switch
-	} # saveCache
-	
 	/*
 	 * Updates a users' setting with an base64 encoded image
 	 */
@@ -2497,4 +2078,62 @@ class SpotDb {
 	function getBlacklistForSpotterId($userId, $spotterId) {
 		return $this->_blackWhiteListDao->getBlacklistForSpotterId($userId, $spotterId);
 	}	
+	function expireCache($expireDays) {
+		return $this->_cacheDao->expireCache($expireDays);
+	}
+	function isCached($resourceid, $cachetype) {
+		return $this->_cacheDao->isCached($resourceid, $cachetype);
+	}
+	function getCache($resourceid, $cachetype) {
+		return $this->_cacheDao->getCache($resourceid, $cachetype);
+	}
+	function updateCacheStamp($resourceid, $cachetype) {
+		return $this->_cacheDao->updateCacheStamp($resourceid, $cachetype);
+	}
+	function saveCache($resourceid, $cachetype, $metadata, $content) {
+		return $this->_cacheDao->saveCache($resourceid, $cachetype, $metadata, $content);
+	}
+	function isCommentMessageIdUnique($messageid) {
+		return $this->_commentDao->isCommentMessageIdUnique($messageid);
+	}
+	function removeExtraComments($messageId) {
+		return $this->_commentDao->removeExtraComments($messageId);
+	}
+	function addPostedComment($userId, $comment) {
+		return $this->_commentDao->addPostedComment($userId, $comment);
+	}
+	function matchCommentMessageIds($hdrList) {
+		return $this->_commentDao->matchCommentMessageIds($hdrList);
+	}
+	function addComments($comments, $fullComments = array()) {
+		return $this->_commentDao->addComments($comments, $fullComments);
+	}
+	function addFullComments($fullComments) {
+		return $this->_commentDao->addFullComments($fullComments);
+	}
+	function getCommentsFull($userId, $nntpRef) {
+		return $this->_commentDao->getCommentsFull($userId, $nntpRef);
+	}
+	function getNewCommentCountFor($nntpRefList, $ourUserId) {
+		return $this->_commentDao->getNewCommentCountFor($nntpRefList, $ourUserId);
+	}
+	function markCommentsModerated($commentMsgIdList) {
+		return $this->_commentDao->markCommentsModerated($commentMsgIdList);
+	}
+	function removeComments($commentMsgIdList) {
+		return $this->_commentDao->removeComments($commentMsgIdList);
+	}
+	function expireCommentsFull($expireDays) {
+		return $this->_commentDao->expireCommentsFull($expireDays);
+	}
+	function addNewNotification($userId, $objectId, $type, $title, $body) {
+		return $this->_notificationDao->addNewNotification($userId, $objectId, $type, $title, $body);
+	}
+	function getUnsentNotifications($userId) {
+		return $this->_notificationDao->getUnsentNotifications($userId);
+	}
+	function updateNotification($msg) {
+		return $this->_notificationDao->updateNotification($msg);
+	}
+
 } # class db

@@ -1,7 +1,7 @@
 <?php
 
 class Dao_Base_Audit implements Dao_Audit {
-	private $_conn;
+	protected $_conn;
 
 	/*
 	 * constructs a new Dao_Base_Audit object, 
