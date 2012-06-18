@@ -18,6 +18,16 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
+		case 'Dao'			: {
+			$parts = explode("_", $class_name);
+
+			if (count($parts) == 2) {
+				require_once ('lib/dao/' . $class_name . '.php');
+			} else {
+				require_once ('lib/dao/' . $parts[1] . '/' . $class_name . '.php');
+			} # else
+			break;
+		} # dao
 		case 'Mobile'		: {
 			if ($class_name == 'Mobile_Detect') {
 				require_once "Mobile_Detect.php";
