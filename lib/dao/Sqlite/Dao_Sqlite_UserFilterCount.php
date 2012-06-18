@@ -2,7 +2,6 @@
 
 class Dao_Sqlite_UserFilterCount extends Dao_Base_UserFilterCount {
 
-
 	/*
 	 * Mark all filters as read
 	 */

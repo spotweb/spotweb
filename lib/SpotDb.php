@@ -12,6 +12,7 @@ class SpotDb {
 	private $_spotReportDao;
 	private $_userFilterCountDao;
 	private $_userFilterDao;
+	private $_userDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -96,6 +97,7 @@ class SpotDb {
 		$this->_spotReportDao = $daoFactory->getSpotReportDao();
 		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
 		$this->_userFilterDao = $daoFactory->getUserFilterDao();
+		$this->_userDao = $daoFactory->getUserDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -180,235 +182,6 @@ class SpotDb {
 	} # addPostedReport
 
 
-
-	/*
-	 * Checkt of een username al bestaat
-	 */
-	function findUserIdForName($username) {
-		return $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($username));
-	} # findUserIdForName
-
-	/*
-	 * Checkt of een emailaddress al bestaat
-	 */
-	function userEmailExists($mail) {
-		$tmpResult = $this->_conn->singleQuery("SELECT id FROM users WHERE mail = '%s'", Array($mail));
-		
-		if (!empty($tmpResult)) {
-			return $tmpResult;
-		} # if
-
-		return false;
-	} # userEmailExists
-
-	/*
-	 * Haalt een user op uit de database 
-	 */
-	function getUser($userid) {
-		$tmp = $this->_conn->arrayQuery(
-						"SELECT u.id AS userid,
-								u.username AS username,
-								u.firstname AS firstname,
-								u.lastname AS lastname,
-								u.mail AS mail,
-								u.apikey AS apikey,
-								u.deleted AS deleted,
-								u.lastlogin AS lastlogin,
-								u.lastvisit AS lastvisit,
-								u.lastread AS lastread,
-								u.lastapiusage AS lastapiusage,
-								s.publickey AS publickey,
-								s.avatar AS avatar,
-								s.otherprefs AS prefs
-						 FROM users AS u
-						 JOIN usersettings s ON (u.id = s.userid)
-						 WHERE u.id = %d AND NOT DELETED",
-				 Array( (int) $userid ));
-
-		if (!empty($tmp)) {
-			# Other preferences worden serialized opgeslagen in de database
-			$tmp[0]['prefs'] = unserialize($tmp[0]['prefs']);
-			return $tmp[0];
-		} # if
-		
-		return false;
-	} # getUser
-
-	/*
-	 * Retrieve a list of userids and some basic properties
-	 */
-	function getUserList() {
-		SpotTiming::start(__FUNCTION__);
-		
-		$tmpResult = $this->_conn->arrayQuery(
-						"SELECT u.id AS userid,
-								u.username AS username,
-								u.firstname AS firstname,
-								u.lastname AS lastname,
-								u.mail AS mail,
-								u.lastlogin AS lastlogin,
-								s.otherprefs AS prefs
-						 FROM users AS u
-						 JOIN usersettings s ON (u.id = s.userid)
-						 WHERE (NOT DELETED)");
-		if (!empty($tmpResult)) {
-			# Other preferences are stored serialized in the database
-			$tmpResultCount = count($tmpResult);
-			for($i = 0; $i < $tmpResultCount; $i++) {
-				$tmpResult[$i]['prefs'] = unserialize($tmpResult[$i]['prefs']);
-			} # for
-		} # if
-
-		SpotTiming::stop(__FUNCTION__, array());
-		return $tmpResult;
-	} # getUserList
-
-	/*
-	 * Haalt een user op uit de database 
-	 */
-	function getUserListForDisplay() {
-		SpotTiming::start(__FUNCTION__);
-		
-		$tmpResult = $this->_conn->arrayQuery(
-						"SELECT u.id AS userid,
-								u.username AS username,
-								MAX(u.firstname) AS firstname,
-								MAX(u.lastname) AS lastname,
-								MAX(u.mail) AS mail,
-								MAX(u.lastlogin) AS lastlogin,
-								COALESCE(MAX(ss.lasthit), MAX(u.lastvisit)) AS lastvisit,
-								MAX(ipaddr) AS lastipaddr
-							FROM users AS u
-							LEFT JOIN (SELECT userid, lasthit, ipaddr, devicetype FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
-							WHERE (deleted = '%s')
-							GROUP BY u.id, u.username", array($this->bool2dt(false)));
-
-		SpotTiming::stop(__FUNCTION__, array());
-		return $tmpResult;
-	} # getUserListForDisplay
-
-	/*
-	 * Disable/delete een user. Echt wissen willen we niet 
-	 * omdat eventuele comments dan niet meer te traceren
-	 * zouden zijn waardoor anti-spam maatregelen erg lastig
-	 * worden
-	 */
-	function deleteUser($userid) {
-		$this->_conn->modify("UPDATE users 
-								SET deleted = true
-								WHERE id = '%s'", 
-							Array( (int) $userid));
-	} # deleteUser
-
-	/*
-	 * Update de informatie over een user behalve het password
-	 */
-	function setUser($user) {
-		# eerst updaten we de users informatie
-		$this->_conn->modify("UPDATE users 
-								SET firstname = '%s',
-									lastname = '%s',
-									mail = '%s',
-									apikey = '%s',
-									lastlogin = %d,
-									lastvisit = %d,
-									lastread = %d,
-									lastapiusage = %d,
-									deleted = '%s'
-								WHERE id = %d", 
-				Array($user['firstname'],
-					  $user['lastname'],
-					  $user['mail'],
-					  $user['apikey'],
-					  (int) $user['lastlogin'],
-					  (int) $user['lastvisit'],
-					  (int) $user['lastread'],
-					  (int) $user['lastapiusage'],
-					  $this->bool2dt($user['deleted']),
-					  (int) $user['userid']));
-
-		# daarna updaten we zijn preferences
-		$this->_conn->modify("UPDATE usersettings
-								SET otherprefs = '%s'
-								WHERE userid = '%s'", 
-				Array(serialize($user['prefs']),
-					  (int) $user['userid']));
-	} # setUser
-
-	/*
-	 * Stel users' password in
-	 */
-	function setUserPassword($user) {
-		$this->_conn->modify("UPDATE users 
-								SET passhash = '%s'
-								WHERE id = '%s'", 
-				Array($user['passhash'],
-					  (int) $user['userid']));
-	} # setUserPassword
-
-	/*
-	 * Vul de public en private key van een user in, alle andere
-	 * user methodes kunnen dit niet updaten omdat het altijd
-	 * een paar moet zijn
-	 */
-	function setUserRsaKeys($userId, $publicKey, $privateKey) {
-		# eerst updaten we de users informatie
-		$this->_conn->modify("UPDATE usersettings
-								SET publickey = '%s',
-									privatekey = '%s'
-								WHERE userid = '%s'",
-				Array($publicKey, $privateKey, $userId));
-	} # setUserRsaKeys 
-
-	/*
-	 * Vraagt de users' private key op
-	 */
-	function getUserPrivateRsaKey($userId) {
-		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = '%s'", 
-					Array($userId));
-	} # getUserPrivateRsaKey
-
-	/* 
-	 * Voeg een user toe
-	 */
-	function addUser($user) {
-		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastread, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-								Array($user['username'], 
-									  $user['firstname'],
-									  $user['lastname'],
-									  $user['passhash'],
-									  $user['mail'],
-									  $user['apikey'],
-									  $this->getMaxMessageTime(),
-									  $this->bool2dt(false)));
-
-		# We vragen nu het userrecord terug op om het userid te krijgen,
-		# niet echt een mooie oplossing, maar we hebben blijkbaar geen 
-		# lastInsertId() exposed in de db klasse
-		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
-
-		# en voeg een usersettings record in
-		$this->_conn->modify("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
-										VALUES('%s', '', '', 'a:0:{}')",
-								Array((int)$user['userid']));
-		return $user;
-	} # addUser
-
-	/*
-	 * Kan de user inloggen met opgegeven password of API key?
-	 *
-	 * Een userid als de user gevonden kan worden, of false voor failure
-	 */
-	function authUser($username, $passhash) {
-		if ($username === false) {
-			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE apikey = '%s' AND NOT DELETED", Array($passhash));
-		} else {
-			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED", Array($username, $passhash));
-		} # if
-
-		return (empty($tmp)) ? false : $tmp[0]['id'];
-	} # authUser
 
 	/* 
 	 * Update of insert the maximum article id in de database.
@@ -1237,114 +1010,6 @@ class SpotDb {
 		SpotTiming::stop(__FUNCTION__, array($list, $messageid, $ourUserId));
 	} # removeFromWatchList
 
-	/* 
-	 * Geeft de permissies terug van een bepaalde groep
-	 */
-	function getGroupPerms($groupId) {
-		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = %d",
-					Array($groupId));
-	} # getgroupPerms
-	
-	/*
-	 * Geeft permissies terug welke user heeft, automatisch in het formaat zoals
-	 * SpotSecurity dat heeft (maw - dat de rechtencheck een simpele 'isset' is om 
-	 * overhead te voorkomen
-	 */
-	function getPermissions($userId) {
-		$permList = array();
-		$tmpList = $this->_conn->arrayQuery('SELECT permissionid, objectid, deny FROM grouppermissions 
-												WHERE groupid IN 
-													(SELECT groupid FROM usergroups WHERE userid = %d ORDER BY prio)',
-											 Array($userId));
-
-		foreach($tmpList as $perm) {
-			# Voeg dit permissionid toe aan de lijst met permissies
-			if (!isset($permList[$perm['permissionid']])) {
-				$permList[$perm['permissionid']] = array();
-			} # if
-			
-			$permList[$perm['permissionid']][$perm['objectid']] = !(boolean) $perm['deny'];
-		} # foreach
-		
-		return $permList;
-	} # getPermissions
-
-	/*
-	 * Geeft alle gedefinieerde groepen terug
-	 */
-	function getGroupList($userId) {
-		if ($userId == null) {
-			return $this->_conn->arrayQuery("SELECT id,name,0 as \"ismember\" FROM securitygroups");
-		} else {
-			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
-										Array($userId));
-		} # if
-	} # getGroupList
-	
-	/*
-	 * Verwijdert een permissie uit een security group
-	 */
-	function removePermFromSecGroup($groupId, $perm) {
-		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($groupId, $perm['permissionid'], $perm['objectid']));
-	} # removePermFromSecGroup
-
-	/*
-	 * Zet een permissie op deny in een security group
-	 */
-	function setDenyForPermFromSecGroup($groupId, $perm) {
-		$this->_conn->modify("UPDATE grouppermissions SET deny = '%s' WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($this->bool2dt($perm['deny']), $groupId, $perm['permissionid'], $perm['objectid']));
-	} # removePermFromSecGroup
-	
-	/*
-	 * Voegt een permissie aan een security group toe
-	 */
-	function addPermToSecGroup($groupId, $perm) {
-		$this->_conn->modify("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES (%d, %d, '%s')",
-				Array($groupId, $perm['permissionid'], $perm['objectid']));
-	} # addPermToSecGroup
-
-	/*
-	 * Geef een specifieke security group terug
-	 */
-	function getSecurityGroup($groupId) {
-		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array($groupId));
-	} # getSecurityGroup
-		
-	/*
-	 * Geef een specifieke security group terug
-	 */
-	function setSecurityGroup($group) {
-		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
-	} # setSecurityGroup
-	
-	/*
-	 * Geef een specifieke security group terug
-	 */
-	function addSecurityGroup($group) {
-		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($group['name']));
-	} # addSecurityGroup
-
-	/*
-	 * Geef een specifieke security group terug
-	 */
-	function removeSecurityGroup($group) {
-		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($group['id']));
-	} # removeSecurityGroup
-	
-	/*
-	 * Wijzigt group membership van een user
-	 */
-	function setUserGroupList($userId, $groupList) {
-		# We wissen eerst huidige group membership
-		$this->_conn->modify("DELETE FROM usergroups WHERE userid = %d", array($userId));
-		
-		foreach($groupList as $groupInfo) {
-			$this->_conn->modify("INSERT INTO usergroups(userid,groupid,prio) VALUES(%d, %d, %d)",
-						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
-		} # foreach
-	} # setUserGroupList
 	
 	
 	/*
@@ -1354,12 +1019,6 @@ class SpotDb {
 		return $this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
 	} # expireCommentsFull
 
-	/*
-	 * Updates a users' setting with an base64 encoded image
-	 */
-	function setUserAvatar($userId, $imageEncoded) {
-		$this->_conn->modify("UPDATE usersettings SET avatar = '%s' WHERE userid = %d", Array( $imageEncoded, (int) $userId));
-	} # setUserAvatar
 
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
@@ -1559,6 +1218,78 @@ class SpotDb {
 	}
 	function getUsersForFilter($tree, $valuelist) {
 		return $this->_userFilterDao->getUsersForFilter($tree, $valuelist);
+	}
+	function findUserIdForName($username) {
+		return $this->_userDao->findUserIdForName($username);
+	}
+	function userEmailExists($mail) {
+		return $this->_userDao->userEmailExists($mail);
+	}
+	function getUser($userid) {
+		return $this->_userDao->getUser($userid);
+	}
+	function getUserList() {
+		return $this->_userDao->getUserList();
+	}
+	function getUserListForDisplay() {
+		return $this->_userDao->getUserListForDisplay();
+	}
+	function deleteUser($userid) {
+		return $this->_userDao->deleteUser($userid);
+	}
+	function setUser($user) {
+		return $this->_userDao->setUser($user);
+	}
+	function setUserPassword($user) {
+		return $this->_userDao->setUserPassword($user);
+	}
+	function setUserRsaKeys($userId, $publicKey, $privateKey) {
+		return $this->_userDao->setUserRsaKeys($userId, $publicKey, $privateKey);
+	}
+	function getUserPrivateRsaKey($userId) {
+		return $this->_userDao->getUserPrivateRsaKey($userId);
+	}
+	function addUser($user) {
+		return $this->_userDao->addUser($user);
+	}
+	function authUser($username, $passhash) {
+		return $this->_userDao->authUser($username, $passhash);
+	}
+	function setUserAvatar($userId, $imageEncoded) {
+		return $this->_userDao->setUserAvatar($userId, $imageEncoded);
+	}
+	function getGroupPerms($groupId) {
+		return $this->_userDao->getGroupPerms($groupId);
+	}
+	function getPermissions($userId) {
+		return $this->_userDao->getPermissions($userId);
+	}
+	function getGroupList($userId) {
+		return $this->_userDao->getGroupList($userId);
+	}
+	function removePermFromSecGroup($groupId, $perm) {
+		return $this->_userDao->removePermFromSecGroup($groupId, $perm);
+	}
+	function setDenyForPermFromSecGroup($groupId, $perm) {
+		return $this->_userDao->setDenyForPermFromSecGroup($groupId, $perm);
+	}
+	function addPermToSecGroup($groupId, $perm) {
+		return $this->_userDao->addPermToSecGroup($groupId, $perm);
+	}
+	function getSecurityGroup($groupId) {
+		return $this->_userDao->getSecurityGroup($groupId);
+	}
+	function setSecurityGroup($group) {
+		return $this->_userDao->setSecurityGroup($group);
+	}
+	function addSecurityGroup($group) {
+		return $this->_userDao->addSecurityGroup($group);
+	}
+	function removeSecurityGroup($group) {
+		return $this->_userDao->removeSecurityGroup($group);
+	}
+	function setUserGroupList($userId, $groupList) {
+		return $this->_userDao->setUserGroupList($userId, $groupList);
 	}
 
 } # class db
