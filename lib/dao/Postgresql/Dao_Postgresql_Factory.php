@@ -67,4 +67,8 @@
 		return new Dao_Postgresql_Setting($this->_conn);
 	} # getSettingDao
 
+	public function getUserFilterCountDao() {
+		return new Dao_Postgresql_UserFilterCount($this->_conn);
+	} # getSettingDao
+
 } // Dao_Postgresql_Factory

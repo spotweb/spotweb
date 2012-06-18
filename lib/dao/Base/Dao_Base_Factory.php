@@ -65,4 +65,8 @@
 		return new Dao_Base_Setting($this->_conn);
 	} # getSettingDao
 
+	public function getUserFilterCountDao() {
+		return new Dao_Base_UserFilterCount($this->_conn);
+	} # getSettingDao
+
 } // Dao_Base_Factory

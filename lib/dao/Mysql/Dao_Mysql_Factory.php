@@ -67,4 +67,8 @@
 		return new Dao_Mysql_Setting($this->_conn);
 	} # getSettingDao
 
+	public function getUserFilterCountDao() {
+		return new Dao_Mysql_UserFilterCount($this->_conn);
+	} # getSettingDao
+
 } // Dao_Mysql_Factory

@@ -10,6 +10,7 @@ class SpotDb {
 	private $_sessionDao;
 	private $_settingDao;
 	private $_spotReportDao;
+	private $_userFilterCountDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -92,6 +93,7 @@ class SpotDb {
 		$this->_sessionDao = $daoFactory->getSessionDao();
 		$this->_settingDao = $daoFactory->getSettingDao();
 		$this->_spotReportDao = $daoFactory->getSpotReportDao();
+		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -1557,256 +1559,6 @@ class SpotDb {
 				 Array($tree, $valuelist));
 	} # getUsersForFilter
 
-	/*
-	 * Add a filter count for a specific SHA1 hash
-	 * of a filter for this specific user
-	 */
-	function setCachedFilterCount($userId, $filterHashes) {
-		$maxSpotStamp = $this->getMaxMessageTime();
-		
-		foreach($filterHashes as $filterHash => $filterCount) {
-			/* Remove any existing cached filtercount for this user */		
-			$this->_conn->modify("DELETE FROM filtercounts WHERE (userid = %d) AND (filterhash = '%s')",
-									Array((int) $userId, $filterHash));
-									
-			/* and insert our new filtercount hash */
-			$this->_conn->modify("INSERT INTO filtercounts(userid, filterhash, currentspotcount, lastvisitspotcount, lastupdate) 
-											VALUES(%d, '%s', %d, %d, %d)",
-									Array((int) $userId, $filterHash, $filterCount['currentspotcount'], $filterCount['lastvisitspotcount'], 
-										  $maxSpotStamp ));
-		} # foreach
-	} # setCachedFilterCount
-
-	/*
-	 * Add a filter count for a specific SHA1 hash
-	 * of a filter for this specific user
-	 */
-	function getNewCountForFilters($userId) {
-		$filterHashes = array();
-		$tmp = $this->_conn->arrayQuery("SELECT f.filterhash AS filterhash, 
-												f.currentspotcount AS currentspotcount, 
-												f.lastvisitspotcount AS lastvisitspotcount, 
-												f.lastupdate AS lastupdate,
-												t.currentspotcount - f.lastvisitspotcount AS newspotcount
-										 FROM filtercounts f
-										 INNER JOIN filtercounts t ON (t.filterhash = f.filterhash)
-										 WHERE t.userid = -1 
-										   AND f.userid = %d",
-								Array((int) $userId) );
-								
-		foreach($tmp as $cachedItem) {
-			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
-															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
-															 'newspotcount' => $cachedItem['newspotcount'],
-															 'lastupdate' => $cachedItem['lastupdate']);
-		} # foreach
-		
-		return $filterHashes;
-	} # getNewCountForFilters
-	
-	/*
-	 * Makes sure all registered users have at least counts
-	 * for all existing filters.
-	 */
-	function createFilterCountsForEveryone() {
-		$userIdList = $this->_conn->arrayQuery('SELECT id FROM users WHERE id <> -1');
-		
-		foreach($userIdList as $user) {
-			$userId = $user['id'];
-			
-			/* We can assume userid -1 (baseline) has all the filters which exist */
-			$filterList = $this->getPlainFilterList($userId, '');
-			$cachedList = $this->getCachedFilterCount($userId);
-
-			/* We add a dummy entry for 'all new spots' */
-			$filterList[] = array('id' => 9999, 'userid' => $userId, 'filtertype' => 'dummyfilter', 
-								'title' => 'NewSpots', 'icon' => '', 'torder' => 0, 'tparent' => 0,
-								'tree' => '', 'valuelist' => 'New:0', 'sorton' => '', 'sortorder' => '',
-								'enablenotify' => false);
-			
-			foreach($filterList as $filter) {
-				$filterHash = sha1($filter['tree'] . '|' . urldecode($filter['valuelist']));
-				
-				# Do we have a cache entry already for this filter?
-				if (!isset($cachedList[$filterHash])) {
-					/*
-					 * Create the cached count filter
-					 */
-					$filter['currentspotcount'] = 0;
-					$filter['lastvisitspotcount'] = 0;
-					
-					$this->setCachedFilterCount($userId, array($filterHash => $filter));
-				} # if
-			} # foreach
-		} # foreach
-	} # createFilterCountsForEveryone
-	
-	/*
-	 * Retrieves the filtercount for a specific userid
-	 */
-	function getCachedFilterCount($userId) {
-		$filterHashes = array();
-		$tmp = $this->_conn->arrayQuery("SELECT filterhash, currentspotcount, lastvisitspotcount, lastupdate FROM filtercounts WHERE userid = %d",
-								Array( (int) $userId) );
-		
-		foreach($tmp as $cachedItem) {
-			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
-															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
-															 'lastupdate' => $cachedItem['lastupdate']);
-		} # foreach
-
-		return $filterHashes;
-	} # getCachedFilterCount
-	
-	/*
-	 * Resets the unread count for a specific user
-	 */
-	function resetFilterCountForUser($userId) {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: 
-			case 'pdo_sqlite'	: {
-				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, filterhash FROM filtercounts WHERE userid = -1", array());
-				foreach($filterList as $filter) {
-					$this->_conn->modify("UPDATE filtercounts
-												SET lastvisitspotcount = currentspotcount,
-													currentspotcount = %d
-												WHERE (filterhash = '%s') 
-												  AND (userid = %d)",
-									Array((int) $filter['currentspotcount'], $filter['filterhash'], (int) $userId));
-				} # foreach
-				
-				break;
-			} # sqlite
-
-			default				: {
-				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-											SET f.lastvisitspotcount = f.currentspotcount,
-												f.currentspotcount = t.currentspotcount
-											WHERE (f.filterhash = t.filterhash) 
-											  AND (t.userid = -1) 
-											  AND (f.userid = %d)",
-								Array((int) $userId) );
-			} # default
-		} # switch
-	} # resetFilterCountForUser
-
-	/*
-	 * Updates the last filtercounts for sessions which are active at the moment
-	 */
-	function updateCurrentFilterCounts() {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: 
-			case 'pdo_sqlite'	: {
-				/*
-  				 * Update the current filter counts if the session
-				 * is still active
-				 */
-				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
-				foreach($filterList as $filter) {
-					$this->_conn->modify("UPDATE filtercounts
-												SET currentspotcount = %d,
-													lastupdate = %d
-												WHERE (filterhash = '%s') 
-												  AND (userid IN (SELECT userid FROM sessions WHERE lasthit > lastupdate GROUP BY userid ))",
-									Array((int) $filter['currentspotcount'], (int) $filter['lastupdate'], $filter['filterhash']));
-				} # foreach
-				
-				break;
-			} # pdo_sqlite
-			
-			default				: {
-				/*
-				 * We do this in two parts because MySQL seems to fall over 
-				 * when we use a subquery
-				 */
-				$sessionList = $this->_conn->arrayQuery("SELECT s.userid FROM sessions s 
-																   INNER JOIN filtercounts f ON (f.userid = s.userid) 
-														 WHERE lasthit > f.lastupdate 
-														 GROUP BY s.userid",
-														 array());
-				
-				# bereid de lijst voor met de queries in de where
-				$userIdList = '';
-				foreach($sessionList as $session) {
-					$userIdList .= (int) $this->_conn->safe($session['userid']) . ", ";
-				} # foreach
-				$userIdList = substr($userIdList, 0, -2);
-
-				/*
-  				 * Update the current filter counts if the session
-				 * is still active
-				 */
-				if (!empty($userIdList)) {
-					$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
-											SET f.currentspotcount = t.currentspotcount,
-												f.lastupdate = t.lastupdate
-											WHERE (f.filterhash = t.filterhash) 
-											  AND (t.userid = -1)
-											  AND (f.userid IN (" . $userIdList . "))");
-				} # if
-
-				/*
-				 * Sometimes retrieve removes some sports, make sure
-				 * we do not get confusing results
-				 */
-				$this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (f.lastvisitspotcount > t.currentspotcount)
-										  AND (t.userid = -1)");
-			} # default
-		} # switch
-	} # updateCurrentFilterCounts
-
-	/*
-	 * Mark all filters as read
-	 */
-	function markFilterCountAsSeen($userId) {
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_sqlite'	: {
-				$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
-				foreach($filterList as $filter) {
-					$this->_conn->modify("UPDATE filtercounts
-												SET lastvisitspotcount = %d,
-													currentspotcount = %d,
-													lastupdate = %d
-												WHERE (filterhash = '%s') 
-												  AND (userid = %d)",
-									Array((int) $filter['currentspotcount'],
-										  (int) $filter['currentspotcount'],
-										  (int) $filter['lastupdate'],
-										  $filter['filterhash'], 
-										  (int) $userId));
-				} # foreach
-				
-				break;
-			} # pdo_sqlite
-
-			case 'pdo_pgsql'	: {
-				$this->_conn->modify("UPDATE filtercounts AS f
-											SET lastvisitspotcount = o.currentspotcount,
-												currentspotcount = o.currentspotcount,
-												lastupdate = o.lastupdate
-											FROM filtercounts AS o
-											WHERE (f.filterhash = o.filterhash) 
-											  AND (f.userid = %d) AND (o.userid = %d)",
-								Array((int) $userId, (int) $userid));
-
-				break;
-			} # pdo_pgsql
-
-			default				: {
-				 $this->_conn->modify("UPDATE filtercounts f, filtercounts t
-										SET f.lastvisitspotcount = t.currentspotcount,
-											f.currentspotcount = t.currentspotcount,
-											f.lastupdate = t.lastupdate
-										WHERE (f.filterhash = t.filterhash) 
-										  AND (t.userid = -1) 
-										  AND (f.userid = %d)",
-							Array( (int) $userId) );
-			} # default
-		} # switch
-	} # markFilterCountAsSeen
 
 	/*
 	 * Removes items from te commentsfull table older than a specific amount of days
@@ -1966,6 +1718,27 @@ class SpotDb {
 	}
 	function addReportRefs($reportList) {
 		return $this->_spotReportDao->addReportRefs($reportList);
+	}
+	function setCachedFilterCount($userId, $filterHashes) {
+		return $this->_userFilterCountDao->setCachedFilterCount($userId, $filterHashes);
+	}
+	function getNewCountForFilters($userId) {
+		return $this->_userFilterCountDao->getNewCountForFilters($userId);
+	}
+	function createFilterCountsForEveryone() {
+		return $this->_userFilterCountDao->createFilterCountsForEveryone();
+	}
+	function getCachedFilterCount($userId) {
+		return $this->_userFilterCountDao->getCachedFilterCount($userId);
+	}
+	function resetFilterCountForUser($userId) {
+		return $this->_userFilterCountDao->resetFilterCountForUser($userId);
+	}
+	function updateCurrentFilterCounts() {
+		return $this->_userFilterCountDao->updateCurrentFilterCounts();
+	}
+	function markFilterCountAsSeen($userId) {
+		return $this->_userFilterCountDao->markFilterCountAsSeen($userId);
 	}
 
 } # class db
