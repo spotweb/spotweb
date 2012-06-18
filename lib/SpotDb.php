@@ -8,6 +8,7 @@ class SpotDb {
 	private $_commentDao;
 	private $_notificationDao;
 	private $_sessionDao;
+	private $_settingDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -88,6 +89,7 @@ class SpotDb {
 		$this->_commentDao = $daoFactory->getCommentDao();
 		$this->_notificationDao = $daoFactory->getNotificationDao();
 		$this->_sessionDao = $daoFactory->getSessionDao();
+		$this->_settingDao = $daoFactory->getSettingDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -99,23 +101,6 @@ class SpotDb {
 	function getDbHandle() {
 		return $this->_conn;
 	} # getDbHandle
-
-	/* 
-	 * Haalt alle settings op uit de database
-	 */
-	function getAllSettings() {
-		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
-		$tmpSettings = array();
-		foreach($dbSettings as $item) {
-			if ($item['serialized']) {
-				$item['value'] = unserialize($item['value']);
-			} # if
-			
-			$tmpSettings[$item['name']] = $item['value'];
-		} # foreach
-		
-		return $tmpSettings;
-	} # getAllSettings
 
 	/* 
 	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
@@ -188,42 +173,6 @@ class SpotDb {
 					  (int) time()));
 	} # addPostedReport
 
-	/*
-	 * Verwijder een setting
-	 */
-	function removeSetting($name) {
-		$this->_conn->exec("DELETE FROM settings WHERE name = '%s'", Array($name));
-	} # removeSetting
-	
-	/*
-	 * Update setting
-	 */
-	function updateSetting($name, $value) {
-		# zet het eventueel serialized in de database als dat nodig is
-		if ((is_array($value) || is_object($value))) {
-			$value = serialize($value);
-			$serialized = true;
-		} else {
-			$serialized = false;
-		} # if
-		
-		switch ($this->_dbsettings['engine']) {
-			case 'mysql'		:
-			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE value = '%s', serialized = %s",
-										Array($name, $value, $this->bool2dt($serialized), $value, $this->bool2dt($serialized)));
-					 break;
-			} # mysql
-			
-			default				: {
-					$this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $this->bool2dt($serialized), $name));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $this->bool2dt($serialized)));
-					} # if
-					break;
-			} # default
-		} # switch
-	} # updateSetting
 
 
 	/*
@@ -1076,13 +1025,6 @@ class SpotDb {
 							WHERE spots.messageid IN (" . $msgIdList . ")
 						");
 	} # updateSpotReportCount
-
-	/*
-	 * Geeft huidig database schema versie nummer terug
-	 */
-	function getSchemaVer() {
-		return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
-	} # getSchemaVer
 
 	/*
 	 * Verwijder een spot uit de db
@@ -2081,5 +2023,16 @@ class SpotDb {
 	function hitSession($sessionid) {
 		return $this->_sessionDao->hitSession($sessionid);
 	}
-
+	public function getAllSettings() {
+		return $this->_settingDao->getAllSettings();
+	}
+	public function removeSetting($name) {
+		return $this->_settingDao->removeSetting($name);
+	}
+	public function updateSetting($name, $value) {
+		return $this->_settingDao->updateSetting($name, $value);
+	}
+	public function getSchemaVer() {
+		return $this->_settingDao->getSchemaVer();
+	}
 } # class db
