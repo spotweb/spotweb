@@ -7,6 +7,7 @@ class SpotDb {
 	private $_cacheDao;
 	private $_commentDao;
 	private $_notificationDao;
+	private $_sessionDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -86,6 +87,7 @@ class SpotDb {
 		$this->_cacheDao = $daoFactory->getCacheDao();
 		$this->_commentDao = $daoFactory->getCommentDao();
 		$this->_notificationDao = $daoFactory->getNotificationDao();
+		$this->_sessionDao = $daoFactory->getSessionDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -223,80 +225,6 @@ class SpotDb {
 		} # switch
 	} # updateSetting
 
-	/*
-	 * Haalt een session op uit de database
-	 */
-	function getSession($sessionid, $userid) {
-		$tmp = $this->_conn->arrayQuery(
-						"SELECT s.sessionid as sessionid,
-								s.userid as userid,
-								s.hitcount as hitcount,
-								s.lasthit as lasthit,
-								s.ipaddr as ipaddr,
-								s.devicetype as devicetype
-						FROM sessions AS s
-						WHERE (sessionid = '%s') AND (userid = %d)",
-				 Array($sessionid,
-				       (int) $userid));
-		if (!empty($tmp)) {
-			return $tmp[0];
-		} # if
-		
-		return false;
-	} # getSession
-
-	/*
-	 * Creert een sessie
-	 */
-	function addSession($session) {
-		$this->_conn->modify(
-				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit, ipaddr, devicetype) 
-					VALUES('%s', %d, %d, %d, '%s', '%s')",
-				Array($session['sessionid'],
-					  (int) $session['userid'],
-					  (int) $session['hitcount'],
-					  (int) $session['lasthit'],
-					  $session['ipaddr'],
-					  $session['devicetype']));
-	} # addSession
-
-	/*
-	 * Haalt een session op uit de database
-	 */
-	function deleteSession($sessionid) {
-		$this->_conn->modify(
-					"DELETE FROM sessions WHERE sessionid = '%s'",
-					Array($sessionid));
-	} # deleteSession
-
-	/*
-	 * Haalt een session op uit de database
-	 */
-	function deleteAllUserSessions($userid) {
-		$this->_conn->modify(
-					"DELETE FROM sessions WHERE userid = %d",
-					Array( (int) $userid));
-	} # deleteAllUserSessions
-	
-	/*
-	 * Haalt een session op uit de database
-	 */
-	function deleteExpiredSessions($maxLifeTime) {
-		$this->_conn->modify(
-					"DELETE FROM sessions WHERE lasthit < %d",
-					Array(time() - $maxLifeTime));
-	} # deleteExpiredSessions
-
-	/*
-	 * Update de last hit van een session
-	 */
-	function hitSession($sessionid) {
-		$this->_conn->modify("UPDATE sessions
-								SET hitcount = hitcount + 1,
-									lasthit = %d
-								WHERE sessionid = '%s'", 
-							Array(time(), $sessionid));
-	} # hitSession
 
 	/*
 	 * Checkt of een username al bestaat
@@ -2134,6 +2062,24 @@ class SpotDb {
 	}
 	function updateNotification($msg) {
 		return $this->_notificationDao->updateNotification($msg);
+	}
+	function getSession($sessionid, $userid) {
+		return $this->_sessionDao->getSession($sessionid, $userid);
+	}
+	function addSession($session) {
+		return $this->_sessionDao->addSession($session);
+	}
+	function deleteSession($sessionid) {
+		return $this->_sessionDao->deleteSession($sessionid);
+	}
+	function deleteAllUserSessions($userid) {
+		return $this->_sessionDao->deleteAllUserSessions($userid);
+	}
+	function deleteExpiredSessions($maxLifeTime) {
+		return $this->_sessionDao->deleteExpiredSessions($maxLifeTime);
+	}
+	function hitSession($sessionid) {
+		return $this->_sessionDao->hitSession($sessionid);
 	}
 
 } # class db
