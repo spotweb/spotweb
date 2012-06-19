@@ -347,65 +347,43 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * Add a lis tof spots to the database
 	 */
 	function addSpots($spots, $fullSpots = array()) {
-		$this->_conn->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($spots, 100);
-		
-		foreach($chunks as $spots) {
-			$insertArray = array();
-			
-			foreach($spots as $spot) {
-				/*
-				 * Manually check whether filesize is really a numeric value
-				 * because in some PHP vrsions an %d will overflow on >32bits (signed)
-				 * values causing a wrong result for files larger than 2GB
-				 */
-				if (!is_numeric($spot['filesize'])) {
-					$spot['filesize'] = 0;
-				} # if
-				
-				/*
-				 * Cut off some strngs to a maximum value as defined in the
-				 * database. We don't cut off the unique keys as we rather
-				 * have Spotweb error out than corrupt it
-				 */
-				$spot['poster'] = substr($spot['poster'], 0, 127);
-				$spot['title'] = substr($spot['title'], 0, 127);
-				$spot['tag'] = substr($spot['tag'], 0, 127);
-				$spot['subcata'] = substr($spot['subcata'], 0, 63);
-				$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
-				$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
-				$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
-				$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
-				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
-						 Array($this->_conn->safe($spot['messageid']),
-							   $this->_conn->safe($spot['poster']),
-							   $this->_conn->safe($spot['title']),
-							   $this->_conn->safe($spot['tag']),
-							   $this->_conn->safe((int) $spot['category']),
-							   $this->_conn->safe($spot['subcata']),
-							   $this->_conn->safe($spot['subcatb']),
-							   $this->_conn->safe($spot['subcatc']),
-							   $this->_conn->safe($spot['subcatd']),
-							   $this->_conn->safe($spot['subcatz']),
-							   (int) $this->_conn->safe($spot['stamp']),
-							   (int) $this->_conn->safe(($spot['stamp'] * -1)),
-							   $this->_conn->safe($spot['filesize']),			# Dont cast filesize to an int because of 32-bits overflow error
-							   $this->_conn->safe($spot['spotterid']))); 
-			} # foreach
-
-			# Actually insert the batch
-			if (!empty($insertArray)) {
-				$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
-									  VALUES " . implode(',', $insertArray), array());
+		foreach($spots as &$spot) {
+			/*
+			 * Manually check whether filesize is really a numeric value
+			 * because in some PHP vrsions an %d will overflow on >32bits (signed)
+			 * values causing a wrong result for files larger than 2GB
+			 */
+			if (!is_numeric($spot['filesize'])) {
+				$spot['filesize'] = 0;
 			} # if
+			
+			/*
+			 * Cut off some strngs to a maximum value as defined in the
+			 * database. We don't cut off the unique keys as we rather
+			 * have Spotweb error out than corrupt it
+			 */
+			$spot['poster'] = substr($spot['poster'], 0, 127);
+			$spot['title'] = substr($spot['title'], 0, 127);
+			$spot['tag'] = substr($spot['tag'], 0, 127);
+			$spot['subcata'] = substr($spot['subcata'], 0, 63);
+			$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
+			$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
+			$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
+			$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
+			$spot['catgory'] = (int) $spot['category'];
+			$spot['stamp'] = (int) $spot['stamp'];
+			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
 		} # foreach
-		$this->_conn->commit();
-		
+
+		$this->_conn->batchInsert($spots,
+								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
+														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+									VALUES",
+								  "('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
+								  Array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
+								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  );
+
 		if (!empty($fullSpots)) {
 			$this->addFullSpots($fullSpots);
 		} # if
@@ -428,32 +406,20 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * table as it will remove the spot from the list
 	 */
 	function addFullSpots($fullSpots) {
-		$this->_conn->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullSpots, 100);
-	
-		foreach($chunks as $fullSpots) {
-			$insertArray = array();
-
-			# en voeg het aan de database toe
-			foreach($fullSpots as $fullSpot) {
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s')",
-						Array($this->_conn->safe($fullSpot['messageid']),
-							  $this->_conn->bool2dt($fullSpot['verified']),
-							  $this->_conn->safe($fullSpot['user-signature']),
-							  $this->_conn->safe(base64_encode(serialize($fullSpot['user-key']))),
-							  $this->_conn->safe($fullSpot['xml-signature']),
-							  $this->_conn->safe($fullSpot['fullxml'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
-								  VALUES " . implode(',', $insertArray), array());
+		/* 
+		 * Prepare the array for insertion
+		 */
+		foreach($fullSpots as &$fullSpot) {
+			$fullSpot['verified'] = $this->_conn->bool2dt($fullSpot['verified']);
+			$fullSpot['user-key'] = base64_encode(serialize($fullSpot['user-key']));
 		} # foreach
 
-		$this->_conn->commit();
+		$this->_conn->batchInsert($fullSpots,
+								  "INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
+								  	VALUES",
+								  "('%s', '%s', '%s', '%s', '%s', '%s')",
+								  Array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
+								  );
 	} # addFullSpot
 
 	/*
@@ -593,7 +559,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 */
 	function expireSpotsFull($expireDays) {
 		return $this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
-	} # expireCommentsFull
+	} # expireSpotsFull
 
 } # Dao_Base_Spot
 

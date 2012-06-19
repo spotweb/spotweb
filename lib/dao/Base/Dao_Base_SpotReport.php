@@ -56,28 +56,11 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 *   nntpref is the messageid of the spot
 	 */
 	function addReportRefs($reportList) {
-		$this->_conn->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($reportList, 100);
-		foreach($chunks as $reportList) {
-			$insertArray = array();
-			
-			foreach($reportList as $report) {
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s')",
-						Array($this->_conn->safe($report['messageid']),
-							  $this->_conn->safe($report['fromhdr']),
-							  $this->_conn->safe($report['keyword']),
-							  $this->_conn->safe($report['nntpref'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref)
-									VALUES " . implode(',', $insertArray), array());
-		} # foreach
-
-		$this->_conn->commit();
+		$this->_conn->batchInsert($spots,
+								  "INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES",
+								  "('%s', '%s', '%s', '%s')",
+								  Array('messageid', 'fromhdr', 'keyword', 'nntpref')
+								  );
 	} # addReportRefs
 
 	/*
