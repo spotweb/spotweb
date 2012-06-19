@@ -137,4 +137,45 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -2);
 	} # arrayValToIn
 
+	/*
+	 * Transforms an array of values to an list usable by an
+	 * IN statement
+	 */
+	function batchInsert($ar, $sql, $tpl, $fields) {
+		$this->beginTransaction();
+		
+		/* 
+		 * Databases usually have a maximum packet size length,
+		 * so just sending down 100kbyte of text usually ends
+		 * up in tears.
+		 */
+		$chunks = array_chunk($ar, 100);
+
+		foreach($chunks as $items) {
+			$insertArray = array();
+
+			foreach($items as $item) {
+				/*
+				 * Add this items' fields to an array in 
+				 * the correct order and nicely escaped
+				 * from any injection
+				 */
+				$itemValues = array();
+				foreach($fields as $idx => $field) {
+					$itemValues[] = $this->safe($item[$field]);
+				} # foreach
+
+				$insertArray[] = vsprintf($tpl, $itemValues);
+			} # foreach
+
+			# Actually insert the batch
+			if (!empty($insertArray)) {
+				$this->modify($sql . implode(',', $insertArray), array());
+			} # if
+
+		} # foreach
+
+		$this->commit();
+	} # batchInsert
+
 } # dbeng_abs
