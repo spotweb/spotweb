@@ -21,24 +21,27 @@ class Dao_Base_Comment implements Dao_Comment {
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
 	
-
 	/*
 	 * Remove extra comments
 	 */
 	function removeExtraComments($messageId) {
-		# vraag eerst het id op
+		# Retrieve the database id for the messageid given
 		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
 		
-		# als deze spot leeg is, is er iets raars aan de hand
+		/* 
+		* If this spot doesn't exist, we have some kind of logical error
+		* or database corruption. Cry about it
+		*/
 		if (empty($commentId)) {
 			throw new Exception("Our highest comment is not in the database!?");
 		} # if
 
-		# en wis nu alles wat 'jonger' is dan deze spot
+		/* 
+		 * remove all spots later inserted than the last spot we have
+		 * retrieved from the usenet server.
+		 */
 		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
 	} # removeExtraComments
-
-
 
 	/*
 	 * Saves the posted comment of the user to the database
@@ -60,24 +63,31 @@ class Dao_Base_Comment implements Dao_Comment {
 	 * Match set of comments
 	 */
 	function matchCommentMessageIds($hdrList) {
-		# We negeren commentsfull hier een beetje express, als die een 
-		# keer ontbreken dan fixen we dat later wel.
+		/* 
+		 * Ignore commentsfull on purpose. If one is missing, we
+		 * will retrieve it later when a spot is actually opened
+		 */
 		$idList = array('comment' => array(), 'fullcomment' => array());
 
-		# geen message id's gegeven? vraag het niet eens aan de db
+		/* 
+		 * When no messageid's are given, bail out immediatly
+		 */
 		if (count($hdrList) == 0) {
 			return $idList;
 		} # if
 
-		# Prepare the list of messageid's we want to match
+		/*
+		 * Prepare the list of messageid's we want to match
+		 */
 		$msgIdList = $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1);
-
-		# Omdat MySQL geen full joins kent, doen we het zo
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as comment, messageid AS fullcomment FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
 
-		# en lossen we het hier op
+		/*
+		 * split out the query in either a full comment or a comment,
+		 * for simple and fast matching in callers of this code
+		 */
 		foreach($rs as $msgids) {
 			if (!empty($msgids['comment'])) {
 				$idList['comment'][$msgids['comment']] = 1;
@@ -93,34 +103,15 @@ class Dao_Base_Comment implements Dao_Comment {
 
 	/*
 	 * Insert commentref, 
-	 *   messageid is het werkelijke commentaar id
-	 *   nntpref is de id van de spot
+	 *   messageid is the actual messageid of the comment
+	 *   nntpref is the messageid of the spot this comment belongs to
 	 */
 	function addComments($comments, $fullComments = array()) {
-		$this->_conn->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($comments, 100);
-
-		foreach($chunks as $comments) {
-			$insertArray = array();
-
-			foreach($comments as $comment) {
-				$insertArray[] = vsprintf("('%s', '%s', %d, %d)",
-						 Array($this->_conn->safe($comment['messageid']),
-							   $this->_conn->safe($comment['nntpref']),
-							   $this->_conn->safe($comment['rating']),
-							   $this->_conn->safe($comment['stamp'])));
-			} # foreach
-
-			# Actually insert the batch
-			if (!empty($insertArray)) {
-				$this->_conn->modify("INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp)
-									  VALUES " . implode(',', $insertArray), array());
-			} # if
-		} # foreach
-		$this->_conn->commit();
+		$this->_conn->batchInsert($comments,
+								  "INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp) VALUES ",
+								  "('%s', '%s', %d, %d)",
+								  Array('messageid', 'nntpref', 'rating', 'stamp')
+								  );
 
 		if (!empty($fullComments)) {
 			$this->addFullComments($fullComments);
@@ -131,38 +122,27 @@ class Dao_Base_Comment implements Dao_Comment {
 	 * Insert commentfull, assumes there is already an entry in commentsxover
 	 */
 	function addFullComments($fullComments) {
-		$this->_conn->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		$chunks = array_chunk($fullComments, 100);
-
-		foreach($chunks as $fullComments) {
-			$insertArray = array();
-
-			foreach($fullComments as $comment) {
-				# Kap de verschillende strings af op een maximum van 
-				# de datastructuur, de unique keys kappen we expres niet af
-				$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
-
-				$insertArray[] = vsprintf("('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
-						Array($this->_conn->safe($comment['messageid']),
-							  $this->_conn->safe($comment['fromhdr']),
-							  $this->_conn->safe($comment['stamp']),
-							  $this->_conn->safe($comment['user-signature']),
-							  $this->_conn->safe(serialize($comment['user-key'])),
-							  $this->_conn->safe($comment['spotterid']),
-							  $this->_conn->safe(implode("\r\n", $comment['body'])),
-							  $this->_conn->bool2dt($comment['verified']),
-							  $this->_conn->safe($comment['user-avatar'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar)
-								  VALUES " . implode(',', $insertArray), array());
+		/* 
+		 * We process the fullcomments array to make sure
+		 * its in the proper format for inserting into the
+		 * database
+		 */
+		foreach($fullComments as &$comment) {
+			/*
+			 * Cut off the from header so we don't overflow the database field,
+			 * and prepare other fields for database storage
+			 */
+			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
+			$comment['user-key'] = serialize($comment['user-key']);
+			$comment['body'] = implode("\r\n", $comment['body']);
+			$comment['verified'] = $this->_conn->bool2dt($comment['verified']);
 		} # foreach
 
-		$this->_conn->commit();
+		$this->_conn->batchInsert($fullComments,
+								  "INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ",
+								  "('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
+								  Array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
+								  );
 	} # addFullComments
 
 	/*
@@ -171,7 +151,7 @@ class Dao_Base_Comment implements Dao_Comment {
 	function getCommentsFull($userId, $nntpRef) {
 		SpotTiming::start(__FUNCTION__);
 
-		# en vraag de comments daadwerkelijk op
+		# eactually retrieve the comment
 		$commentList = $this->_conn->arrayQuery("SELECT c.messageid AS messageid, 
 														(f.messageid IS NOT NULL) AS havefull,
 														f.fromhdr AS fromhdr, 
@@ -237,7 +217,6 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		# bereid de lijst voor met de queries in de where
 		$msgIdList = $this->_conn->arrayKeyToIn($commentMsgIdList);
 
 		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
