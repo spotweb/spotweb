@@ -115,7 +115,7 @@ class Dao_Base_User implements Dao_User {
 							FROM users AS u
 							LEFT JOIN (SELECT userid, lasthit, ipaddr, devicetype FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
 							WHERE (deleted = '%s')
-							GROUP BY u.id, u.username", array($this->bool2dt(false)));
+							GROUP BY u.id, u.username", array($this->_conn->bool2dt(false)));
 
 		SpotTiming::stop(__FUNCTION__, array());
 		return $tmpResult;
@@ -327,7 +327,7 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
 		$this->_conn->modify("UPDATE grouppermissions SET deny = '%s' WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($this->bool2dt($perm['deny']), $groupId, $perm['permissionid'], $perm['objectid']));
+				Array($this->_conn->bool2dt($perm['deny']), $groupId, $perm['permissionid'], $perm['objectid']));
 	} # setDenyForPermFromSecGroup
 	
 	/*

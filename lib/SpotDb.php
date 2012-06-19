@@ -20,13 +20,6 @@ class SpotDb {
 	private $_conn = null;
 
 	/*
-	 * Constants used for updating the SpotStateList
-	 */
-	const spotstate_Down	= 0;
-	const spotstate_Watch	= 1;
-	const spotstate_Seen	= 2;
-
-	/*
 	 * Constants used for updating the black/whitelist
 	 */
 	const spotterlist_Black = 1;
