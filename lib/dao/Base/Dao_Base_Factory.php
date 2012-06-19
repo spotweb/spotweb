@@ -65,4 +65,8 @@
 		return new Dao_Base_UserFilterCount($this->_conn);
 	} # getSettingDao
 
+	public function getSpotStateListDao() {
+		return new Dao_Base_SpotStateList($this->_conn);
+	} # getSpotStateListDao
+
 } // Dao_Base_Factory

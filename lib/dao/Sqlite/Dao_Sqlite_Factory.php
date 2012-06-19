@@ -67,4 +67,8 @@
 		return new Dao_Sqlite_UserFilterCount($this->_conn);
 	} # getSettingDao
 
+	public function getSpotStateListDao() {
+		return new Dao_Sqlite_SpotStateList($this->_conn);
+	} # getSpotStateListDao
+
 } // Dao_Sqlite_Factory

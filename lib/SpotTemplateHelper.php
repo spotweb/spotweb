@@ -144,9 +144,7 @@ class SpotTemplateHelper {
 					 * Always update the seen stamp, this is used for viewing new comments
 					 * and the likes
 					 */
-					$this->_db->addToSpotStateList(SpotDb::spotstate_Seen, 
-												$msgId, 
-												$this->_currentSession['user']['userid']);
+					$this->_db->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
 				} # if
 				
 			} # if allowed

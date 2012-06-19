@@ -45,7 +45,7 @@ class SpotNzb {
 		if ($userSession['user']['prefs']['keep_downloadlist']) {
 			if ($userSession['security']->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) {
 				foreach($messageids as $thisMsgId) {
-					$this->_db->addToSpotStateList(SpotDb::spotstate_Down, $thisMsgId, $userSession['user']['userid']);
+					$this->_db->addToDownloadList(SpotDb::spotstate_Down, $thisMsgId, $userSession['user']['userid']);
 				} # foreach
 			} # if
 		} # if

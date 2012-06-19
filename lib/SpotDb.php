@@ -14,6 +14,7 @@ class SpotDb {
 	private $_userFilterDao;
 	private $_userDao;
 	private $_spotDao;
+	private $_spotStateListDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -100,6 +101,7 @@ class SpotDb {
 		$this->_userFilterDao = $daoFactory->getUserFilterDao();
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_spotDao = $daoFactory->getSpotdao();
+		$this->_spotStateListDao = $daoFactory->getSpotStateListDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -264,70 +266,6 @@ class SpotDb {
 
 
 
-	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
-		SpotTiming::start(__FUNCTION__);
-		if (empty($stamp)) { $stamp = time(); }
-
-		switch($list) {
-			case self::spotstate_Down	: $verifiedList = 'download'; break;
-			case self::spotstate_Watch	: $verifiedList = 'watch'; break;
-			case self::spotstate_Seen	: $verifiedList = 'seen'; break;
-			default						: throw new Exception("Invalid listtype given!");
-		} # switch
-
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_mysql'	:
-			case 'mysql'		:  {
-				$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $verifiedList . " = %d",
-										Array($messageId, (int) $ourUserId, $stamp, $stamp));
-				break;
-			} # mysql
-			
-			default				:  {
-				$this->_conn->modify("UPDATE spotstatelist SET " . $verifiedList . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
-				if ($this->_conn->rows() == 0) {
-					$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $verifiedList . ") VALUES ('%s', %d, %d)",
-						Array($messageId, (int) $ourUserId, $stamp));
-				} # if
-			} # default
-		} # switch
-		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
-	} # addToSpotStateList
-
-	/*
-	 * Mark all as read can perform different functions, 
-	 * depending on the state of the system. 
-	 *
-	 * If only 'seen' is kept, in the statelist, we just set
-	 * seen to NULL to mark it as not explicitly seen.
-	 *
-	 * If either 'download' or 'watch' is also set, we update
-	 * the seen timestamp, this allows us to show any new
-	 * comments from the last time the spot was viewed
-	 */
-	function markAllAsRead($ourUserId) {
-		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET seen = NULL WHERE (ouruserid = %d) AND (download IS NULL) AND (watch IS NULL) ", array( (int) $ourUserId));
-		$this->_conn->modify("UPDATE spotstatelist SET seen = %d WHERE (ouruserid = %d) AND (download IS NOT NULL) OR (watch IS NOT NULL) ", array( (int) time(), (int) $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
-	} # markAllAsRead
-
-	function clearDownloadList($ourUserId) {
-		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET download = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
-	} # clearDownloadList
-
-	function cleanSpotStateList() {
-		$this->_conn->rawExec("DELETE FROM spotstatelist WHERE download IS NULL AND watch IS NULL AND seen IS NULL");
-	} # cleanSpotStateList
-
-	function removeFromWatchList($messageid, $ourUserId) {
-		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET watch = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
-				Array($messageid, (int) $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($list, $messageid, $ourUserId));
-	} # removeFromWatchList
 
 	
 	
@@ -676,5 +614,26 @@ class SpotDb {
 	}
 	function expireSpotsFull($expireDays) {
 		return $this->_spotDao->expireSpotsFull($expireDays);
+	}
+	function markAllAsRead($ourUserId) {
+		return $this->_spotStateListDao->markAllAsRead($ourUserId);
+	}
+	function clearDownloadList($ourUserId) {
+		return $this->_spotStateListDao->clearDownloadList($ourUserId);
+	}
+	function cleanSpotStateList() {
+		return $this->_spotStateListDao->cleanSpotStateList();
+	}
+	function removeFromWatchList($messageid, $ourUserId) {
+		return $this->_spotStateListDao->removeFromWatchList($messageid, $ourUserId);
+	}
+	function addToWatchList($messageid, $ourUserId) {
+		return $this->_spotStateListDao->addToWatchList($messageid, $ourUserId);
+	}
+	function addToSeenList($messageid, $ourUserId) {
+		return $this->_spotStateListDao->addToSeenList($messageid, $ourUserId);
+	}
+	function addToDownloadList($messageid, $ourUserId) {
+		return $this->_spotStateListDao->addToDownloadList($messageid, $ourUserId);
 	}
 } # class db

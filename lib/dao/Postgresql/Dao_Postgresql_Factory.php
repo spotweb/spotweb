@@ -67,4 +67,8 @@
 		return new Dao_Postgresql_UserFilterCount($this->_conn);
 	} # getSettingDao
 
+	public function getSpotStateListDao() {
+		return new Dao_Postgresql_SpotStateList($this->_conn);
+	} # getSpotStateListDao
+
 } // Dao_Postgresql_Factory
