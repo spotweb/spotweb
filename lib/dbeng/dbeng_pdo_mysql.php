@@ -15,6 +15,12 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		$this->_db_user = $user;
 		$this->_db_pass = $pass;
 		$this->_db_db = $db;
+
+		/* 
+		 * arbitrarily chosen because some insert statements might
+		 * be very large.
+		 */
+		$this->_batchInsertChunks = 100;
 	}
 
 	function connect() {

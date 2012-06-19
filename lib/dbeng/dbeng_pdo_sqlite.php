@@ -5,6 +5,11 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 	
 	function __construct($path) {
 		$this->_db_path = $path;
+
+		/* 
+		 * sqlite does not support batch inserts
+		 */
+		$this->_batchInsertChunks = 1;
     } # ctor
 
 	function connect() {

@@ -1,6 +1,7 @@
 <?php
 
 abstract class dbeng_abs {
+	protected $_batchInsertChunks = 500;
 	private $_error	= '';
 	
 	/*
@@ -149,7 +150,7 @@ abstract class dbeng_abs {
 		 * so just sending down 100kbyte of text usually ends
 		 * up in tears.
 		 */
-		$chunks = array_chunk($ar, 100);
+		$chunks = array_chunk($ar, $this->_batchInsertChunks);
 
 		foreach($chunks as $items) {
 			$insertArray = array();
