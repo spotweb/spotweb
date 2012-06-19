@@ -13,6 +13,7 @@ class SpotDb {
 	private $_userFilterCountDao;
 	private $_userFilterDao;
 	private $_userDao;
+	private $_spotDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -98,6 +99,7 @@ class SpotDb {
 		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
 		$this->_userFilterDao = $daoFactory->getUserFilterDao();
 		$this->_userDao = $daoFactory->getUserDao();
+		$this->_spotDao = $daoFactory->getSpotdao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -128,59 +130,7 @@ class SpotDb {
 		return (empty($tmpResult));
 	} # isNewSpotMessageIdUnique
 	
-	/*
-	 * Add the posted spot to the database
-	 */
-	function addPostedSpot($userId, $spot, $fullXml) {
-		$this->_conn->modify(
-				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
-					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
-				Array((int) $userId,
-					  $spot['newmessageid'],
-					  (int) time(),
-					  $spot['title'],
-					  $spot['tag'],
-					  (int) $spot['category'],
-					  implode(',', $spot['subcatlist']),
-					  $fullXml));
-	} # addPostedSpot
 	
-	/* 
-	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
-	 * te posten
-	 */
-	function isReportMessageIdUnique($messageid) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
-						Array($messageid));
-		
-		return (empty($tmpResult));
-	} # isReportMessageIdUnique
-
-	/*
-	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
-	 */
-	function isReportPlaced($messageid, $userId) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
-		
-		return (!empty($tmpResult));
-	} #isReportPlaced
-	
-	
-	/*
-	 * Sla het gepostte report op van deze user
-	 */
-	function addPostedReport($userId, $report) {
-		$this->_conn->modify(
-				"INSERT INTO reportsposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
-					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
-				Array((int) $userId,
-					  $report['newmessageid'],
-					  $report['inreplyto'],
-					  $report['randomstr'],
-					  $report['body'],
-					  (int) time()));
-	} # addPostedReport
-
 
 
 	/* 
@@ -298,42 +248,6 @@ class SpotDb {
 	} # setRetrieverRunning
 
 	/*
-	 * Remove extra spots 
-	 */
-	function removeExtraSpots($messageId) {
-		# vraag eerst het id op
-		$spot = $this->getSpotHeader($messageId);
-
-		/*
-		 * The spot might be empty because - for example, the spot
-		 * is moderated (and hence deleted), the highest spot retrieved
-		 * might be missing from the database because of the spam cleanup.
-		 *
-		 * Ignore this error
-		 */
-		if (empty($spot)) {
-			return ;
-		} # if
-
-		# en wis nu alles wat 'jonger' is dan deze spot
-		switch ($this->_dbsettings['engine']) {
-			# geen join delete omdat sqlite dat niet kan
-			case 'pdo_pgsql'  : 
-			case 'pdo_sqlite' : {
-				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-				$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
-				break;
-			} # case
-
-			default			  : {
-				$this->_conn->modify("DELETE FROM spots, spotsfull USING spots
-										LEFT JOIN spotsfull on spots.messageid=spotsfull.messageid
-									  WHERE spots.id > %d", array($spot['id']));
-			} # default
-		} # switch
-	} # removeExtraSpots
-
-	/*
 	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
 	 */
 	function setLastUpdate($server) {
@@ -347,603 +261,8 @@ class SpotDb {
 		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
 	} # getLastUpdate
 
-	/**
-	 * Geef het aantal spots terug dat er op dit moment in de db zit
-	 */
-	function getSpotCount($sqlFilter) {
-		SpotTiming::start(__FUNCTION__);
-		if (empty($sqlFilter)) {
-			$query = "SELECT COUNT(1) FROM spots AS s";
-		} else {
-			$query = "SELECT COUNT(1) FROM spots AS s 
-						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
-						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
-						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
-						WHERE " . $sqlFilter . " AND (bl.spotterid IS NULL)";
-		} # else
-		$cnt = $this->_conn->singleQuery($query);
-		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
-		if ($cnt == null) {
-			return 0;
-		} else {
-			return $cnt;
-		} # if
-	} # getSpotCount
-
-	function getSpotCountPerHour($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%H', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			default				: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM FROM_UNIXTIME(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
-		} # switch
-		return $rs;
-	} # getSpotCountPerHour
-
-	function getSpotCountPerWeekday($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%w', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			default				: $rs = $this->_conn->arrayQuery("SELECT FROM_UNIXTIME(stamp,'%w') AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
-		} # switch
-		return $rs;
-	} # getSpotCountPerWeekday
-
-	function getSpotCountPerMonth($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'	: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			case 'pdo_sqlite'	: $rs = $this->_conn->arrayQuery("SELECT strftime('%m', time(stamp, 'unixepoch')) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;"); break;
-			default				: $rs = $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM FROM_UNIXTIME(stamp)) AS data, count(*) AS amount FROM spots " . $filter . " GROUP BY data;");
-		} # switch
-		return $rs;
-	} # getSpotCountPerMonth
-
-	function getSpotCountPerCategory($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		$rs = $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data;");
-		return $rs;
-	} # getSpotCountPerCategory
-
-	function getOldestSpotTimestamp() {
-		$rs = $this->_conn->singleQuery("SELECT MIN(stamp) FROM spots;");
-		return $rs;
-	} # getOldestSpotTimestamp
-
-	
-	/*
-	 * Match set of spots
-	 */
-	function matchSpotMessageIds($hdrList) {
-		$idList = array('spot' => array(), 'fullspot' => array());
-
-		# geen message id's gegeven? vraag het niet eens aan de db
-		if (count($hdrList) == 0) {
-			return $idList;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($hdrList as $hdr) {
-			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# Omdat MySQL geen full joins kent, doen we het zo
-		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
-											UNION
-					 				    SELECT '' as spot, messageid AS fullspot FROM spotsfull WHERE messageid IN (" . $msgIdList . ")");
-
-		# en lossen we het hier op
-		foreach($rs as $msgids) {
-			if (!empty($msgids['spot'])) {
-				$idList['spot'][$msgids['spot']] = 1;
-			} # if
-
-			if (!empty($msgids['fullspot'])) {
-				$idList['fullspot'][$msgids['fullspot']] = 1;
-			} # if
-		} # foreach
-
-		return $idList;
-	} # matchMessageIds 
-
-	/*
-	 * Geef alle spots terug in de database die aan $parsedSearch voldoen.
-	 * 
-	 */
-	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
-		SpotTiming::start(__FUNCTION__);
-		$results = array();
-		$offset = (int) $pageNr * (int) $limit;
-
-		# je hebt de zoek criteria (category, titel, etc)
-		$criteriaFilter = " WHERE (bl.spotterid IS NULL) ";
-		if (!empty($parsedSearch['filter'])) {
-			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
-		} # if 
-
-		# er kunnen ook nog additionele velden gevraagd zijn door de filter parser
-		# als dat zo is, voeg die dan ook toe
-		$extendedFieldList = '';
-		foreach($parsedSearch['additionalFields'] as $additionalField) {
-			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
-		} # foreach
-
-		# ook additionele tabellen kunnen gevraagd zijn door de filter parser, die 
-		# moeten we dan ook toevoegen
-		$additionalTableList = '';
-		foreach($parsedSearch['additionalTables'] as $additionalTable) {
-			$additionalTableList = ', ' . $additionalTable . $additionalTableList;
-		} # foreach
-
-		# zelfs additionele joinskunnen gevraagd zijn door de filter parser, die 
-		# moeten we dan ook toevoegen
-		$additionalJoinList = '';
-		foreach($parsedSearch['additionalJoins'] as $additionalJoin) {
-			$additionalJoinList = ' ' . $additionalJoin['jointype'] . ' JOIN ' . 
-							$additionalJoin['tablename'] . ' AS ' . $additionalJoin['tablealias'] .
-							' ON (' . $additionalJoin['joincondition'] . ') ';
-		} # foreach
-		
-		# Nu prepareren we de sorterings lijst
-		$sortFields = $parsedSearch['sortFields'];
-		$sortList = array();
-		foreach($sortFields as $sortValue) {
-			if (!empty($sortValue)) {
-				# als er gevraagd is om op 'stamp' descending te sorteren, dan draaien we dit
-				# om en voeren de query uit reversestamp zodat we een ASCending sort doen. Dit maakt
-				# het voor MySQL ISAM een stuk sneller
-				if ((strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
-					$sortValue['field'] = 's.reversestamp';
-					$sortValue['direction'] = 'ASC';
-				} # if
-				
-				$sortList[] = $sortValue['field'] . ' ' . $sortValue['direction'];
-			} # if
-		} # foreach
-		$sortList = implode(', ', $sortList);
-
-		# en voer de query uit. 
-		# We vragen altijd 1 meer dan de gevraagde limit zodat we ook een hasMore boolean flag
-		# kunnen zetten.
- 		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
-												s.messageid AS messageid,
-												s.category AS category,
-												s.poster AS poster,
-												l.download as downloadstamp, 
-												l.watch as watchstamp,
-												l.seen AS seenstamp,
-												s.subcata AS subcata,
-												s.subcatb AS subcatb,
-												s.subcatc AS subcatc,
-												s.subcatd AS subcatd,
-												s.subcatz AS subcatz,
-												s.title AS title,
-												s.tag AS tag,
-												s.stamp AS stamp,
-												s.moderated AS moderated,
-												s.filesize AS filesize,
-												s.spotrating AS rating,
-												s.commentcount AS commentcount,
-												s.reportcount AS reportcount,
-												s.spotterid AS spotterid,
-												f.verified AS verified,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
-												" . $extendedFieldList . "
-									 FROM spots AS s " . 
-									 $additionalTableList . 
-									 $additionalJoinList . 
-								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
-									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
-									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2)) " .
-									 $criteriaFilter . " 
-									 ORDER BY " . $sortList . 
-								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
-
-		# als we meer resultaten krijgen dan de aanroeper van deze functie vroeg, dan
-		# kunnen we er van uit gaan dat er ook nog een pagina is voor de volgende aanroep
-		$hasMore = (count($tmpResult) > $limit);
-		if ($hasMore) {
-			# verwijder het laatste, niet gevraagde, element
-			array_pop($tmpResult);
-		} # if
-
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
-		return array('list' => $tmpResult, 'hasmore' => $hasMore);
-	} # getSpots()
-
-	/*
-	 * Geeft enkel de header van de spot terug
-	 */
-	function getSpotHeader($msgId) {
-		SpotTiming::start(__FUNCTION__);
-		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
-												s.messageid AS messageid,
-												s.category AS category,
-												s.poster AS poster,
-												s.subcata AS subcata,
-												s.subcatb AS subcatb,
-												s.subcatc AS subcatc,
-												s.subcatd AS subcatd,
-												s.subcatz AS subcatz,
-												s.title AS title,
-												s.tag AS tag,
-												s.stamp AS stamp,
-												s.spotrating AS rating,
-												s.commentcount AS commentcount,
-												s.reportcount AS reportcount,
-												s.moderated AS moderated
-											  FROM spots AS s
-											  WHERE s.messageid = '%s'", Array($msgId));
-		if (empty($tmpArray)) {
-			return ;
-		} # if
-		SpotTiming::stop(__FUNCTION__);
-		return $tmpArray[0];
-	} # getSpotHeader 
-
-	/*
-	 * Vraag 1 specifieke spot op, als de volledig spot niet in de database zit
-	 * geeft dit NULL terug
-	 */
-	function getFullSpot($messageId, $ourUserId) {
-		SpotTiming::start('SpotDb::' . __FUNCTION__);
-		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
-												s.messageid AS messageid,
-												s.category AS category,
-												s.poster AS poster,
-												s.subcata AS subcata,
-												s.subcatb AS subcatb,
-												s.subcatc AS subcatc,
-												s.subcatd AS subcatd,
-												s.subcatz AS subcatz,
-												s.title AS title,
-												s.tag AS tag,
-												s.stamp AS stamp,
-												s.moderated AS moderated,
-												s.spotrating AS rating,
-												s.commentcount AS commentcount,
-												s.reportcount AS reportcount,
-												s.filesize AS filesize,
-												s.spotterid AS spotterid,
-												l.download AS downloadstamp,
-												l.watch as watchstamp,
-												l.seen AS seenstamp,
-												f.verified AS verified,
-												f.usersignature AS \"user-signature\",
-												f.userkey AS \"user-key\",
-												f.xmlsignature AS \"xml-signature\",
-												f.fullxml AS fullxml,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
-												FROM spots AS s
-												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->safe( (int) $ourUserId) . "))
-												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
-												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
-												JOIN spotsfull AS f ON f.messageid = s.messageid
-										  WHERE s.messageid = '%s'", Array($messageId));
-		if (empty($tmpArray)) {
-			return ;
-		} # if
-		$tmpArray = $tmpArray[0];
-
-		# If spot is fully stored in db and is of the new type, we process it to
-		# make it exactly the same as when retrieved using NNTP
-		if (!empty($tmpArray['fullxml']) && (!empty($tmpArray['user-signature']))) {
-			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
-		} # if
-
-		SpotTiming::stop('SpotDb::' . __FUNCTION__, array($messageId, $ourUserId));
-		return $tmpArray;		
-	} # getFullSpot()
 
 
-
-	/*
-	 * Update een lijst van messageid's met de gemiddelde spotrating
-	 */
-	function updateSpotRating($spotMsgIdList) {
-		# Geen message id's gegeven? Doe niets!
-		if (count($spotMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId => $v) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# en update de spotrating
-		$this->_conn->modify("UPDATE spots 
-								SET spotrating = 
-									(SELECT AVG(spotrating) as spotrating 
-									 FROM commentsxover 
-									 WHERE 
-										spots.messageid = commentsxover.nntpref 
-										AND spotrating BETWEEN 1 AND 10
-									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $msgIdList . ")
-						");
-	} # updateSpotRating
-
-	/*
-	 * Update een lijst van messageid's met het aantal niet geverifieerde comments
-	 */
-	function updateSpotCommentCount($spotMsgIdList) {
-		if (count($spotMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId => $v) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		# en update de spotrating
-		$this->_conn->modify("UPDATE spots 
-								SET commentcount = 
-									(SELECT COUNT(1) as commentcount 
-									 FROM commentsxover 
-									 WHERE 
-										spots.messageid = commentsxover.nntpref 
-									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $msgIdList . ")
-						");
-	} # updateSpotCommentCount
-
-	/*
-	 * Update een lijst van messageid's met het aantal niet geverifieerde reports
-	 */
-	function updateSpotReportCount($spotMsgIdList) {
-		if (count($spotMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId => $v) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-		
-		# en update de spotrating
-		$this->_conn->modify("UPDATE spots 
-								SET reportcount = 
-									(SELECT COUNT(1) as reportcount 
-									 FROM reportsxover
-									 WHERE 
-										spots.messageid = reportsxover.nntpref 
-									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $msgIdList . ")
-						");
-	} # updateSpotReportCount
-
-	/*
-	 * Verwijder een spot uit de db
-	 */
-	function removeSpots($spotMsgIdList) {
-		if (count($spotMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql'  : 
-			case 'pdo_sqlite' : {
-				$this->_conn->modify("DELETE FROM spots WHERE messageid IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM spotsfull WHERE messageid  IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref IN (" . $msgIdList . "))");
-				$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref  IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
-				$this->_conn->modify("DELETE FROM cache WHERE resourceid  IN (" . $msgIdList . ")");
-				break; 
-			} # pdo_sqlite
-			
-			default			: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
-									LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
-									LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-									LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
-									LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
-									LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-									LEFT JOIN cache ON spots.messageid=cache.resourceid
-									WHERE spots.messageid  IN (" . $msgIdList . ")");
-			} # default
-		} # switch
-	} # removeSpots
-
-	/*
-	 * Markeer een spot in de db moderated
-	 */
-	function markSpotsModerated($spotMsgIdList) {
-		if (count($spotMsgIdList) == 0) {
-			return;
-		} # if
-
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($spotMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->bool2dt(true)));
-	} # markSpotsModerated
-
-	/*
-	 * Verwijder oude spots uit de db
-	 */
-	function deleteSpotsRetention($retention) {
-		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
-
-		switch ($this->_dbsettings['engine']) {
-			case 'pdo_pgsql' : 
- 			case 'pdo_sqlite': {
-				$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
-				$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
-									(SELECT messageid FROM commentsxover WHERE commentsxover.nntpref not in 
-									(SELECT messageid FROM spots))") ;
-				$this->_conn->modify("DELETE FROM commentsxover WHERE commentsxover.nntpref not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM reportsxover WHERE reportsxover.nntpref not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM spotstatelist WHERE spotstatelist.messageid not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
-									(SELECT messageid FROM spots)") ;
-				$this->_conn->modify("DELETE FROM cache WHERE (cache.cachetype = %d OR cache.cachetype = %d) AND cache.resourceid not in 
-									(SELECT messageid FROM spots)", Array(SpotCache::SpotImage, SpotCache::SpotNzb)) ;
-				break;
-			} # pdo_sqlite
-			default		: {
-				$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
-					LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
-					LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-					LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
-					LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
-					LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-					LEFT JOIN cache ON spots.messageid=cache.resourceid
-					WHERE spots.stamp < " . (time() - $retention) );
-			} # default
-		} # switch
-	} # deleteSpotsRetention
-
-	/*
-	 * Voeg een reeks met spots toe aan de database
-	 */
-	function addSpots($spots, $fullSpots = array()) {
-		$this->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$chunks = array_chunk($spots, 1);
-		} else {
-			$chunks = array_chunk($spots, 100);
-		} # else
-		
-		foreach($chunks as $spots) {
-			$insertArray = array();
-			
-			foreach($spots as $spot) {
-				# we checken hier handmatig of filesize wel numeriek is, dit is omdat printen met %d in sommige PHP
-				# versies een verkeerde afronding geeft bij >32bits getallen.
-				if (!is_numeric($spot['filesize'])) {
-					$spot['filesize'] = 0;
-				} # if
-				
-				# Kap de verschillende strings af op een maximum van 
-				# de datastructuur, de unique keys kappen we expres niet af
-				$spot['poster'] = substr($spot['poster'], 0, 127);
-				$spot['title'] = substr($spot['title'], 0, 127);
-				$spot['tag'] = substr($spot['tag'], 0, 127);
-				$spot['subcata'] = substr($spot['subcata'], 0, 63);
-				$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
-				$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
-				$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
-				
-				# Kap de verschillende strings af op een maximum van 
-				# de datastructuur, de unique keys en de RSA keys en dergeijke
-				# kappen we expres niet af
-				$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
-				
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
-						 Array($this->safe($spot['messageid']),
-							   $this->safe($spot['poster']),
-							   $this->safe($spot['title']),
-							   $this->safe($spot['tag']),
-							   $this->safe((int) $spot['category']),
-							   $this->safe($spot['subcata']),
-							   $this->safe($spot['subcatb']),
-							   $this->safe($spot['subcatc']),
-							   $this->safe($spot['subcatd']),
-							   $this->safe($spot['subcatz']),
-							   (int) $this->safe($spot['stamp']),
-							   (int) $this->safe(($spot['stamp'] * -1)),
-							   $this->safe($spot['filesize']),
-							   $this->safe($spot['spotterid']))); # Filesize mag niet naar int gecast worden, dan heb je 2GB limiet
-			} # foreach
-
-			# Actually insert the batch
-			if (!empty($insertArray)) {
-				$this->_conn->modify("INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
-									  VALUES " . implode(',', $insertArray), array());
-			} # if
-		} # foreach
-		$this->commitTransaction();
-		
-		if (!empty($fullSpots)) {
-			$this->addFullSpots($fullSpots);
-		} # if
-	} # addSpot()
-
-	/*
-	 * Update the spots table with some information contained in the 
-	 * fullspots information. 
-	 *
-	 * Some information in the fullspot is more reliable because 
-	 * more fidelity encoding.
-	 */
-	function updateSpotInfoFromFull($fullSpot) {
-		$this->_conn->modify("UPDATE spots SET title = '%s', spotterid = '%s' WHERE messageid = '%s'",
-							Array($fullSpot['title'], $fullSpot['spotterid'], $fullSpot['messageid']));
-	} # updateSpotInfoFromFull
-
-	/*
-	 * Voeg enkel de full spot toe aan de database, niet gebruiken zonder dat er een entry in 'spots' staat
-	 * want dan komt deze spot niet in het overzicht te staan.
-	 */
-	function addFullSpots($fullSpots) {
-		$this->beginTransaction();
-		
-		# Databases can have a maximum length of statements, so we 
-		# split the amount of spots in chunks of 100
-		if ($this->_dbsettings['engine'] == 'pdo_sqlite') {
-			$chunks = array_chunk($fullSpots, 1);
-		} else {
-			$chunks = array_chunk($fullSpots, 100);
-		} # else
-	
-		foreach($chunks as $fullSpots) {
-			$insertArray = array();
-
-			# en voeg het aan de database toe
-			foreach($fullSpots as $fullSpot) {
-				$insertArray[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s')",
-						Array($this->safe($fullSpot['messageid']),
-							  $this->bool2dt($fullSpot['verified']),
-							  $this->safe($fullSpot['user-signature']),
-							  $this->safe(base64_encode(serialize($fullSpot['user-key']))),
-							  $this->safe($fullSpot['xml-signature']),
-							  $this->safe($fullSpot['fullxml'])));
-			} # foreach
-
-			# Actually insert the batch
-			$this->_conn->modify("INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
-								  VALUES " . implode(',', $insertArray), array());
-		} # foreach
-
-		$this->commitTransaction();
-	} # addFullSpot
 
 	function addToSpotStateList($list, $messageId, $ourUserId, $stamp='') {
 		SpotTiming::start(__FUNCTION__);
@@ -1012,14 +331,6 @@ class SpotDb {
 
 	
 	
-	/*
-	 * Removes items from te commentsfull table older than a specific amount of days
-	 */
-	function expireSpotsFull($expireDays) {
-		return $this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
-	} # expireCommentsFull
-
-
 	function beginTransaction() {
 		$this->_conn->beginTransaction();
 	} # beginTransaction
@@ -1291,5 +602,79 @@ class SpotDb {
 	function setUserGroupList($userId, $groupList) {
 		return $this->_userDao->setUserGroupList($userId, $groupList);
 	}
-
+	function isReportPlaced($messageid, $userId) {
+		return $this->_spotReportDao->isReportPlaced($messageid, $userId);
+	}
+	function isReportMessageIdUnique($messageid) {
+		return $this->_spotReportDao->isReportMessageIdUnique($messageid);
+	}
+	function addPostedReport($userId, $report) {
+		return $this->_spotReportDao->addPostedReport($userId, $report);
+	}
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
+		return $this->_spotDao->getSpots($ourUserId, $pageNr, $limit, $parsedSearch);
+	}
+	function getSpotHeader($msgId) {
+		return $this->_spotDao->getSpotHeader($msgId);
+	}
+	function getFullSpot($messageId, $ourUserId) {
+		return $this->_spotDao->getFullSpot($messageId, $ourUserId);
+	}
+	function updateSpotRating($spotMsgIdList) {
+		return $this->_spotDao->updateSpotRating($spotMsgIdList);
+	}
+	function updateSpotCommentCount($spotMsgIdList) {
+		return $this->_spotDao->updateSpotCommentCount($spotMsgIdList);
+	}
+	function updateSpotReportCount($spotMsgIdList) {
+		return $this->_spotDao->updateSpotReportCount($spotMsgIdList);
+	}
+	function removeSpots($spotMsgIdList) {
+		return $this->_spotDao->removeSpots($spotMsgIdList);
+	}
+	function markSpotsModerated($spotMsgIdList) {
+		return $this->_spotDao->markSpotsModerated($spotMsgIdList);
+	}
+	function deleteSpotsRetention($retention) {
+		return $this->_spotDao->deleteSpotsRetention($retention);
+	}
+	function addSpots($spots, $fullSpots = array()) {
+		return $this->_spotDao->addSpots($spots, $fullSpots);
+	}
+	function updateSpotInfoFromFull($fullSpot) {
+		return $this->_spotDao->updateSpotInfoFromFull($fullSpot);
+	}
+	function addFullSpots($fullSpots) {
+		return $this->_spotDao->addFullSpots($fullSpots);
+	}
+	function getOldestSpotTimestamp() {
+		return $this->_spotDao->getOldestSpotTimestamp();
+	}
+	function matchSpotMessageIds($hdrList) {
+		return $this->_spotDao->matchSpotMessageIds($hdrList);
+	}
+	function getSpotCount($sqlFilter) {
+		return $this->_spotDao->getSpotCount($sqlFilter);
+	}
+	function getSpotCountPerHour($limit) {
+		return $this->_spotDao->getSpotCountPerHour($limit);
+	}
+	function getSpotCountPerWeekday($limit) {
+		return $this->_spotDao->getSpotCountPerWeekday($limit);
+	}
+	function getSpotCountPerMonth($limit) {
+		return $this->_spotDao->getSpotCountPerMonth($limit);
+	}
+	function getSpotCountPerCategory($limit) {
+		return $this->_spotDao->getSpotCountPerCategory($limit);
+	}
+	function removeExtraSpots($messageId) {
+		return $this->_spotDao->removeExtraSpots($messageId);
+	}
+	function addPostedSpot($userId, $spot, $fullXml) {
+		return $this->_spotDao->addPostedSpot($userId, $spot, $fullXml);
+	}
+	function expireSpotsFull($expireDays) {
+		return $this->_spotDao->expireSpotsFull($expireDays);
+	}
 } # class db

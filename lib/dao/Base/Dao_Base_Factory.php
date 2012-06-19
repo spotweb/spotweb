@@ -21,10 +21,6 @@
 		return new Dao_Base_Spot($this->_conn);
 	} # getSpotDao
 
-	public function getSpotSearchDao() {
-		return new Dao_Base_SpotSearch($this->_conn);
-	} # getSpotSearchDao
-
 	public function getUserDao() {
 		return new Dao_Base_User($this->_conn);
 	} # getUserDao

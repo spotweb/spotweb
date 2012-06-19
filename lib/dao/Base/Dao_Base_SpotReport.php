@@ -39,17 +39,10 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 			return $idList;
 		} # if
 
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($hdrList as $hdr) {
-			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
 		# en vraag alle comments op die we kennen
-		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $msgIdList . ")");
+		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1) . ")");
 
-		# geef hier een array terug die kant en klaar is voor array_search
+		# geef hier een array terug die kant en klaar is voor isset()
 		foreach($rs as $msgids) {
 			$idList[$msgids['messageid']] = 1;
 		} # foreach
@@ -86,5 +79,40 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 
 		$this->_conn->commit();
 	} # addReportRefs
+
+	/*
+	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
+	 */
+	function isReportPlaced($messageid, $userId) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
+		
+		return (!empty($tmpResult));
+	} # isReportPlaced
+	
+	/* 
+	 * Makes sure the messageid for this report hasn't been already used to post
+	 */
+	function isReportMessageIdUnique($messageid) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
+						Array($messageid));
+		
+		return (empty($tmpResult));
+	} # isReportMessageIdUnique
+
+	
+	/*
+	 * Saves the posted report to our database
+	 */
+	function addPostedReport($userId, $report) {
+		$this->_conn->modify(
+				"INSERT INTO reportsposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
+					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
+				Array((int) $userId,
+					  $report['newmessageid'],
+					  $report['inreplyto'],
+					  $report['randomstr'],
+					  $report['body'],
+					  (int) time()));
+	} # addPostedReport
 
 } # Dao_Base_SpotReport

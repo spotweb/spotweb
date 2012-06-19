@@ -1,34 +1,29 @@
 <?php
 
 interface Dao_Spot {
-	public function isSpotMessageIdUnique($messageId);							// isNewSpotMessageIdUnique($messageid);
-	public function addPostedSpot($userId, $spot, $fullXml);					// addPostedSpot($userId, $spot, $fullXml);
 
-	public function getSpotMaxMessageId();										// getMaxMessageId()
-	public function getSpotMaxMessageTime();									// getMaxMessageTime()
-	public function getSpotMinMessageTime();									// getOldestSpotTimestamp()
+	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch);
+	function getSpotHeader($msgId);
+	function getFullSpot($messageId, $ourUserId);
+	function updateSpotRating($spotMsgIdList);
+	function updateSpotCommentCount($spotMsgIdList);
+	function updateSpotReportCount($spotMsgIdList);
+	function removeSpots($spotMsgIdList);
+	function markSpotsModerated($spotMsgIdList);
+	function deleteSpotsRetention($retention);
+	function addSpots($spots, $fullSpots = array());
+	function updateSpotInfoFromFull($fullSpot);
+	function addFullSpots($fullSpots);
+	function getOldestSpotTimestamp();
+	function matchSpotMessageIds($hdrList);
+	function getSpotCount($sqlFilter);
+	function getSpotCountPerHour($limit);
+	function getSpotCountPerWeekday($limit);
+	function getSpotCountPerMonth($limit);
+	function getSpotCountPerCategory($limit);
+	function removeExtraSpots($messageId);
+	function addPostedSpot($userId, $spot, $fullXml);
+	function expireSpotsFull($expireDays);
 
-	public function removeSpotsLaterThan($messageId);							// removeExtraSpots
-
-	public function matchSpotMessageIds($hdrList);								// matchSpotMessageIds
-
-	public function getSpotHeader($messageId);									// getSpotHeader
-
-	public function updateSpotRating($msgIdList);								// updateSpotRating
-	public function updateSpotCommentCount($msgIdList);							// updateSpotCommentCount
-	public function updateSpotReportCount($msgIdList);							// updateSpotReportCount
-
-	public function addSpots($spots, $fullSpots = array());						// addSpots
-	public function removeSpots($msgIdList);									// removeSpots
-
-	public function markSpotsModerated($msgIdList);								// markSpotsModerated
-	public function deleteSpotsRetention($retention);							// deleteSpotsRetention
-	public function updateSpotInfoFromFull($fullSpot);							// updateSpotInfoFromFull
-	public function addFullSpots($fullSpots);									// addFullSpots
-	public function expireSpotsFull($expireDays);								// expireSpotsFull
-
-	public function getSpotCountPerHour($limit);								// getSpotCountPerHour
-	public function getSpotCountPerWeekday($limit);								// getSpotCountPerWeekday
-	public function getSpotCountPerCategory($limit);							// getSpotCountPerCategory
 } # Dao_Spot
 

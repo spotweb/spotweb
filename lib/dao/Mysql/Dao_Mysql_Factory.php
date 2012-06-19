@@ -23,10 +23,6 @@
 		return new Dao_Mysql_Spot($this->_conn);
 	} # getSpotDao
 
-	public function getSpotSearchDao() {
-		return new Dao_Mysql_SpotSearch($this->_conn);
-	} # getSpotSearchDao
-
 	public function getUserDao() {
 		return new Dao_Mysql_User($this->_conn);
 	} # getUserDao

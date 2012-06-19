@@ -29,13 +29,6 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 												 GROUP BY s.userid",
 												 array());
 		
-		# Prepare the list of values for the IN selection
-		$userIdList = '';
-		foreach($sessionList as $session) {
-			$userIdList .= (int) $this->_conn->safe($session['userid']) . ", ";
-		} # foreach
-		$userIdList = substr($userIdList, 0, -2);
-
 		/*
 		 * Update the current filter counts if the session
 		 * is still active
@@ -46,7 +39,7 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 										f.lastupdate = t.lastupdate
 									WHERE (f.filterhash = t.filterhash) 
 									  AND (t.userid = -1)
-									  AND (f.userid IN (" . $userIdList . "))");
+									  AND (f.userid IN (" . $this->_conn->arrayValToIn($sessionList, 'userid') . "))");
 		} # if
 
 		/*

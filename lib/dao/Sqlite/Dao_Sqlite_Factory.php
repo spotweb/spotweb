@@ -23,10 +23,6 @@
 		return new Dao_Sqlite_Spot($this->_conn);
 	} # getSpotDao
 
-	public function getSpotSearchDao() {
-		return new Dao_Sqlite_SpotSearch($this->_conn);
-	} # getSpotSearchDao
-
 	public function getUserDao() {
 		return new Dao_Sqlite_User($this->_conn);
 	} # getUserDao

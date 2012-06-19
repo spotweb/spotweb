@@ -69,12 +69,8 @@ class Dao_Base_Comment implements Dao_Comment {
 			return $idList;
 		} # if
 
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($hdrList as $hdr) {
-			$msgIdList .= "'" . substr($this->_conn->safe($hdr['Message-ID']), 1, -1) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
+		# Prepare the list of messageid's we want to match
+		$msgIdList = $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1);
 
 		# Omdat MySQL geen full joins kent, doen we het zo
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
@@ -215,20 +211,13 @@ class Dao_Base_Comment implements Dao_Comment {
 			return array();
 		} # if
 
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($nntpRefList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
 		/*
 		 * Actually run the query
 		 */
 		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
 									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
 												AND (sl.ouruserid = %d)
-									WHERE nntpref IN (" . $msgIdList . ") 
+									WHERE nntpref IN (" . $this->_conn->arrayKeyToIn($nntpRefList) . ") 
  										  AND (cx.stamp > sl.seen) 
 								   GROUP BY nntpref",
 								   Array((int) $ourUserId));
@@ -249,11 +238,7 @@ class Dao_Base_Comment implements Dao_Comment {
 		} # if
 
 		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
+		$msgIdList = $this->_conn->arrayKeyToIn($commentMsgIdList);
 
 		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
@@ -267,14 +252,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		# bereid de lijst voor met de queries in de where
-		$msgIdList = '';
-		foreach($commentMsgIdList as $spotMsgId) {
-			$msgIdList .= "'" . $this->_conn->safe($spotMsgId) . "', ";
-		} # foreach
-		$msgIdList = substr($msgIdList, 0, -2);
-
-		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid IN (" . $msgIdList . ")", Array($this->_conn->bool2dt(true)));
+		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList) . ")", Array($this->_conn->bool2dt(true)));
 	} # markCommentsModerated
 
 	/*

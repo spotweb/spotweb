@@ -70,7 +70,7 @@ abstract class dbeng_abs {
 	
 
 	/*
-	 * Prepares the query string by running vsprintf() met safe() erover heen te gooien
+	 * Prepares the query string by running vsprintf() met safe() thrown around it
 	 */
 	function prepareSql($s, $p) {
 		/*
@@ -97,5 +97,44 @@ abstract class dbeng_abs {
 	 * thrown if a error occurs
 	 */
 	abstract function modify($s, $p = array());
+
+	/*
+	 * Transforms an array of keys to an list usable by an
+	 * IN statement
+	 */
+	function arrayKeyToIn($ar) {
+		$tmpList = '';
+
+		foreach($ar as $k => $v) {
+			$tmpList .= "'" . $this->safe($k) . "', ";
+		} # foreach
+		return substr($tmpList, 0, -2);
+	} # arrayKeyToIn
+
+	/*
+	 * Transforms an array of values to an list usable by an
+	 * IN statement
+	 */
+	function arrayValToInOffset($ar, $val, $valOffset, $valEnd) {
+		$tmpList = '';
+
+		foreach($ar as $k => $v) {
+			$tmpList .= "'" . $this->safe(substr($v[$val], $valOffset, $valEnd)) . "', ";
+		} # foreach
+		return substr($tmpList, 0, -2);
+	} # arrayValToInOffset
+
+	/*
+	 * Transforms an array of values to an list usable by an
+	 * IN statement
+	 */
+	function arrayValToIn($ar, $val, $valOffset, $valEnd) {
+		$tmpList = '';
+
+		foreach($ar as $k => $v) {
+			$tmpList .= "'" . $this->safe($v[$val]) . "', ";
+		} # foreach
+		return substr($tmpList, 0, -2);
+	} # arrayValToIn
 
 } # dbeng_abs

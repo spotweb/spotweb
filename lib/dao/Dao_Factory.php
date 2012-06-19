@@ -5,7 +5,6 @@ abstract class Dao_Factory {
 	abstract public function getConnection();
 
 	abstract public function getSpotDao();
-	abstract public function getSpotSearchDao();
 	abstract public function getUserDao();
 	abstract public function getCacheDao();
 	abstract public function getAuditDao();
