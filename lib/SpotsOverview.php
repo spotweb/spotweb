@@ -527,15 +527,15 @@ class SpotsOverview {
 	} # setActiveRetriever
 
 	public function prepareCategorySelection($dynaList) {
-		$x = new Services_Search_QueryParser($this->_db);
+		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
 		return $x->prepareCategorySelection($dynaList);
 	}
 	public function compressCategorySelection($categoryList, $strongNotList) {
-		$x = new Services_Search_QueryParser($this->_db);
+		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
 		return $x->compressCategorySelection($categoryList, $strongNotList);
 	}
 	public function filterToQuery($search, $sort, $currentSession, $indexFilter) {
-		$x = new Services_Search_QueryParser($this->_db);
+		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
 		return $x->filterToQuery($search, $sort, $currentSession, $indexFilter);
 	}
 

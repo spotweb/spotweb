@@ -114,15 +114,6 @@ class SpotDb {
 		return $this->_conn->safe($x);
 	}
 
-
-	/*
-	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
-	 */
-	function createTextQuery($fieldList) {
-		$ftsEng = dbfts_abs::Factory($this->_conn);
-		return $ftsEng->createTextQuery($fieldList);
-	} # createTextQuery()
-
 	/* --------------------------- */
 	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
 		return $this->_auditDao->addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr);

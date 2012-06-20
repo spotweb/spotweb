@@ -5,14 +5,13 @@ class Services_Search_QueryParser {
 	 * We need a databse class to be able to properly escape
 	 * data in queries
 	 */
-	private $_db = null;
-
+	private $_dbEng = null;
 
 	/*
 	 * constructor 
 	 */
-	function __construct($db) {
-		$this->_db = $db;
+	function __construct(dbeng_abs $db) {
+		$this->_dbEng = $db;
 	} # ctor
 
 	/*
@@ -382,15 +381,15 @@ class Services_Search_QueryParser {
 					 */
 					if (count($subcats) == 1) {
 						if (in_array($subcats[0][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_db->safe($subcats[0]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_dbEng->safe($subcats[0]) . "|')))";
 						} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_db->safe($subcats[0]) . "|%')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_dbEng->safe($subcats[0]) . "|%')))";
 						} # if
 					} elseif (count($subcats) == 2) {
 						if (in_array($subcats[1][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_db->safe($subcats[1]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_dbEng->safe($subcats[1]) . "|')))";
 						} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_db->safe($subcats[1]) . "|%')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_dbEng->safe($subcats[1]) . "|%')))";
 						} # if
 					} # else
 				} # else not whole subcat
@@ -572,7 +571,7 @@ class Services_Search_QueryParser {
 				 */
 				switch($tmpFilterFieldname) {
 					case 'new' : {
-							$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_db->safe($currentSession['user']['lastread']) . ')';
+							$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_dbEng->safe($currentSession['user']['lastread']) . ')';
 							$tmpFilterValue .= ' AND (l.seen IS NULL))';
 							
 							break;
@@ -588,7 +587,7 @@ class Services_Search_QueryParser {
 												   'tablealias' => 'spost',
 												   'jointype' => 'LEFT',
 												   'joincondition' => 'spost.messageid = s.messageid');
-						$tmpFilterValue = ' (spost.ouruserid = ' . (int) $this->_db->safe($currentSession['user']['userid']) . ') '; 	
+						$tmpFilterValue = ' (spost.ouruserid = ' . (int) $this->_dbEng->safe($currentSession['user']['userid']) . ') '; 	
 						$sortFields[] = array('field' => 'spost.stamp',
 											  'direction' => 'DESC',
 											  'autoadded' => true,
@@ -652,9 +651,9 @@ class Services_Search_QueryParser {
 				 * as postgresql doesn't like that of course
 				 */
 				if (!is_numeric($tmpFilterValue)) {
-					$tmpFilterValue = "'" . $this->_db->safe($tmpFilterValue) . "'";
+					$tmpFilterValue = "'" . $this->_dbEng->safe($tmpFilterValue) . "'";
 				} else {
-					$tmpFilterValue = $this->_db->safe($tmpFilterValue);
+					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
 				} # if
 
 				# depending on the type of search, we either add the filter as an AND or an OR
@@ -675,7 +674,8 @@ class Services_Search_QueryParser {
 		 */
 		if (!empty($textSearchFields)) {
 			foreach($textSearchFields as $searchField => $searches) {
-				$parsedTextQueryResult = $this->_db->createTextQuery($searches);
+				$ftsEng = dbfts_abs::Factory($this->_dbEng);
+				$parsedTextQueryResult = $ftsEng->createTextQuery($searches);
 
 				if (in_array($tmpFilterFieldname, array('poster', 'tag'))) {
 					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';
