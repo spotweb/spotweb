@@ -270,7 +270,7 @@ class SpotUserUpgrader {
 				$rsaKey = $this->_db->getUserPrivateRsaKey($user['userid']);
 				if (empty($rsaKey)) {
 					# Creer een private en public key paar voor deze user
-					$spotSigning = new SpotSigning();
+					$spotSigning = Services_Signing_Base::newServiceSigning();
 					$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
 					
 					$this->_db->setUserRsaKeys($user['userid'], $userKey['public'], $userKey['private']);

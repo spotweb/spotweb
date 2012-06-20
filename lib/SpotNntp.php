@@ -246,7 +246,7 @@ class SpotNntp {
 		 */
 		function getComments($commentList) {
 			$comments = array();
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 			
 			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
 			# als comment text zelf.
@@ -331,7 +331,7 @@ class SpotNntp {
 		 */
 		function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
 			# instantiate necessary objects
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 
 			# also by the SpotWeb server 
 			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
@@ -360,7 +360,7 @@ class SpotNntp {
 		function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 			$chunkLen = (1024 * 1024);
 			$segmentList = array();
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 			
 			/*
 			 * Now start posting chunks of the NZB files
@@ -437,7 +437,7 @@ class SpotNntp {
 		 */
 		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
 			# instantiate the necessary objects
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 
 			/*
 			 * Create the spotnet from header part accrdoing to the following structure:
@@ -502,7 +502,7 @@ class SpotNntp {
 			SpotTiming::start('SpotNntp::' . __FUNCTION__);
 
 			# initialize some variables
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 			
 			$spot = array('fullxml' => '',
 						  'user-signature' => '',

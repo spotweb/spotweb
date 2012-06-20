@@ -3,7 +3,7 @@ class SpotParser {
 	private $_spotSigning = null;
 	
 	function __construct() {
-		$this->_spotSigning = new SpotSigning();
+		$this->_spotSigning = Services_Signing_Base::newServiceSigning();
 	} # ctor
 	
 	

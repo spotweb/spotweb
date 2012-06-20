@@ -20,7 +20,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$spotParser = new SpotParser();
 		
 		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = new SpotSigning();
+		$spotSigning = Services_Signing_Base::newServiceSigning();
 		
 		# creeer een default comment zodat het form altijd
 		# de waardes van het form kan renderen
