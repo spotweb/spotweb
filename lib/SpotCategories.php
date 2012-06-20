@@ -536,4 +536,4 @@ class SpotCategories {
 			} # foreach
 		} # foreach
 	} # startTranslation
-}
+} # SpotCategories

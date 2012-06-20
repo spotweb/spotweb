@@ -18,13 +18,14 @@ function __autoload($class_name) {
 				require_once "lib/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
+		case 'Services'		: 
 		case 'Dao'			: {
 			$parts = explode("_", $class_name);
 
 			if (count($parts) == 2) {
-				require_once ('lib/dao/' . $class_name . '.php');
+				require_once ('lib/' . strtolower($parts[0]) . '/' . $class_name . '.php');
 			} else {
-				require_once ('lib/dao/' . $parts[1] . '/' . $class_name . '.php');
+				require_once ('lib/' . strtolower($parts[0]) . '/' . $parts[1] . '/' . $class_name . '.php');
 			} # else
 			break;
 		} # dao
