@@ -1,6 +1,19 @@
 <?php
 
 class Services_Search_QueryParser {
+	/*
+	 * We need a databse class to be able to properly escape
+	 * data in queries
+	 */
+	private $_db = null;
+
+
+	/*
+	 * constructor 
+	 */
+	function __construct($db) {
+		$this->_db = $db;
+	} # ctor
 
 	/*
 	 * When passed an array with categories, this array is expanded \
@@ -215,7 +228,7 @@ class Services_Search_QueryParser {
 			} # elseif
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($categoryList, $strongNoList));
+		SpotTiming::stop(__FUNCTION__, array($categoryList, $strongNotList));
 		
 		return array($categoryList, $strongNotList);
 	} # prepareCategorySelection
