@@ -517,7 +517,7 @@
 			/*
 			 * Create a private/public key pair for this user
 			 */
-			$spotSigning = new SpotSigning();
+			$spotSigning = Services_Signing_Base::newServiceSigning();
 			$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
 			$spotUser['publickey'] = $userKey['public'];
 			$spotUser['privatekey'] = $userKey['private'];

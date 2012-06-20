@@ -75,7 +75,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				if (!empty($this->_currentSession['user']['avatar'])) {
 					$comment['user-avatar'] = $this->_currentSession['user']['avatar'];
 				} else {
-					$spotSigning = new SpotSigning();
+					$spotSigning = Services_Signing_Base::newServiceSigning();
 					$tmpKey = $spotSigning->getPublicKey($this->_currentSession['user']['privatekey']);
 					$comment['user-key'] = $tmpKey['publickey'];
 				} # else

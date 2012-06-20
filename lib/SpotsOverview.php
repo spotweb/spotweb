@@ -36,7 +36,7 @@ class SpotsOverview {
 			 * have a spotterid because we have the fullspot.
 			 */
 			if ((empty($fullSpot['spotterid'])) && ($newFullSpot['verified'])) {
-				$spotSigning = new SpotSigning($this->_db, $this->_settings);
+				$spotSigning = Services_Signing_Base::newServiceSigning();
 				$newFullSpot['spotterid'] = $spotSigning->calculateSpotterId($newFullSpot['user-key']['modulo']);
 
 				/* 
