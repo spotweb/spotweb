@@ -69,4 +69,8 @@
 		return new Dao_Base_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
+	public function getNntpDao() {
+		return new Dao_Base_Nntp($this->_conn);
+	} # getNntpDao
+
 } // Dao_Base_Factory

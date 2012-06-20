@@ -71,4 +71,8 @@
 		return new Dao_Postgresql_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
+	public function getNntpDao() {
+		return new Dao_Postgresql_Nntp($this->_conn);
+	} # getNntpDao
+
 } // Dao_Postgresql_Factory

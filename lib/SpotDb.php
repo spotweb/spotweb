@@ -15,6 +15,7 @@ class SpotDb {
 	private $_userDao;
 	private $_spotDao;
 	private $_spotStateListDao;
+	private $_nntpDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -95,6 +96,7 @@ class SpotDb {
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_spotDao = $daoFactory->getSpotdao();
 		$this->_spotStateListDao = $daoFactory->getSpotStateListDao();
+		$this->_nntpDao = $daoFactory->getNntpDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -107,97 +109,11 @@ class SpotDb {
 		return $this->_conn;
 	} # getDbHandle
 
-	/* 
-	 * Controleer of een messageid niet al eerder gebruikt is door ons om hier
-	 * te posten
-	 */
-	function isNewSpotMessageIdUnique($messageid) {
-		/* 
-		 * We use a union between our own messageids and the messageids we already
-		 * know to prevent a user from spamming the spotweb system by using existing
-		 * but valid spots
-		 */
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'
-												  UNION
-											    SELECT messageid FROM spots WHERE messageid = '%s'",
-						Array($messageid, $messageid));
-		
-		return (empty($tmpResult));
-	} # isNewSpotMessageIdUnique
-	
-	
 
+	function safe($x) {
+		return $this->_conn->safe($x);
+	}
 
-	/* 
-	 * Update of insert the maximum article id in de database.
-	 */
-	function setMaxArticleId($server, $maxarticleid) {
-		switch ($this->_dbsettings['engine']) {
-			case 'mysql'		:
-			case 'pdo_mysql'	: { 
-					$this->_conn->modify("INSERT INTO nntp(server, maxarticleid) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE maxarticleid = '%s'",
-										Array($server, (int) $maxarticleid, (int) $maxarticleid));
-					 break;
-			} # mysql
-			
-			default				: {
-					$this->_conn->exec("UPDATE nntp SET maxarticleid = '%s' WHERE server = '%s'", Array((int) $maxarticleid, $server));
-					if ($this->_conn->rows() == 0) {
-						$this->_conn->modify("INSERT INTO nntp(server, maxarticleid) VALUES('%s', '%s')", Array($server, (int) $maxarticleid));
-					} # if
-					break;
-			} # default
-		} # switch
-	} # setMaxArticleId()
-
-	/*
-	 * Vraag het huidige articleid (van de NNTP server) op, als die nog 
-	 * niet bestaat, voeg dan een nieuw record toe en zet die op 0
-	 */
-	function getMaxArticleId($server) {
-		$artId = $this->_conn->singleQuery("SELECT maxarticleid FROM nntp WHERE server = '%s'", Array($server));
-		if ($artId == null) {
-			$this->setMaxArticleId($server, 0);
-			$artId = 0;
-		} # if
-
-		return $artId;
-	} # getMaxArticleId
-
-	/* 
-	 * Returns the highest messageid from server 
-	 */
-	function getMaxMessageId($headers) {
-		if ($headers == 'headers') {
-			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 5000");
-		} elseif ($headers == 'comments') {
-			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM commentsxover ORDER BY id DESC LIMIT 5000");
-		} elseif ($headers == 'reports') {
-			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover ORDER BY id DESC LIMIT 5000");
-		} else {
-			throw new Exception("getMaxMessageId() header-type value is unknown");
-		} # else
-		
-		if ($msgIds == null) {
-			return array();
-		} # if
-
-		$tempMsgIdList = array();
-		$msgIdCount = count($msgIds);
-		for($i = 0; $i < $msgIdCount; $i++) {
-			$tempMsgIdList['<' . $msgIds[$i]['messageid'] . '>'] = 1;
-		} # for
-		return $tempMsgIdList;
-	} # func. getMaxMessageId
-
-	function getMaxMessageTime() {
-		$stamp = $this->_conn->singleQuery("SELECT MAX(stamp) AS stamp FROM spots");
-		if ($stamp == null) {
-			$stamp = time();
-		} # if
-
-		return $stamp;
-	} # getMaxMessageTime()
 
 	/*
 	 * Geeft een database engine specifieke text-match (bv. fulltxt search) query onderdeel terug
@@ -206,86 +122,6 @@ class SpotDb {
 		$ftsEng = dbfts_abs::Factory($this->_conn);
 		return $ftsEng->createTextQuery($fieldList);
 	} # createTextQuery()
-
-	/*
-	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
-	 */
-	function isRetrieverRunning($server) {
-		$artId = $this->_conn->singleQuery("SELECT nowrunning FROM nntp WHERE server = '%s'", Array($server));
-		return ((!empty($artId)) && ($artId > (time() - 900)));
-	} # isRetrieverRunning
-
-	/*
-	 * Geef terug of de huidige nntp server al bezig is volgens onze eigen database
-	 */
-	function setRetrieverRunning($server, $isRunning) {
-		if ($isRunning) {
-			$runTime = time();
-		} else {
-			$runTime = 0;
-		} # if
-
-		switch ($this->_dbsettings['engine']) {
-			case 'mysql'		:
-			case 'pdo_mysql' 	: {
-				$this->_conn->modify("INSERT INTO nntp (server, nowrunning) VALUES ('%s', %d) ON DUPLICATE KEY UPDATE nowrunning = %d",
-								Array($server, (int) $runTime, (int) $runTime));
-				break;
-			} # mysql
-			
-			default				: {
-				$this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
-				if ($this->_conn->rows() == 0) {
-					$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
-				} # if
-			} # default
-		} # switch
-	} # setRetrieverRunning
-
-	/*
-	 * Zet de tijd/datum wanneer retrieve voor het laatst geupdate heeft
-	 */
-	function setLastUpdate($server) {
-		return $this->_conn->modify("UPDATE nntp SET lastrun = '%d' WHERE server = '%s'", Array(time(), $server));
-	} # getLastUpdate
-
-	/*
-	 * Geef de datum van de laatste update terug
-	 */
-	function getLastUpdate($server) {
-		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
-	} # getLastUpdate
-
-
-
-
-
-	
-	
-	function beginTransaction() {
-		$this->_conn->beginTransaction();
-	} # beginTransaction
-
-	function abortTransaction() {
-		$this->_conn->rollback();
-	} # abortTransaction
-
-	function commitTransaction() {
-		$this->_conn->commit();
-	} # commitTransaction
-
-	function safe($q) {
-		return $this->_conn->safe($q);
-	} # safe
-
-	/*
-	 * Converts a boolean value to a string
-	 * for usage by the database
-	 */
-	function bool2dt($b) {
-		return $this->_conn->bool2dt($b);
-	} # bool2dt
-		
 
 	/* --------------------------- */
 	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr) {
@@ -628,5 +464,32 @@ class SpotDb {
 	}
 	function addToDownloadList($messageid, $ourUserId) {
 		return $this->_spotStateListDao->addToDownloadList($messageid, $ourUserId);
+	}
+	function isNewSpotMessageIdUnique($messageid) {
+		return $this->_spotDao->isNewSpotMessageIdUnique($messageid);
+	}
+	function getMaxMessageTime() {
+		return $this->_spotDao->getMaxMessageTime();
+	}
+	function getMaxMessageId($headers) {
+		return $this->_spotDao->getMaxMessageId($headers);
+	}
+	function setMaxArticleId($server, $maxarticleid) {
+		return $this->_nntpDao->setMaxArticleId($server, $maxarticleid);
+	}
+	function getMaxArticleId($server) {
+		return $this->_nntpDao->getMaxArticleId($server);
+	}
+	function isRetrieverRunning($server) {
+		return $this->_nntpDao->isRetrieverRunning($server);
+	}
+	function setRetrieverRunning($server, $isRunning) {
+		return $this->_nntpDao->setRetrieverRunning($server, $isRunning);
+	}
+	function setLastUpdate($server) {
+		return $this->_nntpDao->setLastUpdate($server);
+	}
+	function getLastUpdate($server) {
+		return $this->_nntpDao->getLastUpdate($server);
 	}
 } # class db

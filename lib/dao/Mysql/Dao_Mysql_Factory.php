@@ -71,4 +71,8 @@
 		return new Dao_Mysql_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
+	public function getNntpDao() {
+		return new Dao_Mysql_Nntp($this->_conn);
+	} # getNntpDao
+
 } // Dao_Mysql_Factory

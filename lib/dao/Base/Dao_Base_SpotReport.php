@@ -56,7 +56,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 *   nntpref is the messageid of the spot
 	 */
 	function addReportRefs($reportList) {
-		$this->_conn->batchInsert($spots,
+		$this->_conn->batchInsert($reportList,
 								  "INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES",
 								  "('%s', '%s', '%s', '%s')",
 								  Array('messageid', 'fromhdr', 'keyword', 'nntpref')

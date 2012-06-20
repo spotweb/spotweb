@@ -17,6 +17,7 @@ abstract class Dao_Factory {
 	abstract public function getSettingDao();
 	abstract public function getUserFilterCountDao();
 	abstract public function getSpotStateListDao();
+	abstract public function getNntpDao();
 
 	/*
 	 * Factory class which instantiates the specified DAO factory object
