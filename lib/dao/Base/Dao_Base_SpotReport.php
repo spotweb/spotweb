@@ -64,7 +64,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	} # addReportRefs
 
 	/*
-	 * Controleer of een user reeds een spamreport heeft geplaatst voor de betreffende spot
+	 * Check whether a user already ceated an report for a specific spot
 	 */
 	function isReportPlaced($messageid, $userId) {
 		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
