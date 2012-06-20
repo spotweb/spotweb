@@ -43,7 +43,7 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 		SpotTiming::start(__FUNCTION__);
 		$this->_conn->modify("UPDATE spotstatelist SET seen = NULL WHERE (ouruserid = %d) AND (download IS NULL) AND (watch IS NULL) ", array( (int) $ourUserId));
 		$this->_conn->modify("UPDATE spotstatelist SET seen = %d WHERE (ouruserid = %d) AND (download IS NOT NULL) OR (watch IS NOT NULL) ", array( (int) time(), (int) $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
+		SpotTiming::stop(__FUNCTION__, array($ourUserId));
 	} # markAllAsRead
 
 	/*
@@ -52,7 +52,7 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 	function clearDownloadList($ourUserId) {
 		SpotTiming::start(__FUNCTION__);
 		$this->_conn->modify("UPDATE spotstatelist SET download = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
-		SpotTiming::stop(__FUNCTION__, array($list, $ourUserId));
+		SpotTiming::stop(__FUNCTION__, array($ourUserId));
 	} # clearDownloadList
 
 	/*

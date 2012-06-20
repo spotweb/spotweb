@@ -1025,7 +1025,7 @@ class SpotTemplateHelper {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls');
 		
-		$this->_db->clearSpotStateList(SpotDb::spotstate_Down, $this->_currentSession['user']['userid']);
+		$this->_db->clearDownloadList($this->_currentSession['user']['userid']);
 	} # clearDownloadList
 	
 	/*
