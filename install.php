@@ -92,9 +92,9 @@
 			<tr> <td colspan="2"> JPEG Support </td> <td> <?php showResult($gdInfo['JPEG Support'] || $gdInfo['JPG Support'], true); ?> </td> </tr> <!-- Previous to PHP 5.3.0, the JPEG Support attribute was named JPG Support. -->
 			<tr> <td colspan="2"> PNG Support </td> <td> <?php showResult($gdInfo['PNG Support'], true); ?> </td> </tr>
 			<tr> <th colspan="3"> OpenSSL </th> </tr>
-		<?php require_once "lib/services/signing/Services_Signing_Base.php";
-			require_once "lib/services/signing/Services_Signing_Php.php";
-			require_once "lib/services/signing/Services_Signing_Openssl.php";
+		<?php require_once "lib/services/Signing/Services_Signing_Base.php";
+			require_once "lib/services/Signing/Services_Signing_Php.php";
+			require_once "lib/services/Signing/Services_Signing_Openssl.php";
 			$spotSigning = Services_Signing_Base::newServiceSigning();
 			$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 			
