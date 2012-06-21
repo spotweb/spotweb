@@ -12,6 +12,9 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 	 * Actually validates the RSA signature
 	 */
 	protected function checkRsaSignature($toCheck, $signature, $rsaKey, $useCache) {
+		# First decode the signature
+		$signature = base64_decode($signature);
+
 		if (isset($this->_pubKeyCache[$rsaKey['modulo'] . $rsaKey['exponent']])) {
 			$openSslPubKey = $this->_pubKeyCache[$rsaKey['modulo'] . $rsaKey['exponent']];
 			$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
