@@ -116,7 +116,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 			if (empty($formMessages['errors'])) {
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
-									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
+									'spotterid' => $spotParser->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'body' => $spot['body']);
 				$formMessages['info'][] = _('Spot has been successfully uploaded. It can take some time before it is shown');
 

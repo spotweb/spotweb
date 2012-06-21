@@ -84,7 +84,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				/* and return the result to the system */
 				$postResult = array('result' => 'success',
 									'user' => $this->_currentSession['user']['username'],
-									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
+									'spotterid' => $spotParser->calculateSpotterId($this->_currentSession['user']['publickey']),
 									'rating' => $comment['rating'],
 									'body' => $tmpBody,
 									'commentimage' => $commentImage);

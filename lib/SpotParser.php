@@ -370,7 +370,7 @@ class SpotParser {
 							 * The users' public key (modulo) is posted in the header, lets 
 							 * try this.
 							 */
-							$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+							$spot['spotterid'] = $this->calculateSpotterId($spot['selfsignedpubkey']);
 						} # if
 					} # if
 
@@ -389,7 +389,7 @@ class SpotParser {
 				/*
 				 * Extract the public key
 				 */
-				$spot['spotterid'] = $this->_spotSigning->calculateSpotterId($spot['selfsignedpubkey']);
+				$spot['spotterid'] = $this->calculateSpotterId($spot['selfsignedpubkey']);
 				$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
 										  'exponent' => 'AQAB');
 				/* 
@@ -663,7 +663,10 @@ class SpotParser {
 
 		return $doc->saveXML($mainElm);
 	} # spotToXml
-	
+
+	/*
+	 * Validates a messageid
+	 */	
 	private function validMessageId($messageId) {
 		$invalidChars = '<>';
 		
@@ -676,5 +679,20 @@ class SpotParser {
 		
 		return true;
 	} # validMessageId
+
+
+	/*
+	 * Calculates the user id using hte users' publickey
+	 */		
+	public function calculateSpotterId($userKey) {
+		$userSignCrc = crc32(base64_decode($userKey));
+		
+		$userIdTmp = chr($userSignCrc & 0xFF) .
+						chr(($userSignCrc >> 8) & 0xFF ).
+						chr(($userSignCrc >> 16) & 0xFF) .
+						chr(($userSignCrc >> 24) & 0xFF);
+		
+		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
+	} # calculateSpotterId
 	
 } # class Spot

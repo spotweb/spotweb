@@ -36,8 +36,10 @@ class SpotsOverview {
 			 * have a spotterid because we have the fullspot.
 			 */
 			if ((empty($fullSpot['spotterid'])) && ($newFullSpot['verified'])) {
+				$spotParser = new SpotParser();
+
 				$spotSigning = Services_Signing_Base::newServiceSigning();
-				$newFullSpot['spotterid'] = $spotSigning->calculateSpotterId($newFullSpot['user-key']['modulo']);
+				$newFullSpot['spotterid'] = $spotParser->calculateSpotterId($newFullSpot['user-key']['modulo']);
 
 				/* 
 				 * Update the spotterid in the spots table so it can be filtered later on

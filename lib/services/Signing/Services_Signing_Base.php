@@ -199,19 +199,5 @@ abstract class Services_Signing_Base {
 		
 		return $unique;
 	} # makeRandomStr
-
-	/*
-	 * Calculates the user id using hte users' publickey
-	 */		
-	public function calculateSpotterId($userKey) {
-		$userSignCrc = crc32(base64_decode($userKey));
-		
-		$userIdTmp = chr($userSignCrc & 0xFF) .
-						chr(($userSignCrc >> 8) & 0xFF ).
-						chr(($userSignCrc >> 16) & 0xFF) .
-						chr(($userSignCrc >> 24) & 0xFF);
-		
-		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-	} # calculateSpotterId
 	
 } # Services_Signing_Base
