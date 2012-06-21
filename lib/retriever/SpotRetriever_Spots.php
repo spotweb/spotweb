@@ -86,7 +86,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 
-			$spotParser = new SpotParser();
+			$spotParser = new Services_Format_Parsing();
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
@@ -189,11 +189,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
-					$spot = $spotParser->parseXover($msgheader['Subject'], 
-													$msgheader['From'], 
-													$msgheader['Date'],
-													$msgheader['Message-ID'],
-													$this->_rsakeys);
+					$spot = $spotParser->parseHeader($msgheader['Subject'], 
+													 $msgheader['From'], 
+													 $msgheader['Date'],
+													 $msgheader['Message-ID'],
+													 $this->_rsakeys);
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*

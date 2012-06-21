@@ -1,5 +1,5 @@
 <?php
-class SpotParser {
+class Services_Format_Parsing {
 	private $_spotSigning = null;
 	
 	function __construct() {
@@ -7,6 +7,9 @@ class SpotParser {
 	} # ctor
 	
 	
+	/*
+	 * Parse a full Spot according to the XML structure
+	 */
 	function parseFull($xmlStr) {
 		# Create a template array so we always have the full fields to prevent ugly notices
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
@@ -122,7 +125,10 @@ class SpotParser {
 		return $tpl_spot;
 	} # parseFull()
 
-	function parseXover($subj, $from, $date, $messageid, $rsaKeys) {
+	/*
+	 * Parse a Spot using only the header information
+	 */
+	function parseHeader($subj, $from, $date, $messageid, $rsaKeys) {
 		# Initialize an empty array, we create a basic template in a few
 		$spot = array();
 
@@ -416,7 +422,7 @@ class SpotParser {
 		} # if
 
 		return $spot;
-	} # parseXover
+	} # parseHeader
 
 	/*private */function unspecialZipStr($strInput) {
 		$strInput = str_replace('=C', "\n", $strInput);
@@ -567,7 +573,7 @@ class SpotParser {
 		return $strInput;
 	} # specialString
 
-	/*private */function unspecialString($strInput) {
+	function unspecialString($strInput) {
 		/* Pad the input string to a multiple of 4 */
 		$paddingLen = strlen($strInput) % 4;
 		if ($paddingLen > 0) {

@@ -24,7 +24,7 @@ class SpotNntp {
 			$this->_pass = $server['pass'];
 
 			$this->_nntp = new Net_NNTP_Client();
-			$this->_spotParser = new SpotParser();
+			$this->_spotParser = new Services_Format_Parsing();
 		} # ctor
 
 	

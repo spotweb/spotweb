@@ -36,7 +36,7 @@ class SpotsOverview {
 			 * have a spotterid because we have the fullspot.
 			 */
 			if ((empty($fullSpot['spotterid'])) && ($newFullSpot['verified'])) {
-				$spotParser = new SpotParser();
+				$spotParser = new Services_Format_Parsing();
 
 				$spotSigning = Services_Signing_Base::newServiceSigning();
 				$newFullSpot['spotterid'] = $spotParser->calculateSpotterId($newFullSpot['user-key']['modulo']);
@@ -63,7 +63,7 @@ class SpotsOverview {
 		 * We cannot use all information from the XML because because some information just
 		 * isn't present in the XML file
 		 */
-		$spotParser = new SpotParser();
+		$spotParser = new Services_Format_Parsing();
 		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
 		$fullSpot = array_merge($parsedXml, $fullSpot);
 		$fullSpot['title'] = $parsedXml['title'];

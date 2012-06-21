@@ -271,7 +271,7 @@ class SpotPosting {
 			$nzbSegmentList = $this->_nntp_post->postBinaryMessage($user, $bin_newsgroup, gzdeflate($nzbFileContents), '');
 			
 			# Convert the current Spotnet info, to an XML structure
-			$spotParser = new SpotParser();
+			$spotParser = new Services_Format_Parsing();
 			$spotXml = $spotParser->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
 			$spot['spotxml'] = $spotXml;
 			

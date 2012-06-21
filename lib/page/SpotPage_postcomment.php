@@ -17,7 +17,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_comment, '');
 							  
 		# Sportparser is nodig voor het escapen van de random string
-		$spotParser = new SpotParser();
+		$spotParser = new Services_Format_Parsing();
 		
 		# spot signing is nodig voor het RSA signen van de spot en dergelijke
 		$spotSigning = Services_Signing_Base::newServiceSigning();
