@@ -1,9 +1,11 @@
 <?php
 class Services_Format_Parsing {
 	private $_spotSigning = null;
+	private $_util;
 	
 	function __construct() {
 		$this->_spotSigning = Services_Signing_Base::newServiceSigning();
+		$this->_util = new Services_Format_Util();
 	} # ctor
 	
 	
@@ -57,7 +59,7 @@ class Services_Format_Parsing {
 			
 			foreach($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
 				# Make sure the messageid's are valid so we do not throw an NNTP error
-				if (!$this->validMessageId((string) $seg)) {
+				if (!$this->_util->validMessageId((string) $seg)) {
 					$tpl_spot['image']['segment'] = array();
 					break;
 				} else {
@@ -68,7 +70,7 @@ class Services_Format_Parsing {
 
 		# Just stitch together the NZB segments
 		foreach($xml->xpath('/Spotnet/Posting/NZB/Segment') as $seg) {
-			if (!$this->validMessageId((string) $seg)) {
+			if (!$this->_util->validMessageId((string) $seg)) {
 				$tpl_spot['nzb'] = array();
 				break;
 			} else {
@@ -158,9 +160,9 @@ class Services_Format_Parsing {
 			 * users' signature as the spots signature as signed by the user
 			 */
 			$headerSignatureTemp = explode('.', $fromAddress[0]);
-			$spot['selfsignedpubkey'] = $this->unSpecialString($headerSignatureTemp[0]);
+			$spot['selfsignedpubkey'] = $this->_util->spotUnprepareBase64($headerSignatureTemp[0]);
 			if (isset($headerSignatureTemp[1])) {
-				$spot['user-signature'] = $this->unSpecialString($headerSignatureTemp[1]);
+				$spot['user-signature'] = $this->_util->spotUnprepareBase64($headerSignatureTemp[1]);
 			} # if
 		} # if
 
@@ -345,7 +347,7 @@ class Services_Format_Parsing {
 			switch($signingMethod) {
 				case 1 : {
 					# the signature this header is signed with
-					$signature = $this->unspecialString($spot['headersign']);
+					$signature = $this->_util->spotUnprepareBase64($spot['headersign']);
 			
 					/*
 					 * Make sure the key specified is an actual known key 
@@ -359,7 +361,7 @@ class Services_Format_Parsing {
 
 				case 2 : {
 					# the signature this header is signed with
-					$signature = $this->unspecialString($spot['headersign']);
+					$signature = $this->_util->spotUnprepareBase64($spot['headersign']);
 
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
 					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
@@ -429,72 +431,4 @@ class Services_Format_Parsing {
 		return $spot;
 	} # parseHeader
 
-	/*private */function unspecialZipStr($strInput) {
-		$strInput = str_replace('=C', "\n", $strInput);
-		$strInput = str_replace('=B', "\r", $strInput);
-		$strInput = str_replace('=A', "\0", $strInput);
-		$strInput = str_replace('=D', '=', $strInput);
-
-		return $strInput;
-	} # unspecialZipstr
-
-	/*private */function specialZipStr($strInput) {
-		$strInput = str_replace("=", '=D', $strInput);
-		$strInput = str_replace("\n", '=C', $strInput);
-		$strInput = str_replace("\r", '=B', $strInput);
-		$strInput = str_replace("\0", '=A', $strInput);
-
-		return $strInput;
-	} # specialZipstr
-	
-	function specialString($strInput) {
-
-		$strInput = str_replace('/', '-s', $strInput);
-		$strInput = str_replace('+', '-p', $strInput);
-
-		return $strInput;
-	} # specialString
-
-	function unspecialString($strInput) {
-		/* Pad the input string to a multiple of 4 */
-		$paddingLen = strlen($strInput) % 4;
-		if ($paddingLen > 0) {
-			$strInput .= str_repeat('=', (4 - $paddingLen));
-		} # if
-		
-		return str_replace(array('-s', '-p'), array('/', '+'), $strInput);
-	} # unspecialString
-	
-
-	/*
-	 * Validates a messageid
-	 */	
-	private function validMessageId($messageId) {
-		$invalidChars = '<>';
-		
-		$msgIdLen = strlen($messageId);		
-		for ($i = 0; $i < $msgIdLen; $i++) {
-			if (strpos($invalidChars, $messageId[$i]) !== false) {
-				return false;
-			} # if
-		} # for
-		
-		return true;
-	} # validMessageId
-
-
-	/*
-	 * Calculates the user id using hte users' publickey
-	 */		
-	public function calculateSpotterId($userKey) {
-		$userSignCrc = crc32(base64_decode($userKey));
-		
-		$userIdTmp = chr($userSignCrc & 0xFF) .
-						chr(($userSignCrc >> 8) & 0xFF ).
-						chr(($userSignCrc >> 16) & 0xFF) .
-						chr(($userSignCrc >> 24) & 0xFF);
-		
-		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-	} # calculateSpotterId
-	
-} # class Spot
+} # class Services_Format_Parsing

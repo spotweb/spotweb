@@ -2,6 +2,7 @@
 require_once "Crypt/RSA.php";
 
 abstract class Services_Signing_Base {
+
 	/* 
 	 * We never want to create this directly
 	 */	

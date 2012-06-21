@@ -213,8 +213,8 @@ class SpotNntp {
 					case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
 					case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
 					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
-					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParser->unspecialString(substr($hdr, 18)); break;
-					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParser->unspecialString(substr($hdr, 17)); break;
+					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 18)); break;
+					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 17)); break;
 					case 'X-User-Avatar'	: $tmpAr['user-avatar'] .= substr($hdr, 15); break;
 					case 'X-User-Key'		: {
 							$xml = simplexml_load_string(substr($hdr, 12)); 
@@ -343,11 +343,11 @@ class SpotNntp {
 				# sign the messageid
 				$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
 			
-				$addHeaders .= 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+				$addHeaders .= 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
 				$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 			} # if
 			
-			$addHeaders .= 'X-Server-Signature: ' . $this->_spotParser->specialString($server_signature['signature']) . "\r\n";
+			$addHeaders .= 'X-Server-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($server_signature['signature']) . "\r\n";
 			$addHeaders .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
 			$addHeaders .= $additionalHeaders;
 
@@ -463,7 +463,7 @@ class SpotNntp {
 			
 			# Create the user-signature
 			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
-			$header = 'X-User-Signature: ' . $this->_spotParser->specialString($user_signature['signature']) . "\r\n";
+			$header = 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
 			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
 				
 			# sign the header by using the users' key
@@ -477,10 +477,10 @@ class SpotNntp {
 			
 			# Create the From header
 			$spotnetFrom = $user['username'] . ' <' . 
-								$this->_spotParser->specialString($userPubKey['publickey']['modulo']) . 
+								$this->_spotParseUtil->spotPrepareBase64($userPubKey['publickey']['modulo']) . 
 								'.' . 
-								$this->_spotParser->specialString($user_signature['signature']) . '@';
-			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParser->specialString($header_signature['signature']) . ">\r\n";
+								$this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . '@';
+			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParseUtil->spotPrepareBase64($header_signature['signature']) . ">\r\n";
 			
 			# Add the Spotnet XML file, but split it in chunks of 900 characters
 			$tmpXml = explode("\r\n", chunk_split($spot['spotxml'], 900));
@@ -489,7 +489,7 @@ class SpotNntp {
 					$header .= 'X-XML: ' . $xmlChunk . "\r\n";
 				} # if
 			} # foreach
-			$header .= 'X-XML-Signature: ' . $this->_spotParser->specialString($xml_signature['signature']) . "\r\n";
+			$header .= 'X-XML-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($xml_signature['signature']) . "\r\n";
 
 			# post the message
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $spot, $header);
