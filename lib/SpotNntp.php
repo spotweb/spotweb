@@ -263,7 +263,8 @@ class SpotNntp {
 					# Valideer de signature van de XML, deze is gesigned door de user zelf
 					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
 					if ($tmpAr['verified']) {
-						$tmpAr['spotterid'] = $this->_spotParser->calculateSpotterId($tmpAr['user-key']['modulo']);
+						$spotParseUtil = new Services_Format_Util();
+						$tmpAr['spotterid'] = $spotParseUtil->calculateSpotterId($tmpAr['user-key']['modulo']);
 					} # if
 
 					# encode de body voor UTF8
@@ -530,7 +531,8 @@ class SpotNntp {
 			
 			# als de spot verified is, toon dan de spotterid van deze user
 			if ($spot['verified']) {
-				$spot['spotterid'] = $this->_spotParser->calculateSpotterId($spot['user-key']['modulo']);
+				$spotParseUtil = new Services_Format_Util();
+				$spot['spotterid'] = $spotParseUtil->calculateSpotterId($spot['user-key']['modulo']);
 			} # if	
 			
 			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven

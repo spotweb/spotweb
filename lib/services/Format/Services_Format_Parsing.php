@@ -383,7 +383,7 @@ class Services_Format_Parsing {
 							 * The users' public key (modulo) is posted in the header, lets 
 							 * try this.
 							 */
-							$spot['spotterid'] = $this->calculateSpotterId($spot['selfsignedpubkey']);
+							$spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
 						} # if
 					} # if
 
@@ -402,7 +402,7 @@ class Services_Format_Parsing {
 				/*
 				 * Extract the public key
 				 */
-				$spot['spotterid'] = $this->calculateSpotterId($spot['selfsignedpubkey']);
+				$spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
 				$spot['user-key'] = array('modulo' => $spot['selfsignedpubkey'],
 										  'exponent' => 'AQAB');
 				/* 
