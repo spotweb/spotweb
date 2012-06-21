@@ -92,7 +92,7 @@ class SpotNntp {
 		 * Post an article to the server, $article should be an 2-element 
 		 * array with head and body as elements
 		 */
-		function post($article) {
+		private function post($article) {
 			$this->connect();
 
 			// We kunnen niet rechtstreeks post() aanroepen omdat die
@@ -108,7 +108,7 @@ class SpotNntp {
 		/*
 		 * Returns the header of an messageid
 		 */
-		function getHeader($msgid) {
+		private function getHeader($msgid) {
 			$this->connect();
 			return $this->_nntp->getHeader($msgid);
 		} # getHeader()
@@ -116,7 +116,7 @@ class SpotNntp {
 		/*
 		 * Returns the body of an messageid
 		 */
-		function getBody($msgid) {
+		private function getBody($msgid) {
 			$this->connect();
 			return $this->_nntp->getBody($msgid);
 		} # getBody	()
@@ -125,7 +125,7 @@ class SpotNntp {
 		 * Connect to the newsserver and authenticate
 		 * if necessary
 		 */
-		function connect() {
+		private function connect() {
 			# dummy operation
 			if ($this->_connected) {
 				return ;
@@ -175,7 +175,7 @@ class SpotNntp {
 		 * Returns a full article divided between an
 		 * header and body part
 		 */
-		function getArticle($msgId) {
+		private function getArticle($msgId) {
 			$this->connect();
 	
 			$result = array('header' => array(), 'body' => array());
@@ -204,7 +204,7 @@ class SpotNntp {
 		 * Parse an header and extract specific fields
 		 * from it
 		 */
-		function parseHeader($headerList, $tmpAr) {
+		private  function parseHeader($headerList, $tmpAr) {
 			# extract de velden we die we willen hebben
 			foreach($headerList as $hdr) {
 				$keys = explode(':', $hdr);
@@ -233,7 +233,7 @@ class SpotNntp {
 		/*
 		 * Callback function for sorting of comments on date
 		 */
-		function cbCommentDateSort($a, $b) {
+		private function cbCommentDateSort($a, $b) {
 			if ($a['stamp'] == $b['stamp']) {
 				return 0;
 			} # if
@@ -315,7 +315,7 @@ class SpotNntp {
 		/*
 		 * Post plain usenet message
 		 */
-		function postPlainMessage($newsgroup, $message, $additionalHeaders) {
+		private function postPlainMessage($newsgroup, $message, $additionalHeaders) {
 			$header = 'Subject: ' . utf8_decode($message['title']) . "\r\n";
 			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
 			$header .= 'Message-ID: <' . $message['newmessageid'] . ">\r\n";
@@ -330,7 +330,7 @@ class SpotNntp {
 		 * Post a signed usenet message, we allow for additional headers
 		 * so this function can be used by anything
 		 */
-		function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
+		private function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
 			# instantiate necessary objects
 			$spotSigning = Services_Signing_Base::newServiceSigning();
 
@@ -358,7 +358,7 @@ class SpotNntp {
 		/*
 		 * Post a binary usenet message
 		 */
-		function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
+		public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 			$chunkLen = (1024 * 1024);
 			$segmentList = array();
 			$spotSigning = Services_Signing_Base::newServiceSigning();
@@ -407,7 +407,7 @@ class SpotNntp {
 		/*
 		 * Post a comment to a spot
 		 */
-		function postComment($user, $serverPrivKey, $newsgroup, $comment) {
+		public function postComment($user, $serverPrivKey, $newsgroup, $comment) {
 			/* 
 			 * Create the comment specific headers
 			 */
@@ -436,7 +436,7 @@ class SpotNntp {
 		 * Posts a spot file and its corresponding image and NZB file (actually done by
 		 * helper functions)
 		 */
-		function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
+		public function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
 			# instantiate the necessary objects
 			$spotSigning = Services_Signing_Base::newServiceSigning();
 
@@ -499,7 +499,7 @@ class SpotNntp {
 		/*
 		 * Retrieve the fullspot from the NNTP server
 		 */
-		function getFullSpot($msgId) {
+		public function getFullSpot($msgId) {
 			SpotTiming::start('SpotNntp::' . __FUNCTION__);
 
 			# initialize some variables
