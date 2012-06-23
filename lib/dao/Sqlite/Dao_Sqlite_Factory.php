@@ -71,8 +71,8 @@
 		return new Dao_Sqlite_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
-	public function getNntpDao() {
-		return new Dao_Sqlite_Nntp($this->_conn);
-	} # getNntpDao
+	public function getNntpConfigDao() {
+		return new Dao_Sqlite_NntpConfig($this->_conn);
+	} # getNntpConfigDao
 
 } // Dao_Sqlite_Factory

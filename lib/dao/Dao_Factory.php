@@ -17,7 +17,7 @@ abstract class Dao_Factory {
 	abstract public function getSettingDao();
 	abstract public function getUserFilterCountDao();
 	abstract public function getSpotStateListDao();
-	abstract public function getNntpDao();
+	abstract public function getNntpConfigDao();
 
 	/*
 	 * Factory class which instantiates the specified DAO factory object
@@ -26,7 +26,8 @@ abstract class Dao_Factory {
 		switch($which) {
 			case 'postgresql'			: return new Dao_Postgresql_Factory(); break;
 			case 'mysql'				: return new Dao_Mysql_Factory(); break;
-			case 'sqlite'				: return new Dao_Sqlite_actory(); break;
+			case 'sqlite'				: return new Dao_Sqlite_Factory(); break;
+			case 'nntp'					: return new Dao_Nntp_Factor(); break;
 
 			default						: throw new Exception("Unknown DAO factory specified");
 		} // switch

@@ -1,6 +1,6 @@
 <?php
 
-class Dao_Base_Nntp implements Dao_Nntp {
+class Dao_Base_NntpConfig implements Dao_NntpConfig {
 	protected $_conn;
 
 	/*
@@ -74,4 +74,4 @@ class Dao_Base_Nntp implements Dao_Nntp {
 		return $this->_conn->singleQuery("SELECT lastrun FROM nntp WHERE server = '%s'", Array($server));
 	} # getLastUpdate
 	
-} # Dao_Base_Nntp
+} # Dao_Base_NntpConfig

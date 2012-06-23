@@ -1,6 +1,6 @@
 <?php
 
-class Dao_Mysql_Nntp extends Dao_Base_Nntp {
+class Dao_Mysql_NntpConfig extends Dao_Base_NntpConfig {
 
 	/* 
 	 * Update of insert the maximum article id in de database.
@@ -24,4 +24,4 @@ class Dao_Mysql_Nntp extends Dao_Base_Nntp {
 								Array($server, (int) $runTime, (int) $runTime));
 	} # setRetrieverRunning
 
-} # Dao_Mysql_Nntp
+} # Dao_Mysql_NntpConfig

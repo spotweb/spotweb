@@ -1,6 +1,6 @@
 <?php
 
-interface Dao_Nntp {
+interface Dao_NntpConfig {
 
 	function setMaxArticleId($server, $maxarticleid);
 	function getMaxArticleId($server);
@@ -10,4 +10,4 @@ interface Dao_Nntp {
 	function getLastUpdate($server);
 
 	
-} # Dao_Nntp
+} # Dao_NntpConfig
