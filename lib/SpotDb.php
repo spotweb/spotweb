@@ -15,7 +15,7 @@ class SpotDb {
 	private $_userDao;
 	private $_spotDao;
 	private $_spotStateListDao;
-	private $_nntpDao;
+	private $_nntpConfigDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
@@ -96,7 +96,7 @@ class SpotDb {
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_spotDao = $daoFactory->getSpotdao();
 		$this->_spotStateListDao = $daoFactory->getSpotStateListDao();
-		$this->_nntpDao = $daoFactory->getNntpDao();
+		$this->_nntpConfigDao = $daoFactory->getNntpConfigDao();
 
 		$this->_conn->connect();
 		SpotTiming::stop(__FUNCTION__);
@@ -466,21 +466,21 @@ class SpotDb {
 		return $this->_spotDao->getMaxMessageId($headers);
 	}
 	function setMaxArticleId($server, $maxarticleid) {
-		return $this->_nntpDao->setMaxArticleId($server, $maxarticleid);
+		return $this->_nntpConfigDao->setMaxArticleId($server, $maxarticleid);
 	}
 	function getMaxArticleId($server) {
-		return $this->_nntpDao->getMaxArticleId($server);
+		return $this->_nntpConfigDao->getMaxArticleId($server);
 	}
 	function isRetrieverRunning($server) {
-		return $this->_nntpDao->isRetrieverRunning($server);
+		return $this->_nntpConfigDao->isRetrieverRunning($server);
 	}
 	function setRetrieverRunning($server, $isRunning) {
-		return $this->_nntpDao->setRetrieverRunning($server, $isRunning);
+		return $this->_nntpConfigDao->setRetrieverRunning($server, $isRunning);
 	}
 	function setLastUpdate($server) {
-		return $this->_nntpDao->setLastUpdate($server);
+		return $this->_nntpConfigDao->setLastUpdate($server);
 	}
 	function getLastUpdate($server) {
-		return $this->_nntpDao->getLastUpdate($server);
+		return $this->_nntpConfigDao->getLastUpdate($server);
 	}
 } # class db
