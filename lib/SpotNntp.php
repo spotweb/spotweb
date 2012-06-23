@@ -12,6 +12,7 @@ class SpotNntp {
 		private $_currentgroup;
 
 		private $_spotParser;
+		private $_spotParseUtil;
 		
 		function __construct($server) { 
 			$error = '';
@@ -25,6 +26,7 @@ class SpotNntp {
 
 			$this->_nntp = new Net_NNTP_Client();
 			$this->_spotParser = new Services_Format_Parsing();
+			$this->_spotParseUtil = new Services_Format_Util();
 		} # ctor
 
 	
@@ -295,7 +297,7 @@ class SpotNntp {
 			 */
 			foreach($segmentList['image']['segment'] as $seg) {
 				$imgTmp = implode('', $this->getBody('<' . $seg . '>'));
-				$imageContent .= $this->_spotParser->unspecialZipStr($imgTmp);
+				$imageContent .= $this->_spotParseUtil->unspecialZipStr($imgTmp);
 			} # foreach
 			
 			return $imageContent;
@@ -308,7 +310,7 @@ class SpotNntp {
 				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
 			} # foreach
 
-			$nzb = gzinflate($this->_spotParser->unspecialZipStr($nzb));
+			$nzb = gzinflate($this->_spotParseUtil->unspecialZipStr($nzb));
 			return $nzb;
 		} # getNzb
 		
@@ -379,7 +381,7 @@ class SpotNntp {
 				/* 
 				 * Split the body in parts of 900 characters
 				 */
-				$message['body'] = chunk_split($this->_spotParser->specialZipstr($chunk), 900);
+				$message['body'] = chunk_split($this->_spotParseUtil->specialZipstr($chunk), 900);
 
 				/*
 				 * Create an unique messageid and store it so we can return it
