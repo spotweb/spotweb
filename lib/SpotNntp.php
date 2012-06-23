@@ -13,6 +13,7 @@ class SpotNntp {
 
 		private $_spotParser;
 		private $_spotParseUtil;
+		private $_nntpEngine;
 		
 		function __construct($server) { 
 			$error = '';
@@ -24,190 +25,60 @@ class SpotNntp {
 			$this->_user = $server['user'];
 			$this->_pass = $server['pass'];
 
-			$this->_nntp = new Net_NNTP_Client();
+			$this->_nntpEngine = new Services_Nntp_Engine($server);
 			$this->_spotParser = new Services_Format_Parsing();
 			$this->_spotParseUtil = new Services_Format_Util();
 		} # ctor
 
 	
-		/*
-		 * Select a group as active group
-		 */
 		function selectGroup($group) {
-			$this->connect();
-
-			$this->_currentgroup = $group;
-			return $this->_nntp->selectGroup($this->_currentgroup);
+			return $this->_nntpEngine->selectGroup($group);
 		} # selectGroup()
 		
-		/*
-		 * Returns an overview (XOVER) from first id to lastid
-		 */
 		function getOverview($first, $last) {
-			$this->connect();
-			return $this->_nntp->getOverview($first . '-' . $last);
+			return $this->_nntpEngine->getOverview($first, $last);
 		} # getOverview()
 
-		/*
-		 * Get a list of messageid's within a range, same as XOVER
-		 * but only for messageids
-		 */
 		function getMessageIdList($first, $last) {
-			$this->connect();
-			$hdrList = $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
-			return $hdrList;
+			return $this->_nntpEngine->getMessageIdList($first, $last);
 		} # getMessageIdList()
 		
-		/*
-		 * Disconnect from the server if we are connected
-		 */
 		function quit() {
-			if (!$this->_connected) {
-				return ;
-			} # if
-			
-			try {
-				$this->_nntp->quit();
-				$this->_connected = false;
-			} 
-			catch(Exception $x) {
-				// dummy, we dont care about exceptions during quitting time
-			} # catch
+			return $this->_nntpEngine->quit();
 		} # quit()
 
-		/*
-		 * Sends a no-operation to the usenet server to keep the
-		 * connection alive
-		 */
 		function sendNoop() {
-			if (!$this->_connected) {
-				return ;
-			} # if
-			
-			/* The NNTP protocol has no proper noop command, this will do fine */
-			if (!empty($this->_currentgroup)) {
-				$this->selectGroup($this->_currentgroup);		
-			} # if
+			return $this->_nntpEngine->sendNoop();
 		} # sendnoop()
 
-		/*
-		 * Post an article to the server, $article should be an 2-element 
-		 * array with head and body as elements
-		 */
-		private function post($article) {
-			$this->connect();
-
-			// We kunnen niet rechtstreeks post() aanroepen omdat die
-			// de autoloader triggered
-			$tmpError = $this->_nntp->cmdPost();
-			if ($tmpError) {
-				return $this->_nntp->cmdPost2($article);
-			} else {
-				return $tmpError;
-			} # else
+		function post($article) {
+			return $this->_nntpEngine->post($article);
 		} # post()
 		
-		/*
-		 * Returns the header of an messageid
-		 */
-		private function getHeader($msgid) {
-			$this->connect();
-			return $this->_nntp->getHeader($msgid);
+		function getHeader($msgid) {
+			return $this->_nntpEngine->getHeader($msgid);
 		} # getHeader()
 
-		/*
-		 * Returns the body of an messageid
-		 */
-		private function getBody($msgid) {
-			$this->connect();
-			return $this->_nntp->getBody($msgid);
+		function getBody($msgid) {
+			return $this->_nntpEngine->getBody($msgid);
 		} # getBody	()
 		
-		/*
-		 * Connect to the newsserver and authenticate
-		 * if necessary
-		 */
-		private function connect() {
-			# dummy operation
-			if ($this->_connected) {
-				return ;
-			} # if
-			
-			# if an empty hostname is provided, abort
-			if (empty($this->_server)) {
-				throw new NntpException('Servername is empty', -1);
-			}  # if 
-
-			# if a portnumber is empty, abort
-			if ((!is_numeric($this->_serverport)) || ($this->_serverport < 1)) {
-				throw new NntpException('A server port has to be entered', -1);
-			}  # if 
-
-			# if the type of SSL is invalid, abort
-			if (($this->_serverenc !== false) && (strtolower($this->_serverenc) !== 'ssl') && (strtolower($this->_serverenc) !== 'tls')) {
-				throw new NntpException('Invalid encryption method specified', -1);
-			}  # if 
-			
-			$this->_connected = true;
-
-			/* 
-			 * Erase username/password so it won't show up in any stacktrace
-			 */
-			$tmpUser = $this->_user;
-			$tmpPass = $this->_pass;
-			$this->_user = '*FILTERED*';
-			$this->_pass = '*FILTERED*';
-			
-			try{
-				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
-				if ($ret === false) {
-					throw new NntpException('Error while connecting to server (server did not respond)', -1);
-				} # if
-				
-				if (!empty($tmpUser)) {
-					$authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
-					
-				} # if
-			}catch(Exception $x){
-				throw new NntpException($x->getMessage(), $x->getCode());
-			}
+		function connect() {
+			return $this->_nntpEngine->connect();
 		} # connect()
 		
-		/*
-		 * Returns a full article divided between an
-		 * header and body part
-		 */
-		private function getArticle($msgId) {
-			$this->connect();
-	
-			$result = array('header' => array(), 'body' => array());
-			
-			# Fetch het artikel
-			$art = $this->_nntp->getArticle($msgId);
-			
-			# vervolgens splitsen we het op in een header array en een body array
-			$i = 0;
-			$lnCount = count($art);
-			while( ($i < $lnCount) && ($art[$i] != '')) {
-				$result['header'][] = $art[$i];
-				$i++;
-			} # while
-			$i++;
-
-			while($i < $lnCount) {
-				$result['body'][] = $art[$i];
-				$i++;
-			} # while
-			
-			return $result;
+		function getArticle($msgId) {
+			return $this->_nntpEngine->getArticle($msgId);
 		} # getArticle
 
 		/*
 		 * Parse an header and extract specific fields
 		 * from it
 		 */
-		private  function parseHeader($headerList, $tmpAr) {
-			# extract de velden we die we willen hebben
+		private function parseHeader($headerList, $tmpAr) {
+			/*
+			 * Interprets the header fields in a global way
+			 */
 			foreach($headerList as $hdr) {
 				$keys = explode(':', $hdr);
 
@@ -556,19 +427,5 @@ class SpotNntp {
 
 			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
 		} # reportSpotAsSpam
-		
-		/*
-		 * validates wether can succesfully connect to the usenet
-		 * server
-		 */
-		function validateServer() {
-			/*
-			 * We need to select a group, because authenticatin
-			 * is not always entered but sometimes required
-			 */
-			$this->selectGroup('free.pt');
-			
-			$this->quit();
-		} # validateServer
 		
 } # class SpotNntp
