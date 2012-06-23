@@ -7,12 +7,10 @@ class Services_Format_Util {
 	 * a very specific set of characters is escaped. Fix those.
 	 */	
 	public function unspecialZipStr($strInput) {
-		$strInput = str_replace('=C', "\n", $strInput);
-		$strInput = str_replace('=B', "\r", $strInput);
-		$strInput = str_replace('=A', "\0", $strInput);
-		$strInput = str_replace('=D', '=', $strInput);
-
-		return $strInput;
+		return str_replace(
+				array("=C", "=B", "=A", "=D"),
+				array("\n", "\r", "\0", "="),
+			    $strInput);
 	} # unspecialZipstr
 
 	/*
@@ -20,12 +18,10 @@ class Services_Format_Util {
 	 * a very specific set of characters will be escaped.
 	 */	
 	public function specialZipStr($strInput) {
-		$strInput = str_replace("=", '=D', $strInput);
-		$strInput = str_replace("\n", '=C', $strInput);
-		$strInput = str_replace("\r", '=B', $strInput);
-		$strInput = str_replace("\0", '=A', $strInput);
-
-		return $strInput;
+		return str_replace(
+				array("=", "\n", "\r", "\0"),
+				array("=D", "=C", "=B", "=A"),
+			    $strInput);
 	} # specialZipstr
 	
 	/*
@@ -33,10 +29,10 @@ class Services_Format_Util {
 	 * encoded strings
 	 */
 	public function spotPrepareBase64($strInput) {
-		$strInput = str_replace('/', '-s', $strInput);
-		$strInput = str_replace('+', '-p', $strInput);
-
-		return $strInput;
+		return str_replace(
+				array('/', '+'), 
+				array('-s', '-p'), 
+				$strInput);
 	} # spotUnprepareBase64
 
 	/*

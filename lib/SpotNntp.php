@@ -1,431 +1,295 @@
 <?php
+
 class SpotNntp {
-		private $_server;
-		private $_user;
-		private $_pass;
-		private $_serverenc;
-		private $_serverport;
-		
-		private $_error;
-		private $_nntp;
-		private $_connected;
-		private $_currentgroup;
-
-		private $_spotParser;
-		private $_spotParseUtil;
-		private $_nntpEngine;
-		
-		function __construct($server) { 
-			$error = '';
-			
-			$this->_connected = false;
-			$this->_server = $server['host'];
-			$this->_serverenc = $server['enc'];
-			$this->_serverport = $server['port'];
-			$this->_user = $server['user'];
-			$this->_pass = $server['pass'];
-
-			$this->_nntpEngine = new Services_Nntp_Engine($server);
-			$this->_spotParser = new Services_Format_Parsing();
-			$this->_spotParseUtil = new Services_Format_Util();
-		} # ctor
-
+	private $_server;
+	private $_user;
+	private $_pass;
+	private $_serverenc;
+	private $_serverport;
 	
-		function selectGroup($group) {
-			return $this->_nntpEngine->selectGroup($group);
-		} # selectGroup()
-		
-		function getOverview($first, $last) {
-			return $this->_nntpEngine->getOverview($first, $last);
-		} # getOverview()
+	private $_error;
+	private $_nntp;
+	private $_connected;
+	private $_currentgroup;
 
-		function getMessageIdList($first, $last) {
-			return $this->_nntpEngine->getMessageIdList($first, $last);
-		} # getMessageIdList()
-		
-		function quit() {
-			return $this->_nntpEngine->quit();
-		} # quit()
+	private $_spotParser;
+	private $_spotParseUtil;
+	private $_nntpEngine;
+	private $_nntpReading;
 
-		function sendNoop() {
-			return $this->_nntpEngine->sendNoop();
-		} # sendnoop()
-
-		function post($article) {
-			return $this->_nntpEngine->post($article);
-		} # post()
+	/*
+	 * constructor
+	 */
+	function __construct($server) { 
+		$error = '';
 		
-		function getHeader($msgid) {
-			return $this->_nntpEngine->getHeader($msgid);
-		} # getHeader()
+		$this->_connected = false;
+		$this->_server = $server['host'];
+		$this->_serverenc = $server['enc'];
+		$this->_serverport = $server['port'];
+		$this->_user = $server['user'];
+		$this->_pass = $server['pass'];
 
-		function getBody($msgid) {
-			return $this->_nntpEngine->getBody($msgid);
-		} # getBody	()
-		
-		function connect() {
-			return $this->_nntpEngine->connect();
-		} # connect()
-		
-		function getArticle($msgId) {
-			return $this->_nntpEngine->getArticle($msgId);
-		} # getArticle
+		$this->_nntpEngine = new Services_Nntp_Engine($server);
+		$this->_nntpReading = new Services_Nntp_SpotReading($this->_nntpEngine);
+		$this->_spotParser = new Services_Format_Parsing();
+		$this->_spotParseUtil = new Services_Format_Util();
+	} # ctor
 
+
+	function selectGroup($group) {
+		return $this->_nntpEngine->selectGroup($group);
+	} # selectGroup()
+	
+	function getOverview($first, $last) {
+		return $this->_nntpEngine->getOverview($first, $last);
+	} # getOverview()
+
+	function getMessageIdList($first, $last) {
+		return $this->_nntpEngine->getMessageIdList($first, $last);
+	} # getMessageIdList()
+	
+	function quit() {
+		return $this->_nntpEngine->quit();
+	} # quit()
+
+	function sendNoop() {
+		return $this->_nntpEngine->sendNoop();
+	} # sendnoop()
+
+	function post($article) {
+		return $this->_nntpEngine->post($article);
+	} # post()
+	
+	function getHeader($msgid) {
+		return $this->_nntpEngine->getHeader($msgid);
+	} # getHeader()
+
+	function getBody($msgid) {
+		return $this->_nntpEngine->getBody($msgid);
+	} # getBody	()
+	
+	function connect() {
+		return $this->_nntpEngine->connect();
+	} # connect()
+	
+	function getArticle($msgId) {
+		return $this->_nntpEngine->getArticle($msgId);
+	} # getArticle
+
+	function getComments($commentList) {
+		return $this->_nntpReading->readComments($commentList);
+	} # getComments
+
+	public function getFullSpot($msgId) {
+		return $this->_nntpReading->readFullSpot($msgId);
+	} # getFullSpot 
+
+	function getImage($image) {
+		$segmentList = array();
+		foreach($image['image']['segment'] as $seg) {
+			$segmentList[] = $seg;
+		} # foreach
+
+		return $this->_nntpReading->readBinary($segmentList, false);
+	} # getImage
+	
+	function getNzb($segList) {
+		return $this->_nntpReading->readBinary($segList, true);
+	} # getNzb
+	
+	/*
+	 * Post plain usenet message
+	 */
+	private function postPlainMessage($newsgroup, $message, $additionalHeaders) {
+		$header = 'Subject: ' . utf8_decode($message['title']) . "\r\n";
+		$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
+		$header .= 'Message-ID: <' . $message['newmessageid'] . ">\r\n";
+		$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
+		$header .= "X-No-Archive: yes\r\n";
+		$header .= $additionalHeaders;
+
+		return $this->post(array($header, $message['body']));
+	} # postPlainMessage
+
+	/*
+	 * Post a signed usenet message, we allow for additional headers
+	 * so this function can be used by anything
+	 */
+	private function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
+		# instantiate necessary objects
+		$spotSigning = Services_Signing_Base::newServiceSigning();
+
+		# also by the SpotWeb server 
+		$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
+
+		$addHeaders = '';
+		
+		# Only add the user-signature header if there is none set yet
+		if (stripos($additionalHeaders, 'X-User-Signature: ') === false) {
+			# sign the messageid
+			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
+		
+			$addHeaders .= 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
+			$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+		} # if
+		
+		$addHeaders .= 'X-Server-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($server_signature['signature']) . "\r\n";
+		$addHeaders .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+		$addHeaders .= $additionalHeaders;
+
+		return $this->postPlainMessage($newsgroup, $message, $addHeaders);
+	} # postSignedMessage
+	
+	/*
+	 * Post a binary usenet message
+	 */
+	public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
+		$chunkLen = (1024 * 1024);
+		$segmentList = array();
+		$spotSigning = Services_Signing_Base::newServiceSigning();
+		
 		/*
-		 * Parse an header and extract specific fields
-		 * from it
+		 * Now start posting chunks of the NZB files
 		 */
-		private function parseHeader($headerList, $tmpAr) {
+		while(strlen($body) > 0) {
+			$message = array();
+
 			/*
-			 * Interprets the header fields in a global way
+			 * Cut of the first piece of the NZB file, and remove it
+			 * from the source string
 			 */
-			foreach($headerList as $hdr) {
-				$keys = explode(':', $hdr);
+			$chunk = substr($body, 0, $chunkLen - 1);
+			$body = substr($body, $chunkLen - 1);
 
-				switch($keys[0]) {
-					case 'From'				: $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: ')))); break;
-					case 'Date'				: $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: '))); break;
-					case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
-					case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 18)); break;
-					case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 17)); break;
-					case 'X-User-Avatar'	: $tmpAr['user-avatar'] .= substr($hdr, 15); break;
-					case 'X-User-Key'		: {
-							$xml = simplexml_load_string(substr($hdr, 12)); 
-							if ($xml !== false) {
-								$tmpAr['user-key']['exponent'] = (string) $xml->Exponent;
-								$tmpAr['user-key']['modulo'] = (string) $xml->Modulus;
-							} # if
-							break;
-					} # x-user-key
-				} # switch
-			} # foreach
-			
-			return $tmpAr;
-		} # parseHeader
-
-		/*
-		 * Callback function for sorting of comments on date
-		 */
-		private function cbCommentDateSort($a, $b) {
-			if ($a['stamp'] == $b['stamp']) {
-				return 0;
-			} # if
-			
-			return ($a['stamp'] < $b['stamp']) ? -1 : 1;
-		} # cbCommentDateSort
-		
-		/*
-		 * Returns a list of comments
-		 */
-		function getComments($commentList) {
-			$comments = array();
-			$spotSigning = Services_Signing_Base::newServiceSigning();
-			
-			# We extracten elke comment en halen daar de datum en poster uit, inclusief de body
-			# als comment text zelf.
-			foreach($commentList as $comment) {
-				try {
-					$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
-										'user-key' => '', 'spotterid' => '', 'verified' => false,
-										'user-avatar' => '', 'fullxml' => '');
-										
-					$tmpAr = array_merge($commentTpl, $this->getArticle('<' . $comment['messageid'] . '>'));
-					$tmpAr['messageid'] = $comment['messageid'];
-					$tmpAr = array_merge($tmpAr, $this->parseHeader($tmpAr['header'], $tmpAr));
-
-					# Valideer de signature van de XML, deze is gesigned door de user zelf
-					$tmpAr['verified'] = $spotSigning->verifyComment($tmpAr);
-					if ($tmpAr['verified']) {
-						$spotParseUtil = new Services_Format_Util();
-						$tmpAr['spotterid'] = $spotParseUtil->calculateSpotterId($tmpAr['user-key']['modulo']);
-					} # if
-
-					# encode de body voor UTF8
-					$tmpAr['body'] = array_map('utf8_encode', $tmpAr['body']);
-
-					$comments[] = $tmpAr; 
-				} 
-				catch(Exception $x) {
-					# Soms gaat het ophalen van een comment mis? Raar want deze komen van de XOVER
-					# van de server zelf, dus tenzij ze gecancelled worden mag dit niet gebeuren.
-					# iig, we negeren de error
-					;
-				} # catch
-			} # foreach
-
-			# sorteer de comments per datum
-			usort($comments, array($this, 'cbCommentDateSort'));
-
-			return $comments;
-		} # getComments
-
-		
-		function getImage($segmentList) {
-			$imageContent = '';
+			/* 
+			 * Split the body in parts of 900 characters
+			 */
+			$message['body'] = chunk_split($this->_spotParseUtil->specialZipstr($chunk), 900);
 
 			/*
-			 * Retrieve all image segments 
+			 * Create an unique messageid and store it so we can return it
+			 * for the actual Spot creation
 			 */
-			foreach($segmentList['image']['segment'] as $seg) {
-				$imgTmp = implode('', $this->getBody('<' . $seg . '>'));
-				$imageContent .= $this->_spotParseUtil->unspecialZipStr($imgTmp);
-			} # foreach
-			
-			return $imageContent;
-		} # getImage
-		
-		function getNzb($segList) {
-			$nzb = '';
-			
-			foreach($segList as $seg) {
-				$nzb .= implode('', $this->getBody('<' . $seg . '>'));
-			} # foreach
+			$message['newmessageid'] = $spotSigning->makeRandomStr(32) . '@spot.net';
+			$message['title'] = md5($message['body']);
 
-			$nzb = gzinflate($this->_spotParseUtil->unspecialZipStr($nzb));
-			return $nzb;
-		} # getNzb
-		
-		/*
-		 * Post plain usenet message
-		 */
-		private function postPlainMessage($newsgroup, $message, $additionalHeaders) {
-			$header = 'Subject: ' . utf8_decode($message['title']) . "\r\n";
-			$header .= 'Newsgroups: ' . $newsgroup . "\r\n";
-			$header .= 'Message-ID: <' . $message['newmessageid'] . ">\r\n";
-			$header .= "X-Newsreader: SpotWeb v" . SPOTWEB_VERSION . "\r\n";
-			$header .= "X-No-Archive: yes\r\n";
-			$header .= $additionalHeaders;
-
-			return $this->post(array($header, $message['body']));
-		} # postPlainMessage
-
-		/*
-		 * Post a signed usenet message, we allow for additional headers
-		 * so this function can be used by anything
-		 */
-		private function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
-			# instantiate necessary objects
-			$spotSigning = Services_Signing_Base::newServiceSigning();
-
-			# also by the SpotWeb server 
-			$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
-
-			$addHeaders = '';
-			
-			# Only add the user-signature header if there is none set yet
-			if (stripos($additionalHeaders, 'X-User-Signature: ') === false) {
-				# sign the messageid
-				$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $message['newmessageid'] . '>');
-			
-				$addHeaders .= 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
-				$addHeaders .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
-			} # if
-			
-			$addHeaders .= 'X-Server-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($server_signature['signature']) . "\r\n";
-			$addHeaders .= 'X-Server-Key: ' . $spotSigning->pubkeyToXml($server_signature['publickey']) . "\r\n";
+			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+			$addHeaders .= 'Content-Type: text/plain; charset=ISO-8859-1' . "\r\n";
+			$addHeaders .= 'Content-Transfer-Encoding: 8bit' . "\r\n";
 			$addHeaders .= $additionalHeaders;
 
-			return $this->postPlainMessage($newsgroup, $message, $addHeaders);
-		} # postSignedMessage
-		
-		/*
-		 * Post a binary usenet message
-		 */
-		public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
-			$chunkLen = (1024 * 1024);
-			$segmentList = array();
-			$spotSigning = Services_Signing_Base::newServiceSigning();
-			
-			/*
-			 * Now start posting chunks of the NZB files
-			 */
-			while(strlen($body) > 0) {
-				$message = array();
-
-				/*
-				 * Cut of the first piece of the NZB file, and remove it
-				 * from the source string
-				 */
-				$chunk = substr($body, 0, $chunkLen - 1);
-				$body = substr($body, $chunkLen - 1);
-
-				/* 
-				 * Split the body in parts of 900 characters
-				 */
-				$message['body'] = chunk_split($this->_spotParseUtil->specialZipstr($chunk), 900);
-
-				/*
-				 * Create an unique messageid and store it so we can return it
-				 * for the actual Spot creation
-				 */
-				$message['newmessageid'] = $spotSigning->makeRandomStr(32) . '@spot.net';
-				$message['title'] = md5($message['body']);
-
-				$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
-				$addHeaders .= 'Content-Type: text/plain; charset=ISO-8859-1' . "\r\n";
-				$addHeaders .= 'Content-Transfer-Encoding: 8bit' . "\r\n";
-				$addHeaders .= $additionalHeaders;
-
-				/* 
-				 * Actually post the image
-				 */
-				$this->postPlainMessage( $newsgroup, $message, $addHeaders);
-
-				$segmentList[] = $message['newmessageid'];
-			} # if
-			 
-			return $segmentList;
-		} # postBinaryMessage
-
-		/*
-		 * Post a comment to a spot
-		 */
-		public function postComment($user, $serverPrivKey, $newsgroup, $comment) {
 			/* 
-			 * Create the comment specific headers
+			 * Actually post the image
 			 */
-			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
-			$addHeaders .= 'References: <' . $comment['inreplyto']. ">\r\n";
-			$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
-			
-			/*
-			 * And add the X-User-Avatar header if user has an avatar specified
-			 */
-			if (!empty($user['avatar'])) {
-				$tmpAvatar = explode("\r\n", chunk_split($user['avatar'], 900));
-				
-				foreach($tmpAvatar as $avatarChunk) {
-					if (strlen(trim($avatarChunk)) > 0) {
-						$addHeaders .= 'X-User-Avatar: ' . $avatarChunk . "\r\n";
-					} # if
-				} # foreach
-			} # if
+			$this->postPlainMessage( $newsgroup, $message, $addHeaders);
 
-			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $comment, $addHeaders);
-		} # postComment
-		
-	
-		/*
-		 * Posts a spot file and its corresponding image and NZB file (actually done by
-		 * helper functions)
+			$segmentList[] = $message['newmessageid'];
+		} # if
+		 
+		return $segmentList;
+	} # postBinaryMessage
+
+	/*
+	 * Post a comment to a spot
+	 */
+	public function postComment($user, $serverPrivKey, $newsgroup, $comment) {
+		/* 
+		 * Create the comment specific headers
 		 */
-		public function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
-			# instantiate the necessary objects
-			$spotSigning = Services_Signing_Base::newServiceSigning();
-
-			/*
-			 * Create the spotnet from header part accrdoing to the following structure:
-			 *   From: [Nickname] <[PUBLICKEY-MODULO.USERSIGNATURE]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
-			 */
-			$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
+		$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+		$addHeaders .= 'References: <' . $comment['inreplyto']. ">\r\n";
+		$addHeaders .= 'X-User-Rating: ' . (int) $comment['rating'] . "\r\n";
+		
+		/*
+		 * And add the X-User-Avatar header if user has an avatar specified
+		 */
+		if (!empty($user['avatar'])) {
+			$tmpAvatar = explode("\r\n", chunk_split($user['avatar'], 900));
 			
-			# Process each subcategory and add them to the from header
-			foreach($spot['subcatlist'] as $subcat) {
-				$spotHeader .= $subcat[0] . str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
-			} # foreach
-			
-			$spotHeader .= '.' . $spot['filesize'];
-			$spotHeader .= '.' . 10; // some kind of magic number?
-			$spotHeader .= '.' . time();
-			$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
-			$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
-
-			# If a tag is given, add it to the subject
-			if (strlen(trim($spot['tag'])) > 0) {
-				$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
-			} # if
-			
-			# Create the user-signature
-			$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
-			$header = 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
-			$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
-				
-			# sign the header by using the users' key
-			$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
-
-			# sign the XML with the users' key
-			$xml_signature = $spotSigning->signMessage($user['privatekey'], $spot['spotxml']);
-
-			# Extract the users' publickey
-			$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
-			
-			# Create the From header
-			$spotnetFrom = $user['username'] . ' <' . 
-								$this->_spotParseUtil->spotPrepareBase64($userPubKey['publickey']['modulo']) . 
-								'.' . 
-								$this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . '@';
-			$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParseUtil->spotPrepareBase64($header_signature['signature']) . ">\r\n";
-			
-			# Add the Spotnet XML file, but split it in chunks of 900 characters
-			$tmpXml = explode("\r\n", chunk_split($spot['spotxml'], 900));
-			foreach($tmpXml as $xmlChunk) {
-				if (strlen(trim($xmlChunk)) > 0) {
-					$header .= 'X-XML: ' . $xmlChunk . "\r\n";
+			foreach($tmpAvatar as $avatarChunk) {
+				if (strlen(trim($avatarChunk)) > 0) {
+					$addHeaders .= 'X-User-Avatar: ' . $avatarChunk . "\r\n";
 				} # if
 			} # foreach
-			$header .= 'X-XML-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($xml_signature['signature']) . "\r\n";
+		} # if
 
-			# post the message
-			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $spot, $header);
-		} # postFullSpot
+		return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $comment, $addHeaders);
+	} # postComment
+	
+
+	/*
+	 * Posts a spot file and its corresponding image and NZB file (actually done by
+	 * helper functions)
+	 */
+	public function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
+		# instantiate the necessary objects
+		$spotSigning = Services_Signing_Base::newServiceSigning();
 
 		/*
-		 * Retrieve the fullspot from the NNTP server
+		 * Create the spotnet from header part accrdoing to the following structure:
+		 *   From: [Nickname] <[PUBLICKEY-MODULO.USERSIGNATURE]@[CAT][KEY-ID][SUBCAT].[SIZE].[RANDOM].[DATE].[CUSTOM-ID].[CUSTOM-VALUE].[SIGNATURE]>
 		 */
-		public function getFullSpot($msgId) {
-			SpotTiming::start('SpotNntp::' . __FUNCTION__);
-
-			# initialize some variables
-			$spotSigning = Services_Signing_Base::newServiceSigning();
-			
-			$spot = array('fullxml' => '',
-						  'user-signature' => '',
-						  'user-key' => '',
-						  'verified' => false,
-						  'messageid' => $msgId,
-						  'spotterid' => '',
-						  'xml-signature' => '',
-						  'moderated' => 0,
-						  'user-avatar' => '');
-			# Vraag de volledige article header van de spot op
-			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->getHeader()');
-			$header = $this->getHeader('<' . $msgId . '>');
-			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->getHeader()', array($header));
-
-			# Parse de header
-			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->parseHeader()');
-			$spot = array_merge($spot, $this->parseHeader($header, $spot));
-			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->parseHeader()', array($spot));
-			
-			# Valideer de signature van de XML, deze is gesigned door de user zelf
-			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->verifyFullSpot()');
-			$spot['verified'] = $spotSigning->verifyFullSpot($spot);
-			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->verifyFullSpot()', array($spot));
-			
-			# als de spot verified is, toon dan de spotterid van deze user
-			if ($spot['verified']) {
-				$spotParseUtil = new Services_Format_Util();
-				$spot['spotterid'] = $spotParseUtil->calculateSpotterId($spot['user-key']['modulo']);
-			} # if	
-			
-			# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
-			SpotTiming::start('SpotNntp::' . __FUNCTION__ . '->parseFull()');
-			$spot = array_merge($this->_spotParser->parseFull($spot['fullxml']), $spot);
-			SpotTiming::stop('SpotNntp::' . __FUNCTION__ . '->parseFull()', array($spot));
-			
-			SpotTiming::stop('SpotNntp::' . __FUNCTION__, array($spot));
-			
-			return $spot;
-		} # getFullSpot 
+		$spotHeader = ($spot['category'] + 1) . $spot['key']; // Append the category and keyid
 		
-		function reportSpotAsSpam($user, $serverPrivKey, $newsgroup, $report) {
-			/*
-			 * Create the comment specific headers
-			 */
-			$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
-			$addHeaders .= 'References: <' . $report['inreplyto']. ">\r\n";
+		# Process each subcategory and add them to the from header
+		foreach($spot['subcatlist'] as $subcat) {
+			$spotHeader .= $subcat[0] . str_pad(substr($subcat, 1), 2, '0', STR_PAD_LEFT);
+		} # foreach
+		
+		$spotHeader .= '.' . $spot['filesize'];
+		$spotHeader .= '.' . 10; // some kind of magic number?
+		$spotHeader .= '.' . time();
+		$spotHeader .= '.' . $spotSigning->makeRandomStr(4);
+		$spotHeader .= '.' . $spotSigning->makeRandomStr(3);
 
-			return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
-		} # reportSpotAsSpam
+		# If a tag is given, add it to the subject
+		if (strlen(trim($spot['tag'])) > 0) {
+			$spot['title'] = $spot['title'] . ' | ' . $spot['tag'];
+		} # if
+		
+		# Create the user-signature
+		$user_signature = $spotSigning->signMessage($user['privatekey'], '<' . $spot['newmessageid'] . '>');
+		$header = 'X-User-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . "\r\n";
+		$header .= 'X-User-Key: ' . $spotSigning->pubkeyToXml($user_signature['publickey']) . "\r\n";
+			
+		# sign the header by using the users' key
+		$header_signature = $spotSigning->signMessage($user['privatekey'], $spot['title'] . $spotHeader . $spot['poster']);
+
+		# sign the XML with the users' key
+		$xml_signature = $spotSigning->signMessage($user['privatekey'], $spot['spotxml']);
+
+		# Extract the users' publickey
+		$userPubKey = $spotSigning->getPublicKey($user['privatekey']);
+		
+		# Create the From header
+		$spotnetFrom = $user['username'] . ' <' . 
+							$this->_spotParseUtil->spotPrepareBase64($userPubKey['publickey']['modulo']) . 
+							'.' . 
+							$this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . '@';
+		$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParseUtil->spotPrepareBase64($header_signature['signature']) . ">\r\n";
+		
+		# Add the Spotnet XML file, but split it in chunks of 900 characters
+		$tmpXml = explode("\r\n", chunk_split($spot['spotxml'], 900));
+		foreach($tmpXml as $xmlChunk) {
+			if (strlen(trim($xmlChunk)) > 0) {
+				$header .= 'X-XML: ' . $xmlChunk . "\r\n";
+			} # if
+		} # foreach
+		$header .= 'X-XML-Signature: ' . $this->_spotParseUtil->spotPrepareBase64($xml_signature['signature']) . "\r\n";
+
+		# post the message
+		return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $spot, $header);
+	} # postFullSpot
+
+	function reportSpotAsSpam($user, $serverPrivKey, $newsgroup, $report) {
+		/*
+		 * Create the comment specific headers
+		 */
+		$addHeaders = 'From: ' . $user['username'] . " <" . trim($user['username']) . '@spot.net>' . "\r\n";
+		$addHeaders .= 'References: <' . $report['inreplyto']. ">\r\n";
+
+		return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
+	} # reportSpotAsSpam
 		
 } # class SpotNntp

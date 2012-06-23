@@ -13,7 +13,7 @@ class Services_Nntp_Engine {
 		private $_currentgroup;
 
 		/*
-		 * Instantiate a new NNTP server object
+		 * Instantiate a new Service NNTP engine object
 		 */
 		function __construct($server) { 
 			$error = '';
@@ -28,7 +28,6 @@ class Services_Nntp_Engine {
 			$this->_nntp = new Net_NNTP_Client();
 		} # ctor
 
-	
 		/*
 		 * Select a group as active group
 		 */
