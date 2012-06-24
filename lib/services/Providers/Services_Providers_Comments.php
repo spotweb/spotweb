@@ -1,0 +1,116 @@
+<?php
+
+class Services_Providers_Comments {
+	private $_commentDao;
+	private $_nntpSpotReading;
+
+	/*
+	 * constructor
+	 */
+	public function __construct(Dao_Comment $commentDao, Services_Nntp_SpotReading $nntpSpotReading) {
+		$this->_commentDao= $commentDao;
+		$this->_nntpSpotReading = $nntpSpotReading;
+	}  # ctor
+	
+	/*
+	 * Callback function to only return verified comments
+	 */
+	private function cbVerifiedOnly($x) {
+		return $x['verified'];
+	} # cbVerifiedOnly
+	
+	/*
+	 * Returns a list of commentss
+	 */
+	public function fetchSpotComments($msgId, $userId, $start, $length) {
+		/*
+		 * Calculate the total amount of comments we want to retrieve
+		 */
+		$totalCommentsNeeded = ($start + $length);
+		
+		SpotTiming::start(__FUNCTION__);
+
+		/*
+		 * Retrieve a list of comments currently in the database, if 
+		 * a full comment already exists we also retrieve it
+		 */
+		$fullComments = $this->_commentDao->getCommentsFull($userId, $msgId);
+		
+		/*
+		 * Now we want oto know the first comment we haven't retrieved yet, we
+		 * ignore not verified comments
+		 */
+		$haveFullCount = 0;
+		$lastHaveFullOffset = -1;
+		$retrievedVerified = 0;
+		$fullCommentsCount = count($fullComments);
+		for ($i = 0; $i < $fullCommentsCount; $i++) {
+			if ($fullComments[$i]['havefull']) {
+				$haveFullCount++;
+				$lastHaveFullOffset = $i;
+				
+				if ($fullComments[$i]['verified']) {
+					$retrievedVerified++;
+				} # if
+			} # if
+		} # for
+
+		/*
+		 * Retrieve the remaining comments from the NNTP server
+		 */
+		if ($retrievedVerified < $totalCommentsNeeded) {
+			/*
+			 * If we want only part of the comments, we loop till
+			 * we have just enough comments to satisfy the requested
+			 * range. We cannot do without the looping because
+			 * we don't know which comments are verified until
+			 * they are retrived
+			 */
+			if (($start > 0) || ($length > 0)) {
+				$newComments = array();
+			
+				/*
+				 * Start retrieving...
+				 */
+				while (($retrievedVerified < $totalCommentsNeeded) && ( ($lastHaveFullOffset) < count($fullComments) )) {
+					SpotTiming::start(__FUNCTION__. ':nntp:readComments()');
+					$tempList = $this->_nntpSpotReading->readComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
+					SpotTiming::stop(__FUNCTION__ . ':nntp:readComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
+				
+					$lastHaveFullOffset += $length;
+					foreach($tempList as $comment) {
+						$newComments[] = $comment;
+						if ($comment['verified']) {
+							$retrievedVerified++;
+						} # if
+					} # foreach
+				} # while
+			} else {
+				$newComments = $this->_nntpSpotReading->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, count($fullComments)));
+			} # else
+			
+			# add them to the database
+			$this->_commentDao->addFullComments($newComments);
+			
+			# re-ask the database so we always have the same common format
+			$fullComments = $this->_commentDao->getCommentsFull($userId, $msgId);
+		} # foreach
+		
+		/*
+		 * Only return verified comments, we are not interested in
+		 * non-valid comments
+		 */
+		$fullComments = array_filter($fullComments, array($this, 'cbVerifiedOnly'));
+
+		/*
+		 * Slice the array so we only retrieve which comments were asked.
+		 */
+		if (($start > 0) || ($length > 0)) {
+			$fullComments = array_slice($fullComments , $start, $length);
+		} # if
+
+		SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
+		return $fullComments;
+	} # fetchSpotComments()
+
+} # Services_Providers_Comments
