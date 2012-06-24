@@ -1,6 +1,12 @@
 <?php
 
 class Dao_Base_Cache implements Dao_Cache {
+	const SpotImage			= 1;
+	const SpotNzb			= 2;
+	const Web				= 3;
+	const Statistics		= 4;
+	const StatisticsData	= 5;
+
 	protected $_conn;
 
 	/*
@@ -57,5 +63,27 @@ class Dao_Base_Cache implements Dao_Cache {
 	function updateCacheStamp($resourceid, $cachetype) {
 		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
+
+	/*
+	 * Retrieve a NZB from the cache
+	 */
+	function getCachedNzb($resourceId) {
+		return $this->getCache($resourceId, $this::SpotNzb);
+	} # getCachedNzb
+
+	/*
+	 * Update an NZB file from the cache
+	 */
+	function updateNzbCacheStamp($resourceId) {
+		return $this->updateCacheStamp($resourceId, $this::SpotNzb);
+	} # updateNzbCacheStamp
+
+	/*
+	 * Save an NZB file into the cache
+	 */
+	function saveNzbCache($resourceId, $content) {
+		return $this->saveCache($resourceId, $this::SpotNzb, false, $content);
+	} # saveNzbCache
+
 
 } # Dao_Base_Cache

@@ -8,4 +8,8 @@ interface Dao_Cache {
 	function updateCacheStamp($resourceid, $cachetype);
 	function saveCache($resourceid, $cachetype, $metadata, $content);
 
+	function getCachedNzb($resourceId);
+	function updateNzbCacheStamp($resourceId);
+	function saveNzbCache($resourceId, $content);
+
 } # Dao_Cache

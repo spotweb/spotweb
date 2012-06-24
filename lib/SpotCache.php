@@ -4,7 +4,6 @@ class SpotCache {
 	protected $_db;
 
 	const SpotImage			= 1;
-	const SpotNzb			= 2;
 	const Web				= 3;
 	const Statistics		= 4;
 	const StatisticsData	= 5;

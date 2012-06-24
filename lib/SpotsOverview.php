@@ -35,27 +35,13 @@ class SpotsOverview {
 		return $x->cacheNewSpotCount();
 	} # cacheNewSpotCount
 	
-	/* 
-	 * Geef de NZB file terug
-	 */
 	function getNzb($fullSpot, $nntp) {
-		SpotTiming::start(__FUNCTION__);
-
-		if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
-			$nzb = true;
-		} elseif ($nzb = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotNzb)) {
-			$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotNzb);
-			$nzb = $nzb['content'];
-		} else {
-			$nzb = $nntp->getNzb($fullSpot['nzb']);
-			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, false, $nzb);
-		} # else
-
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
-
-		return $nzb;
+		$x = new Services_Providers_Nzb($this->_db->_spotDao,
+										$this->_db->_cacheDao,
+										new Services_Nntp_SpotReading($nntp));
+		return $x->getNzb($fullSpot);
 	} # getNzb
-	
+
 	/* 
 	 * Geef de image file terug
 	 */

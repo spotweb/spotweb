@@ -74,10 +74,6 @@ class SpotNntp {
 		return $this->_nntpReading->readBinary($segmentList, false);
 	} # getImage
 	
-	function getNzb($segList) {
-		return $this->_nntpReading->readBinary($segList, true);
-	} # getNzb
-	
 	public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 		return $this->_nntpPosting->postBinaryMessage($user, $newsgroup, $body, $additionalHeaders);
 	} # postBinaryMessage
