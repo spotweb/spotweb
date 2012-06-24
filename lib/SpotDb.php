@@ -5,7 +5,7 @@ class SpotDb {
 	private $_auditDao;
 	private $_blackWhiteListDao;
 	private $_cacheDao;
-	private $_commentDao;
+	public $_commentDao;
 	private $_notificationDao;
 	private $_sessionDao;
 	private $_settingDao;
@@ -13,7 +13,7 @@ class SpotDb {
 	private $_userFilterCountDao;
 	private $_userFilterDao;
 	private $_userDao;
-	private $_spotDao;
+	public $_spotDao;
 	private $_spotStateListDao;
 	private $_nntpConfigDao;
 

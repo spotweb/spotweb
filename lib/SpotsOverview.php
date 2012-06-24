@@ -15,158 +15,16 @@ class SpotsOverview {
 		$this->_cache = new SpotCache($db);
 		$this->_spotImage = new SpotImage($db);
 	} # ctor
-	
-	/*
-	 * Geef een volledig Spot array terug
-	 */
+
 	function getFullSpot($msgId, $ourUserId, $nntp) {
-		SpotTiming::start('SpotsOverview::' . __FUNCTION__);
-
-		$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
-		
-		if (empty($fullSpot)) {
-			/*
-			 * Retrieve a full loaded spot from the NNTP server
-			 */
-			$newFullSpot = $nntp->getFullSpot($msgId);
-			$this->_db->addFullSpots( array($newFullSpot) );
-			
-			/*
-			 * If the current spotterid is empty, we probably now
-			 * have a spotterid because we have the fullspot.
-			 */
-			if ((empty($fullSpot['spotterid'])) && ($newFullSpot['verified'])) {
-				$spotParseUtil = new Services_Format_Util();
-
-				$spotSigning = Services_Signing_Base::newServiceSigning();
-				$newFullSpot['spotterid'] = $spotParseUtil->calculateSpotterId($newFullSpot['user-key']['modulo']);
-
-				/* 
-				 * Update the spotterid in the spots table so it can be filtered later on
-				 */
-				$this->_db->updateSpotInfoFromFull($newFullSpot);
-			} # if
-			
-			/*
-			 * We ask our DB to retrieve the fullspot again, this ensures
-			 * us all information is present and in always the same format
-			 */
-			$fullSpot = $this->_db->getFullSpot($msgId, $ourUserId);
-		} # if
-
-		/**
-		 * We'll overwrite our spot info from the database with some information we parse from the 
-		 * XML. This is necessary because the XML contains better encoding.
-		 *
-		 * For example take the titel from spot bdZZdJ3gPxTAmSE%40spot.net.
-		 *
-		 * We cannot use all information from the XML because because some information just
-		 * isn't present in the XML file
-		 */
-		$spotParser = new Services_Format_Parsing();
-		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
-		$fullSpot = array_merge($parsedXml, $fullSpot);
-		$fullSpot['title'] = $parsedXml['title'];
-		/*
-		 * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
-		 * causes us to never get the spot, hence we throw this exception
-		 */
-		if (empty($fullSpot)) {
-			throw new Exception("Spot is not in our Spotweb database");
-		} # if
-		SpotTiming::stop('SpotsOverview::' . __FUNCTION__, array($msgId, $ourUserId, $nntp, $fullSpot));
-		
-		return $fullSpot;
+		$x = new Services_Providers_FullSpot($this->_db->_spotDao, new Services_Nntp_SpotReading($nntp));
+		return $x->fetchFullSpot($msgId, $ourUserId);
 	} # getFullSpot
 
-	/*
-	 * Callback functie om enkel verified 'iets' terug te geven
-	 */
-	function cbVerifiedOnly($x) {
-		return $x['verified'];
-	} # cbVerifiedOnly
-	
-	/*
-	 * Geef de lijst met comments terug 
-	 */
 	function getSpotComments($userId, $msgId, $nntp, $start, $length) {
-		if (!$this->_settings->get('retrieve_comments')) {
-			return array();
-		} # if
-	
-		# Bereken wat waardes zodat we dat niet steeds moeten doen
-		$totalCommentsNeeded = ($start + $length);
-		
-		SpotTiming::start(__FUNCTION__);
-
-		# vraag een lijst op met comments welke in de database zitten en
-		# als er een fullcomment voor bestaat, vraag die ook meteen op
-		$fullComments = $this->_db->getCommentsFull($userId, $msgId);
-		
-		# Nu gaan we op zoek naar het eerste comment dat nog volledig opgehaald
-		# moet worden. Niet verified comments negeren we.
-		$haveFullCount = 0;
-		$lastHaveFullOffset = -1;
-		$retrievedVerified = 0;
-		$fullCommentsCount = count($fullComments);
-		for ($i = 0; $i < $fullCommentsCount; $i++) {
-			if ($fullComments[$i]['havefull']) {
-				$haveFullCount++;
-				$lastHaveFullOffset = $i;
-				
-				if ($fullComments[$i]['verified']) {
-					$retrievedVerified++;
-				} # if
-			} # if
-		} # for
-		
-		# en haal de overgebleven comments op van de NNTP server
-		if ($retrievedVerified < $totalCommentsNeeded) {
-			# Als we de comments maar in delen moeten ophalen, gaan we loopen tot we
-			# net genoeg comments hebben. We moeten wel loopen omdat we niet weten 
-			# welke comments verified zijn tot we ze opgehaald hebben
-			if (($start > 0) || ($length > 0)) {
-				$newComments = array();
-			
-				# en ga ze ophalen
-				while (($retrievedVerified < $totalCommentsNeeded) && ( ($lastHaveFullOffset) < count($fullComments) )) {
-					SpotTiming::start(__FUNCTION__. ':nntp:getComments()');
-					$tempList = $nntp->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
-					SpotTiming::stop(__FUNCTION__ . ':nntp:getComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
-				
-					$lastHaveFullOffset += $length;
-					foreach($tempList as $comment) {
-						$newComments[] = $comment;
-						if ($comment['verified']) {
-							$retrievedVerified++;
-						} # if
-					} # foreach
-				} # while
-			} else {
-				$newComments = $nntp->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, count($fullComments)));
-			} # else
-			
-			# voeg ze aan de database toe
-			$this->_db->addFullComments($newComments);
-			
-			# en voeg de oude en de nieuwe comments samen
-			$fullComments = $this->_db->getCommentsFull($userId, $msgId);
-		} # foreach
-		
-		# filter de comments op enkel geverifieerde comments
-		$fullComments = array_filter($fullComments, array($this, 'cbVerifiedOnly'));
-
-		# geef enkel die comments terug die gevraagd zijn. We vragen wel alles op
-		# zodat we weten welke we moeten negeren.
-		if (($start > 0) || ($length > 0)) {
-			$fullComments = array_slice($fullComments , $start, $length);
-		} # if
-		
-		# omdat we soms array elementen unsetten, is de array niet meer
-		# volledig oplopend. We laten daarom de array hernummeren
-		SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
-		return $fullComments;
-	} # getSpotComments()
+		$x = new Services_Providers_Comments($this->_db->_commentDao, new Services_Nntp_SpotReading($nntp));
+		return $x->fetchSpotComments($msgId, $userId, $start, $length);
+	} # getSpotComments	
 
 	/*
 	 * Pre-calculates the amount of new spots
