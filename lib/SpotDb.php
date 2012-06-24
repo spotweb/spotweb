@@ -2,20 +2,20 @@
 define('SPOTDB_SCHEMA_VERSION', '0.58');
 
 class SpotDb {
-	private $_auditDao;
-	private $_blackWhiteListDao;
-	private $_cacheDao;
+	public $_auditDao;
+	public $_blackWhiteListDao;
+	public $_cacheDao;
 	public $_commentDao;
-	private $_notificationDao;
-	private $_sessionDao;
-	private $_settingDao;
-	private $_spotReportDao;
-	private $_userFilterCountDao;
-	private $_userFilterDao;
-	private $_userDao;
+	public $_notificationDao;
+	public $_sessionDao;
+	public $_settingDao;
+	public $_spotReportDao;
+	public $_userFilterCountDao;
+	public $_userFilterDao;
+	public $_userDao;
 	public $_spotDao;
-	private $_spotStateListDao;
-	private $_nntpConfigDao;
+	public $_spotStateListDao;
+	public $_nntpConfigDao;
 
 	private $_dbsettings = null;
 	private $_conn = null;
