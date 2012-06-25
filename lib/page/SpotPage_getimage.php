@@ -81,7 +81,13 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# Haal de volledige spotinhoud op
 			$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, false);
 
-			$data = $spotsOverview->getImage($fullSpot, $nzb_spotnntp);
+			/*
+			 * Actually retrieve the image 
+			 */
+			$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
+																  new Services_Nntp_SpotReading($nzb_spotnntp),
+											  					  $this->_db->_cacheDao);
+			$data = $providerSpotImage->fetchSpotImage($fullSpot);
 		} # else
 
 		# Images mogen gecached worden op de client, behalve als is opgegeven dat het niet mag

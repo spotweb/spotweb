@@ -135,7 +135,15 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					$nntp_nzb = new SpotNntp($settings_nntp_nzb);
 					$nntp_nzb->selectGroup($this->_settings->get('nzb_group'));
 				} # else
+				
+				/*
+				 * Instantiate the spotimage provider
+				 */
+				$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
+																	  new Services_Nntp_SpotReading($nntp_nzb),
+											  						  $this->_db->_cacheDao);
 			} # if
+
 
 
 			foreach($hdrList as $msgheader) {
@@ -350,7 +358,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							 */
 							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
 								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
-								$spotsOverview->getImage($fullSpot, $nntp_nzb);
+								$x->fetchSpotImage($fullSpot);
 								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 							} # if
 						} # if

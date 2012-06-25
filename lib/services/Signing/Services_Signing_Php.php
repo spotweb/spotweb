@@ -3,6 +3,12 @@ require_once "Crypt/RSA.php";
 
 class Services_Signing_Php extends Services_Signing_Base {
 
+	/* 
+	 * Override visibility of the constructor see GH issue #1554
+	 */	
+	public function __construct() {
+	} # ctor
+
 	/*
 	 * Actually checks the RSA signature
 	 */
