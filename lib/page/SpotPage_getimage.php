@@ -25,12 +25,12 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 			# init
-			$spotImage = new SpotImage($this->_db);
-
 			$totalSpots = $this->_db->getSpotCount('');
 			$newSpots = $this->_tplHelper->getNewCountForFilter('');
 			$lastUpdate = $this->_tplHelper->formatDate($this->_db->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
-			$data = $spotImage->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
+
+			$svc_ImageSpeedDial = new Services_Image_SpeedDial();
+			$data = $svc_ImageSpeedDial->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
 

@@ -14,7 +14,6 @@ class SpotsOverview {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
-		$this->_spotImage = new SpotImage($db);
 		$this->_cacheDao = $db->_cacheDao;
 	} # ctor
 
@@ -52,7 +51,8 @@ class SpotsOverview {
 		$spotStatistics = new SpotStatistics($this->_db);
 
 		if (!array_key_exists($graph, $this->_spotImage->getValidStatisticsGraphs()) || !array_key_exists($limit, $this->_spotImage->getValidStatisticsLimits())) {
-			$data = $this->_spotImage->createErrorImage(400);
+			$svc_ImageError = new Services_Image_Error();
+			$data = $svc_ImageError->createErrorImage(400);
 			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
 			return $data;
 		} # if

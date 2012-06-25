@@ -71,8 +71,15 @@ class SpotTemplateHelper {
 			$this->_cachedSpotCount = $this->_db->getNewCountForFilters($this->_currentSession['user']['userid']);
 		 } # if
 
-		# Now parse it to an array as we would get when called from a webpage
+		# Now parse it to an ar ray as we would get when called from a webpage
 		parse_str(html_entity_decode($filterStr), $query_params);
+
+		/*
+		 * We need several items to exist
+		 */
+		$query_tpl = array('search' => array( 'valuelist' => array(), 'value' => array() ));
+		$query_params = array_merge($query_tpl, $query_params);
+
 		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
 
 		# Make sure we have a tree variable, even if it is an empty one
