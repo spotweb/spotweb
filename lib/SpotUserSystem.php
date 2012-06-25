@@ -1226,34 +1226,44 @@ class SpotUserSystem {
 	/*
 	 * Changes the avatar of this user
 	 */
-	function changeAvatar($userId, $imageFile) {
+	function changeAvatar($userId, $imageString) {
 		$errorList = array();
 		
 		/* 
 		 * Don't allow images larger than 4000 bytes
 		 */
-		if (strlen($imageFile) > 4000) {
+		if (strlen($imageString) > 4000) {
 			$errorList[] = _('An avatar image has a maximum of 4000 bytes');
 		} # if
 		
 		/*
 		 * Make sure the image can be read, and stuff
 		 */
-		$spotImage = new SpotImage($this->_db);
-		if ($spotImage->getImageInfoFromString($imageFile) === false) {
+		$svc_ImageUtil = new Services_Image_Util();
+		$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
+		if ($dimensions === false) {
 			$errorList[] = _('Invalid avatar image was supplied');
+		} # if
+
+		/*
+		 * If the user supplied an BMP file, convert it to a 
+		 * JPEG file
+		 */
+		if ($dimensions['isbmp']) {
+			$svc_ImageBmpConverter = new Services_Image_BmpConverter();
+			$imageString = $svc_ImageBmpConverter->convertBmpImageStringToJpeg($imageString, $dimensions);
 		} # if
 
 		if (empty($errorList)) {
 			/*
 			 * We store the images base64 encoded
 			 */
-			$imageFile = base64_encode($imageFile);
+			$imageString = base64_encode($imageString);
 			
 			/*
 			 * and update the database 
 			 */
-			$this->_db->setUserAvatar($userId, $imageFile);
+			$this->_db->setUserAvatar($userId, $imageString);
 		} # if
 
 		return $errorList;

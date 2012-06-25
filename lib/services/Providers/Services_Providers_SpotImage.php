@@ -29,7 +29,8 @@ class Services_Providers_SpotImage {
 		$return_code = 0;
 		$validImage = false;
 
-		if ($data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid'])) {
+		$data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid']);
+		if ($data !== false) {
 			$this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid']);
 			return $data;
 		} # if
@@ -48,22 +49,8 @@ class Services_Providers_SpotImage {
 				foreach($fullSpot['image']['segment'] as $seg) {
 					$segmentList[] = $seg;
 				} # foreach
-
-				$data = $this->_spotImage->getImageInfoFromString(
-								$this->_nntpSpotReading->readBinary($segmentList, false)
-						);
-
-				/*
-				 * If this is not a valid image, create a dummy error code, 
-				 * else we save it in the cache
-				 */
-				if ($data !== false) {
-					$validImage = true;
-					$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], $data);
-				} else {
-					$validImage = false;
-					$return_code = 998;
-				} # if	
+				$imageString = $this->_nntpSpotReading->readBinary($segmentList, false);
+				$validImage = true;
 			} catch(Exception $x) {
 				$validImage = false;
 				$return_code = $x->getCode();
@@ -85,22 +72,49 @@ class Services_Providers_SpotImage {
 			 * We don't want the HTTP layer of this code to cache the image, because
 			 * we want to cache / store additional information in the cache for images
 			 */
-			list($return_code, $data) = $this->_serviceHttp->getFromWeb($fullSpot['image'], false, 0);
+			list($return_code, $imageString) = $this->_serviceHttp->getFromWeb($fullSpot['image'], false, 0);
 			if (($return_code == 200) || ($return_code == 304)) {
-
-				$data = $this->_spotImage->getImageInfoFromString($data['content']);
-				if ($data !== false) {
-					$validImage = true;
-					$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], $data);
-				} else {
-					$validImage = false;
-					$return_code = 997;
-				} # else 
-
-			} else {
-				$validImage = false;
+				$validImage = true;
 			} # else
 		} # elseif
+
+		/*
+		 * Now validate the resource we have retrieved from the server
+		 */
+		if ($validImage) {
+			$svc_ImageUtil = new Services_Image_Util();
+			$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
+
+			/*
+			 * If this is not a valid image, create a dummy error code, 
+			 * else we save it in the cache
+			 */
+			if ($dimensions !== false) {
+				/* 
+				 * If the current image is an BMP file, convert it to
+				 * JPEG 
+				 */
+				if ($dimensions['isbmp']) {
+					$svc_ImageBmpConverter = new Services_Image_BmpConverter();
+					$imageString = $svc_ImageBmpConverter->convertBmpImageStringToJpeg($imageString, $dimensions);
+
+					$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
+					$validImage = ($dimensions !== false);
+				} # if
+
+				/* 
+				 * and store the file in the cache
+				 */
+				$validImage = true;
+				$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], 
+										array('content' => $imageString,
+											  'metadata' => $dimensions));
+			} else {
+				$validImage = false;
+				$return_code = 998;
+			} # if	
+		} # if
+
 
 		/*
 		 * Did we get a return code other than 200 OK and 
@@ -108,11 +122,12 @@ class Services_Providers_SpotImage {
 		 * an error code image
 		 */
 		if (!$validImage) {
-			$data = $this->_spotImage->createErrorImage($return_code);
+			$imageString = $this->_spotImage->createErrorImage($return_code);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
-		return $data;
+		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		return array('content' => $imageString,
+					 'metadata' => $dimensions);
 	} # fetchSpotImage
 	
 } # Services_Providers_SpotImage

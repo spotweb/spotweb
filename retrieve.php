@@ -242,11 +242,11 @@ if ($settings_external_blacklist) {
 
 		if ($http_code == 304) {
 			echo "Blacklist not modified, no need to update" . PHP_EOL;
-		} elseif (strpos($blacklist['content'],">")) {
+		} elseif (strpos($blacklist,">")) {
 			echo "Error, blacklist does not have expected layout!" . PHP_EOL;
 		} else {
 			# update de blacklist
-			$blacklistarray = explode(chr(10),$blacklist['content']);
+			$blacklistarray = explode(chr(10),$blacklist);
 			
 			# Perform a very small snaity check on the blacklist
 			if ((count($blacklistarray) > 5) && (strlen($blacklistarray[0]) < 10)) {
@@ -275,11 +275,11 @@ if ($settings_external_whitelist) {
 
 		if ($http_code == 304) {
 			echo "Whitelist not modified, no need to update" . PHP_EOL;
-		} elseif (strpos($whitelist['content'],">")) {
+		} elseif (strpos($whitelist,">")) {
 			echo "Error, whitelist does not have expected layout!" . PHP_EOL;
 		} else {
 			# update de whitelist
-			$whitelistarray = explode(chr(10),$whitelist['content']);
+			$whitelistarray = explode(chr(10),$whitelist);
 			
 			# Perform a very small snaity check on the whitelist
 			if ((count($whitelistarray) > 5) && (strlen($whitelistarray[0]) < 10)) {

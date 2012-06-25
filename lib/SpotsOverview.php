@@ -78,7 +78,12 @@ class SpotsOverview {
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
 		list($return_code, $data) = $this->getFromWeb($url, true, 60*60);
-		$data = $this->_spotImage->getImageInfoFromString($data['content']);
+
+		$svc_ImageUtil = new Services_Image_Util();
+		$dimensions = $svc_ImageUtil->getImageDimensions($data);
+
+		$data = array('content' => $data);
+		$data['metadata'] = $dimensions;
 		$data['expire'] = true;
 		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;

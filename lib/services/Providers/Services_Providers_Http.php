@@ -16,7 +16,7 @@ class Services_Providers_Http {
 	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
 		SpotTiming::start(__FUNCTION__);
 		$url_md5 = md5($url);
-
+		
 		/*
 		 * Is this URL stored in the cache and is it still valid?
 		 */
@@ -58,9 +58,9 @@ class Services_Providers_Http {
 				 * Server respnded with 304 (Resource not modified)
 				 */
 				if ($http_code == 304) {
-					$data['content'] = $content['content'];
+					$data = $content['content'];
 				} else {
-					$data['content'] = substr($response, -$info['download_content_length']);
+					$data = substr($response, -$info['download_content_length']);
  				} # else
 
 			} else {
@@ -98,7 +98,7 @@ class Services_Providers_Http {
 						 * Store the retrieved information in the cache
 						 */
 						if (($storeWhenRedirected) || ($info['redirect_count'] == 0)) {
-							$this->_cacheDao->saveHttpCache($url_md5, $data['content']);
+							$this->_cacheDao->saveHttpCache($url_md5, $data);
 						} # if
 					} # if
 				} # switch
@@ -106,7 +106,7 @@ class Services_Providers_Http {
 			} # else
 		} else {
 			$http_code = 304;
-			$data = $content;
+			$data = $content['content'];
 		} # else
 
 		SpotTiming::stop(__FUNCTION__, array($url, $storeWhenRedirected, $ttl));
