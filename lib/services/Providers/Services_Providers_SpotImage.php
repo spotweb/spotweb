@@ -5,8 +5,6 @@ class Services_Providers_SpotImage {
 	private $_serviceHttp;
 	private $_nntpSpotReading;
 
-	private $_spotImage;
-
 	/*
 	 * constructor
 	 */
@@ -16,8 +14,6 @@ class Services_Providers_SpotImage {
 		$this->_serviceHttp = $serviceHttp;
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpSpotReading = $nntpSpotReading;
-
-		$this->_spotImage = new SpotImage( new SpotDb(array()) );
 	}  # ctor
 	
 	/*
@@ -122,7 +118,8 @@ class Services_Providers_SpotImage {
 		 * an error code image
 		 */
 		if (!$validImage) {
-			$imageString = $this->_spotImage->createErrorImage($return_code);
+			$svc_ImageError = new Services_Image_Error();
+			$imageString = $svc_ImageError->createErrorImage($return_code);
 		} # if
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));

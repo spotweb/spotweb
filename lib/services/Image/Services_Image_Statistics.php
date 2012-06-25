@@ -1,54 +1,23 @@
 <?php
-class SpotImage {
-	protected $_db;
-	private $_oldestSpotAge = null;
 
-	function __construct(SpotDb $db) {
-		$this->_db = $db;
+class Services_Image_Statistics {
+	private $_spotStatistics;
+	private $_oldestSpotAge;
+
+	/*
+	 * Constructor
+	 */
+	function __construct(SpotStatistics $spotStatistics, $oldestSpotAge) {
+		SpotTranslation::initialize($language);
+
+		$this->_spotStatistics = $spotStatistics; 
+		$this->_oldestSpotAge = $oldestSpotAge;
 	} # ctor
 
-	function createErrorImage($errcode) {
-		$img = $this->createDefaultSpotwebImage();
-		$fontSize = 30;
-		$angle = 0;
-
-		# Headertext
-		$text = ($errcode < 900) ? _('ERROR') . ' ' . $errcode : _('ERROR');
-		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
-		$txtwidth = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($txtwidth/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
-
-		# error info
-		switch ($errcode) {
-			case 200:	$text = _('Remote host sent bad data'); break;
-			case 400:	$text = _('Bad request'); break;
-			case 403:	$text = _('Permission denied from remote host'); break;
-			case 404:	$text = _('File not found'); break;
-			case 430:	$text = _('Article not found'); break;
-			case 700:	$text = _('No response from remote host'); break;
-			case 900:	$text = _('XML parse error'); break;
-			case 901:	$text = _('No image provided'); break;
-			default:	$text = _('Unknown error');
-		} # switch
-
-		$fontSize = 20;
-		$bbox = imagettfbbox ($fontSize, $angle, $img['font'], $text);
-		$txtwidth = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($txtwidth/2), 300, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);		
-
-		ob_start();
-		imagejpeg($img['resource']);
-		$imageString = ob_get_clean();
-		imagedestroy($img['resource']);
-
-		$svc_ImageUtil = new Services_Image_Util();
-		$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
-		return array('metadata' => $dimensions, 'expire' => true, 'content' => $imageString);
-	} # createErrorImage
-
+	/*
+	 * Create several statistics images
+	 */
 	function createStatistics($graph, $limit, $lastUpdate, $language) {
-		SpotTranslation::initialize($language);
-		$spotStatistics = new SpotStatistics($this->_db);
 		include_once("images/pchart/pData.class.php");
 		include_once("images/pchart/pDraw.class.php");
 		include_once("images/pchart/pImage.class.php");
@@ -61,22 +30,22 @@ class SpotImage {
 		$limits = $this->getValidStatisticsLimits();
 
 		switch ($graph) {
-			case 'spotsperhour'		: $prepData = $this->prepareData($spotStatistics->getSpotCountPerHour($limit, $lastUpdate));
+			case 'spotsperhour'		: $prepData = $this->prepareData($this->_spotStatistics->getSpotCountPerHour($limit, $lastUpdate));
 									  $legend = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23');
 									  for ($x=0; $x<=23; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "bar";
 									  break;
-			case 'spotsperweekday'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerWeekday($limit, $lastUpdate));
+			case 'spotsperweekday'	: $prepData = $this->prepareData($this->_spotStatistics->getSpotCountPerWeekday($limit, $lastUpdate));
 									  $legend = array(_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday"));
 									  $dataSet = array(@$prepData[1],@$prepData[2],@$prepData[3],@$prepData[4],@$prepData[5],@$prepData[6],@$prepData[0]);
 									  $graphicType = "bar";
 									  break;
-			case 'spotspermonth'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerMonth($limit, $lastUpdate));
+			case 'spotspermonth'	: $prepData = $this->prepareData($this->_spotStatistics->getSpotCountPerMonth($limit, $lastUpdate));
 									  $legend = array(_("January"),_("February"),_("March"),_("April"),_("May"),_("June"),_("July"),_("August"),_("September"),_("October"),_("November"),_("December"));
 									  for ($x=1; $x<=12; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "bar";
 									  break;
-			case 'spotspercategory'	: $prepData = $this->prepareData($spotStatistics->getSpotCountPerCategory($limit, $lastUpdate));
+			case 'spotspercategory'	: $prepData = $this->prepareData($this->_spotStatistics->getSpotCountPerCategory($limit, $lastUpdate));
 									  $legend = array(_(SpotCategories::HeadCat2Desc(0)),_(SpotCategories::HeadCat2Desc(1)),_(SpotCategories::HeadCat2Desc(2)),_(SpotCategories::HeadCat2Desc(3)));
 									  for ($x=0; $x<=3; $x++) { $dataSet[] = @$prepData[$x]; }
 									  $graphicType = "3Dpie";
@@ -144,66 +113,6 @@ class SpotImage {
 		} # img
 	} # createStatistics
 
-	function createSpeedDial($totalSpots, $newSpots, $lastUpdate) {
-		$img = $this->createDefaultSpotwebImage();
-		$fontSize = 24;
-		$angle = 0;
-
-		$text = sprintf(_('Total spots: %d'), $totalSpots);
-		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 50, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
-
-		if (!$newSpots) { $newSpots = 0; }
-		$text = sprintf(_('Total new spots: %d'), $newSpots);
-		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 90, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
-
-		$text = _('Last update:');
-		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $text); $width = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 230+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
-
-		$bbox = imagettfbbox($fontSize, $angle, $img['font'], $lastUpdate); $width = abs($bbox[2]);
-		imagettftext($img['resource'], $fontSize, $angle, 256-($width/2), 270+$fontSize, $this->colorHex($img['resource'], $img['fontColor']), $img['font'], $lastUpdate);
-
-		ob_start();
-		imagejpeg($img['resource']);
-		$imageString = ob_get_clean();
-		imagedestroy($img['resource']);
-
-		$svc_ImageUtil = new Services_Image_Util();
-		$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
-		return array('metadata' => $dimensions, 'expire' => true, 'content' => $imageString);
-	} # createSpeedDial
-
-	function createDefaultSpotwebImage() {
-		$imageFile = 'images/spotnet.gif';
-		$ttfFont = 'images/ttf/liberation-sans/LiberationSans-Bold.ttf';
-		$fontColor = 'ffffff';
-
-		// Create image
-		$img = imagecreatetruecolor(512, 320);
-
-		// Set alphablending to on
-		imagealphablending($img, true);
-
-		// Draw a square
-		imagefilledrectangle($img, 8, 8, 504, 312, $this->colorHex($img, '123456'));
-
-		// Load and show the background image
-		$bg = imagecreatefromgif($imageFile);
-		list($width, $height, $type, $attr) = getimagesize($imageFile);
-		imagecopymerge($img, $bg, 256-($width/2), 160-($height/2), 0, 0, $width, $height, 30);
-		imagedestroy($bg);
-
-		return array('resource' => $img, 'font' => $ttfFont, 'fontColor' => $fontColor);
-	} # createDefaultSpotwebImage
-
-	function colorHex($img, $hexColorString) {
-		$r = hexdec(substr($hexColorString, 0, 2));
-		$g = hexdec(substr($hexColorString, 2, 2));
-		$b = hexdec(substr($hexColorString, 4, 2));
-		return ImageColorAllocate($img, $r, $g, $b);
-	} # colorHex
 
 	function prepareData($data) {
 		$preparedData = array();
@@ -239,4 +148,5 @@ class SpotImage {
 		return $this->_oldestSpotAge;
 	} # getOldestSpotAge
 
-} # class SpotImage
+	
+} # Services_Image_Statistics
