@@ -8,6 +8,13 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 	 */
 	private $_pubKeyCache = array();
 
+	/* 
+	 * Overwrite private constructor
+	 */
+	public function __construct() {
+
+	} # ctor
+
 	/*
 	 * Actually validates the RSA signature
 	 */
