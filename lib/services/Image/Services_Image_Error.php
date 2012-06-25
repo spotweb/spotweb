@@ -48,7 +48,7 @@ class Services_Image_Error {
 		$imageString = ob_get_clean();
 		imagedestroy($img['resource']);
 
-		$dimensions = $_svcImageUtil->getImageDimensions($imageString);
+		$dimensions = $this->_svcImageUtil->getImageDimensions($imageString);
 		return array('metadata' => $dimensions, 'expire' => true, 'content' => $imageString);
 	} # createErrorImage
 	

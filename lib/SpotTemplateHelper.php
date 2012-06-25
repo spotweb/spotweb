@@ -1173,16 +1173,20 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics graphs terug
 	 */
 	function getValidStatisticsGraphs(){
-		$spotImage = new SpotImage($this->_db);
-		return $spotImage->getValidStatisticsGraphs();
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
+														  $this->_db->_cacheDao,
+														  0);
+		return $svcPrv_Stats->getValidStatisticsGraphs();
 	} # getValidStatisticsGraphs
 
 	/*
 	 * Geeft een array met valide statistics limits terug
 	 */
 	function getValidStatisticsLimits(){
-		$spotImage = new SpotImage($this->_db);
-		return $spotImage->getValidStatisticsLimits();
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
+														  $this->_db->_cacheDao,
+														  0);
+		return $svcPrv_Stats->getValidStatisticsLimits();
 	} # getValidStatisticsGraphs
 	
 	/*

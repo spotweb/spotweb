@@ -20,4 +20,8 @@ interface Dao_Cache {
 	function updateSpotImageCacheStamp($resourceId);
 	function saveSpotImageCache($resourceId, $image);
 
+	function getCachedStats($resourceId);
+	function updateStatsCacheStamp($resourceId);
+	function saveStatsCache($resourceId, $content);
+
 } # Dao_Cache

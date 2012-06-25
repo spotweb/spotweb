@@ -34,12 +34,16 @@ class SpotPage_getimage extends SpotPage_Abs {
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
 
-			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
-			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr, $this->_currentSession['user']['prefs']['user_language']);
+
+			# init
+			$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
+															  $this->_db->_cacheDao,
+												 			  $this->_db->_nntpConfigDao->getLastUpdate($settings_nntp_hdr['host']));
+			$data = $svcPrv_Stats->renderStatImage($graph, $limit, $settings_nntp_hdr['host']);
+
+
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
 			# Check users' permissions
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');

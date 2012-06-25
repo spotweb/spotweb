@@ -8,7 +8,6 @@ class SpotsOverview {
 	private $_cache;
 	private $_cacheDao;
 	private $_settings;
-	private $_activeRetriever;
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
@@ -42,33 +41,6 @@ class SpotsOverview {
 										new Services_Nntp_SpotReading($nntp));
 		return $x->getNzb($fullSpot);
 	} # getNzb
-
-	/* 
-	 * Geef een statistics image file terug
-	 */
-	function getStatisticsImage($graph, $limit, $nntp, $language) {
-		SpotTiming::start(__FUNCTION__);
-		$spotStatistics = new SpotStatistics($this->_db);
-
-		if (!array_key_exists($graph, $this->_spotImage->getValidStatisticsGraphs()) || !array_key_exists($limit, $this->_spotImage->getValidStatisticsLimits())) {
-			$svc_ImageError = new Services_Image_Error();
-			$data = $svc_ImageError->createErrorImage(400);
-			SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
-			return $data;
-		} # if
-
-		$lastUpdate = $this->_db->getLastUpdate($nntp['host']);
-		$resourceid = $spotStatistics->getResourceid($graph, $limit, $language);
-		$data = $this->_cache->getCache($resourceid, SpotCache::Statistics);
-		if (!$data || $this->_activeRetriever || (!$this->_settings->get('prepare_statistics') && (int) $data['stamp'] < $lastUpdate)) {
-			$data = $this->_spotImage->createStatistics($graph, $limit, $lastUpdate, $language);
-			$this->_cache->saveCache($resourceid, SpotCache::Statistics, $data['metadata'], $data['content']);
-		} # if
-
-		$data['expire'] = true;
-		SpotTiming::stop(__FUNCTION__, array($graph, $limit, $nntp));
-		return $data;
-	} # getStatisticsImage
 
 	/*
 	 * Geeft een Spotnet avatar image terug
@@ -129,10 +101,6 @@ class SpotsOverview {
 	} # loadSpots()
 
 	
-	public function setActiveRetriever($b) {
-		$this->_activeRetriever = $b;
-	} # setActiveRetriever
-
 	public function prepareCategorySelection($dynaList) {
 		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
 		return $x->prepareCategorySelection($dynaList);

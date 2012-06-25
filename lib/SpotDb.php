@@ -405,26 +405,11 @@ class SpotDb {
 	function addFullSpots($fullSpots) {
 		return $this->_spotDao->addFullSpots($fullSpots);
 	}
-	function getOldestSpotTimestamp() {
-		return $this->_spotDao->getOldestSpotTimestamp();
-	}
 	function matchSpotMessageIds($hdrList) {
 		return $this->_spotDao->matchSpotMessageIds($hdrList);
 	}
 	function getSpotCount($sqlFilter) {
 		return $this->_spotDao->getSpotCount($sqlFilter);
-	}
-	function getSpotCountPerHour($limit) {
-		return $this->_spotDao->getSpotCountPerHour($limit);
-	}
-	function getSpotCountPerWeekday($limit) {
-		return $this->_spotDao->getSpotCountPerWeekday($limit);
-	}
-	function getSpotCountPerMonth($limit) {
-		return $this->_spotDao->getSpotCountPerMonth($limit);
-	}
-	function getSpotCountPerCategory($limit) {
-		return $this->_spotDao->getSpotCountPerCategory($limit);
 	}
 	function removeExtraSpots($messageId) {
 		return $this->_spotDao->removeExtraSpots($messageId);

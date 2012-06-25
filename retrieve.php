@@ -300,20 +300,19 @@ if ($settings_external_whitelist) {
 
 ## Statistics
 if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
-	$spotsOverview = new SpotsOverview($db, $settings);
-	$spotImage = new SpotImage($db);
-	$spotsOverview->setActiveRetriever(true);
+	$svcPrv_Stats = new Services_Providers_Statistics($db->_spotDao,
+													  $db->_cacheDao,
+										 			  $db->_nntpConfigDao->getLastUpdate($settings_nntp_hdr['host']));
 
 	echo "Starting to create statistics " . PHP_EOL;
-	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
+	foreach ($svcPrv_Stats->getValidStatisticsLimits() as $limitValue => $limitName) {
 		# Reset timelimit
 		set_time_limit(60);
 
-		foreach($settings->get('system_languages') as $language => $name) {
-			foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
-				$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
-			} # foreach graph
-		} # foreach language
+		foreach ($svcPrv_Stats->getValidStatisticsGraphs() as $graphValue => $graphName) {
+			$svcPrv_Stats->renderStatImage($graphValue, $limitValue, $settings_nntp_hdr['host']);
+		} # foreach graph
+
 		echo "Finished creating statistics " . $limitName . PHP_EOL;
 	} # foreach limit
 
