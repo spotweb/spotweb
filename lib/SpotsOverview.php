@@ -6,6 +6,7 @@
 class SpotsOverview {
 	private $_db;
 	private $_cache;
+	private $_cacheDao;
 	private $_settings;
 	private $_activeRetriever;
 
@@ -14,6 +15,7 @@ class SpotsOverview {
 		$this->_settings = $settings;
 		$this->_cache = new SpotCache($db);
 		$this->_spotImage = new SpotImage($db);
+		$this->_cacheDao = $db->_cacheDao;
 	} # ctor
 
 	function getFullSpot($msgId, $ourUserId, $nntp) {
@@ -46,41 +48,50 @@ class SpotsOverview {
 	 * Geef de image file terug
 	 */
 	function getImage($fullSpot, $nntp) {
+		//throw new Exception("We should cache on images, not depending on type of storage");
+		//throw new Exception("Remoe the getImageFromString stuff from the HTTP layer!");
+
 		SpotTiming::start(__FUNCTION__);
 		$return_code = false;
 
-		if (is_array($fullSpot['image'])) {
-			if ($this->_activeRetriever && $this->_cache->isCached($fullSpot['messageid'], SpotCache::SpotNzb)) {
-				$data = true;
-			} elseif ($data = $this->_cache->getCache($fullSpot['messageid'], SpotCache::SpotImage)) {
-				$this->_cache->updateCacheStamp($fullSpot['messageid'], SpotCache::SpotImage);
-			} else {
-				try {
-					$img = $nntp->getImage($fullSpot);
+		if ($data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid'])) {
+			$this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid']);
+			return $data;
+		} # if
 
-					if ($data = $this->_spotImage->getImageInfoFromString($img)) {
-						$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotImage, $data['metadata'], $data['content']);
-					} # if	
-				}
-				catch(ParseSpotXmlException $x) {
-					$return_code = 900;
-				}
-				catch(Exception $x) {
-					# "No such article" error
-					if ($x->getCode() == 430) {
-						$return_code = 430;
-					} 
-					# als de XML niet te parsen is, niets aan te doen
-					elseif ($x->getMessage() == 'String could not be parsed as XML') {
-						$return_code = 900;
-					} else {
-						throw $x;
-					} # else
-				} # catch
-			} # if
+		/*
+		 * Determine whether the spot is stored on an NNTP serve or a web resource,
+		 * older spots are stored on an HTTP server
+		 */
+		if (is_array($fullSpot['image'])) {
+			try {
+				$img = $nntp->getImage($fullSpot);
+
+				if ($data = $this->_spotImage->getImageInfoFromString($img)) {
+					$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], $data);
+				} # if	
+			} catch(Exception $x) {
+				# "No such article" error
+				if ($x->getCode() == 430) {
+					$return_code = 430;
+				} else {
+					throw $x;
+				} # else
+			} # catch
 		} elseif (!empty($fullSpot['image'])) {
-			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], false, 24*60*60);
-		} # else
+			/*
+			 * We don't want the HTTP layer of this code to cache the image, because
+			 * we want to cache / store additional information in the cache for images
+			 */
+			list($return_code, $data) = $this->getFromWeb($fullSpot['image'], false, 0);
+			if (($return_code == 200) || ($return_code == 304)) {
+
+				if ($data = $this->_spotImage->getImageInfoFromString($data['content'])) {
+					$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], $data);
+				} # if
+
+			} # if	
+		} # elseif
 
 		# bij een error toch een image serveren
 		if (!$this->_activeRetriever) {
@@ -137,6 +148,7 @@ class SpotsOverview {
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
 		list($return_code, $data) = $this->getFromWeb($url, true, 60*60);
+		$data = $this->_spotImage->getImageInfoFromString($data['content']);
 		$data['expire'] = true;
 		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
@@ -146,75 +158,9 @@ class SpotsOverview {
 	 * Haalt een url op en cached deze
 	 */
 	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
-		SpotTiming::start(__FUNCTION__);
-		$url_md5 = md5($url);
-
-		if ($this->_activeRetriever && $this->_cache->isCached($url_md5, SpotCache::Web)) {
-			return array(200, true);
-		} # if
-
-		$content = $this->_cache->getCache($url_md5, SpotCache::Web);
-		if (!$content || time()-(int) $content['stamp'] > $ttl) {
-			$data = array();
-
-			SpotTiming::start(__FUNCTION__ . ':curl');
-			$ch = curl_init();
-			curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
-			curl_setopt ($ch, CURLOPT_URL, $url);
-			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-			curl_setopt ($ch, CURLOPT_TIMEOUT, 15);
-			curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
-			curl_setopt ($ch, CURLOPT_HEADER, 1);
-			curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
-			if ($content) {
-				curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-				curl_setopt($ch, CURLOPT_TIMEVALUE, (int) $content['stamp']);
-			} # if
-			$response = curl_exec($ch);
-			SpotTiming::stop(__FUNCTION__ . ':curl', array($response));
-
-			/*
-			 * Curl returns false on some unspecified errors (eg: a timeout)
-			 */
-			if ($response !== false) {
-				$info = curl_getinfo($ch);
-				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-				$data['content'] = ($http_code == 304) ? $content['content'] : substr($response, -$info['download_content_length']);
-			} else {
-				$http_code = 700; # Curl returned an error
-			} # else
-			curl_close($ch);
-
-			if ($http_code != 200 && $http_code != 304) {
-				return array($http_code, false);
-			} elseif ($ttl > 0) {
-				if ($imageData = $this->_spotImage->getImageInfoFromString($data['content'])) {
-					$data['metadata'] = $imageData['metadata'];
-				} else {
-					$data['metadata'] = '';
-				} # else
-
-				switch($http_code) {
-					case 304:	if (!$this->_activeRetriever) {
-									$this->_cache->updateCacheStamp($url_md5, SpotCache::Web);
-								} # if
-								break;
-					default:	if ($info['redirect_count'] == 0 || ($info['redirect_count'] > 0 && $storeWhenRedirected)) {
-									$this->_cache->saveCache($url_md5, SpotCache::Web, $data['metadata'], $data['content']);
-								} # if
-				} # switch
-			} # else
-		} else {
-			$http_code = 304;
-			$data = $content;
-		} # else
-
-		SpotTiming::stop(__FUNCTION__, array($url, $storeWhenRedirected, $ttl));
-
-		return array($http_code, $data);
-	} # getUrl
+		$x = new Services_Providers_Http($this->_db->_cacheDao);
+		return $x->getFromWeb($url, $storeWhenRedirected, $ttl);
+	} # getFromWeb
 
 	/*
 	 * Laad de spots van af positie $start, maximaal $limit spots.

@@ -85,5 +85,47 @@ class Dao_Base_Cache implements Dao_Cache {
 		return $this->saveCache($resourceId, $this::SpotNzb, false, $content);
 	} # saveNzbCache
 
+	/*
+	 * Retrieve a HTTP resource from the cache
+	 */
+	function getCachedHttp($resourceId) {
+		return $this->getCache($resourceId, $this::Web);
+	} # getCachedHttp
+
+	/*
+	 * Update an HTTP resource from the cache
+	 */
+	function updateHttpCacheStamp($resourceId) {
+		return $this->updateCacheStamp($resourceId, $this::Web);
+	} # updateHttpCacheStamp
+
+	/*
+	 * Save an HTTP resource into the cache
+	 */
+	function saveHttpcache($resourceId, $content) {
+		return $this->saveCache($resourceId, $this::Web, false, $content);
+	} # saveHttpcache
+
+	/*
+	 * Retrieve a HTTP resource from the cache
+	 */
+	function getCachedSpotImage($resourceId) {
+		return $this->getCache($resourceId, $this::SpotImage);
+	} # getCachedSpotImage
+
+	/*
+	 * Update an HTTP resource from the cache
+	 */
+	function updateSpotImageCacheStamp($resourceId) {
+		return $this->updateCacheStamp($resourceId, $this::SpotImage);
+	} # updateSpotImageCacheStamp
+
+	/*
+	 * Save an HTTP resource into the cache
+	 */
+	function saveSpotImagecache($resourceId, $content) {
+		return $this->saveCache($resourceId, $this::SpotImage, $content['metadata'], $content['content']);
+	} # saveSpotImagecache
+
 
 } # Dao_Base_Cache

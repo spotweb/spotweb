@@ -12,4 +12,12 @@ interface Dao_Cache {
 	function updateNzbCacheStamp($resourceId);
 	function saveNzbCache($resourceId, $content);
 
+	function getCachedHttp($resourceId);
+	function updateHttpCacheStamp($resourceId);
+	function saveHttpCache($resourceId, $content);
+
+	function getCachedSpotImage($resourceId);
+	function updateSpotImageCacheStamp($resourceId);
+	function saveSpotImageCache($resourceId, $image);
+
 } # Dao_Cache
