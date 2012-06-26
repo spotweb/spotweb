@@ -1,22 +1,17 @@
 <?php
 class SpotRetriever_Reports extends SpotRetriever_Abs {
-		private $_outputType;
-
 		/**
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $debug) {
 			parent::__construct($server, $db, $settings, $debug, false);
-			
-			$this->_outputType = $outputType;
 		} # ctor
 		
 		/*
 		 * Returns the status in either xml or text format 
 		 */
 		function displayStatus($cat, $txt) {
-			if ($this->_outputType != 'xml') {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new reports from server " . $txt . "..." . PHP_EOL; break;
 					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
@@ -34,15 +29,6 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 					
 					default				: echo $cat . $txt;
 				} # switch
-			} else {
-
-				switch($cat) {
-					case 'start'			: echo "<reports>"; break;
-					case 'done'				: echo "</reports>"; break;
-					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
-					default					: break;
-				} # switch
-			} # xml output
 		} # displayStatus
 
 		/*

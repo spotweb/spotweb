@@ -1,7 +1,6 @@
 <?php
 class SpotRetriever_Spots extends SpotRetriever_Abs {
 		private $_rsakeys;
-		private $_outputType;
 		private $_retrieveFull;
 		private $_prefetch_image;
 		private $_prefetch_nzb;
@@ -10,11 +9,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $outputType, $debug, $retro) {
+		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
 			parent::__construct($server, $db, $settings, $debug, $retro);
 			
 			$this->_rsakeys = $this->_settings->get('rsa_keys');
-			$this->_outputType = $outputType;
 			$this->_retrieveFull = $this->_settings->get('retrieve_full');
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
@@ -25,7 +23,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * Returns the status in either xml or text format 
 		 */
 		function displayStatus($cat, $txt) {
-			if ($this->_outputType != 'xml') {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
 					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
@@ -48,17 +45,6 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					
 					default				: echo $cat . $txt;
 				} # switch
-			} else {
-			
-				switch($cat) {
-					case 'start'			: echo "<spots>"; break;
-					case 'done'				: echo "</spots>"; break;
-					case 'totalprocessed'	: echo "<totalprocessed>" . $txt . "</totalprocessed>"; break;
-					case 'skipcount'		: echo "<totalskipped> " . $txt . "</totalskipped>"; break;
-					case 'totalremoved'		: echo "<totalremoved>" . $txt . "</totalremoved>"; break;
-					default					: break;
-				} # switch
-			} # else xmloutput
 		} # displayStatus
 		
 		/*
