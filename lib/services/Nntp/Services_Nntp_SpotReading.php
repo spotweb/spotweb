@@ -7,7 +7,7 @@ class Services_Nntp_SpotReading {
 	/*
 	 * constructor
 	 */
-	function __construct($nntpEngine) { 
+	function __construct(Services_Nntp_Engine $nntpEngine) { 
 		$this->_spotParseUtil = new Services_Format_Util();
 		$this->_nntpEngine = $nntpEngine;
 	} # ctor

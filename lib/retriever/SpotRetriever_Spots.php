@@ -136,6 +136,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				} # else
 				
 				/*
+				 * NNTP Spot Reading engine
+				 */
+				$svcNntpReading = new Services_Nntp_SpotReading($this->_spotnntp->_nntpEngine);
+				/*
 				 * Instantiate the spotimage provider
 				 */
 				$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
@@ -285,7 +289,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
-							$fullSpot = $this->_spotnntp->getFullSpot($msgId);
+							$fullSpot = $svcNntpReading->readFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
 							# add this spot to the database

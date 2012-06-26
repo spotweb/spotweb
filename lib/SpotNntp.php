@@ -1,9 +1,9 @@
 <?php
 
 class SpotNntp {
-	private $_nntpEngine;
-	private $_nntpReading;
-	private $_nntpPosting;
+	public $_nntpEngine;
+	public $_nntpReading;
+	public $_nntpPosting;
 
 	/*
 	 * constructor
@@ -41,39 +41,14 @@ class SpotNntp {
 		return $this->_nntpEngine->post($article);
 	} # post()
 	
-	function getHeader($msgid) {
-		return $this->_nntpEngine->getHeader($msgid);
-	} # getHeader()
-
-	function getBody($msgid) {
-		return $this->_nntpEngine->getBody($msgid);
-	} # getBody	()
-	
 	function connect() {
 		return $this->_nntpEngine->connect();
 	} # connect()
 	
-	function getArticle($msgId) {
-		return $this->_nntpEngine->getArticle($msgId);
-	} # getArticle
-
 	function getComments($commentList) {
 		return $this->_nntpReading->readComments($commentList);
 	} # getComments
 
-	public function getFullSpot($msgId) {
-		return $this->_nntpReading->readFullSpot($msgId);
-	} # getFullSpot 
-
-	function getImage($image) {
-		$segmentList = array();
-		foreach($image['image']['segment'] as $seg) {
-			$segmentList[] = $seg;
-		} # foreach
-
-		return $this->_nntpReading->readBinary($segmentList, false);
-	} # getImage
-	
 	public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 		return $this->_nntpPosting->postBinaryMessage($user, $newsgroup, $body, $additionalHeaders);
 	} # postBinaryMessage
