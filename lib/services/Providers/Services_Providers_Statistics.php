@@ -19,7 +19,7 @@ class Services_Providers_Statistics {
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpUpdate = $nntpUpdate;
 
-		$this->_svcImageChart = new Services_Image_Statistics();
+		$this->_svcImageChart = new Services_Image_Chart();
 		$this->_svcImageError = new Services_Image_Error();
 
 		$this->getOldestSpotAge();

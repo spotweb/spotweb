@@ -6,7 +6,7 @@ require_once "vendor/pchart/pImage.class.php";
 require_once "vendor/pchart/pPie.class.php";
 
 
-class Services_Image_Statistics {
+class Services_Image_Chart {
 	private $_svcImageUtil;
 
 	/*
@@ -17,7 +17,7 @@ class Services_Image_Statistics {
 	} # ctor
 
 	/*
-	 * Create several statistics images
+	 * Render a chart images
 	 */
 	function renderChart($chartType, $title, $prepData, $legend) {
 		$width = 800;
@@ -83,4 +83,4 @@ class Services_Image_Statistics {
 		} # else
 	} # renderChart 
 	
-} # Services_Image_Statistics
+} # Services_Image_Chart
