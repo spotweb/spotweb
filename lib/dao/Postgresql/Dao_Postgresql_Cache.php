@@ -5,7 +5,7 @@ class Dao_Postgresql_Cache extends Dao_Base_Cache {
 	/*
 	 * Add a resource to the cache
 	 */
-	function saveCache($resourceid, $cachetype, $metadata, $content) {
+	protected function saveCache($resourceid, $cachetype, $metadata, $content) {
 		if (is_array($content)) {
 			$serialize = true;
 			$content = serialize($content);
@@ -29,7 +29,7 @@ class Dao_Postgresql_Cache extends Dao_Base_Cache {
 	/*
 	 * Returns the resource from the cache table, if we have any
 	 */
-	function getCache($resourceid, $cachetype) {
+	protected function getCache($resourceid, $cachetype) {
 		$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 		if (!empty($tmp)) {
 			$tmp[0]['content'] = stream_get_contents($tmp[0]['content']);

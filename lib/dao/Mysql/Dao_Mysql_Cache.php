@@ -7,7 +7,7 @@ class Dao_Mysql_Cache extends Dao_Base_Cache {
 	 * MySQL has a maximum size we can send to the server, we query
 	 * this because if we send anything larger, it will error out
 	 */
-	private function getMaxPacketSize() {
+	protected function getMaxPacketSize() {
 		if ($this->_maxPacketSize == null) {
 			$packet = $this->_conn->arrayQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"); 
 			$this->_maxPacketSize = $packet[0]['Value'];
@@ -19,7 +19,7 @@ class Dao_Mysql_Cache extends Dao_Base_Cache {
 	/*
 	 * Returns the resource from the cache table, if we have any
 	 */
-	function getCache($resourceid, $cachetype) {
+	protected function getCache($resourceid, $cachetype) {
 		$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata, serialized, UNCOMPRESS(content) AS content FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", array($resourceid, $cachetype));
 
 		if (!empty($tmp)) {
@@ -37,7 +37,7 @@ class Dao_Mysql_Cache extends Dao_Base_Cache {
 	/*
 	 * Add a resource to the cache
 	 */
-	function saveCache($resourceid, $cachetype, $metadata, $content) {
+	protected function saveCache($resourceid, $cachetype, $metadata, $content) {
 		if (is_array($content)) {
 			$serialize = true;
 			$content = serialize($content);

@@ -351,8 +351,6 @@ class Dao_Base_Spot implements Dao_Spot {
 							(SELECT messageid FROM spots)") ;
 		$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
 							(SELECT messageid FROM spots)") ;
-		$this->_conn->modify("DELETE FROM cache WHERE (cache.cachetype = %d OR cache.cachetype = %d) AND cache.resourceid not in 
-							(SELECT messageid FROM spots)", Array(SpotCache::SpotImage, SpotCache::SpotNzb)) ;
 		SpotTiming::stop(__FUNCTION__, array($retention));
 	} # deleteSpotsRetention
 

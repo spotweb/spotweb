@@ -1,12 +1,13 @@
 <?php
 
 interface Dao_Cache {
+	const SpotImage			= 1;
+	const SpotNzb			= 2;
+	const Web				= 3;
+	const Statistics		= 4;
+	const StatisticsData	= 5;
 
 	function expireCache($expireDays);
-	function isCached($resourceid, $cachetype);
-	function getCache($resourceid, $cachetype);
-	function updateCacheStamp($resourceid, $cachetype);
-	function saveCache($resourceid, $cachetype, $metadata, $content);
 
 	function getCachedNzb($resourceId);
 	function updateNzbCacheStamp($resourceId);

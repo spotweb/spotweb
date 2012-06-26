@@ -5,7 +5,7 @@ class Dao_Sqlite_Cache extends Dao_Base_Cache {
 	/*
 	 * Add a resource to the cache
 	 */
-	function saveCache($resourceid, $cachetype, $metadata, $content) {
+	protected function saveCache($resourceid, $cachetype, $metadata, $content) {
 		if (is_array($content)) {
 			$serialize = true;
 			$content = serialize($content);

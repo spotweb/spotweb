@@ -16,7 +16,6 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 */
 	function removeOldList($listUrl, $idtype) {
 		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external') AND (idtype = %d)",Array((int) $idtype));
-		$this->_conn->modify("DELETE FROM cache WHERE (resourceid = '%s') AND (cachetype = '%s')", Array(md5($listUrl), SpotCache::Web));
 	} # removeOldList
 	
 	/*
