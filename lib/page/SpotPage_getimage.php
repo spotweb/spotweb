@@ -72,24 +72,25 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$data = $spotsOverview->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
 		} else {
 			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-			$hdr_spotnntp = new SpotNntp($settings_nntp_hdr);
+			$svc_nntphdr_engine = new Services_Nntp_Engine($settings_nntp_hdr);
 
 			/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
 			if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
-				$nzb_spotnntp = $hdr_spotnntp;
+				$svc_nntpnzb_engine = $svc_nntphdr_engine;
 			} else {
-				$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
+				$svc_nntpnzb_engine = new Services_Nntp_Engine($this->_settings->get('nntp_nzb'));
 			} # else
 
-			# Haal de volledige spotinhoud op
+			/*
+			 * Retrieve the full spot, we need it to be able to retrieve the image
+			 */
 			$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, false);
 
 			/*
 			 * Actually retrieve the image 
 			 */
 			$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
-																  new Services_Nntp_SpotReading($nzb_spotnntp),
+																  new Services_Nntp_SpotReading($svc_nntpnzb_engine),
 											  					  $this->_db->_cacheDao);
 			$data = $providerSpotImage->fetchSpotImage($fullSpot);
 		} # else
