@@ -19,20 +19,6 @@ class SpotsOverview {
 		return $x->fetchFullSpot($msgId, $ourUserId);
 	} # getFullSpot
 
-	function getSpotComments($userId, $msgId, $nntp, $start, $length) {
-		$x = new Services_Providers_Comments($this->_db->_commentDao, new Services_Nntp_SpotReading($nntp));
-		return $x->fetchSpotComments($msgId, $userId, $start, $length);
-	} # getSpotComments	
-
-
-	function cacheNewSpotCount() {
-		$x = new Services_Providers_CacheNewSpotCount($this->_db->_userFilterCountDao, 
-							$this->_db->_userFilterDao,
-							$this->_db->_spotDao,
-						new Services_Search_QueryParser($this->_db->getDbHandle()));
-		return $x->cacheNewSpotCount();
-	} # cacheNewSpotCount
-	
 	function getNzb($fullSpot, $nntp) {
 		$x = new Services_Providers_Nzb($this->_db->_cacheDao,
 										new Services_Nntp_SpotReading($nntp));

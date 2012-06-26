@@ -163,7 +163,11 @@ try {
 
 	## Creating filter counts
 	if ($newSpotCount > 0) {
-		$spotsOverview = new SpotsOverview($db, $settings);
+		$svcPrv_cacheSpotCount = new Services_Providers_CacheNewSpotCount($db->_userFilterCountDao,
+																		  $db->_userFilterDao,
+																		  $db->_spotDao,
+																		  new Services_Search_QueryParser($db->getDbHandle()));
+		$svcPrv_cacheSpotCount = new SpotsOverview($db, $settings);
 		echo 'Calculating how many spots are new';
 		$notifyNewArray = $spotsOverview->cacheNewSpotCount();
 		echo ', done.' . PHP_EOL;

@@ -2,7 +2,6 @@
 
 class SpotNntp {
 	public $_nntpEngine;
-	public $_nntpReading;
 	public $_nntpPosting;
 
 	/*
@@ -10,10 +9,7 @@ class SpotNntp {
 	 */
 	function __construct($server) { 
 		$this->_nntpEngine = new Services_Nntp_Engine($server);
-		$this->_nntpReading = new Services_Nntp_SpotReading($this->_nntpEngine);
 		$this->_nntpPosting = new Services_Nntp_SpotPosting($this->_nntpEngine);
-		$this->_spotParser = new Services_Format_Parsing();
-		$this->_spotParseUtil = new Services_Format_Util();
 	} # ctor
 
 
