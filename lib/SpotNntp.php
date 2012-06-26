@@ -21,22 +21,6 @@ class SpotNntp {
 		return $this->_nntpEngine->selectGroup($group);
 	} # selectGroup()
 	
-	function getOverview($first, $last) {
-		return $this->_nntpEngine->getOverview($first, $last);
-	} # getOverview()
-
-	function getMessageIdList($first, $last) {
-		return $this->_nntpEngine->getMessageIdList($first, $last);
-	} # getMessageIdList()
-	
-	function quit() {
-		return $this->_nntpEngine->quit();
-	} # quit()
-
-	function sendNoop() {
-		return $this->_nntpEngine->sendNoop();
-	} # sendnoop()
-
 	function post($article) {
 		return $this->_nntpEngine->post($article);
 	} # post()
@@ -45,10 +29,6 @@ class SpotNntp {
 		return $this->_nntpEngine->connect();
 	} # connect()
 	
-	function getComments($commentList) {
-		return $this->_nntpReading->readComments($commentList);
-	} # getComments
-
 	public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 		return $this->_nntpPosting->postBinaryMessage($user, $newsgroup, $body, $additionalHeaders);
 	} # postBinaryMessage

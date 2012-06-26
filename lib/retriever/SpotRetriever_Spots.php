@@ -105,10 +105,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
 
-			# if we need to fetch images or nzb files, we need an spotsoverview instance
+			# if we need to fetch images or nzb files, we need several service objects
 			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
-				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-				
 				/*
 				 * NNTP Spot Reading engine
 				 */
