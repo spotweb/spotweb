@@ -5,14 +5,12 @@
  */
 class SpotsOverview {
 	private $_db;
-	private $_cache;
 	private $_cacheDao;
 	private $_settings;
 
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		$this->_cache = new SpotCache($db);
 		$this->_cacheDao = $db->_cacheDao;
 	} # ctor
 
