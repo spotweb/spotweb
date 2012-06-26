@@ -95,6 +95,7 @@ try {
 	 * Retrieve the NNTP header settings weo can validate those
 	 */
 	$settings_nntp_hdr = $settings->get('nntp_hdr');
+	$settings_nntp_bin = $settings->get('nntp_nzb');
 	if (empty($settings_nntp_hdr['host'])) {
 		throw new MissingNntpConfigurationException();
 	} # if
@@ -153,6 +154,7 @@ try {
 	 * Actually retrieve spots from the server
 	 */
 	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
+										 $settings_nntp_bin, 
 										 $db, 
 										 $settings,										 
 										 $debugLog,
@@ -172,6 +174,7 @@ try {
 	 */
 	if ($settings->get('retrieve_comments')) {
 		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
+										 		$settings_nntp_bin, 
 												$db,
 												$settings,
 												$debugLog,
@@ -184,9 +187,10 @@ try {
 	 */
 	if ($settings->get('retrieve_reports') && !$retroMode) {
 		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
-												$db,
-												$settings,
-												$debugLog);
+											   $settings_nntp_bin,
+											   $db,
+											   $settings,
+											   $debugLog);
 		$newReportCount = $retriever->perform();
 	} # if
 	

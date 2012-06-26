@@ -1,14 +1,13 @@
 <?php
 
 class Services_Providers_Nzb {
-	private $_spotDao;
 	private $_cacheDao;
 	private $_nntpSpotReading;
 
 	/*
 	 * constructor
 	 */
-	public function __construct(Dao_Spot $spotDao, Dao_Cache $cacheDao, Services_Nntp_SpotReading $nntpSpotReading) {
+	public function __construct(Dao_Cache $cacheDao, Services_Nntp_SpotReading $nntpSpotReading) {
 		$this->_spotDao = $spotDao;
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpSpotReading = $nntpSpotReading;
@@ -17,7 +16,7 @@ class Services_Providers_Nzb {
 	/* 
 	 * Geef de NZB file terug
 	 */
-	function getNzb($fullSpot) {
+	function fetchNzb($fullSpot) {
 		SpotTiming::start(__FUNCTION__);
 
 		/*
@@ -42,7 +41,7 @@ class Services_Providers_Nzb {
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));
 
 		return $nzb;
-	} # getNzb
+	} # fetchNzb
 	
 
 } # Services_Providers_Nzb

@@ -34,10 +34,9 @@ class SpotsOverview {
 	} # cacheNewSpotCount
 	
 	function getNzb($fullSpot, $nntp) {
-		$x = new Services_Providers_Nzb($this->_db->_spotDao,
-										$this->_db->_cacheDao,
+		$x = new Services_Providers_Nzb($this->_db->_cacheDao,
 										new Services_Nntp_SpotReading($nntp));
-		return $x->getNzb($fullSpot);
+		return $x->fetchNzb($fullSpot);
 	} # getNzb
 
 	/*

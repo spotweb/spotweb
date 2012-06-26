@@ -1,14 +1,16 @@
 <?php
 class SpotRetriever_Comments extends SpotRetriever_Abs {
+		private $_svcNntpTextReading;
 		private $_retrieveFull;
 
 		/**
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			parent::__construct($server, $db, $settings, $debug, $retro);
+		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
+			parent::__construct($textServer, $binServer, $db, $settings, $debug, $retro);
 			
+			$this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
 			$this->_retrieveFull = $this->_settings->get('retrieve_full_comments');
 		} # ctor
 		
@@ -19,7 +21,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new comments from server " . $txt . "..." . PHP_EOL; break;
 					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
-					case 'done'			: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
+					case 'done'				: echo "Finished retrieving comments." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
@@ -27,11 +29,12 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " comments"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
-					case 'totalprocessed'		: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " comments" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
-					case ''				: echo PHP_EOL; break;
+					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
+					case ''					: echo PHP_EOL; break;
 					
-					default				: echo $cat . $txt;
+					default					: echo $cat . $txt;
 				} # switch
 		} # displayStatus
 
@@ -47,7 +50,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			 * If the server is marked as buggy, the last 'x' amount of comments are
 			 * always checked so we do not have to do this 
 			 */
-			if (!$this->_server['buggy']) {
+			if (!$this->_textServer['buggy']) {
 				$this->_db->removeExtraComments($highestMessageId);
 			} # if
 		} # updateLastRetrieved
@@ -204,7 +207,7 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 					if ($this->_retrieveFull) {
 						$fullComment = array();
 						try {
-							$fullComment = $this->_spotnntp->getComments(array(array('messageid' => $commentId)));
+							$fullComment = $this->_svcNntpTextReading->readComments(array(array('messageid' => $commentId)));
 							
 							/*
 							 * Some comments are not actual comments but incorreclty posted NZB
@@ -288,7 +291,8 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 		 * returns the name of the group we are expected to retrieve messages from
 		 */
 		function getGroupName() {
-			return $this->_settings->get('comment_group');
+			return array('text' => $this->_settings->get('comment_group'),
+						 'bin' => '');
 		} # getGroupName
 		
 		/*

@@ -9,15 +9,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			parent::__construct($server, $db, $settings, $debug, $retro);
+		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
+			parent::__construct($textServer, $binServer, $db, $settings, $debug, $retro);
 			
 			$this->_rsakeys = $this->_settings->get('rsa_keys');
 			$this->_retrieveFull = $this->_settings->get('retrieve_full');
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
 		} # ctor
-
 
 		/*
 		 * Returns the status in either xml or text format 
@@ -26,24 +25,25 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new Spots from server " . $txt . "..." . PHP_EOL; break;
 					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
-					case 'done'			: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
+					case 'done'				: echo "Finished retrieving spots." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
-					case 'fullretrieved'		: echo $txt . " full, "; break;
+					case 'fullretrieved'	: echo $txt . " full, "; break;
 					case 'verified'			: echo "verified " . $txt . ", "; break;
-					case 'modcount'		: echo "moderated " . $txt . ", "; break;
+					case 'modcount'			: echo "moderated " . $txt . ", "; break;
 					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
 					case 'loopcount'		: echo $txt . " total messages)"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
-					case 'totalprocessed'		: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
-					case ''				: echo PHP_EOL; break;
+					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
+					case ''					: echo PHP_EOL; break;
 					
-					default				: echo $cat . $txt;
+					default					: echo $cat . $txt;
 				} # switch
 		} # displayStatus
 		
@@ -61,7 +61,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			 * If the server is marked as buggy, the last 'x' amount of spot are
 			 * always checked so we do not have to do this 
 			 */
-			if (!$this->_server['buggy']) {
+			if (!$this->_textServer['buggy']) {
 				$this->_db->removeExtraSpots($highestMessageId);
 			} # if
 		} # updateLastRetrieved
@@ -110,26 +110,15 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 				
 				/*
-				 * Only create a new NZB instance if the server differs from the
-				 * header host, else re-use the connection
-				 */
-				$settings_nntp_nzb = $this->_settings->get('nntp_nzb'); 
-				if ($this->_server['host'] == $settings_nntp_nzb['host']) {
-					$nntp_nzb = $this->_spotnntp;
-				} else {
-					$nntp_nzb = new SpotNntp($settings_nntp_nzb);
-					$nntp_nzb->selectGroup($this->_settings->get('nzb_group'));
-				} # else
-				
-				/*
 				 * NNTP Spot Reading engine
 				 */
-				$svcNntpReading = new Services_Nntp_SpotReading($this->_spotnntp->_nntpEngine);
-				/*
-				 * Instantiate the spotimage provider
-				 */
-				$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
-																	  new Services_Nntp_SpotReading($nntp_nzb),
+				$this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
+				$this->_svcNntpBinReading = new Services_Nntp_SpotReading($this->_svcNntpBin);
+
+				$svcProvNzb = new Services_Providers_Nzb($this->_db->_cacheDao,
+														   $this->_svcNntpBinReading);
+				$svcProvImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
+																	  $this->_svcNntpBinReading,
 											  						  $this->_db->_cacheDao);
 			} # if
 
@@ -143,10 +132,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 				 * Keep te usenet server alive when processing is slow.
 				 */
 				if (($processingStartTime - time()) > 30) {
-					$this->_spotnntp->sendNoop();
-					if ((isset($nntp_nzb)) && ($nntp_nzb != $this->_spotnntp)) {
-						$nntp_nzb->sendNoop();
-					} # if
+					$this->_svcNntpText->sendNoop();
+					$this->_svcNntpBin->sendNoop();
 
 					$processingStartTime = time();
 				} # if
@@ -275,7 +262,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						try {
 							$fullsRetrieved++;
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
-							$fullSpot = $svcNntpReading->readFullSpot($msgId);
+							$fullSpot = $this->_svcNntpReading->readFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
 							# add this spot to the database
@@ -347,7 +334,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							 */
 							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
 								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
-								$x->fetchSpotImage($fullSpot);
+								$svcProvImage->fetchSpotImage($fullSpot);
 								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 							} # if
 						} # if
@@ -361,7 +348,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$spotsOverview->getNzb($fullSpot, $nntp_nzb);
+								$svcProvNzb>fetchNzb($fullSpot);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
@@ -438,7 +425,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			if ($this->_retro) {
 				$this->_db->setMaxArticleid('spots_retro', $endMsg);
 			} else {
-				$this->_db->setMaxArticleid($this->_server['host'], $endMsg);
+				$this->_db->setMaxArticleid($this->_textServer['host'], $endMsg);
 			} # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
 			
@@ -451,7 +438,8 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		 * returns the name of the group we are expected to retrieve messages from
 		 */
 		function getGroupName() {
-			return $this->_settings->get('hdr_group');
+			return array('text' => $this->_settings->get('hdr_group'),
+						 'bin' => $this->_settings->get('hdr_group'));
 		} # getGroupName
 
 		/*
@@ -461,7 +449,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 			if ($this->_retro) {
 				return $this->_db->getMaxArticleid('spots_retro');
 			} else {
-				return $this->_db->getMaxArticleid($this->_server['host']);
+				return $this->_db->getMaxArticleid($this->_textServer['host']);
 			} # if
 		} # getMaxArticleId
 		

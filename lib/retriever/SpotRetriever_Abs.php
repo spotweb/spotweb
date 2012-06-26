@@ -1,11 +1,15 @@
 <?php
 abstract class SpotRetriever_Abs {
-		protected $_server;
-		protected $_spotnntp;
+		protected $_textServer;
+		protected $_binServer;
+
 		protected $_db;
 		protected $_settings;
 		protected $_debug;
 		protected $_retro;
+
+		protected $_svcNntpText = null;
+		protected $_svcNntpBin = null;
 		
 		private $_msgdata;
 
@@ -43,12 +47,30 @@ abstract class SpotRetriever_Abs {
 		/*
 		 * default ctor 
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			$this->_server = $server;
+		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
+			$this->_textServer = $textServer;
+			$this->_binServer = $binServer;
+
 			$this->_db = $db;
 			$this->_settings = $settings;
 			$this->_debug = $debug;
 			$this->_retro = $retro;
+
+			/*
+			 * Create the service objects for both the NNTP binary group and the
+			 * textnews group. We only create a basic NNTP_Engine object, but we 
+			 * don't create any higher level objects
+			 */
+			$this->_svcNntpText = new Services_Nntp_Engine($this->_textServer);
+
+			if (!empty($groupList['bin'])) {
+				if ($this->_textServer['host'] == $this->_binServer['host']) {
+					$this->_svcNntpBin = $this->_svcNntpBin;
+				} else {
+					$this->_svcNntpBin = new Services_Nntp_Engine($this->_binServer);
+					$this->_svcNntpBin->selectGroup($groupList['bin']);
+				} # else
+			} # if
 		} # ctor
 
 		function debug($s) {
@@ -57,22 +79,25 @@ abstract class SpotRetriever_Abs {
 			} # if
 		} # debug
 		
-		function connect($group) {
+		function connect(array $groupList) {
 			# if an retriever instance is already running, stop this one
-			if ($this->_db->isRetrieverRunning($this->_server['host'])) {
+			if ($this->_db->isRetrieverRunning($this->_textServer['host'])) {
 				throw new RetrieverRunningException();
 			} # if
 			
 			/*
 			 * and notify the system we are running
 			 */
-			$this->_db->setRetrieverRunning($this->_server['host'], true);
+			$this->_db->setRetrieverRunning($this->_textServer['host'], true);
 
 			# and fireup the nntp connection
-			$this->displayStatus("lastretrieve", $this->_db->getLastUpdate($this->_server['host']));
-			$this->displayStatus("start", $this->_server['host']);
-			$this->_spotnntp = new SpotNntp($this->_server);
-			$this->_msgdata = $this->_spotnntp->selectGroup($group);
+			$this->displayStatus("lastretrieve", $this->_db->getLastUpdate($this->_textServer['host']));
+			$this->displayStatus("start", $this->_textServer['host']);
+
+			/*
+			 * Select the group
+			 */
+			$this->_msgdata = $this->_svcNntpText->selectGroup($groupList['text']);;
 			
 			return $this->_msgdata;
 		} # connect
@@ -102,18 +127,19 @@ abstract class SpotRetriever_Abs {
 				
 				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
 
-				# get the list of headers (XHDR)
-				$hdrList = $this->_spotnntp->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				# get the list of headers (XHDR) from the usenet server
+				$hdrList = $this->_svcNntpText->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
 				$this->debug('getMessageIdList returned=' . serialize($hdrList));
 				
+				# Show what we are doing
+				$this->displayStatus('searchmsgidstatus', ($curMsg -1) . ' to ' . ($curMsg + $decrement));
+
 				/*
 				 * Reverse the list with messageids because we assume we are at a recent
 				 * run and the last retrieved messageid should be on the top of the list
 				 * somewhere
 				 */
 				$hdrList = array_reverse($hdrList, true);
-
-				echo 'Searching from ' . ($curMsg -1) . ' to ' . ($curMsg + $decrement) . PHP_EOL;
 				
  				foreach($hdrList as $msgNum => $msgId) {
 					if (isset($messageIdList[$msgId])) {
@@ -154,7 +180,7 @@ abstract class SpotRetriever_Abs {
 				$timer = microtime(true);
 				
 				# get the list of headers (XOVER)
-				$hdrList = $this->_spotnntp->getOverview($curMsg, ($curMsg + $increment));
+				$hdrList = $this->_svcNntpText->getOverview($curMsg, ($curMsg + $increment));
 
 				$saveCurMsg = $curMsg;
 				# If no spots were found, just manually increase the
@@ -173,7 +199,7 @@ abstract class SpotRetriever_Abs {
 
 				# reset the start time to prevent a another retriever from starting
 				# during the intial retrieve which can take many hours 
-				$this->_db->setRetrieverRunning($this->_server['host'], true);
+				$this->_db->setRetrieverRunning($this->_textServer['host'], true);
 			} # while
 			
 			# we are done updating, make sure that if the newsserver deleted 
@@ -189,10 +215,17 @@ abstract class SpotRetriever_Abs {
 
 		function quit() {
 			# notify the system we are not running anymore
-			$this->_db->setRetrieverRunning($this->_server['host'], false);
+			$this->_db->setRetrieverRunning($this->_textServer['host'], false);
 			
 			# and disconnect
-			$this->_spotnntp->quit();
+			if (!is_null($this->_svcNntpText)) {
+				$this->_svcNntpText->quit();
+			} # if
+
+			if (!is_null($this->_svcNntpBin)) {
+				$this->_svcNntpBin->quit();
+			} # if
+
 			$this->displayStatus("done", "");
 		} # quit()
 		
@@ -219,7 +252,7 @@ abstract class SpotRetriever_Abs {
 			if (($curMsg != 0) && (!$this->_retro)) {
 				$curMsg = $this->searchMessageId($this->getMaxMessageId());
 				
-				if ($this->_server['buggy']) {
+				if ($this->_textServer['buggy']) {
 					$curMsg = max(1, $curMsg - 15000);
 				} # if
 			} # if
@@ -233,7 +266,7 @@ abstract class SpotRetriever_Abs {
 			 * and cleanup
 			 */
 			$this->quit();
-			$this->_db->setLastUpdate($this->_server['host']);
+			$this->_db->setLastUpdate($this->_textServer['host']);
 			
 			return $newProcessedCount;
 		} # perform

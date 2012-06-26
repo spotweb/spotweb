@@ -4,8 +4,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($server, SpotDb $db, SpotSettings $settings, $debug) {
-			parent::__construct($server, $db, $settings, $debug, false);
+		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug) {
+			parent::__construct($textServer, $binServer, $db, $settings, $debug, false);
 		} # ctor
 		
 		/*
@@ -15,7 +15,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 				switch($cat) {
 					case 'start'			: echo "Retrieving new reports from server " . $txt . "..." . PHP_EOL; break;
 					case 'lastretrieve'		: echo strftime("Last retrieve at %c", $txt) . PHP_EOL; break;
-					case 'done'			: echo "Finished retrieving reports." . PHP_EOL . PHP_EOL; break;
+					case 'done'				: echo "Finished retrieving reports." . PHP_EOL . PHP_EOL; break;
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
@@ -23,11 +23,12 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " reports"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
-					case 'totalprocessed'		: echo "Processed a total of " . $txt . " reports" . PHP_EOL; break;
+					case 'totalprocessed'	: echo "Processed a total of " . $txt . " reports" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
-					case ''				: echo PHP_EOL; break;
+					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
+					case ''					: echo PHP_EOL; break;
 					
-					default				: echo $cat . $txt;
+					default					: echo $cat . $txt;
 				} # switch
 		} # displayStatus
 
@@ -43,7 +44,7 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			 * If the server is marked as buggy, the last 'x' amount of repors are
 			 * always checked so we do not have to do this 
 			 */
-			if (!$this->_server['buggy']) {
+			if (!$this->_textServer['buggy']) {
 				$this->_db->removeExtraReports($highestMessageId);
 			} # if
 		} # updateLastRetrieved
@@ -127,7 +128,8 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 		 * returns the name of the group we are expected to retrieve messages from
 		 */
 		function getGroupName() {
-			return $this->_settings->get('report_group');
+			return array('text' => $this->_settings->get('report_group'),
+						 'bin' => '');
 		} # getGroupName
 
 		/*
