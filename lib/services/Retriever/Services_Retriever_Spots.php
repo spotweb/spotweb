@@ -1,5 +1,5 @@
 <?php
-class SpotRetriever_Spots extends SpotRetriever_Abs {
+class Services_Retriever_Spots extends Services_Retriever_Base {
 		private $_rsakeys;
 		private $_retrieveFull;
 		private $_prefetch_image;
@@ -459,4 +459,4 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 		} # getMaxMessageId
 
 		
-} # class SpotRetriever_Spots
+} # Services_Retriever_Spots

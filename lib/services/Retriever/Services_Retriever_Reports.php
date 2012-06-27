@@ -1,5 +1,5 @@
 <?php
-class SpotRetriever_Reports extends SpotRetriever_Abs {
+class Services_Retriever_Reports extends Services_Retriever_Base {
 		/**
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
@@ -146,4 +146,4 @@ class SpotRetriever_Reports extends SpotRetriever_Abs {
 			return $this->_db->getMaxMessageId('reports');
 		} # getMaxMessageId
 		
-} # class SpotRetriever_Reports
+} # Services_Retriever_Reports

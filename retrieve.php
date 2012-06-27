@@ -153,12 +153,12 @@ try {
 	/*
 	 * Actually retrieve spots from the server
 	 */
-	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
-										 $settings_nntp_bin, 
-										 $db, 
-										 $settings,										 
-										 $debugLog,
-										 $retroMode);
+	$retriever = new Services_Retriever_Spots($settings_nntp_hdr, 
+											  $settings_nntp_bin, 
+											  $db, 
+											  $settings,										 
+											  $debugLog,
+											  $retroMode);
 	$newSpotCount = $retriever->perform();
 
 	## Creating filter counts
@@ -169,7 +169,7 @@ try {
 																		  new Services_Search_QueryParser($db->getDbHandle()));
 		$svcPrv_cacheSpotCount = new SpotsOverview($db, $settings);
 		echo 'Calculating how many spots are new';
-		$notifyNewArray = $spotsOverview->cacheNewSpotCount();
+		$notifyNewArray = $svcPrv_cacheSpotCount->cacheNewSpotCount();
 		echo ', done.' . PHP_EOL;
 	} # if
 
@@ -177,12 +177,12 @@ try {
 	 * Should we retrieve comments?
 	 */
 	if ($settings->get('retrieve_comments')) {
-		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
-										 		$settings_nntp_bin, 
-												$db,
-												$settings,
-												$debugLog,
-												$retroMode);
+		$retriever = new Services_Retriever_Comments($settings_nntp_hdr, 
+										 			 $settings_nntp_bin, 
+													 $db,
+													 $settings,
+													 $debugLog,
+													 $retroMode);
 		$newCommentCount = $retriever->perform();
 	} # if
 
@@ -190,11 +190,11 @@ try {
 	 * Retrieval of reports
 	 */
 	if ($settings->get('retrieve_reports') && !$retroMode) {
-		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
-											   $settings_nntp_bin,
-											   $db,
-											   $settings,
-											   $debugLog);
+		$retriever = new Services_Retriever_Reports($settings_nntp_hdr, 
+												    $settings_nntp_bin,
+												    $db,
+												    $settings,
+												    $debugLog);
 		$newReportCount = $retriever->perform();
 	} # if
 	

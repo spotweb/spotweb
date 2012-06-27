@@ -1,5 +1,5 @@
 <?php
-class SpotRetriever_Comments extends SpotRetriever_Abs {
+class Services_Retriever_Comments extends Services_Retriever_Base {
 		private $_svcNntpTextReading;
 		private $_retrieveFull;
 
@@ -313,4 +313,4 @@ class SpotRetriever_Comments extends SpotRetriever_Abs {
 			return $this->_db->getMaxMessageId('comments');
 		} # getMaxMessageId
 		
-} # class SpotRetriever_Comments
+} # Services_Retriever_Comments

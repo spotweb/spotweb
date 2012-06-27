@@ -1,5 +1,5 @@
 <?php
-abstract class SpotRetriever_Abs {
+abstract class Services_Retriever_Base {
 		protected $_textServer;
 		protected $_binServer;
 
@@ -271,4 +271,4 @@ abstract class SpotRetriever_Abs {
 			return $newProcessedCount;
 		} # perform
 		
-} # class SpotRetriever
+} # Services_Retriever_Base
