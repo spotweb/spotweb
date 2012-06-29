@@ -155,7 +155,7 @@ class Services_Providers_Statistics {
 	/*
 	 * Returns the current oldest spot in the database in number of dys
 	 */
-	function getOldestSpotAge() {
+	private function getOldestSpotAge() {
 		if ($this->_oldestSpotAge == null) {
 			$this->_oldestSpotAge = round((time()- $this->_spotDao->getOldestSpotTimestamp()) / 60 / 60 / 24);
 		} # if
