@@ -67,7 +67,7 @@ class SpotPage_statics extends SpotPage_Abs {
 		# Er is een bug met mod_deflate en mod_fastcgi welke ervoor zorgt dat de content-length
 		# header niet juist geupdate wordt. Als we dus mod_fastcgi detecteren, dan sturen we
 		# content-length header niet mee
-		if (isset($_SERVER['REDIRECT_HANDLER']) && ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
+		if (!isset($_SERVER['REDIRECT_HANDLER']) || ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
 			Header("Content-Length: " . strlen($mergedInfo['body']));
 		} # if
 
