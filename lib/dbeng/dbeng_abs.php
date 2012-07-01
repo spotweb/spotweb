@@ -3,11 +3,31 @@
 abstract class dbeng_abs {
 	protected $_batchInsertChunks = 500;
 	private $_error	= '';
+
+
+	/*
+	 * Factory class which instantiates the specified DAO factory object
+	 */
+	public static function getDbFactory($engine) {
+		/* 
+		 * Erase username/password so it won't show up in any stacktrace,
+		 * only erase them if they exist (eg: sqlite has no username and
+		 * password)
+		 */
+		switch ($engine) {
+			case 'mysql'		: return new dbeng_mysql(); break;
+			case 'pdo_mysql'	: return new dbeng_pdo_mysql(); break; 
+			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
+			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
+
+			default				: throw new Exception("Unknown database engine (" . $dbSettings['engine'] . ") factory specified");
+		} // switch
+	} # getDbFactory()
 	
 	/*
 	 * Connects to the database
 	 */
-	abstract function connect();
+	abstract function connect($host, $user, $pass, $db);
 	
 	/*
 	 * Executes the query and discards any output. Returns true of no

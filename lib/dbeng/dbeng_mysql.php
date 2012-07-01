@@ -2,20 +2,9 @@
 # a mess
 
 class dbeng_mysql extends dbeng_abs {
-	private $_db_host;
-	private $_db_user;
-	private $_db_pass;
-	private $_db_db;
-	
 	private $_conn;
 	
-	function __construct($host, $user, $pass, $db)
-    {
-		$this->_db_host = $host;
-		$this->_db_user = $user;
-		$this->_db_pass = $pass;
-		$this->_db_db = $db;
-
+	function __construct() {
 		/* 
 		 * arbitrarily chosen because some insert statements might
 		 * be very large.
@@ -23,14 +12,15 @@ class dbeng_mysql extends dbeng_abs {
 		$this->_batchInsertChunks = 100;
 	}
 	
-	function connect() {
-		$this->_conn = mysql_connect($this->_db_host, $this->_db_user, $this->_db_pass);
+	function connect($host, $user, $pass, $db) {
+		$this->_conn = mysql_connect($host, $user, $pass);
 		
 		if (!$this->_conn) {
 			throw new DatabaseConnectionException("Unable to connect to MySQL server: " . mysql_error());
 		} # if 
+		
 				
-		if (!@mysql_select_db($this->_db_db, $this->_conn)) {
+		if (!@mysql_select_db($db, $this->_conn)) {
 			throw new DatabaseConnectionException("Unable to select MySQL db: " . mysql_error($this->_conn));
 			return false;
 		} # if

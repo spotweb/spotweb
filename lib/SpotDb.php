@@ -38,51 +38,10 @@ class SpotDb {
 	function connect() {
 		SpotTiming::start(__FUNCTION__);
 
-		/* 
-		 * Erase username/password so it won't show up in any stacktrace
-		 */
+		$dbCon = dbeng_abs::getDbFactory($this->_dbsettings['engine']);;
+		$daoFactory = Dao_Factory::getDAOFactory($this->_dbsettings['engine']);
 
-		# SQlite heeft geen username gedefinieerd
-		if (isset($this->_dbsettings['user'])) {
-			$tmpUser = $this->_dbsettings['user'];
-			$this->_dbsettings['user'] = '*FILTERED*';
-		} # if
-		# en ook geen pass
-		if (isset($this->_dbsettings['pass'])) {
-			$tmpPass = $this->_dbsettings['pass'];
-			$this->_dbsettings['pass'] = '*FILTERED*';
-		} # if
-
-		switch ($this->_dbsettings['engine']) {
-			case 'mysql'	: $this->_conn = new dbeng_mysql($this->_dbsettings['host'],
-												$tmpUser,
-												$tmpPass,
-												$this->_dbsettings['dbname']); 
-							  $daoFactory = Dao_Factory::getDAOFactory("mysql");
-							  break;
-
-			case 'pdo_mysql': $this->_conn = new dbeng_pdo_mysql($this->_dbsettings['host'],
-												$tmpUser,
-												$tmpPass,
-												$this->_dbsettings['dbname']);
-							  $daoFactory = Dao_Factory::getDAOFactory("mysql");
-							  break;
-							  
-			case 'pdo_pgsql' : $this->_conn = new dbeng_pdo_pgsql($this->_dbsettings['host'],
-												$tmpUser,
-												$tmpPass,
-												$this->_dbsettings['dbname']);
-							  $daoFactory = Dao_Factory::getDAOFactory("postgresql");
-							  break;
-							
-			case 'pdo_sqlite': $this->_conn = new dbeng_pdo_sqlite($this->_dbsettings['path']);
-							  $daoFactory = Dao_Factory::getDAOFactory("sqlite");
-							   break;
-
-			default			: throw new Exception('Unknown DB engine specified (' . $this->_dbsettings['engine'] . ', please choose pdo_pgsql, mysql or pdo_mysql');
-		} # switch
-
-		$daoFactory->setConnection($this->_conn);
+		$daoFactory->setConnection($dbCon);
 		$this->_auditDao = $daoFactory->getAuditDao();
 		$this->_blackWhiteListDao = $daoFactory->getBlackWhiteListDao();
 		$this->_cacheDao = $daoFactory->getCacheDao();
@@ -98,7 +57,11 @@ class SpotDb {
 		$this->_spotStateListDao = $daoFactory->getSpotStateListDao();
 		$this->_nntpConfigDao = $daoFactory->getNntpConfigDao();
 
-		$this->_conn->connect();
+		$dbCon->connect($this->_dbsettings['host'], 
+							  $this->_dbsettings['user'], 
+							  $this->_dbsettings['pass'], 
+							  $this->_dbsettings['dbname']);
+		$this->_conn = $dbCon;
 		SpotTiming::stop(__FUNCTION__);
 	} # connect
 
