@@ -66,6 +66,11 @@ function __autoload($class_name) {
 				return ;
 			} # if
 
+			if ($class_name == 'Registry') {
+				require_once "vendor/Lim_Registry/Registry.php";
+				return ;
+			} # if
+
 			require_once 'lib/' . $class_name . '.php';
 		} # default
 	} # switch

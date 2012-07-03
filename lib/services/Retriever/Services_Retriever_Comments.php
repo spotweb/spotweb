@@ -7,9 +7,12 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			parent::__construct($textServer, $binServer, $db, $settings, $debug, $retro);
+		function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $debug, $force, $retro) {
+			parent::__construct($daoFactory, $settings, $debug, $force, $retro);
 			
+			$this->_spotDao = $daoFactory->getSpotDao();
+			$this->_commentDao = $daoFactory->getCommentDao();
+
 			$this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
 			$this->_retrieveFull = $this->_settings->get('retrieve_full_comments');
 		} # ctor
@@ -51,7 +54,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			 * always checked so we do not have to do this 
 			 */
 			if (!$this->_textServer['buggy']) {
-				$this->_db->removeExtraComments($highestMessageId);
+				$this->_commentDao->removeExtraComments($highestMessageId);
 			} # if
 		} # updateLastRetrieved
 		
@@ -79,7 +82,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
 			 */
-			$dbIdList = $this->_db->matchCommentMessageIds($hdrList);
+			$dbIdList = $this->_commentDao->matchCommentMessageIds($hdrList);
 			
 			/*
 			 * We keep a seperate list of messageid's for updating the amount of
@@ -271,18 +274,18 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			} # while
 
 			if ($this->_retro) {
-				$this->_db->setMaxArticleid('comments_retro', $endMsg);
+				$this->_nntpCfgDao->setMaxArticleid('comments_retro', $endMsg);
 			} else {
-				$this->_db->setMaxArticleid('comments', $endMsg);
+				$this->_nntpCfgDao->setMaxArticleid('comments', $endMsg);
 			} # if
-			$this->_db->addComments($commentDbList, $fullComments);
+			$this->_commentDao->addComments($commentDbList, $fullComments);
 
 			/*
 			 * Recalculate the average spotrating and update the amount
 			 * of unverified comments
 			 */
-			$this->_db->updateSpotRating($spotMsgIdRatingList);
-			$this->_db->updateSpotCommentCount($spotMsgIdList);
+			$this->_spotDao->updateSpotRating($spotMsgIdRatingList);
+			$this->_spotDao->updateSpotCommentCount($spotMsgIdList);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
@@ -300,9 +303,9 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		 */
 		function getMaxArticleId() {
 			if ($this->_retro) {
-				return $this->_db->getMaxArticleid('comments_retro');
+				return $this->_nntpCfgDao->getMaxArticleid('comments_retro');
 			} else {
-				return $this->_db->getMaxArticleid('comments');
+				return $this->_nntpCfgDao->getMaxArticleid('comments');
 			} # if
 		} # getMaxArticleId
 
@@ -310,7 +313,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		 * Returns the highest messageid in the database
 		 */
 		function getMaxMessageId() {
-			return $this->_db->getMaxMessageId('comments');
+			return $this->_spotDao->getMaxMessageId('comments');
 		} # getMaxMessageId
 		
 } # Services_Retriever_Comments

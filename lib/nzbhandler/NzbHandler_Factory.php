@@ -16,9 +16,9 @@ class NzbHandler_Factory
 			default					: $handler = new NzbHandler_Display($settings, $nzbHandling); break;
 		} # switch
 
-                if (!$handler instanceof NzbHandler_Disable && $handler->isAvailable()!==true) {
-                    $handler = new NzbHandler_Disable($settings, $nzbHandling);
-                }
+		if (!$handler instanceof NzbHandler_Disable && $handler->isAvailable()!==true) {
+			$handler = new NzbHandler_Disable($settings, $nzbHandling);
+		}
 
 		return $handler;
 	} # build()

@@ -6,8 +6,8 @@ class SpotUserSystem {
 	private $_db;
 	private $_settings;
 	
-	function __construct(SpotDb $db, SpotSettings $settings) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+		$this->_db = new SpotDb($daoFactory);
 		$this->_settings = $settings;
 	} # ctor
 
@@ -123,7 +123,7 @@ class SpotUserSystem {
 		} # if
 		
 		# Initialize the security system
-		$spotSec = new SpotSecurity($this->_db, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
+		$spotSec = new SpotSecurity($this->_db->_userDao, $this->_db->_auditDao, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 		$userSession['security'] = $spotSec;
 		
 		/* 

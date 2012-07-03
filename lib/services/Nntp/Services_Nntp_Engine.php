@@ -131,6 +131,15 @@ class Services_Nntp_Engine {
 		 * if necessary
 		 */
 		public function connect() {
+			/*
+			 * Store the username and password in it,
+			 * we will not put it in member variables
+			 * because they might show up in a stack
+			 * trace
+			 */
+			static $tmpUser;
+			static $tmpPass;
+
 			# dummy operation
 			if ($this->_connected) {
 				return ;
@@ -155,13 +164,19 @@ class Services_Nntp_Engine {
 
 			/* 
 			 * Erase username/password so it won't show up in any stacktrace
+			 *
+			 * Because this class can be reused (e - reconnected) without 
+			 * reconstructing it, we cannot simple 
 			 */
-			$tmpUser = $this->_user;
-			$tmpPass = $this->_pass;
-			$this->_user = '*FILTERED*';
-			$this->_pass = '*FILTERED*';
+			if (($this->_user !== '*FILTERED*') && ($this->_pass !== '*FILTERED*')) {
+				$tmpUser = $this->_user;
+				$tmpPass = $this->_pass;
 			
-			try{
+				$this->_user = '*FILTERED*';
+				$this->_pass = '*FILTERED*';
+			} # if
+			
+			try {
 				$ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
 				if ($ret === false) {
 					throw new NntpException('Error while connecting to server (server did not respond)', -1);

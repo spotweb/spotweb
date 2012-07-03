@@ -1,5 +1,4 @@
 <?php
-define('SPOTDB_SCHEMA_VERSION', '0.58');
 
 class SpotDb {
 	public $_auditDao;
@@ -17,8 +16,8 @@ class SpotDb {
 	public $_spotStateListDao;
 	public $_nntpConfigDao;
 
-	private $_dbsettings = null;
 	private $_conn = null;
+	private $_daoFactory;
 
 	/*
 	 * Constants used for updating the black/whitelist
@@ -26,22 +25,9 @@ class SpotDb {
 	const spotterlist_Black = 1;
 	const spotterlist_White = 2;
 
-	function __construct($db) {
-		$this->_dbsettings = $db;
-	} # __ctor
-	
+	function __construct(Dao_Factory $daoFactory) {
+		$this->_daoFactory = $daoFactory;
 
-	/*
-	 * Open connectie naar de database (basically factory), de 'engine' wordt uit de 
-	 * settings gehaald die mee worden gegeven in de ctor.
-	 */
-	function connect() {
-		SpotTiming::start(__FUNCTION__);
-
-		$dbCon = dbeng_abs::getDbFactory($this->_dbsettings['engine']);;
-		$daoFactory = Dao_Factory::getDAOFactory($this->_dbsettings['engine']);
-
-		$daoFactory->setConnection($dbCon);
 		$this->_auditDao = $daoFactory->getAuditDao();
 		$this->_blackWhiteListDao = $daoFactory->getBlackWhiteListDao();
 		$this->_cacheDao = $daoFactory->getCacheDao();
@@ -50,31 +36,32 @@ class SpotDb {
 		$this->_sessionDao = $daoFactory->getSessionDao();
 		$this->_settingDao = $daoFactory->getSettingDao();
 		$this->_spotReportDao = $daoFactory->getSpotReportDao();
-		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
 		$this->_userFilterDao = $daoFactory->getUserFilterDao();
+		$this->_userFilterCountDao = $daoFactory->getUserFilterCountDao();
 		$this->_userDao = $daoFactory->getUserDao();
-		$this->_spotDao = $daoFactory->getSpotdao();
+		$this->_spotDao = $daoFactory->getSpotDao();
 		$this->_spotStateListDao = $daoFactory->getSpotStateListDao();
 		$this->_nntpConfigDao = $daoFactory->getNntpConfigDao();
+	} # __ctor
+	
 
-		$dbCon->connect($this->_dbsettings['host'], 
-							  $this->_dbsettings['user'], 
-							  $this->_dbsettings['pass'], 
-							  $this->_dbsettings['dbname']);
-		$this->_conn = $dbCon;
-		SpotTiming::stop(__FUNCTION__);
+	/*
+	 * Open connectie naar de database (basically factory), de 'engine' wordt uit de 
+	 * settings gehaald die mee worden gegeven in de ctor.
+	 */
+	function connect() {
 	} # connect
 
 	/*
 	 * Geeft het database connectie object terug
 	 */
 	function getDbHandle() {
-		return $this->_conn;
+		return $this->_daoFactory->getConnection();
 	} # getDbHandle
 
 
 	function safe($x) {
-		return $this->_conn->safe($x);
+		return $this->_daoFactory->getConnection()->safe($x);
 	}
 
 	/* --------------------------- */

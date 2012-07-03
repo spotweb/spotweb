@@ -2,9 +2,9 @@
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
 		SpotTiming::start('SpotPage_Index::ctor');
-		parent::__construct($db, $settings, $currentSession);
+		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
 
@@ -31,7 +31,7 @@ class SpotPage_index extends SpotPage_Abs {
 		
 		# Zet the query parameters om naar een lijst met filters, velden,
 		# en sorteringen etc
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
 							array('field' => $this->_params['sortby'], 'direction' => $this->_params['sortdir']),
 							$this->_currentSession,

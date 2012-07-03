@@ -3,11 +3,6 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 
 	private $_nzbHandler;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
-		
-		parent::__construct($db, $settings, $currentSession);
-	} # ctor	
-	
 	function render() {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_use_sabapi, '');

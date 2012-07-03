@@ -3,8 +3,8 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 	private $_editSecGroupForm;
 	private $_groupId;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editSecGroupForm = $params['editsecgroupform'];
 		$this->_groupId = $params['groupid'];
 	} # ctor

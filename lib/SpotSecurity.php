@@ -1,8 +1,7 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.29');
 
 class SpotSecurity {
-	private $_db;
+	private $_userDao;
 	private $_user;
 	private $_permissions;
 	private $_settings;
@@ -119,18 +118,18 @@ class SpotSecurity {
 	const spot_secaudit_failure			= 1;
 	const spot_secaudit_all				= 2; 
 	
-	function __construct(SpotDb $db, SpotSettings $settings, array $user, $ipaddr) {
-		$this->_db = $db;
+	function __construct(Dao_User $userDao, Dao_Audit $auditDao, SpotSettings $settings, array $user, $ipaddr) {
+		$this->_userDao = $userDao;
 		$this->_user = $user;
 		$this->_settings = $settings;
 		$this->_failAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_failure);
 		$this->_allAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_all);
 		
 		if (($this->_failAudit) || ($this->_allAudit)) {
-			$this->_spotAudit = new SpotAudit($db, $settings, $user, $ipaddr);
+			$this->_spotAudit = new SpotAudit($auditDao, $settings, $user, $ipaddr);
 		} # if
 		
-		$this->_permissions = $db->getPermissions($user['userid']);
+		$this->_permissions = $userDao->getPermissions($user['userid']);
 	} # ctor
 	
 	function allowed($perm, $object) {

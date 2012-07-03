@@ -95,7 +95,7 @@
 		<?php require_once "lib/services/Signing/Services_Signing_Base.php";
 			require_once "lib/services/Signing/Services_Signing_Php.php";
 			require_once "lib/services/Signing/Services_Signing_Openssl.php";
-			$spotSigning = Services_Signing_Base::newServiceSigning();
+			$spotSigning = Services_Signing_Base::factory();
 			$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 			
 			/* We need either one of those 3 extensions, so set the error flag manually */
@@ -517,7 +517,7 @@
 			/*
 			 * Create a private/public key pair for this user
 			 */
-			$spotSigning = Services_Signing_Base::newServiceSigning();
+			$spotSigning = Services_Signing_Base::factory();
 			$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
 			$spotUser['publickey'] = $userKey['public'];
 			$spotUser['privatekey'] = $userKey['private'];

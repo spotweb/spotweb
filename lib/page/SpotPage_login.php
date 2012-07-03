@@ -3,8 +3,8 @@ class SpotPage_login extends SpotPage_Abs {
 	private $_loginForm;
 	private $_params;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_loginForm = $params['loginform'];
 		$this->_params = $params;
 	} # ctor

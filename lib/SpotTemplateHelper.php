@@ -1151,7 +1151,7 @@ class SpotTemplateHelper {
 	 */
 	function getCleanRandomString($len) {
 		$spotParseUtil = new Services_Format_Util();
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		return substr($spotParseUtil->spotPrepareBase64(base64_encode($spotSigning->makeRandomStr($len))), 0, $len);
 	} # getRandomStr
 	

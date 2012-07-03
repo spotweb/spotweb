@@ -20,7 +20,7 @@ abstract class dbeng_abs {
 			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
 			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
 
-			default				: throw new Exception("Unknown database engine (" . $dbSettings['engine'] . ") factory specified");
+			default				: throw new Exception("Unknown database engine (" . $engine . ") factory specified");
 		} // switch
 	} # getDbFactory()
 	

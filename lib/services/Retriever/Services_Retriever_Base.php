@@ -1,15 +1,18 @@
 <?php
 abstract class Services_Retriever_Base {
-		protected $_textServer;
-		protected $_binServer;
-
-		protected $_db;
+		protected $_registry;
 		protected $_settings;
 		protected $_debug;
+		protected $_force;
 		protected $_retro;
+
+		protected $_nntpCfgDao;
 
 		protected $_svcNntpText = null;
 		protected $_svcNntpBin = null;
+
+		protected $_textServer;
+		protected $_binServer;
 		
 		private $_msgdata;
 
@@ -47,30 +50,27 @@ abstract class Services_Retriever_Base {
 		/*
 		 * default ctor 
 		 */
-		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			$this->_textServer = $textServer;
-			$this->_binServer = $binServer;
-
-			$this->_db = $db;
+		function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $debug, $force, $retro) {
+			$this->_daoFactory = $daoFactory;
 			$this->_settings = $settings;
 			$this->_debug = $debug;
 			$this->_retro = $retro;
+			$this->_force = $force;
 
+			$this->_textServer = $settings->get('nntp_hdr');
+			$this->_binServer = $settings->get('nntp_nzb');
+
+			/*
+			 * Create the specific DAO objects
+			 */
+			$this->_nntpCfgDao = $daoFactory->getNntpConfigDao();
 			/*
 			 * Create the service objects for both the NNTP binary group and the
 			 * textnews group. We only create a basic NNTP_Engine object, but we 
 			 * don't create any higher level objects
 			 */
-			$this->_svcNntpText = new Services_Nntp_Engine($this->_textServer);
-
-			if (!empty($groupList['bin'])) {
-				if ($this->_textServer['host'] == $this->_binServer['host']) {
-					$this->_svcNntpBin = $this->_svcNntpBin;
-				} else {
-					$this->_svcNntpBin = new Services_Nntp_Engine($this->_binServer);
-					$this->_svcNntpBin->selectGroup($groupList['bin']);
-				} # else
-			} # if
+			$this->_svcNntpText = Services_Nntp_EnginePool::pool($this->_settings, 'hdr');
+			$this->_svcNntpBin = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 		} # ctor
 
 		function debug($s) {
@@ -81,17 +81,17 @@ abstract class Services_Retriever_Base {
 		
 		function connect(array $groupList) {
 			# if an retriever instance is already running, stop this one
-			if ($this->_db->isRetrieverRunning($this->_textServer['host'])) {
+			if ((!$this->_force) && ($this->_nntpCfgDao->isRetrieverRunning($this->_textServer['host']))) {
 				throw new RetrieverRunningException();
 			} # if
 			
 			/*
 			 * and notify the system we are running
 			 */
-			$this->_db->setRetrieverRunning($this->_textServer['host'], true);
+			$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
 
 			# and fireup the nntp connection
-			$this->displayStatus("lastretrieve", $this->_db->getLastUpdate($this->_textServer['host']));
+			$this->displayStatus("lastretrieve", $this->_nntpCfgDao->getLastUpdate($this->_textServer['host']));
 			$this->displayStatus("start", $this->_textServer['host']);
 
 			/*
@@ -199,7 +199,7 @@ abstract class Services_Retriever_Base {
 
 				# reset the start time to prevent a another retriever from starting
 				# during the intial retrieve which can take many hours 
-				$this->_db->setRetrieverRunning($this->_textServer['host'], true);
+				$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
 			} # while
 			
 			# we are done updating, make sure that if the newsserver deleted 
@@ -215,7 +215,7 @@ abstract class Services_Retriever_Base {
 
 		function quit() {
 			# notify the system we are not running anymore
-			$this->_db->setRetrieverRunning($this->_textServer['host'], false);
+			$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], false);
 			
 			# and disconnect
 			if (!is_null($this->_svcNntpText)) {
@@ -266,7 +266,7 @@ abstract class Services_Retriever_Base {
 			 * and cleanup
 			 */
 			$this->quit();
-			$this->_db->setLastUpdate($this->_textServer['host']);
+			$this->_nntpCfgDao->setLastUpdate($this->_textServer['host']);
 			
 			return $newProcessedCount;
 		} # perform

@@ -3,8 +3,8 @@ class SpotPage_postcomment extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_commentForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_commentForm = $params['commentform'];
 		$this->_inReplyTo = $params['inreplyto'];
 	} # ctor
@@ -20,7 +20,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$spotParseUtil = new Services_Format_Util();
 		
 		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		
 		# creeer een default comment zodat het form altijd
 		# de waardes van het form kan renderen
@@ -75,7 +75,6 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				if (!empty($this->_currentSession['user']['avatar'])) {
 					$comment['user-avatar'] = $this->_currentSession['user']['avatar'];
 				} else {
-					$spotSigning = Services_Signing_Base::newServiceSigning();
 					$tmpKey = $spotSigning->getPublicKey($this->_currentSession['user']['privatekey']);
 					$comment['user-key'] = $tmpKey['publickey'];
 				} # else

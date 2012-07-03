@@ -32,7 +32,7 @@ class Services_Nntp_SpotPosting {
 	 */
 	private function postSignedMessage($user, $serverPrivKey, $newsgroup, $message, $additionalHeaders) {
 		# instantiate necessary objects
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 
 		# also by the SpotWeb server 
 		$server_signature = $spotSigning->signMessage($serverPrivKey, '<' . $message['newmessageid'] . '>');
@@ -61,7 +61,7 @@ class Services_Nntp_SpotPosting {
 	public function postBinaryMessage($user, $newsgroup, $body, $additionalHeaders) {
 		$chunkLen = (1024 * 1024);
 		$segmentList = array();
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		
 		/*
 		 * Now start posting chunks of the binary files
@@ -137,7 +137,7 @@ class Services_Nntp_SpotPosting {
 	 */
 	public function postFullSpot($user, $serverPrivKey, $newsgroup, $spot) {
 		# instantiate the necessary objects
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 
 		/*
 		 * Create the spotnet from header part accrdoing to the following structure:

@@ -3,8 +3,8 @@ class SpotPage_reportpost extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_reportForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_reportForm = $params['reportform'];
 		$this->_inReplyTo = $params['inreplyto'];
 	} # ctor
@@ -20,7 +20,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		$spotParser = new Services_Format_Parsing();
 		
 		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		
 		# creeer een default report
 		$report = array('body' => 'This is SPAM!',

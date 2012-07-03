@@ -1,6 +1,4 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.24');
-define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 /*
  * Classe om de server settings in op te slaan
  */
@@ -18,7 +16,7 @@ class SpotSettings {
 	/* 
 	 * Instantieert een nieuwe settings klasse
 	 */
-	public static function singleton(SpotDb $db, array $phpSettings) {
+	public static function singleton(Dao_Setting $db, array $phpSettings) {
 		if (self::$_instance === null) {
 			self::$_instance = new SpotSettings($db);
 			

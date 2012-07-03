@@ -2,8 +2,8 @@
 class SpotPage_postspot extends SpotPage_Abs {
 	private $_spotForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_spotForm = $params['spotform'];
 	} # ctor
 
@@ -18,7 +18,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$spotParseUtil = new Services_Format_Util();
 		
 		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		
 		# creeer een default spot zodat het form altijd
 		# de waardes van het form kan renderen

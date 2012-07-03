@@ -4,7 +4,7 @@ class Services_Format_Parsing {
 	private $_util;
 	
 	function __construct() {
-		$this->_spotSigning = Services_Signing_Base::newServiceSigning();
+		$this->_spotSigning = Services_Signing_Base::factory();
 		$this->_util = new Services_Format_Util();
 	} # ctor
 	

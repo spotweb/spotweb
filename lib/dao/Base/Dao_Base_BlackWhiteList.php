@@ -22,51 +22,59 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 * Updates the current black- and whitelist with new information for
 	 * external sources. 
 	 */
-	function updateExternalList($newlist,$idtype) {
+	function updateExternalList($newlist, $idtype) {
 		$updatelist = array();
 		$updskipped = 0;
 		$countnewlistspotterid = 0;
 		$countdellistspotterid = 0;
 
-		/* Haal de oude lijst op*/
+		if ($idtype == 'black') {
+			$idtype = 1;
+		} elseif ($idtype == 'white') {
+			$idtype = 2;
+		} else {
+			throw new Exception("Invalid list type specified for updateExternalList: " . $idtype);
+		} # else
+
+		/* Retrieve the current list */
 		$oldlist = $this->_conn->arrayQuery("SELECT spotterid,idtype
 												FROM spotteridblacklist 
 												WHERE ouruserid = -1 AND origin = 'external'");
 		foreach ($oldlist as $obl) {
 			$islisted = (($obl['idtype'] == $idtype) > 0);
-			$updatelist[$obl['spotterid']] = 3 - $islisted;  # 'oude' spotterid eerst op verwijderen zetten.
+			$updatelist[$obl['spotterid']] = 3 - $islisted;  	# Put "old" spotterids (current ones) on the to-delete list
 		}
 		/* verwerk de nieuwe lijst */
 		foreach ($newlist as $nwl) {
-			$nwl = trim($nwl);									# Enters en eventuele spaties wegfilteren
-			if ((strlen($nwl) >= 3) && (strlen($nwl) <= 6)) {	# de lengte van een spotterid is tussen 3 en 6 karakters groot (tot op heden)
+			$nwl = trim($nwl);
+			if ((strlen($nwl) >= 3) && (strlen($nwl) <= 6)) {	# Spotterids are between 2 and 7 characters long
 				if (empty($updatelist[$nwl])) {
-					$updatelist[$nwl] = 1;						# nieuwe spoterids toevoegen 
+					$updatelist[$nwl] = 1;						# We want to add this spotterid
 				} elseif ($updatelist[$nwl] == 2) {
-					$updatelist[$nwl] = 5;						# spotterid staat al op dezelfde lijst, niet verwijderen.
+					$updatelist[$nwl] = 5;						# SpotterID is on the list already, dont remove it
 				} elseif ($updatelist[$nwl] == 3) {
 					if ($idtype == 1) {
-						$updatelist[$nwl] = 4;					# spotterid staat op een andere lijst, idtype veranderen.
+						$updatelist[$nwl] = 4;					# Spotterid is on another kind of list, change the idtype
 					} else {
-						$updskipped++;							# spotterid staat al op de blacklist, niet veranderen.
+						$updskipped++;							# Spotter is already on the list, dont remove it
 						$updatelist[$nwl] = 5;
 					}
 				} else {
-					$updskipped++;								# dubbel spotterid in xxxxxlist.txt.
+					$updskipped++;								# double spotterid in xxxxxlist.txt.
 				}
 			} else {
-				$updskipped++;									# er is iets mis met het spotterid (bijvoorbeeld een lege regel in xxxxxlist.txt)
+				$updskipped++;									# Spotterid did not pass the sanity check
 			}
 		}
 		$updlist = array_keys($updatelist);
 		foreach ($updlist as $updl) {
 			if ($updatelist[$updl] == 1) {
-				# voeg nieuwe spotterid's toe aan de lijst
+				# Add new spotterid's to the list
 				$countnewlistspotterid++;
 				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%d,'external')", Array($updl, (int) $idtype));
 				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s'AND ouruserid != -1  AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
 			} elseif ($updatelist[$updl] == 2) {
-				# verwijder spotterid's die niet meer op de lijst staan
+				# Remove spotters which aren't on the list
 				$countdellistspotterid++;
 				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
 				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
@@ -74,10 +82,13 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 				$countnewlistspotterid++;
 				$this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
 				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = (idtype = 1) WHERE spotterid = '%s' AND ouruserid != -1", Array($updl));
-			}
+			} # elseif
+		} # foreach
 
-		}
-		return array('added' => $countnewlistspotterid,'removed' => $countdellistspotterid,'skipped' => $updskipped);
+		return array('added' => $countnewlistspotterid, 
+					 'removed' => $countdellistspotterid,
+					 'skipped' => $updskipped,
+					 'total' => count($newlist));
 	} # updateExternallist
 
 	/*

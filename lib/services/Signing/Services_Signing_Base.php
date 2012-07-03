@@ -12,7 +12,7 @@ abstract class Services_Signing_Base {
 	/*
 	 * Create a factory method
 	 */
-	static public function newServiceSigning() {
+	static public function factory() {
 		/*
 		 * Automatically select OpenSSL if
 		 * possible
@@ -31,7 +31,7 @@ abstract class Services_Signing_Base {
 		} else {
 			return new Services_Signing_Php(); 
 		} # else
-	} # newServiceSigning
+	} # factory
 
 	/*
 	 * Actually validates the RSA signature

@@ -1,5 +1,6 @@
 <?php
 abstract class SpotPage_Abs {
+	protected $_daoFactory;
 	protected $_db;
 	protected $_settings;
 	protected $_pageTitle;
@@ -9,12 +10,13 @@ abstract class SpotPage_Abs {
 
 	protected $_templatePaths;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession) {
+		$this->_db = new SpotDb($daoFactory);
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];
 		$this->_tplHelper = $this->getTplHelper(array());
+		$this->_daoFactory = $daoFactory;
 
 		/*
 		 * Create a list of paths where to look for template files in

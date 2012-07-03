@@ -2,8 +2,8 @@
 class SpotPage_blacklistspotter extends SpotPage_Abs {
 	private $_blForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_blForm = $params['blform'];
 	} # ctor
 

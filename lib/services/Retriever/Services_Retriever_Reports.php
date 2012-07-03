@@ -4,8 +4,11 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug) {
-			parent::__construct($textServer, $binServer, $db, $settings, $debug, false);
+		function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $debug, $force) {
+			parent::__construct($daoFactory, $settings, $debug, $force, false);
+
+			$this->_reportDao = $daoFactory->getSpotReportDao();
+			$this->_spotDao = $daoFactory->getSpotDao();
 		} # ctor
 		
 		/*
@@ -45,7 +48,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			 * always checked so we do not have to do this 
 			 */
 			if (!$this->_textServer['buggy']) {
-				$this->_db->removeExtraReports($highestMessageId);
+				$this->_reportDao->removeExtraReports($highestMessageId);
 			} # if
 		} # updateLastRetrieved
 		
@@ -63,7 +66,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
 			 */
-			$dbIdList = $this->_db->matchReportMessageIds($hdrList);
+			$dbIdList = $this->_reportDao->matchReportMessageIds($hdrList);
 
 			/*
 			 * We keep a seperate list of messageid's for updating the amount of
@@ -115,11 +118,11 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			# update the last retrieved article			
-			$this->_db->addReportRefs($reportDbList);
-			$this->_db->setMaxArticleid('reports', $endMsg);
+			$this->_reportDao->addReportRefs($reportDbList);
+			$this->_nntpCfgDao->setMaxArticleid('reports', $endMsg);
 			
 			# Calculate the amount of reports for a spot
-			$this->_db->updateSpotReportCount($spotMsgIdList);
+			$this->_spotDao->updateSpotReportCount($spotMsgIdList);
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()
@@ -136,14 +139,14 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 		 * Highest articleid for the implementation in the database
 		 */
 		function getMaxArticleId() {
-			return $this->_db->getMaxArticleid('reports');
+			return $this->_nntpCfgDao->getMaxArticleid('reports');
 		} # getMaxArticleId
 
 		/*
 		 * Returns the highest messageid in the database
 		 */
 		function getMaxMessageId() {
-			return $this->_db->getMaxMessageId('reports');
+			return $this->_spotDao->getMaxMessageId('reports');
 		} # getMaxMessageId
 		
 } # Services_Retriever_Reports

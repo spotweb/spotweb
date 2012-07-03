@@ -3,8 +3,8 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_action = $params['action'];
 	} # ctor

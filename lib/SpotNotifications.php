@@ -19,8 +19,8 @@ class SpotNotifications {
 	const notifytype_user_added				= 'user_added';
 	const notifytype_newspots_for_filter	= 'newspots_for_filter';
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession) {
+		$this->_db = new SpotDb($daoFactory);
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];

@@ -8,8 +8,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 	private $_sortorder;
 	private $_data;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editFilterForm = $params['editfilterform'];
 		$this->_filterId = $params['filterid'];
 		$this->_orderList = $params['orderfilterslist'];

@@ -5,17 +5,47 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		private $_prefetch_image;
 		private $_prefetch_nzb;
 
+		private $_svcNntpTextReading;
+		private $_svcNntpBinReading;
+		private $_svcProvNzb;
+		private $_svcProvImage;
+		private $_svcSpotParser;
+
+		private $_spotDao;
+		private $_commentDao;
+		private $_cacheDao;
+
 		/**
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct($textServer, $binServer, SpotDb $db, SpotSettings $settings, $debug, $retro) {
-			parent::__construct($textServer, $binServer, $db, $settings, $debug, $retro);
+		function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $debug, $force, $retro) {
+			parent::__construct($daoFactory, $settings, $debug, $force, $retro);
 			
 			$this->_rsakeys = $this->_settings->get('rsa_keys');
 			$this->_retrieveFull = $this->_settings->get('retrieve_full');
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
 			$this->_prefetch_nzb = $this->_settings->get('prefetch_nzb');
+
+			$this->_spotDao = $daoFactory->getSpotDao();
+			$this->_commentDao = $daoFactory->getCommentDao();
+			$this->_cacheDao = $daoFactory->getCacheDao();
+			$this->_svcSpotParser = new Services_Format_Parsing();
+
+			# if we need to fetch images or nzb files, we need several service objects
+			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
+				/*
+				 * NNTP Spot Reading engine
+				 */
+				$this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
+				$this->_svcNntpBinReading = new Services_Nntp_SpotReading($this->_svcNntpBin);
+
+				$this->_svcProvNzb = new Services_Providers_Nzb($this->_cacheDao,
+														 $this->_svcNntpBinReading);
+				$this->_svcProvImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_cacheDao),
+																 $this->_svcNntpBinReading,
+											  					 $this->_cacheDao);
+			} # if
 		} # ctor
 
 		/*
@@ -62,7 +92,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * always checked so we do not have to do this 
 			 */
 			if (!$this->_textServer['buggy']) {
-				$this->_db->removeExtraSpots($highestMessageId);
+				$this->_spotDao->removeExtraSpots($highestMessageId);
 			} # if
 		} # updateLastRetrieved
 		
@@ -72,7 +102,6 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 
-			$spotParser = new Services_Format_Parsing();
 			$signedCount = 0;
 			$hdrsRetrieved = 0;
 			$fullsRetrieved = 0;
@@ -101,26 +130,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
 			 */
-			$dbIdList = $this->_db->matchSpotMessageIds($hdrList);
+			$dbIdList = $this->_spotDao->matchSpotMessageIds($hdrList);
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
-
-			# if we need to fetch images or nzb files, we need several service objects
-			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
-				/*
-				 * NNTP Spot Reading engine
-				 */
-				$this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
-				$this->_svcNntpBinReading = new Services_Nntp_SpotReading($this->_svcNntpBin);
-
-				$svcProvNzb = new Services_Providers_Nzb($this->_db->_cacheDao,
-														   $this->_svcNntpBinReading);
-				$svcProvImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
-																	  $this->_svcNntpBinReading,
-											  						  $this->_db->_cacheDao);
-			} # if
-
-
 
 			foreach($hdrList as $msgheader) {
 				$msgCounter++;
@@ -171,11 +183,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
-					$spot = $spotParser->parseHeader($msgheader['Subject'], 
-													 $msgheader['From'], 
-													 $msgheader['Date'],
-													 $msgheader['Message-ID'],
-													 $this->_rsakeys);
+					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'], 
+															$msgheader['From'], 
+															$msgheader['Date'],
+															$msgheader['Message-ID'],
+															$this->_rsakeys);
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
@@ -318,8 +330,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * again
 						 */
 						if (!$didFetchFullSpot) {
-							$fullSpot = $this->_db->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
-							$fullSpot = array_merge($spotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+							$fullSpot = $this->_spotDao->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
+							$fullSpot = array_merge($this->_svcSpotParser->parseFull($fullSpot['fullxml']), $fullSpot);
 						} # if
 
 						/*
@@ -332,7 +344,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 */
 							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
 								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
-								$svcProvImage->fetchSpotImage($fullSpot);
+								$this->_svcProvImage->fetchSpotImage($fullSpot);
 								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 							} # if
 						} # if
@@ -346,7 +358,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$svcProvNzb>fetchNzb($fullSpot);
+								$this->_svcProvNzb>fetchNzb($fullSpot);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
@@ -395,7 +407,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * Add the spots to the database and update the last article
 			 * number found
 			 */
-			$this->_db->addSpots($spotDbList, $fullSpotDbList);
+			$this->_spotDao->addSpots($spotDbList, $fullSpotDbList);
 			$this->debug('added Spots, spotDbList=' . serialize($spotDbList));
 			$this->debug('added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
 
@@ -406,14 +418,14 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			switch($this->_settings->get('spot_moderation')) {
 				case 'disable'	: break;
 				case 'markspot'	: {
-					$this->_db->markCommentsModerated($moderationList); 
-					$this->_db->markSpotsModerated($moderationList); 
+					$this->_commentDao->markCommentsModerated($moderationList); 
+					$this->_spotDao->markSpotsModerated($moderationList); 
 					
 					break;
 				} # case 'markspot' 
 				default			: { 
-					$this->_db->removeSpots($moderationList); 
-					$this->_db->removeComments($moderationList);
+					$this->_spotDao->removeSpots($moderationList); 
+					$this->_commentDao->removeComments($moderationList);
 					
 					break;
 				} # default
@@ -421,9 +433,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			
 			# update the maximum article id
 			if ($this->_retro) {
-				$this->_db->setMaxArticleid('spots_retro', $endMsg);
+				$this->_nntpCfgDao->setMaxArticleid('spots_retro', $endMsg);
 			} else {
-				$this->_db->setMaxArticleid($this->_textServer['host'], $endMsg);
+				$this->_nntpCfgDao->setMaxArticleid($this->_textServer['host'], $endMsg);
 			} # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
 			
@@ -445,9 +457,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 */
 		function getMaxArticleId() {
 			if ($this->_retro) {
-				return $this->_db->getMaxArticleid('spots_retro');
+				return $this->_nntpCfgDao->getMaxArticleid('spots_retro');
 			} else {
-				return $this->_db->getMaxArticleid($this->_textServer['host']);
+				return $this->_nntpCfgDao->getMaxArticleid($this->_textServer['host']);
 			} # if
 		} # getMaxArticleId
 		
@@ -455,7 +467,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 * Returns the highest messageid in the database
 		 */
 		function getMaxMessageId() {
-			return $this->_db->getMaxMessageId('headers');
+			return $this->_spotDao->getMaxMessageId('headers');
 		} # getMaxMessageId
 
 		

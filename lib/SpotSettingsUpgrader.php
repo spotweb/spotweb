@@ -110,7 +110,7 @@ class SpotSettingsUpgrader {
 	 * Create the server private and public keys
 	 */
 	function createServerKeys($openSslCnfPath) {
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		$x = $spotSigning->createPrivateKey($openSslCnfPath);
 		
 		$this->setIfNot('publickey', $x['public']);

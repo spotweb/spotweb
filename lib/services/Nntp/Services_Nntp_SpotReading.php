@@ -60,7 +60,7 @@ class Services_Nntp_SpotReading {
 	 */
 	public function readComments($commentList) {
 		$comments = array();
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 
 		/*
 		 * We retrieve all comments from the server
@@ -125,7 +125,7 @@ class Services_Nntp_SpotReading {
 	 */
 	public function readFullSpot($msgId) {
 		# initialize some variables
-		$spotSigning = Services_Signing_Base::newServiceSigning();
+		$spotSigning = Services_Signing_Base::factory();
 		
 		$spot = array('fullxml' => '',
 					  'user-signature' => '',
