@@ -41,7 +41,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
 															  $this->_db->_cacheDao,
 												 			  $this->_db->_nntpConfigDao->getLastUpdate($settings_nntp_hdr['host']));
-			$data = $svcPrv_Stats->renderStatImage($graph, $limit, $settings_nntp_hdr['host']);
+			$data = $svcPrv_Stats->renderStatImage($graph, $limit);
 
 
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {

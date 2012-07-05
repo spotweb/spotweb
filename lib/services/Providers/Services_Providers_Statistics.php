@@ -26,9 +26,23 @@ class Services_Providers_Statistics {
 	} # ctor
 
 	/*
+	 * Create all statistics available
+	 */
+	public function createAllStatistics() {
+		foreach ($this->getValidStatisticsLimits() as $limitValue => $limitName) {
+			# Reset timelimit
+			set_time_limit(60);
+
+			foreach ($this->getValidStatisticsGraphs() as $graphValue => $graphName) {
+				$this->renderStatImage($graphValue, $limitValue);
+			} # foreach graph
+		} # foreach limit
+	} # createAllStatistics
+
+	/*
 	 * Returns an chart depending on who asks
 	 */
-	public function renderStatImage($statType, $dateLimit, $nntpHost) {
+	public function renderStatImage($statType, $dateLimit) {
 		$graphs = $this->getValidStatisticsGraphs();
 		$limits = $this->getValidStatisticsLimits();
 

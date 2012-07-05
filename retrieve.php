@@ -194,17 +194,8 @@ try {
 											 			  $daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']));
 
 		echo "Starting to create statistics " . PHP_EOL;
-		foreach ($svcPrv_Stats->getValidStatisticsLimits() as $limitValue => $limitName) {
-			# Reset timelimit
-			set_time_limit(60);
-
-			foreach ($svcPrv_Stats->getValidStatisticsGraphs() as $graphValue => $graphName) {
-				$svcPrv_Stats->renderStatImage($graphValue, $limitValue, $settings_nntp_hdr['host']);
-			} # foreach graph
-
-			echo "Finished creating statistics " . $limitName . PHP_EOL;
-		} # foreach limit
-
+		$svcPrv_Stats->createAllStatistics();
+		echo "Finished creating statistics " . $limitName . PHP_EOL;
 		echo PHP_EOL;
 	} # if
 
