@@ -371,7 +371,7 @@ class SpotTemplateHelper {
 	 * Only allow a specific set of users to create customized content
 	 */
 	function allowedToPost() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUser = new SpotUserSystem($this->_db->_daoFactory, $this->_settings);
 		return $spotUser->allowedToPost($this->_currentSession['user']);	
 	} # allowedToPost
 	

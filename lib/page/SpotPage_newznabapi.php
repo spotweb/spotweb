@@ -1,11 +1,13 @@
 <?php
 class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
+	private $_svcPrvHttp;
 
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
+		$this->_svcPrvHttp = new Services_Providers_Http($daoFactory->getCacheDao());
 	} # __construct
 
 	function render() {
@@ -61,7 +63,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
+			if (!@list($http_code, $tvrage) = $this->_svcPrvHttp->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
 				$this->showApiError(300);
 				
 				 return ;
@@ -114,7 +116,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
+			if (!@list($http_code, $imdb) = $this->_svcPrvHttp->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
 				$this->showApiError(300);
 				
 				return ;

@@ -1,10 +1,12 @@
 <?php
 class SpotUserUpgrader {
-	private $_db;
+	private $_dbCon;
+	private $_userDao;
 	private $_settings;
 
-	function __construct(SpotDb $db, SpotSettings $settings) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+		$this->_dbCon = $daoFactory->getConnection();
+		$this->_userDao = $daoFactory->getUserDao();
 		$this->_settings = $settings;
 	} # ctor
 
@@ -30,7 +32,7 @@ class SpotUserUpgrader {
 	 */
 	function createAnonymous() {
 		# if we already have an anonymous user, exit
-		$anonUser = $this->_db->getUser(1);
+		$anonUser = $this->_userDao->getUser(1);
 		if ($anonUser !== false) {
 			if ($anonUser['username'] != 'anonymous') {
 				throw new Exception("Anonymous user is not anonymous anymore. Database logical corrupted, unable to continue");
@@ -40,7 +42,7 @@ class SpotUserUpgrader {
 		} # if
 
 		# DB connection
-		$dbCon = $this->_db->getDbHandle();
+		$dbCon = $this->_dbCon;
 
 		# Create an Spotweb API key. It cannot be used but should not be empty
 		$apikey = md5('anonymous');
@@ -57,7 +59,7 @@ class SpotUserUpgrader {
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
 			'deleted'		=> 0);
-		$this->_db->addUser($anonymous_user);
+		$this->_userDao->addUser($anonymous_user);
 
 		# Manually update the userid so we can be sure anonymous == userid 1
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
@@ -79,30 +81,30 @@ class SpotUserUpgrader {
 	 * Resets a given users' password
 	 */
 	function resetUserPassword($username, $password) {
-		$userId = $this->_db->findUserIdForName($username);
+		$userId = $this->_userDao->findUserIdForName($username);
 		if (empty($userId)) {
 			throw new Exception("Username cannot be found to reset password for");
 		} # if
 
 		# Retrieve the actual userid
-		$user = $this->_db->getUser($userId);
+		$user = $this->_userDao->getUser($userId);
 
 		# update the password
 		$user['passhash'] = $this->passToHash($password);
-		$this->_db->setUserPassword($user);
+		$this->_userDao->setUserPassword($user);
 	} # resetUserPassword
 	/*
 	 * Create the admin user 
 	 */
 	function createAdmin($firstName, $lastName, $password, $mail) {
 		# if we already have an admin user, exit
-		$adminUser = $this->_db->getUser(2);
+		$adminUser = $this->_userDao->getUser(2);
 		if ($adminUser !== false) {
 			return ;
 		} # if
 		
 		# DB connection
-		$dbCon = $this->_db->getDbHandle();
+		$dbCon = $this->_dbCon;
 
 		# calculate the password salt for the admin user
 		$adminPwdHash = $this->passToHash($password);
@@ -122,7 +124,7 @@ class SpotUserUpgrader {
 			'lastlogin'		=> 0,
 			'lastvisit'		=> 0,
 			'deleted'		=> 0);
-		$this->_db->addUser($admin_user);
+		$this->_userDao->addUser($admin_user);
 
 		# Manually update the userid so we can be sure admin == userid 2
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
@@ -135,9 +137,9 @@ class SpotUserUpgrader {
 	 */
 	function resetUserGroupMembership($systemType) {
 		# DB connection
-		$dbCon = $this->_db->getDbHandle();
+		$dbCon = $this->_dbCon;
 
-		$userList = $this->_db->getUserList();
+		$userList = $this->_userDao->getUserList();
 
 		# loop through every user and fix it 
 		foreach($userList as $user) {
@@ -187,7 +189,7 @@ class SpotUserUpgrader {
 	 * Update all users preferences
 	 */
 	function updateUserPreferences() {
-		$userList = $this->_db->getUserList();
+		$userList = $this->_userDao->getUserList();
 
 		# loop through every user and fix it 
 		foreach($userList as $user) {
@@ -195,7 +197,7 @@ class SpotUserUpgrader {
 			 * Because we do not get all users' properties from
 			 * getUserList, retrieve the users' settings from scratch
 			 */
-			$user = $this->_db->getUser($user['userid']);
+			$user = $this->_userDao->getUser($user['userid']);
 
 			# set the users' preferences
 			$this->setSettingIfNot($user['prefs'], 'perpage', 25);
@@ -267,18 +269,18 @@ class SpotUserUpgrader {
 			
 			# Make sure the user has a valid RSA key
 			if ($user['userid'] > 2) {
-				$rsaKey = $this->_db->getUserPrivateRsaKey($user['userid']);
+				$rsaKey = $this->_userDao->getUserPrivateRsaKey($user['userid']);
 				if (empty($rsaKey)) {
 					# Creer een private en public key paar voor deze user
 					$spotSigning = Services_Signing_Base::factory();
 					$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
 					
-					$this->_db->setUserRsaKeys($user['userid'], $userKey['public'], $userKey['private']);
+					$this->_userDao->setUserRsaKeys($user['userid'], $userKey['public'], $userKey['private']);
 				} # if
 			} # if
 
 			# update the user record in the database			
-			$this->_db->setUser($user);
+			$this->_userDao->setUser($user);
 		} # foreach
 	} # update()
 
@@ -287,7 +289,7 @@ class SpotUserUpgrader {
 	 */
 	function createSecurityGroups() {
 		# DB connection
-		$dbCon = $this->_db->getDbHandle();
+		$dbCon = $this->_dbCon;
 		
 		if ($this->_settings->get('securityversion') < 0.27) {
 			/* Truncate the current defined permissions  */
@@ -307,7 +309,7 @@ class SpotUserUpgrader {
 	 */
 	function updateSecurityGroups($forceReset) {
 		# DB connectie	
-		$dbCon = $this->_db->getDbHandle();
+		$dbCon = $this->_dbCon;
 		
 		if (($forceReset) || ($this->_settings->get('securityversion') < 0.27)) {
 			/* Truncate de  huidige permissies */
@@ -411,12 +413,12 @@ class SpotUserUpgrader {
 	function updateUserFilters($forceReset) {
 		if (($this->_settings->get('securityversion') < 0.12) || ($forceReset)) {
 			# DB connection
-			$dbCon = $this->_db->getDbHandle();
+			$dbCon = $this->_dbCon;
 			
 			# delete all existing filters
 			$dbCon->rawExec("DELETE FROM filters WHERE filtertype = 'filter'");
 
-			$userList = $this->_db->getUserList();
+			$userList = $this->_userDao->getUserList();
 
 			# loop through every user and fix it 
 			foreach($userList as $user) {

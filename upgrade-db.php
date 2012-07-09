@@ -11,6 +11,7 @@ try {
 	} # if
 
 	require_once "lib/SpotClassAutoload.php";
+	require_once "lib/SpotWebVersion.php";
 	require_once "settings.php";
 
 	/*
@@ -24,9 +25,24 @@ try {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
 
+	/*
+	 * Create a DAO factory
+	 */
+	$dbCon = dbeng_abs::getDbFactory($settings['db']['engine']);
+	$dbCon->connect($settings['db']['host'], 
+					$settings['db']['user'], 
+					$settings['db']['pass'], 
+					$settings['db']['dbname']);
+	
+	$daoFactory = Dao_Factory::getDAOFactory($settings['db']['engine']);
+	$daoFactory->setConnection($dbCon);
+
+	/*
+	 * And actually start updating or creating the schema and settings
+	 */
 	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	
-	$spotUpgrader = new SpotUpgrader($settings['db'], $settings);
+	$spotUpgrader = new SpotUpgrader($daoFactory, $settings);
 	$spotUpgrader->database();
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;

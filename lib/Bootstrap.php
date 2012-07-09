@@ -1,8 +1,10 @@
 <?php
-define('SPOTWEB_SETTINGS_VERSION', '0.24');
-define('SPOTWEB_SECURITY_VERSION', '0.29');
-define('SPOTDB_SCHEMA_VERSION', '0.58');
-define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
+
+/*
+ * Include several version constants
+ * used throughput Spotweb
+ */
+require_once "lib/SpotWebVersion.php";
 
 /*
  * Spotweb bootstrapping code.
@@ -19,14 +21,6 @@ class Bootstrap {
 	 * Boot up the Spotweb system
 	 */
 	public function boot() {
-		/*
-		 * If we are run from another directory, try to change the current
-		 * working directory to a directory the script is in
-		 */
-		if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-			chdir(dirname(__FILE__));
-		} # if
-
 		$daoFactory = $this->getDaoFactory();
 		$settings = $this->getSettings($daoFactory);
 		$spotReq = $this->getSpotReq($settings);

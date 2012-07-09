@@ -17,7 +17,7 @@ class SpotDb {
 	public $_nntpConfigDao;
 
 	private $_conn = null;
-	private $_daoFactory;
+	public $_daoFactory;
 
 	/*
 	 * Constants used for updating the black/whitelist

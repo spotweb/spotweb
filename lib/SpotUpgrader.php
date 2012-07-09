@@ -1,13 +1,13 @@
 <?php
 
 class SpotUpgrader {
-	private $_db;
-	private $_dbEngine;
+	private $_daoFactory;
+	private $_dbStruct;
+	private $_phpSettings;
 	
-	function __construct($dbSettings, $phpSettings) {
-		$this->_db = new SpotDb($dbSettings);
-		$this->_db->connect();
-		$this->_dbEngine = $dbSettings['engine'];
+	function __construct(Dao_Factory $daoFactory, $phpSettings) {
+		$this->_daoFactory = $daoFactory;
+		$this->_dbStruct = SpotStruct_Abs::factory($phpSettings['db']['engine'], $daoFactory->getConnection());
 		$this->_phpSettings = $phpSettings;
 	} # ctor
 	
@@ -16,8 +16,8 @@ class SpotUpgrader {
 	 */
 	function settings() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
 		$spotSettingsUpgrader->update();
 	} # settings
 
@@ -26,8 +26,8 @@ class SpotUpgrader {
 	 */
 	function users() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->update();
 	} # users
 	 
@@ -35,19 +35,7 @@ class SpotUpgrader {
 	 * Creeert en upgrade de database
 	 */
 	function database() {
-		# Instantieeer een struct object
-		switch($this->_dbEngine) {	
-			case 'mysql'			:
-			case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($this->_db); break;
-
-			case 'pdo_pgsql'		: $dbStruct = new SpotStruct_pgsql($this->_db); break;
-			
-			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
-			
-			default					: throw new Exception("Unknown database engine");
-		} # switch
-		
-		$dbStruct->updateSchema();
+		$this->_dbStruct->updateSchema();
 	 } # database
 
 	/*
@@ -55,18 +43,7 @@ class SpotUpgrader {
 	 */
 	function analyze() {
 		# Instantieeer een struct object
-		switch($this->_dbEngine) {	
-			case 'mysql'			:
-			case 'pdo_mysql'		: $dbStruct = new SpotStruct_mysql($this->_db); break;
-			
-			case 'pdo_pgsql'		: $dbStruct = new SpotStruct_pgsql($this->_db); break;
-			
-			case 'pdo_sqlite'		: $dbStruct = new SpotStruct_sqlite($this->_db); break;
-			
-			default					: throw new Exception("Unknown database engine");
-		} # switch
-		
-		$dbStruct->analyze();
+		$this->_dbStruct->analyze();
 	 } # analyze
 
 	/*
@@ -74,8 +51,8 @@ class SpotUpgrader {
 	 */
 	function resetUserGroupMembership() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
 
@@ -84,8 +61,8 @@ class SpotUpgrader {
 	 */
 	function resetSecurityGroups() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->updateSecurityGroups(true);
 	} # resetSecurityGroups
 
@@ -94,8 +71,8 @@ class SpotUpgrader {
 	 */
 	function resetFilters() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->updateUserFilters(true);
 	} # resetFilters
 	 
@@ -104,9 +81,9 @@ class SpotUpgrader {
 	 */
 	function resetSystemType($systemType) {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
-		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
+		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
 
 		# change the systems' type
 		$spotSettingsUpgrader->setSystemType($systemType);
@@ -120,8 +97,8 @@ class SpotUpgrader {
 	 */
 	function resetPassword($username) {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 
 		# retrieve the userid
 		$spotUserUpgrader->resetUserPassword($username, 'spotweb');

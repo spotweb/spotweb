@@ -1,11 +1,11 @@
 <?php
 class SpotSettingsUpgrader {
-	private $_db;
+	private $_userSystem;
 	private $_settings;
 
-	function __construct(SpotDb $db, SpotSettings $settings) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
 		$this->_settings = $settings;
+		$this->_userSystem = new SpotUserSystem($daoFactory, $settings);
 	} # ctor
 
 	function update() {
@@ -141,8 +141,7 @@ class SpotSettingsUpgrader {
 	 * Create an xsrf secret
 	 */
 	function createXsrfSecret() {
-		$userSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$secret = substr($userSystem->generateUniqueId(), 0, 8);
+		$secret = substr($this->_userSystem->generateUniqueId(), 0, 8);
 		
 		$this->setIfNot('xsrfsecret', $secret);
 	} # createXsrfSecret
@@ -151,8 +150,7 @@ class SpotSettingsUpgrader {
 	 * Create the servers' password salt
 	 */
 	function createPasswordSalt() {
-		$userSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$salt = $userSystem->generateUniqueId() . $userSystem->generateUniqueId();
+		$salt = $this->_userSystem->generateUniqueId() . $this->_userSystem->generateUniqueId();
 		
 		$this->setIfNot('pass_salt', $salt);
 	} # createPasswordSalt

@@ -1,12 +1,28 @@
 <?php
 abstract class SpotStruct_abs {
-	protected $_spotdb;
 	protected $_dbcon;
 
-	public function __construct(SpotDb $spotdb) {
-		$this->_spotdb = $spotdb;
-		$this->_dbcon = $spotdb->getDbHandle();
+	public function __construct(dbeng_abs $dbEng) {
+		$this->_dbcon = $dbEng;
 	} # __construct
+
+	/* 
+	 * Factory for dbstruct
+	 */
+	static public function factory($dbEngine, $dbCon) {
+		# Instantieeer een struct object
+		switch($dbEngine) {
+			case 'mysql'			:
+			case 'pdo_mysql'		: return new SpotStruct_mysql($dbCon); break;
+
+			case 'pdo_pgsql'		: return new SpotStruct_pgsql($dbCon); break;
+			
+			case 'pdo_sqlite'		: return new SpotStruct_sqlite($dbCon); break;
+			
+			default					: throw new Exception("Unknown database engine '" . $dbEngine . "'");
+		} # switch
+
+	} # factory
 
 	/*
 	 * Optimize / analyze (database specific) a number of hightraffic
@@ -538,15 +554,16 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 		
 		# Update old blacklisttable
-		if ($this->_spotdb->getSchemaVer() < 0.56) {
+		$schemaVer = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'", array());
+		if ($schemaVer < 0.56) {
 			$this->_dbcon->rawExec("UPDATE spotteridblacklist SET idtype = 1");
 		}
 		
 		# Drop old cache -- converting is too error prone
-		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
+		if (($schemaVer < 0.50) && ($this->tableExists('cache'))) {
 			$this->dropTable('cache');
 		} # if
-		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
+		if (($schemaVer < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
 			$this->renameTable('cache', 'cachetmp');
 		} # if
 
@@ -585,20 +602,20 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		### deprecation of old Spotweb versions ######################################################
 		##############################################################################################
-		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.51)) {
-			if ($this->_spotdb->getSchemaVer() < 0.30) {
+		if ($schemaVer > 0.00 && ($schemaVer < 0.51)) {
+			if ($schemaVer < 0.30) {
 				throw new SpotwebCannotBeUpgradedTooOldException("da6ba29071c49ae88823cccfefc39375b37e9bee");
 			} # if
 
-			if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
+			if (($schemaVer < 0.34) && ($this->tableExists('spottexts'))) {
 				throw new SpotwebCannotBeUpgradedTooOldException("48bc94a63f94959f9fe6b2372b312e35a4d09997");
 			} # if
 
-			if ($this->_spotdb->getSchemaVer() < 0.48) {
+			if ($schemaVer < 0.48) {
 				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
 			} # if
 
-			if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
+			if (($schemaVer < 0.51) && ($this->tableExists('cachetmp'))) {
 				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
 			} # if
 		} # if
@@ -723,7 +740,8 @@ abstract class SpotStruct_abs {
 		$this->dropTable('cachetmp');
 
 		# update the database with this specific schemaversion
-		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
+		$this->_dbcon->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
+		$this->_dbcon->rawExec("INSERT INTO settings(name, value) VALUES('schemaversion', '" . SPOTDB_SCHEMA_VERSION . "')");
 	} # updateSchema
 
 } # class
