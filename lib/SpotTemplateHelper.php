@@ -103,7 +103,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
-		$svcNntpSpotReading = new Services_Nntp_SpotReading( new Services_Nntp_Engine($this->_settings->get('nntp_hdr')) );
+		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
 		$svcProvComments = new Services_Providers_Comments($this->_db->_commentDao, $svcNntpSpotReading);
 		
 		return $svcProvComments->fetchSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length);
@@ -116,7 +116,7 @@ class SpotTemplateHelper {
 		$result = '';
 		
 		try {
-			$testNntp = new SpotNntp($server);
+			$testNntp = new Services_Nntp_Engine($server);
 			$testNntp->validateServer();
 		} # try
 		catch(Exception $x) {
@@ -140,7 +140,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		
-		$svcNntpSpotReading = new Services_Nntp_SpotReading( new Services_Nntp_Engine($this->_settings->get('nntp_hdr')) );
+		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
 		$svcProvFullSpot = new Services_Providers_FullSpot($this->_db->_spotDao, $svcNntpSpotReading);
 		$fullSpot = $svcProvFullSpot->fetchFullSpot($msgId, $this->_currentSession['user']['userid']);
 
