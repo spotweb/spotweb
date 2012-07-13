@@ -8,7 +8,6 @@ class Services_Providers_Nzb {
 	 * constructor
 	 */
 	public function __construct(Dao_Cache $cacheDao, Services_Nntp_SpotReading $nntpSpotReading) {
-		$this->_spotDao = $spotDao;
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpSpotReading = $nntpSpotReading;
 	}  # ctor

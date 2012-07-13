@@ -103,7 +103,10 @@ class Bootstrap {
 	 */
 	private function getSettings(Dao_Factory $daoFactory) {
 		require_once "settings.php";
-		return SpotSettings::singleton($daoFactory->getSettingDao(), $settings);
+		
+		return SpotSettings::singleton($daoFactory->getSettingDao(), 
+									   $daoFactory->getBlackWhiteListDao(),
+									   $settings);
 	} # getSettings
 
 	/*

@@ -1,17 +1,17 @@
 <?php
 class SpotNzb {
 	private $_settings;
-	private $_db;
+	private $_daoFactory;
 	
-	function __construct(SpotDb $db, SpotSettings $settings) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 	} # ctor
 
 	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
-	function handleNzbAction($messageids, $userSession, $action, $hdr_spotnntp, $nzb_spotnntp) {
+	function handleNzbAction($messageids, array $userSession, $action, Services_Providers_FullSpot $svcProvSpot, Services_Providers_Nzb $svcProvNzb) {
 		if (!is_array($messageids)) {
 			$messageids = array($messageids);
 		} # if
@@ -21,37 +21,41 @@ class SpotNzb {
 		if ($action != 'display') {
 			$userSession['security']->fatalPermCheck(SpotSecurity::spotsec_download_integration, $action);
 		} # if
-			
-		# Haal de volledige spot op en gebruik de informatie daarin om de NZB file op te halen
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		
+
+		/*
+		 * Get all the full spots for all of the specified NZB files
+		 */			
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
-			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $userSession['user']['userid'], $hdr_spotnntp);
+			$fullSpot = $svcProvSpot->fetchFullSpot($thisMsgId, $userSession['user']['userid']);
 			
 			if (!empty($fullSpot['nzb'])) {
 				$nzbList[] = array('spot' => $fullSpot, 
-								   'nzb' => $spotsOverview->getNzb($fullSpot, $nzb_spotnntp));
+								   'nzb' => $svcProvNzb->fetchNzb($fullSpot));
 			} # if
 		} # foreach
 
-		# send nzblist to NzbHandler plugin
+		/*
+		 * send nzblist to NzbHandler plugin
+		 */
 		$nzbHandlerFactory = new NzbHandler_Factory();
 		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action, $userSession['user']['prefs']['nzbhandling']);
 
 		$nzbHandler->processNzb($fullSpot, $nzbList);
 
-		# en voeg hem toe aan de lijst met downloads
+		/*
+		 * and mark the spot as downloaded
+		 */
 		if ($userSession['user']['prefs']['keep_downloadlist']) {
 			if ($userSession['security']->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) {
 				foreach($messageids as $thisMsgId) {
-					$this->_db->addToDownloadList($thisMsgId, $userSession['user']['userid']);
+					$this->_daoFactory->getSpotStateList()->addToDownloadList($thisMsgId, $userSession['user']['userid']);
 				} # foreach
 			} # if
 		} # if
 
 		# en verstuur een notificatie
-		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $userSession);
+		$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $userSession);
 		$spotsNotifications->sendNzbHandled($action, $fullSpot);
 	} # handleNzbAction
 	

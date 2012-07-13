@@ -9,7 +9,7 @@ class SpotPage_render extends SpotPage_Abs {
 		$this->_params = $params;
 	} # ctor
 
-	function sanitizeTplName($tpl) {
+	private function sanitizeTplName($tpl) {
 		$validChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
 		
 		$newName = '';
@@ -23,9 +23,6 @@ class SpotPage_render extends SpotPage_Abs {
 	} # sanitizeTplName
 
 	function render() {
-		# Haal de volledige spotinhoud op
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-
 		# sanitize the template name
 		$tplFile = $this->sanitizeTplName($this->_tplname);
 		

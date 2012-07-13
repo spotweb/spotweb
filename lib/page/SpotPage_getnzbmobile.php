@@ -11,8 +11,6 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 
 	
 	function render() {
-		$hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
-
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
 
@@ -21,14 +19,13 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
 		} # if
 
-		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
-		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
-		if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
-			$nzb_spotnntp = $hdr_spotnntp;
-		} else {
-			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
-		} # else
+		/*
+		 * Create the different NNTP components
+		 */
+		$svcBinSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'bin'));
+		$svcTextSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
+		$svcProvNzb = new Services_Providers_Nzb($this->_daoFactory->getCacheDao(), $svcBinSpotReading);
+		$svcProvSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcTextSpotReading);
 
 		# NZB files mogen liever niet gecached worden op de client
 		$this->sendExpireHeaders(true);
@@ -36,7 +33,7 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
 			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,
-							$this->_action, $hdr_spotnntp, $nzb_spotnntp);
+										$this->_action, $svcProvSpot, $svcProvNzb);
 			
 			if ($this->_action != 'display') {
 				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings->get('spotweburl') ."' rel=external data-role='button'>OK</a></div></div>";			

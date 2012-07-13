@@ -16,7 +16,9 @@ class SpotUpgrader {
 	 */
 	function settings() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
 		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
 		$spotSettingsUpgrader->update();
 	} # settings
@@ -26,7 +28,9 @@ class SpotUpgrader {
 	 */
 	function users() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->update();
 	} # users
@@ -51,7 +55,9 @@ class SpotUpgrader {
 	 */
 	function resetUserGroupMembership() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
@@ -61,7 +67,9 @@ class SpotUpgrader {
 	 */
 	function resetSecurityGroups() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(),
+											$this->_daoFactory->getBlackWhiteListDao(), 
+											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->updateSecurityGroups(true);
 	} # resetSecurityGroups
@@ -71,7 +79,9 @@ class SpotUpgrader {
 	 */
 	function resetFilters() {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotUserUpgrader->updateUserFilters(true);
 	} # resetFilters
@@ -81,7 +91,8 @@ class SpotUpgrader {
 	 */
 	function resetSystemType($systemType) {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(), $this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
 
@@ -97,7 +108,9 @@ class SpotUpgrader {
 	 */
 	function resetPassword($username) {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), $this->_phpSettings);
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
 
 		# retrieve the userid

@@ -25,7 +25,7 @@ class SpotPage_login extends SpotPage_Abs {
 		$loginResult = array();
 		
 		# Instantieer het Spot user system
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
 		# zet de page title
 		$this->_pageTitle = "spot: login";

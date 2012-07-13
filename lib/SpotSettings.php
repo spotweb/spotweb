@@ -4,8 +4,9 @@
  */
 class SpotSettings {
 	private static $_instance = null;
-	
-	private $_db;
+	private $_settingsDao;
+	private $_blackWhiteListDao;
+
 	/* Gemergede array met alle settings */
 	private static $_settings;
 	/* Settings die uit PHP komen */
@@ -16,15 +17,15 @@ class SpotSettings {
 	/* 
 	 * Instantieert een nieuwe settings klasse
 	 */
-	public static function singleton(Dao_Setting $db, array $phpSettings) {
+	public static function singleton(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao, array $phpSettings) {
 		if (self::$_instance === null) {
-			self::$_instance = new SpotSettings($db);
+			self::$_instance = new SpotSettings($settingsDao, $blackWhiteListDao);
 			
 			# maak de array met PHP settings beschikbaar in de klasse
 			self::$_phpSettings = $phpSettings;
 			
 			# haal alle settings op, en prepareer die 
-			self::$_dbSettings = $db->getAllSettings();
+			self::$_dbSettings = $settingsDao->getAllSettings();
 
 			# en merge de settings met degene die we door krijgen 
 			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
@@ -57,7 +58,7 @@ class SpotSettings {
 	function remove($name) {
 		unset(self::$_settings[$name]);
 		
-		$this->_db->removeSetting($name);
+		$this->_settingsDao->removeSetting($name);
 	} # remove
 	
 	/*
@@ -87,7 +88,7 @@ class SpotSettings {
 		# Update onze eigen settings array zodat we meteen up-to-date zijn
 		self::$_settings[$name] = $value;
 		
-		$this->_db->updateSetting($name, $value);
+		$this->_settingsDao->updateSetting($name, $value);
 	} # set
 	
 	/*
@@ -199,12 +200,12 @@ class SpotSettings {
 	function setSettings($settings) {
 		# If we disable the external blacklist, clear all entries
 		if ($settings['external_blacklist'] == false && $this->get('external_blacklist') == true) {
-			$this->_db->removeOldList($this->get('blacklist_url'), SpotDb::spotterlist_Black);
+			$this->_blackWhiteListDao->removeOldList($this->get('blacklist_url'), 'black');
 		} # if
 
 		# If we disable the external whitelist, clear all entries
 		if ($settings['external_whitelist'] == false && $this->get('external_whitelist') == true) {
-			$this->_db->removeOldList($this->get('whitelist_url'), SpotDb::spotterlist_White);
+			$this->_blackWhiteListDao->removeOldList($this->get('whitelist_url'), 'white');
 		} # if
 
 		# clear some stuff we don't need to store
@@ -244,8 +245,9 @@ class SpotSettings {
 	/*
 	 * Private constructor, moet altijd via singleton gaan
 	 */
-	private function __construct($db) {
-		$this->_db = $db;
+	private function __construct(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao) {
+		$this->_settingsDao = $settingsDao;
+		$this->_blackWhiteListDao = $blackWhiteListDao;
 	} # ctor
 
 } # class SpotSettings

@@ -4,10 +4,12 @@ define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
 	private $_db;
+	private $_daoFactory;
 	private $_settings;
 	
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
 		$this->_db = new SpotDb($daoFactory);
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 	} # ctor
 
@@ -182,7 +184,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userSession['user']);
 
 			# Initialize the security system
-			$userSession['security'] = new SpotSecurity($this->_db, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
+			$userSession['security'] = new SpotSecurity($this->_daoFactory->getUserDao(), $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 
 			return $userSession;
 		} else {
