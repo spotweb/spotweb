@@ -8,8 +8,8 @@ class SpotPosting {
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
-		
-		$this->_nntp_post = new SpotNntp($settings->get('nntp_post'));
+
+		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));
 	} # ctor
 
 	/*
