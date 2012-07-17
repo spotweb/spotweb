@@ -4,6 +4,7 @@ define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
 	private $_db;
+	private $_userDao;
 	private $_daoFactory;
 	private $_settings;
 	
@@ -11,6 +12,7 @@ class SpotUserSystem {
 		$this->_db = new SpotDb($daoFactory);
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
+		$this->_userDao = $daoFactory->getUserDao();
 	} # ctor
 
 	/*
@@ -25,6 +27,69 @@ class SpotUserSystem {
 		
 		return $sessionId;
 	} # generateUniqueId
+
+	/*
+	 * Create a new user record
+	 */
+	public function createNewUser(array $spotUser, $spotSession)	{
+		$result = new Dto_FormResult();
+		$spotUser['userid'] = false;
+		
+		/*
+		 * Create a random password for this user
+		 */
+		$spotUser['newpassword1'] = substr($this->generateUniqueId(), 1, 9);
+		$spotUser['newpassword2'] = $spotUser['newpassword1'];
+			
+		/*
+		 * Validate several properties of the user, we share
+		 * this code with the user editor
+		 */
+		$result->addError($this->validateUserRecord($spotUser, false));
+
+		/*
+		 * Make sure no other user exists with the same username
+		 */
+		$userIdForName = $this->_userDao->findUserIdForName($spotUser['username']);
+		if (!empty($userIdForName)) {
+			$result->addError(sprintf(_("'%s' already exists"), $spotUser['username']));
+		} # if
+		
+		if ($result->isSuccess()) {
+			# Create a private and public key pair for this user
+			$spotSigning = Services_Signing_Base::factory();
+			$userKey = $spotSigning->createPrivateKey($this->_settings->get('openssl_cnf_path'));
+			$spotUser['publickey'] = $userKey['public'];
+			$spotUser['privatekey'] = $userKey['private'];
+
+			# Initialize notification system
+			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $spotSession);
+
+			# Actually add the user
+			$this->addUser($spotUser);
+			
+			/*
+			 * We assume the user was succesfully added, all validation is done at
+			 * a higher level, and addUser() will throw an exception if something is
+			 * seriously wrong
+			 */
+			$result->addData('username', $spotUser['username']);
+			$result->addData('password', $spotUser['newpassword1']);
+			$result->addInfo(sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']));
+			$result->addInfo(sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']));
+
+			# Send a mail to the new user if the user asked for this
+			$sendMail = isset($spotUser['sendmail']);
+			if ($sendMail || $this->_settings->get('sendwelcomemail')) {
+				$spotsNotifications->sendNewUserMail($spotUser);
+			} # if 
+
+			# en verstuur een notificatie
+			$spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
+		} # if
+
+		return $formMessages;
+	} # createNewUser
 	
 	/*
 	 * Create a new session for the userid
@@ -184,7 +249,7 @@ class SpotUserSystem {
 			$this->_db->setUser($userSession['user']);
 
 			# Initialize the security system
-			$userSession['security'] = new SpotSecurity($this->_daoFactory->getUserDao(), $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
+			$userSession['security'] = new SpotSecurity($this->_userDao, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
 
 			return $userSession;
 		} else {
@@ -350,7 +415,7 @@ class SpotUserSystem {
 	/*
 	 * Adds a user to the database
 	 */
-	function addUser($user) {
+	private function addUser($user) {
 		if (!$this->validUsername($user['username'])) {
 			throw new Exception("Invalid username");
 		} # if

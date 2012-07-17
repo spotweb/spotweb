@@ -117,7 +117,7 @@ class SpotReq {
 	} # isXsrfValid
 	
 	static function generateXsrfCookie($action) {
-		# XSRF cookie contains 3 fields:
+		# XSRF cookie contains 4 fields:
 		#   1 - Current timestamp in unixtime
 		#	2 - formname (for example, 'loginform' or 'postcommentform')
 		# 	3 - Userid

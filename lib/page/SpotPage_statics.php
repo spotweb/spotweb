@@ -1,10 +1,5 @@
 <?php
-# Deze klasse proxied feitelijk requests voor meerdere resources, dit is voornamelijk handig
-# als er meerdere JS files e.d. geinclude moeten worden. 
-# 
-# Normaal kan je dit ook met mod_expires (van apache) en gelijkaardigen oplossen, maar dit vereist
-# server configuratie en dit kunnen we op deze manier vrij makkelijk in de webapp oplossen.
-#
+
 class SpotPage_statics extends SpotPage_Abs {
 	private $_params;
 	private $_currentCssFile;
@@ -37,9 +32,10 @@ class SpotPage_statics extends SpotPage_Abs {
 					   $this->_settings->get('cookie_host')),
 				$fc);
 
-			# ik ben geen fan van regexpen maar in dit scheelt het
-			# het volledig parsen van de content van de CSS file dus
-			# is het het overwegen waard.
+			/*
+			 * Usually i don't like regexe's as they are hard(er) to read,
+			 * but this saves a lot of parsing so worth it
+			 */
 			$this->_currentCssFile = $file;
 			$fc = preg_replace_callback('/url\(([^)]+)\)/i', array($this, 'cbFixCssUrl'), $fc);
 			
@@ -58,20 +54,21 @@ class SpotPage_statics extends SpotPage_Abs {
 	function render() {
 		$tplHelper = $this->_tplHelper;
 
-		# Controleer de users' rechten
+		/* Make sure users has sufficient permission to perform this action */
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statics, '');
 		
-		# vraag de content op
+		/* Actually get the (merged) static fils */
 		$mergedInfo = $this->mergeFiles($tplHelper->getStaticFiles($this->_params['type']));
 
-		# Er is een bug met mod_deflate en mod_fastcgi welke ervoor zorgt dat de content-length
-		# header niet juist geupdate wordt. Als we dus mod_fastcgi detecteren, dan sturen we
-		# content-length header niet mee
+		/*
+		 * We encounter a bug when using mod_deflate and mod_fastcgi which causes the content-length
+		 * header to be sent incorrectly. Hence, if we detect mod_fastcgi we dont send an content-length
+		 * header at all
+		 */
 		if (!isset($_SERVER['REDIRECT_HANDLER']) || ($_SERVER['REDIRECT_HANDLER'] != 'php-fastcgi')) {
 			Header("Content-Length: " . strlen($mergedInfo['body']));
 		} # if
 
-		# en stuur de versie specifieke content
 		switch($this->_params['type']) {
 			case 'css'		: $this->sendContentTypeHeader('css');
 							  Header('Vary: Accept-Encoding'); // sta toe dat proxy servers dit cachen
@@ -80,10 +77,10 @@ class SpotPage_statics extends SpotPage_Abs {
 			case 'ico'		: $this->sendContentTypeHeader('ico'); break;
 		} # switch
 		
-		# stuur de expiration headers
+		# we don't want this code to expire
 		$this->sendExpireHeaders(false);
 		
-		# stuur de last-modified header
+		# and send the correct last-modified header
 		Header("Last-Modified: " . gmdate("D, d M Y H:i:s", $tplHelper->getStaticModTime($this->_params['type'])) . " GMT"); 
 
 		echo $mergedInfo['body'];
