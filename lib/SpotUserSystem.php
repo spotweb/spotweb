@@ -31,7 +31,7 @@ class SpotUserSystem {
 	/*
 	 * Create a new user record
 	 */
-	public function createNewUser(array $spotUser, $spotSession)	{
+	public function createNewUser(array $spotUser, array $spotSession)	{
 		$result = new Dto_FormResult();
 		$spotUser['userid'] = false;
 		
@@ -88,7 +88,7 @@ class SpotUserSystem {
 			$spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
 		} # if
 
-		return $formMessages;
+		return $result;
 	} # createNewUser
 	
 	/*
@@ -769,14 +769,14 @@ class SpotUserSystem {
 	 * Validate a group record
 	 */
 	function validateSecGroup($group) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 
 		# Remove any lingering spaces
 		$group['name'] = trim($group['name']);
 		
 		# Ensure a gorupname is given and it is not too short
 		if (strlen($group['name']) < 3) {
-			$errorList[] = _('Invalid groupname');
+			$result->addError(_('Invalid groupname'));
 		} # if
 
 		/*
@@ -790,34 +790,53 @@ class SpotUserSystem {
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
 				if ($secGroup['id'] != $group['id']) {
-					$errorList[] = _('Name is already in use');
+					$result->addError(_('Name is already in use'));
 				} # if
 			} # if
 		} # foreach
 		
-		return array($errorList, $group);
+		return $result;
 	} # validateSecGroup
 
 	/*
 	 * Removes a permission from a securitygroup
 	 */
 	function removePermFromSecGroup($groupId, $perm) {
-		$this->_db->removePermFromSecGroup($groupId, $perm);
+		$result = new Dto_FormResult();
+		$result = $this->allowedToEditGroup($groupId);
+
+		if ($result->isSuccess()) {
+			$this->_db->removePermFromSecGroup($groupId, $perm);
+		} # if
+
+		return $result;
 	} # removePermFromSecGroup
 
 	/*
 	 * Sets a speific permission in a group to either allow or deny
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
-		$this->_db->setDenyForPermFromSecGroup($groupId, $perm);
+		$result = new Dto_FormResult();
+		$result = $this->allowedToEditGroup($groupId);
+
+		if ($result->isSuccess()) {
+			$this->_db->setDenyForPermFromSecGroup($groupId, $perm);
+		} # if
+
+		return $result;
 	} # setDenyForPermFromSecGroup
 	
 	/*
 	 * Adds a permission to an security group
 	 */
 	function addPermToSecGroup($groupId, $perm) {
-		$errorList = array();
-		
+		$result = new Dto_FormResult();
+		$result = $this->allowedToEditGroup($groupId);
+
+		if (!$result->isSuccess()) {
+			return $result;
+		} # if
+
 		# Remove any superfluous spaces
 		$perm['objectid'] = trim($perm['objectid']);
 		
@@ -834,30 +853,50 @@ class SpotUserSystem {
 				($groupPerm['objectid'] == $perm['objectid'])) {
 				
 				# Duplicate permission
-				$errorList[] = _('Permission already exists in this group');
+				$result->addError(_('Permission already exists in this group'));
 			} # if
 		} # foreach
 	
 		# Add the permission to the group
-		if (empty($errorList)) {
+		if ($result->isSuccess()) { 
 			$this->_db->addPermToSecGroup($groupId, $perm);
 		} # if
 		
-		return $errorList;
+		return $result;
 	} # addPermToSecGroup
 	
 	/*
 	 * Update a group record
 	 */
-	function setSecGroup($group) {
-		$this->_db->setSecurityGroup($group);
+	function setSecGroup($groupId, $groupName) {
+		$result = new Dto_FormResult();
+		$result = $this->allowedToEditGroup($groupId);
+
+		$group = array('name' => trim($groupName));
+		$result = $this->validateSecGroup($group);
+
+		if ($result->isSuccess()) {
+			$this->_db->setSecurityGroup($group);
+		} # if
+
+		return $result;
 	} # setSecGroup
 
 	/*
 	 * Add an security group
 	 */
-	function addSecGroup($group) {
-		$this->_db->addSecurityGroup($group);
+	function addSecGroup($groupName) {
+		$result = new Dto_FormResult();
+		
+		/* Remove extra spaces from the groupname */
+		$group = array('name' => trim($groupName));
+		$result = $this->validateSecGroup($group);
+
+		if ($result->isSuccess()) {
+			$this->_db->addSecurityGroup($groupName);
+		} # if
+
+		return $result;
 	} # addSecGroup
 	
 	/*
@@ -873,10 +912,34 @@ class SpotUserSystem {
 	} # getSecGroup
 
 	/*
+	 * Make sure we can edit this group record
+	 */
+	function allowedToEditGroup(Dto_FormResult $result, $groupId) {
+		/*
+		 * Make sure the security group exists, and can be editted
+		 */
+		$secGroup = $spotUserSystem->getSecGroup($groupId);
+		if (empty($secGroup)) {
+			$result->addError(_("Group doesn't exist"));
+		} elseif ($groupId < 6) {
+			$result->addError(_("Built-in groups can not be edited"));
+		} # else
+
+		return $result;
+	} # allowedToEditGroup
+
+	/*
 	 * Removes a group record
 	 */
-	function removeSecGroup($group) {
-		$this->_db->removeSecurityGroup($group);
+	function removeSecGroup($groupId) {
+		$result = new Dto_FormResult();
+		$result = $this->allowedToEditGroup($groupId);
+
+		if ($result->isSuccess()) {
+			$this->_db->removeSecurityGroup($secGroup);
+		} # else
+
+		return $result;
 	} # removeSecGroup
 
 	/*
@@ -919,6 +982,7 @@ class SpotUserSystem {
 	 *   * Parent
 	 */
 	function changeFilter($userId, $filterForm) {
+		$filter = $this->getFilter($userId, $filterForm['filterid']);
 		return $this->_db->updateFilter($userId, $filterForm);
 	} # changeFilter
 
@@ -927,7 +991,7 @@ class SpotUserSystem {
 	 * Validates a filter
 	 */
 	function validateFilter($filter) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 
 		# Remove any spaces 
 		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
@@ -935,25 +999,24 @@ class SpotUserSystem {
 		
 		# Make sure a filter name is valid
 		if (strlen($filter['title']) < 3) {
-			$errorList[] = _('Invalid filter name');
+			$result->addError(_('Invalid filter name'));
 		} # if
 		
-		return array($filter, $errorList);
+		return list($result, $filter);
 	} # validateFilter
 	
 	/*
 	 * Adds a filter to a user
 	 */
 	function addFilter($userId, $filter) {
-		$errorList = array();
-		list($filter, $errorList) = $this->validateFilter($filter);
+		list($filter, $result) = $this->validateFilter($filter);
 		
 		# No errors found? add it to the datbase
-		if (empty($errorList)) {
+		if ($result->isSuccess()) { 
 			$this->_db->addFilter($userId, $filter);
 		} # if
 		
-		return $errorList;
+		return $result;
 	} # addFilter
 	
 	/*
@@ -1002,6 +1065,8 @@ class SpotUserSystem {
 	 */
 	function removeFilter($userId, $filterId) {
 		$this->_db->deleteFilter($userId, $filterId, 'filter');
+
+		return new Dto_FormResult('success');
 	} # removeFilter
 	
 	/*
@@ -1014,6 +1079,8 @@ class SpotUserSystem {
 		
 		# and copy them back from the userlist
 		$this->_db->copyFilterList($this->_settings->get('nonauthenticated_userid'), $userId);
+
+		return new Dto_FormResult('success');
 	} # resetFilterList
 
 	/*
@@ -1039,6 +1106,8 @@ class SpotUserSystem {
 		
 		# and copy them from the specified user to anonymous
 		$this->_db->copyFilterList($userId, $this->_settings->get('nonauthenticated_userid'));
+
+		return new Dto_FormResult('success');
 	} # setFiltersAsDefault
 
 	/*
