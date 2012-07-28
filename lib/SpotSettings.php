@@ -95,7 +95,7 @@ class SpotSettings {
 	 * Validate settings
 	 */
 	function validateSettings($settings) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 
 		# Define arrays with valid settings
 		$validNntpEnc = array(false, 'ssl', 'tls');
@@ -114,45 +114,45 @@ class SpotSettings {
 
 		# Verify settings with the previous declared arrays
 		if (in_array($settings['nntp_nzb']['enc'], $validNntpEnc) === false || in_array($settings['nntp_hdr']['enc'], $validNntpEnc) === false || in_array($settings['nntp_post']['enc'], $validNntpEnc) === false) {
-			$errorList[] = _('Invalid encryption setting');
+			$result->addError(_('Invalid encryption setting'));
 		} # if
 		if (in_array($settings['spot_moderation'], $validModerationAction) === false) {
-			$errorList[] = _('Invalid spot moderation setting');
+			$result->addError(_('Invalid spot moderation setting'));
 		} # if
 		if (in_array($settings['retentiontype'], $validRetentionTypes) === false) {
-			$errorList[] = _('Invalid spot retentiontype setting');
+			$result->addError(_('Invalid spot retentiontype setting'));
 		} # if
 
 		# Verify settings
 		$settings['cookie_expires'] = (int) $settings['cookie_expires'];
 		if ($settings['cookie_expires'] < 0) {
-			$errorList[] = _('Invalid cookie_expires setting');
+			$result->addError(_('Invalid cookie_expires setting'));
 		} # if
 
 		$settings['retention'] = (int) $settings['retention'];
 		if ($settings['retention'] < 0) {
-			$errorList[] = _('Invalid retention setting');
+			$result->addError(_('Invalid retention setting'));
 		} # if
 
 		if (($settings['retrieve_newer_than'] = strtotime($settings['retrieve_newer_than'])) === false || $settings['retrieve_newer_than'] > time()) {
-			$errorList[] = _('Invalid retrieve_newer_than setting');
+			$result->addError(_('Invalid retrieve_newer_than setting'));
 		} elseif ($settings['retrieve_newer_than'] < 1230789600) {
 			$settings['retrieve_newer_than'] = 1230789600;
 		} # elseif
 
 		$settings['retrieve_increment'] = (int) $settings['retrieve_increment'];
 		if ($settings['retrieve_increment'] < 1) {
-			$errorList[] = _('Invalid retrieve_increment setting');
+			$result->addError(_('Invalid retrieve_increment setting'));
 		} # if
 
 		# check the mailaddress
 		if (!filter_var($settings['systemfrommail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = _('Not a valid email address');
+			$result->addError(_('Not a valid email address'));
 		} # if
 
 		# We don't want to save megabyts of CSS, so put a limit to the size
 		if (strlen($settings['customcss'] > 1024 * 10)) { 
-			$errorList[] = _('Custom CSS is too large');
+			$result->addError(_('Custom CSS is too large'));
 		} # if		
 
 		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
@@ -194,7 +194,13 @@ class SpotSettings {
 
 		unset($settings['nntp_hdr']['use'], $settings['nntp_post']['use']);
 
-		return array($errorList, $settings);
+		/*
+		 * We want to pass the updated settings back to the caller because
+		 * we fixed several stuff.
+		 */
+		$result->addData('settings', $settings);
+
+		return $result;
 	} # validateSettings
 
 	function setSettings($settings) {

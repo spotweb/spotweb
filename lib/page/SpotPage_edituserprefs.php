@@ -12,8 +12,8 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
+		# Make sure the editresult is set to 'not comited' per default
+		$result = new Dto_FormResult('notsubmitted');
 							  
 		# Validate proper permissions
 		if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
@@ -22,9 +22,6 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_other_users, '');
 		} # if
 		
-		# Make sure the editresult is set to 'not comitted' per default
-		$editResult = array();
-
 		# Instantiat the user system as necessary for the management of user preferences
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
@@ -34,8 +31,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		# retrieve the to-edit user
 		$spotUser = $this->_db->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
-			$formMessages['errors'][] = sprintf(_('User %d can not be found'), $this->_userIdToEdit);
-			$editResult = array('result' => 'failure');
+			$result->addError(sprintf(_('User %d can not be found'), $this->_userIdToEdit));
 		} # if
 		
 		/* 
@@ -51,7 +47,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
 
 		# Are we trying to submit this form, or only rendering it?
-		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+		if ((!empty($formAction)) && (!$result->isError()) {
 			switch($formAction) {
 				case 'edit'	: {
 					/*
@@ -61,19 +57,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 					 * Because we use cleanseUserPreferences() those dummies will not end up in the database
 					 */
 					if (isset($this->_editUserPrefsForm['_dummy_prevent_porn'])) {
-						$spotUserSystem->setIndexFilter(
-							$spotUser['userid'],
-							array('valuelist' => array(),
-								  'title' => 'Index filter',
-								  'torder' => 999,
-								  'tparent' => 0,
-								  'children' => array(),
-								  'filtertype' => 'index_filter',
-								  'sorton' => '',
-								  'sortorder' => '',
-								  'enablenotify' => false,
-								  'icon' => 'spotweb.png',
-								  'tree' => '~cat0_z3'));
+						$spotUserSystem->setEroticIndexFilter($spotUser['userid']);
 					} else {
 						$spotUserSystem->removeIndexFilter($spotUser['userid']);
 					} # if
@@ -85,7 +69,8 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 												$this->_tplHelper->getTemplatePreferences());
 
 					# Validate all preferences
-					list($formMessages['errors'], $spotUser['prefs']) = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
+					$result = $spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
+					$spotUser['prefs'] = $result->getData('prefs');
 
 					# Make sure user has permission to select this template
 					if ($spotUser['prefs']['normal_template'] != $savePrefs['normal_template']) {
@@ -100,7 +85,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 						$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_select_template, $spotUser['prefs']['tablet_template']);
 					} # if
 
-					if (empty($formMessages['errors'])) {
+					if ($result->isSuccess()) {
 						# Make sure an NZB file was provided
 						if (isset($_FILES['edituserprefsform'])) {
 							$uploadError = $_FILES['edituserprefsform']['error']['avatar'];
@@ -110,26 +95,27 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 							 * these errors so they cannot provide the error
 							 */
 							if (($uploadError == UPLOAD_ERR_FORM_SIZE) || ($uploadError == UPLOAD_ERR_INI_SIZE)) {
-								$formMessages['errors'][] = _("Uploaded file is too large");
+								$result->addError(_("Uploaded file is too large"));
 							}  # if 
 							
 							if ($uploadError == UPLOAD_ERR_OK) {
-								$formMessages['errors'] = $spotUserSystem->changeAvatar(
+								$avatarResult  = $spotUserSystem->changeAvatar(
 																$spotUser['userid'], 
 																file_get_contents($_FILES['edituserprefsform']['tmp_name']['avatar']));
+
+								/*
+								 * Merge the result of the avatar update to our
+								 * total result
+								 */
+								$result->mergeResult($avatarResult);
 							} # if
 						} # if
 					} # if
 
-					if (empty($formMessages['errors'])) {
+					if ($result->isSuccess()) { 
 						# and actually update the user in the database
 						$spotUserSystem->setUser($spotUser);
-
-						# if we didnt get an exception, it automatically succeeded
-						$editResult = array('result' => 'success');
-					} else {
-						$editResult = array('result' => 'failure');
-					} # else
+					} # if
 
 					/*
 					 * We have the register Spotweb with the notification providers (growl, prowl, etc) atleast once. 
@@ -146,18 +132,17 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 				} # case 'edit' 
 				
 				case 'cancel' : {
-					$editResult = array('result' => 'success');
+					$result->setResult('success');
 				} # case 'cancel'
 			} # switch
 		} # if
 
 		#- display stuff -#
 		$this->template('edituserprefs', array('edituserprefsform' => $spotUser['prefs'],
-										    'formmessages' => $formMessages,
 											'spotuser' => $spotUser,
 											'dialogembedded' => $this->_dialogembedded,
 											'http_referer' => $this->_editUserPrefsForm['http_referer'],
-											'edituserprefsresult' => $editResult));
+											'result' => $result));
 	} # render
 	
 } # class SpotPage_edituserprefs

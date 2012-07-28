@@ -38,6 +38,14 @@ class Dto_FormResult {
 	} # isSuccess
 
 	/*
+	 * Returns true when the form is in error
+	 * state
+	 */
+	function isError() {
+		return $this->_result == 'error';
+	} # isError
+
+	/*
 	 * Returns the current result of this form
 	 */
 	function getResult($s) {
@@ -84,7 +92,12 @@ class Dto_FormResult {
 			return ;
 		} # if
 
-		$this->setResult("warning");
+		/* 
+		 * Error trumps warnings 
+		 */
+		if ($this->getResult() != 'error') {
+			$this->setResult("warning");
+		} # if
 
 		if (is_array($s)) {
 			$this->_warnings += $s;
@@ -103,8 +116,12 @@ class Dto_FormResult {
 	/*
 	 * Return a list of data fields
 	 */
-	public function getData() {
-		return $this->_data;
+	public function getData($field = null) {
+		if ($field === null) {
+			return $this->_data;	
+		} # if
+
+		return $this->_data[$field];
 	} # getData
 
 	/*
@@ -127,5 +144,27 @@ class Dto_FormResult {
 	public function getWarnings() {
 		return $this->_warnings;
 	} # getWarnings
+
+	/*
+	 * Merge the result object from 
+	 * another instance into this one
+	 */
+	public function mergeResult($result) {
+		foreach($result->getInfo() as $info) {
+			$this->addInfo($info);
+		} # if
+
+		foreach($result->getWarnings() as $warning) {
+			$this->addWarning($warning);
+		} # if
+
+		foreach($result->getErrors() as $error) {
+			$this->addError($error);
+		} # if
+
+		foreach($result->getData() as $dataKey => $dataVal) {
+			$this->addData($dataKey, $dataVal);
+		} # if
+	} # mergeResult
 
 } # Dto_FormResult

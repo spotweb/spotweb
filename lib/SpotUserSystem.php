@@ -575,7 +575,7 @@ class SpotUserSystem {
 	 * Validate user preferences
 	 */
 	function validateUserPreferences($prefs, $currentPrefs) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 		
 		# Define several arrays with valid settings
 		$validDateFormats = array('human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)');
@@ -586,32 +586,32 @@ class SpotUserSystem {
 		# Check per page setting
 		$prefs['perpage'] = (int) $prefs['perpage'];
 		if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
-			$errorList[] = _('Invalid preference value (perpage)');
+			$result->addError(_('Invalid preference value (perpage)'));
 		} # if
 		
 		# Controleer basis settings
 		if (in_array($prefs['date_formatting'], $validDateFormats) === false) {
-			$errorList[] = _('Invalid user preference value (date_formatting)');
+			$result->addError(_('Invalid user preference value (date_formatting)'));
 		} # if
 		
 		if (in_array($prefs['normal_template'], $validTemplates) === false) { 	
-			$errorList[] = _('Invalid user preference value (template)');
+			$result->addError(_('Invalid user preference value (template)'));
 		} # if
 
 		if (in_array($prefs['mobile_template'], $validTemplates) === false) { 	
-			$errorList[] = _('Invalid user preference value (template)');
+			$result->addError(_('Invalid user preference value (template)'));
 		} # if
 
 		if (in_array($prefs['tablet_template'], $validTemplates) === false) { 	
-			$errorList[] = _('Invalid user preference value (template)');
+			$result->addError(_('Invalid user preference value (template)'));
 		} # if
 
 		if (in_array($prefs['user_language'], $validLanguages) === false) { 	
-			$errorList[] = _('Invalid user preference value (language)');
+			$result->addError(_('Invalid user preference value (language)'));
 		} # if
 
 		if (in_array($prefs['defaultsortfield'], $validDefaultSorts) === false) { 	
-			$errorList[] = _('Invalid user preference value (defaultsortfield)');
+			$result->addError(_('Invalid user preference value (defaultsortfield)'));
 		} # if
 		
 		# when an sabnzbd host is entered, it has to be a valid URL
@@ -619,7 +619,7 @@ class SpotUserSystem {
 			$tmpHost = parse_url($prefs['nzbhandling']['sabnzbd']['url']);
 			
 			if ( ($tmpHost === false) | (!isset($tmpHost['scheme'])) || (($tmpHost['scheme'] != 'http') && ($tmpHost['scheme'] != 'https')) ) {
-				$errorList[] = _('sabnzbd host is not a valid URL');
+				$result->addError(_('sabnzbd host is not a valid URL'));
 			} # if
 			
 			# SABnzbd URL should always end with a s slash
@@ -637,71 +637,76 @@ class SpotUserSystem {
 
 		# We don't want to save megabyts of CSS, so put a limit to the size
 		if (strlen($prefs['customcss'] > 1024 * 10)) { 
-			$errorList[] = _('Custom CSS is too large');
+			$result->addError(_('Custom CSS is too large'));
 		} # if		
 
 		# We don't want to save megabytes of default newspot body, so limit it
 		if (strlen($prefs['newspotdefault_tag'] > 90)) { 
-			$errorList[] = _('Default value for a spots\' tag is too long');
+			$result->addError(_('Default value for a spots\' tag is too long'));
 		} # if		
 		
 		if (strlen($prefs['newspotdefault_body'] > 9000)) { 
-			$errorList[] = _('Default value for a spots\' body is too long');
+			$result->addError(_('Default value for a spots\' body is too long'));
 		} # if		
 		
 		# When a 'runcommand' or 'save' action is chosen, 'local_dir' is a mandatry setting
 		if (($prefs['nzbhandling']['action'] == 'save') || ($prefs['nzbhandling']['action'] == 'runcommand')) {
 			if (empty($prefs['nzbhandling']['local_dir'])) {
-				$errorList[] = _('When NZB handling is either "save" or "runcommand" the directory must be entered');
+				$result->addError(_('When NZB handling is either "save" or "runcommand" the directory must be entered'));
 			} # if
 		} # if
 
 		# When a 'runcommand' action is chosen, 'command' is a mandatry setting
 		if ($prefs['nzbhandling']['action'] == 'runcommand') {
 			if (empty($prefs['nzbhandling']['command'])) {
-				$errorList[] = _('When NZB handling is "runcommand" a command must be entered');
+				$result->addError(_('When NZB handling is "runcommand" a command must be entered'));
 			} # if
 		} # if
 
 		# For the 'growl' notification provider, a host is mandatory
 		if ($prefs['notifications']['growl']['enabled']) {
 			if (empty($prefs['notifications']['growl']['host'])) {
-				$errorList[] = _('Growl notifications require a growl host to be entered');
+				$result->addError(_('Growl notifications require a growl host to be entered'));
 			} # if
 		} # if
 
 		# 'Notify My Android' requires an API key
 		if ($prefs['notifications']['nma']['enabled']) {
 			if (empty($prefs['notifications']['nma']['api'])) {
-				$errorList[] = _('"Notify My Android" notifications require an API key');
+				$result->addError(_('"Notify My Android" notifications require an API key'));
 			} # if
 		} # if
 
 		# 'Notifo' requires both a username and apikey
 		if ($prefs['notifications']['notifo']['enabled']) {
 			if (empty($prefs['notifications']['notifo']['username'])) {
-				$errorList[] = _('"Notifo" notifications require an username to be entered');
+				$result->addError(_('"Notifo" notifications require an username to be entered'));
 			} # if
 			if (empty($prefs['notifications']['notifo']['api'])) {
-				$errorList[] = _('"Notifo" notifications require an api key to be entered');
+				$result->addError(_('"Notifo" notifications require an api key to be entered'));
 			} # if
 		} # if
 
 		# 'Prowl' requires an API key
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {
-				$errorList[] = _('"Prowl" notifications require an API key to be entered');
+				$result->addError(_('"Prowl" notifications require an API key to be entered'));
 			} # if
 		} # if
 
 		# To use Twitter, an twitter account should be defined
 		if ($prefs['notifications']['twitter']['enabled']) {
 			if (empty($prefs['notifications']['twitter']['access_token']) || empty($prefs['notifications']['twitter']['access_token_secret'])) {
-				$errorList[] = _('To use twitter you need to enter and validate a twitter account');
+				$result->addError(_('To use twitter you need to enter and validate a twitter account'));
 			} # if
 		} # if
 
-		return array($errorList, $prefs);
+		/*
+		 * We want to return the fixed up preferences to the caller
+		 */
+		$result->addData('prefs', $prefs);
+
+		return $result;
 	} # validateUserPreferences
 
 	/*
@@ -1038,9 +1043,28 @@ class SpotUserSystem {
 	} # getIndexFilter
 	
 	/*
+	 * Flter out all erotic spots on the indx page
+	 */
+	function setEroticIndexFilter($userId) {
+		$this->setIndexFilter(
+			$userId,
+			array('valuelist' => array(),
+				  'title' => 'Index filter',
+				  'torder' => 999,
+				  'tparent' => 0,
+				  'children' => array(),
+				  'filtertype' => 'index_filter',
+				  'sorton' => '',
+				  'sortorder' => '',
+				  'enablenotify' => false,
+				  'icon' => 'spotweb.png',
+				  'tree' => '~cat0_z3'));
+	} # setEroticIndexFilter
+
+	/*
 	 * Add user's index filter
 	 */
-	function setIndexFilter($userId, $filter) {
+	private function setIndexFilter($userId, $filter) {
 		# There can only be one 
 		$this->removeIndexFilter($userId);
 		
@@ -1363,13 +1387,13 @@ class SpotUserSystem {
 	 * Changes the avatar of this user
 	 */
 	function changeAvatar($userId, $imageString) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 		
 		/* 
 		 * Don't allow images larger than 4000 bytes
 		 */
 		if (strlen($imageString) > 4000) {
-			$errorList[] = _('An avatar image has a maximum of 4000 bytes');
+			$result->addError(_('An avatar image has a maximum of 4000 bytes'));
 		} # if
 		
 		/*
@@ -1378,7 +1402,7 @@ class SpotUserSystem {
 		$svc_ImageUtil = new Services_Image_Util();
 		$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
 		if ($dimensions === false) {
-			$errorList[] = _('Invalid avatar image was supplied');
+			$result->addError(_('Invalid avatar image was supplied'));
 		} # if
 
 		/*
@@ -1402,7 +1426,7 @@ class SpotUserSystem {
 			$this->_db->setUserAvatar($userId, $imageString);
 		} # if
 
-		return $errorList;
+		return $result;
 	} # changeAvatar
 	
 	/*

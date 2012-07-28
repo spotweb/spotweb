@@ -8,14 +8,11 @@ class SpotPage_editsettings extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_settings, '');
 
 		# Make sure the editresult is set to 'not comited' per default
-		$editResult = array();
+		$result = new Dto_FormResult('notsubmitted');
 		
 		# zet de page title
 		$this->_pageTitle = _('Settings');
@@ -31,17 +28,13 @@ class SpotPage_editsettings extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					# Validate and apply all settings
-					list($formMessages['errors'], $newSettings) = $this->_settings->validateSettings($this->_editSettingsForm);
+					$result = $this->_settings->validateSettings($this->_editSettingsForm);
 
-					if (empty($formMessages['errors'])) {
+					if ($result->isSuccess()) { 
 						# and actually update the user in the database
+						$newSettings = $result->getData('settings');
 						$this->_settings->setSettings($newSettings);
-
-						# if we didnt get an exception, it automatically succeeded
-						$editResult = array('result' => 'success');
-					} else {
-						$editResult = array('result' => 'failure');
-					} # else
+					} # if
 					
 					break;
 				} # case 'edit' 
@@ -54,9 +47,9 @@ class SpotPage_editsettings extends SpotPage_Abs {
 
 		#- display stuff -#
 		$this->template('editsettings', array('editsettingsform' => $this->_settings,
-											  'formmessages' => $formMessages,
+											  'result' => $result,
 											  'http_referer' => $this->_editSettingsForm['http_referer'],
 											  'adminpanelresult' => $editResult));
 	} # render
 	
-} # class SpotPage_edituserprefs
+} # class SpotPage_editsettings
