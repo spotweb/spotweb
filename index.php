@@ -307,12 +307,6 @@ try {
 				break;
 		} # logout
 
-		case 'sabapi' : {
-			$page = new SpotPage_sabapi($daoFactory, $settings, $currentSession);
-			$page->render();
-			break;
-		} # sabapi
-
 		case 'nzbhandlerapi' : {
 			$page = new SpotPage_nzbhandlerapi($daoFactory, $settings, $currentSession,
 							Array('nzbhandlerapikey' => $req->getDef('nzbhandlerapikey', ''),
