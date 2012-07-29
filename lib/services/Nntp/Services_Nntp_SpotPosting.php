@@ -207,6 +207,5 @@ class Services_Nntp_SpotPosting {
 
 		return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
 	} # reportSpotAsSpam
-	
 
-} # SpotPosting
+} # Services_Nntp_SpotPosting

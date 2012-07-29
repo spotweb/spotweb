@@ -167,7 +167,7 @@ class Services_Providers_Statistics {
 	} # getValidStatisticsLimits
 
 	/*
-	 * Returns the current oldest spot in the database in number of dys
+	 * Returns the current oldest spot in the database in number of days
 	 */
 	private function getOldestSpotAge() {
 		if ($this->_oldestSpotAge == null) {

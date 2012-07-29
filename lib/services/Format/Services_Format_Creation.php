@@ -89,4 +89,4 @@ class Services_Format_Creation {
 		return $doc->saveXML($mainElm);
 	} # spotToXml
 
-} Services_Format_Creation
+} # Services_Format_Creation

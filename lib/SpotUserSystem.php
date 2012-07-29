@@ -1449,6 +1449,20 @@ class SpotUserSystem {
 	} # removeSpotterFromList
 	
 	/*
+	 * Clears the users' download list
+	 */
+	function clearDownloadList($ourUserId) {
+		$this->_db->clearDownloadList($ourUserId);;
+	} # clearDownloadList
+
+	/*
+	 * Mark all spots as read
+	 */
+	function markAllAsRead($ourUserId) {
+		return $this->_db->markAllAsRead($ourUserId);
+	} # markAllAsRead
+
+	/*
 	 * Returns the users' remote IP address
 	 */
 	function determineUsersIpAddress() {

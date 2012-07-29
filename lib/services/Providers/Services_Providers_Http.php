@@ -11,9 +11,9 @@ class Services_Providers_Http {
 	}  # ctor
 	
 	/* 
-	 * Haalt een url op en cached deze
+	 * Retrieves an URL from the web and caches it when so required
 	 */
-	function getFromWeb($url, $storeWhenRedirected, $ttl=900) {
+	function getFromWeb($url, $storeWhenRedirected, $ttl = 900) {
 		SpotTiming::start(__FUNCTION__);
 		$url_md5 = md5($url);
 		

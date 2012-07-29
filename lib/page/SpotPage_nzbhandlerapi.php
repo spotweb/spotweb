@@ -1,16 +1,20 @@
 <?php
 class SpotPage_nzbhandlerapi extends SpotPage_Abs {
-
 	private $_nzbHandler;
+	private $_params;
+
+	public function __construct() {
+		parent::__construct($daoFactory, $settings, $currentSession);
+
+		$this->_params = $params;
+	} # ctor
 	
 	function render() {
-		# Controleer de users' rechten
+		# Make sure the user has the appropriate permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_use_sabapi, '');
 		
-		parse_str($_SERVER['QUERY_STRING'], $request);
-
 		$apikey = $this->_currentSession['user']['apikey'];
-		if ($this->_tplHelper->apiToHash($apikey) != $request['nzbhandlerapikey']) {
+		if ($this->_tplHelper->apiToHash($apikey) != $this->_params['nzbhandlerapikey']) {
 			error_log('API Key Incorrect');
 			echo 'API Key Incorrect';
 			
@@ -24,7 +28,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 		
 		if ($this->_nzbHandler->hasApiSupport() !== false)
 		{
-			$action = strtolower($request['action']);
+			$action = strtolower($this->_params['action']);
 			
 			switch($action)
 			{
@@ -39,41 +43,41 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 					$result = $this->_nzbHandler->resumeQueue();
 					break;
 				case 'setspeedlimit':
-					$result = $this->_nzbHandler->setSpeedLimit($request['limit']);
+					$result = $this->_nzbHandler->setSpeedLimit($this->_params['limit']);
 					break;
 				# actions on a specific download
 				case 'movedown':
-					$result = $this->_nzbHandler->moveDown($request['id']);
+					$result = $this->_nzbHandler->moveDown($this->_params['id']);
 					break;
 				case 'moveup':
-					$result = $this->_nzbHandler->moveUp($request['id']);
+					$result = $this->_nzbHandler->moveUp($this->_params['id']);
 					break;
 				case 'movetop':
-					$result = $this->_nzbHandler->moveTop($request['id']);
+					$result = $this->_nzbHandler->moveTop($this->_params['id']);
 					break;
 				case 'movebottom':
-					$result = $this->_nzbHandler->moveBottom($request['id']);
+					$result = $this->_nzbHandler->moveBottom($this->_params['id']);
 					break;
 				case 'setcategory':
-					$result = $this->_nzbHandler->setCategory($request['id'], $request['category']);
+					$result = $this->_nzbHandler->setCategory($this->_params['id'], $this->_params['category']);
 					break;
 				case 'setpriority':
-					$result = $this->_nzbHandler->setPriority($request['id'], $request['priority']);
+					$result = $this->_nzbHandler->setPriority($this->_params['id'], $this->_params['priority']);
 					break;
 				case 'setpassword':
-					$result = $this->_nzbHandler->setPassword($request['id'], $request['password']);
+					$result = $this->_nzbHandler->setPassword($this->_params['id'], $this->_params['password']);
 					break;
 				case 'delete':
-					$result = $this->_nzbHandler->delete($request['id']);
+					$result = $this->_nzbHandler->delete($this->_params['id']);
 					break;
 				case 'rename':
-					$result = $this->_nzbHandler->rename($request['id'], $request['name']);
+					$result = $this->_nzbHandler->rename($this->_params['id'], $this->_params['name']);
 					break;
 				case 'pause':
-					$result = $this->_nzbHandler->pause($request['id']);
+					$result = $this->_nzbHandler->pause($this->_params['id']);
 					break;
 				case 'resume':
-					$result = $this->_nzbHandler->resume($request['id']);
+					$result = $this->_nzbHandler->resume($this->_params['id']);
 					break;
 				# non download related actions
 				case 'getcategories':
@@ -103,7 +107,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 			return ;
 		}
 		
-		# de nzbhandlerapi output moet niet gecached worden
+		# do not cache the nzbhandlerapi's output
 		$this->sendExpireHeaders(true);
 		$this->sendContentTypeHeader('json');
 

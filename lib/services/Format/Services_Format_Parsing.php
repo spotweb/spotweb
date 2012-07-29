@@ -1,4 +1,5 @@
 <?php
+
 class Services_Format_Parsing {
 	private $_spotSigning = null;
 	private $_util;

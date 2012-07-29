@@ -7,7 +7,7 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
-	}
+	} # ctor
 
 	function render() {
 		# Controleer de users' rechten

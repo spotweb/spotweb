@@ -314,7 +314,16 @@ try {
 		} # sabapi
 
 		case 'nzbhandlerapi' : {
-			$page = new SpotPage_nzbhandlerapi($daoFactory, $settings, $currentSession);
+			$page = new SpotPage_nzbhandlerapi($daoFactory, $settings, $currentSession,
+							Array('nzbhandlerapikey' => $req->getDef('nzbhandlerapikey', ''),
+								   'action' => $req->getDef('action', ''),
+								   'limit' => $req->getDef('limit', ''),
+								   'id' => $req->getDef('id', ''),
+								   'category' => $req->getDef('category', ''),
+								   'priority' => $req->getDef('priority', ''),
+								   'password' => $req->getDef('password', ''),
+								   'name' => $req->getDef('name', ''))
+						);
 			$page->render();
 			break;
 		} # nzbhandlerapi

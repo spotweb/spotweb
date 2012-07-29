@@ -1028,17 +1028,6 @@ class SpotTemplateHelper {
 	} # getLastSpotUpdates
 	
 	/*
-	 * Leegt de lijst met gedownloade NZB bestanden
-	 */
-	function clearDownloadList() {
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls');
-		
-		$this->_db->clearDownloadList($this->_currentSession['user']['userid']);
-	} # clearDownloadList
-	
-	/*
 	 * Converteert een permission id naar een string
 	 */
 	function permToString($perm) {
