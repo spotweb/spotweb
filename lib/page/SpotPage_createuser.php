@@ -14,11 +14,15 @@ class SpotPage_createuser extends SpotPage_Abs {
 		$result = new Dto_FormResult('notsubmitted');
 
 		/*
-		 * Create a default SpotUser record so we always have a "valid" amount of
-		 * fields to render the template with
-		 */
-		
-		# Instantieer het Spot user system
+		 * Create a default SpotUser so the form is always able to render
+		 * the values of the form
+		 */ 
+		$spotUser = array('username' => '',
+						'firstname' => '',
+						'lastname' => '',
+						'mail' => '');
+
+		# Instantiate the Spot usersystem
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
 		# Set the page title to something useful
@@ -26,8 +30,8 @@ class SpotPage_createuser extends SpotPage_Abs {
 
 		# Are we actually submitting/creating this user?
 		if ($this->_createUserForm['action'] == 'create') {
-			$spotUser = array_merge($spotUser, $this->_createUserForm);
-			$formMessages = $spotUserSystem->createNewUser($spotUser, $this->_currentSession);
+				$spotUser = array_merge($spotUser, $this->_createUserForm);
+				$result = $spotUserSystem->createNewUser($spotUser, $this->_currentSession);
 		} # if
 		
 		#- display stuff -#

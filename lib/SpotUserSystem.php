@@ -45,7 +45,7 @@ class SpotUserSystem {
 		 * Validate several properties of the user, we share
 		 * this code with the user editor
 		 */
-		$result->addError($this->validateUserRecord($spotUser, false));
+		$result->mergeResult($this->validateUserRecord($spotUser, false));
 
 		/*
 		 * Make sure no other user exists with the same username
@@ -713,54 +713,54 @@ class SpotUserSystem {
 	 * Validate the user record. Might be used for both adding and changing
 	 */
 	function validateUserRecord($user, $isEdit) {
-		$errorList = array();
+		$result = new Dto_FormResult();
 		
 		# Make sure the username is valid
 		if (!$isEdit) {
 			if (!$this->validUsername($user['username'])) {
-				$errorList[] = _('Invalid username chosen');
+				$result->addError(_('Invalid username chosen'));
 			} # if
 		} # if
 		
 		# Check a firstname is entered
 		if (strlen($user['firstname']) < 2) {
-			$errorList[] = _('Not a valid firstname');
+			$result->addError(_('Not a valid firstname'));
 		} # if
 		
 		# Check a lastname is entered
 		if (strlen($user['lastname']) < 2) {
-			$errorList[] = _('Not a valid lastname');
+			$result->addError(_('Not a valid lastname'));
 		} # if
 
 		# Make sure a valid password is entered for existing users
 		if ((strlen($user['newpassword1'] > 0)) && ($isEdit)) {
 			if (strlen($user['newpassword1']) < 5){
-				$errorList[] = _('Entered password is too short');
+				$result->addError(_('Entered password is too short'));
 			} # if
 		} # if
 
 		# Make sure a valid password is entered for new users
 		if ((strlen($user['newpassword1']) < 5) && (!$isEdit)) {
-			$errorList[] = _('Entered password is too short');
+			$result->addError(_('Entered password is too short'));
 		} # if
 
 		# and make sure the passwords match
 		if ($user['newpassword1'] != $user['newpassword2']) {
-			$errorList[] = _('Passwords do not match');
+			$result->addError(_('Passwords do not match'));
 		} # if
 		
 		# check the mailaddress
 		if (!filter_var($user['mail'], FILTER_VALIDATE_EMAIL)) {
-			$errorList[] = _('Not a valid email address');
+			$result->addError(_('Not a valid email address'));
 		} # if
 
 		# and make sure the mailaddress is unique among all users
 		$emailExistResult = $this->_db->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
-			$errorList[] = _('Mailaddress is already in use');
+			$result->addError(_('Mailaddress is already in use'));
 		} # if
 		
-		return $errorList;
+		return $result;
 	} # validateUserRecord
 	
 	/*
