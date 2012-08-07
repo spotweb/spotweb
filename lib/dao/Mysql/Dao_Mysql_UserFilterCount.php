@@ -33,7 +33,7 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 		 * Update the current filter counts if the session
 		 * is still active
 		 */
-		if (!empty($userIdList)) {
+		if (!empty($sessionList)) {
 			$this->_conn->modify("UPDATE filtercounts f, filtercounts t 
 									SET f.currentspotcount = t.currentspotcount,
 										f.lastupdate = t.lastupdate
