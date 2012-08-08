@@ -129,7 +129,7 @@ abstract class dbeng_abs {
 	 * Transforms an array of values to an list usable by an
 	 * IN statement
 	 */
-	function arrayValToIn($ar, $val, $valOffset, $valEnd) {
+	function arrayValToIn($ar, $val) {
 		$tmpList = '';
 
 		foreach($ar as $k => $v) {
