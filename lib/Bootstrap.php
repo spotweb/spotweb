@@ -110,48 +110,6 @@ class Bootstrap {
 	} # getSettings
 
 	/*
-	 * Initializes the NNTP access
-	 */
-	static public function createNntpEngine($type) {
-		/*
-		 * Retrieve the NNTP header settings we can validate those
-		 */
-		$settings = Registry::get('settings');
-		$settings_nntp_hdr = $settings->get('nntp_hdr');
-		
-		/*
-		 * Make sure we have a valid NNTP configuration
-		 */
-		if (empty($settings_nntp_hdr['host'])) {
-			throw new MissingNntpConfigurationException();
-		} # if
-	
-
-		switch ($type) {
-			case 'hdr'			: return new Service_Nntp_Engine($settings_nntp_hdr); break;
-			case 'nzb'			: {
-				$settings_nntp_bin = $settings->get('nntp_nzb');
-				if (empty($settings_nntp_nzb['host'])) {
-					return Registry::get('nntp_hdr');
-				} else {
-					return new Service_Nntp_Engine($settings_nntp_nzb);
-				} # else
-			} # nzb
-
-			case 'post'			: {
-				$settings_nntp_post = $settings->get('nntp_post');
-				if (empty($settings_nntp_post['host'])) {
-					return Registry::get('nntp_hdr');
-				} else {
-					return new Service_Nntp_Engine($settings_nntp_post);
-				} # else
-			} # post
-
-			default 			: throw new Exception("Unknown NNTP type engine (" . $type . ") for registry creation");
-		} # switch
-	} # initNntpAccess
-
-	/*
 	 * Instantiate an Request object
 	 */
 	private function getSpotReq(SpotSettings $settings) {
