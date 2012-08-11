@@ -29,9 +29,7 @@ abstract class SpotPage_Abs {
 	} # ctor
 
 	/* 
-	 * Standaard mogen paginas niet gecached worden 
-	 * om invalid cached informatie te voorkomen. Kan overriden worden
-	 * per pagina
+	 * Send either 'do cache' or 'do no cache' headers to the client
 	 */
 	function sendExpireHeaders($preventCaching) {
 		if ($preventCaching) {
@@ -46,8 +44,7 @@ abstract class SpotPage_Abs {
 	} # sendExpireHeaders
 	
 	/*
-	 * Stuur een content header, dit zorgt er voor dat de browser
-	 * eventuele content sneller kan parsen
+	 * Send the correct content header and character set to the browser
 	 */
 	function sendContentTypeHeader($type) {
 		switch($type) {
@@ -63,8 +60,11 @@ abstract class SpotPage_Abs {
 		
 	} # sendContentTypeHeader
 
-	
-	# Geef the tpl helper terug
+
+	/*
+	 * Returns an TemplateHelper instance. Instantiates an
+	 * dynamic class name which is ugly.
+	 */	
 	private function getTplHelper($params) {
 		$tplName = $this->_currentSession['active_tpl'];
 
@@ -76,7 +76,7 @@ abstract class SpotPage_Abs {
 		
 	
 	/*
-	 * Display de template
+	 * Actually run the templating code
 	 */
 	function template($tpl, $params = array()) {
 		SpotTiming::start(__FUNCTION__ . ':' . $tpl);
@@ -109,13 +109,13 @@ abstract class SpotPage_Abs {
 	} # template
 	
 	/*
-	 * Daadwerkelijk renderen van de pagina -- implementatie specifiek
+	 * Actually render the page, must be overriden by the specific implementation
 	 */
 	abstract function render();
 	
 	/*
-	 * Renderen van een permission denied pagina, kan overridden worden door een implementatie
-	 * specifieke renderer
+	 * Render a permission denied page. Might be overrided by a page specific
+	 * implementation to allow rendering of XML or other type of pages
 	 */
 	function permissionDenied($exception, $page, $http_referer) {
 		$this->template('permdenied',
