@@ -43,7 +43,7 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 		} # if
 
 		/*
-		 * Sometimes retrieve removes some sports, make sure
+		 * Sometimes retrieve removes some spots, make sure
 		 * we do not get confusing results
 		 */
 		$this->_conn->modify("UPDATE filtercounts f, filtercounts t

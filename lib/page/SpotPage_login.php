@@ -28,7 +28,7 @@ class SpotPage_login extends SpotPage_Abs {
 		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
 		# zet de page title
-		$this->_pageTitle = "spot: login";
+		$this->_pageTitle = "spot: login";	
 
 		# bring the form action into the local scope
 		$formAction = $this->_loginForm['action'];

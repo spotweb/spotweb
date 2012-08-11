@@ -155,8 +155,15 @@ class SpotUserSystem {
 	/*
 	 * Removes a session from the database. 
 	 */
-	function removeSession($sessionId) {
-		$this->_db->deleteSession($sessionId);
+	function removeSession($userSession) {
+		# and remove the users' session if the user isn't the anonymous one
+		if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
+			$this->_db->deleteSession($userSession['session']['sessionid']);
+
+			return true;
+		} else {
+			return false;
+		} # else
 	} # removeSession
 	
 	/*
