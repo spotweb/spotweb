@@ -63,7 +63,7 @@ class dbfts_mysql extends dbfts_abs {
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
-	function createTextQuery($searchFields) {
+	function createTextQuery($searchFields, $additionalFields) {
 		SpotTiming::start(__FUNCTION__);
 
 		/*
@@ -71,7 +71,6 @@ class dbfts_mysql extends dbfts_abs {
 		 * make sure always return a valid set
 		 */
 		$filterValueSql = array();
-		$additionalFields = array();
 		$sortFields = array();
 
 		/*

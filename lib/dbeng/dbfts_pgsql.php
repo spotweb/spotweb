@@ -5,7 +5,7 @@ class dbfts_pgsql extends dbfts_abs {
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
-	function createTextQuery($searchFields) {
+	function createTextQuery($searchFields, $additionalFields) {
 		SpotTiming::start(__FUNCTION__);
 
 		/*
@@ -13,7 +13,6 @@ class dbfts_pgsql extends dbfts_abs {
 		 * make sure always return a valid set
 		 */
 		$filterValueSql = array();
-		$additionalFields = array();
 		$sortFields = array();
 
 		foreach($searchFields as $searchItem) {
@@ -25,7 +24,7 @@ class dbfts_pgsql extends dbfts_abs {
 			 * in the system
 			 */
 			$tmpSortCounter = count($additionalFields);
-			
+
 			# Prepare the to_tsvector and to_tsquery strings
 			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
 			$ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
