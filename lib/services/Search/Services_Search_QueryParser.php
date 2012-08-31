@@ -673,9 +673,17 @@ class Services_Search_QueryParser {
 		 * If so, ask the FTS engin to process the query.
 		 */
 		if (!empty($textSearchFields)) {
+			/*
+ 			 * We group searches per search type, but this means
+			 * we need to pass several the total amount of added
+			 * fields to the FTS so it can create unique relevancy
+			 * field names.
+			 * 
+			 * For example: search for poster AA and Title BB
+			 */
 			foreach($textSearchFields as $searchField => $searches) {
 				$ftsEng = dbfts_abs::Factory($this->_dbEng);
-				$parsedTextQueryResult = $ftsEng->createTextQuery($searches);
+				$parsedTextQueryResult = $ftsEng->createTextQuery($searches, $additionalFields);
 
 				if (in_array($tmpFilterFieldname, array('poster', 'tag'))) {
 					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';

@@ -5,7 +5,7 @@ class dbfts_sqlite extends dbfts_abs {
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
-	function createTextQuery($searchFields) {
+	function createTextQuery($searchFields, $additionalFields) {
 		SpotTiming::start(__FUNCTION__);
 
 		/*
@@ -43,7 +43,7 @@ class dbfts_sqlite extends dbfts_abs {
 
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => $additionalTables,
-					 'additionalFields' => array(),
+					 'additionalFields' => $additionalFields,
 					 'sortFields' => array());
 	} # createTextQuery()
 

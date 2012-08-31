@@ -31,7 +31,7 @@ abstract class dbfts_abs {
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
-	function createTextQuery($searchFields) {
+	function createTextQuery($searchFields, $additionalFields) {
 		throw new NotImplementedException("createTextQuery() is running unoptimized while it shouldnt. Please report to the author");
 		
 		# Initialize some basic variables so our return statements are simple
@@ -46,7 +46,7 @@ abstract class dbfts_abs {
 
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),
-					 'additionalFields' => array(),
+					 'additionalFields' => $additionalFields,
 					 'sortFields' => array());
 	} # createTextQuery
 
