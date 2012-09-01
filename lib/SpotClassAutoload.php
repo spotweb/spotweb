@@ -19,6 +19,7 @@ function __autoload($class_name) {
 				break;
 		} # ubb
 		case 'Services'		: 
+		case 'Dto'			: 
 		case 'Dao'			: {
 			$parts = explode("_", $class_name);
 

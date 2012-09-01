@@ -23,13 +23,13 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		} # if
 		
 		# Instantiat the user system as necessary for the management of user preferences
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
 		# zet de page title
 		$this->_pageTitle = "spot: edit user preferences";
 		
 		# retrieve the to-edit user
-		$spotUser = $this->_db->getUser($this->_userIdToEdit);
+		$spotUser = $spotUserSystem->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
 			$result->addError(sprintf(_('User %d can not be found'), $this->_userIdToEdit));
 		} # if
@@ -44,10 +44,10 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		 * We want the annymous' users account so we can use this users' preferences as a
 		 * template. This makes sure all properties are atleast set.
 		 */
-		$anonUser = $this->_db->getUser(SPOTWEB_ANONYMOUS_USERID);
+		$anonUser = $spotUserSystem->getUser(SPOTWEB_ANONYMOUS_USERID);
 
 		# Are we trying to submit this form, or only rendering it?
-		if ((!empty($formAction)) && (!$result->isError()) {
+		if ((!empty($formAction)) && (!$result->isError())) {
 			switch($formAction) {
 				case 'edit'	: {
 					/*

@@ -8,7 +8,7 @@ class Dto_FormResult {
 	private $_info;
 
 	public function __construct($result = 'success') {
-		$this->_setResult($result);
+		$this->setResult($result);
 		$this->_fields = array();
 		$this->_errors = array();
 		$this->_warnings = array();
@@ -24,7 +24,7 @@ class Dto_FormResult {
 							  'failure' => true,
 							  'notsubmitted' => true);
 
-		if (isset($validResults[$s])) {
+		if (!isset($validResults[$s])) {
 			throw new Exception("Invalid result (" . $s . ") chosen");
 		} # if
 	} # setResult
@@ -87,7 +87,7 @@ class Dto_FormResult {
 	/*
 	 * Add an warning filed to the list of warningmessages
 	 */
-	public function addWarning(s) {
+	public function addWarning($s) {
 		if (empty($s)) {
 			return ;
 		} # if
