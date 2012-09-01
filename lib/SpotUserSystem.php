@@ -1014,7 +1014,7 @@ class SpotUserSystem {
 			$result->addError(_('Invalid filter name'));
 		} # if
 		
-		return list($result, $filter);
+		return array($result, $filter);
 	} # validateFilter
 	
 	/*
