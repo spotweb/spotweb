@@ -4,6 +4,7 @@ define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
 	private $_db;
+	private $_sessionDao;
 	private $_userDao;
 	private $_daoFactory;
 	private $_settings;
@@ -12,7 +13,9 @@ class SpotUserSystem {
 		$this->_db = new SpotDb($daoFactory);
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
+
 		$this->_userDao = $daoFactory->getUserDao();
+		$this->_sessionDao = $daoFactory->getSessionDao();
 	} # ctor
 
 	/*
@@ -110,7 +113,7 @@ class SpotUserSystem {
 			$tmpUser['lastvisit'] = time();
 			
 			# Mark everything as read for anonymous users
-			$this->_db->markFilterCountAsSeen($userid);
+			$this->_daoFactory->getUserFilterCountDao()->markFilterCountAsSeen($userid);
 		} else {
 			$tmpUser['lastvisit'] = $tmpUser['lastlogin'];
 		} # if
@@ -132,7 +135,7 @@ class SpotUserSystem {
 	 	 * anonymous user might have given additional features
 	 	 */
 		if ($userid != SPOTWEB_ANONYMOUS_USERID) {
-			$this->_db->addSession($session);
+			$this->_sessionDao->addSession($session);
 		} # if
 		
 		return array('user' => $tmpUser,
@@ -158,7 +161,7 @@ class SpotUserSystem {
 	function removeSession($userSession) {
 		# and remove the users' session if the user isn't the anonymous one
 		if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
-			$this->_db->deleteSession($userSession['session']['sessionid']);
+			$this->_sessionDao->deleteSession($userSession['session']['sessionid']);
 
 			return true;
 		} else {
@@ -170,7 +173,7 @@ class SpotUserSystem {
 	 * Removes all users' sessions from the database
 	 */
 	function removeAllUserSessions($userId) {
-		$this->_db->deleteAllUserSessions($userId);
+		$this->_sessionDao->deleteAllUserSessions($userId);
 	} # removeAllUserSessions
 	
 	/*
@@ -197,7 +200,11 @@ class SpotUserSystem {
 		} # if
 		
 		# Initialize the security system
-		$spotSec = new SpotSecurity($this->_db->_userDao, $this->_db->_auditDao, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
+		$spotSec = new SpotSecurity($this->_userDao, 
+									$this->_daoFactory->getAuditDao(), 
+									$this->_settings, 
+									$userSession['user'], 
+									$userSession['session']['ipaddr']);
 		$userSession['security'] = $spotSec;
 		
 		/* 
@@ -237,7 +244,7 @@ class SpotUserSystem {
 		$password = $this->passToHash($password);
 
 		# authenticate the user
-		$userId = $this->_db->authUser($user, $password);
+		$userId = $this->_userDao->authUser($user, $password);
 		if ($userId !== false) {
 			/*
 			 * If the user is logged in, create a session.
@@ -253,11 +260,14 @@ class SpotUserSystem {
 
 			# now update the user record with the last logon time
 			$userSession['user']['lastlogin'] = time();
-			$this->_db->setUser($userSession['user']);
+			$this->_userDao->setUser($userSession['user']);
 
 			# Initialize the security system
-			$userSession['security'] = new SpotSecurity($this->_userDao, $this->_settings, $userSession['user'], $userSession['session']['ipaddr']);
-
+			$userSession['security'] = new SpotSecurity($this->_userDao, 
+														$this->_daoFactory->getAuditDao(), 
+														$this->_settings, 
+														$userSession['user'], 
+														$userSession['session']['ipaddr']);
 			return $userSession;
 		} else {
 			return false;
@@ -266,7 +276,7 @@ class SpotUserSystem {
 
 	function verifyApi($apikey) {
 		# try to authenticate the user
-		$userId = $this->_db->authUser(false, $apikey);
+		$userId = $this->_userDao->authUser(false, $apikey);
 		
 		if ($userId !== false && $userId > SPOTWEB_ADMIN_USERID && $apikey != '') {
 			/*
@@ -280,10 +290,14 @@ class SpotUserSystem {
 
 			# and use the userrecord to update the lastapiusage time
 			$userRecord['user']['lastapiusage'] = time();
-			$this->_db->setUser($userRecord['user']);
+			$this->_userDao->setUser($userRecord['user']);
 
 			# Initialize the security system
-			$userRecord['security'] = new SpotSecurity($this->_db, $this->_settings, $userRecord['user'], $this->determineUsersIpAddress() );
+			$userRecord['security'] = new SpotSecurity($this->_userDao, 
+														$this->_daoFactory->getAuditDao(), 
+														$this->_settings, 
+														$userRecord['user'], 
+														$this->determineUsersIpAddress());
 
 			# always use the default template
 			$userRecord['active_tpl'] = $userRecord['user']['prefs']['normal_template'];
@@ -299,11 +313,11 @@ class SpotUserSystem {
 	 */
 	function resetReadStamp($user) {
 		$user['lastvisit'] = time();
-		$user['lastread'] = $this->_db->getMaxMessageTime();
-		$this->_db->setUser($user);
+		$user['lastread'] = $this->_daoFactory->getSpotDao()->getMaxMessageTime();
+		$this->_userDao->setUser($user);
 
 		# Mark everything as read for this user
-		$this->_db->markFilterCountAsSeen($user['userid']);
+		$this->_daoFactory->getUserFilterCountDao()->markFilterCountAsSeen($user['userid']);
 		
 		return $user;
 	} # resetReadStamp
@@ -319,13 +333,13 @@ class SpotUserSystem {
 		} # if
 
 		# Check whether the session is to be found in the database
-		$sessionValid = $this->_db->getSession($sessionParts[0], $sessionParts[1]);
+		$sessionValid = $this->_sessionDao->getSession($sessionParts[0], $sessionParts[1]);
 		if ($sessionValid === false) {
 			return false;
 		} # if
 		
 		# The session is valid, let's update the hit counter and retrieve the user
-		$this->_db->hitSession($sessionParts[0]);
+		$this->_sessionDao->hitSession($sessionParts[0]);
 		$userRecord = $this->getUser($sessionValid['userid']);
 		
 		/*
@@ -358,7 +372,7 @@ class SpotUserSystem {
 			 */
 			if ($userRecord['prefs']['auto_markasread']) {
 				# Retrieve the last update stamp from the filters
-				$filterHashes = $this->_db->getCachedFilterCount($userRecord['userid']);
+				$filterHashes = $this->_daoFactory->getUserFilterCountDao()->getCachedFilterCount($userRecord['userid']);
 				
 				/* 
 				 * Set the lastread stamp to the last time the spotcount was updated
@@ -368,14 +382,14 @@ class SpotUserSystem {
 					$filterKeys = array_keys($filterHashes);
 					$userRecord['lastread'] = $filterHashes[$filterKeys[0]]['lastupdate'];
 				} else {
-					$userRecord['lastread'] = $this->_db->getMaxMessageTime();
+					$userRecord['lastread'] = $this->_daoFactory->getSpotDao()->getMaxMessageTime();
 				} # else
 				
 				# Mark older spots as read for this user
-				$this->_db->resetFilterCountForUser($userRecord['userid']);
+				$this->_daoFactory->getUserFilterCountDao()->resetFilterCountForUser($userRecord['userid']);
 			} # if
 			
-			$this->_db->setUser($userRecord);			
+			$this->_userDao->setUser($userRecord);			
 		} # if
 		
 		return array('user' => $userRecord,
@@ -434,23 +448,23 @@ class SpotUserSystem {
 		$user['apikey'] = md5($this->generateUniqueId());
 
 		# and actually add the user to the database
-		$tmpUser = $this->_db->addUser($user);
-		$this->_db->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
+		$tmpUser = $this->_userDao->addUser($user);
+		$this->_userDao->setUserRsaKeys($tmpUser['userid'], $user['publickey'], $user['privatekey']);
 		
 		/*
 		 * Now copy the preferences from the anonymous user to this
 		 * new user 
 		 */
-		$anonUser = $this->_db->getUser($this->_settings->get('nonauthenticated_userid'));
+		$anonUser = $this->_userDao->getUser($this->_settings->get('nonauthenticated_userid'));
 		$tmpUser = array_merge($anonUser, $tmpUser);
 		$tmpUser['prefs']['newspotdefault_tag'] = $user['username'];
-		$this->_db->setUser($tmpUser);
+		$this->_userDao->setUser($tmpUser);
 		
 		# and add the user to the default set of groups as configured
-		$this->_db->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
+		$this->_userDao->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 		
 		# now copy the users' filters to the new user
-		$this->_db->copyFilterList($this->_settings->get('nonauthenticated_userid'), $tmpUser['userid']);
+		$this->_userDao->copyFilterList($this->_settings->get('nonauthenticated_userid'), $tmpUser['userid']);
 
 		return $tmpUser['userid'];
 	} # addUser()
@@ -459,7 +473,7 @@ class SpotUserSystem {
 	 * Update a user's group membership
 	 */
 	function setUserGroupList($user, $groupList) {
-		$this->_db->setUserGroupList($user['userid'], $groupList);
+		$this->_userDao->setUserGroupList($user['userid'], $groupList);
 	} # setUserGroupList
 	 
 	/*
@@ -469,7 +483,7 @@ class SpotUserSystem {
 		# Convert the password to an passhash
 		$user['passhash'] = $this->passToHash($user['newpassword1']);
 		
-		$this->_db->setUserPassword($user);
+		$this->_userDao->setUserPassword($user);
 	} # setUserPassword
 
 	/*
@@ -478,7 +492,7 @@ class SpotUserSystem {
 	function resetUserApi($user) {
 		$user['apikey'] = md5($this->generateUniqueId());
 		
-		$this->_db->setUser($user);
+		$this->_userDao->setUser($user);
 		return $user;
 	} # setUserApi
 
@@ -762,7 +776,7 @@ class SpotUserSystem {
 		} # if
 
 		# and make sure the mailaddress is unique among all users
-		$emailExistResult = $this->_db->userEmailExists($user['mail']);
+		$emailExistResult = $this->_userDao->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
 			$result->addError(_('Mailaddress is already in use'));
 		} # if
@@ -774,7 +788,7 @@ class SpotUserSystem {
 	 * Set the users' public and private keys
 	 */
 	function setUserRsaKeys($user, $privateKey, $publicKey) {
-		$this->_db->setUserRsaKeys($user['userid'], $privateKey, $publicKey);
+		$this->_userDao->setUserRsaKeys($user['userid'], $privateKey, $publicKey);
 	} # setUserRsaKeys
 	
 	/*
@@ -798,7 +812,7 @@ class SpotUserSystem {
 		 * This is not the most efficient way to do stuff, but we 
 		 * do not expect dozens of security groups so this is acceptable
 		 */
-		$secGroupList = $this->_db->getGroupList(null);
+		$secGroupList = $this->_userDao->getGroupList(null);
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
 				if ($secGroup['id'] != $group['id']) {
@@ -818,7 +832,7 @@ class SpotUserSystem {
 		$result = $this->allowedToEditGroup($groupId);
 
 		if ($result->isSuccess()) {
-			$this->_db->removePermFromSecGroup($groupId, $perm);
+			$this->_userDao->removePermFromSecGroup($groupId, $perm);
 		} # if
 
 		return $result;
@@ -832,7 +846,7 @@ class SpotUserSystem {
 		$result = $this->allowedToEditGroup($groupId);
 
 		if ($result->isSuccess()) {
-			$this->_db->setDenyForPermFromSecGroup($groupId, $perm);
+			$this->_userDao->setDenyForPermFromSecGroup($groupId, $perm);
 		} # if
 
 		return $result;
@@ -859,7 +873,7 @@ class SpotUserSystem {
 		 * groups with both a deny and an allow setting as the results
 		 * would be undefined
 		 */
-		$groupPerms = $this->_db->getGroupPerms($groupId);
+		$groupPerms = $this->_userDao->getGroupPerms($groupId);
 		foreach($groupPerms as $groupPerm) {
 			if (($groupPerm['permissionid'] == $perm['permissionid']) && 
 				($groupPerm['objectid'] == $perm['objectid'])) {
@@ -871,7 +885,7 @@ class SpotUserSystem {
 	
 		# Add the permission to the group
 		if ($result->isSuccess()) { 
-			$this->_db->addPermToSecGroup($groupId, $perm);
+			$this->_userDao->addPermToSecGroup($groupId, $perm);
 		} # if
 		
 		return $result;
@@ -888,7 +902,7 @@ class SpotUserSystem {
 		$result = $this->validateSecGroup($group);
 
 		if ($result->isSuccess()) {
-			$this->_db->setSecurityGroup($group);
+			$this->_userDao->setSecurityGroup($group);
 		} # if
 
 		return $result;
@@ -905,7 +919,7 @@ class SpotUserSystem {
 		$result = $this->validateSecGroup($group);
 
 		if ($result->isSuccess()) {
-			$this->_db->addSecurityGroup($groupName);
+			$this->_userDao->addSecurityGroup($groupName);
 		} # if
 
 		return $result;
@@ -915,7 +929,7 @@ class SpotUserSystem {
 	 * Retrieve a group record 
 	 */
 	function getSecGroup($groupId) {
-		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		$tmpGroup = $this->_userDao->getSecurityGroup($groupId);
 		if (!empty($tmpGroup)) {
 			return $tmpGroup[0];
 		} else {
@@ -948,7 +962,7 @@ class SpotUserSystem {
 		$result = $this->allowedToEditGroup($groupId);
 
 		if ($result->isSuccess()) {
-			$this->_db->removeSecurityGroup($secGroup);
+			$this->_userDao->removeSecurityGroup($secGroup);
 		} # else
 
 		return $result;
@@ -958,7 +972,7 @@ class SpotUserSystem {
 	 * Retrieves an user record
 	 */
 	function getUser($userid) {
-		$tmpUser = $this->_db->getUser($userid);
+		$tmpUser = $this->_userDao->getUser($userid);
 		
 		return $tmpUser;
 	} # getUser()
@@ -967,21 +981,21 @@ class SpotUserSystem {
 	 * Retrieves an unformatted filterlist
 	 */
 	function getPlainFilterList($userId, $filterType) {
-		return $this->_db->getPlainFilterList($userId, $filterType);
+		return $this->_daoFactory->getUserFilterDao()->getPlainFilterList($userId, $filterType);
 	} # get PlainFilterList
 	
 	/*
 	 * Retrieves a list of filters (in an hierarchical list)
 	 */
 	function getFilterList($userId, $filterType) {
-		return $this->_db->getFilterList($userId, $filterType);
+		return $this->_daoFactory->getUserFilterDao()->getFilterList($userId, $filterType);
 	} # getFilterList
 	
 	/*
 	 * Retrieves one specific filter
 	 */
 	function getFilter($userId, $filterId) {
-		return $this->_db->getFilter($userId, $filterId);
+		return $this->_daoFactory->getUserFilterDao()->getFilter($userId, $filterId);
 	} # getFilter
 
 	/*
@@ -995,7 +1009,7 @@ class SpotUserSystem {
 	 */
 	function changeFilter($userId, $filterForm) {
 		$filter = $this->getFilter($userId, $filterForm['filterid']);
-		return $this->_db->updateFilter($userId, $filterForm);
+		return $this->_daoFactory->getUserFilterDao()->updateFilter($userId, $filterForm);
 	} # changeFilter
 
 
@@ -1025,7 +1039,7 @@ class SpotUserSystem {
 		
 		# No errors found? add it to the datbase
 		if ($result->isSuccess()) { 
-			$this->_db->addFilter($userId, $filter);
+			$this->_daoFactory->getUserFilterDao()->addFilter($userId, $filter);
 		} # if
 		
 		return $result;
@@ -1040,7 +1054,7 @@ class SpotUserSystem {
 		 * thee times for the index page, make sure we don't approach
 		 * the database that many times
 		 */
-		$userIndexFilter = $this->_db->getUserIndexFilter($userId);
+		$userIndexFilter = $this->_daoFactory->getUserFilterDao()->getUserIndexFilter($userId);
 		
 		if ($userIndexFilter === false) {
 			return array('tree' => '');
@@ -1077,17 +1091,17 @@ class SpotUserSystem {
 		
 		# and actually add the index filter
 		$filter['filtertype'] = 'index_filter';
-		$this->_db->addFilter($userId, $filter);
+		$this->_daoFactory->getUserFilterDao()->addFilter($userId, $filter);
 	} # addIndexFilter
 	
 	/*
 	 * Remove an index filter
 	 */
 	function removeIndexFilter($userId) {
-		$tmpFilter = $this->_db->getUserIndexFilter($userId);
+		$tmpFilter = $this->_daoFactory->getUserFilterDao()->getUserIndexFilter($userId);
 		
 		if (!empty($tmpFilter)) {
-			$this->_db->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
+			$this->_daoFactory->getUserFilterDao()->deleteFilter($userId, $tmpFilter['id'], 'index_filter');
 		} # if
 	} # removeIndexFilter
 
@@ -1095,7 +1109,7 @@ class SpotUserSystem {
 	 * Removes a userfilter
 	 */
 	function removeFilter($userId, $filterId) {
-		$this->_db->deleteFilter($userId, $filterId, 'filter');
+		$this->_daoFactory->getUserFilterDao()->deleteFilter($userId, $filterId, 'filter');
 
 		return new Dto_FormResult('success');
 	} # removeFilter
@@ -1106,10 +1120,10 @@ class SpotUserSystem {
 	 */
 	function resetFilterList($userId) {
 		# Remove all filters
-		$this->_db->removeAllFilters($userId);
+		$this->_daoFactory->getUserFilterDao()->removeAllFilters($userId);
 		
 		# and copy them back from the userlist
-		$this->_db->copyFilterList($this->_settings->get('nonauthenticated_userid'), $userId);
+		$this->_daoFactory->getUserFilterDao()->copyFilterList($this->_settings->get('nonauthenticated_userid'), $userId);
 
 		return new Dto_FormResult('success');
 	} # resetFilterList
@@ -1119,11 +1133,11 @@ class SpotUserSystem {
 	 */
 	function setFilterList($userId, $filterList) {
 		# remove all existing filters
-		$this->_db->removeAllFilters($userId);
+		$this->_daoFactory->getUserFilterDao()->removeAllFilters($userId);
 		
 		# and add the filters from the list
 		foreach($filterList as $filter) {
-			$this->_db->addFilter($userId, $filter);
+			$this->_daoFactory->getUserFilterDao()->addFilter($userId, $filter);
 		} # foreach
 	} # setFilterList
 	
@@ -1133,10 +1147,10 @@ class SpotUserSystem {
 	 */
 	function setFiltersAsDefault($userId) {
 		# Remove all filters for the Anonymous user
-		$this->_db->removeAllFilters($this->_settings->get('nonauthenticated_userid'));
+		$this->_daoFactory->getUserFilterDao()->removeAllFilters($this->_settings->get('nonauthenticated_userid'));
 		
 		# and copy them from the specified user to anonymous
-		$this->_db->copyFilterList($userId, $this->_settings->get('nonauthenticated_userid'));
+		$this->_daoFactory->getUserFilterDao()->copyFilterList($userId, $this->_settings->get('nonauthenticated_userid'));
 
 		return new Dto_FormResult('success');
 	} # setFiltersAsDefault
@@ -1150,21 +1164,21 @@ class SpotUserSystem {
 		 * this function, hence the password is never updated
 		 * by setUser()
 		 */
-		$this->_db->setUser($user);
+		$this->_userDao->setUser($user);
 	} # setUser()
 	
 	/*
 	 * Removes an user record
 	 */
 	function removeUser($userid) {
-		$this->_db->deleteUser($userid);
+		$this->_userDao->deleteUser($userid);
 	} # removeUser()
 
 	/*
 	 * Retrieves an RSA key from the users' record.
 	 */
 	function getUserPrivateRsaKey($userId) {
-		return $this->_db->getUserPrivateRsaKey($userId);
+		return $this->_userDao->getUserPrivateRsaKey($userId);
 	} # getUserPrivateRsaKey
 	
 	/*
@@ -1172,7 +1186,7 @@ class SpotUserSystem {
 	 * be interchangeable
 	 */
 	public function filtersToXml($filterList) {
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+		$svcSearchQP = new Services_Search_QueryParser($this->_daoFactory->getConnection());
 
 		# create the XML document
 		$doc = new DOMDocument('1.0', 'utf-8');
@@ -1203,8 +1217,8 @@ class SpotUserSystem {
 			 * and excludes
 			 */
 			$dynaList = explode(',', $filter['tree']);
-			list($categoryList, $strongNotList) = $spotsOverview->prepareCategorySelection($dynaList);
-			$treeList = explode(',', $spotsOverview->compressCategorySelection($categoryList, $strongNotList));
+			list($categoryList, $strongNotList) = $svcSearchQP->prepareCategorySelection($dynaList);
+			$treeList = explode(',', $svcSearchQP->compressCategorySelection($categoryList, $strongNotList));
 			$tree = $doc->createElement('tree');
 			foreach($treeList as $treeItem) { 
 				if (!empty($treeItem)) {
@@ -1290,7 +1304,6 @@ class SpotUserSystem {
 	public function xmlToFilters($xmlStr) {
 		$filterList = array();
 		$idMapping = array();
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
 		/*
 		 * Parse the XML file
@@ -1430,7 +1443,7 @@ class SpotUserSystem {
 			/*
 			 * and update the database 
 			 */
-			$this->_db->setUserAvatar($userId, $imageString);
+			$this->_userDao->setUserAvatar($userId, $imageString);
 		} # if
 
 		return $result;
@@ -1445,28 +1458,28 @@ class SpotUserSystem {
 			return ;
 		} # if
 
-		$this->_db->addSpotterToList($spotterId, $ourUserId, $origin, $idtype);
+		$this->_daoFactory->getBlackWhiteListDao()->addSpotterToList($spotterId, $ourUserId, $origin, $idtype);
 	} # addSpotterToList	
 
 	/*
 	 * Removes a specific spotter from the blacklis
 	 */
 	function removeSpotterFromList($ourUserId, $spotterId) {
-		$this->_db->removeSpotterFromList($spotterId, $ourUserId);
+		$this->_daoFactory->getBlackWhiteListDao()->removeSpotterFromList($spotterId, $ourUserId);
 	} # removeSpotterFromList
 	
 	/*
 	 * Clears the users' download list
 	 */
 	function clearDownloadList($ourUserId) {
-		$this->_db->clearDownloadList($ourUserId);;
+		$this->_daoFactory->getSpotStateListDao()->clearDownloadList($ourUserId);;
 	} # clearDownloadList
 
 	/*
 	 * Mark all spots as read
 	 */
 	function markAllAsRead($ourUserId) {
-		return $this->_db->markAllAsRead($ourUserId);
+		return $this->_daoFactory->getSpotStateListDao()->markAllAsRead($ourUserId);
 	} # markAllAsRead
 
 	/*
