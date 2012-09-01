@@ -41,8 +41,6 @@ class SpotPage_index extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 		} # if
 		
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-
 		/*
 		 * We get a bunch of query parameters, so now change this to the actual
 		 * search query the user requested including the required sorting

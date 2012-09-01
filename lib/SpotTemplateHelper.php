@@ -3,8 +3,7 @@
 # door custom templates extended worden
 class SpotTemplateHelper {	
 	protected $_settings;
-	protected $_db;
-	protected $_spotsOverview;
+	protected $_daoFactory;
 	protected $_currentSession;
 	protected $_params;
 	protected $_nzbhandler;
@@ -12,17 +11,14 @@ class SpotTemplateHelper {
 	protected $_cachedSpotCount = null;
 	
 	
-	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
+	function __construct(SpotSettings $settings, $currentSession, Dao_Factory $daoFactory, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
+		$this->_daoFactory = $daoFactory;
+
 		$this->_spotSec = $currentSession['security'];
-		$this->_db = $db;
 		$this->_params = $params;
 		
-		# We hebben SpotsOverview altijd nodig omdat we die ook voor het
-		# maken van de sorturl nodig hebben, dus maken we deze hier aan
-		$this->_spotsOverview = new SpotsOverview($db, $settings);
-
 		# We initialiseren hier een NzbHandler object om te voorkomen
 		# dat we voor iedere spot een nieuw object initialiseren, een property
 		# zou mooier zijn, maar daar is PHP dan weer te traag voor
@@ -68,7 +64,7 @@ class SpotTemplateHelper {
 		 * If necessary, fill the cache 
 		 */
 		if ($this->_cachedSpotCount == null) {
-			$this->_cachedSpotCount = $this->_db->getNewCountForFilters($this->_currentSession['user']['userid']);
+			$this->_cachedSpotCount = $this->_daoFactory->getUserFilterCountDao()->getNewCountForFilters($this->_currentSession['user']['userid']);
 		 } # if
 
 		# Now parse it to an ar ray as we would get when called from a webpage
@@ -104,7 +100,7 @@ class SpotTemplateHelper {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
 		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
-		$svcProvComments = new Services_Providers_Comments($this->_db->_commentDao, $svcNntpSpotReading);
+		$svcProvComments = new Services_Providers_Comments($this->_daoFactory->getCommentDao(), $svcNntpSpotReading);
 		
 		return $svcProvComments->fetchSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length);
 	} # getSpotComments
@@ -141,7 +137,7 @@ class SpotTemplateHelper {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		
 		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_db->_spotDao, $svcNntpSpotReading);
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcNntpSpotReading);
 		$fullSpot = $svcProvFullSpot->fetchFullSpot($msgId, $this->_currentSession['user']['userid']);
 
 		# seen list
@@ -152,7 +148,7 @@ class SpotTemplateHelper {
 					 * Always update the seen stamp, this is used for viewing new comments
 					 * and the likes
 					 */
-					$this->_db->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
+					$this->_daoFactory->getSpotStateList()->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
 				} # if
 				
 			} # if allowed
@@ -371,7 +367,7 @@ class SpotTemplateHelper {
 	 * Only allow a specific set of users to create customized content
 	 */
 	function allowedToPost() {
-		$spotUser = new SpotUserSystem($this->_db->_daoFactory, $this->_settings);
+		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		return $spotUser->allowedToPost($this->_currentSession['user']);	
 	} # allowedToPost
 	
@@ -608,7 +604,8 @@ class SpotTemplateHelper {
 	 * als een comma seperated lijst voor de dynatree initialisatie
 	 */
 	function categoryListToDynatree() {
-		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		return $svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
 	} # categoryListToDynatree
 	
 	/*
@@ -659,7 +656,8 @@ class SpotTemplateHelper {
 		} # if
 		
 		# Bouwen de search[tree] value op
-		return '&amp;search[tree]=' . urlencode($this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		return '&amp;search[tree]=' . urlencode($svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
 														$this->_params['parsedsearch']['strongNotList']));
 	} # convertTreeFilterToQueryParams
 
@@ -807,7 +805,7 @@ class SpotTemplateHelper {
 			$nntpRefList[] = $spot['messageid'];
 		} # foreach
 
-		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
+		return $this->_daoFactory->getCommentDao()->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
 	} # getNewCommentCountFor
 
 	
@@ -995,7 +993,7 @@ class SpotTemplateHelper {
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
 		
-		return $this->_db->getUserListForDisplay();
+		return $this->_daoFactory->getUserListDao()->getUserListForDisplay();
 	} # getUserList
 
  	/*
@@ -1005,7 +1003,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 		
-		return $this->_db->getSpotterList($this->_currentSession['user']['userid']);
+		return $this->_daoFactory->getBlackWhiteListDao()->getSpotterList($this->_currentSession['user']['userid']);
 	} # getSpotterList
 	
 	/*
@@ -1015,7 +1013,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 		
-		return $this->_db->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
+		return $this->_daoFactory->getBlackWhiteListDao()->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
 	} # getBlacklistForSpotterId
 	
 	/*
@@ -1024,7 +1022,7 @@ class SpotTemplateHelper {
 	function getLastSpotUpdates() {
 		# query wanneer de laatste keer de spots geupdate werden
 		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
-		return $this->_db->getLastUpdate($nntp_hdr_settings['host']);
+		return $this->_daoFactory->getNntpConfigDao()->getLastUpdate($nntp_hdr_settings['host']);
 	} # getLastSpotUpdates
 	
 	/*
@@ -1048,7 +1046,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
 		
-		return $this->_db->getGroupList(null);
+		return $this->_daoFactory->getUserDao()->getGroupList(null);
 	}  # getGroupList
 
 	/*
@@ -1058,7 +1056,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
 		
-		return $this->_db->getGroupList($userId);
+		return $this->_daoFactory->getUserDao()->getGroupList($userId);
 	}  # getGroupListForUser
 
 	/*
@@ -1079,7 +1077,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
 		
-		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		$tmpGroup = $this->_daoFactory->getUserDao()->getSecurityGroup($groupId);
 		if (!empty($tmpGroup)) {
 			return $tmpGroup[0];
 		} else {
@@ -1094,7 +1092,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
 		
-		return $this->_db->getGroupPerms($id);
+		return $this->_daoFactory->getUserDao()->getGroupPerms($id);
 	} # getSecGroupPerms
 	
 	/*
@@ -1108,7 +1106,7 @@ class SpotTemplateHelper {
 	 * Get users' filter list
 	 */
 	function getUserFilterList() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		return $spotUser->getFilterList($this->_currentSession['user']['userid'], 'filter');
 	} # getUserFilterList
 
@@ -1116,7 +1114,7 @@ class SpotTemplateHelper {
 	 * Get specific filter
 	 */
 	function getUserFilter($filterId) {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
 	} # getUserFilter
 
@@ -1124,7 +1122,7 @@ class SpotTemplateHelper {
 	 * Get index filter
 	 */
 	function getIndexFilter() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
 	} # getIndexFilter
 
@@ -1132,7 +1130,7 @@ class SpotTemplateHelper {
 	 * Controleer  of de user al een report heeft aangemaakt
 	 */
 	function isReportPlaced($messageId) {
-		return $this->_db->isReportPlaced($messageId, $this->_currentSession['user']['userid']);
+		return $this->_daoFactory->getSpotReportDao()->isReportPlaced($messageId, $this->_currentSession['user']['userid']);
 	} # isReportPlaced
 	
 	/*
@@ -1163,8 +1161,8 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics graphs terug
 	 */
 	function getValidStatisticsGraphs(){
-		$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
-														  $this->_db->_cacheDao,
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+														  $this->_daoFactory->getCacheDao(),
 														  0);
 		return $svcPrv_Stats->getValidStatisticsGraphs();
 	} # getValidStatisticsGraphs
@@ -1173,8 +1171,8 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics limits terug
 	 */
 	function getValidStatisticsLimits(){
-		$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
-														  $this->_db->_cacheDao,
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+														  $this->_daoFactory->getCacheDao(),
 														  0);
 		return $svcPrv_Stats->getValidStatisticsLimits();
 	} # getValidStatisticsGraphs
