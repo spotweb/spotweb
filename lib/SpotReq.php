@@ -66,6 +66,22 @@ class SpotReq {
 			return self::$_settings->get('spotweburl');
 		} # else
 	} # getHttpReferer
+
+
+	static function getRequestProtocol() {
+		$protocol = 'http';
+
+		if ( (isset($_SERVER['HTTPS'])) && ($_SERVER['HTTPS'] == 'on') ) {
+			$protocol = 'https';
+		} # if
+
+		# nginx reverse proxy, check GH issue 1569
+		if ( (isset($_SERVER['HTTP_X_FORWARDED_SSL'])) && ($_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') ) {
+			$protocol = 'https';
+		} # if
+
+		return $protocol;
+	} # getRequestProtocol
 	
     
 	function cleanup($var) {

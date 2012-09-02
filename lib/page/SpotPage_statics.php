@@ -27,7 +27,7 @@ class SpotPage_statics extends SpotPage_Abs {
 				Array('$HTTP_S',
 					  '$COOKIE_EXPIRES',
 					  '$COOKIE_HOST'),
-				Array((@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http'),
+				Array(SpotReq::getRequestProtocol(),
 				       $this->_settings->get('cookie_expires'),
 					   $this->_settings->get('cookie_host')),
 				$fc);
