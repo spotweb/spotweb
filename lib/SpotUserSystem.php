@@ -3,14 +3,12 @@ define('SPOTWEB_ANONYMOUS_USERID', 1);
 define('SPOTWEB_ADMIN_USERID', 2);
 
 class SpotUserSystem {
-	private $_db;
 	private $_sessionDao;
 	private $_userDao;
 	private $_daoFactory;
 	private $_settings;
 	
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
-		$this->_db = new SpotDb($daoFactory);
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 
@@ -66,7 +64,7 @@ class SpotUserSystem {
 			$spotUser['privatekey'] = $userKey['private'];
 
 			# Initialize notification system
-			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $spotSession);
+			$spotsNotifications = new SpotNotifications(new SpotDb($this->_daoFactory), $this->_settings, $spotSession);
 
 			# Actually add the user
 			$this->addUser($spotUser);
