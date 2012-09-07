@@ -5,6 +5,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];
 	} # ctor
@@ -38,9 +39,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
 
 			# init
-			$svcPrv_Stats = new Services_Providers_Statistics($this->_db->_spotDao,
-															  $this->_db->_cacheDao,
-												 			  $this->_db->_nntpConfigDao->getLastUpdate($settings_nntp_hdr['host']));
+			$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+															  $this->_daoFactory->getCacheDao(),
+												 			  $this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']));
 			$data = $svcPrv_Stats->renderStatImage($graph, $limit);
 
 
