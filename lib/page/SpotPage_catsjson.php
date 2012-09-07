@@ -26,7 +26,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * logic whatsoever
 	 */
 	function renderSelectBox() {
-		# stuur een 'always cache' header zodat dit gecached kan worden
+		/*
+		 * The categorylisting is very static, so ask the user to always cache
+		 */
 		$this->sendExpireHeaders(false);
 		
 		$category = $this->_params['category'];
@@ -84,25 +86,26 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	} # renderSelectBox
 	
 	/*
-	 * Geeft JSON terug interpreteerbaar voor DynaTree om de categorylist als boom
-	 * te kunnen weergeven
+	 * Returns a JSON back for DynaTree so it can render the categorylist as a tree
 	 */
 	function categoriesToJson() {
-		# stuur een expires header zodat dit niet gecached is, hierin staat 
-		# state van de boom
+		/*
+		 * Don't allow the tree to be cached, it contains the current state of the
+		 * tree
+		 */
 		$this->sendExpireHeaders(true);
 
 		/* First parse the search string so we know which items to select and which not */
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		$parsedSearch = $svcSearchQp->filterToQuery($this->_params['search'], 
 													  array(),
 													  $this->_currentSession,
 													  $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
 		if ($this->_params['disallowstrongnot']) {
 			$parsedSearch['strongNotList'] = '';
 		} # if
-		$compressedCatList = ',' . $spotsOverview->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
+		$compressedCatList = ',' . $svcSearchQp->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
 //error_log($this->_params['search']['tree']);
 //var_dump($parsedSearch);
 //var_dump($compressedCatList);
