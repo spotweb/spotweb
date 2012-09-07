@@ -1452,20 +1452,36 @@ class SpotUserSystem {
 	/*
 	 * Blacklist a specific spotter
 	 */
-	function addSpotterToList($ourUserId, $spotterId, $origin, $idtype) {
+	function addSpotterToList($currentUser, $spotterId, $origin, $idtype) {
+		$result = new Dto_FormResult();
+
 		if (($idtype < 0) || ($idtype > 2)) {
 			/* Invalid id type, dont allow this */
 			return ;
 		} # if
 
-		$this->_daoFactory->getBlackWhiteListDao()->addSpotterToList($spotterId, $ourUserId, $origin, $idtype);
+		if (!$this->allowedToPost($currentUser)) {
+			$result->addError(_('User is not allowed to maintain spotstatelist'));
+		} else {
+			$this->_daoFactory->getBlackWhiteListDao()->addSpotterToList($spotterId, $currentUser['userid'], $origin, $idtype);
+		} # else
+
+		return $result;
 	} # addSpotterToList	
 
 	/*
 	 * Removes a specific spotter from the blacklis
 	 */
-	function removeSpotterFromList($ourUserId, $spotterId) {
-		$this->_daoFactory->getBlackWhiteListDao()->removeSpotterFromList($spotterId, $ourUserId);
+	function removeSpotterFromList($currentUser, $spotterId) {
+		$result = new Dto_FormResult();
+
+		if (!$this->allowedToPost($currentUser)) {
+			$result->addError(_('User is not allowed to maintain spotstatelist'));
+		} else {
+			$this->_daoFactory->getBlackWhiteListDao()->removeSpotterFromList($spotterId, $currentUser['userid']);
+		} # else
+
+		return $result;
 	} # removeSpotterFromList
 	
 	/*

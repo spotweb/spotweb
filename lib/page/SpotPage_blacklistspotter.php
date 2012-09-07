@@ -8,59 +8,61 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
-		# Controleer de users' rechten
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
+
+		# Make sure the editresult is set to 'not comited' per default
+		$result = new Dto_FormResult('notsubmitted');
 				
-		# creeer een default blacklist
+		# Create the default blacklist information
 		$blackList = array('spotterid' => '',
 						   'origin' => '');
 		
-		# blacklist is standaard niet geprobeerd
-		$postResult = array();
-		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "report: blacklist spotter";
 
 		/* 
 		 * bring the forms' action into the local scope for 
 		 * easier access
 		 */
-		$formAction = $this->_blForm['action'];
+		if (isset($this->_blForm['action'])) {
+			$formAction = $this->_blForm['action'];
+		} else {
+			$formAction = '';
+		} # else
 
 		# Make sure the anonymous user and reserved usernames cannot post content
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUserSystem->allowedToPost($this->_currentSession['user'])) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
-		if (!empty($formAction)) {
-			# zorg er voor dat alle variables ingevuld zijn
+		if ((!empty($formAction)) && (!$result->isError())) {
+			$result->setResult('success');
+
+			# Make sure we have a complete blacklist information
 			$blackList = array_merge($blackList, $this->_blForm);
 
 			switch($formAction) {
 				case 'addspotterid'		: {
-					$spotUserSystem->addSpotterToList($this->_currentSession['user']['userid'], $blackList['spotterid'], $blackList['origin'], $blackList['idtype']);
+					$result->mergeResult($spotUserSystem->addSpotterToList($this->_currentSession['user'], 
+													  $blackList['spotterid'], 
+													  $blackList['origin'], 
+													  $blackList['idtype']));
+
 					break;
 				} # case addspotterid
 				
 				case 'removespotterid'	: {
-					$idtyPe = $blackList['idtype'];
-					$spotUserSystem->removeSpotterFromList($this->_currentSession['user']['userid'], $blackList['spotterid']);
+					$result->mergeResult($spotUserSystem->removeSpotterFromList($this->_currentSession['user'], 
+														   $blackList['spotterid']));
+
 					break;
 				} # case removespotterid
 			} # switch
 			
-			$postResult = array('result' => 'success');
 		} # if
 		
 		#- display stuff -#
 		$this->template('blacklistspotter', array('blacklistspotter' => $blackList,
-											 'formmessages' => $formMessages,
-											 'postresult' => $postResult));
-	} # render	
+											 'result' => $result));
+	} # render
+
 } # class SpotPage_blacklistspotter

@@ -28,14 +28,14 @@ abstract class SpotPage_Abs {
 	} # ctor
 
 	/* 
-	 * Send either 'do cache' or 'do no cache' headers to the client
+	 * Send either 'do cache' or 'do not cache' headers to the client
 	 */
 	function sendExpireHeaders($preventCaching) {
 		if ($preventCaching) {
 			Header("Cache-Control: private, post-check=1, pre-check=2, max-age=1, must-revalidate");
 			Header("Expires: Mon, 12 Jul 2000 01:00:00 GMT");
 		} else {
-			# stuur een expires header zodat dit een jaar of 10 geldig is
+			# send an expire header claiming this content is at least valid for 10 years
 			Header("Cache-Control: public");
 			Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
 			Header("Pragma: ");
@@ -104,6 +104,7 @@ abstract class SpotPage_Abs {
 				break;
 			} # if
 		} # foreach
+		
 		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
 	} # template
 	
