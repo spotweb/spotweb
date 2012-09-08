@@ -4,6 +4,7 @@ class SpotPage_getspot extends SpotPage_Abs {
 
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $messageid) {
 		parent::__construct($daoFactory, $settings, $currentSession);
+		
 		$this->_messageid = $messageid;
 	} # ctor
 

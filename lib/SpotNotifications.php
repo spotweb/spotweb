@@ -6,7 +6,8 @@ class SpotNotifications {
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
-	private $_db;
+
+	private $_daoFactory;
 
 	/*
 	 * Constants used for securing the system
@@ -20,11 +21,11 @@ class SpotNotifications {
 	const notifytype_newspots_for_filter	= 'newspots_for_filter';
 
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession) {
-		$this->_db = new SpotDb($daoFactory);
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];
-		$this->_notificationTemplate = new SpotNotificationTemplate($this->_db, $this->_settings, $this->_currentSession);
+		$this->_notificationTemplate = new SpotNotificationTemplate($this->_settings, $this->_currentSession);
 	} # ctor
 
 	function register() {
@@ -49,7 +50,7 @@ class SpotNotifications {
 	} # register
 
 	function sendWatchlistHandled($action, $messageid) {
-		$spot = $this->_db->getSpotHeader($messageid);
+		$spot = $this->_daoFactory->getSpotDao()->getSpotHeader($messageid);
 		switch ($action) {
 			case 'remove'	: $notification = $this->_notificationTemplate->template('watchlist_removed', array('spot' => $spot)); break;
 			case 'add'		: $notification = $this->_notificationTemplate->template('watchlist_added', array('spot' => $spot)); break;
@@ -90,7 +91,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 
 	function sendReportPosted($messageid) {
 		# haal de spot op
-		$spot = $this->_db->getSpotHeader($messageid);
+		$spot = $this->_daoFactory->getSpotDao()->getSpotHeader($messageid);
 
 		$notification = $this->_notificationTemplate->template('report_posted', array('spot' => $spot));
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_report_posted, 'Single', $notification);
@@ -123,8 +124,8 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	function newSingleMessage($user, $objectId, $type, $notification) {
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
-		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
-		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
+		$tmpUser['user'] = $this->_daoFactory->getUserDao()->getUser($user['user']['userid']);
+		$tmpUser['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
@@ -135,7 +136,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, $objectId) &&
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)
 					) {
-						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
+						$this->_daoFactory->getNotificationDao()->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
 						break;
 					} # if
 				} # if
@@ -148,7 +149,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	} # newSingleMessage
 
 	function newMultiMessage($objectId, $notification) {
-		$userArray = $this->_db->getUserList();
+		$userArray = $this->_daoFactory->getUserDao()->getUserList();
 		foreach ($userArray as $user['user']) {
 			# Create a fake session array
 			$user['session'] = array('ipaddr' => '');
@@ -167,17 +168,17 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 
 	function sendMessages($userId) {
 		if ($userId == 0) {
-			$userList = $this->_db->getUserList();
+			$userList = $this->_daoFactory->getUserDao()->getUserList();
 		} else {
-			$thisUser = $this->_db->getUser($userId);
+			$thisUser = $this->_daoFactory->getUserDao()->getUser($userId);
 			$userList = array($thisUser);
 		} # else
 
 		foreach ($userList as $user) {
 			# Omdat we vanuit getUserList() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
-			$user = $this->_db->getUser($user['userid']);
-			$security = new SpotSecurity($this->_db, $this->_settings, $user, '');
+			$user = $this->_daoFactory->getUserDao()->getUser($user['userid']);
+			$security = new SpotSecurity($this->_daoFactory, $this->_settings, $user, '');
 
 			# Om e-mail te kunnen versturen hebben we iets meer data nodig
 			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
@@ -191,7 +192,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 			$user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
 			$user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
-			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
+			$newMessages = $this->_daoFactory->getNotificationDao()->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
@@ -222,7 +223,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 				} # if
 
 				$newMessage['sent'] = true;
-				$this->_db->updateNotification($newMessage);
+				$this->_daoFactory->getNotificationDao()->updateNotification($newMessage);
 			} # foreach message
 		} # foreach user
 	} # sendMessages

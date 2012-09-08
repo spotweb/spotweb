@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_statistics extends SpotPage_Abs {
 	private $_params;
 
@@ -25,7 +26,7 @@ class SpotPage_statistics extends SpotPage_Abs {
 													$this->_currentSession, 
 													$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid'])
 												);
-		
+
 		$this->template('statistics', array('quicklinks' => $this->_settings->get('quicklinks'),
 											'filters' => $spotUserSystem->getFilterList($this->_currentSession['user']['userid'], 'filter'),
 											'parsedsearch' => $parsedSearch,

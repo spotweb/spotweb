@@ -1,16 +1,13 @@
 <?php
 
 class SpotNotificationTemplate {
-	protected $_db;
 	protected $_settings;
 	protected $_currentSession;
-	protected $_spotSec;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
+	function __construct(SpotSettings $settings, $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
-		$this->_spotSec = $currentSession['security'];
 	} # ctor
 
 	/*

@@ -9,9 +9,6 @@ require_once "lib/SpotWebVersion.php";
 /*
  * Spotweb bootstrapping code.
  * 
- * This class will initialize the registry and so other
- * related stuff. Is required for all Spotweb related code.
- *
  */
 
 class Bootstrap {
