@@ -148,7 +148,7 @@ class SpotTemplateHelper {
 					 * Always update the seen stamp, this is used for viewing new comments
 					 * and the likes
 					 */
-					$this->_daoFactory->getSpotStateList()->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
+					$this->_daoFactory->getSpotStateListDao()->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
 				} # if
 				
 			} # if allowed
