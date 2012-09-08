@@ -26,9 +26,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 			# init
-			$totalSpots = $this->_db->getSpotCount('');
+			$totalSpots = $this->_daoFactory->getSpotDao()->getSpotCount('');
 			$newSpots = $this->_tplHelper->getNewCountForFilter('');
-			$lastUpdate = $this->_tplHelper->formatDate($this->_db->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
+			$lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
 
 			$svc_ImageSpeedDial = new Services_Image_SpeedDial();
 			$data = $svc_ImageSpeedDial->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
@@ -50,7 +50,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
 			
 			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
+			$spotsOverview = new SpotsOverview($this->_daoFactory, $this->_settings);
 
 			$imgDefaults = array('md5' => false,
 								 'size' => 80,
@@ -90,9 +90,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 			/*
 			 * Actually retrieve the image 
 			 */
-			$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_db->_cacheDao),
+			$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()), 
 																  new Services_Nntp_SpotReading($svc_nntpnzb_engine),
-											  					  $this->_db->_cacheDao);
+											  					  $this->_daoFactory->getCacheDao());
 			$data = $providerSpotImage->fetchSpotImage($fullSpot);
 		} # else
 
