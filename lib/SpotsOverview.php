@@ -15,8 +15,8 @@ class SpotsOverview {
 	} # ctor
 
 	function getFullSpot($msgId, $ourUserId, $nntp) {
-		$x = new Services_Providers_FullSpot($this->_db->_spotDao, new Services_Nntp_SpotReading($nntp));
-		return $x->fetchFullSpot($msgId, $ourUserId);
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_db->_spotDao, new Services_Nntp_SpotReading($nntp));
+		return $svcProvFullSpot->fetchFullSpot($msgId, $ourUserId);
 	} # getFullSpot
 
 	function getNzb($fullSpot, $nntp) {

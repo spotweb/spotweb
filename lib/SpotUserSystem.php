@@ -64,7 +64,7 @@ class SpotUserSystem {
 			$spotUser['privatekey'] = $userKey['private'];
 
 			# Initialize notification system
-			$spotsNotifications = new SpotNotifications(new SpotDb($this->_daoFactory), $this->_settings, $spotSession);
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $spotSession);
 
 			# Actually add the user
 			$this->addUser($spotUser);

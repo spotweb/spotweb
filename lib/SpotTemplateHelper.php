@@ -619,11 +619,6 @@ class SpotTemplateHelper {
 		#var_dump($this->_params['parsedsearch']['sortFields']);
 
 		
-		//$xml = $this->_spotsOverview->parsedSearchToXml($this->_params['parsedsearch']);
-		//$parsed = $this->_spotsOverview->xmlToParsedSearch($xml, $this->_currentSession);
-		//var_dump($parsed);
-		//die();
-		
 		return $this->convertUnfilteredToQueryParams() . $this->convertTreeFilterToQueryParams() . $this->convertTextFilterToQueryParams();
 	} # convertFilterToQueryParams
 

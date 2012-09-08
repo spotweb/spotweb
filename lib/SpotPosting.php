@@ -1,15 +1,16 @@
 <?php
 
 class SpotPosting {
-	private $_db;
+	private $_daoFactory;
 	private $_settings;
 	private $_nntp_post;
+	private $_nntp_hdr;
 
-	function __construct(SpotDb $db, SpotSettings $settings) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
-
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));
+		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('hdr'));
 	} # ctor
 
 	/*
@@ -17,11 +18,12 @@ class SpotPosting {
 	 * een 'true' terug, anders een foutmelding
 	 */
 	public function postComment($user, $comment) {
+		$commentDao = $this->_daoFactory->getCommentDao();
 		$errorList = array();
 
 		# haal de spot op waar dit een reply op is
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($comment['inreplyto'], $user['userid'], $this->_nntp_post);
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, new Services_Nntp_SpotReading($this->_nntp_hdr));
+		$fullSpot = $svcProvFullSpot->fetchFullSpot($comment['inreplyto'], $user['userid']);
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
@@ -53,7 +55,7 @@ class SpotPosting {
 		# controleer dat het random getal niet recentelijk ook al gebruikt
 		# is voor deze messageid (hiermee voorkomen we dat de hashcash niet
 		# steeds herberekend wordt voor het volspammen van 1 spot).
-		if (!$this->_db->isCommentMessageIdUnique($comment['newmessageid'])) {
+		if (!$commentDao->isCommentMessageIdUnique($comment['newmessageid'])) {
 			$errorList[] = _('Replay attack!?');
 		} # if
 
@@ -76,7 +78,7 @@ class SpotPosting {
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $this->_settings->get('comment_group'),
 										   $comment);
-			$this->_db->addPostedComment($user['userid'], $dbComment);
+			$commentDao->addPostedComment($user['userid'], $dbComment);
 		} # if
 		
 		return $errorList;
@@ -86,6 +88,7 @@ class SpotPosting {
 	 * Post a spot to the usenet server. 
 	 */
 	public function postSpot($user, $spot, $imageFilename, $nzbFilename) {
+		$spotDao = $this->_daoFactory->getSpotDao();
 		$errorList = array();
 		$hdr_newsgroup = $this->_settings->get('hdr_group');
 		$bin_newsgroup = $this->_settings->get('nzb_group');
@@ -166,7 +169,7 @@ class SpotPosting {
 		 * prevents people from not recalculating the hashcash in order to spam
 		 * the system
 		 */
-		if (!$this->_db->isNewSpotMessageIdUnique($spot['newmessageid'])) {
+		if (!$spotDao->isNewSpotMessageIdUnique($spot['newmessageid'])) {
 			$errorList[] = _('Replay attack!?');
 		} # if
 
@@ -280,7 +283,7 @@ class SpotPosting {
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $hdr_newsgroup,
 										   $spot);
-			$this->_db->addPostedSpot($user['userid'], $spot, $spotXml);
+			$spotDao->addPostedSpot($user['userid'], $spot, $spotXml);
 		} # if
 
 		return $errorList;
@@ -291,16 +294,17 @@ class SpotPosting {
 	 * een 'true' terug, anders een foutmelding
 	 */
 	public function reportSpotAsSpam($user, $report) {
+		$spotReportDao = $this->_daoFactory->getSpotReportDao();
 		$errorList = array();
 
 		# Controleer eerst of de user al een report heeft aangemaakt, dan kunnen we gelijk stoppen.
-		if ($this->_db->isReportPlaced($report['inreplyto'], $user['userid'])) {
+		if ($spotReportDao->isReportPlaced($report['inreplyto'], $user['userid'])) {
 			$errorList[] = _('This spot has already been marked as spam');
 		} # if
 		
 		# haal de spot op waar dit een reply op is
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$fullSpot = $spotsOverview->getFullSpot($report['inreplyto'], $user['userid'], $this->_nntp_post);
+		$svcProvFullSpot = new Services_Providers_FullSpot($sportReportDao->_spotDao, new Services_Nntp_SpotReading($this->_nntp_hdr));
+		$fullSpot = $svcProvFullSpot->fetchFullSpot($report['inreplyto'], $user['userid']);
 
 		# als de hashcash al niet klopt, doen we verder geen moeite
 		if (substr(sha1('<' . $report['newmessageid'] . '>'), 0, 4) != '0000') {
@@ -324,7 +328,7 @@ class SpotPosting {
 		# controleer dat het random getal niet recentelijk ook al gebruikt
 		# is voor deze messageid (hiermee voorkomen we dat de hashcash niet
 		# steeds herberekend wordt voor het volspammen van 1 spot).
-		if (!$this->_db->isReportMessageIdUnique($report['newmessageid'])) {
+		if (!$sportReportDao->isReportMessageIdUnique($report['newmessageid'])) {
 			$errorList[] = _('Replay attack!?');
 		} # if
 
@@ -345,7 +349,7 @@ class SpotPosting {
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $this->_settings->get('report_group'),
 										   $report);
-			$this->_db->addPostedReport($user['userid'], $dbReport);
+			$sportReportDao->addPostedReport($user['userid'], $dbReport);
 		} # if
 		
 		return $errorList;
