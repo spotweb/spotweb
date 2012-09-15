@@ -8,11 +8,10 @@ ul.dynatree-container
 	white-space: nowrap;
 	padding: 3px;
 	margin: 0; /* issue 201 */
-
 	background-color: white;
 	border: 1px dotted gray;
-
 	overflow: auto;
+	height: 100%; /* issue 263 */
 }
 
 ul.dynatree-container ul
@@ -73,7 +72,8 @@ span.dynatree-drag-helper-img,
 {
 	width: 16px;
 	height: 16px;
-	display: -moz-inline-box; /* @ FF 1+2 */
+/*	display: -moz-inline-box; /* @ FF 1+2 removed for issue 221*/
+/*	-moz-box-align: start; /* issue 221 */
 	display: inline-block; /* Required to make a span sizeable */
 	vertical-align: top;
 	background-repeat: no-repeat;
@@ -280,7 +280,8 @@ span.dynatree-icon /* Default icon */
    Removed again for issue 165; (133 couldn't be reproduced) */
 span.dynatree-node
 {
-  display: -moz-inline-box; /* issue 133, 165, 172, 192 */
+/*	display: -moz-inline-box; /* issue 133, 165, 172, 192. removed for issue 221 */
+/*	-moz-box-align: start; /* issue 221 */
 /*  display: inline-block; /* Required to make a span sizeable */
 }
 
@@ -397,6 +398,7 @@ div.dynatree-drop-reject span.dynatree-drag-helper-img
 	width: 24px;
 	position: absolute;
 	background-position: 0 -128px;
+	margin: 0;
 }
 #dynatree-drop-marker.dynatree-drop-after,
 #dynatree-drop-marker.dynatree-drop-before
@@ -433,9 +435,6 @@ span.dynatree-drop-target
 }
 span.dynatree-drop-target a
 {
-	/*background-repeat: no-repeat;
-	background-position: right;
-	background-image: url("drop_child.gif");*/
 }
 span.dynatree-drop-target.dynatree-drop-accept a
 {
@@ -450,7 +449,4 @@ span.dynatree-drop-target.dynatree-drop-reject
 }
 span.dynatree-drop-target.dynatree-drop-after a
 {
-	/*background-repeat: repeat-x;
-	background-position: bottom;
-	background-image: url("drop_append.gif");*/
 }
