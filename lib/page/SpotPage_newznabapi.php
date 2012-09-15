@@ -11,7 +11,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # __construct
 
 	function render() {
-		# we willen niet dat de API output gecached wordt
+		# Do not cache this output
 		$this->sendExpireHeaders(true);
 
 		# CAPS function is used to query the server for supported features and the protocol version and other 
@@ -22,7 +22,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			return ;
 		} # if
 		
-		# Controleer de users' rechten
+		# Make sure the user has the correct permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 		$outputtype = ($this->_params['o'] == "json") ? "json" : "xml";
@@ -45,12 +45,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # render()
 
 	function search($outputtype) {
-		# Controleer de users' rechten
+		# Make sure the user has the correct permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
+		/*
+		 * Did the user ask for an TV show? If so, try to get the actual TV show title
+		 */
 		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
 			# validate input
 			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
@@ -71,7 +73,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$dom->loadXML($tvrage);
 			$showTitle = $dom->getElementsByTagName('showname');
-			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
+			# TVrage returns an 404 when the TV show is not found, convert it to an newznab error code
 			if (!@$showTitle->item(0)->nodeValue) {
 				$this->showApiError(300);
 				
@@ -80,6 +82,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$tvSearch = $showTitle->item(0)->nodeValue;
 
 			$epSearch = '';
+			/* Make sure the season is numeric or prefixed with an S */
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
 				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
@@ -88,6 +91,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
+			/* Make sure the episode number is numeric or prefixed with an S */
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
 				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
@@ -96,6 +100,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
+			/* Add the TV title to the search parameters */
 			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
@@ -137,7 +142,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # foreach
 		$search['tree'] = implode(",", $tmpCat);
 
-		# Spots met een filesize 0 niet opvragen
+		# Do not retrieve spots which are zero bytes
 		$search['value'][] = "filesize:>:0";
 
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
@@ -147,14 +152,34 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
 		$offset = $pageNr*$limit;
 
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession,
+		/*
+		 * Actually perform the search
+		 */
+		/*
+		 * We get a bunch of query parameters, so now change this to the actual
+		 * search query the user requested including the required sorting
+		 */		
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		$parsedSearch = $svcSearchQp->filterToQuery(
+							$search,
+							array(
+								'field' => 'stamp',
+								'direction' => 'DESC',
+							),
+							$this->_currentSession,
 							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
-		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
-						$pageNr,
-						$limit,
-						$parsedSearch);
-		$this->showResults($spots, $offset, $outputtype);
+
+		/* 
+		 * Actually fetch the spots
+		 */		
+		$svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
+		$spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
+												$pageNr, 
+												$limit,
+												$parsedSearch);
+
+		$this->showResults($spotsTmp, $offset, $outputtype);
 	} # search
 
 	function showResults($spots, $offset, $outputtype) {
@@ -456,10 +481,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 	function getNzb() {
 		if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
-			$spot = $this->_db->getFullSpot($this->_params['messageid'], $this->_currentSession['user']['userid']);
+			$spot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
 			if ($spot['watchstamp'] !== NULL) {
-				$this->_db->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
-				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+				$svcSpotStateListDao = new Services_Providers_SpotStateList($this->_daoFactory->getSpotStateListDao());
+				$svcSpotStateListDao->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
+
+				$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 				$spotsNotifications->sendWatchlistHandled('remove', $this->_params['messageid']);
 			} # if
 		} # if
