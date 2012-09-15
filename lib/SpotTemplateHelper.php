@@ -8,7 +8,6 @@ class SpotTemplateHelper {
 	protected $_params;
 	protected $_nzbhandler;
 	protected $_spotSec;
-	protected $_cachedSpotCount = null;
 	
 	
 	function __construct(SpotSettings $settings, $currentSession, Dao_Factory $daoFactory, $params) {
@@ -60,36 +59,11 @@ class SpotTemplateHelper {
 	 * Returns te amount of spots (for a specific filter) which are new for this user
 	 */
 	function getNewCountForFilter($filterStr) {
-		/*
-		 * If necessary, fill the cache 
-		 */
-		if ($this->_cachedSpotCount == null) {
-			$this->_cachedSpotCount = $this->_daoFactory->getUserFilterCountDao()->getNewCountForFilters($this->_currentSession['user']['userid']);
-		 } # if
-
-		# Now parse it to an ar ray as we would get when called from a webpage
-		parse_str(html_entity_decode($filterStr), $query_params);
-
-		/*
-		 * We need several items to exist
-		 */
-		$query_tpl = array('search' => array( 'valuelist' => array(), 'value' => array() ));
-		$query_params = array_merge($query_tpl, $query_params);
-
-		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
-
-		# Make sure we have a tree variable, even if it is an empty one
-		if (!isset($query_params['search']['tree'])) {
-			$query_params['search']['tree'] = '';
-		} # if
-		 
-		$filterHash = sha1($query_params['search']['tree'] . '|' . urldecode($query_params['search']['valuelist']));
-		 
-		if (isset($this->_cachedSpotCount[$filterHash])) {
-			return $this->_cachedSpotCount[$filterHash]['newspotcount'];
-		} else {
-			return -1;
-		 } # if
+		$svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+										$this->_daoFactory->getUserFilterDao(),
+										$this->_daoFactory->getSpotDao(),
+										new Services_Search_QueryParser($this->_daoFactory->getConnection()));
+		return $svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], $filterStr);
 	} # getNewCountForFilter
 
 	/*

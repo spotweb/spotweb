@@ -5,6 +5,7 @@ class Services_Providers_CacheNewSpotCount {
 	private $_userFilterDao;
 	private $_spotDao;
 	private $_queryParser;
+	protected $_cachedSpotCount = null;
 
 	/*
 	 * constructor
@@ -18,6 +19,43 @@ class Services_Providers_CacheNewSpotCount {
 		$this->_spotDao = $spotDao;
 		$this->_queryParser = $queryParser;
 	}  # ctor
+
+	/*
+	 * Get the new spotcount for a specific filter
+	 */
+	function getNewCountForFilter($userId, $filterStr) {
+		/*
+		 * If necessary, fill the cache 
+		 */
+		if ($this->_cachedSpotCount == null) {
+			$this->_cachedSpotCount = $this->_userFilterCountDao->getNewCountForFilters($userId);
+		 } # if
+
+		# Now parse it to an array as we would get when called from a webpage
+		parse_str(html_entity_decode($filterStr), $query_params);
+
+		/*
+		 * We need several items to exist
+		 */
+		$query_tpl = array('search' => array( 'valuelist' => array(), 'value' => array() ));
+		$query_params = array_merge($query_tpl, $query_params);
+
+		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
+
+		# Make sure we have a tree variable, even if it is an empty one
+		if (!isset($query_params['search']['tree'])) {
+			$query_params['search']['tree'] = '';
+		} # if
+		 
+		$filterHash = sha1($query_params['search']['tree'] . '|' . urldecode($query_params['search']['valuelist']));
+		 
+		if (isset($this->_cachedSpotCount[$filterHash])) {
+			return $this->_cachedSpotCount[$filterHash]['newspotcount'];
+		} else {
+			return -1;
+		 } # if
+	} # getNewCountForFilter
+
 
 	/*
 	 * Pre-calculates the amount of new spots
@@ -147,5 +185,13 @@ class Services_Providers_CacheNewSpotCount {
 
 		return $statisticsUpdate;
 	} # cacheNewSpotCount
+
+	/*
+	 * Returns the amount of spots for a specific version
+	 */
+	function getSpotCount($sqlFilter) {
+		return $this->_spotDao->getSpotCount($sqlFilter);
+	} # getSpotCount
+
 	
 } # Services_Providers_CacheNewSpotCount

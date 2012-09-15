@@ -11,13 +11,13 @@ class SpotPage_getimage extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
-
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
 		
-		# Haal de image op
+		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
+		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
+
+		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
 			/*
 			 * Because the speeddial image shows stuff like last update and amount of new spots,
@@ -25,14 +25,25 @@ class SpotPage_getimage extends SpotPage_Abs {
 			 */
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
-			# init
-			$totalSpots = $this->_daoFactory->getSpotDao()->getSpotCount('');
-			$newSpots = $this->_tplHelper->getNewCountForFilter('');
+			/*
+			 * Initialize the service to get the new spotcount for this user
+			 */
+			$svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+											$this->_daoFactory->getUserFilterDao(),
+											$this->_daoFactory->getSpotDao(),
+											new Services_Search_QueryParser($this->_daoFactory->getConnection()));
+			$newSpots = $svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], '');
+
+			/*
+			 * Get the total amount of spots
+			 */
+			$totalSpots = $svcCacheNewSpotCount->getSpotCount('');
 			$lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
 
 			$svc_ImageSpeedDial = new Services_Image_SpeedDial();
 			$data = $svc_ImageSpeedDial->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
+			/* Check whether the user has view statistics permissions */
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
 
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;

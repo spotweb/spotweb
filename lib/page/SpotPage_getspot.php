@@ -9,13 +9,13 @@ class SpotPage_getspot extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		# Controleer de users' rechten
+		# Check the appropriate permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 
-		# Haal de volledige spotinhoud op
+		# Retrieve the full spot
 		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
 
-		# zet de page title
+		# set page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];
 
 		#- display stuff -#
