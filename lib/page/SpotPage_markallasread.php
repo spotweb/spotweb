@@ -2,6 +2,8 @@
 class SpotPage_markallasread extends SpotPage_Abs {
 
 	function render() {
+		$result = new Dto_FormResult('success');
+
 		# Check the appropriate permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_mark_spots_asread, '');
 							  
@@ -19,7 +21,7 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		# reset the lastvisit and lastread timestamp
 		$spotUserSystem->resetReadStamp($this->_currentSession['user']);
 
-		echo "<xml><return>ok</return></xml>";
+		$this->render('markallasread', array('result' => $result));
 	} # render()
 
 } # SpotPage_markallasread

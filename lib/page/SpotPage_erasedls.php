@@ -2,7 +2,7 @@
 class SpotPage_erasedls extends SpotPage_Abs {
 
 	function render() {
-		# Controleer de users' rechten
+		# Make sure the user has the appropriate permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls');
 
@@ -11,7 +11,9 @@ class SpotPage_erasedls extends SpotPage_Abs {
 		$spotUserSystem->clearDownloadList($this->_currentSession['user']['userid']);
 		
 		$this->sendExpireHeaders(true);
-		echo "<xml><return>ok</return></xml>";
+
+		$result = new Dto_FormResult('success');
+		$this->template('erasedls', array('result' => $result));
 	} # render()
 
 } # SpotPage_erasedls

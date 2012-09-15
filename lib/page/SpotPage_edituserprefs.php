@@ -14,7 +14,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 	function render() {
 		# Make sure the editresult is set to 'not comited' per default
 		$result = new Dto_FormResult('notsubmitted');
-							  
+
 		# Validate proper permissions
 		if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_own_userprefs, '');

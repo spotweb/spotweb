@@ -69,7 +69,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 
 		#- display stuff -#
 		$this->template('editsecgroup', array('securitygroup' => $secGroup,
-										    'formmessages' => $result,
+										    'result' => $result,
 											'http_referer' => $this->_editSecGroupForm['http_referer']));
 	} # render
 	

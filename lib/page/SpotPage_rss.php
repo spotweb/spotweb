@@ -23,7 +23,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		 * Transform the query parameters to a list of filters, fields, 
 		 * sortings, etc.
 		 */		
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		$parsedSearch = $svcSearchQp->filterToQuery(
 							$this->_params['search'], 
 							array(

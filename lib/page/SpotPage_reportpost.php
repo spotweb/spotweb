@@ -10,28 +10,18 @@ class SpotPage_reportpost extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
-		# Controleer de users' rechten
+		$result = new Dto_FormResult('notsubmitted');
+
+		# Check the users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_report_spam, '');
 				
-		# Sportparser is nodig voor het escapen van de random string
-		$spotParser = new Services_Format_Parsing();
-		
-		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::factory();
-		
-		# creeer een default report
+		# Create the default report a spot structure
 		$report = array('body' => 'This is SPAM!',
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
 						 'randomstr' => '');
 		
-		# reportpost verzoek was standaard niet geprobeerd
-		$postResult = array();
-		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "report: report spot";
 
 		/* 
@@ -40,46 +30,27 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		 */
 		$formAction = $this->_reportForm['action'];
 
-		# Make sure the anonymous user and reserved usernames cannot post content
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
-		
 		if ($formAction == 'post') {
-			# Notificatiesysteem initialiseren
+			# Initialize the notification system
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
-			# zorg er voor dat alle variables ingevuld zijn
+			# Make sure we always have a fully valid form
 			$report = array_merge($report, $this->_reportForm);
 
-			# vraag de users' privatekey op
-			$this->_currentSession['user']['privatekey'] = 
-				$this->_db->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
-			
-			# het messageid krijgen we met <>'s, maar we werken 
-			# in spotweb altijd zonder, dus die strippen we
-			$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
-			
-			# valideer of we dit report kunnen posten, en zo ja, doe dat dan
+			# can we report this spot as spam?
 			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			$formMessages['errors'] = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
+			$result = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
 			
-			if (empty($formMessages['errors'])) {
-				$postResult = array('result' => 'success');
-
-				# en verstuur een notificatie
+			if ($result->isSuccess()) {
+				# send a notification
 				$spotsNotifications->sendReportPosted($report['inreplyto']);
-			} else {
-				$postResult = array('result' => 'failure');
-			} # else
+			} # if
 		} # if
 		
 		#- display stuff -#
 		$this->template('spamreport', array('postreportform' => $report,
-											 'formmessages' => $formMessages,
-											 'postresult' => $postResult));
+											'result' => $result));
 	} # render	
+
 } # class SpotPage_reportpost
+

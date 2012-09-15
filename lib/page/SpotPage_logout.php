@@ -2,6 +2,8 @@
 class SpotPage_logout extends SpotPage_Abs {
 	
 	function render() {
+		$result = new Dto_FormResult('notsubmitted');
+
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
 							  
@@ -16,10 +18,12 @@ class SpotPage_logout extends SpotPage_Abs {
 		
 		# and remove the users' session if the user isn't the anonymous one
 		if ($spotUserSystem->removeSession($this->_currentSession['session']['sessionid'])) {
-			echo '<xml><result>OK</result></xml>';
+			$result->setResult('success');
 		} else {
-			echo '<xml><result>ERROR</result></xml>';
+			$result->addError(_('Unable to remove session');
 		} # else
+
+		$this->render('logout', array('result' => $result));
 	} # render
 	
 } # class SpotPage_logout

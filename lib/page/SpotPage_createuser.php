@@ -36,7 +36,7 @@ class SpotPage_createuser extends SpotPage_Abs {
 		
 		#- display stuff -#
 		$this->template('createuser', array('createuserform' => $spotUser,
-										    'result' => $formMessages);
+										    'result' => $result);
 	} # render
 	
 } # class SpotPage_createuser

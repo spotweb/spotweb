@@ -1044,6 +1044,29 @@ class SpotUserSystem {
 	} # addFilter
 	
 	/*
+	 * Reorder filters
+	 */
+	public function reorderFilters($userId, $filterOrder) {
+		foreach($filterOrder as $id => $parent) {
+			$spotFilter = $spotUserSystem->getFilter($userId, $id);
+
+			/*
+			 * If either the order or the filterhierarchy is changed, we 
+			 * need to update the filter
+			 */
+			if (($spotFilter['torder'] <> $orderCounter) || ($spotFilter['tparent'] <> $parent)) { 
+				$spotFilter['torder'] = (int) $orderCounter;
+				$spotFilter['tparent'] = (int) $parent;
+				$spotUserSystem->changeFilter($userId, $spotFilter);
+			} # if
+			
+			$orderCounter++;
+		} # foreach
+
+		return new Dto_FormResult('success');
+	} # reorderFilters
+
+	/*
 	 * Retrieves the users' index filter
 	 */
 	function getIndexFilter($userId) {

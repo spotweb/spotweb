@@ -28,12 +28,11 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# editfilter resultaat is standaard niet geprobeerd
 		$editResult = array();
 
-		# Instantiate the SpoUser system
+		# Instantiate the SpotUser system
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "spot: filters";
-		
 	
 		/* 
 		 * bring the forms' action into the local scope for 
@@ -93,18 +92,16 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'importfilters' 
 				
 				case 'addfilter'	: {
-					# Creeer een nieuw filter record - we voegen een filter altijd aan de root toe
+					# Create a new filter record, we will always add the filter to the root with no children
 					$filter = $this->_editFilterForm;
 					$filter['valuelist'] = explode('&', $filter['valuelist']) ;
 					$filter['torder'] = 999;
 					$filter['tparent'] = 0;
 					$filter['children'] = array();
 					$filter['filtertype'] = 'filter';
-					$filter['sorton'] = $filter['sorton'];
-					$filter['sortorder'] = $filter['sortorder'];
 					$filter['enablenotify'] = isset($filter['enablenotify']) ? true : false;
 						
-					# en probeer de filter toe te voegen
+					# and actually add the filter
 					$result = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
 
 					break;
@@ -113,20 +110,11 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				case 'reorder' : {
 					$orderCounter = 0;
 					
-					# Omdat de nestedSortable jquery widget niet een expliciete sortering meegeeft, voegen
-					# we die zelf toe aan de hand van hoe de elementen binnen komen
-					foreach($this->_orderList as $id => $parent) {
-						$spotFilter = $spotUserSystem->getFilter($this->_currentSession['user']['userid'], $id);
-
-						# Als de volgorde of hierarchie dan moet de filter geupdate worden
-						if (($spotFilter['torder'] <> $orderCounter) || ($spotFilter['tparent'] <> $parent)) { 
-							$spotFilter['torder'] = (int) $orderCounter;
-							$spotFilter['tparent'] = (int) $parent;
-							$spotUserSystem->changeFilter($this->_currentSession['user']['userid'], $spotFilter);
-						} # if
-						
-						$orderCounter++;
-					} # foreach
+					/*
+					 * The nestedSortable jquery widget will not pass an explicit sorting, we
+					 * add it ourselves using the order of the elements we are given
+					 */
+					$result = $spotUserSystem->reorderFilters($this->_currentSession['user']['userid'], $this->_orderList);
 				} # case 'reorder' 
 				
 				case 'changefilter'	: {
@@ -150,7 +138,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 											'sortby' => $this->_sorton,
 											'sortdir' => $this->_sortorder,
 											'lastformaction' => $formAction,
-										    'formmessages' => $result,
+										    'result' => $result,
 										    'data' => $this->_data,
 											'http_referer' => $this->_editFilterForm['http_referer'],
 											'editresult' => $editResult));

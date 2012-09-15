@@ -10,30 +10,28 @@ class SpotPage_postcomment extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
+		# Make sure the result is set to 'not comited' per default
+		$result = new Dto_FormResult('notsubmitted');
+
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_comment, '');
 							  
-		# Sportparser is nodig voor het escapen van de random string
+		$result = new Dto_FormResult('notsubmitted');
 		$spotParseUtil = new Services_Format_Util();
-		
-		# spot signing is nodig voor het RSA signen van de spot en dergelijke
 		$spotSigning = Services_Signing_Base::factory();
-		
-		# creeer een default comment zodat het form altijd
-		# de waardes van het form kan renderen
+		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
+
+		/*
+		 * Make sure we have the template for the comment form
+		 * so our view can always render properties
+		 */		
 		$comment = array('body' => '',
 						 'rating' => 0,
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
 						 'randomstr' => '');
 		
-		# postcomment verzoek was standaard niet geprobeerd
-		$postResult = array();
-		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "spot: post comment";
 
 		/* 
@@ -41,33 +39,16 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		 * easier access
 		 */
 		$formAction = $this->_commentForm['action'];
-
-
-		# Make sure the anonymous user and reserved usernames cannot post content
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
 		
 		if ($formAction == 'post') {
 			# zorg er voor dat alle variables ingevuld zijn
 			$comment = array_merge($comment, $this->_commentForm);
 
-			# vraag de users' privatekey op
-			$this->_currentSession['user']['privatekey'] = 
-				$spotUser->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
-				
-			# het messageid krijgen we met <>'s, maar we werken 
-			# in spotweb altijd zonder, dus die strippen we
-			$comment['newmessageid'] = substr($comment['newmessageid'], 1, -1);
+			# valiate whether we can post comments, if so, do this
+			$spotPosting = new SpotPosting($this->_daoFactory, $this->_settings);
+			$result = $spotPosting->postComment($spotUser, $this->_currentSession['user'], $comment);
 			
-			# valideer of we deze comment kunnen posten, en zo ja, doe dat dan
-			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			$formMessages['errors'] = $spotPosting->postComment($this->_currentSession['user'], $comment);
-			
-			if (empty($formMessages['errors'])) {
+			if ($result->isSuccess()) {
 				/* Format the body so we can have smilies and stuff be shown in the template */
 				$tmpBody = $this->_tplHelper->formatContent($comment['body']);
 
@@ -81,12 +62,11 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				$commentImage = $this->_tplHelper->makeCommenterImageUrl($comment);
 
 				/* and return the result to the system */
-				$postResult = array('result' => 'success',
-									'user' => $this->_currentSession['user']['username'],
-									'spotterid' => $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']),
-									'rating' => $comment['rating'],
-									'body' => $tmpBody,
-									'commentimage' => $commentImage);
+				$result->addData('user' => $this->_currentSession['user']['username']);
+				$result->addData('spotterid' => $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']));
+				$result->addData('rating' => $comment['rating']);
+				$result->addData('body' => $tmpBody);
+				$result->addData('commentimage' => $commentImage);
 			} else {
 				$postResult = array('result' => 'failure');
 			} # else
@@ -94,8 +74,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		
 		#- display stuff -#
 		$this->template('postcomment', array('postcommentform' => $comment,
-											 'formmessages' => $formMessages,
-											 'postresult' => $postResult));
+											 'result' => $result));
 	} # render
 	
 } # class SpotPage_postcomment

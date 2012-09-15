@@ -39,11 +39,14 @@ class SpotPage_getnzb extends SpotPage_Abs {
 										$this->_action, $svcProvSpot, $svcProvNzb);
 			
 			if ($this->_action != 'display') {
-				echo "<xml><result>OK</result><msg></msg></xml>";
+				$result = new Dto_FormResult('success');
+				$this->template('getnzb', array('result' => $result));
 			} # if
 		}
 		catch(Exception $x) {
-			echo "<xml><result>ERROR</result><msg>" . $x->getMessage() . "</msg></xml>";
+			$result = new Dto_FormResult('notsubmitted');
+			$result->addError($x->getMessage());
+			$this->template('getnzb', array('result' => $result));
 		} # catch
 	} # render
 	
