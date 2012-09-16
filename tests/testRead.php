@@ -3,13 +3,12 @@ require_once "lib/SpotClassAutoload.php";
 require_once "lib/SpotParser.php";
 require_once "lib/SpotPosting.php";
 require_once "lib/SpotCategories.php";
-require_once "lib/SpotSigning.php";
-require_once "lib/SpotSeclibToOpenSsl.php";
 require_once "lib/SpotNntp.php";
 require_once "NNTP/Protocol/Client.php";
 require_once "NNTP/Client.php";
 require_once "lib/exceptions/CustomException.php";
 require_once "lib/exceptions/NntpException.php";
+require_once "lib/services/Signing/Services_Signing_Base.php";
 require_once "lib/SpotSecurity.php";
 require_once "lib/SpotTiming.php";
 require_once "settings.php";
@@ -26,7 +25,7 @@ $db->connect();
 echo "Connected to the database.." . PHP_EOL;
 
 $spotSettings = SpotSettings::singleton($db, $settings);
-$spotSigning = new SpotSigning();
+$spotSigning = Services_Signing_Base::newServiceSigning();
 $spotPosting = new SpotPosting($db, $spotSettings);
 $spotUserSystem = new SpotUserSystem($db, $spotSettings);
 
@@ -45,8 +44,10 @@ var_dump($msgdata);
 # Connct thru our own NNTP session to the server so we have an XOVER list
 $headerServer = $spotSettings->get('nntp_hdr');
 $spotnntp = new SpotNntp($spotSettings->get('nntp_hdr'));
-$spotnntp->selectGroup($spotSettings->get('hdr_group'));
-$hdrList = $spotnntp->getOverview(3244937, 3244938);
+# $spotnntp->selectGroup($spotSettings->get('hdr_group'));
+$spotnntp->selectGroup('alt.test');
+
+$hdrList = $spotnntp->getOverview(3042000, 3042636);
 
 
 foreach($hdrList as $msgid => $msgheader) {
