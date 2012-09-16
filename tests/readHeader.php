@@ -38,9 +38,9 @@ try {
        
 	foreach($r as $hdr) {
 		$y = explode(":", $hdr);
-		$r[$y[0]] = $y[1];
+		$r[$y[0]] = trim($y[1]);
 	} # foreac
- 
+
 	$spotParser = new SpotParser();
         $spot = $spotParser->parseXover($r['Subject'],
                                         $r['From'],
@@ -48,8 +48,8 @@ try {
                                         $r['Message-ID'],
                                         $rsaKeys);
 
-	var_dump($y);
-	var_dump($r);
+//	var_dump($y);
+	//var_dump($r);
         var_dump($spot);
 
 } catch(Exception $x) {
