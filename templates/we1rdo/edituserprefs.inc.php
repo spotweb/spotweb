@@ -35,7 +35,6 @@ if (!$dialogembedded) { ?>
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
-	<input type="hidden" name="edituserprefsform[buttonpressed]" value="">
 	<input type="hidden" name="userid" value="<?php echo htmlspecialchars($spotuser['userid']); ?>">
 <?php if ($dialogembedded) { ?>
 	<input type="hidden" name="dialogembedded" value="1">

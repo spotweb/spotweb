@@ -33,7 +33,6 @@ if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254
 <form class="editsettingsform" name="editsettingsform" action="<?php echo $tplHelper->makeEditSettingsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="editsettingsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsettingsform'); ?>">
 	<input type="hidden" name="editsettingsform[http_referer]" value="<?php echo $http_referer; ?>">
-	<input type="hidden" name="editsettingsform[buttonpressed]" value="">
 	
 	<div id="editsettingstab" class="ui-tabs">
 		<ul>
