@@ -130,7 +130,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 			
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
-							 'templates/we1rdo/css/jquery-ui-1.8.13.custom.css',
+							 'templates/we1rdo/css/jquery-ui-1.8.23.custom.css',
 							 'templates/we1rdo/css/spoticons.css',
 							 'templates/we1rdo/css/style.css',
 							 'templates/we1rdo/css/tipTip.css'

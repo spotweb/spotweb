@@ -935,7 +935,7 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	// post de data
 	$.ajax({
 		type: "POST",
-		url: url, // '?page=editfilter',
+		url: url, 
 		dataType: "html",
 		data: formdata,
 		success: function(xml) {
