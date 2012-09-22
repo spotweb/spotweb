@@ -172,6 +172,8 @@ class SpotUserSystem {
 	 */
 	function removeAllUserSessions($userId) {
 		$this->_sessionDao->deleteAllUserSessions($userId);
+
+		return new Dto_FormResult('success');
 	} # removeAllUserSessions
 	
 	/*
@@ -491,7 +493,11 @@ class SpotUserSystem {
 		$user['apikey'] = md5($this->generateUniqueId());
 		
 		$this->_userDao->setUser($user);
-		return $user;
+
+		$result = new Dto_FormResult('success');
+		$result->addData('apikey', $user['apikey']);
+
+		return $result;
 	} # setUserApi
 
 	/*
@@ -781,6 +787,99 @@ class SpotUserSystem {
 		
 		return $result;
 	} # validateUserRecord
+
+	private function cleanseEditForm($editForm) {
+		/* Make sure the preferences aren't set using this page as it might override security */
+		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist', 'prefs');
+		foreach($editForm as $key => $value) {
+			if (in_array($key, $validFields) === false) {
+				unset($editForm[$key]);
+			} # if
+		} # foreach
+		
+		return $editForm;
+	} # cleanseEditForm
+
+	public function updateUserRecord($user, array $groupList, $allowEditGroupMembership) {
+		# Remove any non-valid fields from the array
+		$user = $this->cleanseEditForm($user);
+		$spotUser = $spotUserSystem->getUser($user['userid']);
+
+		/* Make sure we the user to be editted can be found */
+		if ($spotUser === false) {
+			$result->addError(sprintf(_('User %d can not be found'), $user['userid']));
+		} # if
+		$spotUser = array_merge($spotUser, $user);
+
+		/* now make sure the entered data is somewhat valid */
+		if ($result->isSuccess()) {
+			$result = $spotUserSystem->validateUserRecord($spotUser, true);
+		} # if
+
+		if ($result->isSuccess()) { 
+			# actually update the user record
+			$spotUserSystem->setUser($spotUser);
+
+			/*
+			 * Update the users' password, but only when
+			 * a new password is given
+			 */
+			if (!empty($spotUser['newpassword1'])) {
+				$spotUserSystem->setUserPassword($spotUser);
+			} # if
+
+			/*
+			 * Did we get an groupmembership list? If so,
+			 * try to update it as well
+			 */						
+			if (!empty($groupList)) { 
+				# make sure there is at least one group
+				if (count($groupList) < 1) {
+					$result->addError(_('A user must be member of at least one group'));
+				} else {
+					# Mangle the current group membership to a common format
+					$currentGroupList = array();
+					foreach($groupList as $value) {
+						$currentGroupList[] = $value['groupid'];
+					} # foreach
+
+					# and mangle the new requested group membership
+					$groupMembership = $this->getUserGroupMemberShip($spotUser['userid']);
+					$tobeGroupList = array();
+					foreach($groupMembership as $value) {
+						$tobeGroupList[] = $value['id'];
+					} # foreach
+
+					/*
+					 * Try to compare the grouplist with the current
+					 * grouplist. If the grouplist changes, the user 
+					 * needs change group membership permissions
+					 */
+					sort($currentGroupList, SORT_NUMERIC);
+					sort($tobeGroupList, SORT_NUMERIC);
+
+					/* 
+					 * If the groupmembership list changes, lets make sure
+					 * the user has the specific permission
+					 */
+					$groupDiff = (count($currentGroupList) != count($tobeGroupList));
+					for ($i = 0; $i < count($currentGroupList) && !$groupDiff; $i++) {
+						$groupDiff = ($currentGroupList[$i] != $tobeGroupList[$i]);
+					} # for
+
+					if ($groupDiff) {
+						if ($allowEditGroupMembership) {
+							$spotUserSystem->setUserGroupList($spotUser, $groupList);
+						} else {
+							$result->addError(_('Changing group membership is not allowed'));
+						} # else
+					} # if
+				} # if
+			} # if
+		} # if
+
+		return $result;
+	} # updateUserRecord
 	
 	/*
 	 * Set the users' public and private keys
@@ -821,6 +920,13 @@ class SpotUserSystem {
 		
 		return $result;
 	} # validateSecGroup
+
+	/*
+	 * Returns the users' group membership
+	 */
+	function getUserGroupMemberShip($userId) {
+		return $this->_userDao->getGroupList($userId);
+	} # getUserGroupMemberShip
 
 	/*
 	 * Removes a permission from a securitygroup
@@ -970,9 +1076,7 @@ class SpotUserSystem {
 	 * Retrieves an user record
 	 */
 	function getUser($userid) {
-		$tmpUser = $this->_userDao->getUser($userid);
-		
-		return $tmpUser;
+		return $this->_userDao->getUser($userid);
 	} # getUser()
 
 	/*
@@ -1192,7 +1296,16 @@ class SpotUserSystem {
 	 * Removes an user record
 	 */
 	function removeUser($userid) {
-		$this->_userDao->deleteUser($userid);
+		$result = new Dto_FormResult('success');
+
+		# Do not allow the builtin accounts to be deleted
+		if ($this->_userIdToEdit <= SPOTWEB_ADMIN_USERID) {
+			$result->addError(_('Admin and Anonymous can not be deleted'));
+		} else {
+			$this->_userDao->deleteUser($userid);
+		} # else
+
+		return $result;
 	} # removeUser()
 
 	/*

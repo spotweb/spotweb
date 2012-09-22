@@ -231,7 +231,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 							 * messageid's we already have retrieved and are ready
 							 * to be added to the database
 							 */
-							$dbIdList['fullcomment'][$msgid] = 1;
+							$dbIdList['fullcomment'][$commentId] = 1;
 						} 
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
