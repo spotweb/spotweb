@@ -14,17 +14,6 @@ class SpotsOverview {
 		$this->_cacheDao = $db->_cacheDao;
 	} # ctor
 
-	function getFullSpot($msgId, $ourUserId, $nntp) {
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_db->_spotDao, new Services_Nntp_SpotReading($nntp));
-		return $svcProvFullSpot->fetchFullSpot($msgId, $ourUserId);
-	} # getFullSpot
-
-	function getNzb($fullSpot, $nntp) {
-		$x = new Services_Providers_Nzb($this->_db->_cacheDao,
-										new Services_Nntp_SpotReading($nntp));
-		return $x->fetchNzb($fullSpot);
-	} # getNzb
-
 	/*
 	 * Geeft een Spotnet avatar image terug
 	 */
@@ -52,49 +41,5 @@ class SpotsOverview {
 		return $x->getFromWeb($url, $storeWhenRedirected, $ttl);
 	} # getFromWeb
 
-	/*
-	 * Laad de spots van af positie $start, maximaal $limit spots.
-	 *
-	 * $parsedSearch is een array met velden, filters en sorteringen die 
-	 * alles bevat waarmee SpotWeb kan filteren. 
-	 */
-	function loadSpots($ourUserId, $start, $limit, $parsedSearch) {
-		SpotTiming::start(__FUNCTION__);
-		
-		# en haal de daadwerkelijke spots op
-		$spotResults = $this->_db->getSpots($ourUserId, $start, $limit, $parsedSearch, false);
-
-		$spotCnt = count($spotResults['list']);
-		for ($i = 0; $i < $spotCnt; $i++) {
-			# We forceren category naar een integer, sqlite kan namelijk een lege
-			# string terug ipv een category nummer
-			$spotResults['list'][$i]['category'] = (int) $spotResults['list'][$i]['category'];
-			
-			# We trekken de lijst van subcategorieen uitelkaar 
-			$spotResults['list'][$i]['subcatlist'] = explode("|", 
-							$spotResults['list'][$i]['subcata'] . 
-							$spotResults['list'][$i]['subcatb'] . 
-							$spotResults['list'][$i]['subcatc'] . 
-							$spotResults['list'][$i]['subcatd'] . 
-							$spotResults['list'][$i]['subcatz']);
-		} # foreach
-
-		SpotTiming::stop(__FUNCTION__, array($spotResults));
-		return $spotResults;
-	} # loadSpots()
-
-	
-	public function prepareCategorySelection($dynaList) {
-		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
-		return $x->prepareCategorySelection($dynaList);
-	}
-	public function compressCategorySelection($categoryList, $strongNotList) {
-		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
-		return $x->compressCategorySelection($categoryList, $strongNotList);
-	}
-	public function filterToQuery($search, $sort, $currentSession, $indexFilter) {
-		$x = new Services_Search_QueryParser($this->_db->getDbHandle());
-		return $x->filterToQuery($search, $sort, $currentSession, $indexFilter);
-	}
 
 } # class SpotsOverview
