@@ -141,7 +141,8 @@ class SpotCategories {
 					  11 => array("Dutch audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
 					  12 => array("German audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
 					  13 => array("French audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
-					  14 => array("Spanish audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3"))),
+					  14 => array("Spanish audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
+					  15 => array("Asian audio/written", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3"))),
 				  'd' =>
 				Array(0  => array("Action", array("z0", "z1"), array("z0", "z1")),
 					  1  => array("Adventure", array("z0", "z1", "z2"), array("z0", "z1", "z2")),
