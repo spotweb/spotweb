@@ -201,6 +201,7 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					 * spots are ignored
 					 */
 					if (($spot === false) || (!$spot['verified'])){
+						$this->debug('foreach-loop, spot is either false or not verified');
 						continue;
 					} # if
 
@@ -208,12 +209,14 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					 * Special moderator commands always have keyid 2
 					 */
 					if ($spot['keyid'] == 2) {
+						$this->debug('foreach-loop, spot is a moderation spot');
+
 						$commandAr = explode(' ', strtolower($spot['title']));
 						$validCommands = array('delete', 'dispose', 'remove');
 
 						# is this one of the defined valid commands?
 						if (in_array($commandAr[0], $validCommands) !== false) {
-							$moderationList[] = $commandAr[1];
+							$moderationList[$commandAr[1]] = 1;
 							$modCount++;
 						} # if
 						
@@ -222,8 +225,10 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 						 * Don't add spots older than specified for the retention stamp
 						 */
 						if (($retentionStamp > 0) && ($spot['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+							$this->debug('foreach-loop, spot is expired: ' . $spot['stamp']);
 							continue;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
+							$this->debug('foreach-loop, spot is too old: ' . $spot['stamp']);
 							$skipCount++;
 						} else {
 							/*
