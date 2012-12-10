@@ -3,7 +3,7 @@
 ?>
 			<div class='permdenied'>
 				<p>
-					<?php echo sprintf(_('Toegang geweigerd voor [%s (%d::%s)]'), $tplHelper->permToString($exception->getPermId()), $exception->getPermId(), $exception->getObject()); ?> </strong>
+					<?php echo sprintf(_('Access denied for [%s (%d::%s)]'), $tplHelper->permToString($exception->getPermId()), $exception->getPermId(), $exception->getObject()); ?> </strong>
 				</p>
 			</div>
 		</div>

@@ -1821,3 +1821,6 @@ msgstr "Spotterid verwijderen"
 
 msgid "%s commented earlier:"
 msgstr "%s schreef eerder:"
+
+msgid "Access denied for [%s (%d::%s)]"
+msgstr "Toegang geweigerd voor [%s (%d::%s)]"
