@@ -75,6 +75,7 @@
 			<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext'), false); ?> </td> </tr>
 			<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring'), true); ?> </td> </tr>
+			<tr> <td colspan="2"> json </td> <td> <?php showResult(extension_loaded('json'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
 			<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
