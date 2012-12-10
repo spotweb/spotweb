@@ -190,7 +190,7 @@
 			<table summary="PHP settings">
 				<tr> <th> Database settings </th> <th> </th> </tr>
 				<tr> <td colspan='2'> Spotweb needs an available MySQL or PostgreSQL database. The database needs to be created and you need to have an user account and password for this database. </td> </tr>
-				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='mysql'>mysql</option> <option value='postgresql'>PostgreSQL</option> </select> </td> </tr>
+				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='mysql'>mysql</option> <option value='pdo_pgsql'>PostgreSQL</option> </select> </td> </tr>
 				<tr> <td> server </td> <td> <input type='text' length='40' name='dbform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
 				<tr> <td> database </td> <td> <input type='text' length='40' name='dbform[dbname]' value='<?php echo htmlspecialchars($form['dbname']); ?>' ></input></td> </tr>
 				<tr> <td> username </td> <td> <input type='text' length='40' name='dbform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
@@ -554,7 +554,7 @@
 					break;
 				} # mysql
 
-				case 'postgresql' : {
+				case 'pdo_pgsql' : {
 					$dbConnectionString .= "\$dbsettings['engine'] = 'pdo_pgsql';" . PHP_EOL;
 					$dbConnectionString .= "\$dbsettings['host'] = '" . $_SESSION['spotsettings']['db']['host'] . "';" . PHP_EOL;
 					$dbConnectionString .= "\$dbsettings['dbname'] = '" . $_SESSION['spotsettings']['db']['dbname'] . "';" . PHP_EOL;
@@ -562,7 +562,7 @@
 					$dbConnectionString .= "\$dbsettings['pass'] = '" . $_SESSION['spotsettings']['db']['pass'] . "';" . PHP_EOL;
 
 					break;
-				} # postgresql
+				} # pdo_pgsql 
 			} # switch
 
 			# Try to create the dbsettings.inc.php file for the user
