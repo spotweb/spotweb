@@ -9,7 +9,40 @@ class Services_Format_Parsing {
 		$this->_util = new Services_Format_Util();
 	} # ctor
 	
-	
+
+	/*
+	 * Some Spotnet clients create invalid XML - see 
+	 * messageid ZOB4WPyqQfcHqykUAES8q@spot.net for example, because
+	 * it uses an unescaped & not in an CDATA block.
+	 */
+	private function correctElmContents($xmlStr, $elems) {
+		$cdataStart = '<![CDATA[';
+		$cdataEnd = ']]>';
+
+		foreach($elems as $elementName) {
+			// find the element entries
+			$startElem = stripos($xmlStr, '<' . $elementName . '>');
+			$endElem = stripos($xmlStr, '</' . $elementName . '>');
+
+			if (($startElem === false) || ($endElem === false)) {
+				continue;
+			}
+
+			/*
+			 * Make sure this elements content is not preceeded by the
+			 * required CDATA header
+			 */ 
+			if (substr($xmlStr, $startElem + strlen($elementName) + 2, strlen($cdataStart)) !== $cdataStart) {
+				$xmlStr = str_replace(
+					Array('<' . $elementName . '>', '</' . $elementName . '>'),
+					Array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
+					$xmlStr);
+			} // if
+		} # foreach
+
+		return $xmlStr;
+	} # correctElmContents
+
 	/*
 	 * Parse a full Spot according to the XML structure
 	 */
@@ -32,6 +65,11 @@ class Services_Format_Parsing {
 			);
 		} // if 
 		
+		/* 
+		 * Fix up some forgotten entity encoding / cdata sections in the XML
+		 */
+		$xmlStr = $this->correctElmContents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
+
 		/* 
 		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		
