@@ -20,6 +20,18 @@ class Services_Format_Parsing {
 						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
 
+		/*
+		 * Some legacy potNet clients create incorrect/invalid multiple segments,
+		 * we use this crude way to workaround this. GH issue #1608
+		*/
+		if (strpos($xmlStr, 'spot.net></Segment') !== false) {
+			$xmlStr = str_replace(
+				Array('spot.net></Segment>', 'spot.ne</Segment>'),
+				Array('spot.net</Segment>', 'spot.net</Segment>'),
+				$xmlStr
+			);
+		} // if 
+		
 		/* 
 		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		
