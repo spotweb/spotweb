@@ -29,7 +29,7 @@ class SpotParser {
 			 * Make sure this elements content is not preceeded by the
 			 * required CDATA header
 			 */ 
-			if (substr($xmlStr, $startElem + strlen($elementName) + 3, strlen($cdataStart)) !== $cdataStart) {
+			if (substr($xmlStr, $startElem + strlen($elementName) + 2, strlen($cdataStart)) !== $cdataStart) {
 				$xmlStr = str_replace(
 					Array('<' . $elementName . '>', '</' . $elementName . '>'),
 					Array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
