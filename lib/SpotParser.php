@@ -15,6 +15,18 @@ class SpotParser {
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
 
 		/* 
+		 * Some legacy potNet clients create incorrect/invalid multiple segments,
+		 * we use this crude way to workaround this. GH issue #1608
+		 */
+		if (strpos($xmlStr, 'spot.net></Segment') !== false) {
+                        $xmlStr = str_replace(
+                                        Array('spot.net></Segment>', 'spot.ne</Segment>'),
+                                        Array('spot.net</Segment>', 'spot.net</Segment>'),
+					$xmlStr
+                        );
+		} // if 
+
+		/* 
 		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */		
 		$xml = @(new SimpleXMLElement($xmlStr));
@@ -72,7 +84,7 @@ class SpotParser {
 				$tpl_spot['nzb'][] = (string) $seg;
 			} # else
 		} # foreach
-
+		
 		# fix the category in the XML array but only for new spots
 		if ((int) $xml->Key != 1) {
 			$tpl_spot['category'] = ((int) $tpl_spot['category']) - 1;
@@ -360,7 +372,7 @@ class SpotParser {
 					 if ($spot['verified']) {
 						$userRsaKey = array(7 => array('modulo' => $spot['selfsignedpubkey'],
 													   'exponent' => 'AQAB'));
-													   
+				
 						/*
 						 * We cannot use this as a full measure to check the spot's validness yet, 
 						 * because at least one Spotnet client feeds us invalid data for now
