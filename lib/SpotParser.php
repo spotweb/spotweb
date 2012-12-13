@@ -16,6 +16,12 @@ class SpotParser {
 		$cdataStart = '<![CDATA[';
 		$cdataEnd = ']]>';
 
+		/*
+		 * replace low-ascii characters, see messageid KNCuzvnxJJErJibUAAxQJ@spot.net
+		 */
+                $xmlStr = preg_replace('/[\x00-\x1F]/', '', $xmlStr);
+
+		/* and loop through all elements and fix them up */
 		foreach($elems as $elementName) {
 			// find the element entries
 			$startElem = stripos($xmlStr, '<' . $elementName . '>');
