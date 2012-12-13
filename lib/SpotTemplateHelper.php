@@ -839,7 +839,7 @@ class SpotTemplateHelper {
 		// It will only filter cat0 (beeld).
 		if ($spot['category'] == 0) {
 			$spot['cleantitle'] = preg_replace('/(([Ss][uU][Bb][Ss]) ([Mm][Aa][Dd][Ee]\s)?([bB][yY])\s?:?.{0,15}\S)|(~.+~)|' .
-											   '( \S{2,}( ?/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
+											   '( \S{2,}( ?\/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
 											   '(\(\w+(\s\w+)?\))|(\S*([Ss][Uu][Bb](([Ss])|([Bb][Ee][Dd])))\S*)|((-\S+)$)|' .
 											   '([Nn][Ll])|([\s\/][Ee][Nn][Gg]?[\s\/])|(AC3)|(DD(5.1)?)|([Xx][Vv][Ii][Dd])|' .
 											   '([Dd][Ii][Vv][Xx])|([Tt][Ss])|(\d+\s([Mm]|[Kk]|[Gg])[Bb])|([Mm][Kk][Vv])|' . 
@@ -851,7 +851,6 @@ class SpotTemplateHelper {
 											   "", 
 											   $spot['title']);
 			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
-			$spot['cleantitle'] = preg_replace('\s', "", $spot['cleantitle']);
 			if (empty($spot['cleantitle'])) {
 				// Use $spot['title'] if my regex screws up..
 				$spot['cleantitle']=$spot['title'];
