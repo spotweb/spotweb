@@ -8,7 +8,7 @@ Spotweb has been regulary tested on several different systems. Spotweb is mostly
 
 Spotweb also supports PostgreSQL and SQLite where SQLite is the least supported and tested database engine.
 
-Please run 'testinstall.php' from within your browser before attempting anything further with Spotweb and make sure
+Please run 'install.php' from within your browser before attempting anything further with Spotweb and make sure
 all items are checked 'OK'.
 	
 == Installation instructions ==
