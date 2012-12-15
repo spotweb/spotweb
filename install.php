@@ -9,6 +9,12 @@
 		// ignore errors
 	} # catch
 	set_error_handler("ownWarning",E_WARNING);
+
+	/*
+	 * We output headers after already sending HTML, make
+	 * sure output buffering is turned on.
+	 */
+	ob_start();
 	
 	/*
 	 * We default to a succeeded install, let it prove
@@ -684,3 +690,5 @@
 		
 		default			: performAndPrintTests(); break;
 	} # switch
+
+	ob_end_flush();
