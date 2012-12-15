@@ -78,7 +78,7 @@ class SpotPage_index extends SpotPage_Abs {
 		} # if
 		
 		# zet de page title
-		$this->_pageTitle = _("overzicht");
+		$this->_pageTitle = _("overview");
 		
 		#- display stuff -#
 		$this->template('spots', array(
