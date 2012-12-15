@@ -34,12 +34,15 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 			} # catch
 
 			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+			// Disable standard conforming strings for now as it breaks our code.
+			$this->rawExec('SET standard_conforming_strings=0');
 		} # if
 	} # connect()
 
 	function safe($s) {
 		$search=array("\\","\0","\n","\r","\x1a","'",'"');
-		$replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+		$replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'"');
 		return str_replace($search, $replace, $s);
 	} # safe
 
