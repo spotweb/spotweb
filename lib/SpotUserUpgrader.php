@@ -219,7 +219,7 @@ class SpotUserUpgrader {
 			$this->setSettingIfNot($user['prefs'], 'customcss', '');
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
 			$this->setSettingIfNot($user['prefs'], 'newspotdefault_body', '');
-			$this->setSettingIfNot($user['prefs'], 'user_language', 'nl_NL');
+			$this->setSettingIfNot($user['prefs'], 'user_language', 'en_US');
 			$this->setSettingIfNot($user['prefs'], 'show_avatars', true);
 			$this->setSettingIfNot($user['prefs'], 'usemailaddress_for_gravatar', true);
 
@@ -477,9 +477,6 @@ class SpotUserUpgrader {
 	 * Update the current version of the settings
 	 */
 	function updateSecurityVersion() {
-		# Ugly trick to trigger the autoloader to load the SpotSecurity class
-		if (SpotSecurity::spotsec_perform_login == 0) { } ;
-		
 		$this->_settings->set('securityversion', SPOTWEB_SECURITY_VERSION);
 	} # updateSecurityVersion
 
