@@ -32,7 +32,7 @@ function __autoload($class_name) {
 		} # dao
 		case 'Mobile'		: {
 			if ($class_name == 'Mobile_Detect') {
-				require_once "Mobile_Detect.php";
+				require_once "vendor/Mobile_Detect/Mobile_Detect.php";
 			} # if
 
 			break;
