@@ -64,7 +64,7 @@ try {
 	$req->setUserId($currentSession['user']['userid']);
 
 	/*
-	 * Only now it is safe to check wether the user is actually alowed 
+	 * Only now it is safe to check wether the user is actually allowed
 	 * to authenticate with an API key 
 	 */
 	if ($req->doesExist('apikey')) {

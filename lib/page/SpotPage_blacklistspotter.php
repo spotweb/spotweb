@@ -31,7 +31,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 			$formAction = '';
 		} # else
 
-		# Make sure the anonymous user and reserved usernames cannot post content
+		# Instantiate the user system which does the actually heavy lifting
 		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
 		if ((!empty($formAction)) && (!$result->isError())) {

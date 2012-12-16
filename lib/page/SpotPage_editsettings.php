@@ -14,7 +14,7 @@ class SpotPage_editsettings extends SpotPage_Abs {
 		# Make sure the editresult is set to 'not comited' per default
 		$result = new Dto_FormResult('notsubmitted');
 		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = _('Settings');
 
 		/* 

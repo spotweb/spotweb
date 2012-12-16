@@ -104,34 +104,6 @@ class SpotTemplateHelper {
 	} # allowed
 	
 	/*
-	 * Returns a spot in full including all the information we have available
-	 */
-	function getFullSpot($msgId, $markAsRead) {
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
-		
-		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcNntpSpotReading);
-		$fullSpot = $svcProvFullSpot->fetchFullSpot($msgId, $this->_currentSession['user']['userid']);
-
-		# seen list
-		if ($markAsRead) {
-			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
-				if ($this->_currentSession['user']['prefs']['keep_seenlist']) {
-					/*
-					 * Always update the seen stamp, this is used for viewing new comments
-					 * and the likes
-					 */
-					$this->_daoFactory->getSpotStateListDao()->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
-				} # if
-				
-			} # if allowed
-		} # if
-		
-		return $fullSpot;
-	} # getFullSpot
-
-	/*
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
 	 */
 	function makeSearchUrl($spot) {
@@ -414,12 +386,6 @@ class SpotTemplateHelper {
 		} # else 
 	} # makeCommenterImageUrl
 
-	/*
-	 * Creert een gravatar url
-	 */
-	function makeGravatarUrl($avatar, $size=80, $default='mm', $rating='g') {
-		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5' . $avatar . '&amp;image[size]=' . $size . '&amp;image[default]=' . $default . '&amp;image[rating]=' . $rating;
-	} # makeGravatarUrl
 
 	/*
 	 * Creert een sorteer url die andersom sorteert 
@@ -813,9 +779,8 @@ class SpotTemplateHelper {
 		// It will probably not filter all but it will filter a lot.
 		// It will only filter cat0 (beeld).
 		if ($spot['category'] == 0) {
-			/*
 			$spot['cleantitle'] = preg_replace('/(([Ss][uU][Bb][Ss]) ([Mm][Aa][Dd][Ee]\s)?([bB][yY])\s?:?.{0,15}\S)|(~.+~)|' .
-											   '( \S{2,}( ?/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
+											   '( \S{2,}( ?\/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
 											   '(\(\w+(\s\w+)?\))|(\S*([Ss][Uu][Bb](([Ss])|([Bb][Ee][Dd])))\S*)|((-\S+)$)|' .
 											   '([Nn][Ll])|([\s\/][Ee][Nn][Gg]?[\s\/])|(AC3)|(DD(5.1)?)|([Xx][Vv][Ii][Dd])|' .
 											   '([Dd][Ii][Vv][Xx])|([Tt][Ss])|(\d+\s([Mm]|[Kk]|[Gg])[Bb])|([Mm][Kk][Vv])|' . 
@@ -827,8 +792,6 @@ class SpotTemplateHelper {
 											   "", 
 											   $spot['title']);
 			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
-			$spot['cleantitle'] = preg_replace('\s', "", $spot['cleantitle']);
-			*/
 			if (empty($spot['cleantitle'])) {
 				// Use $spot['title'] if my regex screws up..
 				$spot['cleantitle']=$spot['title'];

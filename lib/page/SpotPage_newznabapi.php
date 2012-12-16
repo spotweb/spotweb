@@ -128,6 +128,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
 			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
+
+			// imdb sometimes returns the title translated, if so, pass the original title as well
+			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
+			if (!empty($originalTitle)) {
+				$search['value'][] = "Titel:=:\"" . trim($originalTitle[1]) . "\"";
+			} // if
+
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
 			$search['value'][] = "Titel:=:+" . $searchTerm;

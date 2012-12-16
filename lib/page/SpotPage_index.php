@@ -26,7 +26,7 @@ class SpotPage_index extends SpotPage_Abs {
 		SpotTiming::start(__FUNCTION__);
 
 		# Give an page title
-		$this->_pageTitle = _("overzicht");
+		$this->_pageTitle = _("overview");
 
 		/* 
 		 * Make sure the user has the appropriate permissions

@@ -10,7 +10,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		# Make sure the result is set to 'not comited' per default
+		# Make sure the result is set to 'not comitted' per default
 		$result = new Dto_FormResult('notsubmitted');
 
 		# Validate proper permissions
@@ -41,7 +41,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$formAction = $this->_commentForm['action'];
 		
 		if ($formAction == 'post') {
-			# zorg er voor dat alle variables ingevuld zijn
+			# Make sure we use valid forms
 			$comment = array_merge($comment, $this->_commentForm);
 
 			# valiate whether we can post comments, if so, do this

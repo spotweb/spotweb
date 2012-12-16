@@ -5,7 +5,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
-		$this->sendContentTypeHeader('html');
+		$this->sendContentTypeHeader('json');
 
 		$this->_params = $params;
 	} # ctor

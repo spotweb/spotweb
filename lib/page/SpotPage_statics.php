@@ -47,7 +47,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			$tmp .= $fc;
 		} # foreach
 
-		# en geef de body terug
+		# and return the replaced body
 		return array('body' => $tmp);
 	} # mergeFiles
 	

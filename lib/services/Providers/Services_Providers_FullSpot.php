@@ -40,7 +40,7 @@ class Services_Providers_FullSpot {
 			 * We now update the 'basic' spot information, like the spotterid but also the 
 			 * title. This is necessary because the XML contains better encoding.
 			 *
-			 * For example take the title from spot bdZZdJ3gPxTAmSE%40spot.net.
+			 * For example take the title from spot bdZZdJ3gPxTAmSE@spot.net.
 			 *
 			 * We cannot use all information from the XML because because some information just
 			 * isn't present in the XML file

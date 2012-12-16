@@ -28,6 +28,7 @@ class Services_Providers_SpotImage {
 		$data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid']);
 		if ($data !== false) {
 			$this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid']);
+			
 			return $data;
 		} # if
 
@@ -45,6 +46,7 @@ class Services_Providers_SpotImage {
 				foreach($fullSpot['image']['segment'] as $seg) {
 					$segmentList[] = $seg;
 				} # foreach
+
 				$imageString = $this->_nntpSpotReading->readBinary($segmentList, false);
 				$validImage = true;
 			} catch(Exception $x) {

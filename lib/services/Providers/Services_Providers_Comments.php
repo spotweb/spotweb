@@ -37,7 +37,7 @@ class Services_Providers_Comments {
 		$fullComments = $this->_commentDao->getCommentsFull($userId, $msgId);
 		
 		/*
-		 * Now we want oto know the first comment we haven't retrieved yet, we
+		 * Now we want to know the first comment we haven't retrieved yet, we
 		 * ignore not verified comments
 		 */
 		$haveFullCount = 0;

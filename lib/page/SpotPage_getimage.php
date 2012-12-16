@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
@@ -19,29 +20,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
-			/*
-			 * Because the speeddial image shows stuff like last update and amount of new spots,
-			 * we want to make sure this is not a totally closed system
-			 */
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
-
-			/*
-			 * Initialize the service to get the new spotcount for this user
-			 */
-			$svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
-											$this->_daoFactory->getUserFilterDao(),
-											$this->_daoFactory->getSpotDao(),
-											new Services_Search_QueryParser($this->_daoFactory->getConnection()));
-			$newSpots = $svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], '');
-
-			/*
-			 * Get the total amount of spots
-			 */
-			$totalSpots = $svcCacheNewSpotCount->getSpotCount('');
-			$lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
-
-			$svc_ImageSpeedDial = new Services_Image_SpeedDial();
-			$data = $svc_ImageSpeedDial->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
+			$svcActn_SpeeDial = new Services_Action_SpeedDial($this->_daoFactory, $this->_spotSec, $this->_tplHelper);
+			$data = $svcActn_SpeeDial->createSpeedDialImage();
+			
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
 			/* Check whether the user has view statistics permissions */
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
@@ -59,29 +40,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
 			# Check users' permissions
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
-			
-			# init
-			$spotsOverview = new SpotsOverview($this->_daoFactory, $this->_settings);
 
-			$imgDefaults = array('md5' => false,
-								 'size' => 80,
-								 'default' => 'identicon',
-								 'rating' => 'g');
-			$imgSettings = array_merge($imgDefaults, $this->_image);
-
-			if ($imgSettings['size'] < 1 || $imgSettings['size'] > 512) {
-				$imgSettings['size'] = $imgDefaults['size'];
-			} # if
-
-			if (!in_array($imgSettings['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
-				$imgSettings['default'] = $imgDefaults['default'];
-			} # if
-
-			if (!in_array($imgSettings['rating'], array('g', 'pg', 'r', 'x'))) {
-				$imgSettings['rating'] = $imgDefaults['rating'];
-			} # if
-
-			$data = $spotsOverview->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
+			$svcCommentImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
+			$data = $svcCommentImage->fetchGravatarImage($this->_image);
 		} else {
 			# init
 			$svc_nntphdr_engine = new Services_Nntp_Engine($settings_nntp_hdr);
@@ -107,7 +68,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$data = $providerSpotImage->fetchSpotImage($fullSpot);
 		} # else
 
-		# Images mogen gecached worden op de client, behalve als is opgegeven dat het niet mag
+		# Images are allowed to be cached on the client unless the provider explicitly told us not to
 		if (isset($data['expire'])) {
 			$this->sendExpireHeaders(true);
 		} else {

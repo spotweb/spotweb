@@ -24,7 +24,7 @@ class SpotPage_login extends SpotPage_Abs {
 		# login verzoek was standaard niet geprobeerd
 		$loginResult = array();
 		
-		# Instantieer het Spot user system
+		# Instantiate the Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
 		# set the page title
@@ -33,7 +33,7 @@ class SpotPage_login extends SpotPage_Abs {
 		# bring the form action into the local scope
 		$formAction = $this->_loginForm['action'];
 
-		# Is dit een submit van een form, of nog maar de aanroep?
+		# Are we already submitting the form login?
 		if (!empty($formAction)) {
 			# valideer de user
 			$credentials = array_merge($credentials, $this->_loginForm);

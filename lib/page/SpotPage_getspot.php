@@ -9,11 +9,12 @@ class SpotPage_getspot extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		# Check the appropriate permissions
+		# Make sure user has access to the spot
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 
-		# Retrieve the full spot
-		$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, true);
+		# and actually retrieve the spot
+		$svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
+		$fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $this->_messageid, true);
 
 		# set page title
 		$this->_pageTitle = "spot: " . $fullSpot['title'];

@@ -36,6 +36,12 @@ class Bootstrap {
 			SpotTiming::disable();
 		} # if
 
+		/*
+		 * Disable XML entity loader as this might be an
+		 * security issue.
+		 */
+		libxml_disable_entity_loader(true);
+
 
 		return array($settings, $daoFactory, $spotReq);
 	} # boot

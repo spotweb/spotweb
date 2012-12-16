@@ -685,7 +685,7 @@ class Services_Search_QueryParser {
 				$ftsEng = dbfts_abs::Factory($this->_dbEng);
 				$parsedTextQueryResult = $ftsEng->createTextQuery($searches, $additionalFields);
 
-				if (in_array($tmpFilterFieldname, array('poster', 'tag'))) {
+				if (in_array($searches[0]['fieldname'], array('s.poster', 's.tag', 's.title'))) {
 					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';
 				} else {
 					$filterValueSql['AND'][] = ' (' . implode(' AND ', $parsedTextQueryResult['filterValueSql']) . ') ';
@@ -970,7 +970,7 @@ class Services_Search_QueryParser {
 		} # if
 		$endFilter[] = join(' AND ', $strongNotSql);
 		$endFilter = array_filter($endFilter);
-		
+
 		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
 					 'categoryList' => $categoryList,
