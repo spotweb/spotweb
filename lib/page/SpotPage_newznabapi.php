@@ -153,9 +153,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$offset = $pageNr*$limit;
 
 		/*
-		 * Actually perform the search
-		 */
-		/*
 		 * We get a bunch of query parameters, so now change this to the actual
 		 * search query the user requested including the required sorting
 		 */		
