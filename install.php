@@ -376,14 +376,6 @@
 		$userVerified = false;
 		if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {			
 			try {
-				/* 
-				 * Make sure the reserved username 'admin' and 'anonymous' are
-				 * are not used as username
-				 */
-				if (($form['username'] == 'admin') || ($form['username'] == 'anonymous')) {
-					throw new Exception('Username is reserved, please choose another one');
-				} // if
-
 				/*
 				 * Store the given user settings in the 
 				 * SESSION object, we need it later to update
@@ -425,7 +417,7 @@
 				if (!empty($errorList)) {
 					throw new Exception($errorList[0]);
 				} # if
-				
+			
 				/*
 				 * and call the next stage in the setup
 				 */
