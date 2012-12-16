@@ -1,0 +1,5 @@
+<IfModule !mpm_winnt_module>
+	RewriteEngine on  
+	RewriteCond %{REQUEST_URI} !api/  
+	RewriteRule api/?$ index.php?page=newznabapi [QSA,L]  
+</IfModule>
