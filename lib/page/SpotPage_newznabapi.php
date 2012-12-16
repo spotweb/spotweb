@@ -121,6 +121,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb['content'], $movieTitle);
 			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
+
+			// imdb sometimes returns the title translated, if so, pass the original title as well
+			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
+			if (!empty($originalTitle)) {
+				$search['value'][] = "Titel:=:\"" . trim($originalTitle[1]) . "\"";
+			} // if
+
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
 			$search['value'][] = "Titel:=:+" . $searchTerm;
@@ -148,6 +155,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession,
 							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+
 		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
 						$pageNr,
 						$limit,
