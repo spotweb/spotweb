@@ -10,20 +10,18 @@ class SpotPage_login extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
+		$result = new Dto_FormResult('notsubmitted');
 
-		# Controleer de users' rechten
+		# Check permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_login, '');
-							  
-		# creeer een default credentials zodat het form altijd
-		# de waardes van het form kan renderen
+	
+		/*
+		 * Create a default SpotUser so the form is always able to render
+		 * the values of the form
+		 */ 
 		$credentials = array('username' => '',
 						  'password' => '');
 
-		# login verzoek was standaard niet geprobeerd
-		$loginResult = array();
-		
 		# Instantiate the Spot user system
 		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
 		
@@ -35,7 +33,7 @@ class SpotPage_login extends SpotPage_Abs {
 
 		# Are we already submitting the form login?
 		if (!empty($formAction)) {
-			# valideer de user
+			# make sure we can simply assume all fields are there
 			$credentials = array_merge($credentials, $this->_loginForm);
 			
 			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
@@ -53,15 +51,15 @@ class SpotPage_login extends SpotPage_Abs {
 				$this->_currentSession = $tryLogin;
 			} # else
 		} else {
-			# Als de user al een sessie heeft, voeg een waarschuwing toe
+			# When the user is already logged in, show this as a warning
 			if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
-				$loginResult = array('result' => 'alreadyloggedin');
+
+				$loginResult->addError(_('You are already logged in'));
 			} # if
 		} # else
 		
 		#- display stuff -#
 		$this->template('login', array('loginform' => $credentials,
-									   'formmessages' => $formMessages,
 									   'loginresult' => $loginResult,
 									   'http_referer' => $this->_loginForm['http_referer'],
 									   'data' => $this->_params['data']));
