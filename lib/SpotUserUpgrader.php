@@ -187,7 +187,7 @@ class SpotUserUpgrader {
 	 * Mass update all users preferences
 	 */
 	function massChangeUserPreferences($prefName, $prefValue) {
-		$userList = $this->_userDao->getUserList();
+		$userList = $this->_db->getUserList();
 
 		# loop through every user and fix it 
 		foreach($userList as $user) {
@@ -195,7 +195,7 @@ class SpotUserUpgrader {
 			 * Because we do not get all users' properties from
 			 * getUserList, retrieve the users' settings from scratch
 			 */
-			$user = $this->_userDao->getUser($user['userid']);
+			$user = $this->_db->getUser($user['userid']);
 
 
 			/*
@@ -210,7 +210,7 @@ class SpotUserUpgrader {
 			/*
 			 * update the user record in the database			
 			 */
-			$this->_userDao->setUser($user);
+			$this->_db->setUser($user);
 		} # foreach
 	} # massChangeUserPreferences
 

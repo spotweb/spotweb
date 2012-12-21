@@ -104,11 +104,9 @@ class SpotUpgrader {
 	 */
 	function massChangeUserPreferences($prefName, $prefValue) {
 		# Create the settings object
-		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
-											$this->_daoFactory->getBlackWhiteListDao(),
-											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->massChangeUserPreferences($prefValue, $prefName);
+		$settings = SpotSettings::singleton($this->_db, $this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_db, $settings);
+		$spotUserUpgrader->massChangeUserPreferences($prefName, $prefValue);
 	} # massChangeUserPreferences
 
 	/*
