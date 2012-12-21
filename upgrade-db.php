@@ -19,7 +19,7 @@ try {
 	 */
 	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups', 'reset-filters'), 
 								array('reset-groupmembership' => false, 'reset-securitygroups' => false, 'reset-filters' => false,
-									  'set-systemtype' => false, 'reset-password' => false));
+									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false));
 	if (!SpotCommandline::isCommandline()) {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
@@ -44,6 +44,21 @@ try {
 		$spotUpgrader->resetSystemType(SpotCommandline::get('set-systemtype'));
 		echo "System type changed" . PHP_EOL;
 	} # if
+
+	/* 
+	 * If the user asked to change the preference of all users..
+	 */
+	if (SpotCommandline::get('mass-userprefchange')) {
+		$prefToChange = explode("=", SpotCommandline::get('mass-userprefchange'));
+		if (count($prefToChange)) {
+			throw new Exception("Please specify new preference as follows: perpage=10 or count_newspots=off");
+		} # if
+
+		echo "Mass changing a users' preference " . $prefToChange[0] .  " to a value of " . $prefToChange[1] . PHP_EOL;
+		$spotUpgrader->massChangeUserPreferences($prefToChange[0], $prefToChange[1]);
+		echo "Users' preferences changed" . PHP_EOL;
+	} # if
+
 
 	/* 
 	 * If the user asked to reset the password of a user

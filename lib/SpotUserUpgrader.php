@@ -184,6 +184,37 @@ class SpotUserUpgrader {
 	} # resetUserGroupMembership
 
 	/*
+	 * Mass update all users preferences
+	 */
+	function massChangeUserPreferences($prefName, $prefValue) {
+		$userList = $this->_userDao->getUserList();
+
+		# loop through every user and fix it 
+		foreach($userList as $user) {
+			/*
+			 * Because we do not get all users' properties from
+			 * getUserList, retrieve the users' settings from scratch
+			 */
+			$user = $this->_userDao->getUser($user['userid']);
+
+
+			/*
+			 * update the preference in the record, we don't
+			 * support nested preferences just yet.
+			 */
+			if (isset($user['prefs'][$prefName])) {
+				$user['prefs'][$prefName] = $prefValue;
+			} # if
+
+
+			/*
+			 * update the user record in the database			
+			 */
+			$this->_userDao->setUser($user);
+		} # foreach
+	} # massChangeUserPreferences
+
+	/*
 	 * Update all users preferences
 	 */
 	function updateUserPreferences() {
