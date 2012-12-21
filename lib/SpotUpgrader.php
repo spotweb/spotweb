@@ -95,7 +95,7 @@ class SpotUpgrader {
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
 		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->massChangeUserPreferences($prefValue, $prefName);
+		$spotUserUpgrader->massChangeUserPreferences($prefName, $prefValue);
 	} # massChangeUserPreferences
 
 	/*

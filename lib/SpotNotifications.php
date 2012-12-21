@@ -6,7 +6,6 @@ class SpotNotifications {
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
-
 	private $_daoFactory;
 
 	/*
@@ -170,7 +169,6 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		if ($userId == 0) {
 			$userList = $this->_daoFactory->getUserDao()->getUserList();
 		} else {
-			$thisUser = $this->_daoFactory->getUserDao()->getUser($userId);
 			$userList = array($thisUser);
 		} # else
 

@@ -199,7 +199,6 @@ class SpotUserUpgrader {
 			 */
 			$user = $this->_userDao->getUser($user['userid']);
 
-
 			/*
 			 * update the preference in the record, we don't
 			 * support nested preferences just yet.
