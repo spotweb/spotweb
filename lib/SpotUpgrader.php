@@ -75,7 +75,7 @@ class SpotUpgrader {
 	} # resetSecurityGroups
 
 	/*
-	 * Reset securitygroup settings to their default
+	 * Reset users' filters settings to their default
 	 */
 	function resetFilters() {
 		# Create the settings object
@@ -86,6 +86,18 @@ class SpotUpgrader {
 		$spotUserUpgrader->updateUserFilters(true);
 	} # resetFilters
 	 
+	/*
+	 * Perform a mass change for users' preferences
+	 */
+	function massChangeUserPreferences($prefName, $prefValue) {
+		# Create the settings object
+		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
+											$this->_daoFactory->getBlackWhiteListDao(),
+											$this->_phpSettings);
+		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
+		$spotUserUpgrader->massChangeUserPreferences($prefValue, $prefName);
+	} # massChangeUserPreferences
+
 	/*
 	 * Reset a systems' type to the given setting
 	 */
