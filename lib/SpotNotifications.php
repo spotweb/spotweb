@@ -124,7 +124,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
 		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
-		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
+		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user'], $tmpUser['session']['ipaddr']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
