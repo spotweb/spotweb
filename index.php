@@ -464,4 +464,6 @@ catch(Exception $x) {
 		var_dump($x);
 	} # if
 	echo $x->getMessage();
+
+	error_log('SpotWeb Exception occured: ' . $x->getMessage());
 } # catch
