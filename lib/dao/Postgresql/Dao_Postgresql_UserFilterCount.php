@@ -14,7 +14,7 @@ class Dao_Postgresql_UserFilterCount extends Dao_Base_UserFilterCount {
 									FROM filtercounts AS o
 									WHERE (f.filterhash = o.filterhash) 
 									  AND (f.userid = %d) AND (o.userid = %d)",
-						Array((int) $userId, (int) $userid));
+						Array((int) $userId, (int) $userId));
 	} # markFilterCountAsSeen
 
 } # Dao_Postgresql_UserFilterCount
