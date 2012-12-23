@@ -83,7 +83,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$epSearch = '';
 			/* Make sure the season is numeric or prefixed with an S */
-			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,2}$/', $this->_params['season'])) {
+			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
 				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
@@ -92,7 +92,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			/* Make sure the episode number is numeric or prefixed with an S */
-			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep'])) {
+			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
 				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
