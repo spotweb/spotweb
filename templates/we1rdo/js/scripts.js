@@ -507,6 +507,12 @@ function loadSpotImage() {
 		})
 		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
 		detectScrollbar();
+	})
+	.each(function() {
+		// From the jQuery comments: http://api.jquery.com/load-event/
+		if (this.complete || (jQuery.browser.msie && parseInt(jQuery.browser.version) == 6)) {
+			$(this).trigger("load");
+		}
 	});
 }
 
