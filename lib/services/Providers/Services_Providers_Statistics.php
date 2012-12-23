@@ -9,9 +9,8 @@ class Services_Providers_Statistics {
 	private $_svcImageError;
 
 	/*
-	 * Constrctor
+	 * Constructor
 	 *
-	 * oldestSpotage is to determine what kind of daterange should be available
 	 * nntpUpdate is the last time an update of spots has occured
 	 */
 	function __construct(Dao_Spot $spotDao, Dao_Cache $cacheDao, $nntpUpdate) {
