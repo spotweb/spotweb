@@ -1,3 +1,3 @@
 NZB opgeslagen
 
-<?php echo $spot['title']; ?> opgeslagen in <? echo $nzbhandling['local_dir']; ?>.
+<?php echo $spot['title']; ?> opgeslagen in <?php echo $nzbhandling['local_dir']; ?>.

@@ -201,5 +201,5 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				document.getElementById(element_id).value += text;
 			}
 		</script>
-<?
+<?php
 require_once "includes/footer.inc.php";
