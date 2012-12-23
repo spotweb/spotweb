@@ -176,6 +176,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
 		<script type="text/javascript">
+			// Attach an onLoad() listener to the image so we can bring the image into view
+			loadSpotImage();
+
 			$(document).ready(function(){
 				$("#details").addClass("external");
 
@@ -189,7 +192,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 				postCommentsForm();
 				postReportForm();
 				postBlacklistForm();
-				loadSpotImage();
 				if (spotweb_retrieve_commentsperpage > 0) {
 					loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
 				} // if
