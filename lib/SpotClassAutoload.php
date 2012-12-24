@@ -14,8 +14,8 @@ function __autoload($class_name) {
 		case 'Gettext'		: require_once 'lib/gettext/' . $class_name . '.php'; break;
 		case 'Crypt'		: break; /* Crypt/Random.php uses class_exist to find a random generator, this triggers autoload */
 		case 'SpotUbb'		: {
-				require_once "lib/ubb/SpotUbb_parser.php";
-				require_once "lib/ubb/TagHandler.inc.php";
+				require_once "vendor/ubb/SpotUbb_parser.php";
+				require_once "vendor/ubb/TagHandler.inc.php";
 				break;
 		} # ubb
 		case 'Services'		: 
