@@ -54,6 +54,11 @@ class SpotNotifications {
 		} # foreach
 	} # register
 
+	
+	/*
+	 * Send a notification when an watchlist addition or removal
+	 * is handled
+	 */
 	function sendWatchlistHandled($action, $messageid) {
 		$spot = $this->_db->getSpotHeader($messageid);
 		switch ($action) {
@@ -63,6 +68,13 @@ class SpotNotifications {
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_watchlist_handled, 'Single', $notification);
 	} # sendWatchlistHandled
 
+	
+	/*
+	 * Send a notification when an NZB file is handled by Spotweb
+	 * Because Spotweb does not handle the download itself, the
+	 * SpotWeb cannot send this message until the file is actually
+	 * downloaded, so this message might come too early.
+	 */
 	function sendNzbHandled($action, $spot) {
 		switch ($action) {
 			case 'save'				: $notification = $this->_notificationTemplate->template('nzb_save', array('spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling'])); break;
