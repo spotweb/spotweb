@@ -6,7 +6,7 @@ class SpotNotifications {
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
-	private $_daoFactory;
+	private $_db;
 
 	/*
 	 * Constants used for securing the system
@@ -16,20 +16,26 @@ class SpotNotifications {
 	const notifytype_retriever_finished		= 'retriever_finished';
 	const notifytype_report_posted			= 'report_posted';
 	const notifytype_spot_posted			= 'spot_posted';
-	const notifytype_user_added				= 'user_added';
-	const notifytype_newspots_for_filter	= 'newspots_for_filter';
+	const notifytype_user_added			= 'user_added';
+	const notifytype_newspots_for_filter		= 'newspots_for_filter';
 
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession) {
-		$this->_daoFactory = $daoFactory;
+	function __construct(SpotDb $db, SpotSettings $settings, array $currentSession) {
+		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];
-		$this->_notificationTemplate = new SpotNotificationTemplate($this->_settings, $this->_currentSession);
+		$this->_notificationTemplate = new SpotNotificationTemplate($this->_db, $this->_settings, $this->_currentSession);
 	} # ctor
 
+	
+	/*
+	 * Some notification providers need explicit registration (eg, 
+	 * a twitter signup/approval). We use this function to provide
+	 * for this
+	 */
 	function register() {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			# Boxcar heeft extra settings nodig
+			# Boxcar requires additional settings
 			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
 			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
@@ -48,8 +54,13 @@ class SpotNotifications {
 		} # foreach
 	} # register
 
+	
+	/*
+	 * Send a notification when an watchlist addition or removal
+	 * is handled
+	 */
 	function sendWatchlistHandled($action, $messageid) {
-		$spot = $this->_daoFactory->getSpotDao()->getSpotHeader($messageid);
+		$spot = $this->_db->getSpotHeader($messageid);
 		switch ($action) {
 			case 'remove'	: $notification = $this->_notificationTemplate->template('watchlist_removed', array('spot' => $spot)); break;
 			case 'add'		: $notification = $this->_notificationTemplate->template('watchlist_added', array('spot' => $spot)); break;
@@ -57,6 +68,13 @@ class SpotNotifications {
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_watchlist_handled, 'Single', $notification);
 	} # sendWatchlistHandled
 
+	
+	/*
+	 * Send a notification when an NZB file is handled by Spotweb
+	 * Because Spotweb does not handle the download itself, the
+	 * SpotWeb cannot send this message until the file is actually
+	 * downloaded, so this message might come too early.
+	 */
 	function sendNzbHandled($action, $spot) {
 		switch ($action) {
 			case 'save'				: $notification = $this->_notificationTemplate->template('nzb_save', array('spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling'])); break;
@@ -70,6 +88,11 @@ class SpotNotifications {
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_nzb_handled, 'Single', $notification);
 	} # sendNzbHandled
 
+	
+	/*
+	 * When a specific user defined filter in Spotweb has new spots
+	 * we can send the user for this filter a notification.
+	 */
 	function sendNewSpotsForFilter($userId, $filterTitle, $newSpotCount) {
 		$notification = $this->_notificationTemplate->template('newspots_for_filter', array('filtertitle' => $filterTitle, 'newCount' => $newSpotCount)); 
 
@@ -81,6 +104,11 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		$this->newSingleMessage($user, SpotNotifications::notifytype_newspots_for_filter, 'Single', $notification);
 	} # sendNewSpotsForFilter
 
+	
+	/*
+	 * We can notify the user when the retrieve process has done
+	 * retrievinjg and actually retrieved new spots.
+	 */
 	function sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount) {
 		if ($newSpotCount > 0) {
 			$notification = $this->_notificationTemplate->template('retriever_finished', array('newSpotCount' => $newSpotCount, 'newCommentCount' => $newCommentCount, 'newReportCount' => $newReportCount));
@@ -88,24 +116,40 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		} # if
 	} # sendRetrieverFinished
 
+	
+	/*
+	 * If a spot is reported to be spam or incorect, we can
+	 * send this notification.
+	 */
 	function sendReportPosted($messageid) {
 		# haal de spot op
-		$spot = $this->_daoFactory->getSpotDao()->getSpotHeader($messageid);
+		$spot = $this->_db->getSpotHeader($messageid);
 
 		$notification = $this->_notificationTemplate->template('report_posted', array('spot' => $spot));
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_report_posted, 'Single', $notification);
 	} # sendReportPosted
 
+	/*
+	 * Send a notification after a new spot has been
+	 * posted
+	 */
 	function sendSpotPosted($spot) {
 		$notification = $this->_notificationTemplate->template('spot_posted', array('spot' => $spot));
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_spot_posted, 'Single', $notification);
 	} # sendSpotPosted
-
+	
+	/*
+	 * send a notification when a new user is added
+	 */
 	function sendUserAdded($username, $password) {
 		$notification = $this->_notificationTemplate->template('user_added', array('username' => $username, 'password' => $password));
 		$this->newMultiMessage(SpotNotifications::notifytype_user_added, $notification);
 	} # sendUserAdded
 
+	/*
+	 * Send the new user itself a notification mail
+	 * that his / her account has been created
+	 */
 	function sendNewUserMail($user) {
 		# Omdat het versturen van dit bericht expliciet is opgegeven, worden er
 		# geen security-checks gedaan voor de ontvanger.
@@ -120,11 +164,16 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		} # if
 	} # sendNewUserMail
 
-	function newSingleMessage($user, $objectId, $type, $notification) {
+	
+	/*
+	 * utility function to send a message to one person
+	 * only
+	 */
+	private function newSingleMessage($user, $objectId, $type, $notification) {
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
-		$tmpUser['user'] = $this->_daoFactory->getUserDao()->getUser($user['user']['userid']);
-		$tmpUser['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
+		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
+		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
@@ -135,7 +184,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, $objectId) &&
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)
 					) {
-						$this->_daoFactory->getNotificationDao()->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
+						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
 						break;
 					} # if
 				} # if
@@ -147,8 +196,12 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 		} # if
 	} # newSingleMessage
 
-	function newMultiMessage($objectId, $notification) {
-		$userArray = $this->_daoFactory->getUserDao()->getUserList();
+	
+	/*
+	 * Send a notification to multiple users
+	 */
+	private function newMultiMessage($objectId, $notification) {
+		$userArray = $this->_db->getUserList();
 		foreach ($userArray as $user['user']) {
 			# Create a fake session array
 			$user['session'] = array('ipaddr' => '');
@@ -167,16 +220,17 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 
 	function sendMessages($userId) {
 		if ($userId == 0) {
-			$userList = $this->_daoFactory->getUserDao()->getUserList();
+			$userList = $this->_db->getUserList();
 		} else {
+			$thisUser = $this->_db->getUser($userId);
 			$userList = array($thisUser);
 		} # else
 
 		foreach ($userList as $user) {
 			# Omdat we vanuit getUserList() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
-			$user = $this->_daoFactory->getUserDao()->getUser($user['userid']);
-			$security = new SpotSecurity($this->_daoFactory, $this->_settings, $user, '');
+			$user = $this->_db->getUser($user['userid']);
+			$security = new SpotSecurity($this->_db, $this->_settings, $user, '');
 
 			# Om e-mail te kunnen versturen hebben we iets meer data nodig
 			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
@@ -190,7 +244,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 			$user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
 			$user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
-			$newMessages = $this->_daoFactory->getNotificationDao()->getUnsentNotifications($user['userid']);
+			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
@@ -221,7 +275,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 				} # if
 
 				$newMessage['sent'] = true;
-				$this->_daoFactory->getNotificationDao()->updateNotification($newMessage);
+				$this->_db->updateNotification($newMessage);
 			} # foreach message
 		} # foreach user
 	} # sendMessages
