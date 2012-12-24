@@ -16,10 +16,10 @@ class SpotNotifications {
 	const notifytype_retriever_finished		= 'retriever_finished';
 	const notifytype_report_posted			= 'report_posted';
 	const notifytype_spot_posted			= 'spot_posted';
-	const notifytype_user_added				= 'user_added';
-	const notifytype_newspots_for_filter	= 'newspots_for_filter';
+	const notifytype_user_added			= 'user_added';
+	const notifytype_newspots_for_filter		= 'newspots_for_filter';
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
+	function __construct(SpotDb $db, SpotSettings $settings, array $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
@@ -27,9 +27,15 @@ class SpotNotifications {
 		$this->_notificationTemplate = new SpotNotificationTemplate($this->_db, $this->_settings, $this->_currentSession);
 	} # ctor
 
+	
+	/*
+	 * Some notification providers need explicit registration (eg, 
+	 * a twitter signup/approval). We use this function to provide
+	 * for this
+	 */
 	function register() {
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-			# Boxcar heeft extra settings nodig
+			# Boxcar requires additional settings
 			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
 			$this->_currentSession['user']['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
