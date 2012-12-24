@@ -9,14 +9,13 @@ class SpotSecurity {
 	private $_AllAudit;
 	
 	/*
-	 * Het security systeem kent een aantal rechten welke gedefinieerd worden met een aantal parameters.
+	 * The security system has several rights which are defined with zero or more parameters.
 	 * 
 	 * Parameter:
-	 *     Permissie           - Permissie is de permissie die gevraagd wordt - moet gebruik maken van de gedefinieerde constants
-	 *     Object              - Geeft aan dat de permissie enkel voor dit specifieke object geld. Denk bv. aan 'cat0_z4'.
-	 *                           Als het objectid leeg is, dan geld de permissie voor alle objecten.
-	 *     DenyOrGranted       - Als deze op "True" staat, dan is de permissie expliciet gegeven. Als de permissie op FALSE
-	 *                           staat is de permissie expliciet denied. 
+	 *     Permission          - Actually permission being asked for.
+	 *     Object              - Mentions that the permission is enkel valid for this specific objectid. For example, 'cat0_z4', or
+     *                           'client-sabnzbd'. You also need an empty objectid to have this permission at all.
+	 *     DenyOrGranted       - When enabled, the permission is explicitly granted. When set to FALSE, the permission is denied.
 	 */
 
 	 /*
@@ -135,8 +134,10 @@ class SpotSecurity {
 	function allowed($perm, $object) {
 		$allowed = isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
 
-		# We check for auditing in SpotSecurity to prevent the overhead
-		# of a function call for each security check
+		/* 
+		 * We check for auditing in SpotSecurity to prevent the overhead
+		 * of a function call for each security check
+		 */
 		if (($this->_allAudit) || ((!$allowed) && ($this->_failAudit))) {
 			$this->_spotAudit->audit($perm, $object, $allowed);
 		} # if
