@@ -186,8 +186,8 @@
 				<post ssl='' port='119'>upload.eweka.nl</post>
 			</ssl>
 			<plain>
-				<header ssl='' port='119'>reader.eweka.nl</header>
-				<nzb ssl='' port='119'>reader.eweka.nl</nzb>
+				<header ssl='' port='119'>newsreader.eweka.nl</header>
+				<nzb ssl='' port='119'>newsreader.eweka.nl</nzb>
 				<post ssl='' port='119'>upload.eweka.nl</post>
 			</plain>
 		</server>
