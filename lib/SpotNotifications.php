@@ -169,7 +169,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	 * utility function to send a message to one person
 	 * only
 	 */
-	function newSingleMessage($user, $objectId, $type, $notification) {
+	private function newSingleMessage($user, $objectId, $type, $notification) {
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
 		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
@@ -200,7 +200,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	/*
 	 * Send a notification to multiple users
 	 */
-	function newMultiMessage($objectId, $notification) {
+	private function newMultiMessage($objectId, $notification) {
 		$userArray = $this->_db->getUserList();
 		foreach ($userArray as $user['user']) {
 			# Create a fake session array
