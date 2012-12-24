@@ -34,8 +34,8 @@ class SpotPage_getnzb extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		try {
-			$spotNzb = new SpotNzb($this->_daoFactory, $this->_settings);
-			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,
+			$svcActnNzb = new Services_Actions_Nzb($this->_settings, $this->_daoFactory);
+			$svcActnNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 										$this->_action, $svcProvSpot, $svcProvNzb);
 			
 			if ($this->_action != 'display') {
