@@ -32,14 +32,14 @@ class SpotPage_reportpost extends SpotPage_Abs {
 
 		if ($formAction == 'post') {
 			# Initialize the notification system
-			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 			# Make sure we always have a fully valid form
 			$report = array_merge($report, $this->_reportForm);
 
 			# can we report this spot as spam?
-			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			$result = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
+			$svcPostReport = new Services_Posting_Report($this->_daoFactory, $this->_settings);
+			$result = $svcPostReport->postSpamReport($this->_currentSession['user'], $report);
 			
 			if ($result->isSuccess()) {
 				# send a notification

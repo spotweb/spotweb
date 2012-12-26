@@ -1,6 +1,6 @@
 <?php
 
-class SpotPosting {
+class Services_Posting_Spot {
 	private $_daoFactory;
 	private $_settings;
 	private $_nntp_post;
@@ -12,102 +12,6 @@ class SpotPosting {
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));
 		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('hdr'));
 	} # ctor
-
-	/*
-	 * Post een comment op een spot naar de newsserver, als dit lukt komt er
-	 * een 'true' terug, anders een foutmelding
-	 */
-	public function postComment(SpotUserSystem $spotUser, array $user, array $comment) {
-		$result = new Dto_FormResult();
-		$commentDao = $this->_daoFactory->getCommentDao();
-
-		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
-			$result->addError(_("You need to login to be able to post comments"));
-		} # if
-
-		# Retrieve the users' private key
-		$user['privatekey'] = $spotUser->getUserPrivateRsaKey($user['userid']);
-
-		/*
-		 * We'll get the messageid's with <>'s but we always strip
-		 * them in Spotweb, so remove them
-		 */			
-		$comment['newmessageid'] = substr($comment['newmessageid'], 1, -1);
-
-		# Retrieve the spot to which we are commenting
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, new Services_Nntp_SpotReading($this->_nntp_hdr));
-		$fullSpot = $svcProvFullSpot->fetchFullSpot($comment['inreplyto'], $user['userid']);
-
-		# we won't bother when the hashcash is not properly calculcated
-		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
-			$result->addError(_('Hash was not calculated properly'));
-		} # if
-
-		# Body cannot be either empty or very short
-		$comment['body'] = trim($comment['body']);
-		if (strlen($comment['body']) < 2) {
-			$result->addError(_('Please enter a comment'));
-		} # if
-		if (strlen($comment['body']) > 9000) {
-			$result->addError(_('Comment is too long'));
-		} # if
-		
-		# Rating must be within range
-		if (($comment['rating'] > 10) || ($comment['rating'] < 0)) {
-			$result->addError(_('Invalid rating'));
-		} # if
-		
-		/*
-		 * The "newmessageid" is based upon the messageid we are replying to,
-		 * this is to make sure a user cannot reuse an calculated hashcash
-		 * for an spam attack on different posts
-		 */
-		$replyToPart = substr($comment['inreplyto'], 0, strpos($comment['inreplyto'], '@'));
-
-		if (substr($comment['newmessageid'], 0, strlen($replyToPart)) != $replyToPart) { 
-			$result->addError(_('Replay attack!?'));
-		} # if
-		
-		/*
-		 * Make sure the random message we require in the system has not been
-		 * used recently to prevent one calculated hashcash to be reused again
-		 * and again
-		 */
-		if (!$commentDao->isCommentMessageIdUnique($comment['newmessageid'])) {
-			$result->addError(_('Replay attack!?'));
-		} # if
-
-		# Make sure a newmessageid contains a certain length
-		if (strlen($comment['newmessageid']) < 10) {
-			$result->addError(_('MessageID too short!?'));
-		} # if
-
-		# Add the title as a comment property
-		$comment['title'] = 'Re: ' . $fullSpot['title'];
-		
-		/*
-		 * Body is UTF-8 (we instruct the browser to do everything in UTF-*), but
-		 * usenet wants its body in UTF-8.
-		 * 
-		 * The database requires UTF8 again, so we keep seperate bodies for 
-		 * the database and for the system
-		 */
-		$dbComment = $comment;
-		$comment['body'] = utf8_decode($comment['body']);
-		
-		# and actually post the comment
-		if ($result->isSuccess()) {
-			$this->_nntp_post->postComment($user,
-										   $this->_settings->get('privatekey'),  # Server private key
-										   $this->_settings->get('comment_group'),
-										   $comment);
-
-			$commentDao->addPostedComment($user['userid'], $dbComment);
-		} # if
-		
-		return $result;
-	} # postComment
 
 	/*
 	 * Post a spot to the usenet server. 
@@ -281,7 +185,7 @@ class SpotPosting {
 			
 			# If not in our format
 			if (count($subcats) != 3) {
-				$result->addError(sprintf(_('Incorrect subcateories (%s)'), $spot['subcatlist'][$i]));
+				$result->addError(sprintf(_('Incorrect subcategories (%s)'), $spot['subcatlist'][$i]));
 			} else {
 				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
 				
@@ -342,91 +246,5 @@ class SpotPosting {
 		return $result;
 	} # postSpot
 	
-	/*
-	 * Post een spam report van een spot naar de newsserver, als dit lukt komt er
-	 * een 'true' terug, anders een foutmelding
-	 */
-	public function reportSpotAsSpam(SpotUserSystem $spotUser, array $user, array $report) {
-		$result = new Dto_FormResult();
-		$spotReportDao = $this->_daoFactory->getSpotReportDao();
-
-		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$spotUser->allowedToPost($user)) {
-			$result->addError(_("You need to login to be able to report spam"));
-		} # if
-
-		# Retrieve the users' private key
-		$user['privatekey'] = $spotUser->getUserPrivateRsaKey($user['userid']);
-
-		# Controleer eerst of de user al een report heeft aangemaakt, dan kunnen we gelijk stoppen.
-		if ($spotReportDao->isReportPlaced($report['inreplyto'], $user['userid'])) {
-			$result->addError(_('This spot has already been marked as spam'));
-		} # if
-		
-		/*
-		 * We'll get the messageid's with <>'s but we always strip
-		 * them in Spotweb, so remove them
-		 */			
-		$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
-
-		# retrieve the spot this is a report of
-		$svcProvFullSpot = new Services_Providers_FullSpot($sportReportDao->_spotDao, new Services_Nntp_SpotReading($this->_nntp_hdr));
-		$fullSpot = $svcProvFullSpot->fetchFullSpot($report['inreplyto'], $user['userid']);
-
-		# we won't bother when the hashcash is not properly calculcated
-		if (substr(sha1('<' . $report['newmessageid'] . '>'), 0, 4) != '0000') {
-			$result->addError(_('Hash was not calculated properly'));
-		} # if
-
-		# Body cannot be empty or very short
-		$report['body'] = trim($report['body']);
-		if (strlen($report['body']) < 2) {
-			$result->addError(_('Please provide a report body'));
-		} # if
-		
-		# controleer dat de messageid waarop we replyen overeenkomt
-		# met het newMessageid om replay-attacks te voorkomen.
-		$replyToPart = substr($report['inreplyto'], 0, strpos($report['inreplyto'], '@'));
-
-		if (substr($report['newmessageid'], 0, strlen($replyToPart)) != $replyToPart) { 
-			$result->addError(_('Replay attack!?'));
-		} # if
-		
-		/*
-		 * Make sure the random message we require in the system has not been
-		 * used recently to prevent one calculated hashcash to be reused again
-		 * and again
-		 */
-		if (!$sportReportDao->isReportMessageIdUnique($report['newmessageid'])) {
-			$result->addError(_('Replay attack!?'));
-		} # if
-
-		# Make sure a newmessageid consists of a certain length
-		if (strlen($report['newmessageid']) < 10) {
-			$result->addError(_('MessageID too short!?'));
-		} # if
-
-		/*
-		 * Body is UTF-8 (we instruct the browser to do everything in UTF-*), but
-		 * usenet wants its body in UTF-8.
-		 * 
-		 * The database requires UTF8 again, so we keep seperate bodies for 
-		 * the database and for the system
-		 */
-		$dbReport = $report;
-		$report['body'] = utf8_decode($report['body']);
-		$report['title'] = 'REPORT <' . $report['inreplyto'] . '> ' . $fullSpot['title'];
-
-		# en post daadwerkelijk de report
-		if ($result->isSuccess()) { 
-			$this->_nntp_post->reportSpotAsSpam($user,
-										   $this->_settings->get('privatekey'),  # Server private key
-										   $this->_settings->get('report_group'),
-										   $report);
-			$sportReportDao->addPostedReport($user['userid'], $dbReport);
-		} # if
-		
-		return $result;
-	} # reportSpotAsSpam
 	
-} # SpotPosting
+} # Services_Posting_Spot

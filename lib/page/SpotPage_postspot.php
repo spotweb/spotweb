@@ -67,8 +67,8 @@ class SpotPage_postspot extends SpotPage_Abs {
 			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 
 			# valideer of we deze spot kunnen posten, en zo ja, doe dat dan
-			$spotPosting = new SpotPosting($this->_daoFactory, $this->_settings);
-			$result = $spotPosting->postSpot($spotUser,
+			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
+			$result = $svcPostSpot->postSpot($spotUser,
 									   $this->_currentSession['user'], 
 									   $spot,
 									   $_FILES['newspotform']['tmp_name']['imagefile'],

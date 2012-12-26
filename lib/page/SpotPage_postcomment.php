@@ -45,8 +45,8 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			$comment = array_merge($comment, $this->_commentForm);
 
 			# valiate whether we can post comments, if so, do this
-			$spotPosting = new SpotPosting($this->_daoFactory, $this->_settings);
-			$result = $spotPosting->postComment($spotUser, $this->_currentSession['user'], $comment);
+			$svcPostComment = new Services_Posting_Comment($this->_daoFactory, $this->_settings);
+			$result = $svcPostComment->postComment($spotUser, $this->_currentSession['user'], $comment);
 			
 			if ($result->isSuccess()) {
 				/* Format the body so we can have smilies and stuff be shown in the template */
