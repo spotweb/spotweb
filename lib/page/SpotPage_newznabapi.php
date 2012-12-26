@@ -101,12 +101,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			/* Add the TV title to the search parameters */
-			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
+			$search['value'][] = "Title:=:" . trim($tvSearch) . " " . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
 			} else {
-				$search['value'][] = "Titel:=:\"" . $this->_params['artist'] . "\"";
+				$search['value'][] = "Title:=:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
@@ -126,18 +126,25 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				
 				return ;
 			} # if
-			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
-			$search['value'][] = "Titel:=:\"" . trim($movieTitle[1]) . "\"";
 
-			// imdb sometimes returns the title translated, if so, pass the original title as well
+			/* Extract the movie title, and alternative (original) title if necessary */
+			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
 			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
-			if (!empty($originalTitle)) {
-				$search['value'][] = "Titel:=:\"" . trim($originalTitle[1]) . "\"";
+
+			/* Extract the release date from the IMDB info page */
+			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb['content'], $movieReleaseDate);
+
+			/* Search for the title */
+			$search['value'][] = "Title:=:\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate[1];
+
+			/* IMDB  sometimes returns the title translated, if so, pass the original title as well */
+			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
+				$search['value'][] = "Title:=:\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate[1];
 			} // if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
-			$search['value'][] = "Titel:=:+" . $searchTerm;
+			$search['value'][] = "Title:=:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
