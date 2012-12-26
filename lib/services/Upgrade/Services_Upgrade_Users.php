@@ -1,5 +1,5 @@
 <?php
-class SpotUserUpgrader {
+class Services_Upgrade_User {
 	private $_dbCon;
 	private $_userDao;
 	private $_settings;
@@ -532,4 +532,4 @@ class SpotUserUpgrader {
 		unset($pref[$name]);
 	} # setSettingIfNot
 	 
-} # SpotUserUpgrader
+} # Services_Upgrade_User

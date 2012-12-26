@@ -42,13 +42,13 @@ try {
 	 */
 	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
 	
-	$spotUpgrader = new SpotUpgrader($daoFactory, $settings);
-	$spotUpgrader->database();
+	$svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $settings);
+	$svcUpgradeBase->database();
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
-	$spotUpgrader->settings();
+	$svcUpgradeBase->settings();
 	echo "Settings update done" . PHP_EOL;
-	$spotUpgrader->users($settings);
+	$svcUpgradeBase->users($settings);
 	echo "Updating users" . PHP_EOL;
 	echo "Users' update done" . PHP_EOL;
 
@@ -57,7 +57,7 @@ try {
 	 */
 	if (SpotCommandline::get('set-systemtype')) {
 		echo "Resetting the system type of Spotweb to " . SpotCommandline::get('set-systemtype') . PHP_EOL;
-		$spotUpgrader->resetSystemType(SpotCommandline::get('set-systemtype'));
+		$svcUpgradeBase->resetSystemType(SpotCommandline::get('set-systemtype'));
 		echo "System type changed" . PHP_EOL;
 	} # if
 
@@ -71,7 +71,7 @@ try {
 		} # if
 
 		echo "Mass changing a users' preference " . $prefToChange[0] .  " to a value of " . $prefToChange[1] . PHP_EOL;
-		$spotUpgrader->massChangeUserPreferences($prefToChange[0], $prefToChange[1]);
+		$svcUpgradeBase->massChangeUserPreferences($prefToChange[0], $prefToChange[1]);
 		echo "Users' preferences changed" . PHP_EOL;
 	} # if
 
@@ -81,14 +81,14 @@ try {
 	 */
 	if (SpotCommandline::get('reset-password')) {
 		echo "Resetting the password of '". SpotCommandline::get('reset-password') . "' to 'spotweb'" . PHP_EOL;
-		$spotUpgrader->resetPassword(SpotCommandline::get('reset-password'));
+		$svcUpgradeBase->resetPassword(SpotCommandline::get('reset-password'));
 		echo "Password changed" . PHP_EOL;
 	} # if
 
 	/* If the user asked to reset group membership, reset all group memberships */
 	if (SpotCommandline::get('reset-securitygroups')) {
 		echo "Resetting security groups to their default settings" . PHP_EOL;
-		$spotUpgrader->resetSecurityGroups();
+		$svcUpgradeBase->resetSecurityGroups();
 		echo "Reset security groups to their default settings done" . PHP_EOL;
 	} # if
 
@@ -98,7 +98,7 @@ try {
 	 */
 	if (SpotCommandline::get('reset-groupmembership')) {
 		echo "Resetting users' group membeship to the default" . PHP_EOL;
-		$spotUpgrader->resetUserGroupMembership();
+		$svcUpgradeBase->resetUserGroupMembership();
 		echo "Reset of users' group membership done" . PHP_EOL;
 	} # if
 
@@ -107,12 +107,12 @@ try {
 	 */
 	if (SpotCommandline::get('reset-filters')) {
 		echo "Resetting users' filters to the default" . PHP_EOL;
-		$spotUpgrader->resetFilters();
+		$svcUpgradeBase->resetFilters();
 		echo "Reset of users' filters done" . PHP_EOL;
 	} # if
 
 	echo "Performing basic analysis of database tables" . PHP_EOL;
-	$spotUpgrader->analyze($settings);
+	$svcUpgradeBase->analyze($settings);
 	echo "Basic database optimalisation done" . PHP_EOL;
 } 
 

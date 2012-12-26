@@ -1,5 +1,5 @@
 <?php
-class SpotSettingsUpgrader {
+class Services_Upgrade_Settings {
 	private $_userSystem;
 	private $_settings;
 
@@ -238,4 +238,4 @@ class SpotSettingsUpgrader {
 	} # setSystemType
 	
 
-} # SpotSettingsUpgrader
+} # Services_Upgrade_Settings

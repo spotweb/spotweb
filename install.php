@@ -474,18 +474,18 @@
 			 * Now create the database ...
 			 */
 			$settings['db'] = $_SESSION['spotsettings']['db'];
-			$spotUpgrader = new SpotUpgrader($settings['db'], $settings);
-			$spotUpgrader->database();
+			$svcUpgradeBase = new Servics_Upgrade_Base($settings['db'], $settings);
+			$svcUpgradeBase->database();
 
 			/*
 			 * and create all the different settings (only the default) ones
 			 */
-			$spotUpgrader->settings();
+			$svcUpgradeBase->settings();
 
 			/*
 			 * Create the users
 			 */
-			$spotUpgrader->users();
+			$svcUpgradeBase->users();
 
 			/*
 			 * print all the output as HTML comment for debugging
@@ -544,7 +544,7 @@
 			$spotSettings->set('systemtype', $spotUser['systemtype']);
 
 			# Set the system type
-			$spotUpgrader->resetSystemType($spotUser['systemtype']);
+			$svcUpgradeBase->resetSystemType($spotUser['systemtype']);
 
 			/* 
 			 * Create the necessary database connection information

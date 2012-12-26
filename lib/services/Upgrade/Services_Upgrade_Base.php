@@ -1,6 +1,6 @@
 <?php
 
-class SpotUpgrader {
+class Services_Upgrade_Base {
 	private $_daoFactory;
 	private $_dbStruct;
 	private $_phpSettings;
@@ -19,8 +19,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
-		$spotSettingsUpgrader->update();
+		$svcUpgradeSettings = new Services_Upgrade_Settings($this->_daoFactory, $settings);
+		$svcUpgradeSettings->update();
 	} # settings
 
 	/*
@@ -31,8 +31,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->update();
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeUser->update();
 	} # users
 	 
 	/*
@@ -58,8 +58,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->resetUserGroupMembership($settings->get('systemtype'));
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeUser->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
 
 	/*
@@ -70,8 +70,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(),
 											$this->_daoFactory->getBlackWhiteListDao(), 
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->updateSecurityGroups(true);
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeUser->updateSecurityGroups(true);
 	} # resetSecurityGroups
 
 	/*
@@ -82,8 +82,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->updateUserFilters(true);
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeUser->updateUserFilters(true);
 	} # resetFilters
 	 
 	/*
@@ -94,8 +94,8 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotUserUpgrader->massChangeUserPreferences($prefName, $prefValue);
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeUser->massChangeUserPreferences($prefName, $prefValue);
 	} # massChangeUserPreferences
 
 	/*
@@ -105,14 +105,14 @@ class SpotUpgrader {
 		# Create the settings object
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(), $this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
-		$spotSettingsUpgrader = new SpotSettingsUpgrader($this->_daoFactory, $settings);
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
+		$svcUpgradeSettings = new Services_Upgrade_Settings($this->_daoFactory, $settings);
 
 		# change the systems' type
-		$spotSettingsUpgrader->setSystemType($systemType);
+		$svcUpgradeSettings->setSystemType($systemType);
 		
 		# and reset all the users' group memberships for all users to match
-		$spotUserUpgrader->resetUserGroupMembership($systemType);
+		$svcUpgradeUser->resetUserGroupMembership($systemType);
 	} # resetSystemType
 
 	/*
@@ -123,11 +123,11 @@ class SpotUpgrader {
 		$settings = SpotSettings::singleton($this->_daoFactory->getSettingDao(), 
 											$this->_daoFactory->getBlackWhiteListDao(),
 											$this->_phpSettings);
-		$spotUserUpgrader = new SpotUserUpgrader($this->_daoFactory, $settings);
+		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $settings);
 
 		# retrieve the userid
-		$spotUserUpgrader->resetUserPassword($username, 'spotweb');
+		$svcUpgradeUser->resetUserPassword($username, 'spotweb');
 	} # resetPassword
 
-} # SpotUpgrader
+} # Services_Upgrade_Base
 
