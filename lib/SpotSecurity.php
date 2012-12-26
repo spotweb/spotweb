@@ -117,7 +117,7 @@ class SpotSecurity {
 	const spot_secaudit_failure			= 1;
 	const spot_secaudit_all				= 2; 
 	
-	function __construct(Dao_User $userDao, Dao_Audit $auditDao, SpotSettings $settings, array $user, $ipaddr) {
+	function __construct(Dao_User $userDao, Dao_Audit $auditDao, Services_Settings_Base $settings, array $user, $ipaddr) {
 		$this->_userDao = $userDao;
 		$this->_user = $user;
 		$this->_settings = $settings;

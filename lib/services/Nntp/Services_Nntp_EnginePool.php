@@ -9,7 +9,7 @@ class Services_Nntp_EnginePool {
 	 * which are created by issueing existing NNTP engines
 	 * when possible
 	 */
-	static public function pool(SpotSettings $settings, $type) {
+	static public function pool(Services_Settings_Base $settings, $type) {
 		if (isset(self::$_instances[$type])) {
 			return self::$_instances[$type];
 		} # if

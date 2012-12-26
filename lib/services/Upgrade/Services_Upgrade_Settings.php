@@ -3,7 +3,7 @@ class Services_Upgrade_Settings {
 	private $_userSystem;
 	private $_settings;
 
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_settings = $settings;
 		$this->_userSystem = new SpotUserSystem($daoFactory, $settings);
 	} # ctor

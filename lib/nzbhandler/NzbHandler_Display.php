@@ -1,7 +1,7 @@
 <?php
 class NzbHandler_Display extends NzbHandler_abs
 {
-	function __construct(SpotSettings $settings, array $nzbHandling)
+	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'Display', 'Show', $nzbHandling);
 	} # __construct

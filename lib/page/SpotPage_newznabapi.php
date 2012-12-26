@@ -3,7 +3,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
 	private $_svcPrvHttp;
 
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;

@@ -2,7 +2,7 @@
 /*
  * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
  */
-class SpotSettings {
+class Services_Settings_Base {
 	private static $_instance = null;
 	private $_settingsDao;
 	private $_blackWhiteListDao;
@@ -23,11 +23,11 @@ class SpotSettings {
 	} # ctor
 	
 	/* 
-	 * SpotSettings is a singleton class, this function instantiates SpotSetttings
+	 * Services_Settings_Base is a singleton class, this function instantiates SpotSetttings
 	 */
 	public static function singleton(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao, array $phpSettings) {
 		if (self::$_instance === null) {
-			self::$_instance = new SpotSettings($settingsDao, $blackWhiteListDao);
+			self::$_instance = new Services_Settings_Base($settingsDao, $blackWhiteListDao);
 			
 			# Make sure the PHP settings are stored in the class individually
 			self::$_phpSettings = $phpSettings;
@@ -269,4 +269,4 @@ class SpotSettings {
 		return isset(self::$_settings[$name]);
 	} # isSet
 
-} # class SpotSettings
+} # class Services_Settings_Base

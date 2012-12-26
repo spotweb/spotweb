@@ -4,7 +4,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_userIdToEdit;
 	private $_dialogembedded;
 	
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editUserPrefsForm = $params['edituserprefsform'];
 		$this->_userIdToEdit = $params['userid'];

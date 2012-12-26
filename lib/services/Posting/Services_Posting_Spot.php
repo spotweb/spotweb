@@ -6,7 +6,7 @@ class Services_Posting_Spot {
 	private $_nntp_post;
 	private $_nntp_hdr;
 
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));

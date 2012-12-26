@@ -4,7 +4,7 @@ class Services_Upgrade_User {
 	private $_userDao;
 	private $_settings;
 
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_dbCon = $daoFactory->getConnection();
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_settings = $settings;

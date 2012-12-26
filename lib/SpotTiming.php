@@ -15,7 +15,7 @@ class SpotTiming {
 
 		/* Clear any outstanding timings */
 		self::$_inflight = array();
-		self::$_timings = array();
+		self::$_timings = array();	
 	} #disable
 	
 	static function start($name) {

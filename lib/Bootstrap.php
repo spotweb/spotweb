@@ -70,7 +70,7 @@ class Bootstrap {
 	 * Returns a sort of pre-flight check to see if 
 	 * everything is setup the way we like.
 	 */
-	private function validate(SpotSettings $settings) {
+	private function validate(Services_Settings_Base $settings) {
 		/*
 		 * The basics has been setup, lets check if the schema needs
 		 * updating
@@ -107,15 +107,15 @@ class Bootstrap {
 	private function getSettings(Dao_Factory $daoFactory) {
 		require_once "settings.php";
 		
-		return SpotSettings::singleton($daoFactory->getSettingDao(), 
-									   $daoFactory->getBlackWhiteListDao(),
-									   $settings);
+		return Services_Settings_Base::singleton($daoFactory->getSettingDao(), 
+									 			 $daoFactory->getBlackWhiteListDao(),
+									   			 $settings);
 	} # getSettings
 
 	/*
 	 * Instantiate an Request object
 	 */
-	private function getSpotReq(SpotSettings $settings) {
+	private function getSpotReq(Services_Settings_Base $settings) {
 		$req = new SpotReq();
 		$req->initialize($settings);
 

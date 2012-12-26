@@ -4,7 +4,7 @@ class SpotNotificationTemplate {
 	protected $_settings;
 	protected $_currentSession;
 	
-	function __construct(SpotSettings $settings, $currentSession) {
+	function __construct(Services_Settings_Base $settings, $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;

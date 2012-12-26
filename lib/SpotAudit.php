@@ -5,7 +5,7 @@ class SpotAudit {
 	private $_settings;
 	private $_ipaddr;
 
-	function __construct(Dao_Audit $auditDao, SpotSettings $settings, array $user, $ipaddr) {
+	function __construct(Dao_Audit $auditDao, Services_Settings_Base $settings, array $user, $ipaddr) {
 		$this->_auditDao = $auditDao;
 		$this->_user = $user;
 		$this->_settings = $settings;

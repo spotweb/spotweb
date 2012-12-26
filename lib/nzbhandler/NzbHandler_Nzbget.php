@@ -7,7 +7,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	private $_url = null;
 	private $_credentials = null;
 
-	function __construct(SpotSettings $settings, array $nzbHandling)
+	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'NZBGet', 'D/L', $nzbHandling);
 

@@ -388,7 +388,7 @@
 				 * so this will satisfy the constructor in the system.
 				 * It's ugly, i know.
 				 */
-				class SpotSettings { } ;
+				class Services_Settings_Base { } ;
 
 				/*
 				 * Override the SpotDb class so we can override userEmailExists()
@@ -411,7 +411,7 @@
 				 * And initiate the user system, this allows us to use
 				 * validateUserRecord() 
 				 */
-				$spotUserSystem = new SpotUserSystem($db, new SpotSettings(array()));				
+				$spotUserSystem = new SpotUserSystem($db, new Services_Settings_Base(array()));				
 				$errorList = $spotUserSystem->validateUserRecord($form, false);
 
 				if (!empty($errorList)) {
@@ -474,7 +474,7 @@
 			 * Now create the database ...
 			 */
 			$settings['db'] = $_SESSION['spotsettings']['db'];
-			$svcUpgradeBase = new Servics_Upgrade_Base($settings['db'], $settings);
+			$svcUpgradeBase = new Services_Upgrade_Base($settings['db'], $settings);
 			$svcUpgradeBase->database();
 
 			/*
@@ -506,7 +506,7 @@
 			$settings['db'] = $_SESSION['spotsettings']['db'];;
 
 			/* and create the database settings */
-			$spotSettings = SpotSettings::singleton($db, $settings);
+			$spotSettings = Services_Settings_Base::singleton($db, $settings);
 
 			/*
 			 * Update the NNTP settings in the databas

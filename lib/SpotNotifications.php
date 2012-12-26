@@ -19,7 +19,7 @@ class SpotNotifications {
 	const notifytype_user_added			= 'user_added';
 	const notifytype_newspots_for_filter		= 'newspots_for_filter';
 
-	function __construct(SpotDb $db, SpotSettings $settings, array $currentSession) {
+	function __construct(SpotDb $db, Services_Settings_Base $settings, array $currentSession) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;

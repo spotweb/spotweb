@@ -8,7 +8,7 @@ class SpotUserSystem {
 	private $_daoFactory;
 	private $_settings;
 	
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 

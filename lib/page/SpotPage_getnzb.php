@@ -3,7 +3,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;
 	
-	function __construct(Dao_Factory $daoFactory, SpotSettings $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_messageid = $params['messageid'];
 		$this->_action = $params['action'];
