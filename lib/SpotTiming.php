@@ -12,6 +12,10 @@ class SpotTiming {
 	
 	static function disable() {
 		self::$_disabled = true;
+
+		/* Clear any outstanding timings */
+		self::$_inflight = array();
+		self::$_timings = array();
 	} #disable
 	
 	static function start($name) {
