@@ -1,42 +1,52 @@
 <?php
 /*
- * Classe om de server settings in op te slaan
+ * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
  */
 class SpotSettings {
 	private static $_instance = null;
 	private $_settingsDao;
 	private $_blackWhiteListDao;
 
-	/* Gemergede array met alle settings */
+	/* Merged array with all settings (both db, and php) */
 	private static $_settings;
-	/* Settings die uit PHP komen */
+	/* Settings which originated from PHP */
 	private static $_phpSettings;
-	/* Settings die uit de database komen */
+	/* Settings which originated from the database */
 	private static $_dbSettings;
+
+	/*
+	 * Private constructor, class is singleton
+	 */
+	private function __construct(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao) {
+		$this->_settingsDao = $settingsDao;
+		$this->_blackWhiteListDao = $blackWhiteListDao;
+	} # ctor
 	
 	/* 
-	 * Instantieert een nieuwe settings klasse
+	 * SpotSettings is a singleton class, this function instantiates SpotSetttings
 	 */
 	public static function singleton(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao, array $phpSettings) {
 		if (self::$_instance === null) {
 			self::$_instance = new SpotSettings($settingsDao, $blackWhiteListDao);
 			
-			# maak de array met PHP settings beschikbaar in de klasse
+			# Make sure the PHP settings are stored in the class individually
 			self::$_phpSettings = $phpSettings;
 			
-			# haal alle settings op, en prepareer die 
+			# Retrieve all settings and prepare those
 			self::$_dbSettings = $settingsDao->getAllSettings();
 
-			# en merge de settings met degene die we door krijgen 
+			# merge them
 			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
 
-			# Override NNTP header/comments settings, als er geen aparte NNTP header/comments server is opgegeven, gebruik die van 
-			# de NZB server
+			/*
+			 * When no specific NNTP header / comments server is entered, we override these with the NZB server
+			 * header. This allows us to always assume those are entered by the user.
+			 */
 			if ((empty(self::$_settings['nntp_hdr']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
 			} # if
 
-			# Hetzelfde voor de NNTP upload server
+			# Same for the NNTP upload server
 			if ((empty(self::$_settings['nntp_post']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
 				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
 			} # if
@@ -46,14 +56,15 @@ class SpotSettings {
 	} # singleton
 
 	/*
-	 * Geeft de waarde van de setting terug
+	 * Returns the value of a setting
 	 */
 	function get($name) {
 		return self::$_settings[$name];
 	} # get
 
 	/*
-	 * Unset een bepaalde waarde
+	 * Removes a certain setting from the database. If it is a PHP setting,
+	 * it will return the next time this class is instantiated.
 	 */
 	function remove($name) {
 		unset(self::$_settings[$name]);
@@ -62,9 +73,10 @@ class SpotSettings {
 	} # remove
 	
 	/*
-	 * Geeft terug of een bepaalde setting uit de database
-	 * komt of uit de settings.php file. De settings-file
-	 * heeft altijd prioriteit 
+	 *
+	 * Returns whether a specific setting originated from the
+	 * database or the (own)settings.php file. If both contain
+	 * the setting, the PHP takes precedence.
 	 */
 	function getOrigin($name) {
 		if (isset(self::$_phpSettings[$name])) {
@@ -75,18 +87,23 @@ class SpotSettings {
 	} # getOrigin
 
 	/*
-	 * Set de waarde van de setting, maakt hem ook
-	 * meteen persistent dus mee oppassen
+	 * Updates a setting. It will throw an exception if the
+	 * setting is set from within PHP to ensure we don't create
+	 * an setting which seems to revert magically.
+	 *
+	 * Otherwise directly persists the setting, so be careful
 	 */
 	function set($name, $value) {
-		# Als de setting uit PHP komt, dan mag die niet geupdate worden
-		# hier omdat we dan niet meer weten wat er gebeurt.
+		/*
+		 * If setting originates from PHP, throw an exception
+		 */
 		if (isset(self::$_phpSettings[$name])) {
-			throw new InvalidSettingsUpdateException("InvalidSettingUpdat Exception for '" . $name . '"');
+			throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '" . $name . '"');
 		} # if
 		
-		# Update onze eigen settings array zodat we meteen up-to-date zijn
+		# Make sure we update our own settings system
 		self::$_settings[$name] = $value;
+		self::$_dbSettings[$name] = $value;
 		
 		$this->_settingsDao->updateSetting($name, $value);
 	} # set
@@ -137,6 +154,7 @@ class SpotSettings {
 		if (($settings['retrieve_newer_than'] = strtotime($settings['retrieve_newer_than'])) === false || $settings['retrieve_newer_than'] > time()) {
 			$result->addError(_('Invalid retrieve_newer_than setting'));
 		} elseif ($settings['retrieve_newer_than'] < 1230789600) {
+			/* We don't allow settings earlier than january 1st 2009 */
 			$settings['retrieve_newer_than'] = 1230789600;
 		} # elseif
 
@@ -155,7 +173,7 @@ class SpotSettings {
 			$result->addError(_('Custom CSS is too large'));
 		} # if		
 
-		# converteer overige settings naar boolean zodat we gewoon al weten wat er uitkomt
+		# Convert other settings (usually checkboxes) to be simply boolean settings
 		$settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
 		$settings['sendwelcomemail'] = (isset($settings['sendwelcomemail'])) ? true : false;
 		$settings['nntp_nzb']['buggy'] = (isset($settings['nntp_nzb']['buggy'])) ? true : false;
@@ -192,6 +210,9 @@ class SpotSettings {
 										   'buggy' => false); 
 		} # if
 
+		/* 
+		 * Remove dummy preferences 
+		 */
 		unset($settings['nntp_hdr']['use'], $settings['nntp_post']['use']);
 
 		/*
@@ -225,10 +246,10 @@ class SpotSettings {
 	} # setSettings
 
 	/* 
-	 * Is onze database versie nog wel geldig?
+	 * Is our database version still valid?
 	 */
 	function schemaValid() {
-		# SPOTDB_SCHEMA_VERSION is gedefinieerd bovenin SpotDb
+		# Is our database still up to date
 		return ($this->get('schemaversion') == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
 	
@@ -237,23 +258,15 @@ class SpotSettings {
 	 * Zijn onze settings versie nog wel geldig?
 	 */
 	function settingsValid() {
-		# SPOTWEB_SETTINGS_VERSION is gedefinieerd bovenin dit bestand
+		# Is our settings list still valid?
 		return ($this->get('settingsversion') == SPOTWEB_SETTINGS_VERSION);
 	} # settingsValid
 
 	/* 
-	 * Bestaat de opgegeven setting ?
+	 * Does the setting actually exist?
 	 */
 	function exists($name) {
 		return isset(self::$_settings[$name]);
 	} # isSet
-
-	/*
-	 * Private constructor, moet altijd via singleton gaan
-	 */
-	private function __construct(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao) {
-		$this->_settingsDao = $settingsDao;
-		$this->_blackWhiteListDao = $blackWhiteListDao;
-	} # ctor
 
 } # class SpotSettings
