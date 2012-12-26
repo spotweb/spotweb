@@ -79,7 +79,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			$epSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
-				$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
+
+				if (strlen($this->_params['season']) == 2) {
+					$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
+				} else {
+					$epSearch = $this->_params['season'] . ' ';
+				} # else 
+
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 				
@@ -95,6 +101,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
+var_dump($search);die();
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
