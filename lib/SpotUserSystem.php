@@ -1354,19 +1354,5 @@ class SpotUserSystem {
 		return $this->_daoFactory->getSpotStateListDao()->markAllAsRead($ourUserId);
 	} # markAllAsRead
 
-	/* 
-	 * Returns a string depending on the device type.
-	 */
-	 function determineDeviceType() {
-	 	$mobDetect = new Mobile_Detect();
-
-	 	if ($mobDetect->isTablet()) {
-	 		return "tablet";
-	 	} elseif ($mobDetect->isMobile()) {
-	 		return "mobile";
-	 	} else {
-	 		return "full";
-	 	} # else
-	} # determineDeviceType
 	
 } # class SpotUserSystem

@@ -7,7 +7,7 @@ class Services_User_Authentication {
 	private $_settings;
 
 	public function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
-		$this->_daoFactory = $daoFactory;
+		$This->_daoFactory = $daoFactory;
 
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_sessionDao = $daoFactory->getSessionDao();
@@ -79,7 +79,7 @@ class Services_User_Authentication {
 	 */
 	public function removeSession($userSession) {
 		# and remove the users' session if the user isn't the anonymous one
-		if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
+		if ($userSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
 			$this->_sessionDao->deleteSession($userSession['session']['sessionid']);
 
 			return true;
@@ -321,6 +321,20 @@ class Services_User_Authentication {
 		return $remote_addr;
 	} # determineUsersIpAddress
 
+	/* 
+	 * Returns a string depending on the device type.
+	 */
+	 private function determineDeviceType() {
+	 	$mobDetect = new Mobile_Detect();
+
+	 	if ($mobDetect->isTablet()) {
+	 		return "tablet";
+	 	} elseif ($mobDetect->isMobile()) {
+	 		return "mobile";
+	 	} else {
+	 		return "full";
+	 	} # else
+	} # determineDeviceType
 
 } # Services_User_Authentication
 
