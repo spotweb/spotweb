@@ -7,6 +7,9 @@ msgstr "\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: general translations
+msgid "SpotWeb - overview"
+msgstr "SpotWeb - overzicht"
+
 msgid "Add"
 msgstr "Toevoegen"
 
@@ -620,6 +623,9 @@ msgstr "Externe blacklist bijwerken tijdens spots ophalen"
 
 msgid "Fetch the external whitelist during retrieve"
 msgstr "Externe whitelist bijwerken tijdens spots ophalen"
+
+msgid "Custom CSS"
+msgstr "Eigen CSS"
 
 #: editusersprefs.inc.php
 msgid "Language to use in Spotweb"
@@ -1453,6 +1459,9 @@ msgstr "Frans gesproken/geschreven"
 
 msgid "Spanish audio/written"
 msgstr "Spaans gesproken/geschreven"
+
+msgid "Asian audio/written"
+msgstr "Aziatisch gesproken/geschreven"
 
 msgid "Action"
 msgstr "Actie"
