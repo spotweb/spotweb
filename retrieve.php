@@ -300,24 +300,27 @@ if ($settings_external_whitelist) {
 
 ## Statistics
 if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
-	$spotsOverview = new SpotsOverview($db, $settings);
-	$spotImage = new SpotImage($db);
-	$spotsOverview->setActiveRetriever(true);
+	if (extension_loaded('gd') || extension_loaded('gd2')) {	
+		$spotsOverview = new SpotsOverview($db, $settings);
+		$spotImage = new SpotImage($db);
+		$spotsOverview->setActiveRetriever(true);
 
-	echo "Starting to create statistics " . PHP_EOL;
-	foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
-		# Reset timelimit
-		set_time_limit(60);
+		echo "Starting to create statistics " . PHP_EOL;
+		foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
+			# Reset timelimit
+			set_time_limit(60);
 
-		foreach($settings->get('system_languages') as $language => $name) {
-			foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
-				$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
-			} # foreach graph
-		} # foreach language
-		echo "Finished creating statistics " . $limitName . PHP_EOL;
-	} # foreach limit
-
-	echo PHP_EOL;
+			foreach($settings->get('system_languages') as $language => $name) {
+				foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
+					$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
+				} # foreach graph
+			} # foreach language
+			echo "Finished creating statistics " . $limitName . PHP_EOL;
+		} # foreach limit
+		echo PHP_EOL;
+	} else {
+		echo "GD extension not loaded, not creating statistics" . PHP_EOL;
+	} # else
 } # if
 
 # Verstuur notificaties
