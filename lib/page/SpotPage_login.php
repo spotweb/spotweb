@@ -36,7 +36,7 @@ class SpotPage_login extends SpotPage_Abs {
 			# make sure we can simply assume all fields are there
 			$credentials = array_merge($credentials, $this->_loginForm);
 			
-			$tryLogin = $spotUserSystem->login($credentials['username'], $credentials['password']);
+			$tryLogin = $spotUserSystem->authenticate($credentials['username'], $credentials['password']);
 			if (!$tryLogin) {
 				/* Create an audit event */
 				if ($this->_settings->get('auditlevel') != SpotSecurity::spot_secaudit_none) {
