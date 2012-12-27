@@ -7,8 +7,8 @@ msgstr "\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: general translations
-msgid "SpotWeb - overview"
-msgstr "SpotWeb - overzicht"
+msgid "overview"
+msgstr "overzicht"
 
 msgid "Add"
 msgstr "Toevoegen"
