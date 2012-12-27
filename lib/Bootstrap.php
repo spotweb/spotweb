@@ -1,17 +1,19 @@
 <?php
 
 /*
- * Include several version constants
+ * Define several version constants
  * used throughput Spotweb
  */
-require_once "lib/SpotWebVersion.php";
+define('SPOTWEB_SETTINGS_VERSION', '0.24');
+define('SPOTWEB_SECURITY_VERSION', '0.29');
+define('SPOTDB_SCHEMA_VERSION', '0.58');
+define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 
 /*
  * Spotweb bootstrapping code.
  * 
  */
-
-class Bootstrap {
+public class Bootstrap {
 	static private $_dbSettings = null;
 
 	/*
