@@ -17,19 +17,6 @@ class SpotUserSystem {
 	} # ctor
 
 	/*
-	 * Generates an unique id, mostly used for sessions
-	 */
-	function generateUniqueId() {
-		$sessionId = '';
-		
-		for($i = 0; $i < 10; $i++) {
-			$sessionId .= base_convert(mt_rand(), 10, 36);
-		} # for
-		
-		return $sessionId;
-	} # generateUniqueId
-
-	/*
 	 * Create a new user record
 	 */
 	public function createNewUser(array $spotUser, array $spotSession)	{
@@ -39,7 +26,7 @@ class SpotUserSystem {
 		/*
 		 * Create a random password for this user
 		 */
-		$spotUser['newpassword1'] = substr($this->generateUniqueId(), 1, 9);
+		$spotUser['newpassword1'] = substr(Services_User_Util::generateUniqueId(), 1, 9);
 		$spotUser['newpassword2'] = $spotUser['newpassword1'];
 			
 		/*
@@ -91,17 +78,6 @@ class SpotUserSystem {
 
 		return $result;
 	} # createNewUser
-	
-	/*
-	 * Password to hash. Duplicated in SpotUserUpgrader
-	 * but we cannot rely on this class always being available
-	 * already
-	 */
-	function passToHash($password) {
-		return sha1(strrev(substr($this->_settings->get('pass_salt'), 1, 3)) . $password . $this->_settings->get('pass_salt'));
-	} # passToHash
-
-
 
 	/*
 	 * Reset the seenstamp timestamp
@@ -164,10 +140,10 @@ class SpotUserSystem {
 		} # if
 
 		# Convert the password to an passhash
-		$user['passhash'] = $this->passToHash($user['newpassword1']);
+		$user['passhash'] = Services_User_Util::passToHash($this->_settings->get('pass_salt'), $user['newpassword1']);
 
 		# Create an API key
-		$user['apikey'] = md5($this->generateUniqueId());
+		$user['apikey'] = md5(Services_User_Util::generateUniqueId());
 
 		# and actually add the user to the database
 		$tmpUser = $this->_userDao->addUser($user);
@@ -203,7 +179,7 @@ class SpotUserSystem {
 	 */
 	function setUserPassword($user) {
 		# Convert the password to an passhash
-		$user['passhash'] = $this->passToHash($user['newpassword1']);
+		$user['passhash'] = Services_User_Util::passToHash($this->_settings->get('pass_salt'), $user['newpassword1']);
 		
 		$this->_userDao->setUserPassword($user);
 	} # setUserPassword
@@ -212,7 +188,7 @@ class SpotUserSystem {
 	 * Update a user's API key
 	 */
 	function resetUserApi($user) {
-		$user['apikey'] = md5($this->generateUniqueId());
+		$user['apikey'] = md5(Services_User_Util::generateUniqueId());
 		
 		$this->_userDao->setUser($user);
 

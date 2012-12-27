@@ -38,7 +38,7 @@ class Services_User_Authentication {
 		} # if
 
 		# Create a new session record
-		$session = array('sessionid' => $this->generateUniqueId(),
+		$session = array('sessionid' => Services_User_Util::generateUniqueId(),
 						 'userid' => $userid,
 						 'hitcount' => 1,
 						 'lasthit' => time(),
@@ -153,7 +153,7 @@ class Services_User_Authentication {
 	 */
 	public function authenticate($user, $password) {
 		# Sals the password with the unique salt given in the database
-		$password = $this->passToHash($password);
+		$password = Services_User_Util::passToHash($this->_settings->get('pass_salt'), $password);
 
 		# authenticate the user
 		$userId = $this->_userDao->authUser($user, $password);
