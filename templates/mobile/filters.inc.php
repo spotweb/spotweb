@@ -48,7 +48,7 @@
 
 <ul data-role="listview" data-theme="c" data-dividertheme="b">
 <?php
-	function processFilters($tplHelper, $count_newspots, $filterList) {
+	function processFilters($tplHelper, $count_newspots, $filterList, $defaultSortField) {
 		$selfUrl = $tplHelper->makeSelfUrl("path");
 
 		foreach($filterList as $filter) {
@@ -61,7 +61,7 @@
 			if (!empty($filter['sorton'])) {
 				$strFilter .= '&amp;sortby=' . $filter['sorton'] . '&amp;sortdir=' . $filter['sortorder'];
 			} else {
-				$sortType = $currentSession['user']['prefs']['defaultsortfield'];
+				$sortType = $defaultSortField;
 			} # if
 
 			# escape the filter vlaues
@@ -77,7 +77,7 @@
 			# Als er children zijn, output die ool
 			if (!empty($filter['children'])) {
 				echo '<ul class="filterlist subfilterlist">';
-				processFilters($tplHelper, $count_newspots, $filter['children']);
+				processFilters($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
 				echo '</ul>';
 			} # if
 			
@@ -85,7 +85,7 @@
 		} # foreach
 	} # processFilters
 	
-	processFilters($tplHelper, false, $filters);
+	processFilters($tplHelper, false, $filters, $currentSession['user']['prefs']['defaultsortfield']);
 ?>
 </ul>
 </div>
