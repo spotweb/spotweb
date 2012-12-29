@@ -1,4 +1,7 @@
-<?php 	$setpath = $tplHelper->makeBaseUrl("path"); ?>
+<?php 	$setpath = $tplHelper->makeBaseUrl("path"); 
+
+     $sortType = $currentSession['user']['prefs']['defaultsortfield'];
+ ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Zoek<?php require "logincontrol.inc.php"; ?></h1>
@@ -16,6 +19,16 @@
 	<div data-role="fieldcontain" >
 		<form id="filterform" action="<?php echo $setpath;?>index.php?page=search#spots" method="get" data-ajax="false">
 			<fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
+	         		
+	         		<input type="radio" id="radio-choice-1" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>>
+	         		<label for="radio-choice-1"><?php echo _('Relevance'); ?></label> 
+	         	
+                    <input type="radio" id="radio-choice-2"  name="sortby" value="stamp" <?php echo $sortType == "stamp" ? 'checked="checked"' : "" ?>>
+                    <label for="radio-choice-2"><?php echo _('Date');?></label> 
+                    
+               </fieldset>
+               
+               <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
 	         		<input type="radio" name="search[type]" value="Titel" id="radio-choice-1" checked="checked" />
 	         		<label for="radio-choice-1">Titel</label>
 	
