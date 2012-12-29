@@ -100,7 +100,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
-			$search['value'][] = "Titel:=:" . trim($tvSearch) . " " . $epSearch;
+			$search['value'][] = "Titel:=:\"" . trim($tvSearch) . "\" " . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
