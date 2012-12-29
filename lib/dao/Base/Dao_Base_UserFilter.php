@@ -219,7 +219,7 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 * Returns the user ids for this filter combination
 	 */
 	function getUsersForFilter($tree, $valuelist) {
-		return $this->_conn->arrayQuery("SELECT title, userid, enablenotify FROM filters WHERE tree = '%s' AND valuelist = '%s'",
+		return $this->_conn->arrayQuery("SELECT title, userid, enablenotify FROM filters INNER JOIN users ON (filters.userid = users.id) WHERE (NOT users.deleted) AND tree = '%s' AND valuelist = '%s'",
 				 Array($tree, $valuelist));
 	} # getUsersForFilter
 
