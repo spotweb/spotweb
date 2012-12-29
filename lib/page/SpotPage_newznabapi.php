@@ -105,7 +105,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			/* Add the TV title to the search parameters */
-			$search['value'][] = "Title:=:" . trim($tvSearch) . " " . $epSearch;
+			$search['value'][] = "Title:=:\" . trim($tvSearch) . "\" +" . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
@@ -139,11 +139,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb['content'], $movieReleaseDate);
 
 			/* Search for the title */
-			$search['value'][] = "Title:=:\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate[1];
+			$search['value'][] = "Title:=:\"" . trim($movieTitle[1]) . "\" +" . $movieReleaseDate[1];
 
 			/* IMDB  sometimes returns the title translated, if so, pass the original title as well */
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Title:=:\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate[1];
+				$search['value'][] = "Title:=:\"" . trim($originalTitle[1]) . "\" +" . $movieReleaseDate[1];
 			} // if
 
 		} elseif (!empty($this->_params['q'])) {
