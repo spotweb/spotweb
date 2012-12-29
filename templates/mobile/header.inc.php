@@ -16,6 +16,13 @@
 		<style>
 		    th{text-align:left;}
 		</style>
+		<meta name="viewport" content="user-scalable=0, initial-scale=1.0">
+		<script type='text/javascript'>
+			if (window.screen.height==568) { // iPhone 4"
+				document.querySelector("meta[name=viewport]").content="width=320.1";
+			}
+		</script>
+
 		<script type='text/javascript'>
 //		    $(function(){ });
 		    $( document ).ready ( function ( ) {
