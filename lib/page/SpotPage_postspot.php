@@ -18,7 +18,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$spotParseUtil = new Services_Format_Util();
 
 		# we need the spotuser system
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
 		# creeer een default spot zodat het form altijd
 		# de waardes van het form kan renderen
@@ -68,7 +68,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 			# valideer of we deze spot kunnen posten, en zo ja, doe dat dan
 			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
-			$result = $svcPostSpot->postSpot($spotUser,
+			$result = $svcPostSpot->postSpot($svcUserRecord,
 									   $this->_currentSession['user'], 
 									   $spot,
 									   $_FILES['newspotform']['tmp_name']['imagefile'],

@@ -1,11 +1,15 @@
 <?php
 
 class Services_Actions_EdtUserPrefs {
-	private $_spotUserSystem;
+	private $_svcUserFilter;
+	private $_svcUserRecord;
+	private $_svcUserAuth;
 	private $_spotSec;
 
-	function __construct(SpotUserSystem $spotUserSystem, SpotSecurity $spotSec) {
-		$this->_spotUserSystem = $spotUserSystem;
+	function __construct(Services_User_Record $svcUserRecord, Services_User_Filter $svcUserFilter,Services_User_Authentication $svcUserAuth, SpotSecurity $spotSec) {
+		$this->_svcUserFilter = $svcUserFilter;
+		$this->_svcUserRecord = $svcUserRecord;
+		$this->_svcUserAuth = $svcUserAuth;
 		$this->_spotSec = $spotSec;
 	} # ctor
 
@@ -15,7 +19,7 @@ class Services_Actions_EdtUserPrefs {
 		 * We want the annymous' users account so we can use this users' preferences as a
 		 * template. This makes sure all properties are atleast set.
 		 */
-		$anonUser = $spotUserSystem->getUser(SPOTWEB_ANONYMOUS_USERID);
+		$anonUser = $this->_svcUserRecord->getUser(SPOTWEB_ANONYMOUS_USERID);
 
 		/*
 		 * We have a few dummy preferenes -- these are submitted like a checkbox for example
@@ -24,19 +28,19 @@ class Services_Actions_EdtUserPrefs {
 		 * Because we use cleanseUserPreferences() those dummies will not end up in the database
 		 */
 		if (isset($editUserPrefsForm['_dummy_prevent_porn'])) {
-			$this->_spotUserSystem->setEroticIndexFilter($spotUser['userid']);
+			$this->_svcUserFilter->setEroticIndexFilter($spotUser['userid']);
 		} else {
-			$this->_spotUserSystem->removeIndexFilter($spotUser['userid']);
+			$this->_svcUserFilter->removeIndexFilter($spotUser['userid']);
 		} # if
 
 		# Save the current' user preferences because we need them before cleansing 
 		$savePrefs = $spotUser['prefs'];
-		$spotUser['prefs'] = $this->_spotUserSystem->cleanseUserPreferences($editUserPrefsForm, 
+		$spotUser['prefs'] = $this->_svcUserRecord->cleanseUserPreferences($editUserPrefsForm, 
 									$anonUser['prefs'],
 									$this->_tplHelper->getTemplatePreferences());
 
 		# Validate all preferences
-		$result = $this->_spotUserSystem->validateUserPreferences($spotUser['prefs'], $savePrefs);
+		$result = $this->_svcUserRecord->validateUserPreferences($spotUser['prefs'], $savePrefs);
 		$spotUser['prefs'] = $result->getData('prefs');
 
 		# Make sure user has permission to select this template
@@ -66,7 +70,7 @@ class Services_Actions_EdtUserPrefs {
 				}  # if 
 				
 				if ($uploadError == UPLOAD_ERR_OK) {
-					$avatarResult  = $this->_spotUserSystem->changeAvatar(
+					$avatarResult  = $this->_svcUserRecord->changeAvatar(
 													$spotUser['userid'], 
 													file_get_contents($_FILES['edituserprefsform']['tmp_name']['avatar']));
 
@@ -81,7 +85,7 @@ class Services_Actions_EdtUserPrefs {
 
 		if ($result->isSuccess()) { 
 			# and actually update the user in the database
-			$this->_spotUserSystem->setUser($spotUser);
+			$this->_svcUserRecord->setUser($spotUser);
 		} # if
 
 		/*
@@ -89,7 +93,7 @@ class Services_Actions_EdtUserPrefs {
 		 * The safes option is to just do this wih each preferences submit. But first we create a fake
 		 * session for this user.
 		 */
-		$fakeSession = $this->_spotUserSystem->createNewSession($spotUser['userid']);
+		$fakeSession = $this->_svcUserAuth->createNewSession($spotUser['userid']);
 		$fakeSession['security'] = new SpotSecurity($this->_db, $this->_settings, $fakeSession['user'], '');
 
 		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $fakeSession);

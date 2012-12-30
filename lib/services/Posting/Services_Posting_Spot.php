@@ -16,17 +16,17 @@ class Services_Posting_Spot {
 	/*
 	 * Post a spot to the usenet server. 
 	 */
-	public function postSpot(SpotUserSystem $spotUser, array $user, array $spot, $imageFilename, $nzbFilename) {
+	public function postSpot(Services_User_Record $svcUserRecord, array $user, array $spot, $imageFilename, $nzbFilename) {
 		$result = new Dto_FormResult();
 		$spotDao = $this->_daoFactory->getSpotDao();
 
 		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$spotUser->allowedToPost($user)) {
+		if (!$svcUserRecord->allowedToPost($user)) {
 			$result->addError(_("You need to login to be able to post comments"));
 		} # if
 
 		# Retrieve the users' private key
-		$user['privatekey'] = $spotUser->getUserPrivateRsaKey($user['userid']);
+		$user['privatekey'] = $svcUserRecord->getUserPrivateRsaKey($user['userid']);
 
 		$hdr_newsgroup = $this->_settings->get('hdr_group');
 		$bin_newsgroup = $this->_settings->get('nzb_group');

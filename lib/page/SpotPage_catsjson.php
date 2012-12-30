@@ -96,12 +96,12 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		/* First parse the search string so we know which items to select and which not */
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
 		$parsedSearch = $svcSearchQp->filterToQuery($this->_params['search'], 
 													  array(),
 													  $this->_currentSession,
-													  $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+													  $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 		if ($this->_params['disallowstrongnot']) {
 			$parsedSearch['strongNotList'] = '';
 		} # if

@@ -23,13 +23,15 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		} # if
 		
 		# Instantiate the user system as necessary for the management of user preferences
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_user_Filter($this->_daoFactory, $this->_settings);
+		$svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# set the page title
 		$this->_pageTitle = "spot: edit user preferences";
 		
 		# retrieve the to-edit user
-		$spotUser = $spotUserSystem->getUser($this->_userIdToEdit);
+		$spotUser = $svcUserRecord->getUser($this->_userIdToEdit);
 		if ($spotUser === false) {
 			$result->addError(sprintf(_('User %d can not be found'), $this->_userIdToEdit));
 		} # if
@@ -44,7 +46,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		if ((!empty($formAction)) && (!$result->isError())) {
 			switch($formAction) {
 				case 'edit'	: {
-					$svcActn_EditUserPrefs = new Service_Actions_EditUserPrefs();
+					$svcActn_EditUserPrefs = new Service_Actions_EditUserPrefs($svcUserRecord, $svcUserFilter, $svcUserAuth, $this->_spotSec);
 					$result = $svcActn_EditUserPrefs->editUserPrefs($this->_editUserPrefsForm,
 																	$spotUser);
 					

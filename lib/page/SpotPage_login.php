@@ -23,7 +23,7 @@ class SpotPage_login extends SpotPage_Abs {
 						  'password' => '');
 
 		# Instantiate the Spot user system
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserAuth = new ServiceS_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# set the page title
 		$this->_pageTitle = "spot: login";	
@@ -36,7 +36,7 @@ class SpotPage_login extends SpotPage_Abs {
 			# make sure we can simply assume all fields are there
 			$credentials = array_merge($credentials, $this->_loginForm);
 			
-			$tryLogin = $spotUserSystem->authenticate($credentials['username'], $credentials['password']);
+			$tryLogin = $svcUserAuth->authenticate($credentials['username'], $credentials['password']);
 			if (!$tryLogin) {
 				/* Create an audit event */
 				if ($this->_settings->get('auditlevel') != SpotSecurity::spot_secaudit_none) {

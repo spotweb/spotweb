@@ -411,8 +411,8 @@
 				 * And initiate the user system, this allows us to use
 				 * validateUserRecord() 
 				 */
-				$spotUserSystem = new SpotUserSystem($db, new Services_Settings_Base(array()));				
-				$errorList = $spotUserSystem->validateUserRecord($form, false);
+				$svcUserRecord = new Services_User_Record($db, new Services_Settings_Base(array()));				
+				$errorList = $svcUserRecord->validateUserRecord($form, false);
 
 				if (!empty($errorList)) {
 					throw new Exception($errorList[0]);
@@ -518,7 +518,7 @@
 			/*
 			 * Create the given user
 			 */
-			$spotUserSystem = new SpotUserSystem($db, $spotSettings);
+			$svcUserRecord = new Services_User_Record($db, $spotSettings);
 			$spotUser = $_SESSION['spotsettings']['adminuser'];
 
 			/*
@@ -532,10 +532,10 @@
 			/*
 			 * and actually add the user
 			 */
-			$userId = $spotUserSystem->addUser($spotUser);
+			$userId = $svcUserRecord->addUser($spotUser);
 
 			# Change the administrators' account password to that of this created user
-			$adminUser = $spotUserSystem->getUser(SPOTWEB_ADMIN_USERID);
+			$adminUser = $svcUserRecord->getUser(SPOTWEB_ADMIN_USERID);
 			$adminUser['newpassword1'] = $spotUser['newpassword1'];
 			$spotUserSystem->setUserPassword($adminUser);
 

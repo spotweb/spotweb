@@ -16,17 +16,17 @@ class Services_Posting_Comment {
 	/*
 	 * Post a comment
 	 */
-	public function postComment(SpotUserSystem $spotUser, array $user, array $comment) {
+	public function postComment(Services_User_Record $svcUserRecord, array $user, array $comment) {
 		$result = new Dto_FormResult();
 		$commentDao = $this->_daoFactory->getCommentDao();
 
 		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
+		if (!$svcUserRecord->allowedToPost($this->_currentSession['user'])) {
 			$result->addError(_("You need to login to be able to post comments"));
 		} # if
 
 		# Retrieve the users' private key
-		$user['privatekey'] = $spotUser->getUserPrivateRsaKey($user['userid']);
+		$user['privatekey'] = $svcUserRecord->getUserPrivateRsaKey($user['userid']);
 
 		/*
 		 * We'll get the messageid's with <>'s but we always strip

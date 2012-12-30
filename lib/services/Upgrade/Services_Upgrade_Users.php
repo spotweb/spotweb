@@ -69,7 +69,7 @@ class Services_Upgrade_User {
 
 	/*
 	 * Create a password hash. Duplicate with
-	 * SpotUserSystem but we cannot rely on that one
+	 * Services_User_Record system but we cannot rely on that one
 	 * to be available for the moment
 	 */
 	function passToHash($password) {

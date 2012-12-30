@@ -23,7 +23,7 @@ class SpotPage_rss extends SpotPage_Abs {
 		 * Transform the query parameters to a list of filters, fields, 
 		 * sortings, etc.
 		 */		
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
 		$parsedSearch = $svcSearchQp->filterToQuery(
 							$this->_params['search'], 
 							array(
@@ -31,7 +31,7 @@ class SpotPage_rss extends SpotPage_Abs {
 								'direction' => $this->_params['sortdir']
 							),
 							$this->_currentSession,
-							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 
 		/* 
 		 * Actually fetch the spots

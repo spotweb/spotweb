@@ -1,11 +1,9 @@
 <?php
 class Services_Upgrade_Settings {
-	private $_userSystem;
 	private $_settings;
 
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_settings = $settings;
-		$this->_userSystem = new SpotUserSystem($daoFactory, $settings);
 	} # ctor
 
 	function update() {
@@ -141,7 +139,7 @@ class Services_Upgrade_Settings {
 	 * Create an xsrf secret
 	 */
 	function createXsrfSecret() {
-		$secret = substr($this->_userSystem->generateUniqueId(), 0, 8);
+		$secret = substr(Services_User_Util::generateUniqueId(), 0, 8);
 		
 		$this->setIfNot('xsrfsecret', $secret);
 	} # createXsrfSecret
@@ -150,7 +148,7 @@ class Services_Upgrade_Settings {
 	 * Create the servers' password salt
 	 */
 	function createPasswordSalt() {
-		$salt = $this->_userSystem->generateUniqueId() . $this->_userSystem->generateUniqueId();
+		$salt = Services_User_Util::generateUniqueId() . Services_User_Util::generateUniqueId();
 		
 		$this->setIfNot('pass_salt', $salt);
 	} # createPasswordSalt

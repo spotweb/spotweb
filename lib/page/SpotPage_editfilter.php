@@ -29,7 +29,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		$editResult = array();
 
 		# Instantiate the SpotUser system
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
 		
 		# set the page title
 		$this->_pageTitle = "spot: filters";
@@ -44,13 +44,13 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		if (!empty($formAction)) {
 			switch($formAction) {
 				case 'removefilter' : {
-					$result = $spotUserSystem->removeFilter($this->_currentSession['user']['userid'], $this->_filterId);
+					$result = $svcUserFilter->removeFilter($this->_currentSession['user']['userid'], $this->_filterId);
 					
 					break;
 				} # case 'removefilter'
 				
 				case 'discardfilters' : {
-					$result = $spotUserSystem->resetFilterList($this->_currentSession['user']['userid']);
+					$result = $svcUserFilter->resetFilterList($this->_currentSession['user']['userid']);
 					
 					break;
 				} # case 'discardfilters'
@@ -58,13 +58,13 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				case 'setfiltersasdefault' : {
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
 
-					$result = $spotUserSystem->setFiltersAsDefault($this->_currentSession['user']['userid']);
+					$result = $svcUserFilter->setFiltersAsDefault($this->_currentSession['user']['userid']);
 					
 					break;
 				} # case 'setfiltersasdefault'
 
 				case 'exportfilters': {
-					$editResult = $spotUserSystem->filtersToXml($spotUserSystem->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
+					$editResult = $svcUserFilter->filtersToXml($svcUserFilter->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
 					
 					break;
 				} # case 'exportfilters' 
@@ -75,8 +75,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
 						if ($_FILES['filterimport']['error'] === UPLOAD_ERR_OK) {
 							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
 							try {
-								$filterList = $spotUserSystem->xmlToFilters($xml);
-								$spotUserSystem->setFilterList($this->_currentSession['user']['userid'], $filterList);
+								$filterList = $svcUserFilter->xmlToFilters($xml);
+								$svcUserFilter->setFilterList($this->_currentSession['user']['userid'], $filterList);
 							} catch(Exception $x) {
 								$result->addError(_('Uploaded Spotwebfilter in invalid'));
 							} # catch
@@ -102,7 +102,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					$filter['enablenotify'] = isset($filter['enablenotify']) ? true : false;
 						
 					# and actually add the filter
-					$result = $spotUserSystem->addFilter($this->_currentSession['user']['userid'], $filter);
+					$result = $svcUserFilter->addFilter($this->_currentSession['user']['userid'], $filter);
 
 					break;
 				} # case 'addfilter' 
@@ -114,15 +114,15 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					 * The nestedSortable jquery widget will not pass an explicit sorting, we
 					 * add it ourselves using the order of the elements we are given
 					 */
-					$result = $spotUserSystem->reorderFilters($this->_currentSession['user']['userid'], $this->_orderList);
+					$result = $svcUserFilter->reorderFilters($this->_currentSession['user']['userid'], $this->_orderList);
 				} # case 'reorder' 
 				
 				case 'changefilter'	: {
 					# Retieve the filter we want to edit
-					$spotFilter = $spotUserSystem->getFilter($this->_currentSession['user']['userid'], $this->_filterId);
+					$spotFilter = $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $this->_filterId);
 					$spotFilter = array_merge($spotFilter, $this->_editFilterForm);
 					
-					$spotUserSystem->changeFilter($this->_currentSession['user']['userid'],
+					$svcUserFilter->changeFilter($this->_currentSession['user']['userid'],
 												  $spotFilter);
 
 					break;

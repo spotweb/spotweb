@@ -16,7 +16,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
 
 		# Instantiate the SpoUser system
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_db, $this->_settings);
 		
 		# zet de page title
 		$this->_pageTitle = "spot: edit security groups";
@@ -31,17 +31,17 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
 			switch($formAction) {
 				case 'removegroup' : {
-					$result = $spotUserSystem->removeSecGroup($this->_groupId);
+					$result = $svcUserRecord->removeSecGroup($this->_groupId);
 					break;
 				} # case 'removegroup'
 				
 				case 'addperm'	: {
-					$result = $spotUserSystem->addPermToSecGroup($this->_groupId, $this->_editSecGroupForm);
+					$result = $svcUserRecord->addPermToSecGroup($this->_groupId, $this->_editSecGroupForm);
 					break;
 				} # case 'addperm' 
 				
 				case 'removeperm'	: {
-					$result = $spotUserSystem->removePermFromSecGroup($this->_groupId,
+					$result = $svcUserRecord->removePermFromSecGroup($this->_groupId,
 															$this->_editSecGroupForm);
 					break;
 				} # case 'removeparm' 
@@ -50,18 +50,18 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 				case 'setdeny'		:  {
 					$this->_editSecGroupForm['deny'] = (bool) ($formAction == 'setdeny');
 				
-					$result = $spotUserSystem->setDenyForPermFromSecGroup($this->_groupId,
+					$result = $svcUserRecord->setDenyForPermFromSecGroup($this->_groupId,
 																$this->_editSecGroupForm);
 					break;
 				} # case 'setallow' / 'setdeny'
 				
 				case 'addgroup' 	: {
-					$result = $spotUserSystem->addSecGroup($this->_editSecGroupForm['name']); 
+					$result = $svcUserRecord->addSecGroup($this->_editSecGroupForm['name']); 
 					break;
 				} # 'addgroup'
 
 				case 'changename'	: {
-					$result = $spotUserSystem->setSecGroup($this->_groupId, $this->_editSecGroupForm['name']); 
+					$result = $svcUserRecord->setSecGroup($this->_groupId, $this->_editSecGroupForm['name']); 
 					break;
 				} # case 'changename' 
 			} # switch

@@ -345,9 +345,9 @@ try {
 							Array('messageid' => $req->getDef('messageid', ''),
 								  'image' => array('type' => 'speeddial')));
 				} else {
-					$spotUserSystem = new SpotUserSystem($daoFactory, $settings);
+					$svcUserFilters = new Services_User_Filters($daoFactory, $settings);
 					$page = new SpotPage_index($daoFactory, $settings, $currentSession,
-							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+							Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),

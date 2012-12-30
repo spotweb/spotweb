@@ -1,4 +1,4 @@
-# This file is distributed under the same license as the SpotWeb package. 
+﻿# This file is distributed under the same license as the SpotWeb package. 
 msgid "\n"
 msgstr "\n"
 "MIME-Version: 1.0\n"
@@ -1023,7 +1023,7 @@ msgstr "Gebruiker toevoegen"
 msgid "Download your filters"
 msgstr "Download je filters"
 
-#: spotusersystem.php
+#: User system
 msgid "An avatar image has a maximum of 4000 bytes"
 msgstr "Een avatar mag niet groter dan 4000 bytes zijn"
 

@@ -313,8 +313,8 @@ class SpotTemplateHelper {
 	 * Only allow a specific set of users to create customized content
 	 */
 	function allowedToPost() {
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
-		return $spotUser->allowedToPost($this->_currentSession['user']);	
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+		return $spotUsersvcUserRecord->allowedToPost($this->_currentSession['user']);	
 	} # allowedToPost
 	
 	/*
@@ -1038,24 +1038,24 @@ class SpotTemplateHelper {
 	 * Get users' filter list
 	 */
 	function getUserFilterList() {
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
-		return $spotUser->getFilterList($this->_currentSession['user']['userid'], 'filter');
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getFilterList($this->_currentSession['user']['userid'], 'filter');
 	} # getUserFilterList
 
 	/*
 	 * Get specific filter
 	 */
 	function getUserFilter($filterId) {
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
-		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $filterId);
 	} # getUserFilter
 
 	/*
 	 * Get index filter
 	 */
 	function getIndexFilter() {
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
-		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']);
 	} # getIndexFilter
 
 	/*

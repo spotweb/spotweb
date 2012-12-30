@@ -8,7 +8,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
 							  
 		# Instanatiate the spotweb user system
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserAuth = new ServiceS_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# make sure the logout isn't cached
 		$this->sendExpireHeaders(true);
@@ -17,7 +17,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->sendContentTypeHeader('xml');
 		
 		# and remove the users' session if the user isn't the anonymous one
-		if ($spotUserSystem->removeSession($this->_currentSession['session']['sessionid'])) {
+		if ($svcUserAuth->removeSession($this->_currentSession['session']['sessionid'])) {
 			$result->setResult('success');
 		} else {
 			$result->addError(_('Unable to remove session');

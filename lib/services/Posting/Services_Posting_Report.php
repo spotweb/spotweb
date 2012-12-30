@@ -16,17 +16,17 @@ class Services_Posting_Report {
 	/*
 	 * Post a spam report
 	 */
-	public function postSpamReport(SpotUserSystem $spotUser, array $user, array $report) {
+	public function postSpamReport(Service_User_Record $svcUserRecord, array $user, array $report) {
 		$result = new Dto_FormResult();
 		$spotReportDao = $this->_daoFactory->getSpotReportDao();
 
 		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$spotUser->allowedToPost($user)) {
+		if (!$svcUserRecord->allowedToPost($user)) {
 			$result->addError(_("You need to login to be able to report spam"));
 		} # if
 
 		# Retrieve the users' private key
-		$user['privatekey'] = $spotUser->getUserPrivateRsaKey($user['userid']);
+		$user['privatekey'] = $svcUserRecord->getUserPrivateRsaKey($user['userid']);
 
 		# Make sure no spam report has already been posted by this user to prevent flooding
 		if ($spotReportDao->isReportPlaced($report['inreplyto'], $user['userid'])) {

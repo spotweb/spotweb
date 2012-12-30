@@ -19,7 +19,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		$result = new Dto_FormResult('notsubmitted');
 		$spotParseUtil = new Services_Format_Util();
 		$spotSigning = Services_Signing_Base::factory();
-		$spotUser = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 
 		/*
 		 * Make sure we have the template for the comment form
@@ -46,7 +46,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 
 			# valiate whether we can post comments, if so, do this
 			$svcPostComment = new Services_Posting_Comment($this->_daoFactory, $this->_settings);
-			$result = $svcPostComment->postComment($spotUser, $this->_currentSession['user'], $comment);
+			$result = $svcPostComment->postComment($svcUserRecord, $this->_currentSession['user'], $comment);
 			
 			if ($result->isSuccess()) {
 				/* Format the body so we can have smilies and stuff be shown in the template */

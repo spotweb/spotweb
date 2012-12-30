@@ -45,7 +45,7 @@ class SpotPage_index extends SpotPage_Abs {
 		 * We get a bunch of query parameters, so now change this to the actual
 		 * search query the user requested including the required sorting
 		 */		
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
 
 		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
 		$parsedSearch = $svcSearchQp->filterToQuery(
@@ -55,7 +55,7 @@ class SpotPage_index extends SpotPage_Abs {
 								'direction' => $this->_params['sortdir']
 							),
 							$this->_currentSession,
-							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 
 		/*
 		 * If any specific action was chosen, we perform that as well
@@ -117,7 +117,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->template('spots', array(
 								'spots' => $spotsTmp['list'],
 								'quicklinks' => $this->_settings->get('quicklinks'),
-								'filters' => $spotUserSystem->getFilterList($this->_currentSession['user']['userid'], 'filter'),
+								'filters' => $svcUserFilter->getFilterList($this->_currentSession['user']['userid'], 'filter'),
 		                        'nextPage' => $nextPage,
 								'prevPage' => $prevPage,
 								'parsedsearch' => $parsedSearch,

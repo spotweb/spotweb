@@ -32,7 +32,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		} # else
 
 		# Instantiate the user system which does the actually heavy lifting
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
 		if ((!empty($formAction)) && (!$result->isError())) {
 			$result->setResult('success');
@@ -42,7 +42,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 
 			switch($formAction) {
 				case 'addspotterid'		: {
-					$result->mergeResult($spotUserSystem->addSpotterToList($this->_currentSession['user'], 
+					$result->mergeResult($svcUserRecord->addSpotterToList($this->_currentSession['user'], 
 													  $blackList['spotterid'], 
 													  $blackList['origin'], 
 													  $blackList['idtype']));
@@ -51,7 +51,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 				} # case addspotterid
 				
 				case 'removespotterid'	: {
-					$result->mergeResult($spotUserSystem->removeSpotterFromList($this->_currentSession['user'], 
+					$result->mergeResult($svcUserRecord->removeSpotterFromList($this->_currentSession['user'], 
 														   $blackList['spotterid']));
 
 					break;

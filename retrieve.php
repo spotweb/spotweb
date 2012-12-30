@@ -42,7 +42,8 @@ try {
 	 * When retrieval is run from the webinterface, we want to make
 	 * sure this user is actually allowed to run retrieval.
 	 */
-	$spotUserSystem = new SpotUserSystem($daoFactory, $settings);
+	$svcUserRecord = new Services_User_Record($daoFactory, $settings);
+	$svcUserAuth = new Services_User_Authentication($daoFactory, $settings);
 	if (!SpotCommandline::isCommandline()) {
 		/*
 		 * An API key is required, so request it and try to
@@ -50,7 +51,7 @@ try {
 		 * the user with
 		 */
 		$apiKey = $req->getDef('apikey', '');
-		$userSession = $spotUserSystem->verifyApi($apiKey);
+		$userSession = $svcUserAuth->verifyApi($apiKey);
 
 		/*
 		 * If the session failed or the the user doesn't have access
@@ -63,7 +64,7 @@ try {
 		# Add the user's ip addres, we need it for sending notifications
 		$userSession['session'] = array('ipaddr' => '');
 	} else {
-		$userSession['user'] = $spotUserSystem->getUser(SPOTWEB_ADMIN_USERID);
+		$userSession['user'] = $svcUserRecord->getUser(SPOTWEB_ADMIN_USERID);
 		$userSession['security'] = new SpotSecurity($daoFactory->getUserDao(),
 													$daoFactory->getAuditDao(),
 													$settings, 

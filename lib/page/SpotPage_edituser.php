@@ -20,14 +20,14 @@ class SpotPage_edituser extends SpotPage_Abs {
 		} # if
 		
 		# Instantiate the spotuser object
-		$spotUserSystem = new SpotUserSystem($this->_daoFactory, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
 		# and create a nice and shiny page title
 		$this->_pageTitle = "spot: edit user";
 		
 		# get the users' group membership
-		$spotUser = $spotUserSystem->getUser($this->_userIdToEdit);
-		$groupMembership = $spotUserSystem->getUserGroupMemberShip($this->_userIdToEdit);
+		$spotUser = $svcUserRecord->getUser($this->_userIdToEdit);
+		$groupMembership = $svcUserRecord->getUserGroupMemberShip($this->_userIdToEdit);
 
 		/* 
 		 * bring the forms' action into the local scope for 
@@ -40,7 +40,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 			switch($formAction) {
 				case 'delete' : {
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
-					$result = $spotUserSystem->removeUser($this->_userIdToEdit);
+					$result = $svcUserRecord->removeUser($this->_userIdToEdit);
 
 					break;
 				} # case delete
@@ -58,21 +58,21 @@ class SpotPage_edituser extends SpotPage_Abs {
 					} # if
 
 					$this->_editUserForm['userid'] = $this->_userIdToEdit;
-					$result = $spotUserSystem->updateUserRecord($this->_editUserForm, 
+					$result = $svcUserRecord->updateUserRecord($this->_editUserForm, 
 													$groupList, 
 													$this->_spotSec->allowed(SpotSecurity::spotsec_edit_groupmembership, ''));
 					break;
 				} # case 'edit' 
 				
 				case 'removeallsessions' : {
-					$result = $spotUserSystem->removeAllUserSessions($spotUser['userid']);
+					$result = $svcUserRecord->removeAllUserSessions($spotUser['userid']);
 					break;
 				} # case 'removeallsessions'
 
 				case 'resetuserapi' : {
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');
 
-					$result = $spotUserSystem->resetUserApi($spotUser);
+					$result = $svcUserRecord->resetUserApi($spotUser);
 					break;
 				} # case resetuserapi
 			} # switch
