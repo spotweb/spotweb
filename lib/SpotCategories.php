@@ -121,7 +121,7 @@ class SpotCategories {
 					  3 => array("Retail", array("z0", "z1", "z2", "z3"), array("z0", "z1", "z2", "z3")),
 					  4 => array("TV", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
 					  5 => array("", array(), array()),
-					  6 => array("Satelite", array(), array("z0", "z1", "z3")),
+					  6 => array("Satellite", array(), array("z0", "z1", "z3")),
 					  7 => array("R5", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
 					  8 => array("Telecine", array(), array("z0", "z1", "z3")),
 					  9 => array("Telesync", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
@@ -387,9 +387,9 @@ class SpotCategories {
 					  19 => array("Firewalls", array(), array("zz")),
 					  20 => array("Antivirus software", array(), array("zz")),
 					  21 => array("Antispyware software", array(), array("zz")),
-					  22 => array("Optimalisatiesoftware", array(), array("zz")),
-					  23 => array("Beveiligingssoftware", array("zz"), array("zz")),
-					  24 => array("Systeemsoftware", array("zz"), array("zz")),
+					  22 => array("Optimization software", array(), array("zz")),
+					  23 => array("Security software", array("zz"), array("zz")),
+					  24 => array("System software", array("zz"), array("zz")),
 					  25 => array("Other", array(), array("zz")),
 					  26 => array("Educational", array("zz"), array("zz")),
 					  27 => array("Office", array("zz"), array("zz")),
@@ -398,7 +398,7 @@ class SpotCategories {
 					  30 => array("Development", array("zz"), array("zz")),
 					  31 => array("Spotnet", array("zz"), array("zz"))),
 				  'z' =>
-				Array('z' => "alles")
+				Array('z' => "everything")
 			)
 		);
 
