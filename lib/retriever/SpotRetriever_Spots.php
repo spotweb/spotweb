@@ -211,11 +211,11 @@ class SpotRetriever_Spots extends SpotRetriever_Abs {
 					if ($spot['keyid'] == 2) {
 						$this->debug('foreach-loop, spot is a moderation spot');
 
-						$commandAr = explode(' ', strtolower($spot['title']));
+						$commandAr = explode(' ', $spot['title']);
 						$validCommands = array('delete', 'dispose', 'remove');
 
 						# is this one of the defined valid commands?
-						if (in_array($commandAr[0], $validCommands) !== false) {
+						if (in_array(strtolower($commandAr[0]), $validCommands) !== false) {
 							$moderationList[$commandAr[1]] = 1;
 							$modCount++;
 						} # if
