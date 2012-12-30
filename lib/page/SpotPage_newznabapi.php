@@ -132,12 +132,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			/* Extract the release date from the IMDB info page */
 			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb['content'], $movieReleaseDate);
 
-			$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" +" . $movieReleaseDate[1];
+			$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
 
 			// imdb sometimes returns the title translated, if so, pass the original title as well
 			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" +" . $movieReleaseDate[1];
+				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
 			} // if
 
 		} elseif (!empty($this->_params['q'])) {
