@@ -13,7 +13,7 @@ define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_
  * Spotweb bootstrapping code.
  * 
  */
-public class Bootstrap {
+class Bootstrap {
 	static private $_dbSettings = null;
 
 	/*

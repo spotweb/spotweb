@@ -7,7 +7,8 @@ class Services_User_Authentication {
 	private $_settings;
 
 	public function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
-		$This->_daoFactory = $daoFactory;
+		$this->_daoFactory = $daoFactory;
+		$this->_settings = $settings;
 
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_sessionDao = $daoFactory->getSessionDao();
@@ -238,7 +239,7 @@ class Services_User_Authentication {
 		
 		# The session is valid, let's update the hit counter and retrieve the user
 		$this->_sessionDao->hitSession($sessionParts[0]);
-		$userRecord = $this->getUser($sessionValid['userid']);
+		$userRecord = $this->_userDao->getUser($sessionValid['userid']);
 		
 		/*
 		 * If the user could not be found, the session wasn't valid after all

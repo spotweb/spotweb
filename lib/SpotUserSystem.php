@@ -1158,7 +1158,7 @@ class SpotUserSystem {
 			$filter['sorton'] = '';
 			$filter['sortorder'] = '';
 			$filter['tree'] = '';
-			$filter['enablenotify'] = (boolean) $filterItem->enablenotify;
+			$filter['enablenotify'] = (string) $filterItem->enablenotify;
 			$filter['children'] = array();
 
 			/*

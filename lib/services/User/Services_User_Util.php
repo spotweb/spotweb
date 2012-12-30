@@ -1,8 +1,6 @@
 <?php
 
-static class Services_User_Util {
-	
-	
+class Services_User_Util {
 	/*
 	 * Password to hash. Duplicated in SpotUserUpgrader
 	 * but we cannot rely on this class always being available

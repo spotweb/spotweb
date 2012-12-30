@@ -21,11 +21,11 @@ try {
 
 	# Retrieve the users object of the user which is logged on
 	SpotTiming::start('auth');
-	$spotUserSystem = new SpotUserSystem($daoFactory, $settings);
+	$svcUserAuth = new Services_User_Authentication($daoFactory, $settings);
 	if ($req->doesExist('apikey')) {
-		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
+		$currentSession = $svcUserAuth->verifyApi($req->getDef('apikey', ''));
 	} else {
-		$currentSession = $spotUserSystem->useOrStartSession(false);
+		$currentSession = $svcUserAuth->useOrStartSession(false);
 	} # if
 
 	/*
@@ -34,7 +34,7 @@ try {
 	 */
 	if ($currentSession === false) {
 		if ($req->doesExist('apikey')) {
-			$currentSession = $spotUserSystem->useOrStartSession(true);
+			$currentSession = $svcUserAuth->useOrStartSession(true);
 			
 			throw new PermissionDeniedException(SpotSecurity::spotsec_consume_api, 'invalid API key');
 		} else {
@@ -84,7 +84,7 @@ try {
 	switch($page) {
 		case 'render' : {
 				$page = new SpotPage_render($daoFactory, $settings, $currentSession, $req->getDef('tplname', ''),
-							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+							Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -139,7 +139,7 @@ try {
 									$daoFactory, 
 									$settings, 
 									$currentSession,
-									Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+									Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
 									      'subcatz' => $req->getDef('subcatz', '*'),
 										  'category' => $req->getDef('category', '*'),
 										  'rendertype' => $req->getDef('rendertype', 'tree'),
@@ -187,7 +187,7 @@ try {
 
 		case 'rss' : {
 			$page = new SpotPage_rss($daoFactory, $settings, $currentSession,
-					Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+					Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
 						  'sortdir' => $req->getDef('sortdir', ''),
@@ -345,6 +345,7 @@ try {
 							Array('messageid' => $req->getDef('messageid', ''),
 								  'image' => array('type' => 'speeddial')));
 				} else {
+					$spotUserSystem = new SpotUserSystem($daoFactory, $settings);
 					$page = new SpotPage_index($daoFactory, $settings, $currentSession,
 							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
 								  'pagenr' => $req->getDef('pagenr', 0),
