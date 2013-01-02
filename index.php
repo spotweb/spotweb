@@ -83,8 +83,9 @@ try {
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
-				$page = new SpotPage_render($daoFactory, $settings, $currentSession, $req->getDef('tplname', ''),
-							Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
+                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+    			$page = new SpotPage_render($daoFactory, $settings, $currentSession, $req->getDef('tplname', ''),
+							Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),

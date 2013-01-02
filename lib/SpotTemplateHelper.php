@@ -79,6 +79,14 @@ class SpotTemplateHelper {
 		return $svcProvComments->fetchSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length);
 	} # getSpotComments
 
+    function getFullSpot($messageId) {
+        # and actually retrieve the spot
+        $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
+        $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $messageId, true);
+
+        return $fullSpot;
+    } # getFullSpot
+
 	/*
 	 * Validates wether we can connect to a usenet server succesfully
 	 */
