@@ -1,5 +1,5 @@
 <?php
-require_once "Crypt/RSA.php";
+require_once "vendor/phpseclib/Crypt/RSA.php";
 
 abstract class Services_Signing_Base {
 

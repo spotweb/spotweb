@@ -53,8 +53,8 @@ function __autoload($class_name) {
 			break;
 		} # net
 		case 'Math'			: {
-			if ($class_name == 'Math_BigInteger') {
-				require_once "Math/BigInteger.php";
+			if ($class_name == 'Vendor/phpseclib/Math/Math_BigInteger') {
+				require_once "Vendor/phpseclib/Math/BigInteger.php";
 			} # if
 			
 			break;
