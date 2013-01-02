@@ -123,7 +123,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 		
 		$reportSpam = '';
-		if ($show_spamreports && $spot['reportcount'] >= $minimum_spamreports && $spot['reportcount'] > 0) {
+		if ($show_spamreports && $spot['reportcount'] >= $minimum_spamreports) {
 			if($spot['reportcount'] == 1) {
 				$reportSpamClass = ' grey';
 			} elseif ($spot['reportcount'] >= 2 && $spot['reportcount'] < 4) {
