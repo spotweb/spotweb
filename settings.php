@@ -196,15 +196,4 @@ if (!empty($settings['db'])) {
 		throw new InvalidOwnSettingsSettingException("You need to remove the database settings from your ownsettings.php file and open install.php from your webbrowser. If you are upgrading, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
 } # if
 
-/*
- * Allow database settings to be entered in dbsettings.inc.php
- */
-@include "dbsettings.inc.php";
-if (empty($dbsettings)) {
-		throw new InvalidOwnSettingsSettingException("No databasesettings have been entered, please use the 'install.php' wizard to install and configure Spotweb" . PHP_EOL . 
-									"If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
-} else {
-	$settings['db'] = $dbsettings;
-} # else
-
 if (file_exists('reallymyownsettings.php')) { include_once('reallymyownsettings.php'); }
