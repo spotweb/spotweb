@@ -179,7 +179,10 @@ class Services_Format_Parsing {
 		if (empty($tpl_spot['subcatz'])) {
 			$tpl_spot['subcatz'] = SpotCategories::createSubcatZ($tpl_spot['category'], $tpl_spot['subcata'] . $tpl_spot['subcatb'] . $tpl_spot['subcatd']);
 		} # if
-		
+
+        # map deprecated genre categories to their new genre category
+        $tpl_spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
+
 		# and return the parsed XML
 		return $tpl_spot;
 	} # parseFull()
@@ -312,6 +315,9 @@ class Services_Format_Parsing {
 		if (empty($spot['subcatz'])) {
 			$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
 		} # if
+
+        # map deprecated genre categories to their new genre category
+        $spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
 
 		if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 			# This is an old format to parse, instantiate the legacy parsing
