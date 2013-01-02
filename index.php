@@ -394,24 +394,24 @@ catch(InvalidOwnSettingsSettingException $x) {
 
 catch(OwnsettingsCreatedOutputException $x) {
 	echo "ownsettings.php or dbsettings.inc.php created output. Please make sure theese files do not contain a PHP closing tag ( ?> ) and no information before the PHP opening tag ( <?php )<br><br>" . PHP_EOL;
-	echo nl2br($x->getMessage());
+	echo nl2br($x->getMessage()). PHP_EOL;
 } # OwnsettingsCreatedOutputException
 
 catch(SchemaNotUpgradedException $x) {
-	echo "Database schema has been changed. Please run 'upgrade-db.php' from an console window";
+	echo "Database schema has been changed. Please run 'upgrade-db.php' from an console window". PHP_EOL;
 } # SchemaNotUpgradedException
 
 catch(SecurityNotUpgradedException $x) {
-	echo "Spotweb contains updated security settings. Please run 'upgrade-db.php' from a console window";
+	echo "Spotweb contains updated security settings. Please run 'upgrade-db.php' from a console window". PHP_EOL;
 } # SecurityNotUpgradedException
 
 catch(SettingsNotUpgradedException $x) {
-	echo "Spotweb contains updated global settings settings. Please run 'upgrade-db.php' from a console window";
+	echo "Spotweb contains updated global settings settings. Please run 'upgrade-db.php' from a console window". PHP_EOL;
 } # SecurityNotUpgradedException
 
 catch(DatabaseConnectionException $x) {
-	echo "Unable to connect to database:  <br>";
-	echo nl2br($x->getMessage()) . PHP_EOL . '<br>';
+	echo "Unable to connect to database:  <br>". PHP_EOL;
+	echo nl2br($x->getMessage()) . PHP_EOL . '<br>'. PHP_EOL;
 	echo "<br><br>Please make sure your database server is up and running and your connection parameters are set<br>" . PHP_EOL;
 } # DatabaseConnectionException
 
@@ -420,7 +420,7 @@ catch(Exception $x) {
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
-	echo $x->getMessage();
+	echo $x->getMessage(). PHP_EOL;
 	
 	error_log('SpotWeb Exception occured: ' . $x->getMessage());
 } # catch
