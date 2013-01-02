@@ -351,7 +351,7 @@ function loadComments(messageid,perpage,pagenr) {
 
 function postReportForm() {
 	$("form.postreportform").submit(function(){ 
-		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
+		new SpotPosting().postReport(this,postReportUiStart,postReportUiDone);
 		return false;
 	});	
 }
@@ -484,7 +484,7 @@ function postCommentsForm() {
 	}
 
 	$("form.postcommentform").submit(function(){ 
-		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
+		new SpotPosting().postComment(this,postCommentUiStart,postCommentUiDone);
 		return false;
 	});	
 }
@@ -610,7 +610,7 @@ function initializeUserPreferencesScreen() {
 	$('#twitter_request_auth').click(function(){
 		$('#twitter_result').html(loading);
 		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
-			$('#twitter_result').html('<t><b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this.</t><br /><input type="text" name="twitter_pin" id="twitter_pin">');
+			$('#twitter_result').html('<t><b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this.</t><br /><input type="text" name="twitter_pin" id="twitter_pin" />');
 		});
 		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="<t>Validate PIN</t>">');
 	});

@@ -101,7 +101,7 @@ if (empty($editresult)) {
 			
 			<dt><label for="editsecgroupform[objectid]"><?php echo _('ObjectID (normally empty)'); ?></label></dt>
 			<dd>
-				<input type="text" name="editsecgroupform[objectid]" ></input>
+				<input type="text" name="editsecgroupform[objectid]" />
 			</dd>
 
 			<dd>

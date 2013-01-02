@@ -628,7 +628,7 @@ class Services_User_Record {
 	 */
 	function removePermFromSecGroup($groupId, $perm) {
 		$result = new Dto_FormResult();
-		$result = $this->allowedToEditGroup($groupId);
+		$result = $this->allowedToEditGroup($result, $groupId);
 
 		if ($result->isSuccess()) {
 			$this->_userDao->removePermFromSecGroup($groupId, $perm);
@@ -642,7 +642,7 @@ class Services_User_Record {
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
 		$result = new Dto_FormResult();
-		$result = $this->allowedToEditGroup($groupId);
+		$result = $this->allowedToEditGroup($result, $groupId);
 
 		if ($result->isSuccess()) {
 			$this->_userDao->setDenyForPermFromSecGroup($groupId, $perm);
@@ -695,7 +695,7 @@ class Services_User_Record {
 	 */
 	function setSecGroup($groupId, $groupName) {
 		$result = new Dto_FormResult();
-		$result = $this->allowedToEditGroup($groupId);
+		$result = $this->allowedToEditGroup($result, $groupId);
 
 		$group = array('name' => trim($groupName));
 		$result = $this->validateSecGroup($group);

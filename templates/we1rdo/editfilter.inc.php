@@ -46,15 +46,15 @@ if (empty($editresult)) {
 			<input type="hidden" name="filterid" value="<?php echo (int) $filter['id']; ?>">
 <?php } else {  ?>
 			<input type="hidden" name="filterid" value="9999">
-			<input type="hidden" name="editfilterform[tree]" value="<?php echo (isset($search['tree']) ? htmlspecialchars($search['tree'], ENT_QUOTES, "UTF-8") : ""); ?>"></input>
-			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo htmlspecialchars(implode('&', array_map('urlencode', (isset($search['value']) ?$search['value'] : array()) )), ENT_QUOTES, "UTF-8"); ?>"></input>
-			<input type="hidden" name="editfilterform[sorton]" value="<?php echo htmlspecialchars($sortby, ENT_QUOTES, "UTF-8"); ?>"></input>
-			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir, ENT_QUOTES, "UTF-8"); ?>"></input>
+			<input type="hidden" name="editfilterform[tree]" value="<?php echo (isset($search['tree']) ? htmlspecialchars($search['tree'], ENT_QUOTES, "UTF-8") : ""); ?>" />
+			<input type="hidden" name="editfilterform[valuelist]" value="<?php echo htmlspecialchars(implode('&', array_map('urlencode', (isset($search['value']) ?$search['value'] : array()) )), ENT_QUOTES, "UTF-8"); ?>" />
+			<input type="hidden" name="editfilterform[sorton]" value="<?php echo htmlspecialchars($sortby, ENT_QUOTES, "UTF-8"); ?>" />
+			<input type="hidden" name="editfilterform[sortorder]" value="<?php echo htmlspecialchars($sortdir, ENT_QUOTES, "UTF-8"); ?>" />
 <?php } ?>
 			
 			<dt><label for="editfilterform[title]"><?php echo _('Name'); ?></label></dt>
 			<dd>
-				<input type="text" name="editfilterform[title]" value="<?php echo htmlspecialchars($filter['title']); ?>"></input>
+				<input type="text" name="editfilterform[title]" value="<?php echo htmlspecialchars($filter['title']); ?>" />
 			</dd>
 
 			<dt><label for="editfilterform[icon]"><?php echo _('Icon'); ?></label></dt>
@@ -70,7 +70,7 @@ if (empty($editresult)) {
 
 			<dt><label for="editfilterform[enablenotify]"><?php echo _('Notify me when this filter has new spots?'); ?></label></dt>
 			<dd>
-				<input type="checkbox" name="editfilterform[enablenotify]" <?php if ((isset($filter['enablenotify'])) && ($filter['enablenotify'])) { echo 'checked="checked" '; } ?>></input>
+				<input type="checkbox" name="editfilterform[enablenotify]" <?php if ((isset($filter['enablenotify'])) && ($filter['enablenotify'])) { echo 'checked="checked" '; } ?> />
 			</dd>
 			
 			<dd>

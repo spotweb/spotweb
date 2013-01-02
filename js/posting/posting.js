@@ -1,4 +1,4 @@
-function spotPosting() {
+function SpotPosting() {
 	this.commentForm = null;
 	this.reportForm = null;
 	this.uiStart = null;

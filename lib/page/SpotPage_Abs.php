@@ -109,7 +109,7 @@ abstract class SpotPage_Abs {
 	} # template
 	
 	/*
-	 * Actually render the page, must be overriden by the specific implementation
+	 * Actually render the page, must be overridden by the specific implementation
 	 */
 	abstract function render();
 	

@@ -38,7 +38,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 			$report = array_merge($report, $this->_reportForm);
 
 			# can we report this spot as spam?
-			$svcPostReport = new Services_Posting_Report(new Services_User_Record($this->_daoFactory, $this->_settings), $this->_settings);
+			$svcPostReport = new Services_Posting_Report($this->_daoFactory, $this->_settings);
 			$result = $svcPostReport->postSpamReport($this->_currentSession['user'], $report);
 			
 			if ($result->isSuccess()) {

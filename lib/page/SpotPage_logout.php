@@ -20,7 +20,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		if ($svcUserAuth->removeSession($this->_currentSession['session']['sessionid'])) {
 			$result->setResult('success');
 		} else {
-			$result->addError(_('Unable to remove session');
+			$result->addError(_('Unable to remove session'));
 		} # else
 
 		$this->render('logout', array('result' => $result));

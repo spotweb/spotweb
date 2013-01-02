@@ -41,8 +41,8 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# Check users' permissions
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
 
-			$svcCommentImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
-			$data = $svcCommentImage->fetchGravatarImage($this->_image);
+            $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
+			$data = $providerSpotImage ->fetchGravatarImage($this->_image);
 		} else {
 			# init
 			$svc_nntphdr_engine = new Services_Nntp_Engine($settings_nntp_hdr);

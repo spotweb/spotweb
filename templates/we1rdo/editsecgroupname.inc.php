@@ -27,7 +27,7 @@
 			
 			<dt><label for="editsecgroupform[name]"><?php echo _('Name'); ?></label></dt>
 			<dd>
-				<input type="text" name="editsecgroupform[name]" value="<?php echo htmlspecialchars($securitygroup['name']); ?>"></input>
+				<input type="text" name="editsecgroupform[name]" value="<?php echo htmlspecialchars($securitygroup['name']); ?>" />
 			</dd>
 			
 			<dd>

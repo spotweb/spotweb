@@ -74,8 +74,8 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	public function hasApiSupport()
 	{
 		$api = "getStatus,pauseQueue,resumeQueue,setSpeedLimit,moveDown,moveUp"
-			+ ",moveTop,moveBottom,setCategory,setPriority,delete,rename"
-			+ ",pause,resume,getVersion";
+			. ",moveTop,moveBottom,setCategory,setPriority,delete,rename"
+			. ",pause,resume,getVersion";
 		
 		return $api;
 	} # hasApiSupport

@@ -19,12 +19,12 @@ class SpotNotifications {
 	const notifytype_user_added			= 'user_added';
 	const notifytype_newspots_for_filter		= 'newspots_for_filter';
 
-	function __construct(SpotDb $db, Services_Settings_Base $settings, array $currentSession) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession) {
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];
-		$this->_notificationTemplate = new SpotNotificationTemplate($this->_db, $this->_settings, $this->_currentSession);
+		$this->_notificationTemplate = new SpotNotificationTemplate($this->_daoFactory, $this->_settings, $this->_currentSession);
 	} # ctor
 
 	

@@ -43,7 +43,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 			# Make sure we use valid forms
 			$comment = array_merge($comment, $this->_commentForm);
 
-			# valiate whether we can post comments, if so, do this
+			# validate whether we can post comments, if so, do this
 			$svcPostComment = new Services_Posting_Comment($this->_daoFactory, $this->_settings);
 			$result = $svcPostComment->postComment($svcUserRecord, $this->_currentSession['user'], $comment);
 			
