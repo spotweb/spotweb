@@ -314,7 +314,7 @@ class SpotTemplateHelper {
 	 */
 	function allowedToPost() {
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
-		return $spotUsersvcUserRecord->allowedToPost($this->_currentSession['user']);	
+		return $svcUserRecord ->allowedToPost($this->_currentSession['user']);
 	} # allowedToPost
 	
 	/*
