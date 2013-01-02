@@ -205,7 +205,7 @@ try {
 
 			echo "Starting to create statistics " . PHP_EOL;
 			$svcPrv_Stats->createAllStatistics();
-			echo "Finished creating statistics " . $limitName . PHP_EOL;
+			echo "Finished creating statistics " . PHP_EOL;
 			echo PHP_EOL;
 		} else {
 			echo "GD extension not loaded, not creating statistics" . PHP_EOL;
