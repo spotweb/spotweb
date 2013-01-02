@@ -358,7 +358,7 @@ try {
 				} # if
 				SpotTiming::stop('renderpage->case-default');
 				$page->render();
-				break;
+                break;
 		} # default
 	} # switch
 	SpotTiming::stop('renderpage');

@@ -45,7 +45,7 @@ class SpotPage_index extends SpotPage_Abs {
 		 * We get a bunch of query parameters, so now change this to the actual
 		 * search query the user requested including the required sorting
 		 */		
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 
 		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
 		$parsedSearch = $svcSearchQp->filterToQuery(
