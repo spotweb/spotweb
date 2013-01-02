@@ -202,11 +202,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					 * Special moderator commands always have keyid 2
 					 */
 					if ($spot['keyid'] == 2) {
-						$commandAr = explode(' ', strtolower($spot['title']));
+						$commandAr = explode(' ', $spot['title']);
 						$validCommands = array('delete', 'dispose', 'remove');
 
 						# is this one of the defined valid commands?
-						if (in_array($commandAr[0], $validCommands) !== false) {
+						if (in_array(strtolower($commandAr[0]), $validCommands) !== false) {
 							$moderationList[] = $commandAr[1];
 							$modCount++;
 						} # if
