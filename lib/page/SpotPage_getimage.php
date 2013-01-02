@@ -57,7 +57,9 @@ class SpotPage_getimage extends SpotPage_Abs {
 			/*
 			 * Retrieve the full spot, we need it to be able to retrieve the image
 			 */
-			$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, false);
+            # and actually retrieve the spot
+            $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
+            $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $this->_messageid, false);
 
 			/*
 			 * Actually retrieve the image 
