@@ -15,26 +15,29 @@
  * ?>
  * </code>
  *
- * LICENSE: This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA  02111-1307  USA
+ * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  * @category   Crypt
  * @package    Crypt_Random
  * @author     Jim Wigginton <terrafrost@php.net>
  * @copyright  MMVII Jim Wigginton
- * @license    http://www.gnu.org/licenses/lgpl.txt
+ * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
  * @link       http://phpseclib.sourceforge.net
  */
@@ -60,15 +63,25 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
         return $min;
     }
 
-    // see http://en.wikipedia.org/wiki//dev/random
-    // if open_basedir is enabled file_exists() will ouput an "open_basedir restriction in effect" warning,
-    // so we suppress it.
-    if (@file_exists('/dev/urandom')) {
-        static $fp;
-        if (!$fp) {
-            $fp = fopen('/dev/urandom', 'rb');
+    if (function_exists('openssl_random_pseudo_bytes')) {
+        // openssl_random_pseudo_bytes() is slow on windows per the following:
+        // http://stackoverflow.com/questions/1940168/openssl-random-pseudo-bytes-is-slow-php
+        if ((PHP_OS & "\xDF\xDF\xDF") !== 'WIN') { // PHP_OS & "\xDF\xDF\xDF" == strtoupper(substr(PHP_OS, 0, 3)), but a lot faster
+            extract(unpack('Nrandom', openssl_random_pseudo_bytes(4)));
+
+            return abs($random) % ($max - $min) + $min; 
         }
-        extract(unpack('Nrandom', fread($fp, 4)));
+    }
+
+    // see http://en.wikipedia.org/wiki//dev/random
+    static $urandom = true;
+    if ($urandom === true) {
+        // Warning's will be output unles the error suppression operator is used.  Errors such as
+        // "open_basedir restriction in effect", "Permission denied", "No such file or directory", etc.
+        $urandom = @fopen('/dev/urandom', 'rb');
+    }
+    if (!is_bool($urandom)) {
+        extract(unpack('Nrandom', fread($urandom, 4)));
 
         // say $min = 0 and $max = 3.  if we didn't do abs() then we could have stuff like this:
         // -4 % 3 + 0 = -1, even though -1 < $min
@@ -82,7 +95,7 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
 
        The seeding routine is pretty much ripped from PHP's own internal GENERATE_SEED() macro:
 
-       http://svn.php.net/viewvc/php/php-src/branches/PHP_5_3_2/ext/standard/php_rand.h?view=markup */
+       http://svn.php.net/viewvc/php/php-src/tags/php_5_3_2/ext/standard/php_rand.h?view=markup */
     if (version_compare(PHP_VERSION, '5.2.5', '<=')) { 
         static $seeded;
         if (!isset($seeded)) {
@@ -127,4 +140,3 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
     extract(unpack('Nrandom', $crypto->encrypt("\0\0\0\0")));
     return abs($random) % ($max - $min) + $min;
 }
-?>
