@@ -1,7 +1,4 @@
 <?php
-define('SPOTWEB_ANONYMOUS_USERID', 1);
-define('SPOTWEB_ADMIN_USERID', 2);
-
 class Services_User_Record {
 	private $_sessionDao;
 	private $_userDao;

@@ -10,6 +10,14 @@ define('SPOTDB_SCHEMA_VERSION', '0.58');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 
 /*
+ * Define several constants regarding "fixed"
+ * userids, used by Spotweb.
+ */
+define('SPOTWEB_ANONYMOUS_USERID', 1);
+define('SPOTWEB_ADMIN_USERID', 2);
+
+
+/*
  * Spotweb bootstrapping code.
  * 
  */
