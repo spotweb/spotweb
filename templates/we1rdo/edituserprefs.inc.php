@@ -178,6 +178,22 @@ if (!$dialogembedded) { ?>
 
 					<dt><label for="edituserprefsform[show_reportcount]"><?php echo _('Show number of spamreports in spotoverview?'); ?></label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_reportcount]" <?php if ($edituserprefsform['show_reportcount']) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="edituserprefsform[minimum_reportcount]"><?php echo _('Minimum number of spamreports before showing spamreports icon?'); ?></label></dt>
+					<dd>
+						<select name="edituserprefsform[minimum_reportcount]">
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 1) { echo 'selected="selected"'; } ?> value="1">1</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 2) { echo 'selected="selected"'; } ?> value="2">2</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 3) { echo 'selected="selected"'; } ?> value="3">3</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 4) { echo 'selected="selected"'; } ?> value="4">4</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 5) { echo 'selected="selected"'; } ?> value="5">5</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 6) { echo 'selected="selected"'; } ?> value="6">6</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 7) { echo 'selected="selected"'; } ?> value="7">7</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 8) { echo 'selected="selected"'; } ?> value="8">8</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 9) { echo 'selected="selected"'; } ?> value="9">9</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 10) { echo 'selected="selected"'; } ?> value="10">10</option>
+						</select>
+					</dd>					
 					
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) { ?>
 					<dt><label for="edituserprefsform[show_nzbbutton]"><?php echo _('Show NZB button to download file with this browser?'); ?></label></dt>
