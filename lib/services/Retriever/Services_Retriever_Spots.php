@@ -191,7 +191,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
-					 * When a parse error occured, we ignore the spot, also unverified
+					 * When a parse error occurred, we ignore the spot, also unverified
 					 * spots are ignored
 					 */
 					if (($spot === false) || (!$spot['verified'])){
