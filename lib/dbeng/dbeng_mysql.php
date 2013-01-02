@@ -11,8 +11,9 @@ class dbeng_mysql extends dbeng_abs {
 		 */
 		$this->_batchInsertChunks = 100;
 	}
-	
-	function connect($host, $user, $pass, $db) {
+
+    /** @noinspection PhpInconsistentReturnPointsInspection */
+    function connect($host, $user, $pass, $db) {
 		$this->_conn = mysql_connect($host, $user, $pass);
 		
 		if (!$this->_conn) {
@@ -22,11 +23,12 @@ class dbeng_mysql extends dbeng_abs {
 				
 		if (!@mysql_select_db($db, $this->_conn)) {
 			throw new DatabaseConnectionException("Unable to select MySQL db: " . mysql_error($this->_conn));
-			return false;
 		} # if
 		
 		# Set that we will be talking in utf8
 		$this->rawExec("SET NAMES utf8;"); # mysql_set_charset is not compatible with older PHP versions
+
+        return true;
     } # connect()
 		
 	function safe($s) {

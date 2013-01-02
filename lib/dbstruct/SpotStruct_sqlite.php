@@ -80,6 +80,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 				return false;
 			} # if
 		} # foreach
+
+        return true;
 	} # ftsExists
 			
 	/* creates a full text index */

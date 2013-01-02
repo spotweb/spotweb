@@ -40,6 +40,7 @@ function __autoload($class_name) {
 			$tpl_name = substr($class_name, strlen('SpotTemplateHelper_'));
 
 			require_once "templates/" . strtolower($tpl_name) . "/" . "SpotTemplateHelper_" . ucfirst($tpl_name) . ".php";
+            break;
 		} # SpotTemplateHelper
 		case 'Net'			: { 
 			$class_name = substr($class_name, 4);

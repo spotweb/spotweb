@@ -77,10 +77,7 @@
 		var frmname='';
 		function checkedAll(frmname) {
 			var valus= document.getElementById(frmname);
-			if (checked==false) { 
-				checked=true;
-			} else { 
-				checked = false; }
+            checked = !checked;
 			for (var i =0; i < valus.elements.length; i++) {
 				valus.elements[i].checked=checked;
 			}

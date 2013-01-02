@@ -2,8 +2,6 @@
 class dbeng_pdo_pgsql extends dbeng_pdo {
 	protected $_conn;
 
-    private $_rows = 0;
-
 	function __construct() {
 		/* 
 		 * arbitrarily chosen because some insert statements might

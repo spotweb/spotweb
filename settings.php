@@ -89,7 +89,6 @@ $settings['sabnzbd']['categories'] = Array(
 		2	=> Array('default'	=> 'games'),
 		3	=> Array('default'	=> 'apps',
 					 'a3'		=> 'consoles',
-					 'a3'		=> 'consoles',
 					 'a4'		=> 'consoles',
 					 'a5'		=> 'consoles',
 					 'a6'		=> 'consoles',

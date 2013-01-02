@@ -43,8 +43,8 @@ class Services_User_Filters {
 	 *   * Parent
 	 */
 	function changeFilter($userId, $filterForm) {
-		$filter = $this->getFilter($userId, $filterForm['filterid']);
-		return $this->_daoFactory->getUserFilterDao()->updateFilter($userId, $filterForm);
+		$filter = array_merge($filterForm, $this->getFilter($userId, $filterForm['filterid']));
+		return $this->_daoFactory->getUserFilterDao()->updateFilter($userId, $filter);
 	} # changeFilter
 
 
@@ -335,7 +335,6 @@ class Services_User_Filters {
 	 */
 	public function xmlToFilters($xmlStr) {
 		$filterList = array();
-		$idMapping = array();
 
 		/*
 		 * Parse the XML file
@@ -387,8 +386,6 @@ class Services_User_Filters {
 			 */
 			$filterValues = array();
 			foreach($filterItem->xpath('values/item') as $valueItem) {
-				$value = array();
-
 				$filterValues[] = urlencode(
 								   (string) $valueItem->fieldname . 
 									':' . 

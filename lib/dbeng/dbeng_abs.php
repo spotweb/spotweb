@@ -2,8 +2,6 @@
 
 abstract class dbeng_abs {
 	protected $_batchInsertChunks = 500;
-	private $_error	= '';
-
 
 	/*
 	 * Factory class which instantiates the specified DAO factory object

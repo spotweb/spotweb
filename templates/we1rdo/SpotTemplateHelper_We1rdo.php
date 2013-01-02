@@ -39,6 +39,8 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 		} elseif (stripos($s, 'cat3') !== false) {
 			return "red";
 		} # else
+
+        return "N/A";
 	} # filter2cat
 
 	function getFilterIcons() {

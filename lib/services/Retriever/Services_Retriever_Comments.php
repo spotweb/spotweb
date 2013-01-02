@@ -208,7 +208,6 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					} # if
 					
 					if ($this->_retrieveFull) {
-						$fullComment = array();
 						try {
 							$fullComment = $this->_svcNntpTextReading->readComments(array(array('messageid' => $commentId)));
 							

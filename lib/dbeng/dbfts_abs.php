@@ -35,7 +35,8 @@ abstract class dbfts_abs {
 		throw new NotImplementedException("createTextQuery() is running unoptimized while it shouldnt. Please report to the author");
 		
 		# Initialize some basic variables so our return statements are simple
-		$filterValueSql = array();
+        /** @noinspection PhpUnreachableStatementInspection */
+        $filterValueSql = array();
 
 		foreach($searchFields as $searchItem) {
 			$searchValue = trim($searchItem['value']);

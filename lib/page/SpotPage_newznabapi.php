@@ -582,7 +582,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # caps
 
 	function Cat2NewznabCat($hcat, $cat) {
-		$result = "-";
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
 		$nr = substr($cat, 1);
@@ -593,6 +592,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			switch ($cat[0]) {
 				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
+
+                default     : throw new Exception("Invalid parameter / category for newznab API");
 			} # switch
 		} # if
 	} # Cat2NewznabCat
@@ -713,6 +714,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
 
 			case 7020: return 'cat0_z2';
+
+            default     : throw new Exception("Invalid nabcat for newznab API");
 		}
 	} # nabcat2spotcat
 

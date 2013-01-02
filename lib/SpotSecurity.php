@@ -6,7 +6,7 @@ class SpotSecurity {
 	private $_permissions;
 	private $_settings;
 	private $_failAudit;
-	private $_AllAudit;
+	private $_allAudit;
 	
 	/*
 	 * The security system has several rights which are defined with zero or more parameters.

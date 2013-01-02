@@ -7,7 +7,6 @@ class Services_Nntp_Engine {
 		private $_serverenc;
 		private $_serverport;
 		
-		private $_error;
 		private $_nntp;
 		private $_connected;
 		private $_currentgroup;

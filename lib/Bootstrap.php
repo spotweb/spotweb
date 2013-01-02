@@ -22,8 +22,6 @@ define('SPOTWEB_ADMIN_USERID', 2);
  * 
  */
 class Bootstrap {
-	static private $_dbSettings = null;
-
 	/*
 	 * Boot up the Spotweb system
 	 */

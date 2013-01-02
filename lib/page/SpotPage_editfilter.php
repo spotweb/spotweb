@@ -115,6 +115,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					 * add it ourselves using the order of the elements we are given
 					 */
 					$result = $svcUserFilter->reorderFilters($this->_currentSession['user']['userid'], $this->_orderList);
+                    break;
 				} # case 'reorder' 
 				
 				case 'changefilter'	: {

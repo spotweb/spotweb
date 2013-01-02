@@ -1,13 +1,6 @@
 <?php
 class dbeng_pdo_mysql extends dbeng_pdo {
-	private $_db_host;
-	private $_db_user;
-	private $_db_pass;
-	private $_db_db;
-	
 	protected $_conn;
-
-    private $_rows = 0;
 
 	function __construct() {
     	/* 

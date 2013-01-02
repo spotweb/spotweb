@@ -9,7 +9,7 @@ $.address.init(function() {
 				var currentSpot = $('table.spots tr.active');
 				if ((currentSpot) && (currentSpot.offset() != null)) {
 					if (currentSpot.offset().top > $(window).height()) {
-						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+						$(document).scrollTop(currentSpot.offset().top - 50);
 					} // if
 				} // if
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
@@ -174,7 +174,7 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 				dataType: "xml",
 				data: formdata,
 				success: function(xml) {
-					var $dialdiv = $("#"+divid)
+					var $dialdiv = $("#"+divid);
 					var result = $(xml).find('result').text();
 					
 					if ((result == 'success') && (successAction == 'autoclose')) {
@@ -214,7 +214,7 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 			}); // ajax call om de form te submitten
 			
 			return false; // standaard button submit supressen
-		} // buttonClick
+		}; // buttonClick
 	} // if not defined
 	
 	/*
@@ -247,7 +247,7 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 				// is, dus moeten we wat doen om dat duidelijk te krijgen.
 				//var $buttons = $("form." + formname + " input[type='submit']"); 
 				var $buttons = $("#" + divid + " input[type='submit']"); 
-				$buttons.click(buttonClick)
+				$buttons.click(buttonClick);
 
 				// Call the open callback
 				if (openCb) {
@@ -504,7 +504,7 @@ function loadSpotImage() {
 		$('a.postimage').css({
 			'width': $("img.spotinfoimage").width(),
 			'height': $("img.spotinfoimage").height()
-		})
+		});
 		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
 		detectScrollbar();
 	})
@@ -974,8 +974,7 @@ function userLogout() {
 // SabNZBd actions
 function sabBaseURL() {
 	var apikey = $("div.sabnzbdPanel input.apikey").val();
-	var sabBaseURL = createBaseURL()+'?page=nzbhandlerapi&nzbhandlerapikey='+apikey;
-	return sabBaseURL;
+	return createBaseURL()+'?page=nzbhandlerapi&nzbhandlerapikey='+apikey;
 }
 
 function sabActions(start,limit,action,slot) {
@@ -1581,7 +1580,7 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 function applyTipTip(){
 	var categories = $(this).data('cats');
 	if(!categories) return;
-	var $dl = $("<ul/>")
+	var $dl = $("<ul/>");
 	var list = $.map(categories, function(value, key){
 		if(value) {
 			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);

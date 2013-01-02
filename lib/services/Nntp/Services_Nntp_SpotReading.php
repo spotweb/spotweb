@@ -67,7 +67,7 @@ class Services_Nntp_SpotReading {
 		 */		
 		foreach($commentList as $comment) {
 			try {
-				$commentTpl = array('messageid' => '', 'fromhdr' => '', 'stamp' => 0, 'user-signature' => '', 
+				$commentTpl = array('fromhdr' => '', 'stamp' => 0, 'user-signature' => '',
 									'user-key' => '', 'spotterid' => '', 'verified' => false,
 									'user-avatar' => '', 'fullxml' => '', 'messageid' => $comment['messageid']);
 									

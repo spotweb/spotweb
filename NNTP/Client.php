@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,7 +61,7 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2011 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3Cï¿½ SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id: Client.php 306619 2010-12-24 12:16:07Z heino $
  * @link       http://pear.php.net/package/Net_NNTP
  * @see        
@@ -224,7 +224,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     {
         // Username is a must...
         if ($user == null) {
-            return $this->throwError('No username supplied', null);
+            $this->throwError('No username supplied', null);
         }
 
         return $this->cmdAuthinfo($user, $pass);
@@ -452,7 +452,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    $implode = false;
 
     	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
+    	        $this->throwError("Class '$class' does not exist!");
 	    }
     	}
 
@@ -508,7 +508,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    $implode = false;
 
     	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
+    	        $this->throwError("Class '$class' does not exist!");
 	    }
     	}
 
@@ -564,7 +564,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    $implode = false;
 
     	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
+    	        $this->throwError("Class '$class' does not exist!");
 	    }
     	}
 
@@ -623,7 +623,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	// Only accept $article if array or string
     	if (!is_array($article) && !is_string($article)) {
-    	    return $this->throwError('Ups', null, 0);
+    	    $this->throwError('Ups', null, 0);
     	}
 
     	// Check if server will receive an article
@@ -799,7 +799,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    case is_string($time):
     	    	$time = strtotime($time);
     	    	if ($time === false || ($time === -1 && version_compare(php_version(), '5.1.0', '<'))) {
-    	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
+    	    	    $this->throwError('$time could not be converted into a timestamp!', null, 0);
 		}
     	    	break;
     	    default:
@@ -851,7 +851,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	    // 
     	    if (!is_null($wildmat)) {
-    	    	return $this->throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
+    	    	$this->throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
     	    }
 	    
     	    // 
@@ -1506,4 +1506,4 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
  * End:
  */
 
-?>
+

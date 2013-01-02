@@ -39,7 +39,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		
 		/* Validate the selected category */
 		if (!isset(SpotCategories::$_head_categories[$category])) {
-			return '';
+			return;
 		} # if
 
 		$returnArray = array();

@@ -358,7 +358,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$this->_svcProvNzb>fetchNzb($fullSpot);
+								$this->_svcProvNzb->fetchNzb($fullSpot);
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if

@@ -16,7 +16,6 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_comment, '');
 							  
-		$result = new Dto_FormResult('notsubmitted');
 		$spotParseUtil = new Services_Format_Util();
 		$spotSigning = Services_Signing_Base::factory();
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
@@ -62,14 +61,12 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				$commentImage = $this->_tplHelper->makeCommenterImageUrl($comment);
 
 				/* and return the result to the system */
-				$result->addData('user' => $this->_currentSession['user']['username']);
-				$result->addData('spotterid' => $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']));
-				$result->addData('rating' => $comment['rating']);
-				$result->addData('body' => $tmpBody);
-				$result->addData('commentimage' => $commentImage);
-			} else {
-				$postResult = array('result' => 'failure');
-			} # else
+				$result->addData('user', $this->_currentSession['user']['username']);
+				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']));
+				$result->addData('rating', $comment['rating']);
+				$result->addData('body', $tmpBody);
+				$result->addData('commentimage', $commentImage);
+			} # if
 		} # if
 		
 		#- display stuff -#

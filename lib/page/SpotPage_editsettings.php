@@ -1,6 +1,6 @@
 <?php
 class SpotPage_editsettings extends SpotPage_Abs {
-	private $_editSettingsFrom;
+	private $_editSettingsForm;
 	
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);

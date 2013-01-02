@@ -161,7 +161,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__);
 
 		if (empty($tmpArray)) {
-			return ;
+			return null;
 		} # if
 
 		return $tmpArray[0];
@@ -208,7 +208,7 @@ class Dao_Base_Spot implements Dao_Spot {
 												JOIN spotsfull AS f ON f.messageid = s.messageid
 										  WHERE s.messageid = '%s'", Array($messageId));
 		if (empty($tmpArray)) {
-			return ;
+			return null;
 		} # if
 		$tmpArray = $tmpArray[0];
 

@@ -103,10 +103,11 @@ class Services_Providers_SpotImage {
 				/* 
 				 * and store the file in the cache
 				 */
-				$validImage = true;
-				$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'], 
-										array('content' => $imageString,
-											  'metadata' => $dimensions));
+				if ($validImage) {
+                    $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
+                                            array('content' => $imageString,
+                                                  'metadata' => $dimensions));
+                } # if
 			} else {
 				$validImage = false;
 				$return_code = 998;

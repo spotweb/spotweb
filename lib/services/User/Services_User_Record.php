@@ -656,7 +656,7 @@ class Services_User_Record {
 	 */
 	function addPermToSecGroup($groupId, $perm) {
 		$result = new Dto_FormResult();
-		$result = $this->allowedToEditGroup($groupId);
+		$result = $this->allowedToEditGroup($result, $groupId);
 
 		if (!$result->isSuccess()) {
 			return $result;
@@ -715,7 +715,7 @@ class Services_User_Record {
 		
 		/* Remove extra spaces from the groupname */
 		$group = array('name' => trim($groupName));
-		$result = $this->validateSecGroup($group);
+		$result = $this->validateSecGroup($result, $group);
 
 		if ($result->isSuccess()) {
 			$this->_userDao->addSecurityGroup($groupName);
@@ -758,7 +758,7 @@ class Services_User_Record {
 	 */
 	function removeSecGroup($groupId) {
 		$result = new Dto_FormResult();
-		$result = $this->allowedToEditGroup($groupId);
+		$result = $this->allowedToEditGroup($result, $groupId);
 
 		if ($result->isSuccess()) {
 			$this->_userDao->removeSecurityGroup($secGroup);
@@ -864,7 +864,7 @@ class Services_User_Record {
 
 		if (($idtype < 0) || ($idtype > 2)) {
 			/* Invalid id type, dont allow this */
-			return ;
+			return null;
 		} # if
 
 		if (!$this->allowedToPost($currentUser)) {
