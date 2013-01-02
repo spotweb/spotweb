@@ -502,6 +502,40 @@ class SpotCategories {
 		return $subcatz;
 	} # createSubcatZ
 	
+	static function mapDepricatedGenreSubCategories($hcat, $subcatd, $subcatz)
+	{
+		# image
+		if ($hcat == 0) {
+			# erotica
+			if ($subcatz == 'z3|') {
+		        # hetero
+ 				$subcatd = self::replaceGenreSubCategory($subcatd, 'd23|', 'd75|');
+				$subcatd = self::replaceGenreSubCategory($subcatd, 'd24|', 'd74|');
+				$subcatd = self::replaceGenreSubCategory($subcatd, 'd25|', 'd73|');
+				$subcatd = self::replaceGenreSubCategory($subcatd, 'd26|', 'd72|');
+			}
+		} # if
+		
+		return $subcatd;
+	}
+
+	# helper function for function mapDepricatedGenreSubCategories()
+	private static function replaceGenreSubCategory($subcatd, $oldsubcat, $newsubcat)
+	{
+		if (stripos($subcatd, $oldsubcat) !== false) {
+			# prevent new genre being listed twice
+			# if the new genre already exists, we replace the old genre with nothing
+			if (stripos($subcatd, $newsubcat) !== false) {
+				$subcatd = str_replace($oldsubcat, '', $subcatd);
+			}
+			else {
+				$subcatd = str_replace($oldsubcat, $newsubcat, $subcatd);
+			}
+		}
+		
+		return $subcatd;
+	}
+	
 	public static function startTranslation() {
 		/* 
 		 * Make sure we only translate once
