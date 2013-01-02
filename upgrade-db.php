@@ -11,7 +11,7 @@ try {
 	} # if
 
 	require_once "lib/SpotClassAutoload.php";
-	require_once "lib/SpotWebVersion.php";
+	require_once "lib/Bootstrap.php";
 	require_once "settings.php";
 
 	/*
