@@ -54,7 +54,11 @@ class Bootstrap {
 	 * Spotweb
 	 */
 	private function getDaoFactory() {
-		require "dbsettings.inc.php";
+		@require "dbsettings.inc.php";
+        if (empty($dbsettings)) {
+                throw new InvalidOwnSettingsSettingException("No databasesettings have been entered, please use the 'install.php' wizard to install and configure Spotweb" . PHP_EOL .
+                                                             "If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
+        } # if
 
 		$dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
 		$dbCon->connect($dbsettings['host'], 
