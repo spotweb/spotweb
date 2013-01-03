@@ -4,10 +4,30 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Tue, 29 May 2012 00:00:00 +0100</lastBuildDate>
-		<pubDate>Tue, 29 May 2012 00:00:00 +0100</pubDate>
+		<lastBuildDate>Thu, 3 Jan 2013 00:00:00 +0100</lastBuildDate>
+		<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
 
+		<item>
+			<title>Show spam reports icon based on user configurable spam report threshold</title>
+			<description><![CDATA[Spotweb now has the option show the spam reports icon in the spotoverview based on a user 
+				configurable threshold. This allows a user to configure Spotweb such that it will show the spam icon when for 
+				example more than 5 spam reports are available for a spot. Spots with less than 5 spam reports will not be 
+				marked as spam in the spotoverview.<br />
+				By default the threshold is set to 1 spam report meaning that nothing changes for the user unless he/she 
+				chooses to use a different threshold.<br />
+				Please run <i>upgrade-db.php</i> to update your database schema. 
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+			<author>leechguy</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.25</spotweb:settings_version>
+			<spotweb:security_version>0.29</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Added permissions for specific templates</title>
