@@ -421,9 +421,14 @@ class Services_User_Record {
 			} # if
 		} # if
 
-		/*
-		 * We want to return the fixed up preferences to the caller
-		 */
+        /* Make sure a valid value for minimum_reportcount is entered */
+        if ((!is_numeric($prefs['minimum_reportcount'])) || ($prefs['minimum_reportcount']) > 10) {
+            $result->addError(_('Invalid value for minimum_reportcount'));
+        } # if
+
+        /*
+         * We want to return the fixed up preferences to the caller
+         */
 		$result->addData('prefs', $prefs);
 
 		return $result;
