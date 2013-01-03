@@ -10,6 +10,7 @@
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_spamreports = $currentSession['user']['prefs']['show_reportcount'];
+	$minimum_spamreports = $currentSession['user']['prefs']['minimum_reportcount'];
 	$show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	$show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
@@ -122,7 +123,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 		
 		$reportSpam = '';
-		if ($show_spamreports && $spot['reportcount'] != 0) {
+		if ($show_spamreports && $spot['reportcount'] >= $minimum_spamreports) {
 			if($spot['reportcount'] == 1) {
 				$reportSpamClass = ' grey';
 			} elseif ($spot['reportcount'] >= 2 && $spot['reportcount'] < 4) {
