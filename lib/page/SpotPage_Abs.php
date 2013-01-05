@@ -30,7 +30,7 @@ abstract class SpotPage_Abs {
      */
 	protected $_templatePaths;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;

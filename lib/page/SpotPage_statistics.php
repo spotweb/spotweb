@@ -3,7 +3,7 @@
 class SpotPage_statistics extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
@@ -14,7 +14,7 @@ class SpotPage_statistics extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
 
 		# init
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 
 		# set the page title
 		$this->_pageTitle = _("Statistics");
