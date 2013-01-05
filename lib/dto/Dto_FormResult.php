@@ -27,6 +27,8 @@ class Dto_FormResult {
 		if (!isset($validResults[$s])) {
 			throw new Exception("Invalid result (" . $s . ") chosen");
 		} # if
+
+        $this->_result = $s;
 	} # setResult
 
 	/*
