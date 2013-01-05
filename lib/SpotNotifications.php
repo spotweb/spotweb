@@ -24,7 +24,7 @@ class SpotNotifications {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_spotSec = $currentSession['security'];
-		$this->_notificationTemplate = new SpotNotificationTemplate($this->_daoFactory, $this->_settings, $this->_currentSession);
+		$this->_notificationTemplate = new SpotNotificationTemplate($this->_settings, $this->_currentSession);
 	} # ctor
 
 	
