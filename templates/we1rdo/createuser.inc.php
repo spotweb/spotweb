@@ -1,23 +1,7 @@
 <?php
+    include "includes/form-messages.inc.php";
 
-/*
- * First make sure the user actually tried
- * to submit this form, if so, create a nice output.
- */
-if ($result->isSubmitted()) {
-    echo $result->toJSON();
-} # if
-
-if (!empty($createresult)) {
-	include 'includes/form-xmlresult.inc.php';
-	
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($createresult, $formmessages, $tplHelper);
-} # if
-
-if (empty($createresult)) {
-	include "includes/form-messages.inc.php";
-
+    if (!showResults($result)) {
 ?>
 <form class="createuserform" name="createuserform" action="<?php echo $tplHelper->makeCreateUserAction(); ?>" method="post">
 	<input type="hidden" name="createuserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('createuserform'); ?>">
@@ -43,6 +27,4 @@ if (empty($createresult)) {
 		</dl>
 	</fieldset>
 </form>
-
-<?php
-} # if
+<?php } ?>

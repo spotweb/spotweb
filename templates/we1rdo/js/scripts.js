@@ -138,9 +138,14 @@ function refreshTab(tabName) {
  */
 function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb, openCb) {
 	var $dialdiv = $("#" + divid);
-  
+
+    /*
+     * Test whether we need to 'dialog'-ify the
+     * dialog again, if not, we can just reshow the
+     * normal dialog after we clear its' content
+     */
     if (!$dialdiv.is(".ui-dialog-content")) {
-		// en nu kunnen we de dialog wel tonen
+		// Show the dialog
 		$dialdiv.dialog( {
 			title: title,
 			autoOpen: false,
@@ -154,30 +159,39 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 		} );
 	} // if
 
-	// Update de dialogs' title, de tweede manier is er omdat het niet altijd goed
-	// werkt met de 1e methode
-	$dialdiv.dialog("option", 'title', title);
+	/*
+	 * Update de dialogs' title, we use two seperate methods because the first one because we
+	 * the first one doesn't always work correctly.
+	 *
+	 * Because we re-use dialogs, we need to update the title.
+	 */
+    $dialdiv.dialog("option", 'title', title);
 	$("span.ui-dialog-title").text(title);
 	
 	/* submit button handler */
 	if (!buttonClick) {
 		var buttonClick = function() {
-			// In deze context is 'this' de submit button waarop gedrukt is,
-			// dus die data voegen we gewoon aan de post data toe.
-			var formdata = $(this).attr("name") + "=" + $(this).val();  
+            /*
+             * The current 'this' is where the submitt button has been pushed,
+             * this means we can assume we are in the form itselve.
+             */
+			var formdata = $(this).attr("name") + "=" + $(this).val();
 			formdata = $(this.form).serialize() + "&" + formdata;
 			
-			// post de data
+			// actually post the data, use JSON as a result type
 			$.ajax({
 				type: "POST",
 				url: this.form.action,
-				dataType: "xml",
+				dataType: "json",
 				data: formdata,
-				success: function(xml) {
+				success: function(data) {
+                    /*
+                     * Upon success (of the HTTP call), we try to find the
+                     * dialog again and act upon the chosen action
+                     */
 					var $dialdiv = $("#"+divid);
-					var result = $(xml).find('result').text();
-					
-					if ((result == 'success') && (successAction == 'autoclose')) {
+
+					if ((data.result == 'success') && (successAction == 'autoclose')) {
 						$dialdiv.dialog('close');
 						$dialdiv.empty();
 						
@@ -185,12 +199,12 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 							closeCb();
 						} // if
 					} else {						
-						/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
+						/* If we need to reload the content, reload it, else just show the results */
 						if (successAction == 'reload') {
 							loadDialogContent(false);
 						} // if
 						
-						if ((successAction == 'showresultsonly') && (result == 'success')) {
+						if ((successAction == 'showresultsonly') && (data.result == 'success')) {
 							$dialdiv.empty();
 							
 							/* Create the empty elements to show the errors/information in */
@@ -199,33 +213,31 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 
 						var $formerrors = $dialdiv.find("ul.formerrors");
 						$formerrors.empty();
-						$('errors', xml).each(function() {
-							$formerrors.append("<li>" + $(this).text() + "</li>");
+						$.each(data.errors, function(key, val) {
+							$formerrors.append("<li>" + val + "</li>");
 						}); // each
 
 						// Add the information items to the form
 						var $forminfo = $dialdiv.find("ul.forminformation");
 						$forminfo.empty();
-						$('info', xml).each(function() {
-							$forminfo.append("<li>" + $(this).text() + "</li>");
+						$.each(data.info, function(key, val) {
+							$forminfo.append("<li>" + val + "</li>");
 						}); // each
-					} // if post was not succesful
+					} // if post was not successful
 				} // success()
-			}); // ajax call om de form te submitten
+			}); // ajax call to submit the form
 			
-			return false; // standaard button submit supressen
+			return false; // supress standard submit button
 		}; // buttonClick
 	} // if not defined
 	
 	/*
-	 * definieer een dialog loader functie welke tegelijkertijd
-	 * de submit buttons attached, deze wordt namelijk aangeroepen
-	 * als een dialog submit succesvol is, maar de dialog niet gesloten
-	 * mag worden. Dat is namelijk de simpelste manier om de content
-	 * te refreshen
+	 * Define a dialog loader function which also attaches the
+	 * submit buttons. This will be called when the dialog submit
+	 * is succesful but the dialog shouldn't be closed.
 	 */
 	function loadDialogContent(async) {
-		/* en laad de werkelijke content */
+		/* actually load the content */
 		$.ajax({
 			type: "GET",
 			dataType: "html",
@@ -233,20 +245,22 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 			url: url,
 			data: {},
 			success: function(response) {
-				// Laad de content van de pagina in de dialog zodat we die daarna 
-				// kunnen laten zien
+                /*
+                 * Replace the current HTML content of the dialog with this new content
+                 */
 				var $dialdiv = $("#" + divid);
 				$dialdiv.empty().html(response);
 				
-				// sla de geladen url op zodat we het resultaat zien
+				// Save the actual DialogUrl, so we can refresh it later if required
 				$dialdiv.data('dialogurl', url);
-				
-				// we vragen vervolgens alle submit buttons op, hier gaan we dan een
-				// form submit handler aan vast knopen. Dit is nodig omdat standaard
-				// de form submit handler van jquery niet weet op welke knop er gedrukt
-				// is, dus moeten we wat doen om dat duidelijk te krijgen.
-				//var $buttons = $("form." + formname + " input[type='submit']"); 
-				var $buttons = $("#" + divid + " input[type='submit']"); 
+
+                /*
+                 * Loop through all submit buttons, and attach a form submit handler to
+                 * it. We need this to make sure we know which button was pressed, else
+                 * we cannot differentiate between different 'submit' buttons which is
+                 * rather limitting.
+                 */
+				var $buttons = $("#" + divid + " input[type='submit']");
 				$buttons.click(buttonClick);
 
 				// Call the open callback
@@ -254,15 +268,15 @@ function openDialog(divid, title, url, formname, buttonClick, successAction, clo
 					openCb();
 				} // if
 				
-				// en toon de dialog
+				// actually show the dialogs content
 				$dialdiv.dialog('open');
 					
-				return false; // standaard link actie voor openen dialog supressen
+				return false; // supress the default action of the link which opens this dialog
 			} // success function
 		}); // ajax call
 	} // loadDialogContent
 
-	// en laad de content
+	// load contents on first run
 	loadDialogContent(true);
 	return false;
 } // openDialog

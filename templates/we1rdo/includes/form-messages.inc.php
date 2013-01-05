@@ -1,16 +1,22 @@
 <?php
-	echo "<ul class='formerrors'>";
-	if (isset($formmessages['errors'])) {
-		foreach($formmessages['errors'] as $formError) {
-			echo "<li>" . $formError . "</li>";
-		} # foreach
-	} # if
-	echo "</ul>";
+    function showResults($result) {
+        /*
+         * First make sure the user actually tried
+         * to submit this form, if so, return our
+         * JSON output and nothing else.
+         */
+        if ($result->isSubmitted()) {
+            echo $result->toJSON();
 
-	echo "<ul class='forminformation'>";
-	if (isset($formmessages['info'])) {
-		foreach($formmessages['info'] as $formInfo) {
-			echo "<li>" . $formInfo . "</li>";
-		} # foreach
-	} # if
-	echo "</ul>";
+            return true;
+        } # if
+
+        /*
+         * If there was no submit of the form, just show placeholders
+         * for the errors and information
+         */
+        echo "<ul class='formerrors'></ul><ul class='forminformation'></ul>";
+
+        return false;
+    } # showResults
+
