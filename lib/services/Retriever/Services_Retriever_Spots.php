@@ -282,7 +282,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							
 							/*
 							 * Some buggy NNTP servers give us the same messageid
-							 * in once XOVER statement, hence we update the list of
+							 * in the same XOVER statement, hence we update the list of
 							 * messageid's we already have retrieved and are ready
 							 * to be added to the database
 							 */
