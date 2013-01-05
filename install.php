@@ -657,7 +657,8 @@
 
 	function ownWarning($errno, $errstr) {
 		$GLOBALS['iserror'] = true;
-		#echo $errstr;
+        error_log($errstr);
+        echo $errstr;
 	} # ownWarning
 
 	function testInclude($fname) {

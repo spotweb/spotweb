@@ -12,7 +12,6 @@ class dbeng_mysql extends dbeng_abs {
 		$this->_batchInsertChunks = 100;
 	}
 
-    /** @noinspection PhpInconsistentReturnPointsInspection */
     function connect($host, $user, $pass, $db) {
 		$this->_conn = mysql_connect($host, $user, $pass);
 		

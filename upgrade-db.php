@@ -11,13 +11,12 @@ try {
 	} # if
 
 	require_once "lib/SpotClassAutoload.php";
-	require_once "lib/Bootstrap.php";
-	require_once "settings.php";
+    require_once "lib/Bootstrap.php";
 
-	/*
-	 * Make sure we are not run from the server, an db upgrade can take too much time and
-	 * will easily be aborted by either a database, apache or browser timeout
-	 */
+    /*
+     * Make sure we are not run from the server, an db upgrade can take too much time and
+     * will easily be aborted by either a database, apache or browser timeout
+     */
 	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups', 'reset-filters'), 
 								array('reset-groupmembership' => false, 'reset-securitygroups' => false, 'reset-filters' => false,
 									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false));
@@ -26,23 +25,20 @@ try {
 	} # if
 
 	/*
-	 * Create a DAO factory
+	 * Create a DAO factory. We cannot use the bootstrapper here,
+	 * because it validates for a valid settings etc. version.
 	 */
-	$dbCon = dbeng_abs::getDbFactory($settings['db']['engine']);
-	$dbCon->connect($settings['db']['host'], 
-					$settings['db']['user'], 
-					$settings['db']['pass'], 
-					$settings['db']['dbname']);
-	
-	$daoFactory = Dao_Factory::getDAOFactory($settings['db']['engine']);
-	$daoFactory->setConnection($dbCon);
+    $bootstrap = new Bootstrap();
+    $daoFactory = $bootstrap->getDaoFactory();
+    $settings = $bootstrap->getSettings($daoFactory);
+    $dbSettings = $bootstrap->getDbSettings();
 
 	/*
 	 * And actually start updating or creating the schema and settings
 	 */
-	echo "Updating schema..(" . $settings['db']['engine'] . ")" . PHP_EOL;
+	echo "Updating schema..(" . $dbSettings['engine'] . ")" . PHP_EOL;
 	
-	$svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $settings);
+	$svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $settings, $dbSettings['engine']);
 	$svcUpgradeBase->database();
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
@@ -136,4 +132,3 @@ catch(Exception $x) {
 	echo $x->getTraceAsString();
 	die(1);
 } # catch
-

@@ -1,5 +1,5 @@
 <?php
-class Services_Upgrade_User {
+class Services_Upgrade_Users {
 	private $_dbCon;
 	private $_userDao;
 	private $_settings;
@@ -533,4 +533,4 @@ class Services_Upgrade_User {
 		unset($pref[$name]);
 	} # setSettingIfNot
 	 
-} # Services_Upgrade_User
+} # Services_Upgrade_Users

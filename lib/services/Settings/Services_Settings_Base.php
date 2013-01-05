@@ -269,4 +269,11 @@ class Services_Settings_Base {
 		return isset(self::$_settings[$name]);
 	} # isSet
 
+    /*
+     * Returns a list of all settings in an array
+     */
+    function getAllSettings() {
+        return self::$_settings;
+    } # getAllSettings
+
 } # class Services_Settings_Base

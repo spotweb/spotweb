@@ -22,6 +22,8 @@ define('SPOTWEB_ADMIN_USERID', 2);
  * 
  */
 class Bootstrap {
+    private $_dbSettings;
+
 	/*
 	 * Boot up the Spotweb system
 	 */
@@ -59,12 +61,21 @@ class Bootstrap {
 	 * Returns the DAO factory used by all of 
 	 * Spotweb
 	 */
-	private function getDaoFactory() {
+	public function getDaoFactory() {
 		@include "dbsettings.inc.php";
         if (empty($dbsettings)) {
                 throw new InvalidOwnSettingsSettingException("No database settings have been entered, please use the 'install.php' wizard to install and configure Spotweb." . PHP_EOL .
                                                              "If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
         } # if
+
+        /*
+         * Store the DB settings so we can retrieve them later, if so desired,
+         * we do overwrite the password to make sure it doesn't show up in a
+         * stacktrace.
+         */
+        $this->_dbSettings = $dbsettings;
+        $this->_dbSettings['pass'] = '**overwritten**';
+        $this->_dbSettings['user'] = '**overwritten**';
 
 		$dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
 		$dbCon->connect($dbsettings['host'], 
@@ -116,7 +127,7 @@ class Bootstrap {
 	/*
 	 * Bootup the settings system
 	 */
-	private function getSettings(Dao_Factory $daoFactory) {
+	public function getSettings(Dao_Factory $daoFactory) {
 		require_once "settings.php";
 		
 		return Services_Settings_Base::singleton($daoFactory->getSettingDao(), 
@@ -133,6 +144,13 @@ class Bootstrap {
 
 		return $req;
 	} # getSpotReq
+
+    /*
+     * Returns the dbSettings object if already set
+     */
+    function getDbSettings() {
+        return $this->_dbSettings;
+    } # getDbSettings
 
 } # Bootstrap
 
