@@ -1,12 +1,12 @@
 <?php
 
-class Services_Providers_SpotStateListDao {
+class Services_Providers_SpotStateList {
 	private $_spotStateListDao;
 
 	/*
 	 * constructor
 	 */
-	public function __construct(Dao_SpotStateListDao $spotStateListDao) {
+	public function __construct(Dao_SpotStateList $spotStateListDao) {
 		$this->_spotStateListDao = $spotStateListDao;
 	}  # ctor
 	
@@ -40,4 +40,4 @@ class Services_Providers_SpotStateListDao {
 	}
 	
 
-} # Services_Providers_SpotStateListDao
+} # Services_Providers_SpotStateList
