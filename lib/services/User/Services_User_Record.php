@@ -54,7 +54,7 @@ class Services_User_Record {
 			$this->addUser($spotUser);
 			
 			/*
-			 * We assume the user was succesfully added, all validation is done at
+			 * We assume the user was successfully added, all validation is done at
 			 * a higher level, and addUser() will throw an exception if something is
 			 * seriously wrong
 			 */
@@ -62,6 +62,7 @@ class Services_User_Record {
 			$result->addData('password', $spotUser['newpassword1']);
 			$result->addInfo(sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']));
 			$result->addInfo(sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']));
+            $result->setResult('success');
 
 			# Send a mail to the new user if the user asked for this
 			$sendMail = isset($spotUser['sendmail']);
@@ -159,7 +160,7 @@ class Services_User_Record {
 		$this->_userDao->setUserGroupList($tmpUser['userid'], $this->_settings->get('newuser_grouplist'));
 		
 		# now copy the users' filters to the new user
-		$this->_userDao->copyFilterList($this->_settings->get('nonauthenticated_userid'), $tmpUser['userid']);
+		$this->_daoFactory->getUserFilterDao()->copyFilterList($this->_settings->get('nonauthenticated_userid'), $tmpUser['userid']);
 
 		return $tmpUser['userid'];
 	} # addUser()
