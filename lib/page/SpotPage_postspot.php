@@ -64,7 +64,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 		if (($formAction == 'post') && ($result->isSuccess())) {
 			# Initialize notificatiesystem
-			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 			# valideer of we deze spot kunnen posten, en zo ja, doe dat dan
 			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);

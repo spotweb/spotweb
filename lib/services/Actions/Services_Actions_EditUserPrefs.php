@@ -17,7 +17,7 @@ class Services_Actions_EdtUserPrefs {
 	function editUserPref(array $editUserPrefsForm, array $spotUser) {
 		/*
 		 * We want the annymous' users account so we can use this users' preferences as a
-		 * template. This makes sure all properties are atleast set.
+		 * template. This makes sure all properties are at least set.
 		 */
 		$anonUser = $this->_svcUserRecord->getUser(SPOTWEB_ANONYMOUS_USERID);
 
@@ -94,9 +94,9 @@ class Services_Actions_EdtUserPrefs {
 		 * session for this user.
 		 */
 		$fakeSession = $this->_svcUserAuth->createNewSession($spotUser['userid']);
-		$fakeSession['security'] = new SpotSecurity($this->_db, $this->_settings, $fakeSession['user'], '');
+		$fakeSession['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $fakeSession['user'], '');
 
-		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $fakeSession);
+		$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $fakeSession);
 		$spotsNotifications->register();
 	} # editUserPref
 

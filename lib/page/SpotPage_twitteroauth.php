@@ -14,8 +14,8 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_send_notifications_services, 'twitter');
 
 		# Instantieer het Spot user system & notificatiesysteem
-		$svcUserRecord = new Services_User_Record($this->_db, $this->_settings);
-		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+		$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 		$requestArray = array_merge_recursive($this->_currentSession['user']['prefs']['notifications']['twitter'],
 											  array('consumer_key' => $this->_settings->get('twitter_consumer_key'),

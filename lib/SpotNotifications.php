@@ -178,7 +178,11 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
         $notificationDao = $this->_daoFactory->getNotificationDao();
 
 		$tmpUser['user'] = $userDao->getUser($user['user']['userid']);
-		$tmpUser['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
+		$tmpUser['security'] = new SpotSecurity($this->_daoFactory->getUserDao(),
+                                                $this->_daoFactory->getAuditDao(),
+                                                $this->_settings,
+                                                $tmpUser['user'],
+                                                $user['session']['ipaddr']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
@@ -239,7 +243,11 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 			# Omdat we vanuit getUserList() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
 			$user = $userDao->getUser($user['userid']);
-			$security = new SpotSecurity($this->_daoFactory, $this->_settings, $user, '');
+            $security = new SpotSecurity($this->_daoFactory->getUserDao(),
+                $this->_daoFactory->getAuditDao(),
+                $this->_settings,
+                $user,
+                '');
 
 			# Om e-mail te kunnen versturen hebben we iets meer data nodig
 			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
