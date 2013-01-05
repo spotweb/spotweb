@@ -272,7 +272,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						try {
 							$fullsRetrieved++;
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
-							$fullSpot = $this->_svcNntpReading->readFullSpot($msgId);
+							$fullSpot = $this->_svcNntpTextReading->readFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 							
 							# add this spot to the database
