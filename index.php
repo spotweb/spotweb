@@ -136,18 +136,19 @@ try {
 		} # erasedls
 
 		case 'catsjson' : {
-				$page = new SpotPage_catsjson(
-									$daoFactory, 
-									$settings, 
-									$currentSession,
-									Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
-									      'subcatz' => $req->getDef('subcatz', '*'),
-										  'category' => $req->getDef('category', '*'),
-										  'rendertype' => $req->getDef('rendertype', 'tree'),
-										  'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
-				$page->render();
-				break;
-		} # getspot
+                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+                $page = new SpotPage_catsjson(
+                                        $daoFactory,
+                                        $settings,
+                                        $currentSession,
+                                        Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
+                                              'subcatz' => $req->getDef('subcatz', '*'),
+                                              'category' => $req->getDef('category', '*'),
+                                              'rendertype' => $req->getDef('rendertype', 'tree'),
+                                              'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
+                    $page->render();
+                    break;
+        } # catsjson
 
 		case 'markallasread' : {
 				$page = new SpotPage_markallasread($daoFactory, $settings, $currentSession);
