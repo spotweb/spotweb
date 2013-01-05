@@ -4,24 +4,98 @@ abstract class Dao_Factory {
 	abstract public function setConnection($conn);
 	abstract public function getConnection();
 
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Spot
+     */
 	abstract public function getSpotDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_User
+     */
 	abstract public function getUserDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Cache
+     */
 	abstract public function getCacheDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Audit
+     */
 	abstract public function getAuditDao();
-	abstract public function getUserFilterDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_UserFilter
+     */
+    abstract public function getUserFilterDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Session
+     */
 	abstract public function getSessionDao();
-	abstract public function getBlackWhiteListDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_BlackWhiteList
+     */
+    abstract public function getBlackWhiteListDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Notification
+     */
 	abstract public function getNotificationDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Comment
+     */
 	abstract public function getCommentDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_SpotReport
+     */
 	abstract public function getSpotReportDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_Setting
+     */
 	abstract public function getSettingDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_UserFilterCount
+     */
 	abstract public function getUserFilterCountDao();
-	abstract public function getSpotStateListDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_SpotStateList
+     */
+    abstract public function getSpotStateListDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Base_NntpConfig
+     */
 	abstract public function getNntpConfigDao();
 
-	/*
-	 * Factory class which instantiates the specified DAO factory object
-	 */
+    /**
+     * Factory class which instantiates the specified DAO factory object
+     *
+     * @param $which String specifying which DB specific factory to return
+     * @throws Exception Throws exception when unknown database engine is asked
+     * @return Dao_Base_Factory
+     */
 	public static function getDAOFactory($which) {
 		switch($which) {
 			case 'postgresql'			: return new Dao_Postgresql_Factory(); break;
@@ -32,4 +106,4 @@ abstract class Dao_Factory {
 		} // switch
 	} # getDayFactory()
 
-} // Dao_Factory
+} # Dao_Factory
