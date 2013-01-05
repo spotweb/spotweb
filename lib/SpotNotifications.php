@@ -6,7 +6,7 @@ class SpotNotifications {
 	private $_spotSec;
 	private $_currentSession;
 	private $_settings;
-	private $_db;
+	private $_daoFactory;
 
 	/*
 	 * Constants used for securing the system
@@ -16,8 +16,8 @@ class SpotNotifications {
 	const notifytype_retriever_finished		= 'retriever_finished';
 	const notifytype_report_posted			= 'report_posted';
 	const notifytype_spot_posted			= 'spot_posted';
-	const notifytype_user_added			= 'user_added';
-	const notifytype_newspots_for_filter		= 'newspots_for_filter';
+    const notifytype_user_added			    = 'user_added';
+	const notifytype_newspots_for_filter	= 'newspots_for_filter';
 
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession) {
 		$this->_daoFactory = $daoFactory;
@@ -60,7 +60,9 @@ class SpotNotifications {
 	 * is handled
 	 */
 	function sendWatchlistHandled($action, $messageid) {
-		$spot = $this->_db->getSpotHeader($messageid);
+        $spotDao = $this->_daoFactory->getSpotDao();
+		$spot = $spotDao->getSpotHeader($messageid);
+
 		switch ($action) {
 			case 'remove'	: $notification = $this->_notificationTemplate->template('watchlist_removed', array('spot' => $spot)); break;
 			case 'add'		: $notification = $this->_notificationTemplate->template('watchlist_added', array('spot' => $spot)); break;
@@ -122,8 +124,8 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	 * send this notification.
 	 */
 	function sendReportPosted($messageid) {
-		# haal de spot op
-		$spot = $this->_db->getSpotHeader($messageid);
+        $spotDao = $this->_daoFactory->getSpotDao();
+        $spot = $spotDao->getSpotHeader($messageid);
 
 		$notification = $this->_notificationTemplate->template('report_posted', array('spot' => $spot));
 		$this->newSingleMessage($this->_currentSession, SpotNotifications::notifytype_report_posted, 'Single', $notification);
@@ -172,8 +174,11 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	private function newSingleMessage($user, $objectId, $type, $notification) {
 		# Aangezien het niet zeker kunnen zijn als welke user we dit stuk
 		# code uitvoeren, halen we voor de zekerheid opnieuw het user record op
-		$tmpUser['user'] = $this->_db->getUser($user['user']['userid']);
-		$tmpUser['security'] = new SpotSecurity($this->_db, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
+        $userDao = $this->_daoFactory->getUserDao();
+        $notificationDao = $this->_daoFactory->getNotificationDao();
+
+		$tmpUser['user'] = $userDao->getUser($user['user']['userid']);
+		$tmpUser['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $tmpUser['user'], $user['session']['ipaddr']);
 		$this->_spotSecTmp = $tmpUser['security'];
 
 		if ($this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
@@ -184,7 +189,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_types, $objectId) &&
 						$this->_spotSecTmp->allowed(SpotSecurity::spotsec_send_notifications_services, $notifProvider)
 					) {
-						$this->_db->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
+						$notificationDao->addNewNotification($tmpUser['user']['userid'], $objectId, $type, $notification['title'], implode(PHP_EOL, $notification['body']));
 						break;
 					} # if
 				} # if
@@ -201,7 +206,8 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	 * Send a notification to multiple users
 	 */
 	private function newMultiMessage($objectId, $notification) {
-		$userArray = $this->_db->getUserList();
+        $userDao = $this->_daoFactory->getUserDao();
+		$userArray = $userDao->getUserList();
 		foreach ($userArray as $user['user']) {
 			# Create a fake session array
 			$user['session'] = array('ipaddr' => '');
@@ -219,18 +225,21 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	} # sendNowOrLater
 
 	function sendMessages($userId) {
-		if ($userId == 0) {
-			$userList = $this->_db->getUserList();
+        $userDao = $this->_daoFactory->getUserDao();
+        $notificationDao = $this->_daoFactory->getNotificationDao();
+
+        if ($userId == 0) {
+			$userList = $userDao->getUserList();
 		} else {
-			$thisUser = $this->_db->getUser($userId);
+			$thisUser = $userDao->getUser($userId);
 			$userList = array($thisUser);
 		} # else
 
 		foreach ($userList as $user) {
 			# Omdat we vanuit getUserList() niet alle velden meekrijgen
 			# vragen we opnieuw het user record op
-			$user = $this->_db->getUser($user['userid']);
-			$security = new SpotSecurity($this->_db, $this->_settings, $user, '');
+			$user = $userDao->getUser($user['userid']);
+			$security = new SpotSecurity($this->_daoFactory, $this->_settings, $user, '');
 
 			# Om e-mail te kunnen versturen hebben we iets meer data nodig
 			$user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
@@ -244,7 +253,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 			$user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
 			$user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
-			$newMessages = $this->_db->getUnsentNotifications($user['userid']);
+			$newMessages = $notificationDao->getUnsentNotifications($user['userid']);
 			foreach ($newMessages as $newMessage) {
 				$objectId = $newMessage['objectid'];
 				$spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
@@ -275,7 +284,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 				} # if
 
 				$newMessage['sent'] = true;
-				$this->_db->updateNotification($newMessage);
+				$notificationDao->updateNotification($newMessage);
 			} # foreach message
 		} # foreach user
 	} # sendMessages
