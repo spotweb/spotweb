@@ -14,7 +14,14 @@
 
         require "includes/header.inc.php";
         echo '</div>';
-    } # if
+    } else {
+        if ($result->isSubmitted()) {
+            /* Show the results in JSON */
+            showResults($result);
+
+            return;
+        } # if
+    } # else
 
 if (!$dialogembedded) { ?>
 	<div id='toolbar'>

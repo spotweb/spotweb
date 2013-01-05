@@ -349,7 +349,18 @@ class Services_User_Record {
 			} # if
 		} # if
 
-		# Twitter tokens are never posted by the form, but they shouldn't be tossed out
+        # when an nzbget host is entered, it has to be a valid URL
+        if ($prefs['nzbhandling']['action'] == 'nzbget') {
+            if (empty($prefs['nzbhandling']['nzbget']['host'])) {
+                $result->addError(_("Host entered for nzbget is not valid"));
+            } # if
+
+            if (empty($prefs['nzbhandling']['nzbget']['port'])) {
+                $result->addError(_("Port entered for nzbget is not valid"));
+            } # if
+        } # if
+
+        # Twitter tokens are never posted by the form, but they shouldn't be tossed out
 		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
 		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];
 		$prefs['notifications']['twitter']['access_token_secret'] = $currentPrefs['notifications']['twitter']['access_token_secret'];
