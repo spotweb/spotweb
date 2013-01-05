@@ -2,14 +2,16 @@
 
 class Dto_FormResult {
 	private $_result;
-	private $_fields;
+
+    private $_data;
+
 	private $_errors;
 	private $_warnings;
 	private $_info;
 
 	public function __construct($result = 'success') {
 		$this->setResult($result);
-		$this->_fields = array();
+		$this->_data = array();
 		$this->_errors = array();
 		$this->_warnings = array();
 		$this->_info = array();
@@ -50,7 +52,7 @@ class Dto_FormResult {
 	/*
 	 * Returns the current result of this form
 	 */
-	function getResult($s) {
+	function getResult() {
 		return $this->_result;
 	} # getResult
 
@@ -164,9 +166,30 @@ class Dto_FormResult {
 			$this->addError($error);
 		} # if
 
-		foreach($result->getData() as $dataKey => $dataVal) {
+        $dataFields = $result->getData();
+		foreach($dataFields as $dataKey => $dataVal) {
 			$this->addData($dataKey, $dataVal);
 		} # if
 	} # mergeResult
+
+    /*
+     * Returns true when a form was tried to be submitted
+     */
+    function isSubmitted() {
+        return $this->_result != 'notsubmitted';
+    } # isSubmitted
+
+    /*
+     * Convert this struct to JSON
+     */
+    function toJSON() {
+        return json_encode(
+            array('result' => $this->getResult(),
+                  'data' => $this->getData(),
+                  'info' => $this->getInfo(),
+                  'warnings' => $this->getWarnings(),
+                  'errors' => $this->getErrors())
+        );
+    } # toJSON
 
 } # Dto_FormResult

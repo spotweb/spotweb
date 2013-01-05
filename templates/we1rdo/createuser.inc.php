@@ -1,4 +1,12 @@
-<?php 
+<?php
+
+/*
+ * First make sure the user actually tried
+ * to submit this form, if so, create a nice output.
+ */
+if ($result->isSubmitted()) {
+    echo $result->toJSON();
+} # if
 
 if (!empty($createresult)) {
 	include 'includes/form-xmlresult.inc.php';
