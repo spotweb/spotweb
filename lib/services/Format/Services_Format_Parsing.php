@@ -317,7 +317,7 @@ class Services_Format_Parsing {
 		} # if
 
         # map deprecated genre categories to their new genre category
-        $spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
+        $spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($spot['category'], $spot['subcatd'], $spot['subcatz']);
 
 		if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 			# This is an old format to parse, instantiate the legacy parsing
