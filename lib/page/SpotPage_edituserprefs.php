@@ -4,7 +4,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_userIdToEdit;
 	private $_dialogembedded;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editUserPrefsForm = $params['edituserprefsform'];
 		$this->_userIdToEdit = $params['userid'];
@@ -12,7 +12,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		# Make sure the editresult is set to 'not comited' per default
+		# Make sure the result is set to 'not submitted' per default
 		$result = new Dto_FormResult('notsubmitted');
 
 		# Validate proper permissions
@@ -24,7 +24,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		
 		# Instantiate the user system as necessary for the management of user preferences
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
-		$svcUserFilter = new Services_user_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		$svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# set the page title
@@ -46,9 +46,12 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		if ((!empty($formAction)) && (!$result->isError())) {
 			switch($formAction) {
 				case 'edit'	: {
-					$svcActn_EditUserPrefs = new Service_Actions_EditUserPrefs($svcUserRecord, $svcUserFilter, $svcUserAuth, $this->_spotSec);
-					$result = $svcActn_EditUserPrefs->editUserPrefs($this->_editUserPrefsForm,
-																	$spotUser);
+					$svcActn_EditUserPrefs = new Services_Actions_EditUserPrefs($this->_daoFactory,
+                                                                                $this->_settings,
+                                                                                $this->_spotSec);
+					$result = $svcActn_EditUserPrefs->editUserPref($this->_editUserPrefsForm,
+                                                                   $this->_tplHelper->getTemplatePreferences(),
+																   $spotUser);
 					
 					break;
 				} # case 'edit' 

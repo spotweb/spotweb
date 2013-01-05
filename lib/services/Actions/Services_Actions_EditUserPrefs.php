@@ -1,22 +1,29 @@
 <?php
 
-class Services_Actions_EdtUserPrefs {
+class Services_Actions_EditUserPrefs {
+    private $_daoFactory;
+    private $_settings;
+
 	private $_svcUserFilter;
 	private $_svcUserRecord;
 	private $_svcUserAuth;
 	private $_spotSec;
 
-	function __construct(Services_User_Record $svcUserRecord, Services_User_Filter $svcUserFilter,Services_User_Authentication $svcUserAuth, SpotSecurity $spotSec) {
-		$this->_svcUserFilter = $svcUserFilter;
-		$this->_svcUserRecord = $svcUserRecord;
-		$this->_svcUserAuth = $svcUserAuth;
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, SpotSecurity $spotSec) {
+        $this->_daoFactory = $daoFactory;
+        $this->_settings = $settings;
+
+		$this->_svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+		$this->_svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+		$this->_svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
+
 		$this->_spotSec = $spotSec;
 	} # ctor
 
 
-	function editUserPref(array $editUserPrefsForm, array $spotUser) {
+	function editUserPref(array $editUserPrefsForm, array $userPrefTemplate, array $spotUser) {
 		/*
-		 * We want the annymous' users account so we can use this users' preferences as a
+		 * We want the anonymous' users account so we can use this users' preferences as a
 		 * template. This makes sure all properties are at least set.
 		 */
 		$anonUser = $this->_svcUserRecord->getUser(SPOTWEB_ANONYMOUS_USERID);
@@ -37,7 +44,7 @@ class Services_Actions_EdtUserPrefs {
 		$savePrefs = $spotUser['prefs'];
 		$spotUser['prefs'] = $this->_svcUserRecord->cleanseUserPreferences($editUserPrefsForm, 
 									$anonUser['prefs'],
-									$this->_tplHelper->getTemplatePreferences());
+									$userPrefTemplate);
 
 		# Validate all preferences
 		$result = $this->_svcUserRecord->validateUserPreferences($spotUser['prefs'], $savePrefs);
@@ -94,10 +101,16 @@ class Services_Actions_EdtUserPrefs {
 		 * session for this user.
 		 */
 		$fakeSession = $this->_svcUserAuth->createNewSession($spotUser['userid']);
-		$fakeSession['security'] = new SpotSecurity($this->_daoFactory, $this->_settings, $fakeSession['user'], '');
+		$fakeSession['security'] = new SpotSecurity($this->_daoFactory->getUserDao(),
+                                                    $this->_daoFactory->getAuditDao(),
+                                                    $this->_settings,
+                                                    $fakeSession['user'],
+                                                    '');
 
 		$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $fakeSession);
 		$spotsNotifications->register();
+
+        return $result;
 	} # editUserPref
 
-} # Services_Actions_EdtUserPrefs
+} # Services_Actions_EditUserPrefs

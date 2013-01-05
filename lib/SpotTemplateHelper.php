@@ -933,7 +933,7 @@ class SpotTemplateHelper {
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
 		
-		return $this->_daoFactory->getUserListDao()->getUserListForDisplay();
+		return $this->_daoFactory->getUserDao()->getUserListForDisplay();
 	} # getUserList
 
  	/*
@@ -1062,7 +1062,7 @@ class SpotTemplateHelper {
 	 * Get index filter
 	 */
 	function getIndexFilter() {
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		return $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']);
 	} # getIndexFilter
 
