@@ -8,7 +8,7 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_mark_spots_asread, '');
 							  
 		# instantiate an user system
-		$svcUserRecord = new Services_User_Record($this->_db, $this->_settings);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
 		# if this is allowed, mark all individual spots as read
 		if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {

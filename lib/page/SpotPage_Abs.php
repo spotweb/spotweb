@@ -1,12 +1,33 @@
 <?php
 abstract class SpotPage_Abs {
-	protected $_daoFactory;
-	protected $_settings;
-	protected $_pageTitle;
-	protected $_currentSession;
-	protected $_spotSec;
-	protected $_tplHelper;
-
+    /**
+     * @var Dao_Factory
+     */
+    protected $_daoFactory;
+    /**
+     * @var Services_Settings_Base
+     */
+    protected $_settings;
+    /**
+     * Name of the page which we should render.
+     * @var string
+     */
+    protected $_pageTitle;
+    /**
+     * @var array
+     */
+    protected $_currentSession;
+    /**
+     * @var SpotSecurity
+     */
+    protected $_spotSec;
+    /**
+     * @var SpotTemplateHelper
+     */
+    protected $_tplHelper;
+    /**
+     * @var string
+     */
 	protected $_templatePaths;
 	
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession) {
