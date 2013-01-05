@@ -1,30 +1,20 @@
 <?php
-$pagetitle = _('Change user preferences');
+    include "includes/form-messages.inc.php";
 
-/* If we run embedded in a dialog, dont run the HTML header as that messes up things */
-if (!$dialogembedded) {
+    $pagetitle = _('Change user preferences');
 
-	/* Redirect to the callingpage */
-	if (!empty($edituserprefsresult)) {
-		if ($edituserprefsresult['result'] == 'success') {
-			$tplHelper->redirect($http_referer);
+    /* If we run embedded in a dialog, dont run the HTML header as that messes up things */
+    if (!$dialogembedded) {
 
-			return ;
-		} # if
-	} # if
+        /* Redirect to the calling page */
+        if ($result->isSuccess()) {
+            $tplHelper->redirect($http_referer);
+            return ;
+        } # if
 
-	require "includes/header.inc.php";
-	echo '</div>';
-} else {
-	/* Return the XML result */
-	if (!empty($edituserprefsresult)) {
-		include 'includes/form-xmlresult.inc.php';
-		echo formResult2Xml($edituserprefsresult, $formmessages, $tplHelper);
-
-		return ;
-	} # if
-} # if
-include "includes/form-messages.inc.php";
+        require "includes/header.inc.php";
+        echo '</div>';
+    } # if
 
 if (!$dialogembedded) { ?>
 	<div id='toolbar'>
@@ -32,6 +22,7 @@ if (!$dialogembedded) { ?>
 		</div>
 	</div>
 <?php } ?>
+
 <form class="edituserprefsform" name="edituserprefsform" action="<?php echo $tplHelper->makeEditUserPrefsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="edituserprefsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserprefsform'); ?>">
 	<input type="hidden" name="edituserprefsform[http_referer]" value="<?php echo $http_referer; ?>">
@@ -39,7 +30,11 @@ if (!$dialogembedded) { ?>
 <?php if ($dialogembedded) { ?>
 	<input type="hidden" name="dialogembedded" value="1">
 <?php } ?>
-	
+
+<?php
+    showResults($result, array('renderhtml' => 1));
+?>
+
 	<div id="edituserpreferencetabs" class="ui-tabs">
 		<ul>
 			<li><a href="#edituserpreftab-1"><span><?php echo _('General'); ?></span></a></li>
@@ -177,6 +172,22 @@ if (!$dialogembedded) { ?>
 
 					<dt><label for="edituserprefsform[show_reportcount]"><?php echo _('Show number of spamreports in spotoverview?'); ?></label></dt>
 					<dd><input type="checkbox" name="edituserprefsform[show_reportcount]" <?php if ($edituserprefsform['show_reportcount']) { echo 'checked="checked"'; } ?>></dd>
+
+					<dt><label for="edituserprefsform[minimum_reportcount]"><?php echo _('Minimum number of spamreports before showing spamreports icon?'); ?></label></dt>
+					<dd>
+						<select name="edituserprefsform[minimum_reportcount]">
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 1) { echo 'selected="selected"'; } ?> value="1">1</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 2) { echo 'selected="selected"'; } ?> value="2">2</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 3) { echo 'selected="selected"'; } ?> value="3">3</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 4) { echo 'selected="selected"'; } ?> value="4">4</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 5) { echo 'selected="selected"'; } ?> value="5">5</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 6) { echo 'selected="selected"'; } ?> value="6">6</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 7) { echo 'selected="selected"'; } ?> value="7">7</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 8) { echo 'selected="selected"'; } ?> value="8">8</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 9) { echo 'selected="selected"'; } ?> value="9">9</option>
+							<option <?php if ($edituserprefsform['minimum_reportcount'] == 10) { echo 'selected="selected"'; } ?> value="10">10</option>
+						</select>
+					</dd>					
 					
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) { ?>
 					<dt><label for="edituserprefsform[show_nzbbutton]"><?php echo _('Show NZB button to download file with this browser?'); ?></label></dt>
