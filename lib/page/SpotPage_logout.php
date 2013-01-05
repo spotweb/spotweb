@@ -17,7 +17,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->sendContentTypeHeader('xml');
 		
 		# and remove the users' session if the user isn't the anonymous one
-		if ($svcUserAuth->removeSession($this->_currentSession['session']['sessionid'])) {
+		if ($svcUserAuth->removeSession($this->_currentSession)) {
 			$result->setResult('success');
 		} else {
 			$result->addError(_('Unable to remove session'));

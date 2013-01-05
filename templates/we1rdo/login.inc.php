@@ -1,24 +1,37 @@
 <?php
-if (!empty($loginresult)) {
-	if ((!isset($data['performredirect'])) || (($loginresult['result'] != 'success'))) {
-		if (!isset($data['renderhtml'])) {
-			include 'includes/form-xmlresult.inc.php';
-		
-			$this->sendContentTypeHeader('xml');
-			echo formResult2Xml($loginresult, $formmessages, $tplHelper);
-		} # if
-	} else {
-		$tplHelper->redirect($loginform['http_referer']);
-	} # if
-} # if
+    include "includes/form-messages.inc.php";
 
-if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult)) || (isset($data['renderhtml']))) {
-	if (!isset($data['htmlheaderssent'])) {
-		include "includes/basic-html-header.inc.php";
+    /*
+     * Do we need to redirect on success? If so, perform this
+     */
+    if (isset($data['performredirect']) && ($result->isSuccess())) {
+        $tplHelper->redirect($loginform['http_referer']);
 
-		$data['renderhtml'] = true;
-	} # if
-	include "includes/form-messages.inc.php"; 
+        return ;
+    } # if
+
+    $didSubmitForm = showResults($result, $data);
+
+    /*
+     * If the form submission was successful, all output
+     * we wanted has already been sent (either the JSON
+     * or the redirect).
+     *
+     * If not, we try to re-render the form again
+     */
+    if (($didSubmitForm) && (!isset($data['renderhtml']))) {
+        return ;
+    } # if
+
+    /*
+     * If no HTML headers are sent just yet, make sure
+     * we send them to the client
+     */
+    if (!isset($data['htmlheaderssent'])) {
+        include_once "includes/basic-html-header.inc.php";
+
+        $data['renderhtml'] = true;
+    } # if
 ?>
 <form class="loginform" name="loginform" action="<?php echo $tplHelper->getPageUrl('login'); ?>" method="post">
 	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
@@ -42,10 +55,7 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 	</fieldset>
 </form>
 <?php
-	}
 
 	if (isset($data['renderhtml'])) {
 		echo "</div></body></html>";
 	} # if
-?>
-

@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_login extends SpotPage_Abs {
 	private $_loginForm;
 	private $_params;
@@ -44,23 +45,22 @@ class SpotPage_login extends SpotPage_Abs {
 					$spotAudit->audit(SpotSecurity::spotsec_perform_login, 'incorrect user or pass', false);
 				} # if
 				
-				$loginResult = array('result' => 'failure');
-			    $formMessages['errors'][] = _('Invalid username or password');
+			    $result->addError(_('Invalid username or password'));
 			} else {
-				$loginResult = array('result' => 'success');
+                $result->setResult("success");
 				$this->_currentSession = $tryLogin;
 			} # else
 		} else {
 			# When the user is already logged in, show this as a warning
 			if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
 
-				$loginResult->addError(_('You are already logged in'));
+				$result->addError(_('You are already logged in'));
 			} # if
 		} # else
 		
 		#- display stuff -#
 		$this->template('login', array('loginform' => $credentials,
-									   'loginresult' => $result,
+									   'result' => $result,
 									   'http_referer' => $this->_loginForm['http_referer'],
 									   'data' => $this->_params['data']));
 	} # render

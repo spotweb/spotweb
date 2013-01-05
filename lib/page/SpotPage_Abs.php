@@ -114,7 +114,7 @@ abstract class SpotPage_Abs {
 	abstract function render();
 	
 	/*
-	 * Render a permission denied page. Might be overrided by a page specific
+	 * Render a permission denied page. Might be overridden by a page specific
 	 * implementation to allow rendering of XML or other type of pages
 	 */
 	function permissionDenied($exception, $page, $http_referer) {
