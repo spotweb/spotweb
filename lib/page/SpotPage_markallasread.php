@@ -21,7 +21,7 @@ class SpotPage_markallasread extends SpotPage_Abs {
 		# reset the lastvisit and lastread timestamp
 		$svcUserRecord->resetReadStamp($this->_currentSession['user']);
 
-		$this->render('markallasread', array('result' => $result));
+		$this->template('markallasread', array('result' => $result));
 	} # render()
 
 } # SpotPage_markallasread
