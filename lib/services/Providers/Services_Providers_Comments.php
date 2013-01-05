@@ -35,7 +35,7 @@ class Services_Providers_Comments {
 		 * a full comment already exists we also retrieve it
 		 */
 		$fullComments = $this->_commentDao->getCommentsFull($userId, $msgId);
-		
+
 		/*
 		 * Now we want to know the first comment we haven't retrieved yet, we
 		 * ignore not verified comments
@@ -64,37 +64,48 @@ class Services_Providers_Comments {
 			 * we have just enough comments to satisfy the requested
 			 * range. We cannot do without the looping because
 			 * we don't know which comments are verified until
-			 * they are retrived
+			 * they are retrieved
 			 */
 			if (($start > 0) || ($length > 0)) {
-				$newComments = array();
-			
 				/*
 				 * Start retrieving...
 				 */
 				while (($retrievedVerified < $totalCommentsNeeded) && ( ($lastHaveFullOffset) < count($fullComments) )) {
-					SpotTiming::start(__FUNCTION__. ':nntp:readComments()');
-					$tempList = $this->_nntpSpotReading->readComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
+                    $newComments = array();
+
+                    SpotTiming::start(__FUNCTION__. ':nntp:readComments()');
+					//$tempList = $this->_nntpSpotReading->readComments(array_slice($fullComments, $lastHaveFullOffset + 1, $length));
+
+                    /*
+                     * We only fetch one comment at a time, to make sure that if the system asks for a range of
+                     * comments which cannot be retrieved within the timeout period (eg: 250 comments cannot be
+                     * retrieved within 30 seconds), we at least have some comments in the database. This ensures
+                     * us that we make some progress at least.
+                     */
+                    $tempList = $this->_nntpSpotReading->readComments(array_slice($fullComments, $lastHaveFullOffset + 1, 1));
 					SpotTiming::stop(__FUNCTION__ . ':nntp:readComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
 				
-					$lastHaveFullOffset += $length;
+					$lastHaveFullOffset += 1; // was + $length
 					foreach($tempList as $comment) {
 						$newComments[] = $comment;
 						if ($comment['verified']) {
 							$retrievedVerified++;
 						} # if
 					} # foreach
-				} # while
+
+                    # add them to the database
+                    $this->_commentDao->addFullComments($newComments);
+                } # while
 			} else {
 				$newComments = $this->_nntpSpotReading->getComments(array_slice($fullComments, $lastHaveFullOffset + 1, count($fullComments)));
+
+                # add them to the database
+                $this->_commentDao->addFullComments($newComments);
 			} # else
-			
-			# add them to the database
-			$this->_commentDao->addFullComments($newComments);
 			
 			# re-ask the database so we always have the same common format
 			$fullComments = $this->_commentDao->getCommentsFull($userId, $msgId);
-		} # foreach
+		} # if
 		
 		/*
 		 * Only return verified comments, we are not interested in
@@ -109,7 +120,7 @@ class Services_Providers_Comments {
 			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
+        SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
 		return $fullComments;
 	} # fetchSpotComments()
 
