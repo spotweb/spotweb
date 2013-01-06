@@ -1,13 +1,7 @@
 <?php
-if (!empty($editresult)) {
-	include 'includes/form-xmlresult.inc.php';
-	
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($editresult, $formmessages, $tplHelper);
-} # if
+include "includes/form-messages.inc.php";
 
-if (empty($editresult)) {
-	include "includes/form-messages.inc.php";
+if (!showResults($result)) {
 ?>
 <form class="edituserform" name="edituserform" action="<?php echo $tplHelper->makeEditUserAction(); ?>" method="post">
 	<input type="hidden" name="edituserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserform'); ?>">

@@ -513,9 +513,11 @@ class Services_User_Record {
 	} # cleanseEditForm
 
 	public function updateUserRecord($user, array $groupList, $allowEditGroupMembership) {
+        $result = new Dto_FormResult('success');
+        $spotUser = $this->getUser($user['userid']);
+
 		# Remove any non-valid fields from the array
 		$user = $this->cleanseEditForm($user);
-		$spotUser = $this->getUser($user['userid']);
 
 		/* Make sure we the user to be editted can be found */
 		if ($spotUser === false) {

@@ -19,7 +19,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_other_users, '');
 		} # if
 		
-		# Instantiate the spotuser object
+		# Instantiate the service userrecord object
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
 		# and create a nice and shiny page title
@@ -65,7 +65,9 @@ class SpotPage_edituser extends SpotPage_Abs {
 				} # case 'edit' 
 				
 				case 'removeallsessions' : {
-					$result = $svcUserRecord->removeAllUserSessions($spotUser['userid']);
+                    $svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
+                    $result = $svcUserAuth->removeAllUserSessions($spotUser['userid']);
+
 					break;
 				} # case 'removeallsessions'
 

@@ -552,7 +552,7 @@ class Services_Search_QueryParser {
 			 * by utilizing the fulltext search (engine). If so, we take this path
 			 * to gain the most performance.
 			 */
-			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
+			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'title', 'titel'))) {
 				/*
 				 * Some databases (sqlite for example), want to have all their fulltext
 				 * searches available in one SQL function call. 
@@ -665,13 +665,13 @@ class Services_Search_QueryParser {
 			} # if
 		} # foreach
 
-		/*
-		 * When all filters are processed, we want to check wether we actually
-		 * have to process any of the $textSearchFields for which we could run
-		 * the db specific FTS engine.
-		 *
-		 * If so, ask the FTS engin to process the query.
-		 */
+        /*
+         * When all filters are processed, we want to check wether we actually
+         * have to process any of the $textSearchFields for which we could run
+         * the db specific FTS engine.
+         *
+         * If so, ask the FTS engin to process the query.
+         */
 		if (!empty($textSearchFields)) {
 			/*
  			 * We group searches per search type, but this means

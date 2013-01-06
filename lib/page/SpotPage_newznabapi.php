@@ -133,10 +133,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			/* Extract the movie title, and alternative (original) title if necessary */
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
-			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
+			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb, $originalTitle);
 
 			/* Extract the release date from the IMDB info page */
-			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb['content'], $movieReleaseDate);
+			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb, $movieReleaseDate);
 
 			/* Search for the title */
 			$search['value'][] = "Title:=:+\"" . trim($movieTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
@@ -174,7 +174,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		 * We get a bunch of query parameters, so now change this to the actual
 		 * search query the user requested including the required sorting
 		 */		
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
 		$parsedSearch = $svcSearchQp->filterToQuery(
 							$search,
@@ -185,7 +185,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 							$this->_currentSession,
 							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 
-		/* 
+		/*
 		 * Actually fetch the spots
 		 */		
 		$svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
@@ -194,7 +194,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 												$limit,
 												$parsedSearch);
 
-		$this->showResults($spotsTmp, $offset, $outputtype);
+        $this->showResults($spotsTmp, $offset, $outputtype);
 	} # search
 
 	function showResults($spots, $offset, $outputtype) {
@@ -593,7 +593,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
 
-                default     : throw new Exception("Invalid parameter / category for newznab API");
+                default     : return '';
 			} # switch
 		} # if
 	} # Cat2NewznabCat
@@ -715,7 +715,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 7020: return 'cat0_z2';
 
-            default     : throw new Exception("Invalid nabcat for newznab API");
+            default  : return '';
 		}
 	} # nabcat2spotcat
 

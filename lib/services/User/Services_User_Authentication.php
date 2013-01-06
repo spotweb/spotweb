@@ -199,7 +199,7 @@ class Services_User_Authentication {
 			 *
 			 * We therefore manually retrieve the user record
 			 */
-			$userRecord['user'] = $this->getUser($userId);
+			$userRecord['user'] = $this->_userDao->getUser($userId);
 
 			# and use the userrecord to update the lastapiusage time
 			$userRecord['user']['lastapiusage'] = time();
