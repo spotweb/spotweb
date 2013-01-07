@@ -5,8 +5,12 @@
 class SpotTranslation {
 
 	public static function initialize($lang) {
-		# Do we have native gettext?
-		if (extension_loaded('gettext')) {
+		/*
+		 * Do we have native gettext? We also check to see if this function exists,
+		 * because if the gettext module fails to load, this function will not exist.
+		 * See GitHub issue #1696
+		 */
+		if (extension_loaded('gettext') && (function_exists('bind_textdomain_codeset'))) {
 			putenv("LC_ALL=" . $lang . ".UTF-8");
 			setlocale(LC_ALL, $lang . '.UTF-8');
 
@@ -26,7 +30,7 @@ class SpotTranslation {
  * This is procedural code because we want these functions to
  * be in the global name space
  */
-if (!extension_loaded('gettext')) {
+if (!extension_loaded('gettext') || (!function_exists('bind_textdomain_codeset'))) {
 	function _($msg) {
 		return $GLOBALS['_gt_obj']->gettext($msg);
 	} # _ alias of gettext
