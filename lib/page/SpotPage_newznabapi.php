@@ -135,8 +135,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
 			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb, $originalTitle);
 
-			/* Extract the release date from the IMDB info page */
-			preg_match('/<time itemprop="datePublished" datetime="([0-9]{4})/ms', $imdb, $movieReleaseDate);
+			/*
+			 * Extract the release date from the IMDB info page. We cannot use datePublished because
+			 * that is the release date of the country this query to imdb is from.
+			 */
+            preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
+			preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate);
 
 			/* Search for the title */
 			$search['value'][] = "Title:=:+\"" . trim($movieTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
@@ -185,9 +189,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 							$this->_currentSession,
 							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 
-		/*
-		 * Actually fetch the spots
-		 */		
+        /*
+         * Actually fetch the spots
+         */
 		$svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
 		$spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
 												$pageNr, 
