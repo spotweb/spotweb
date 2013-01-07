@@ -122,7 +122,10 @@ class Services_Providers_SpotImage {
 		 */
 		if (!$validImage) {
 			$svc_ImageError = new Services_Image_Error();
-			$imageString = $svc_ImageError->createErrorImage($return_code);
+			$errorImage = $svc_ImageError->createErrorImage($return_code);
+
+            $imageString = $errorImage['content'];
+            $dimensions = $errorImage['dimensions'];
 		} # if
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));
