@@ -1,4 +1,6 @@
-ss dbfts_mysql extends dbfts_abs {
+<?php
+
+class dbfts_mysql extends dbfts_abs {
 	// LIST OF STOP WORDS: http://dev.mysql.com/doc/refman/5.0/en/fulltext-stopwords.html  
 	// Array copied from http://www.linein.org/blog/2008/11/10/mysql-full-text-stopwords-array/
 	private $stop_words = array('a\'s', 'able', 'about', 'above', 'according', 'accordingly', 'across', 'actually',
