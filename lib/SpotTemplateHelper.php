@@ -1046,7 +1046,7 @@ class SpotTemplateHelper {
 	 * Get users' filter list
 	 */
 	function getUserFilterList() {
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		return $svcUserFilter->getFilterList($this->_currentSession['user']['userid'], 'filter');
 	} # getUserFilterList
 
@@ -1054,7 +1054,7 @@ class SpotTemplateHelper {
 	 * Get specific filter
 	 */
 	function getUserFilter($filterId) {
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
 		return $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $filterId);
 	} # getUserFilter
 

@@ -956,11 +956,11 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	$.ajax({
 		type: "POST",
 		url: url, 
-		dataType: "html",
+		dataType: "json",
 		data: formdata,
-		success: function(xml) {
+		success: function(data) {
 			// alert(xml);
-			cb(xml);
+			cb(data);
 		} // success
 	}); // ajax call om de form te submitten
 } // ajaxSubmitFormWithCb
@@ -1578,12 +1578,10 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 	$.ajax({
 		type: "POST",
 		url: '?page=editfilter',
-		dataType: "xml",
+		dataType: "json",
 		data: formData,
-		success: function(xml) {
-			var result = $(xml).find('result').text();
-			
-			if (result == 'success') {
+		success: function(data) {
+			if (data.result == 'success') {
 				$("." + addElementClass).remove();
 			} // if
 		} // success()

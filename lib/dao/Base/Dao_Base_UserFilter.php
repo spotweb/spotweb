@@ -77,7 +77,7 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 * Get a specific filter
 	 */
 	function getFilter($userId, $filterId) {
-		/* Haal de lijst met filter values op */
+		/* Retrieve this specific filter */
 		$tmpResult = $this->_conn->arrayQuery("SELECT id,
 													  userid,
 													  filtertype,

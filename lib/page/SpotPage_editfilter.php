@@ -25,22 +25,20 @@ class SpotPage_editfilter extends SpotPage_Abs {
 		# Make sure the user has the appropriate rights
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_filters, '');
 		
-		# editfilter resultaat is standaard niet geprobeerd
-		$editResult = array();
-
 		# Instantiate the SpotUser system
-		$svcUserFilter = new Services_User_Filter($this->_daoFactory, $this->_settings);
-		
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+        $spotFilter = $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $this->_filterId);
+
 		# set the page title
 		$this->_pageTitle = "spot: filters";
-	
-		/* 
+
+		/*
 		 * bring the forms' action into the local scope for 
 		 * easier access
 		 */
 		$formAction = $this->_editFilterForm['action'];
 		
-		# Is dit een submit van een form, of nog maar de aanroep?
+		# Are we submitting this form, or just rendering it?
 		if (!empty($formAction)) {
 			switch($formAction) {
 				case 'removefilter' : {
@@ -64,7 +62,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'setfiltersasdefault'
 
 				case 'exportfilters': {
-					$editResult = $svcUserFilter->filtersToXml($svcUserFilter->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
+					$result = $svcUserFilter->filtersToXml($svcUserFilter->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
 					
 					break;
 				} # case 'exportfilters' 
@@ -119,12 +117,11 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'reorder' 
 				
 				case 'changefilter'	: {
-					# Retieve the filter we want to edit
-					$spotFilter = $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $this->_filterId);
-					$spotFilter = array_merge($spotFilter, $this->_editFilterForm);
+					# Retrieve the filter we want to edit
+                    $this->_editFilterForm['id'] = $this->_filterId;
 					
-					$svcUserFilter->changeFilter($this->_currentSession['user']['userid'],
-												  $spotFilter);
+					$result = $svcUserFilter->changeFilter($this->_currentSession['user']['userid'],
+                                                           $this->_editFilterForm);
 
 					break;
 				} # case 'changefilter' 
@@ -141,8 +138,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 											'lastformaction' => $formAction,
 										    'result' => $result,
 										    'data' => $this->_data,
-											'http_referer' => $this->_editFilterForm['http_referer'],
-											'editresult' => $editResult));
+											'http_referer' => $this->_editFilterForm['http_referer']));
 	} # render
 	
 } # class SpotPage_editfilter

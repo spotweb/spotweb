@@ -1,41 +1,57 @@
 <?php
+include "includes/form-messages.inc.php";
+
+/*
+ * If this page is rendered without an result variable
+ * available, just create one ourselves.
+ */
+if (!isset($result)) {
+    $result = new Dto_FormResult('notsubmitted');
+} # if
+
 if ((isset($lastformaction) && ($lastformaction == 'exportfilters'))) {
 	$this->sendContentTypeHeader('xml');
 	Header('Content-Disposition: attachment; filename="spotwebfilters.xml"');
 	
-	echo $editresult;
+	echo $result->getData('filters');
 	return ;
 } # if
 
 if ((isset($lastformaction) && ($lastformaction == 'importfilters'))) {
-	$tplHelper->redirect($http_referer);
+    if ($result->isSuccess()) {
+	    $tplHelper->redirect($http_referer);
+    } # if
 } # if
 
-if (!empty($editresult)) {
-	include 'includes/form-xmlresult.inc.php';
-
-	echo formResult2Xml($editresult, $formmessages, $tplHelper);
+/*
+ * Render the JSON or the form
+ */
+if (showResults($result)) {
+    return ;
 } # if
 
-
-# Retrieve a list of icons available
+/*
+ * Retrieve a list of icons available
+ */
 $filterIcons = $tplHelper->getFilterIcons();
 
-if (empty($editresult)) {
-	# is form voor het toevoegen van een groep ipv wijzigen van een
+
+/*
+ * If the user did not submit the form yet, make
+ * sure we add some data to the template
+ */
+if (!$result->isSubmitted()) {
+	# Determine whether this an edit of an existing filter or adding a new one
 	$isNew = (isset($data['isnew']));
 	
-	# vraag de opgegeven filter op
+	# Retrieve the requested filter
 	if ((!$isNew) && (isset($data['filterid']))) {
 		$filter = $tplHelper->getUserFilter($data['filterid']);
 	} else {
 		$filter = array('id' => 9999, 'title' => '', 'icon' => '');
 	} # if
 
-	# bereid alvast een UL voor voor de errors e.d., worden er later
-	# via AJAX ingegooid
-	include "includes/form-messages.inc.php";
-	
+
 ?>
 
 	<!-- Naam van filter wijzigen of nieuwe filter toevoegen -->

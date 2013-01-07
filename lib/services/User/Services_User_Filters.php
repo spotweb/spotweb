@@ -43,8 +43,15 @@ class Services_User_Filters {
 	 *   * Parent
 	 */
 	function changeFilter($userId, $filterForm) {
-		$filter = array_merge($filterForm, $this->getFilter($userId, $filterForm['filterid']));
-		return $this->_daoFactory->getUserFilterDao()->updateFilter($userId, $filter);
+		$filter = array_merge($this->getFilter($userId, $filterForm['id']), $filterForm);
+        list($filter, $result) = $this->validateFilter($filter);
+
+        # No errors found? add it to the datbase
+        if ($result->isSuccess()) {
+            $this->_daoFactory->getUserFilterDao()->updateFilter($userId, $filter);
+        } # if
+
+        return $result;
 	} # changeFilter
 
 
@@ -54,18 +61,18 @@ class Services_User_Filters {
 	function validateFilter($filter) {
 		$result = new Dto_FormResult();
 
-		# Remove any spaces 
+		# Remove any spaces
 		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
 		$filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
-		
+
 		# Make sure a filter name is valid
 		if (strlen($filter['title']) < 3) {
 			$result->addError(_('Invalid filter name'));
 		} # if
-		
-		return array($result, $filter);
+
+		return array($filter, $result);
 	} # validateFilter
-	
+
 	/*
 	 * Adds a filter to a user
 	 */
@@ -84,6 +91,7 @@ class Services_User_Filters {
 	 * Reorder filters
 	 */
 	public function reorderFilters($userId, $filterOrder) {
+        $orderCounter = 0;
 		foreach($filterOrder as $id => $parent) {
 			$spotFilter = $this->getFilter($userId, $id);
 
@@ -276,7 +284,7 @@ class Services_User_Filters {
 			$filterElm->appendChild($tree);
 
 			/* 
-			 * Prepareer the filtervalue list to make it usable for the XML
+			 * Prepare the filtervalue list to make it usable for the XML
 			 */
 			$tmpFilterValues = explode('&', $filter['valuelist']);
 			$filterValueList = array();
@@ -327,8 +335,14 @@ class Services_User_Filters {
 		
 		$mainElm->appendChild($filterListElm);
 
-		return $doc->saveXML();
-	} # filtersToXml 
+        /*
+         * Create a new result object
+         */
+        $result = new Dto_FormResult('success');
+        $result->addData('filters', $doc->saveXML());
+
+        return $result;
+	} # filtersToXml
 
 	/*
 	 * Translates an XML string back to a list of filters
@@ -428,8 +442,15 @@ class Services_User_Filters {
 				unset($filterList[$filter['id']]);
 			} # if
 		} # foreach
-		
-		return $filterList;
+
+
+        /*
+         * Create a new result object
+         */
+        $result = new Dto_FormResult('success');
+        $result->addData('filters', $filterList);
+
+        return $result;
 	} # xmlToFilters
 	
 } # class Services_User_Filters
