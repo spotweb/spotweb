@@ -1325,6 +1325,12 @@ msgstr "Fout tijden XML parsen"
 msgid "No image provided"
 msgstr "Geen plaatje opgegeven"
 
+msgid "unknown"
+msgstr "onbekende"
+
+msgid "Statistics"
+msgstr "Statistieken"
+
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
