@@ -1,4 +1,4 @@
-function spotPosting() {
+function SpotPosting() {
 	this.commentForm = null;
 	this.reportForm = null;
 	this.uiStart = null;
@@ -25,7 +25,7 @@ function spotPosting() {
 					var spotterid = $(xml).find('spotterid').text();
 					var rating = $(xml).find('rating').text();
 					var text = $(xml).find('body').text();
-					var spotteridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
+					var spotteridurl = 'http://'+window.location.host+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
 					var commentimage = $(xml).find('commentimage').text();
 
 					var data = "<li> <img class='commentavatar' src='" + commentimage + "'> <strong> <t>Posted by %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='spotterid' target='_parent' href='"+spotteridurl+"' title='<t>Search spots from %1</t>".replace("%1", spotterid) + "'>"+spotterid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
