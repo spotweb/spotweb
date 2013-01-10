@@ -261,7 +261,7 @@ class Net_NNTP_Protocol_Client
 
     	// Check if connected
     	if (!$this->_isConnected()) {
-            $this->throwError('Failed to write to socket! (connection lost!)');
+            $this->throwError('Failed to write to socket! (connection lost!)', -999);
         }
 
     	// Send the command

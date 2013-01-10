@@ -228,7 +228,7 @@ class Services_Nntp_Engine {
 		 */
 		public function validateServer() {
 			/*
-			 * We need to select a group, because authenticatin
+			 * We need to select a group, because authentication
 			 * is not always entered but sometimes required
 			 */
 			$this->selectGroup('free.pt');

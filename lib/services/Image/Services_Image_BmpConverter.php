@@ -52,9 +52,9 @@ class Services_Image_BmpConverter {
 			 * output the image to the standard output stream
 			 */
 			ob_start();
-			imagejpeg($tmpimg);
+			imagejpeg($tmpImg);
 			$imageString = ob_get_clean();
-			imagedestroy($tmpimg);
+			imagedestroy($tmpImg);
 		} # if
 
 		return $imageString;
