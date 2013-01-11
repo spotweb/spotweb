@@ -8,7 +8,8 @@ class SpotTemplateHelper {
 	protected $_params;
 	protected $_nzbhandler;
 	protected $_spotSec;
-    protected $_svcCacheNewSpotCount;
+    protected $_svcCacheNewSpotCount = null;
+    protected $_treeFilterCache = null;
 	
 	
 	function __construct(Services_Settings_Base $settings, $currentSession, Dao_Factory $daoFactory, $params) {
@@ -601,11 +602,17 @@ class SpotTemplateHelper {
 		if (!isset($this->_params['parsedsearch']['categoryList'])) {
 			return '';
 		} # if
-		
-		# Bouwen de search[tree] value op
+
+        if ($this->_treeFilterCache !== null) {
+            return $this->_treeFilterCache;
+        } # if
+
+		# Rebuild the category tree
 		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
-		return '&amp;search[tree]=' . urlencode($svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+        $this->_treeFilterCache = '&amp;search[tree]=' . urlencode($svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
 														$this->_params['parsedsearch']['strongNotList']));
+
+        return $this->_treeFilterCache;
 	} # convertTreeFilterToQueryParams
 
 	/*
