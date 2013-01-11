@@ -40,7 +40,7 @@ class SpotPage_editsettings extends SpotPage_Abs {
 				} # case 'edit' 
 				
 				case 'cancel' : {
-					$editResult = array('result' => 'success');
+					$result = new Dto_FormResult('success');
 				} # case 'cancel'
 			} # switch
 		} # if
@@ -48,8 +48,7 @@ class SpotPage_editsettings extends SpotPage_Abs {
 		#- display stuff -#
 		$this->template('editsettings', array('editsettingsform' => $this->_settings,
 											  'result' => $result,
-											  'http_referer' => $this->_editSettingsForm['http_referer'],
-											  'adminpanelresult' => $editResult));
+											  'http_referer' => $this->_editSettingsForm['http_referer']));
 	} # render
 	
 } # class SpotPage_editsettings

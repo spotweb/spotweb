@@ -1,30 +1,32 @@
 <?php
-if (!empty($editsettingsresult)) {
-	if ($editsettingsresult['result'] == 'success') {
-		$tplHelper->redirect($http_referer);
-		return ;
-	} # if
-} # if
+    require "includes/header.inc.php";
+    require "includes/form-messages.inc.php";
 
-require "includes/header.inc.php";
-include "includes/form-messages.inc.php";
-$nntp_nzb = $this->_settings->get('nntp_nzb');
-$nntp_hdr = $this->_settings->get('nntp_hdr');
-$nntp_post = $this->_settings->get('nntp_post');
+    if ($result->isSubmitted()) {
+        if ($result->isSuccess()) {
+            $tplHelper->redirect($http_referer);
 
-$tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
-if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
-	$nntp_hdr['isadummy'] = true;
-} # if
+            return ;
+        } # if
+    } # if
 
-$tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
-if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
-	$nntp_post['isadummy'] = true;
-} # if
+    $nntp_nzb = $this->_settings->get('nntp_nzb');
+    $nntp_hdr = $this->_settings->get('nntp_hdr');
+    $nntp_post = $this->_settings->get('nntp_post');
 
-if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
-	$retrieve_newer_than = 1254373200; // 2009-11-01
-} # if
+    $tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
+    if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
+        $nntp_hdr['isadummy'] = true;
+    } # if
+
+    $tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
+    if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
+        $nntp_post['isadummy'] = true;
+    } # if
+
+    if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
+        $retrieve_newer_than = 1254373200; // 2009-11-01
+    } # if
 ?>
 </div>
 	<div id='toolbar'>
