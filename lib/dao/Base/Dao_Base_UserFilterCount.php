@@ -50,7 +50,7 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 										 WHERE t.userid = -1 
 										   AND f.userid = %d",
 								Array((int) $userId) );
-								
+
 		foreach($tmp as $cachedItem) {
 			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
 															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],

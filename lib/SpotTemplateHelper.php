@@ -8,6 +8,7 @@ class SpotTemplateHelper {
 	protected $_params;
 	protected $_nzbhandler;
 	protected $_spotSec;
+    protected $_svcCacheNewSpotCount;
 	
 	
 	function __construct(Services_Settings_Base $settings, $currentSession, Dao_Factory $daoFactory, $params) {
@@ -59,11 +60,14 @@ class SpotTemplateHelper {
 	 * Returns te amount of spots (for a specific filter) which are new for this user
 	 */
 	function getNewCountForFilter($filterStr) {
-		$svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
-										$this->_daoFactory->getUserFilterDao(),
-										$this->_daoFactory->getSpotDao(),
-										new Services_Search_QueryParser($this->_daoFactory->getConnection()));
-		return $svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], $filterStr);
+        if ($this->_svcCacheNewSpotCount == null) {
+            $this->_svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+                                            $this->_daoFactory->getUserFilterDao(),
+                                            $this->_daoFactory->getSpotDao(),
+                                            new Services_Search_QueryParser($this->_daoFactory->getConnection()));
+        } # if
+
+		return $this->_svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], $filterStr);
 	} # getNewCountForFilter
 
 	/*
