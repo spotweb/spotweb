@@ -103,7 +103,7 @@ class Gettext_PHP extends SpotGettext
      *
      * @return Array of offsets
      */
-    private function parseOffsetTable(resource $fp, $offset, $num)
+    private function parseOffsetTable($fp, $offset, $num)
     {
         if (fseek($fp, $offset, SEEK_SET) < 0) {
             return null;
@@ -127,7 +127,7 @@ class Gettext_PHP extends SpotGettext
      *
      * @return Parsed string
      */
-    private function parseEntry(resource $fp, $entry)
+    private function parseEntry($fp, $entry)
     {
         if (fseek($fp, $entry['offset'], SEEK_SET) < 0) {
             return null;
