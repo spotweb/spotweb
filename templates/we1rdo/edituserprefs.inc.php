@@ -62,7 +62,7 @@ if (!$dialogembedded) { ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_allow_custom_stylesheet, '')) { ?>
 			<li><a href="#edituserpreftab-5"><span><?php echo _('Own CSS'); ?></span></a></li>
 <?php } ?>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '')) { ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '') && $currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) { ?>
 			<li><a href="#edituserpreftab-6"><span><?php echo _('Posting of spots'); ?></span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) { ?>
