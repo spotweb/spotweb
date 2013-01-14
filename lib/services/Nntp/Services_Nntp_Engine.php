@@ -15,8 +15,6 @@ class Services_Nntp_Engine {
 		 * Instantiate a new Service NNTP engine object
 		 */
 		function __construct(array $server) { 
-			$error = '';
-			
 			$this->_connected = false;
 			$this->_server = $server['host'];
 			$this->_serverenc = $server['enc'];

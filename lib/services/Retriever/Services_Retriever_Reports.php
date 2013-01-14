@@ -58,7 +58,6 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 		function process($hdrList, $curMsg, $endMsg, $timer) {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 		
-			$signedCount = 0;
 			$lastProcessedId = '';
 			$reportDbList = array();
 

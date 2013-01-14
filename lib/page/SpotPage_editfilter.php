@@ -106,8 +106,6 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'addfilter' 
 
 				case 'reorder' : {
-					$orderCounter = 0;
-					
 					/*
 					 * The nestedSortable jquery widget will not pass an explicit sorting, we
 					 * add it ourselves using the order of the elements we are given

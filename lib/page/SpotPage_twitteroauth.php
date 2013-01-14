@@ -15,7 +15,6 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 
 		# Instantieer het Spot user system & notificatiesysteem
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
-		$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 		$requestArray = array_merge_recursive($this->_currentSession['user']['prefs']['notifications']['twitter'],
 											  array('consumer_key' => $this->_settings->get('twitter_consumer_key'),
