@@ -41,7 +41,7 @@ class Notifications_Prowl extends Notifications_abs {
 			$oFilter = new \Prowl\Security\PassthroughFilterImpl();
 			$this->prowlObj->setFilter($oFilter);
 			$this->prowlObj->setIsPostRequest(true);
-			$oResponse = $this->prowlObj->push($oMsg);
+			$this->prowlObj->push($oMsg);
 		} # if
 	} # sendMessage
 

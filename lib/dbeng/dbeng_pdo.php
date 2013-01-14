@@ -8,6 +8,7 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @param string $s
      * @param array $p
      * @return PDOStatement
+     * @throws Exception When PDO statement cannot be created
      */
 	public function prepareSql($s, $p) {
 		if (empty($p)) {
@@ -84,6 +85,7 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @param string $s
      * @param array $p
      * @return PDOStatement
+     * @throws SqlErrorException SQL exception when an SQL error occurs during execution
      */
     public function exec($s, $p = array()) {
 		SpotTiming::start(__FUNCTION__);

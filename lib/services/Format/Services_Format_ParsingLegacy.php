@@ -8,7 +8,6 @@ class Services_Format_ParsingLegacy {
 
 
 	private function parseEncodedWord($inputStr) {
-		$str = '';
 		$builder = '';
 
 		if (substr($inputStr, 0, 1) !== '=') {

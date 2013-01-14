@@ -17,7 +17,6 @@ class Dao_Base_Spot implements Dao_Spot {
 	 */
 	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
 		SpotTiming::start(__FUNCTION__);
-		$results = array();
 		$offset = (int) $pageNr * (int) $limit;
 
 		/*

@@ -30,10 +30,10 @@ class Services_Nntp_EnginePool {
 			case 'bin'			: {
 
 				$settings_nntp_bin = $settings->get('nntp_nzb');
-				if (empty($settings_nntp_nzb['host'])) {
+				if (empty($settings_nntp_bin['host'])) {
 					self::$_instances[$type] = self::pool($settings, 'hdr');
 				} else {
-					self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_nzb);
+					self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_bin);
 				} # else
 
 				break;

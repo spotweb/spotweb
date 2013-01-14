@@ -24,9 +24,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		
 		# Instantiate the user system as necessary for the management of user preferences
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
-		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
-		$svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
-		
+
 		# set the page title
 		$this->_pageTitle = "spot: edit user preferences";
 		

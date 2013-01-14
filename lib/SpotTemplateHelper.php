@@ -665,7 +665,6 @@ class SpotTemplateHelper {
 	 * naar GET parameters voor in de URL
 	 */
 	function convertSortToQueryParams() {
-		$sortStr = '';
 		$activeSort = $this->getActiveSorting();
 		
 		if (!empty($activeSort['field'])) {
