@@ -23,7 +23,7 @@ class SpotPage_logout extends SpotPage_Abs {
 			$result->addError(_('Unable to remove session'));
 		} # else
 
-		$this->render('jsonresult', array('result' => $result));
+		$this->template('jsonresult', array('result' => $result));
 	} # render
 	
 } # class SpotPage_logout

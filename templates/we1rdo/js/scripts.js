@@ -978,7 +978,7 @@ function userLogout() {
         type: "GET",
         url: url,
 		async: false,
-        dataType: "xml",
+        dataType: "json",
         success: function(msg) {
 			window.location.reload();
 		}
