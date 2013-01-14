@@ -65,7 +65,7 @@ class Services_Nntp_Engine {
 			} # if
 			
 			try {
-				$this->_nntp->quit();
+				$this->_nntp->disconnect();
 				$this->_connected = false;
 			} 
 			catch(Exception $x) {
