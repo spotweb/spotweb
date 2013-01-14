@@ -1,4 +1,5 @@
 <?php
+
 class Services_Actions_DownloadNzb {
 	private $_settings;
 	private $_daoFactory;

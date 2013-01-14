@@ -16,7 +16,7 @@ class Services_User_Record {
 	/*
 	 * Create a new user record
 	 */
-	public function createNewUser(array $spotUser, array $spotSession)	{
+	public function createUserRecord(array $spotUser)	{
 		$result = new Dto_FormResult();
 		$spotUser['userid'] = false;
 		
@@ -47,9 +47,6 @@ class Services_User_Record {
 			$spotUser['publickey'] = $userKey['public'];
 			$spotUser['privatekey'] = $userKey['private'];
 
-			# Initialize notification system
-			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $spotSession);
-
 			# Actually add the user
 			$this->addUser($spotUser);
 			
@@ -63,19 +60,10 @@ class Services_User_Record {
 			$result->addInfo(sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']));
 			$result->addInfo(sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']));
             $result->setResult('success');
-
-			# Send a mail to the new user if the user asked for this
-			$sendMail = isset($spotUser['sendmail']);
-			if ($sendMail || $this->_settings->get('sendwelcomemail')) {
-				$spotsNotifications->sendNewUserMail($spotUser);
-			} # if 
-
-			# send a notiifcation that a new user was added to the system
-			$spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
 		} # if
 
 		return $result;
-	} # createNewUser
+	} # createUserRecord
 
 	/*
 	 * Reset the seenstamp timestamp
