@@ -39,7 +39,7 @@ class Services_User_Record {
 		if (!empty($userIdForName)) {
 			$result->addError(sprintf(_("'%s' already exists"), $spotUser['username']));
 		} # if
-		
+
 		if ($result->isSuccess()) {
 			# Create a private and public key pair for this user
 			$spotSigning = Services_Signing_Base::factory();
@@ -48,18 +48,20 @@ class Services_User_Record {
 			$spotUser['privatekey'] = $userKey['private'];
 
 			# Actually add the user
-			$this->addUser($spotUser);
-			
+			$spotUser['userid'] = $this->addUser($spotUser);
+
 			/*
 			 * We assume the user was successfully added, all validation is done at
 			 * a higher level, and addUser() will throw an exception if something is
 			 * seriously wrong
 			 */
+			$result->addData('userid', $spotUser['userid']);
 			$result->addData('username', $spotUser['username']);
 			$result->addData('password', $spotUser['newpassword1']);
             $result->addData('userrecord', $spotUser);
 			$result->addInfo(sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']));
 			$result->addInfo(sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']));
+
             $result->setResult('success');
 		} # if
 
@@ -481,14 +483,23 @@ class Services_User_Record {
 		} # if
 
 		# and make sure the mailaddress is unique among all users
+		$result->mergeResult($this->validateUserEmailExists($user));
+		
+		return $result;
+	} # validateUserRecord
+
+	function validateUserEmailExists($user) {
+		$result = new Dto_FormResult();
+		
+		# and make sure the mailaddress is unique among all users
 		$emailExistResult = $this->_userDao->userEmailExists($user['mail']);
 		if (($emailExistResult !== $user['userid']) && ($emailExistResult !== false)) {
 			$result->addError(_('Mailaddress is already in use'));
 		} # if
 		
 		return $result;
-	} # validateUserRecord
-
+	} # validateUserEmailExists
+	
 	private function cleanseEditForm($editForm) {
 		/* Make sure the preferences aren't set using this page as it might override security */
 		$validFields = array('firstname', 'lastname', 'mail', 'newpassword1', 'newpassword2', 'grouplist', 'prefs');
