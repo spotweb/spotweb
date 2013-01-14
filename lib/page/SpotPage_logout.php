@@ -14,7 +14,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		# send the appropriate content-type header
-		$this->sendContentTypeHeader('xml');
+		$this->sendContentTypeHeader('json');
 		
 		# and remove the users' session if the user isn't the anonymous one
 		if ($svcUserAuth->removeSession($this->_currentSession)) {
@@ -23,7 +23,7 @@ class SpotPage_logout extends SpotPage_Abs {
 			$result->addError(_('Unable to remove session'));
 		} # else
 
-		$this->render('logout', array('result' => $result));
+		$this->render('jsonresult', array('result' => $result));
 	} # render
 	
 } # class SpotPage_logout

@@ -48,7 +48,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		} # if
 		
 		#- display stuff -#
-		$this->template('spamreport', array('postreportform' => $report,
+		$this->template('jsonresult', array('postreportform' => $report,
 											'result' => $result));
 	} # render	
 

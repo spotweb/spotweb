@@ -13,7 +13,7 @@ class SpotPage_erasedls extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		$result = new Dto_FormResult('success');
-		$this->template('erasedls', array('result' => $result));
+		$this->template('jsonresult', array('result' => $result));
 	} # render()
 
 } # SpotPage_erasedls

@@ -17,11 +17,14 @@ class SpotPage_markallasread extends SpotPage_Abs {
 
 		# never cache this action
 		$this->sendExpireHeaders(true);
+
+        # our results are always in json
+        $this->sendContentTypeHeader('json');
 		
 		# reset the lastvisit and lastread timestamp
 		$svcUserRecord->resetReadStamp($this->_currentSession['user']);
 
-		$this->template('markallasread', array('result' => $result));
+		$this->template('jsonresult', array('result' => $result));
 	} # render()
 
 } # SpotPage_markallasread
