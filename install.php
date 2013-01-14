@@ -148,34 +148,44 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$form = array('engine' => 'MySQL',
-					  'host' => 'localhost',
-					  'dbname' => 'spotweb',
-					  'user' => 'spotweb',
-					  'pass' => 'spotweb',
-					  'submit' => '');
+		if (!isset($settings['mydb'])) {
+			$form = array('engine' => 'MySQL',
+						  'host' => 'localhost',
+						  'dbname' => 'spotweb',
+						  'user' => 'spotweb',
+						  'pass' => 'spotweb',
+						  'submit' => '');
+		} else {
+			$form = $settings['mydb'];
+			unset($settings['mydb']);
+		} # else
+
 		if (isset($_POST['dbform'])) {
 			$form = array_merge($form, $_POST['dbform']);
 		} # if
-						
+
 		/*
-		 * Dit the user press submit? If so, try to
+		 * Did the user press submit? If so, try to
 		 * connect to the database
 		 */
 		$databaseCreated = false;
 		if ($form['submit'] === 'Verify database') {
 			try {
-				$db = new SpotDb($form);
-				$db->connect();
+				$dbCon = dbeng_abs::getDbFactory($form['engine']);
+				$dbCon->connect($form['host'],
+								$form['user'],
+								$form['pass'],
+								$form['dbname']);
+
 				$databaseCreated = true;
-				
+
 				/*
 				 * Store the given database settings in the 
 				 * SESSION object, we need it later to generate
-				 * a 'ownsettings.php' file
+				 * a 'dbsettings.inc.php' file
 				 */
-				$_SESSION['spotsettings']['db'] = $form;			
-				
+				$_SESSION['spotsettings']['db'] = $form;
+
 				/*
 				 * and call the next stage in the setup
 				 */
@@ -187,10 +197,10 @@
 				<br /><br />
 				Please correct the errors in below form and try again
 				</div>
-	<?php			
+	<?php
 			} # exception
 		} # if
-		
+
 		if (!$databaseCreated) {
 	?>
 			<form name='dbform' method='POST'>
@@ -215,19 +225,25 @@
 		global $_testInstall_Ok;
 
 		$serverList = simplexml_load_file('usenetservers.xml');
-		$form = array('name' => 'custom',
-					  'host' => '',
-					  'user' => '',
-					  'pass' => '',
-					  'port' => 119,
-					  'enc' => false,
-					  'submit' => '');
+		if (!isset($settings['mynntp'])) {
+			$form = array('name' => 'custom',
+						  'host' => '',
+						  'user' => '',
+						  'pass' => '',
+						  'port' => 119,
+						  'enc' => false,
+						  'submit' => '');
+		} else {
+			$form = $settings['mynntp'];
+			unset($settings['mynntp']);
+		} # else
+
 		if (isset($_POST['nntpform'])) {
 			$form = array_merge($form, $_POST['nntpform']);
 		} # if
 
 		/*
-		 * Dit the user press submit? If so, try to
+		 * Did the user press submit? If so, try to
 		 * connect to the database
 		 */
 		$nntpVerified = false;
@@ -239,8 +255,6 @@
 				 */
 				if ($form['name'] == 'custom') {
 						$form['buggy'] = false;
-
-
 						$form['hdr'] = $form;
 						$form['nzb'] = $form;
 						$form['post'] = $form;
@@ -293,7 +307,7 @@
 				} # else 
 				
 				/* and try to connect to the usenet server */
-				$nntp = new SpotNntp($form['hdr']);
+				$nntp = new Services_Nntp_Engine($form['hdr']);
 				$nntp->validateServer();
 
 				$nntpVerified = true;
@@ -362,19 +376,25 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$form = array('systemtype' => 'public',
-					  'username' => '', 'newpassword1' => '', 'newpassword2' => '', 'firstname' => '',
-					  'lastname' => '', 'mail' => '', 'userid' => -1);
+		if (!isset($settings['myadminuser'])) {
+			$form = array('systemtype' => 'public',
+						  'username' => '', 'newpassword1' => '', 'newpassword2' => '', 'firstname' => '',
+						  'lastname' => '', 'mail' => '', 'userid' => -1);
+		} else {
+			$form = $settings['myadminuser'];
+			unset($settings['myadminuser']);
+		}
+
 		if (isset($_POST['settingsform'])) {
 			$form = array_merge($form, $_POST['settingsform']);
 		} # if
 
 		/*
-		 * Dit the user press submit? If so, try to
+		 * Did the user press submit? If so, try to
 		 * connect to the database
 		 */
 		$userVerified = false;
-		if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {			
+		if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {
 			try {
 				/*
 				 * Store the given user settings in the 
@@ -382,42 +402,44 @@
 				 * the settings in the database
 				 */
 				$_SESSION['spotsettings']['adminuser'] = $form;
-			
+
 				/*
-				 * Very ugly hack. We create an empty SpotSettings class
+				 * Very ugly hack. We create an empty Services_Settings_Base class
 				 * so this will satisfy the constructor in the system.
-				 * It's ugly, i know.
+				 * It's ugly, I know.
 				 */
 				class Services_Settings_Base { } ;
 
 				/*
-				 * Override the SpotDb class so we can override userEmailExists()
+				 * Override the Service_User_Record class so we can override userEmailExists()
 				 * to not require database access.
-				 */
-				class DbLessSpotDb extends SpotDb {
-					function userEmailExists($s) {
-						return (($s == 'john@example.com') || ($s == 'spotwebadmin@example.com'));
-					} # userEmailExists
-				} #  class DbLessSpotDb
-				  
+				*/
+				class Services_ValidateUser_Record extends Services_User_Record {
 
-				/*
-				 * Create an DbLessSpotDb object to satisfy the user subsystem
-				 */
-				$db = new DbLessSpotDb($_SESSION['spotsettings']['db']);
-				$db->connect();
+					function validateUserEmailExists($user) {
+						$result = new Dto_FormResult();
+
+						if (($user['mail'] == 'john@example.com') || ($user['mail'] == 'spotwebadmin@example.com')) {
+							$result->addError(_('Mailaddress is already in use'));
+						} # if
+
+						return $result;
+					} # validateUserRecord
+				}
 
 				/*
 				 * And initiate the user system, this allows us to use
-				 * validateUserRecord() 
+				 * validateUserRecord()
 				 */
-				$svcUserRecord = new Services_User_Record($db, new Services_Settings_Base(array()));				
-				$errorList = $svcUserRecord->validateUserRecord($form, false);
+				$dbsettings = $_SESSION['spotsettings']['db'];
+				$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
+				$svcUserRecord = new Services_ValidateUser_Record($daoFactory, new Services_Settings_Base(array()));
+				$errorList = $svcUserRecord->validateUserRecord($form, false)->getErrors();
 
 				if (!empty($errorList)) {
 					throw new Exception($errorList[0]);
 				} # if
-			
+
 				/*
 				 * and call the next stage in the setup
 				 */
@@ -429,10 +451,10 @@
 				<br /><br />
 				Please correct the errors in below form and try again
 				</div>
-	<?php			
+	<?php
 			} # exception
 		} # if
-		
+
 		if (!$userVerified) {
 	?>
 			<form name='settingsform' method='POST'>
@@ -471,14 +493,38 @@
 			ob_start();
 
 			/*
-			 * Now create the database ...
+			 * Get the schema version and other constants
 			 */
-			$settings['db'] = $_SESSION['spotsettings']['db'];
-			$svcUpgradeBase = new Services_Upgrade_Base($settings['db'], $settings);
-			$svcUpgradeBase->database();
+			require_once "lib/Bootstrap.php";
+			$bootstrap = new Bootstrap();
 
 			/*
-			 * and create all the different settings (only the default) ones
+			 * Now create the database
+			 */
+			$dbsettings = $_SESSION['spotsettings']['db'];
+			$dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
+			$dbCon->connect($dbsettings['host'],
+							$dbsettings['user'],
+							$dbsettings['pass'],
+							$dbsettings['dbname']);
+
+			$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
+			$daoFactory->setConnection($dbCon);
+
+			/*
+			 * The database must exist before we can get the Service_Settings_Base instance
+			 */
+			$dbStruct = SpotStruct_abs::factory($dbsettings['engine'], $daoFactory->getConnection());
+			$dbStruct->updateSchema();
+
+			$spotSettings = Services_Settings_Base::singleton($daoFactory->getSettingDao(),
+															  $daoFactory->getBlackWhiteListDao(),
+															  $settings);
+
+			$svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $spotSettings, $dbsettings['engine']);
+
+			/*
+			 * Create all the different settings (only the default) ones
 			 */
 			$svcUpgradeBase->settings();
 
@@ -497,16 +543,6 @@
 			 * Now it is time to do something with
 			 * the information the user has given to us
 			 */
-			$db = new SpotDb($_SESSION['spotsettings']['db']);
-			$db->connect();
-
-			/* 
-			 * add the database settings to the main settings array for now
-			 */
-			$settings['db'] = $_SESSION['spotsettings']['db'];;
-
-			/* and create the database settings */
-			$spotSettings = Services_Settings_Base::singleton($db, $settings);
 
 			/*
 			 * Update the NNTP settings in the databas
@@ -514,33 +550,31 @@
 			$spotSettings->set('nntp_nzb', $_SESSION['spotsettings']['nntp']['nzb']);
 			$spotSettings->set('nntp_hdr', $_SESSION['spotsettings']['nntp']['hdr']);
 			$spotSettings->set('nntp_post', $_SESSION['spotsettings']['nntp']['post']);
-			
+
 			/*
 			 * Create the given user
 			 */
-			$svcUserRecord = new Services_User_Record($db, $spotSettings);
+			$svcUserRecord = new Services_User_Record($daoFactory, $spotSettings);
 			$spotUser = $_SESSION['spotsettings']['adminuser'];
-
-			/*
-			 * Create a private/public key pair for this user
-			 */
-			$spotSigning = Services_Signing_Base::factory();
-			$userKey = $spotSigning->createPrivateKey($spotSettings->get('openssl_cnf_path'));
-			$spotUser['publickey'] = $userKey['public'];
-			$spotUser['privatekey'] = $userKey['private'];
 
 			/*
 			 * and actually add the user
 			 */
-			$userId = $svcUserRecord->addUser($spotUser);
+			$spotUser['userid'] = $svcUserRecord->createUserRecord($spotUser)->getData('userid');
+
+			/*
+			 * When the new user was created a random password was assigned, 
+			 * so now have to set the supplied password
+			 */
+			$svcUserRecord->setUserPassword($spotUser);
 
 			# Change the administrators' account password to that of this created user
 			$adminUser = $svcUserRecord->getUser(SPOTWEB_ADMIN_USERID);
 			$adminUser['newpassword1'] = $spotUser['newpassword1'];
-			$spotUserSystem->setUserPassword($adminUser);
+			$svcUserRecord->setUserPassword($adminUser);
 
 			# update the settings with our system type and our admin id
-			$spotSettings->set('custom_admin_userid', $userId);
+			$spotSettings->set('custom_admin_userid', $spotUser['userid']);
 			$spotSettings->set('systemtype', $spotUser['systemtype']);
 
 			# Set the system type
@@ -580,7 +614,7 @@
 
 			<table summary="PHP settings">
 				<tr> <th colspan='2'> Installation succesful </th> </tr>
-				<tr> <td colspan='2'> Spotweb has been installed succesfuly! </td> </tr>
+				<tr> <td colspan='2'> Spotweb has been installed successfully! </td> </tr>
 				<tr> <td colspan='2'> &nbsp; </td> </tr>
 <?php if (!$createdDbSettings) { ?>
 				<tr> 

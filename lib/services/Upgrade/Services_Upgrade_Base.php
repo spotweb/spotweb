@@ -7,7 +7,7 @@ class Services_Upgrade_Base {
 	
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $dbEngine) {
 		$this->_daoFactory = $daoFactory;
-		$this->_dbStruct = SpotStruct_Abs::factory($dbEngine, $daoFactory->getConnection());
+		$this->_dbStruct = SpotStruct_abs::factory($dbEngine, $daoFactory->getConnection());
 		$this->_settings = $settings;
 	} # ctor
 	
@@ -46,7 +46,7 @@ class Services_Upgrade_Base {
 	 * Reset users' group membership
 	 */
 	function resetUserGroupMembership() {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 		$svcUpgradeUser->resetUserGroupMembership($settings->get('systemtype'));
 	} # resetUserGroupMembership
 
@@ -54,7 +54,7 @@ class Services_Upgrade_Base {
 	 * Reset securitygroup settings to their default
 	 */
 	function resetSecurityGroups() {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 		$svcUpgradeUser->updateSecurityGroups(true);
 	} # resetSecurityGroups
 
@@ -62,7 +62,7 @@ class Services_Upgrade_Base {
 	 * Reset users' filters settings to their default
 	 */
 	function resetFilters() {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 		$svcUpgradeUser->updateUserFilters(true);
 	} # resetFilters
 	 
@@ -70,7 +70,7 @@ class Services_Upgrade_Base {
 	 * Perform a mass change for users' preferences
 	 */
 	function massChangeUserPreferences($prefName, $prefValue) {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 		$svcUpgradeUser->massChangeUserPreferences($prefName, $prefValue);
 	} # massChangeUserPreferences
 
@@ -78,7 +78,7 @@ class Services_Upgrade_Base {
 	 * Reset a systems' type to the given setting
 	 */
 	function resetSystemType($systemType) {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 		$svcUpgradeSettings = new Services_Upgrade_Settings($this->_daoFactory, $this->_settings);
 
 		# change the systems' type
@@ -92,7 +92,7 @@ class Services_Upgrade_Base {
 	 * Reset a users' password
 	 */
 	function resetPassword($username) {
-		$svcUpgradeUser = new Services_Upgrade_User($this->_daoFactory, $this->_settings);
+		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
 
 		# retrieve the userid
 		$svcUpgradeUser->resetUserPassword($username, 'spotweb');
