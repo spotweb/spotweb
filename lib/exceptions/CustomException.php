@@ -40,4 +40,3 @@ abstract class CustomException extends Exception implements IException
                                 . "{$this->getTraceAsString()}";
     }
 }
-?>

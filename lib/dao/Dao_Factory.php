@@ -1,7 +1,7 @@
 <?php
 
 abstract class Dao_Factory {
-	abstract public function setConnection($conn);
+	abstract public function setConnection(dbeng_abs $conn);
 	abstract public function getConnection();
 
     /**
