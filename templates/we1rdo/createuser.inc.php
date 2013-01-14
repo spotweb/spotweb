@@ -1,7 +1,8 @@
 <?php
-    include "includes/form-messages.inc.php";
+    require "includes/form-messages.inc.php";
 
-    if (!showResults($result)) {
+
+if (!showResults($result)) {
 ?>
 <form class="createuserform" name="createuserform" action="<?php echo $tplHelper->makeCreateUserAction(); ?>" method="post">
 	<input type="hidden" name="createuserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('createuserform'); ?>">

@@ -15,11 +15,18 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		# Make sure the user has the appropriate rights
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
 
-		# Instantiate the SpoUser system
-		$svcUserRecord = new Services_User_Record($this->_db, $this->_settings);
+		# Instantiate the user record system
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "spot: edit security groups";
+
+        /*
+         * Retrieve the requested group and merge results
+         */
+        if ($this->_groupId != 9999) {
+            $this->_editSecGroupForm = array_merge($svcUserRecord->getSecGroup($this->_groupId), $this->_editSecGroupForm);
+        } # if
 		
 		/* 
 		 * bring the forms' action into the local scope for 
@@ -28,7 +35,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		$formAction = $this->_editSecGroupForm['action'];
 		
 		# Did the user submit already or are we just rendering the form?
-		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+		if (!empty($formAction)) {
 			switch($formAction) {
 				case 'removegroup' : {
 					$result = $svcUserRecord->removeSecGroup($this->_groupId);
@@ -68,7 +75,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 		} # if
 
 		#- display stuff -#
-		$this->template('editsecgroup', array('securitygroup' => $secGroup,
+		$this->template('editsecgroup', array('securitygroup' => $this->_editSecGroupForm,
 										    'result' => $result,
 											'http_referer' => $this->_editSecGroupForm['http_referer']));
 	} # render

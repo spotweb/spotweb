@@ -594,9 +594,7 @@ class Services_User_Record {
 	/*
 	 * Validate a group record
 	 */
-	function validateSecGroup($group) {
-		$result = new Dto_FormResult();
-
+	function validateSecGroup(Dto_FormResult $result, array $group) {
 		# Remove any lingering spaces
 		$group['name'] = trim($group['name']);
 		
@@ -615,10 +613,18 @@ class Services_User_Record {
 		$secGroupList = $this->_userDao->getGroupList(null);
 		foreach($secGroupList as $secGroup) {
 			if ($secGroup['name'] == $group['name']) {
-				if ($secGroup['id'] != $group['id']) {
-					$result->addError(_('Name is already in use'));
-				} # if
-			} # if
+
+                /*
+                 * If we are editing, allow ourselves to be a 'duplicate'
+                 */
+                if (!isset($group['id'])) {
+                    $group['id'] = -1;
+                } # if
+
+                if ($secGroup['id'] != $group['id']) {
+                    $result->addError(_('Name is already in use'));
+                } # if
+            } # if
 		} # foreach
 		
 		return $result;
@@ -705,8 +711,8 @@ class Services_User_Record {
 		$result = new Dto_FormResult();
 		$result = $this->allowedToEditGroup($result, $groupId);
 
-		$group = array('name' => trim($groupName));
-		$result = $this->validateSecGroup($group);
+		$group = array('name' => trim($groupName), 'id' => $groupId);
+		$result = $this->validateSecGroup($result, $group);
 
 		if ($result->isSuccess()) {
 			$this->_userDao->setSecurityGroup($group);
@@ -769,7 +775,7 @@ class Services_User_Record {
 		$result = $this->allowedToEditGroup($result, $groupId);
 
 		if ($result->isSuccess()) {
-			$this->_userDao->removeSecurityGroup($secGroup);
+			$this->_userDao->removeSecurityGroup($groupId);
 		} # else
 
 		return $result;

@@ -1,15 +1,9 @@
 <?php
-if (!empty($editresult)) {
-	include 'includes/form-xmlresult.inc.php';
+    require "includes/form-messages.inc.php";
 
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($editresult, $formmessages, $tplHelper);
-} # if
+    if (!showResults($result)) {
 
-if (empty($editresult)) {
-	include "includes/form-messages.inc.php";
-	
-	# vraag de opgegeven securitygroup op
+	# Retrieve the requested security group
 	$permList = $tplHelper->getSecGroupPerms($securitygroup['id']);
 ?>
 	<table class="ui-widget ui-widget-content secgroupperms" summary="Permissions">

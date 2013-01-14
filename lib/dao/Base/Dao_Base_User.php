@@ -355,15 +355,15 @@ class Dao_Base_User implements Dao_User {
 	/*
 	 * Adds a security group
 	 */
-	function addSecurityGroup($group) {
-		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($group['name']));
+	function addSecurityGroup($groupName) {
+		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($groupName));
 	} # addSecurityGroup
 
 	/*
 	 * Removes a security group
 	 */
-	function removeSecurityGroup($group) {
-		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($group['id']));
+	function removeSecurityGroup($groupId) {
+		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($groupId));
 	} # removeSecurityGroup
 	
 	/*
