@@ -7,7 +7,7 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 	 * constructs a new Dao_Base_SpotStateList object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
