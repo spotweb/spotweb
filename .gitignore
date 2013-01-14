@@ -15,3 +15,4 @@ tests/*.nzb
 .DS_Store
 dbsettings.inc.php
 .idea
+reallymyownsettings.php
