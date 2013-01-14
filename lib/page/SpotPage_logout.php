@@ -8,7 +8,7 @@ class SpotPage_logout extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
 							  
 		# Instanatiate the spotweb user system
-		$svcUserAuth = new ServiceS_User_Authentication($this->_daoFactory, $this->_settings);
+		$svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# make sure the logout isn't cached
 		$this->sendExpireHeaders(true);
