@@ -117,9 +117,16 @@ class Dto_FormResult {
 		$this->_data[$field] = $value;
 	} # addData
 
-	/*
-	 * Return a list of data fields
-	 */
+    /*
+     * remove a data field from the result
+     */
+    public function removeData($field) {
+        unset($this->_data[$field]);
+    } # removeData
+
+    /*
+     * Return a list of data fields
+     */
 	public function getData($field = null) {
 		if ($field === null) {
 			return $this->_data;	

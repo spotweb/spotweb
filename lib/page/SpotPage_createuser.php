@@ -22,14 +22,14 @@ class SpotPage_createuser extends SpotPage_Abs {
 						'lastname' => '',
 						'mail' => '');
 
-		# Instantiate the Spot usersystem
-		$svcActnCreateUser = new Services_Actions_CreateUser($this->_daoFactory, $this->_settings);
-		
 		# Set the page title to something useful
 		$this->_pageTitle = "spot: create user";
 
 		# Are we actually submitting/creating this user?
 		if ($this->_createUserForm['action'] == 'create') {
+                # Instantiate the Spot usersystem
+    	    	$svcActnCreateUser = new Services_Actions_CreateUser($this->_settings, $this->_daoFactory);
+
 				$spotUser = array_merge($spotUser, $this->_createUserForm);
 				$result = $svcActnCreateUser->createNewUser($spotUser, $this->_currentSession);
 		} # if

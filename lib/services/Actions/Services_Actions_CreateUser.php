@@ -18,6 +18,14 @@ class Services_Actions_CreateUser {
     public function createNewUser(array $spotUser, array $spotSession)	{
         $result = $this->_svcUserRecord->createUserRecord($spotUser);
         if ($result->isSuccess()) {
+            $spotUser = $result->getData('userrecord');
+
+            /**
+             * We do not want the complete user record to be passed as JSON, so
+             * we remove it again
+             */
+            $result->removeData('userrecord');
+
             # Initialize notification system
             $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $spotSession);
 
@@ -28,7 +36,7 @@ class Services_Actions_CreateUser {
             } # if
 
             # send a notification that a new user was added to the system
-            $spotsNotifications->sendUserAdded($spotUser['username'], $spotUser['newpassword1']);
+            $spotsNotifications->sendUserAdded($result->getData('username'), $result->getData('password'));
         } # if
 
         return $result;

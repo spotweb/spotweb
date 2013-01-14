@@ -57,6 +57,7 @@ class Services_User_Record {
 			 */
 			$result->addData('username', $spotUser['username']);
 			$result->addData('password', $spotUser['newpassword1']);
+            $result->addData('userrecord', $spotUser);
 			$result->addInfo(sprintf(_("User <strong>&quot;%s&quot;</strong> successfully added"), $spotUser['username']));
 			$result->addInfo(sprintf(_("Password: <strong>&quot;%s&quot;</strong>"), $spotUser['newpassword1']));
             $result->setResult('success');
