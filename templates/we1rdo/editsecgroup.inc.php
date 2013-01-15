@@ -24,14 +24,14 @@
 				<?php } ?>
 			</tr>
 		</thead>
-		
+
 		<tbody id="secgroupermlist">
 <?php for($i = 0; $i < count($permList); $i += 2) { 
 		echo '<tr>';
 		for($j = 0; $j < 2 && count($permList) > ($i + $j); $j++) { 
 			$perm = $permList[$i+$j];
 ?>
-				<td> <?php echo _($tplHelper->permToString($perm['permissionid'])); ?> </td>
+				<td> <?php echo $perm['permissionname']; ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
 				<?php if ($securitygroup['id'] > 5) { ?>
 				<td> 
