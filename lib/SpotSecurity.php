@@ -159,7 +159,8 @@ class SpotSecurity {
 		
 		# Translated permissions
 		$secHumanReadable = array();
-		for ($i = 0; $i < count($this->_secHumanReadable); $i++) {
+        $secItemCount = count($this->_secHumanReadable);
+		for ($i = 0; $i < $secItemCount; $i++) {
 			$secHumanReadable[] = _($this->_secHumanReadable[$i]);
 		}
 		# and return a nicely sorted list of permissions
