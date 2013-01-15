@@ -143,7 +143,7 @@ class Services_Posting_Spot {
 		
 		# Fix up some overly long spot properties and other minor issues
 		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
-		$spot['http'] = substr(trim($spot['website']), 0, 449);
+		$spot['website'] = substr(trim($spot['website']), 0, 449);
 		
 		/**
 		 * If the post's character do not fit into ISO-8859-1, we HTML
