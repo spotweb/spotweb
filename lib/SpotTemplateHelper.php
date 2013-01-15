@@ -1041,10 +1041,25 @@ class SpotTemplateHelper {
 	function getSecGroupPerms($id) {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
-		
-		return $this->_daoFactory->getUserDao()->getGroupPerms($id);
+		$permList = $this->_daoFactory->getUserDao()->getGroupPerms($id);
+		for($i = 0; $i < count($permList); $i++) {
+			$permList[$i]['permissionname'] = _($this->permToString($permList[$i]['permissionid']));
+		}
+		usort($permList, 'SpotTemplateHelper::comparePermissionName');
+		return $permList;
 	} # getSecGroupPerms
-	
+
+	/*
+	 * Callback function for usort
+	 */
+	static function comparePermissionName($a, $b) {
+		$retval = strnatcmp($a['permissionname'], $b['permissionname']);
+		if (!$retval) {
+			return strnatcmp($a['objectid'], $b['objectid']);
+		}
+		return $retval;	
+	}
+
 	/*
 	 * Redirect naar een opgegeven url
 	 */

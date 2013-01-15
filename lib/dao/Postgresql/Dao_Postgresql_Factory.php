@@ -7,7 +7,7 @@
  	 * Actual connection object to be used in
  	 * data retrieval
  	 */
-	public function setConnection($conn) {
+	public function setConnection(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # setConnection
 
