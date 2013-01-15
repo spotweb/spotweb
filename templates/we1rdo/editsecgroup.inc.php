@@ -88,7 +88,7 @@
 				<select name="editsecgroupform[permissionid]">
 			
 <?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
-					<option value="<?php echo $key; ?>"><?php echo _($val); ?></option>
+					<option value="<?php echo $key; ?>"><?php echo $val; ?></option>
 <?php } ?>
 				</select>
 			</dd>

@@ -156,7 +156,16 @@ class SpotSecurity {
 	} # toHuman
 	
 	function getAllPermissions() {
-		return $this->_secHumanReadable;
+		
+		# Translated permissions
+		$secHumanReadable = array();
+		for ($i = 0; $i < count($this->_secHumanReadable); $i++) {
+			$secHumanReadable[] = _($this->_secHumanReadable[$i]);
+		}
+		# and return a nicely sorted list of permissions
+		asort($secHumanReadable);
+
+		return $secHumanReadable;
 	} # getAllPermissions
 	
 	function securityValid() {
