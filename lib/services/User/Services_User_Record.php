@@ -552,16 +552,18 @@ class Services_User_Record {
 					$result->addError(_('A user must be member of at least one group'));
 				} else {
 					# Mangle the current group membership to a common format
-					$currentGroupList = array();
+                    $tobeGroupList = array();
 					foreach($groupList as $value) {
-						$currentGroupList[] = $value['groupid'];
+						$tobeGroupList[] = $value['groupid'];
 					} # foreach
 
 					# and mangle the new requested group membership
 					$groupMembership = $this->getUserGroupMemberShip($spotUser['userid']);
-					$tobeGroupList = array();
+                    $currentGroupList = array();
 					foreach($groupMembership as $value) {
-						$tobeGroupList[] = $value['id'];
+                        if ($value['ismember']) {
+                            $currentGroupList[] = $value['id'];
+                        } # if
 					} # foreach
 
 					/*
