@@ -30,7 +30,7 @@
 # make sure we have an even number of permissions so that both columns are always filled in
 $nrOfPermission = count($permList);
 if ($nrOfPermission % 2 == 1) {
-	$permList[] = array('id' => -1,
+	$permList[] = array('permissionid' => -1,
 						'permissionname' => '&nbsp;',
 						'objectid' => '&nbsp;');
 
@@ -47,7 +47,8 @@ for($i = 0; $i < $rows; $i++) {
 ?>
 				<td> <?php echo $perm['permissionname']; ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
-				<?php if ($securitygroup['id'] > 5) { ?>
+				<?php if ($securitygroup['id'] > 5) {
+						if ($perm['permissionid'] != -1) { ?>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
@@ -72,7 +73,10 @@ for($i = 0; $i < $rows; $i++) {
 						<?php } ?>
 					</form>
 				</td>
-				<?php } ?>
+				<?php 	} else { ?>
+				<td>&nbsp;</td><td>&nbsp;</td>
+				<?php 	} # else
+					  } # if ?>
 				
 <?php
 			if ($j == 0) {
