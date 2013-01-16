@@ -83,7 +83,7 @@ class Services_Posting_Spot {
 		# Body cannot be empty, very short or too long
 		$spot['body'] = trim($spot['body']);
 		if (strlen($spot['body']) < 30) {
-			$result->addError(_('Please enter an description'));
+			$result->addError(_('Please enter a description'));
 		} # if
 		if (strlen($spot['body']) > 9000) {
 			$result->addError(_('Entered description is too long'));
