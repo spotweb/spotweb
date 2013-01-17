@@ -114,14 +114,6 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			$markSpot = '';
 		}
 		
-		if($spot['idtype'] == 2) {
-			$markSpot = '<span class="markGreen">W</span>' . $markSpot;
-		}
-		
-		if($spot['idtype'] == 1) {
-			$markSpot = '<span class="markSpot">B</span>' . $markSpot;
-		}
-		
 		$reportSpam = '';
 		if ($show_spamreports && $spot['reportcount'] >= $minimum_spamreports) {
 			if($spot['reportcount'] == 1) {
@@ -167,8 +159,16 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $commentCountValue . "</a></td>";
 		} # if
 		
+		$markSpot = '';
+		if($spot['idtype'] == 2) {
+			$markSpot = '<span class="markGreen">W</span>';
+		}
+		
+		if($spot['idtype'] == 1) {
+			$markSpot = '<span class="markSpot">B</span>';
+		}		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
-			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
+			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $markSpot . $spot['poster'] . "</a></td>" .
 			 "<td class='date' title='" . $dateTitleText . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {

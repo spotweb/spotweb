@@ -12,8 +12,8 @@ class SpotSecurity {
 	 * The security system has several rights which are defined with zero or more parameters.
 	 * 
 	 * Parameter:
-	 *     Permission          - Actually permission being asked for.
-	 *     Object              - Mentions that the permission is enkel valid for this specific objectid. For example, 'cat0_z4', or
+	 *     Permission          - Actual permission being asked for.
+	 *     Object              - Mentions that the permission is only valid for this specific objectid. For example, 'cat0_z4', or
      *                           'client-sabnzbd'. You also need an empty objectid to have this permission at all.
 	 *     DenyOrGranted       - When enabled, the permission is explicitly granted. When set to FALSE, the permission is denied.
 	 */
