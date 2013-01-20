@@ -71,9 +71,32 @@ class SpotPage_catsjson extends SpotPage_Abs {
 					} # if
 					
 					break;
-			} # case subcatz
+			} # case subcata, subcatb, subcatc, subcatd
+			
+			# Used to show all (including deprecated) categories. This is required when editing
+			# a spot since some spots still use deprecated categories which we don't want to lose.
+			# Depreicated categories will be marked as such.
+			case 'subcata_old':
+			case 'subcatb_old':
+			case 'subcatc_old':
+			case 'subcatd_old': {
+					$scType = $this->_params['rendertype'][6];
+
+					if (isset(SpotCategories::$_categories[$category][$scType])) {
+						foreach(SpotCategories::$_categories[$category][$scType] as $key => $value) {
+							if (in_array('z'. $genre, $value[1])) {
+								$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
+							} # if
+							elseif (in_array('z'. $genre, $value[2])) {
+								$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0] . " (" . _("deprecated") . ")";
+							} # elseif
+						} # foreach
+					} # if
+
+					break;
+				} # case subcata_old, subcatb_old, subcatc_old, subcatd_old
 		} # switch
-		
+
 		if (isset(SpotCategories::$_subcat_descriptions[$category][$scType])) {
 			echo json_encode(
 						array('title' => SpotCategories::$_subcat_descriptions[$category][$scType],

@@ -260,6 +260,14 @@ try {
 				break;
 		} # edituser
 
+		case 'editspot' : {
+			$page = new SpotPage_editspot($daoFactory, $settings, $currentSession,
+							Array('editspotform' => $req->getForm('editspotform'),
+								  'messageid' => $req->getDef('messageid', '')));
+			$page->render();
+			break;
+		} # editspot
+
 		case 'login' : {
 				$page = new SpotPage_login($daoFactory, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform'),

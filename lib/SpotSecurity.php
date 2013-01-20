@@ -63,6 +63,11 @@ class SpotSecurity {
 	const spotsec_view_statistics				= 39;
 	const spotsec_view_spotweb_updates			= 40;
 	const spotsec_edit_settings					= 41;
+	const spotsec_edit_spotdetail				= 42;
+	const spotsec_view_spot_editor				= 43;
+	const spotsec_show_spot_was_edited			= 44;
+	const spotsec_delete_spot					= 45;
+	
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -107,7 +112,11 @@ class SpotSecurity {
 		38		=> "Blacklist a spotter",
 		39		=> "Display statistics",
 		40		=> "Display Spotweb's changelog",
-		41		=> "Change settings"
+		41		=> "Change settings",
+		42		=> "Edit spot details",
+		43		=> "Display the spot editor's username",
+		44		=> "Display that the spot was edited",
+		45		=> "Delete a spot"
 	);
 
 	/*

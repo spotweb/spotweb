@@ -13,7 +13,11 @@ class Services_Format_Creation {
 		$mainElm = $doc->createElement('Spotnet');
 		$postingElm = $doc->createElement('Posting');
 		$postingElm->appendChild($doc->createElement('Key', $spot['key']));
-		$postingElm->appendChild($doc->createElement('Created', time()));
+		if (array_key_exists('created', $spot) && strlen($spot['created']) > 0) {
+			$postingElm->appendChild($doc->createElement('Created', $spot['created']));
+		} else {
+			$postingElm->appendChild($doc->createElement('Created', time()));
+		} # else
 		$postingElm->appendChild($doc->createElement('Poster', $spot['poster']));
 		$postingElm->appendChild($doc->createElement('Size', $spot['filesize']));
 

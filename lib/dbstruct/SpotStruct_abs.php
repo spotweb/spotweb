@@ -353,6 +353,8 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
+		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #

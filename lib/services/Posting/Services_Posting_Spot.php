@@ -22,7 +22,7 @@ class Services_Posting_Spot {
 
 		# Make sure the anonymous user and reserved usernames cannot post content
 		if (!$svcUserRecord->allowedToPost($user)) {
-			$result->addError(_("You need to login to be able to post comments"));
+			$result->addError(_("You need to login to be able to post spots"));
 		} # if
 
 		# Retrieve the users' private key

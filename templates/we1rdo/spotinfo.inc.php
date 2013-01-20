@@ -13,6 +13,8 @@
 	$isWhitelisted = ($spot['listidtype'] == 2); 
 	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!empty($spot['spotterid'])));
 	$allow_whiteList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!$isWhitelisted) && (!empty($spot['spotterid'])));
+	$show_spot_edit = $tplHelper->allowed(SpotSecurity::spotsec_show_spot_was_edited, '');
+	$show_editor = $tplHelper->allowed(SpotSecurity::spotsec_view_spot_editor, '');
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -146,7 +148,10 @@ echo "</th>";
 
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Number of spamreports'); ?> </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
-							</tbody>
+<?php if ($show_spot_edit && $spot['editstamp']) { ?>
+								<tr> <th> <?php echo _('Spot edited'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['editstamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['editstamp'], 'spotdetail'); ?> <?php if ($show_editor) echo "(" . $spot['editor'] . ")"?></td> </tr>
+<?php } ?>
+								</tbody>
 						</table>
 					</td>
 				</tr>

@@ -1549,7 +1549,119 @@ function categorySelectChanged() {
 	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true, true);
 	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true, true);
 } // categorySelectChanged
- 
+
+/*
+ * Function to load the ?page=catsjson data into an
+ * selectbox given by the system
+ */
+function spotEditLoadCategoryIntoSelectbox(selectId, titleElm, data, async, doClear, subcategory) {
+	if (typeof subcategory == "undefined") { subcategory = new Array(); }
+
+	var $selectbox = $("#" + selectId);
+	if (titleElm) {
+		var $titleElm = $("#" + titleElm);
+	} else {
+		var $titleElm = null;
+	} // else
+	if ($selectbox.data('fromurl') == $.toJSON(data)) {
+		return ;
+	} // if
+
+	$.ajax(
+		{type: "GET",
+		url: "?page=catsjson",
+		data: data,
+		async: async,
+		dataType: "json",
+		success: function(msg) {
+			$selectbox.data('fromurl', $.toJSON(data));
+			var htmlData = '';
+
+			if ($titleElm) {
+				$titleElm.text(msg.title);
+			} else {
+				htmlData += '<optgroup label="' + msg.title + '">';
+			} // else
+
+			if (doClear) {
+				$selectbox.empty();
+			} // if
+
+			$.each(msg.items, function(index, item) {
+				var selected = "";
+				for (var i=0; i < subcategory.length; i++) {
+					if (subcategory[i] == index) {
+						selected = " selected=\"selected\"";
+						break;
+					} // if
+				} // for
+
+				htmlData += '<option' + selected + ' value="' + index + '">' + item + '</option>';
+			}); // $.each
+
+			if (!$titleElm) {
+				htmlData += '</optgroup>';
+			} // if
+
+			$selectbox.append(htmlData);
+			$selectbox[0].selected = 0;
+
+			if ($selectbox[0].options.length < 2) {
+				if ($titleElm) { $titleElm.hide(); }
+				$selectbox.hide();
+			} else {
+				if ($titleElm) { $titleElm.show(); }
+				$selectbox.show();
+			} // else
+		},error: function() {
+			alert("Failed to load data");
+		}
+	}); // $.ajax
+} // spotEditLoadCategoryIntoSelectbox
+
+function spotEditCategorySelectChanged(category, subcata, subcatb, subcatc, subcatd, subcatz) {
+	var itm = $("#spotcategoryselectbox")[0];
+
+	if (typeof subcatz != "undefined") {
+		// remove leading z and trailing |
+		subcatz = subcatz.slice(1,-1);
+	}
+
+	spotEditLoadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: subcatz, rendertype: 'subcatz'}, false, true, new Array(subcatz));
+	var subcatzValue = $("#subcatzselectbox")[0].value;
+
+	// update the select boxes with the correct selections
+	var subcataValue = $("#subcataselectbox")[0].value;
+	subcataArray = makeSubcategoryArray(category, subcatzValue, subcata);
+	// don't select items in category b and c when switching to or from type Book.
+	if ((category == 0) && (subcatz == "2" || subcatzValue == 2)) { 
+		subcatbArray = makeSubcategoryArray(category, subcatz, subcatb);
+		subcatcArray = makeSubcategoryArray(category, subcatz, subcatc);
+	}
+	else
+	{
+		subcatbArray = makeSubcategoryArray(category, subcatzValue, subcatb);
+		subcatcArray = makeSubcategoryArray(category, subcatzValue, subcatc);
+	}
+	subcatdArray = makeSubcategoryArray(category, subcatzValue, subcatd);
+
+	spotEditLoadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata_old'}, true, true, subcataArray);
+	spotEditLoadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb_old'}, true, true, subcatbArray);
+	spotEditLoadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc_old'}, true, true, subcatcArray);
+	spotEditLoadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd_old'}, true, true, subcatdArray);
+} // spotEditCategorySelectChanged
+
+function makeSubcategoryArray(category, subcatz, subcat)
+{
+	if (typeof subcat == "undefined") { return new Array(); }
+
+	var subcatarray = subcat.split("|");
+	for (var i=0; i < subcatarray.length-1; i++) {
+		subcatarray[i] = 'cat' + category + "_z" + subcatz + "_" + subcatarray[i];
+	}
+	return subcatarray;
+} // makeSubcategoryArray
+
 function downloadMappingTypeChanged() {
 	var itm = $("#spotcategoryselectbox")[0];
 	var $selectbox = $('#subcataselectbox');

@@ -105,6 +105,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
 												s.spotterid AS spotterid,
+ 												s.editstamp AS editstamp,
+ 												s.editor AS editor,
 												f.verified AS verified,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
 												" . $extendedFieldList . "
@@ -190,6 +192,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.reportcount AS reportcount,
 												s.filesize AS filesize,
 												s.spotterid AS spotterid,
+												s.editstamp AS editstamp,
+												s.editor AS editor,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -369,7 +373,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			} # if
 			
 			/*
-			 * Cut off some strngs to a maximum value as defined in the
+			 * Cut off some strings to a maximum value as defined in the
 			 * database. We don't cut off the unique keys as we rather
 			 * have Spotweb error out than corrupt it
 			 */
@@ -441,6 +445,40 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__, array($fullSpots));
 	} # addFullSpot
 
+	/*
+	 * Update a spot in the spots and spotsfull tables after editing the spot
+	 */
+	function editSpot($fullSpot, $editor) {
+		SpotTiming::start(__FUNCTION__);
+
+		/*
+		 * Cut off some strings to a maximum value as defined in the
+		 * database. 
+		 */
+		$fullSpot['title'] = substr($fullSpot['title'], 0, 127);
+		$fullSpot['tag'] = substr($fullSpot['tag'], 0, 127);
+		$fullSpot['subcata'] = substr($fullSpot['subcata'], 0, 63);
+		$fullSpot['subcatb'] = substr($fullSpot['subcatb'], 0, 63);
+		$fullSpot['subcatc'] = substr($fullSpot['subcatc'], 0, 63);
+		$fullSpot['subcatd'] = substr($fullSpot['subcatd'], 0, 63);
+		$fullSpot['subcatz'] = substr($fullSpot['subcatz'], 0, 63);
+		$fullSpot['category'] = (int) $fullSpot['category'];
+
+		# update spots table
+		$this->_conn->modify("UPDATE spots SET title = '%s', tag = '%s', subcata = '%s', 
+				subcatb = '%s', subcatc = '%s', subcatd = '%s', subcatz = '%s', category = %d, editstamp = %d, 
+				editor = '%s' WHERE messageid = '%s'",
+				Array($fullSpot['title'], $fullSpot['tag'], $fullSpot['subcata'], $fullSpot['subcatb'], 
+						$fullSpot['subcatc'], $fullSpot['subcatd'], $fullSpot['subcatz'], $fullSpot['category'],
+						(int) time(), $editor, $fullSpot['messageid']));
+
+		#update spotsfull table
+		$this->_conn->modify("UPDATE spotsfull SET fullxml = '%s' WHERE messageid = '%s'",
+				Array($fullSpot['fullxml'], $fullSpot['messageid']));
+
+		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+	}
+	
 	/*
 	 * Returns the oldest spot in the system
 	 */
