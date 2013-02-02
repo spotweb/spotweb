@@ -165,6 +165,18 @@ class SpotTemplateHelper {
 	} # makeSpotUrl
 
 	/*
+	 * Creates the url for editing an existing spot
+	 */ 
+	function makeEditSpotUrl($spot, $action) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_spotdetail, '')) {
+			return '';
+		}
+		
+		return $this->makeBaseUrl("path") . "?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . '&amp;action=' . $action;
+	} # makeEditSpotUrl
+
+	/*
 	 * Creeert de action url voor het aanmaken van de user
 	 */
 	function makeCreateUserAction() {
@@ -187,7 +199,19 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=postspot";
 	} # makePostSpotAction
-	
+
+	/*
+	 * Creates the action url for editing an existing spot (used in form post actions)
+	 */
+	 function makeEditSpotAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_spotdetail, '')) {
+			return '';
+		} # if
+
+		return $this->makeBaseUrl("path") . "?page=editspot";
+	} # makeEditSpotAction
+
 	/*
 	 * Creeert de action url voor het beweken van een security group 
 	 */

@@ -57,12 +57,12 @@ class Services_Format_Parsing {
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
-						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '');
+						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '');
 
 		/*
-		 * Some legacy potNet clients create incorrect/invalid multiple segments,
+		 * Some legacy spotNet clients create incorrect/invalid multiple segments,
 		 * we use this crude way to workaround this. GH issue #1608
-		*/
+		 */
 		if (strpos($xmlStr, 'spot.net></Segment') !== false) {
 			$xmlStr = str_replace(
 				Array('spot.net></Segment>', 'spot.ne</Segment>'),
@@ -76,11 +76,13 @@ class Services_Format_Parsing {
 		 */
 		$xmlStr = $this->correctElmContents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
 
-		/* 
+		/*
 		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
-		 */		
+		 */
 		$xml = @(new SimpleXMLElement($xmlStr));
 		$xml = $xml->Posting;
+		$tpl_spot['created'] = (string) $xml->Created;
+		$tpl_spot['key'] = (string) $xml->Key;
 		$tpl_spot['category'] = (string) $xml->Category;
 		$tpl_spot['website'] = (string) $xml->Website;
 		$tpl_spot['description'] = (string) $xml->Description;

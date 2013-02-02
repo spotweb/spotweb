@@ -4,9 +4,36 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Thu, 3 Jan 2013 00:00:00 +0100</lastBuildDate>
-		<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+		<lastBuildDate>Sun, 20 Jan 2013 00:00:00 +0100</lastBuildDate>
+		<pubDate>Sun, 20 Jan 2013 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Edit and delete spots in your local Spotweb database</title>
+			<description><![CDATA[You can now edit and delete spots. You can update the spot's title, description, category, subcategories, 
+				tags, and website or simply delete the entire spot. By default only administrators have permission to edit and delete spots.<br />
+				Please be aware that the changes are applied to your local Spotweb database only! Updated spots will not be posted to usenet and 
+				will therefor not show up on other Spotweb and/or Spotnet clients. Deleting spots will delete them from the local Spotweb database 
+				only! They will not be deleted from usenet, nor will they be deleted from other Spotweb and/or Spotnet clients.<br />
+				The following new permissions have been introduced:<br />
+				'Display that a spot was edited' - In the spot details window show that the spot was edited and when it when it was edited<br />
+				'Display the spot editor's username' - Next to the timestamp of the edit, also show the username of the editor. This permission requires 
+				the 'Display that a spot was edited' permission<br />
+				'Edit spot details' - Edit the spot details. When this permission is assigned, a pencil to the right of the spot title in the
+				spotsoverview will appear<br />
+				'Delete a spot' - permission to delete a spot. This permission requires	the 'Edit spot details' permission<br />
+				Please run <i>upgrade-db.php</i> to update your database schema.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Sun, 20 Jan 2013 00:00:00 +0100</pubDate>
+			<author>leechguy</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.59</spotweb:schema_version>
+			<spotweb:settings_version>0.25</spotweb:settings_version>
+			<spotweb:security_version>0.30</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Show spam reports icon based on user configurable spam report threshold</title>

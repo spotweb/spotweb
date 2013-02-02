@@ -412,7 +412,8 @@ class Services_Upgrade_Users {
 							 SpotSecurity::spotsec_delete_user, SpotSecurity::spotsec_edit_groupmembership, 
 							 SpotSecurity::spotsec_display_groupmembership, SpotSecurity::spotsec_edit_securitygroups,
 							 SpotSecurity::spotsec_set_filters_as_default, SpotSecurity::spotsec_view_spotweb_updates,
-							 SpotSecurity::spotsec_edit_settings);
+							 SpotSecurity::spotsec_edit_settings, SpotSecurity::spotsec_edit_spotdetail, SpotSecurity::spotsec_view_spot_editor,
+							 SpotSecurity::spotsec_show_spot_was_edited, SpotSecurity::spotsec_delete_spot);
 			foreach($adminPerms as $adminPerm) {
 				$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . $adminPerm . ")");
 			} # foreach
@@ -435,6 +436,16 @@ class Services_Upgrade_Users {
 		if (($forceReset) || ($this->_settings->get('securityversion') < 0.29)) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'we1rdo')");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'mobile')");
+		} # if
+
+		########################################################################
+		## Security level 0.30
+		########################################################################
+		if (($forceReset) || ($this->_settings->get('securityversion') < 0.30)) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_edit_spotdetail . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_view_spot_editor . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_show_spot_was_edited . ")");
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_delete_spot . ")");
 		} # if
 	} # updateSecurityGroups
 

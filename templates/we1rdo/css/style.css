@@ -135,7 +135,10 @@ form.edituserprefsform fieldset.manageFilters input {float:left; margin:0 20px 2
 form.editsettingsform div.newsservers fieldset.serverSettings,
 form.edituserprefsform div fieldset fieldset.notificationSettings {background-color:#ededed; border:1px solid #aaaaaa; border-radius:4px; padding:5px; margin:5px 0 25px 0;}
 
-form.newspotform  fieldset dt {padding:0 0 0px 0px; background: none; border-bottom: none; }
+form.newspotform  fieldset dt,
+form.editspotform  fieldset dt {padding:0 0 0px 0px; background: none; border-bottom: none; }
+form.editspotform div.editspotButtons input {float:left;}
+form.editspotform div.red { color: red; }
 
 form.editsettingsform span.loading {background:transparent url(../img/loading.gif) no-repeat 50% 50%; margin:4px; font-size: 16px; display: none;}
 form.editsettingsform span.servertest_nntp_nzb_result_success { color: #00ab00; }
@@ -594,17 +597,26 @@ span.strongnotnode-active a,
 span.strongnotnode a { background-color: maroon !important; color: white !important; }
 span.strongnotnode a:hover { background-color: white !important; color: maroon !important; }
 
-div.newspotdiv div.loading {background:#fff url(../img/loading.gif) no-repeat 50% 50%; opacity:0.75; position:absolute; margin:0;}
-div.newspotdiv form fieldset {padding:0 5px 0 5px; margin:0; border:0;}
-div.newspotdiv form dl {margin:0;}
-div.newspotdiv form dt {padding:3px 0 2px 0; float: left; width: 80px; clear: left;}
-div.newspotdiv form dd {margin:0; float: left; margin-bottom: 6px; } 
+div.newspotdiv div.loading,
+div.editspotdiv div.loading {background:#fff url(../img/loading.gif) no-repeat 50% 50%; opacity:0.75; position:absolute; margin:0;}
+div.newspotdiv form fieldset,
+div.editspotdiv form fieldset {padding:0 5px 0 5px; margin:0; border:0;}
+div.newspotdiv form dl,
+div.editspotdiv form dl {margin:0;}
+div.newspotdiv form dt,
+div.editspotdiv form dt {padding:3px 0 2px 0; float: left; width: 80px; clear: left;}
+div.newspotdiv form dd,
+div.editspotdiv form dd {margin:0; float: left; margin-bottom: 6px; } 
 
-div.newspotdiv form dt#txtsubcata  { width: auto; margin-right: 6px; }
+div.newspotdiv form dt#txtsubcata,
+div.editspotdiv form dt#txtsubcata  { width: auto; margin-right: 6px; }
 
 div.newspotdiv form div.categorydropdown,
-div.newspotdiv form div.subcategorylistbox { float: left; width: 200px; }
-div.newspotdiv form div.subcategorylistbox select { width: 192px; }
+div.editspotdiv form div.categorydropdown,
+div.newspotdiv form div.subcategorylistbox,
+div.editspotdiv form div.subcategorylistbox { float: left; width: 200px; }
+div.newspotdiv form div.subcategorylistbox select,
+div.editspotdiv form div.subcategorylistbox select { width: 192px; }
 
 /* jquery UI overrides to make it be more in we1rdo's template style */
 .ui-widget .ui-widget,

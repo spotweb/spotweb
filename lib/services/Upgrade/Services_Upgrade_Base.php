@@ -46,7 +46,7 @@ class Services_Upgrade_Base {
 	 */
 	function resetUserGroupMembership() {
 		$svcUpgradeUser = new Services_Upgrade_Users($this->_daoFactory, $this->_settings);
-		$svcUpgradeUser->resetUserGroupMembership($settings->get('systemtype'));
+		$svcUpgradeUser->resetUserGroupMembership($this->_settings->get('systemtype'));
 	} # resetUserGroupMembership
 
 	/*

@@ -16,6 +16,7 @@
 	$show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
 	$newCommentCount = array();
 	$noResults = (count($spots) == 0);
+	$show_editspot_button = ($tplHelper->allowed(SpotSecurity::spotsec_view_spotdetail, '') && $tplHelper->allowed(SpotSecurity::spotsec_edit_spotdetail, ''));
 
 	/*
 	 * For Seen, Watched en MyPosted-spots we want to show a list of
@@ -34,7 +35,10 @@
 						<tr class="head">
 							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sort on category'); ?>"><?php echo _('Cat.'); ?></a> </th> 
 							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sort on title [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sort on title [Z-0]'); ?>"> </a></span> <?php echo _('Title'); ?> </th> 
-							<?php if ($show_watchlist_button) { ?>
+							<?php if ($show_editspot_button) { ?>
+							<th class='editspot'> </th>
+							<?php }
+							if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
 							if ($show_comments) {
@@ -71,6 +75,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_nzb_button) { $colSpan++; }
 		if ($show_filesize) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
+		if ($show_editspot_button) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
@@ -147,6 +152,12 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+
+		if ($show_editspot_button) {
+			echo "<td class='editspot'>";
+			echo "<a href='" . $tplHelper->makeEditSpotUrl($spot, "edit") . "' onclick=\"return openDialog('editdialogdiv', '" . _('Edit spot') ."', '?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . "', 'editspotform', null, 'autoclose', function() { window.location.reload(); }, null);\" title='" . _('Edit spot') . "'><span class='ui-icon ui-icon-pencil'></span></a>";
+			echo "</td>";
+		} # if
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
