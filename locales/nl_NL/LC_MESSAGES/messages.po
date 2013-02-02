@@ -1,9 +1,20 @@
 ﻿# This file is distributed under the same license as the SpotWeb package. 
-msgid "\n"
-msgstr "\n"
+# Copyright (c) 2011, Spotweb
+# All rights reserved.
+# 
+msgid ""
+msgstr ""
+
+"Project-Id-Version: SpotWeb\n"
+"Report-Msgid-Bugs-To: Test <test@gmail.com>\n"
+"POT-Creation-Date: 2013-01-20 06:10+0800\n"
+"PO-Revision-Date: 2013-01-20 06:10+0800\n"
+"Last-Translator: Test <test@gmail.com>\n"
+"Language-Team: English\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: general translations
@@ -293,7 +304,7 @@ msgstr "Typen"
 msgid "Format"
 msgstr "Formaat"
 
-msgid "Title"
+msgid "Titel"
 msgstr "Titel"
 
 msgid "Description"
@@ -494,9 +505,6 @@ msgstr "Reactie toevoegen (uitklappen)"
 msgid "Open \"%s\" panel"
 msgstr "Open \"%s\" paneel"
 
-msgid "Close \"%s\" panel"
-msgstr "Sluit \"%s\" paneel"
-
 #: editsettings.inc.php
 msgid "General"
 msgstr "Algemeen"
@@ -640,11 +648,8 @@ msgstr "Nederlands"
 msgid "English"
 msgstr "Engels"
 
-msgid "NZB handling"
+msgid "NZB handeling"
 msgstr "NZB afhandeling"
-
-msgid "Sort on:"
-msgstr "Sorteren op:"
 
 msgid "Filters"
 msgstr "Filters"
@@ -884,11 +889,8 @@ msgstr "Sluit 'Advanced Search'"
 msgid "Search on:"
 msgstr "Zoeken op:"
 
-msgid "Between "
-msgstr "Tussen "
-
-msgid " and "
-msgstr " en "
+msgid "Title"
+msgstr "Titel"
 
 msgid "Poster"
 msgstr "Poster"
@@ -974,7 +976,7 @@ msgstr "Onderhoud"
 msgid "Log out"
 msgstr "Uitloggen"
 
-msgid "Selected NZB download method doesn't support sidepanel"
+msgid "Selected NZB download methode doesn't support sidepanel"
 msgstr "De geselecteerde methode om NZB's te downloaden heeft geen panel support."
 
 msgid "Status:"
@@ -1032,7 +1034,7 @@ msgstr "Gebruiker toevoegen"
 msgid "Download your filters"
 msgstr "Download je filters"
 
-#: User system
+#: spotusersystem.php
 msgid "An avatar image has a maximum of 4000 bytes"
 msgstr "Een avatar mag niet groter dan 4000 bytes zijn"
 
@@ -1571,7 +1573,7 @@ msgstr "Vrouw"
 msgid "Religion"
 msgstr "Religie"
 
-msgid "Biography"
+msgid "Biografy"
 msgstr "Biografie"
 
 msgid "Travel"
@@ -1836,12 +1838,6 @@ msgstr "Spotter van whitelist afhalen"
 
 msgid "Spotter ID"
 msgstr "Spotter ID"
-
-msgid "Blacklisted"
-msgstr "Blacklisted"
-
-msgid "Whitelisted"
-msgstr "Whitelisted"
 
 msgid "Origin"
 msgstr "Oorsprong"
