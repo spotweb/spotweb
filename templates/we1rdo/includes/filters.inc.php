@@ -165,7 +165,7 @@
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
 ?>
-							<tr> <th> <?php echo _($filterType['fieldname']); ?> </th> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo _($filterType['fieldname']); ?> </th> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(str_replace(urldecode($tplHelper->convertFilterToQueryParams()), '"', '&quot;'), "\\\'\"\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
