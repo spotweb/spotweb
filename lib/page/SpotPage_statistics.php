@@ -16,7 +16,7 @@ class SpotPage_statistics extends SpotPage_Abs {
 		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
 
 		# zet de page title
-		$this->_pageTitle = _("Statistieken");
+		$this->_pageTitle = _("Statistics");
 
 		#- display stuff -#
 		$parsedSearch = $spotsOverview->filterToQuery('', array('field' => '', 'direction' => ''), $this->_currentSession, $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
