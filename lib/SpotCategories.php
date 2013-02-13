@@ -193,7 +193,7 @@ class SpotCategories {
 					  46  => array("Female", array("z2"), array("z2")),
 					  47  => array("Religion", array("z2"), array("z2")),
 					  48  => array("Roman", array("z2"), array("z2")),
-					  49  => array("Biografy", array("z2"), array("z2")),
+					  49  => array("Biography", array("z2"), array("z2")),
 					  50  => array("Detective", array("z0", "z1", "z2"), array("z0", "z1", "z2")),
 					  51  => array("Animals", array("z0", "z1", "z2"), array("z0", "z1", "z2")),
 					  52  => array("Humor", array("z0", "z1", "z2"), array("z0", "z1", "z2")),
