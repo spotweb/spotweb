@@ -304,7 +304,7 @@ msgstr "Typen"
 msgid "Format"
 msgstr "Formaat"
 
-msgid "Titel"
+msgid "Title"
 msgstr "Titel"
 
 msgid "Description"
@@ -505,6 +505,9 @@ msgstr "Reactie toevoegen (uitklappen)"
 msgid "Open \"%s\" panel"
 msgstr "Open \"%s\" paneel"
 
+msgid "Close \"%s\" panel"
+msgstr "Sluit \"%s\" paneel"
+
 #: editsettings.inc.php
 msgid "General"
 msgstr "Algemeen"
@@ -648,8 +651,11 @@ msgstr "Nederlands"
 msgid "English"
 msgstr "Engels"
 
-msgid "NZB handeling"
+msgid "NZB handling"
 msgstr "NZB afhandeling"
+
+msgid "Sort on:"
+msgstr "Sorteren op:"
 
 msgid "Filters"
 msgstr "Filters"
@@ -889,8 +895,11 @@ msgstr "Sluit 'Advanced Search'"
 msgid "Search on:"
 msgstr "Zoeken op:"
 
-msgid "Title"
-msgstr "Titel"
+msgid "Between "
+msgstr "Tussen "
+
+msgid " and "
+msgstr " en "
 
 msgid "Poster"
 msgstr "Poster"
@@ -976,7 +985,7 @@ msgstr "Onderhoud"
 msgid "Log out"
 msgstr "Uitloggen"
 
-msgid "Selected NZB download methode doesn't support sidepanel"
+msgid "Selected NZB download method doesn't support sidepanel"
 msgstr "De geselecteerde methode om NZB's te downloaden heeft geen panel support."
 
 msgid "Status:"
@@ -1573,7 +1582,7 @@ msgstr "Vrouw"
 msgid "Religion"
 msgstr "Religie"
 
-msgid "Biografy"
+msgid "Biography"
 msgstr "Biografie"
 
 msgid "Travel"
@@ -1838,6 +1847,12 @@ msgstr "Spotter van whitelist afhalen"
 
 msgid "Spotter ID"
 msgstr "Spotter ID"
+
+msgid "Blacklisted"
+msgstr "Blacklisted"
+
+msgid "Whitelisted"
+msgstr "Whitelisted"
 
 msgid "Origin"
 msgstr "Oorsprong"
