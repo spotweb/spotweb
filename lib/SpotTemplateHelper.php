@@ -376,9 +376,165 @@ class SpotTemplateHelper {
 			return '';
 		} # if
 		
+		if ($this->hasAlternateDownloadUrlForSpot($spot)) {
+		  return $this->getAlternateDownloadUrlForSpot($spot);
+		}
+		
 		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']) . $this->makeApiRequestString();
 	} # makeNzbUrl
+  
+	/**
+	 * 
+	 * Check for specific string to check if we have an alternate download url.
+	 * @param array $spot
+	 */	
+	public function hasAlternateDownloadUrlForSpot($spot) {
+	  if ($this->alternateDownloadUrl) {
+	    return true;
+	  }
+	  
+	  // Array containing matches
+	  $matches = array(
+	  	'http://base64.derefer.me',
+	  );
+	  
+	  // Search in the website url
+	  if(isset($spot['website'])) {
+	    foreach ($matches as $needle) {
+	      if (strpos($spot['website'], $needle) !== false) {
+	        // Stop search we have a match
+	        $this->alternateDownloadUrl = $this->resolveAlternateDownloadUrl($spot['website']);
+	        return true;
+	      }
+	    }
+	  }
 
+	  // We have no alternate yet lets spider the description.
+	  if (isset($spot['description'])) {
+	  	foreach ($matches as $needle) {
+	      if (strpos($spot['description'], $needle) !== false) {
+	        // Stop search we have a match
+	        $this->findAlternateDownloadUrl($spot['website']);
+	        return true;
+	      }
+	    }
+	  }
+	  
+	  return false;
+	}
+	
+	protected $alternateDownloadUrl = null;
+	/**
+	 * 
+	 * Find the alternate url 
+	 * @param String $data String containing alternate url.
+	 */
+	protected function resolveAlternateDownloadUrl($url) {
+	  if(!function_exists('curl_init')) {
+	    trigger_error('cURL is needed to resolve alternate download urls.', E_NOTICE);
+	    return $url;
+	  }
+	  	  	  
+    $ch = curl_init($url);
+
+    $chOptions = array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_FAILONERROR		 => 1,
+      CURLOPT_CONNECTTIMEOUT => 10,
+      CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_HEADER         => TRUE,
+      CURLOPT_NOBODY         => TRUE,
+      CURLOPT_SSL_VERIFYPEER => FALSE,
+      CURLOPT_SSL_VERIFYHOST => FALSE,         
+    );
+    curl_setopt_array($ch, $chOptions);
+    
+    // Execute
+    curl_exec($ch);
+    
+    // Check if any error occured
+    if(!curl_errno($ch))
+    {
+     $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+     
+     // Close handle
+     curl_close($ch);
+    
+     if ($finalUrl) {
+       return $this->resolveMetaRefreshOnUrl($finalUrl);
+     }
+    }
+    
+    // Close handle (will occur on error)
+    curl_close($ch);
+    
+    // Return input url, due to error the url could not be resolved.
+    return $this->resolveMetaRefreshOnUrl($url);
+	}
+	
+	/**
+	 * 
+	 * Checks for a meta refresh tag on the page given by url.
+	 * Returns the new url if one is found. If there is no new url it will return the input url.
+	 * 
+	 * @param String $url
+	 */
+	protected function resolveMetaRefreshOnUrl($url)
+	{
+		if(!function_exists('curl_init')) {
+	    trigger_error('cURL is needed to resolve meta refresh urls.', E_NOTICE);
+	    return $url;
+	  }
+    $url = trim($url);
+    	  	  
+    $ch = curl_init($url);
+
+    $chOptions = array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_FAILONERROR		 => 1,
+      CURLOPT_CONNECTTIMEOUT => 10,
+      CURLOPT_NOBODY         => false,
+      CURLOPT_SSL_VERIFYPEER => FALSE,
+      CURLOPT_SSL_VERIFYHOST => FALSE,         
+    );
+    curl_setopt_array($ch, $chOptions);
+    
+    // Execute
+    $body = curl_exec($ch);
+    
+    // Check if any error occured
+    if(!curl_errno($ch))
+    {
+
+      // Get the url.
+      if (preg_match('/meta.+?http-equiv\W+?refresh/i',$body)) {
+        preg_match('/content.+?url\W+?(.+?)\"/i',$body,$matches);
+        if(isset($matches[1])) {
+          $url = $matches[1];
+        }
+      }
+  
+      // Close handle
+      curl_close($ch);
+       
+      return $url;
+    }
+
+    // Close handle (will occur on error)
+    curl_close($ch);
+    
+    // Return input url, due to error the url could not be resolved.
+    return $url;
+	}
+	
+	function getAlternateDownloadUrlForSpot($spot) {
+	  if(!$this->hasAlternateDownloadUrlForSpot($spot)) {
+	    return false;
+	  }
+	  
+	  return $this->alternateDownloadUrl;
+	}
+	
 	/*
 	 * Creeert een linkje naar retrieve.php
 	 */
