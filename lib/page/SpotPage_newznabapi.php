@@ -140,14 +140,18 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 * that is the release date of the country this query to imdb is from.
 			 */
             preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
-			preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate);
+			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate)) {
+                $movieReleaseDate = " +(" . $movieReleaseDate[1] . ")";
+            } else {
+                $movieReleaseDate = '';
+            } # else
 
 			/* Search for the title */
-			$search['value'][] = "Title:=:+\"" . trim($movieTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
+			$search['value'][] = "Title:=:+\"" . trim($movieTitle[1]) . "\"" . $movieReleaseDate;
 
 			/* IMDB  sometimes returns the title translated, if so, pass the original title as well */
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Title:=:+\"" . trim($originalTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
+				$search['value'][] = "Title:=:+\"" . trim($originalTitle[1]) . "\"" . $movieReleaseDate;
 			} // if
 
 		} elseif (!empty($this->_params['q'])) {
