@@ -132,8 +132,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			/* Extract the movie title, and alternative (original) title if necessary */
-			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
-			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb, $originalTitle);
+            preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb, $movieTitle);
+            preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 
 			/*
 			 * Extract the release date from the IMDB info page. We cannot use datePublished because
