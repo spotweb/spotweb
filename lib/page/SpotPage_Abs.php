@@ -100,8 +100,8 @@ abstract class SpotPage_Abs {
 	 */
 	function template($tpl, $params = array()) {
 		SpotTiming::start(__FUNCTION__ . ':' . $tpl);
-		
-		extract($params, EXTR_REFS);
+
+        extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = $this->_pageTitle;
 		
@@ -116,8 +116,8 @@ abstract class SpotPage_Abs {
 		# send any expire headers
 		$this->sendExpireHeaders(true);
 		$this->sendContentTypeHeader('html');
-		
-		# and include the template
+
+        # and include the template
 		foreach($this->_templatePaths as $tplPath) {
 			if (file_exists($tplPath . $tpl . '.inc.php')) {
 				require_once($tplPath . $tpl . '.inc.php');
