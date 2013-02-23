@@ -1,5 +1,0 @@
-<IfModule mod_rewrite.c>
-	RewriteEngine on  
-	RewriteCond %{REQUEST_URI} !api/  
-	RewriteRule api/?$ index.php?page=newznabapi [QSA,L]  
-</IfModule>
