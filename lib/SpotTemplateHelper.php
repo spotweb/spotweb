@@ -824,7 +824,9 @@ class SpotTemplateHelper {
 		// Geen website? Dan standaard naar de zoekmachine
 		if (empty($spot['website'])) {
 			$spot['website'] = $this->makeSearchUrl($spot);
-		} # if
+		} else {
+			$spot['website'] = htmlspecialchars($spot['website']);
+		} # else
 		
 		// geef de category een fatsoenlijke naam
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
@@ -834,7 +836,6 @@ class SpotTemplateHelper {
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
 		} # if
-		$spot['website'] = htmlspecialchars($spot['website']);
 		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 		
 		// description

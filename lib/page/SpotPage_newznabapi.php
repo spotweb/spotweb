@@ -126,20 +126,23 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				
 				return ;
 			} # if
-			preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb['content'], $movieTitle);
-			
+
+			preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb['content'], $movieTitle);
 
 			/* Extract the release date from the IMDB info page */
-			preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb['content'], $movieReleaseDate);
+			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb['content'], $movieReleaseDate)) {
+				$movieReleaseDate = '"+(' . $movieReleaseDate[1] . ')"';
+			} else {
+				$movieReleaseDate = '';
+			} # else
 
-
-			$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
+			$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate;
 
 			// imdb sometimes returns the title translated, if so, pass the original title as well
-			preg_match('/<span class="title-extra">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
+			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" +(" . $movieReleaseDate[1] . ")";
-			} // if
+				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
+			} # if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);

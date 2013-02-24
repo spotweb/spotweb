@@ -45,7 +45,7 @@ if (!$dialogembedded) { ?>
 		<ul>
 			<li><a href="#edituserpreftab-1"><span><?php echo _('General'); ?></span></a></li>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, '')) { ?>
-			<li><a href="#edituserpreftab-2"><span><?php echo _('NZB handeling'); ?></span></a></li>
+			<li><a href="#edituserpreftab-2"><span><?php echo _('NZB handling'); ?></span></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 	<?php if (!$dialogembedded) { ?>

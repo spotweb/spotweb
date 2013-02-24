@@ -19,7 +19,7 @@
 	foreach($blacklist as $bannedspotter) {
 ?>
 				<td> <?php echo $bannedspotter['spotterid']; ?> </td>
-				<td> <?php if ($bannedspotter['idtype'] == 1) { echo _("Blacklisted"); } else { echo ("Whitelisted"); } ?> </td>
+				<td> <?php if ($bannedspotter['idtype'] == 1) { echo _("Blacklisted"); } else { echo _("Whitelisted"); } ?> </td>
 				<td> <?php echo $bannedspotter['origin']; ?> </td>
 				<td><a href="" onclick="return openDialog('editblacklistdialogdiv', '<?php if ($bannedspotter['idtype'] == 1) { echo _('Remove spotter from blacklist'); } else { echo _('Remove spotter from whitelist'); } ?>', '?page=render&tplname=editspotterblacklistdelete&data[spotterid]=<?php echo $bannedspotter['spotterid']; ?>', 'blacklistspotterform', null, 'autoclose', function() { refreshTab('edituserpreferencetabs')}, null); "><span class="ui-icon ui-icon-circle-close"></span></a></td>
 			</tr>
