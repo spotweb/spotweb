@@ -3,11 +3,22 @@ class SpotNzb {
 	private $_settings;
 	private $_db;
 	
+	protected $searchForAlternateDownloadUrl = false;
+	
 	function __construct(SpotDb $db, SpotSettings $settings) {
 		$this->_db = $db;
 		$this->_settings = $settings;
 	} # ctor
 
+	/**
+	 * 
+	 * Enable or disable searching for alternate urls for the spot.
+	 * @param boolean $search
+	 */
+	public function searchForAlternateDownload($search = true) {
+	  $this->searchForAlternateDownloadUrl = $search;
+	}
+	
 	/*
 	 * Behandel de gekozen actie voor de NZB file
 	 */
@@ -28,10 +39,25 @@ class SpotNzb {
 		$nzbList = array();
 		foreach($messageids as $thisMsgId) {
 			$fullSpot = $spotsOverview->getFullSpot($thisMsgId, $userSession['user']['userid'], $hdr_spotnntp);
-			
 			if (!empty($fullSpot['nzb'])) {
-				$nzbList[] = array('spot' => $fullSpot, 
-								   'nzb' => $spotsOverview->getNzb($fullSpot, $nzb_spotnntp));
+			  
+			  $nzb = null;
+			  // Search for alternate download urls
+				if ($this->searchForAlternateDownloadUrl) {
+					$alternateDownload = new SpotAlternateDownload($fullSpot);
+					
+					// Only return an alternate if there is one.
+      	  if ($alternateDownload->hasNzb()) {
+      	    $nzb = $alternateDownload->getNzb();
+      	  }
+			  }
+
+			  // We did not find or search for an alternate download url, fallback to default behaviour.
+			  if(!$nzb){
+			    $nzb = $spotsOverview->getNzb($fullSpot, $nzb_spotnntp);
+			  }
+			  
+				$nzbList[] = array('spot' => $fullSpot, 'nzb' => $nzb);
 			} # if
 		} # foreach
 

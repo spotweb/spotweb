@@ -29,15 +29,16 @@ class SpotPage_getnzb extends SpotPage_Abs {
 		} else {
 			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
 		} # else
-
+		
 		# NZB files mogen liever niet gecached worden op de client
 		$this->sendExpireHeaders(true);
 
 		try {
 			$spotNzb = new SpotNzb($this->_db, $this->_settings);
+			$spotNzb->searchForAlternateDownload();
 			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 										$this->_action, $hdr_spotnntp, $nzb_spotnntp);
-			
+
 			if ($this->_action != 'display') {
 				echo "<xml><result>OK</result><msg></msg></xml>";
 			} # if

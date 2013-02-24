@@ -310,11 +310,6 @@ class SpotsOverview {
 			$nzb = $nntp->getNzb($fullSpot['nzb']);
 			$this->_cache->saveCache($fullSpot['messageid'], SpotCache::SpotNzb, false, $nzb);
 		} # else
-
-	  $alternateDownload = new SpotAlternateDownload($fullSpot);
-	  if ($alternateDownload->hasNzb()) {
-	    $nzb = $alternateDownload->getNzb();
-	  }
 		
 		SpotTiming::stop(__FUNCTION__, array($fullSpot, $nntp));
 

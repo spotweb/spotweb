@@ -375,14 +375,7 @@ class SpotTemplateHelper {
 		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_retrieve_nzb, '')) {
 			return '';
 		} # if
-		
-		// Find an alternate download url if possible. 
-		// If none exists fallback to the original url.
-		$alternateDownload = new SpotAlternateDownload($spot);
-		if ($alternateDownload->hasUrlForSpot()) {
-		  return $alternateDownload->getUrlForSpot();
-		}
-		
+				
 		return $this->makeBaseUrl("full") . '?page=getnzb&amp;action=display&amp;messageid=' . urlencode($spot['messageid']) . $this->makeApiRequestString();
 	} # makeNzbUrl
   
