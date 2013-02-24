@@ -732,9 +732,9 @@
 
 		<server name='XSNews'>
 			<ssl>
-				<header ssl='yes' port='563'>reader.xsnews.nl</header>
-				<nzb ssl='yes' port='563'>reader.xsnews.nl</nzb>
-				<post ssl='yes' port='563'>upload.xsnews.nl</post>
+				<header ssl='yes' port='443'>reader.xsnews.nl</header>
+				<nzb ssl='yes' port='443'>reader.xsnews.nl</nzb>
+				<post ssl='yes' port='443'>upload.xsnews.nl</post>
 			</ssl>
 			<plain>
 				<header ssl='' port='119'>reader.xsnews.nl</header>
