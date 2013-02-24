@@ -141,7 +141,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			// imdb sometimes returns the title translated, if so, pass the original title as well
 			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleasedate;
+				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
 			} # if
 
 		} elseif (!empty($this->_params['q'])) {
