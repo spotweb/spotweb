@@ -142,6 +142,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
 				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleasedate;
+			} # if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
