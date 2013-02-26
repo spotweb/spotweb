@@ -242,7 +242,7 @@
 				<nzb ssl='' port='119'>news.giganews.com</nzb>
 				<post ssl='' port='119'>news.giganews.com</post>
 			</plain>
-		</server>		
+		</server>
 
 		<server name='Hitnews EU'>
 			<ssl>
@@ -424,7 +424,7 @@
 				<header ssl='' port='119'>news.eu.supernews.com</header>
 				<nzb ssl='' port='119'>news.eu.supernews.com</nzb>
 				<post ssl='' port='119'>news.eu.supernews.com</post>
-			</plain>				
+			</plain>
 		</server>
 
 		<server name='Supernews US'>
@@ -502,7 +502,7 @@
 				<header ssl='' port='119'>news.sunnyusenet.com</header>
 				<nzb ssl='' port='119'>news.sunnyusenet.com</nzb>
 				<post ssl='' port='119'>post.sunnyusenet.com</post> 
-			</plain>						
+			</plain>
 		</server>
 
 		<server name='Tele2 v1'>
@@ -545,7 +545,20 @@
 			</plain>
 		</server>
 
-		<server name='Tweaknews'>
+		<server name='Tweaknews EU'>
+			<ssl>
+				<header ssl='yes' port='563'>news.tweaknews.eu</header>
+				<nzb ssl='yes' port='563'>news.tweaknews.eu</nzb>
+				<post ssl='yes' port='563'>news.tweaknews.eu</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='119'>news.tweaknews.eu</header>
+				<nzb ssl='' port='119'>news.tweaknews.eu</nzb>
+				<post ssl='' port='119'>news.tweaknews.eu</post>
+			</plain>
+		</server>
+
+		<server name='Tweaknews NL'>
 			<ssl>
 				<header ssl='yes' port='563'>news.tweaknews.nl</header>
 				<nzb ssl='yes' port='563'>news.tweaknews.nl</nzb>
@@ -556,7 +569,7 @@
 				<nzb ssl='' port='119'>news.tweaknews.nl</nzb>
 				<post ssl='' port='119'>news.tweaknews.nl</post>
 			</plain>
-		</server>		
+		</server>
 
 		<server name='Usenet-News EU'>
 			<ssl>
@@ -697,12 +710,12 @@
 		</server>
 
 		<server name='XLUsenet'>
-			<ssl>			
+			<ssl>
 				<header ssl='yes' port='563'>ssl-news.eu.xlusenet.nl</header>
 				<nzb ssl='yes' port='563'>ssl-news.eu.xlusenet.nl</nzb>
 				<post ssl='yes' port='563'>ssl-news.eu.xlusenet.nl</post>
 			</ssl>
-			<plain>			
+			<plain>
 				<header ssl='' port='119'>news.eu.xlusenet.nl</header>
 				<nzb ssl='' port='119'>news.eu.xlusenet.nl</nzb>
 				<post ssl='' port='119'>news.eu.xlusenet.nl</post>
