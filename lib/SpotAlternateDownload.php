@@ -242,16 +242,16 @@ class SpotAlternateDownload {
     
     // Execute
     $body = curl_exec($ch);
-    
+
     // Check if any error occured
     if(!curl_errno($ch))
     {
       // Close handle
       curl_close($ch);
-      
       // Load the body into simplexml. 
       // If the xml is well formed this will result in true thus returning the xml.
-      if (simplexml_load_string($body)) {
+      // Suppress errors if the string is not well formed, where testing here.
+      if (@simplexml_load_string($body)) {
         $this->nzb = $body;
         return $this->nzb;
       } else if($body) {
@@ -319,7 +319,7 @@ class SpotAlternateDownload {
     foreach( $dom->getElementsByTagName( 'tr' ) as $tr ) {
       
       // Only continue parsing if the search query is found in the tr.
-      if (strpos($tr->nodeValue, 'G7pruRWDr2ASFraTyabR5VagE5') !== false) {
+      if (strpos($tr->nodeValue, $matches[1]) !== false) {
         
         // Get all input fields.
         $fields = $tr->getElementsByTagName('input');
@@ -333,7 +333,7 @@ class SpotAlternateDownload {
             if(
               $input->parentNode && 
               $input->parentNode->nextSibling 
-              && strpos($input->parentNode->nextSibling->nodeValue, 'G7pruRWDr2ASFraTyabR5VagE5') !== false) 
+              && strpos($input->parentNode->nextSibling->nodeValue, $matches[1]) !== false) 
             {
               
               // Push name to array. This name is needed to fetch the download.
