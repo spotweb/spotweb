@@ -30,10 +30,21 @@ class Services_Providers_Nzb {
 			$this->_cacheDao->updateNzbCacheStamp($fullSpot['messageid']);
 		} else {
 			/*
-			 * File is not in the cache yet, retrieve it from the usenet
-			 * server and store it in the cache
+			 * File is not in the cache yet, retrieve it from the appropriate store, and
+			 * store it in the cache
 			 */
-			$nzb = $this->_nntpSpotReading->readBinary($fullSpot['nzb'], true);
+            $nzb = null;
+
+            // Search for alternate download urls
+            $alternateDownload = new SpotAlternateDownload($fullSpot);
+
+            // Only return an alternate if there is one.
+            if ($alternateDownload->hasNzb()) {
+                $nzb = $alternateDownload->getNzb();
+            } else {
+                $nzb = $this->_nntpSpotReading->readBinary($fullSpot['nzb'], true);
+            } # else
+
 			$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb);
 		} # else
 
