@@ -4,9 +4,33 @@
 		<title>Spotweb update notifications</title>
 		<description>Major changes are described in this newsfeed</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Thu, 3 Jan 2013 00:00:00 +0100</lastBuildDate>
-		<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+		<lastBuildDate>Wed, 27 Feb 2013 00:00:00 +0100</lastBuildDate>
+		<pubDate>Wed, 27 Feb 2013 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
+
+		<item>
+			<title>Alternate nzb download functionality / prevent fake nzb downloads</title>
+			<description><![CDATA[
+			  Recently spots are getting removed from the news servers more often.<br>
+			  To prevent this from happening spotters are posting fake nzb files.<br>
+			  The real nzb's are being hosted on other websites and linked to inside the spot web link or description.<br>
+			  This new situation makes it hard for spotweb to function properly. 
+        <br><br>
+        Changes are made to spotweb to automatically find the alternative url from the spot and download the real nzb from the link.<br>
+        Currently support has been added for http://base64.derefer.me links which result in a direct download<br>
+        and http://alturl.com links which redirect to binsearch.info.<br>
+        This new feature will try to download the alternate nzb if possible if not it will present the old nzb instead.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Wed, 27 Feb 2013 00:00:00 +0100</pubDate>
+			<author>michaelw85</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.25</spotweb:settings_version>
+			<spotweb:security_version>0.29</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
 
 		<item>
 			<title>Show spam reports icon based on user configurable spam report threshold</title>
