@@ -639,8 +639,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											 'Games'	=> '4050')
 				), array('name'		=> 'TV',
 						 'cat'		=> '5000',
-						 'subcata'	=> array('SD'		=> '5030',
+						 'subcata'	=> array('Foreign	=> '5020',
+											'SD'		=> '5030',
 											 'HD'		=> '5040',
+											 'Other'	=> '5050',
 											 'Sport'	=> '5060')
 				), array('name'		=> 'XXX',
 						 'cat'		=> '6000',
@@ -682,8 +684,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 4050: return 'cat2_a0,cat2_a1,cat2_a2';
 
 			case 5000: return 'cat0_z1';
+			case 5020: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_a10';
 			case 5030: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10';
 			case 5040: return 'cat0_z1,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9';
+			case 5050: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_a10';
 			case 5060: return 'cat0_z1,cat0_d18';
 
 			case 6000: return 'cat0_z3';
