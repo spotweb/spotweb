@@ -71,7 +71,8 @@ class SpotAlternateDownload {
 	 * Find the alternate url 
 	 * @param String $data String containing alternate url.
 	 */
-	protected function resolveUrl($url) {
+	protected function resolveUrl($url, $currentUrl=false, $retries=0) {
+	  
 	  if(!function_exists('curl_init')) {
 	    trigger_error('cURL is needed to resolve alternate download urls.', E_NOTICE);
 	    return $url;
@@ -104,7 +105,27 @@ class SpotAlternateDownload {
      curl_close($ch);
     
      if ($finalUrl) {
-       return $this->resolveMetaRefreshOnUrl($finalUrl);
+       // We found the final url let return it.
+       if($currentUrl == $finalUrl) {
+         return $finalUrl;
+       }
+	  
+       // Lets try to find a meta refresh on the page of the current url.
+       $url = $this->resolveMetaRefreshOnUrl($finalUrl);
+
+       // We found a meta refresh url inside the page.
+       if ($url != $finalUrl) {
+         // Lets try to resolve this again there might be more redirects.
+         // Recursive call.
+         if ($retries == 2) {
+           // Lets stop trying recursive we have to many redirects.
+           return $url;
+         }
+         
+         return $this->resolveUrl($url, $url,$retries++);
+       }
+
+       return $finalUrl;
      }
     } else {
       trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
@@ -114,7 +135,7 @@ class SpotAlternateDownload {
     curl_close($ch);
     
     // Return input url, due to error the url could not be resolved.
-    return $this->resolveMetaRefreshOnUrl($url);
+    return $url;
 	}
 	
 	/**
@@ -220,7 +241,7 @@ class SpotAlternateDownload {
 	  
 	  // Get the alternate url.
     $url = $this->getUrlForSpot();
-            
+   
     // If there is no alternate url return;
     if (!$url) {
       $this->nzb = false;
