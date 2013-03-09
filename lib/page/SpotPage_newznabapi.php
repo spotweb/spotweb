@@ -131,7 +131,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			/* Extract the release date from the IMDB info page */
 			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb['content'], $movieReleaseDate)) {
-				$movieReleaseDate = '"+(' . $movieReleaseDate[1] . ')"';
+				$movieReleaseDate = '+(' . $movieReleaseDate[1] . ')';
 			} else {
 				$movieReleaseDate = '';
 			} # else
