@@ -7,7 +7,7 @@ Transifex is a modern, open-source localization platform. It’s a web system wh
 3. [Request a language](https://www.transifex.com/projects/p/spotweb/languages/add/) or request to be added to an existing Language Team.
 4. Click on the language you wish to help translate.
 5. Click on messages.po
-	*  Select "Download for translation" to download the .po file to your computer. See [Editing .po files][] for details.
+	*  Select "Download for translation" to download the .po file to your computer. See [Editing .po files](#editing-po-files) for details.
 	* Or select "Translate Now" or "Try out our new editor" to translate online.
 6. Save your online edits or upload your updated .po file.
 
@@ -15,28 +15,21 @@ Transifex is a modern, open-source localization platform. It’s a web system wh
 ##Updating Transifex ##
 When new Dutch translations are added to `spotweb/locales/nl_NL/LC_MESSAGES/messages.po` a new English template file needs to be created and uploaded to Transifex, followed by the updated Dutch `messages.po` file. If we want English to be the *source language* then we have to have this slightly inefficient two-step method.
 
-1. Create a new English template file using `spotweb/utils/transifex/messagesToPO.py`. This requires [Python](http://www.python.org/download/releases/2.7.3/) - I used 2.7.3 on a Mac.
+1. Create a new English template file using `spotweb/utils/transifex/messagesToPO.php`
 
-	`$ pwd`
-	
-	`/Users/james/tmp/spotweb`
-	
-	`$ cd utils/transifex/`
-	
-	`$ python messagesToPO.py`
-	
-	`input file = /Users/james/tmp/spotweb/utils/transifex/../../locales/nl_NL/LC_MESSAGES/messages.po`
-	
-	`output file = /Users/james/tmp/spotweb/utils/transifex/messages_template.po`
-	
-	`Template file written successfully`
-	
+````bash
+$ cd spotweb/utils/transifex/
+$ php messagesToPO.php
+Input file is /Users/james/Projects/Github/spotweb/utils/transifex/../../locales/nl_NL/LC_MESSAGES/messages.po
+Output File is /Users/james/Projects/Github/spotweb/utils/transifex/messages_template.po
+Template file written successfully
+````	
 
 2. Check the format of the template file:
 
 	`msgfmt -c ./messages_template.po -o - -v`
 
-	There should be no errors. See [Installing gettext][] for info on `msgfmt`.
+	There should be no errors. See [Installing gettext](#installing-gettext) for info on `msgfmt`.
 
 3. Go to the [SpotWeb resources page](https://www.transifex.com/projects/p/spotweb/resource/messagespo/) on Transifex.
 
@@ -52,9 +45,9 @@ When new Dutch translations are added to `spotweb/locales/nl_NL/LC_MESSAGES/mess
 
 ## Installing gettext ##
 ### Mac ###
-1. Install [MacPorts](http://www.macports.org/).
-2. Install gettext: `sudo port install gettext`
-3. `msgfmt` should be in your path.
+1. Install [Homebrew](http://mxcl.github.com/homebrew/).
+2. Install gettext: `brew install gettext`
+3. `msgfmt` won't be in your path, so run: `$(brew --prefix gettext)/bin/msgfmt`
 
 ### Windows ###
 1. Download [gettext for Win32](http://sourceforge.net/projects/gettext/files/).
