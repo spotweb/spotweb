@@ -1,17 +1,15 @@
 <?php
 class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
-	private $_svcPrvHttp;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
-		parent::__construct($daoFactory, $settings, $currentSession);
+	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
+		parent::__construct($db, $settings, $currentSession);
 
 		$this->_params = $params;
-		$this->_svcPrvHttp = new Services_Providers_Http($daoFactory->getCacheDao());
 	} # __construct
 
 	function render() {
-		# Do not cache this output
+		# we willen niet dat de API output gecached wordt
 		$this->sendExpireHeaders(true);
 
 		# CAPS function is used to query the server for supported features and the protocol version and other 
@@ -22,7 +20,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			return ;
 		} # if
 		
-		# Make sure the user has the correct permissions
+		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 		$outputtype = ($this->_params['o'] == "json") ? "json" : "xml";
@@ -45,14 +43,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # render()
 
 	function search($outputtype) {
-		# Make sure the user has the correct permissions
+		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
+		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$search = array();
 
-		/*
-		 * Did the user ask for an TV show? If so, try to get the actual TV show title
-		 */
 		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
 			# validate input
 			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
@@ -65,15 +61,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$dom = new DomDocument();
 			$dom->prevservWhiteSpace = false;
 
-			if (!@list($http_code, $tvrage) = $this->_svcPrvHttp->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
+			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
 				$this->showApiError(300);
 				
 				 return ;
 			} # if
 
-			$dom->loadXML($tvrage);
+			$dom->loadXML($tvrage['content']);
 			$showTitle = $dom->getElementsByTagName('showname');
-			# TVrage returns an 404 when the TV show is not found, convert it to an newznab error code
+			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
 			if (!@$showTitle->item(0)->nodeValue) {
 				$this->showApiError(300);
 				
@@ -82,20 +78,20 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$tvSearch = $showTitle->item(0)->nodeValue;
 
 			$epSearch = '';
-			/* Make sure the season is numeric or prefixed with an S */
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
+
 				if (strlen($this->_params['season']) < 3) {
 					$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
 				} else {
 					$epSearch = $this->_params['season'] . ' ';
-				} # else
+				} # else 
+
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 				
 				return ;
 			} # if
 
-			/* Make sure the episode number is numeric or prefixed with an S */
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
 				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
 			} elseif ($this->_params['ep'] != "") {
@@ -104,13 +100,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
-			/* Add the TV title to the search parameters */
-			$search['value'][] = "Title:=:+\"" . trim($tvSearch) . "\" +" . $epSearch;
+			# The + operator is supported both by PostgreSQL and MySQL's FTS
+			$search['value'][] = "Titel:=:+\"" . trim($tvSearch) . "\" +" . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
 			} else {
-				$search['value'][] = "Title:=:\"" . $this->_params['artist'] . "\"";
+				$search['value'][] = "Titel:=:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
@@ -125,38 +121,32 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# fetch remote content
-			if (!@list($http_code, $imdb) = $this->_svcPrvHttp->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
+			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://uk.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
 				$this->showApiError(300);
 				
 				return ;
 			} # if
 
-			/* Extract the movie title, and alternative (original) title if necessary */
-            preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb, $movieTitle);
-            preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
+			preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb['content'], $movieTitle);
 
-			/*
-			 * Extract the release date from the IMDB info page. We cannot use datePublished because
-			 * that is the release date of the country this query to imdb is from.
-			 */
-            preg_match('/<h1 class="header" itemprop="name">([^\<]*)<span([^\<]*)>/ms', $imdb, $movieTitle);
-			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate)) {
-                $movieReleaseDate = " +(" . $movieReleaseDate[1] . ")";
-            } else {
-                $movieReleaseDate = '';
-            } # else
+			/* Extract the release date from the IMDB info page */
+			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb['content'], $movieReleaseDate)) {
+				$movieReleaseDate = '+(' . $movieReleaseDate[1] . ')';
+			} else {
+				$movieReleaseDate = '';
+			} # else
 
-			/* Search for the title */
-			$search['value'][] = "Title:=:+\"" . trim($movieTitle[1]) . "\"" . $movieReleaseDate;
+			$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate;
 
-			/* IMDB  sometimes returns the title translated, if so, pass the original title as well */
+			// imdb sometimes returns the title translated, if so, pass the original title as well
+			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Title:=:+\"" . trim($originalTitle[1]) . "\"" . $movieReleaseDate;
-			} // if
+				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
+			} # if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
-			$search['value'][] = "Title:=:+" . $searchTerm;
+			$search['value'][] = "Titel:=:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
@@ -168,7 +158,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # foreach
 		$search['tree'] = implode(",", $tmpCat);
 
-		# Do not retrieve spots which are zero bytes
+		# Spots met een filesize 0 niet opvragen
 		$search['value'][] = "filesize:>:0";
 
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
@@ -178,31 +168,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
 		$offset = $pageNr*$limit;
 
-		/*
-		 * We get a bunch of query parameters, so now change this to the actual
-		 * search query the user requested including the required sorting
-		 */		
-		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
-		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
-		$parsedSearch = $svcSearchQp->filterToQuery(
-							$search,
-							array(
-								'field' => 'stamp',
-								'direction' => 'DESC',
-							),
-							$this->_currentSession,
-							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
+		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession,
+							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
 
-        /*
-         * Actually fetch the spots
-         */
-		$svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
-		$spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
-												$pageNr, 
-												$limit,
-												$parsedSearch);
-
-        $this->showResults($spotsTmp, $offset, $outputtype);
+		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
+						$pageNr,
+						$limit,
+						$parsedSearch);
+		$this->showResults($spots, $offset, $outputtype);
 	} # search
 
 	function showResults($spots, $offset, $outputtype) {
@@ -504,12 +478,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 	function getNzb() {
 		if ($this->_params['del'] == "1" && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
-			$spot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
+			$spot = $this->_db->getFullSpot($this->_params['messageid'], $this->_currentSession['user']['userid']);
 			if ($spot['watchstamp'] !== NULL) {
-				$svcSpotStateListDao = new Services_Providers_SpotStateList($this->_daoFactory->getSpotStateListDao());
-				$svcSpotStateListDao->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
-
-				$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
+				$this->_db->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
+				$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
 				$spotsNotifications->sendWatchlistHandled('remove', $this->_params['messageid']);
 			} # if
 		} # if
@@ -590,6 +562,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	} # caps
 
 	function Cat2NewznabCat($hcat, $cat) {
+		$result = "-";
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
 		$nr = substr($cat, 1);
@@ -600,8 +573,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			switch ($cat[0]) {
 				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
-
-                default     : return '';
 			} # switch
 		} # if
 	} # Cat2NewznabCat
@@ -722,8 +693,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
 
 			case 7020: return 'cat0_z2';
-
-            default  : return '';
 		}
 	} # nabcat2spotcat
 
