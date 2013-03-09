@@ -1,5 +1,5 @@
 # This file is distributed under the same license as the SpotWeb package. 
-# Copyright (c) 2011, Spotweb
+# Copyright (c) 2013, Spotweb
 # All rights reserved.
 # 
 msgid ""
@@ -303,7 +303,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-msgid "Titel"
+msgid "Title"
 msgstr ""
 
 msgid "Description"
@@ -504,6 +504,9 @@ msgstr ""
 msgid "Open \"%s\" panel"
 msgstr ""
 
+msgid "Close \"%s\" panel"
+msgstr ""
+
 #: editsettings.inc.php
 msgid "General"
 msgstr ""
@@ -647,7 +650,10 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-msgid "NZB handeling"
+msgid "NZB handling"
+msgstr ""
+
+msgid "Sort on:"
 msgstr ""
 
 msgid "Filters"
@@ -888,7 +894,10 @@ msgstr ""
 msgid "Search on:"
 msgstr ""
 
-msgid "Title"
+msgid "Between "
+msgstr ""
+
+msgid " and "
 msgstr ""
 
 msgid "Poster"
@@ -975,7 +984,7 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-msgid "Selected NZB download methode doesn't support sidepanel"
+msgid "Selected NZB download method doesn't support sidepanel"
 msgstr ""
 
 msgid "Status:"
@@ -1571,7 +1580,7 @@ msgstr ""
 msgid "Religion"
 msgstr ""
 
-msgid "Biografy"
+msgid "Biography"
 msgstr ""
 
 msgid "Travel"

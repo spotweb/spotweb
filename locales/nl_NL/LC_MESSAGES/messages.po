@@ -1,5 +1,5 @@
 ﻿# This file is distributed under the same license as the SpotWeb package. 
-# Copyright (c) 2011, Spotweb
+# Copyright (c) 2013, Spotweb
 # All rights reserved.
 # 
 msgid ""
@@ -1848,12 +1848,6 @@ msgstr "Spotter van whitelist afhalen"
 msgid "Spotter ID"
 msgstr "Spotter ID"
 
-msgid "Blacklisted"
-msgstr "Blacklisted"
-
-msgid "Whitelisted"
-msgstr "Whitelisted"
-
 msgid "Origin"
 msgstr "Oorsprong"
 
@@ -1865,3 +1859,24 @@ msgstr "%s schreef eerder:"
 
 msgid "Access denied for [%s (%d::%s)]"
 msgstr "Toegang geweigerd voor [%s (%d::%s)]"
+
+msgid "Loading"
+msgstr "Laden"
+
+msgid "Listed spotters"
+msgstr "Geregistreerde spotters"
+
+msgid "Blacklisted"
+msgstr "Geblacklist"
+
+msgid "Whitelisted"
+msgstr "Gewhitelist"
+
+msgid "Reported via Spotweb for spot"
+msgstr "Gemeld via Spotweb voor spot"
+
+msgid "Whitelisted by user"
+msgstr "Gewhitelist door gebruiker"
+
+msgid "Minimum number of spamreports before showing spamreports icon?"
+msgstr "Minimaal aantal spamreports voor tonen spamreports icoon?"
