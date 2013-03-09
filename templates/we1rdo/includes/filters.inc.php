@@ -165,7 +165,7 @@
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
 ?>
-							<tr> <th> <?php echo _($filterType['fieldname']); ?> </th> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo ($filterType['fieldname'] == 'Titel') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
@@ -174,7 +174,7 @@
 <?php						
 	}
 ?>
-						<h4>Sorteren op:</h4>
+						<h4><?php echo _('Sort on:'); ?></h4>
 						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
 							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label><?php echo _('Relevance'); ?></label> </li>
@@ -231,14 +231,14 @@
 
 				<div class="sidebarPanel sabnzbdPanel">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_use_sabapi, '')) { ?>
-					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo _('Sluit "' . $tplHelper->getNzbHandlerName() . 'paneel"'); ?>'>[x]</a><?php echo $tplHelper->getNzbHandlerName(); ?></h4>
+					<h4><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Close "%s" panel'), $tplHelper->getNzbHandlerName()); ?>'>[x]</a><?php echo $tplHelper->getNzbHandlerName(); ?></h4>
 <?php 
 		$apikey = $tplHelper->apiToHash($currentSession['user']['apikey']);
 		echo "<input class='apikey' type='hidden' value='".$apikey."'>";
 		if ($tplHelper->getNzbHandlerApiSupport() === false)
 		{?>
 					<table class="sabInfo" summary="SABnzbd infomatie">
-						<tr><td><?php echo _('Selected NZB download methode doesn\'t support sidepanel'); ?></td></tr>
+						<tr><td><?php echo _('Selected NZB download method doesn\'t support sidepanel'); ?></td></tr>
 					</table>			
 <?php	}
 		else
@@ -378,7 +378,7 @@
 				var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
 				$( "#min-filesize" ).val( "filesize:>:" + minSize );
 				$( "#max-filesize" ).val( "filesize:<:" + maxSize );
-				$( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
+				$( "#human-filesize" ).text( "<?php echo _('Between '); ?>" + format_size( minSize ) + "<?php echo _(' and '); ?>" + format_size( maxSize ) );
 			}
 		});
 		
@@ -403,7 +403,7 @@
 		/* Filesizes */
 		$( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
 		$( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
-		$( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
+		$( "#human-filesize" ).text( "<?php echo _('Between '); ?>" + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + "<?php echo _(' and '); ?>" + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
 		
 		/* Report counts */
 		var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);

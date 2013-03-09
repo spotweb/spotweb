@@ -58,7 +58,7 @@
 <?php } ?>						
 <?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
-							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s panel"'), $tplHelper->getNzbHandlerName()); ?>'></a></th>
+							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s" panel'), $tplHelper->getNzbHandlerName()); ?>'></a></th>
 <?php } ?>						
 						</tr>
 					</thead>

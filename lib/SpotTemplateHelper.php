@@ -667,7 +667,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . urlencode(htmlspecialchars($value['value'], ENT_QUOTES, "utf-8"));
+			$filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . htmlspecialchars(urlencode($value['value']), ENT_QUOTES, "utf-8");
 		} # foreach
 
 		return $filterStr;
@@ -817,7 +817,9 @@ class SpotTemplateHelper {
 		// Geen website? Dan standaard naar de zoekmachine
 		if (empty($spot['website'])) {
 			$spot['website'] = $this->makeSearchUrl($spot);
-		} # if
+		} else {
+			$spot['website'] = htmlspecialchars($spot['website']);
+		} # else
 		
 		// geef de category een fatsoenlijke naam
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
@@ -827,7 +829,6 @@ class SpotTemplateHelper {
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
 		} # if
-		$spot['website'] = htmlspecialchars($spot['website']);
 		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 		
 		// description
