@@ -72,34 +72,42 @@ class SpotAlternateDownload {
 	 * @param String $data String containing alternate url.
 	 */
 	protected function resolveUrl($url, $currentUrl=false, $retries=0) {
-	  
+
 	  if(!function_exists('curl_init')) {
 	    trigger_error('cURL is needed to resolve alternate download urls.', E_NOTICE);
 	    return $url;
 	  }
-	  	  	  
+
 	  // Initialize curl and follow redirects.
     $ch = curl_init($url);
     $chOptions = array(
       CURLOPT_RETURNTRANSFER => 1,
       CURLOPT_FAILONERROR		 => 1,
       CURLOPT_CONNECTTIMEOUT => 30,
-      CURLOPT_FOLLOWLOCATION => TRUE,
-      CURLOPT_MAXREDIRS      => 20,
       CURLOPT_HEADER         => TRUE,
       CURLOPT_NOBODY         => TRUE,
       CURLOPT_SSL_VERIFYPEER => FALSE,
       CURLOPT_SSL_VERIFYHOST => FALSE,         
     );
-    curl_setopt_array($ch, $chOptions);
     
-    // Execute
-    curl_exec($ch);
+    // Only use these curl options if no open base dir is set and php mode is off.
+    $manualResolving = true;
+	  if (ini_get('open_basedir') == '' && ini_get('safe_mode') == false) {
+	    $manualResolving = false;
+      $chOptions[CURLOPT_FOLLOWLOCATION] = true;
+      $chOptions[CURLOPT_MAXREDIRS]      = 20;
+    }    
+
+    curl_setopt_array($ch, $chOptions);            
+    
+    // Execute (save responce to var for manual following redirects)
+    $header = curl_exec($ch);
     
     // Check if any error occured
     if(!curl_errno($ch))
     {
-     $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+     $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);   
+     $HTTPcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
      
      // Close handle
      curl_close($ch);
@@ -109,10 +117,36 @@ class SpotAlternateDownload {
        if($currentUrl == $finalUrl) {
          return $finalUrl;
        }
-	  
+
+       // We have a php config using safe mode or open_basedir.
+       // Lets do some manual matching for redirects.
+       if ($manualResolving) {
+         
+         if ($HTTPcode == 301 || $HTTPcode == 302) {
+           preg_match('/Location:(.*?)\n/', $header, $matches);
+           $url = trim(array_pop($matches));
+         }
+
+
+         // We found a redirect url inside the page.
+         if ($url != $finalUrl) {
+           // Lets try to resolve this again there might be more redirects.
+           // Recursive call.
+           if ($retries == 20) {
+             // Lets stop trying recursive we have to many redirects.
+             return $url;
+           }
+           
+           // Recursive call coming up :)
+           // Do no return we need to continue for meta refresh checks.
+           $finalUrl = $this->resolveUrl($url, $url,$retries++);
+         }
+         
+       }
+
        // Lets try to find a meta refresh on the page of the current url.
        $url = $this->resolveMetaRefreshOnUrl($finalUrl);
-
+       
        // We found a meta refresh url inside the page.
        if ($url != $finalUrl) {
          // Lets try to resolve this again there might be more redirects.
@@ -241,7 +275,7 @@ class SpotAlternateDownload {
 	  
 	  // Get the alternate url.
     $url = $this->getUrlForSpot();
-   
+
     // If there is no alternate url return;
     if (!$url) {
       $this->nzb = false;
