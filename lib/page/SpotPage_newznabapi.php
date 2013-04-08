@@ -639,7 +639,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											 'Games'	=> '4050')
 				), array('name'		=> 'TV',
 						 'cat'		=> '5000',
-						 'subcata'	=> array('Foreign	=> '5020',
+						 'subcata'	=> array('Foreign'	=> '5020',
 											'SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Other'	=> '5050',
