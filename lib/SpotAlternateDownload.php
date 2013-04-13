@@ -26,7 +26,8 @@ class SpotAlternateDownload {
 	  // Array containing url matches. Must contain the first part of the url.
 	  $matches = array(
 	  	'http://base64.derefer.me',
-	    'http://alturl.com'
+	    'http://derefer.me',
+	    'http://alturl.com',
 	  );
 	  
 	  // Search in the website url
@@ -291,7 +292,7 @@ class SpotAlternateDownload {
       CURLOPT_ENCODING       => '',
       CURLOPT_NOBODY         => FALSE,
       CURLOPT_SSL_VERIFYPEER => FALSE,
-      CURLOPT_SSL_VERIFYHOST => FALSE,     
+      CURLOPT_SSL_VERIFYHOST => FALSE,
     );
     curl_setopt_array($ch, $chOptions);
     
@@ -340,7 +341,13 @@ class SpotAlternateDownload {
 	  if (strpos($url, 'binsearch.info') !== FALSE) {
 	    return $this->downloadNzbFromBinsearch($url, $body);
 	  }
-	  
+
+	  // NZB Index
+	  if (strpos($url, 'nzbindex.nl') !== FALSE) {
+	    // This function does not use the $body var.
+	    return $this->downloadNzbFromNzbindex($url);
+	  }
+
 	  // No support found return ;(
 	  return false;
 	}
@@ -352,7 +359,8 @@ class SpotAlternateDownload {
 	 * @param String $url
 	 * @param String $body
 	 */
-	protected function downloadNzbFromBinsearch($url, $body) {	  
+	protected function downloadNzbFromBinsearch($url, $body) {
+	        
 	  // Match to get the nzb id.
 	  preg_match('/\q\=([a-z0-9]*)&/i', $url, $matches);
 
@@ -423,6 +431,76 @@ class SpotAlternateDownload {
 	
 	/**
 	 * 
+	 * Tries to download the actual nzb from nzbindex
+	 * 
+	 * @param String $url
+	 * @param String $body
+	 */
+	protected function downloadNzbFromNzbindex($url) {
+	  // New curl request to get the page again
+	  // This time do a request with the cookie that accepts the Disclaimer agreement.
+	  
+	  // Initialize curl.
+    $ch = curl_init($url);
+    $chOptions = array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_FAILONERROR		 => 1,
+      CURLOPT_CONNECTTIMEOUT => 30,
+      CURLOPT_ENCODING       => '',
+      CURLOPT_NOBODY         => FALSE,
+      CURLOPT_SSL_VERIFYPEER => FALSE,
+      CURLOPT_SSL_VERIFYHOST => FALSE,
+      CURLOPT_COOKIE         => 'agreed=true'
+    );
+    curl_setopt_array($ch, $chOptions);
+    
+    // Execute
+    $body = curl_exec($ch);
+
+    // Check if any error occured
+    if(curl_errno($ch))
+    {
+      trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+      return false;
+    }
+
+    // Close handle
+    curl_close($ch);  
+	  
+  	// Match to get the nzb id.
+    preg_match('/\q\=([a-z0-9]*)&/i', $url, $matches);
+    
+    // This match is essential for the download
+    if (!count($matches)) {
+      return false;
+    }
+  
+    $dom = new DOMDocument;
+    
+    // Suppress errors, html does not have to be well formed to function.
+    @$dom->loadHTML( $body );
+
+    // Fetch a tags from the result page.
+    foreach( $dom->getElementsByTagName( 'a' ) as $a ) {
+
+      // Search for the direct nzb download link :)
+      if(trim(strtolower($a->nodeValue)) == 'download') {
+        $url = $a->getAttribute('href');
+        
+        if(strpos($url, $matches[1]) !== false) {
+          // We just found a direct download link for our url.
+          // No need for posting, just another get using curl.
+          return $this->getAndDownloadNzb($url);
+        }
+      }
+    }
+    
+    // Could not find the right download link.
+    return false;
+	}
+	
+	/**
+	 * 
 	 * Execute a POST to the given url and return the body.
 	 * @param String $url
 	 * @param array $postdata
@@ -458,7 +536,16 @@ class SpotAlternateDownload {
     {
       // Close handle
       curl_close($ch);
-      return $body;
+      
+      // Load the body into simplexml. 
+      // If the xml is well formed this will result in true thus returning the xml.
+      // Suppress errors if the string is not well formed, where testing here.
+      if (@simplexml_load_string($body)) {
+        return $body;
+      } else {
+        return false;
+      }
+      
     } else {
       trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
     }
@@ -466,4 +553,50 @@ class SpotAlternateDownload {
     return false;
 	}
 	
+	/**
+	 * 
+	 * Curl GET return xml or false if not well formed.
+	 * @param String $url
+	 */
+	protected function getAndDownloadNzb($url)
+	{
+    // Initialize curl.
+    $ch = curl_init($url);
+    $chOptions = array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_FAILONERROR		 => 1,
+      CURLOPT_CONNECTTIMEOUT => 30,
+      CURLOPT_ENCODING       => '',
+      CURLOPT_NOBODY         => FALSE,
+      CURLOPT_SSL_VERIFYPEER => FALSE,
+      CURLOPT_SSL_VERIFYHOST => FALSE,     
+    );
+    curl_setopt_array($ch, $chOptions);
+    
+    // Execute
+    $body = curl_exec($ch);
+
+    // Check if any error occured
+    if(!curl_errno($ch))
+    {
+      // Close handle
+      curl_close($ch);
+      
+      // Load the body into simplexml. 
+      // If the xml is well formed this will result in true thus returning the xml.
+      // Suppress errors if the string is not well formed, where testing here.
+      if (@simplexml_load_string($body)) {
+        return $body;
+      } else {
+        return false;
+      }
+    } else {
+      trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+    }
+
+    // Close handle (will occur on error)
+    curl_close($ch);
+    
+    return false;
+	}
 }
