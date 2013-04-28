@@ -205,12 +205,10 @@ abstract class Services_Retriever_Base {
 				# reset the start time to prevent a another retriever from starting
 				# during the intial retrieve which can take many hours 
 				$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
-
-                break;
 			} # while
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
 
-			# we are done updating, make sure that if the newsserver deleted 
+			# we are done updating, make sure that if the newsserver deleted
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
 				$this->debug('loopTillEnd() finished, highestMessageId = ' . $highestMessageId);
