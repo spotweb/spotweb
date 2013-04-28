@@ -1071,10 +1071,11 @@ class SpotUserSystem {
 				$tmpFilter = explode(':', urldecode($filterValue));
 				
 				# and create the actual filter
-				if (count($tmpFilter) >= 3) {
+				if (count($tmpFilter) >= 4) {
 					$filterValueList[] = Array('fieldname' => $tmpFilter[0],
 											 'operator' => $tmpFilter[1],
-											 'value' => join(":", array_slice($tmpFilter, 2)));
+											 'booloper' => $tmpFilter[2],
+											 'value' => join(":", array_slice($tmpFilter, 3)));
 				} # if
 			} # foreach
 
@@ -1088,6 +1089,7 @@ class SpotUserSystem {
 					$itemElm = $doc->createElement('item');
 					$itemElm->appendChild($doc->createElement('fieldname', $filterValue['fieldname']));
 					$itemElm->appendChild($doc->createElement('operator', $filterValue['operator']));
+					$itemElm->appendChild($doc->createElement('booloper', $filterValue['booloper']));
 					$itemElm->appendChild($doc->createElement('value', $filterValue['value']));
 
 					$valuesElm->appendChild($itemElm);
@@ -1181,6 +1183,8 @@ class SpotUserSystem {
 								   (string) $valueItem->fieldname . 
 									':' . 
 								   (string) $valueItem->operator . 
+									':' . 
+								   (string) $valueItem->booloper . 
 									':' . 
 								   (string) $valueItem->value
 								  );
