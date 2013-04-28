@@ -950,8 +950,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	    // API v1.3
 	    case func_num_args() != 2:
 	    case is_bool(func_get_arg(1)):
-	    case !is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && ctype_digit(func_get_arg(1))):
-	    case !is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && ctype_digit(func_get_arg(0))):
+	    case !is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && $this->isDigit(func_get_arg(1))):
+	    case !is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && $this->isDigit(func_get_arg(0))):
 		break;
 
 	    default:
@@ -1051,7 +1051,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    // Expect one article
     	    case is_null($range);
     	    case is_int($range);
-            case is_string($range) && ctype_digit($range):
+            case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
     	        if (count($overview) == 0) {
     	    	    return false;
@@ -1149,7 +1149,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    // Expect one article
     	    case is_null($range);
     	    case is_int($range);
-            case is_string($range) && ctype_digit($range):
+            case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
 
     	        if (count($fields) == 0) {
@@ -1275,7 +1275,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    // Expect one article
     	    case is_null($range);
     	    case is_int($range);
-    	    case is_string($range) && ctype_digit($range):
+    	    case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
     	        if (count($references) == 0) {
     	    	    return false;
@@ -1494,6 +1494,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     // }}}
 
+    private function isDigit($s) {
+        for($i = 0; $i < strlen($s); $i++) {
+            if (strpos('0123456789', $s[$i]) === false) {
+                return false;
+            } # if
+        } # for
+
+        return true;
+    } # isDigit
 }
 
 // }}}
