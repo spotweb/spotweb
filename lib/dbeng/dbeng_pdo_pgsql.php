@@ -23,7 +23,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 
 	function connect($host, $user, $pass, $db) {
 		if (!$this->_conn instanceof PDO) {
-			$db_conn = "host=" . $this->_db_host;
+			$db_conn = "host=" . $host;
 			
 			try {
 				$this->_conn = new PDO('pgsql:' . $db_conn . ';dbname=' . $db, $user, $pass);
