@@ -409,7 +409,7 @@ class Services_Search_QueryParser {
 		$filterValueList = array();
 
 		/*
-		 * We have drie kinds of filters:
+		 * We have three kinds of filters:
 		 *		- Old type where you have a search[type] with the values stamp,title,tag and an search[text]
 		 *		  containing the value to search for. This limits you to a maximum of one filter which is not
 		 *		  sufficient.
