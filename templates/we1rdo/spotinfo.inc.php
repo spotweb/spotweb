@@ -2,8 +2,6 @@
 	require_once "includes/header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
 
-var_dump($parsedSearch);die();
-
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = ( (!empty($spot['nzb'])) && 
 						 ($spot['stamp'] > 1290578400) && 
