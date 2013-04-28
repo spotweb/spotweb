@@ -81,7 +81,6 @@
 
 		<table summary="PHP extensions">
 			<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-			<tr> <td colspan="2"> ctype </td> <td> <?php showResult(extension_loaded('ctype'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
 			<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext'), false); ?> </td> </tr>

@@ -3,7 +3,7 @@ Spotweb has been regulary tested on several different systems. Spotweb is mostly
 
 * Unix-based (Linux, FreeBSD) operating systems or small NAS systems like Synology and Qnap 
 * Apache Webserver
-* PHP v5.3 or higher (modules required: ctyle, curl, DOM, gettext, mbstring, xml, zip, zlib, gd, openssl)
+* PHP v5.3 or higher (modules required: curl, DOM, gettext, mbstring, xml, zip, zlib, gd, openssl)
 * MySQL webserver.
 
 Spotweb also supports PostgreSQL and SQLite where SQLite is the least supported and tested database engine.
