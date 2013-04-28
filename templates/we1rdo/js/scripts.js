@@ -1358,10 +1358,10 @@ function updateSabPanel(start,limit) {
  * Haalt uit een bestaande filter URL de opgegeven filter via
  * string replacement
  */
-function removeFilter(href, fieldname, operator, value) {
+function removeFilter(href, fieldname, operator, booloper, value) {
 	href = unescape(href).replace(/\+/g, ' ');
 
-	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
+	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + booloper + ':' + value, '');
 } // removeFilter	
 
 /*
@@ -1386,7 +1386,7 @@ function submitFilterBtn(searchform) {
 		$('<input>').attr({
 			type: 'hidden',
 			name: 'search[value][]',
-			value: rad_val + ':=:' + searchform.elements['search[text]'].value
+			value: rad_val + ':=:DEF:' + searchform.elements['search[text]'].value
 		}).appendTo('form#filterform');
 	} // if
 	
@@ -1679,7 +1679,7 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 	var formData = 'editfilterform[xsrfid]=' + escape(xsrf);
 	formData += '&editfilterform[filterid]=9999';
 	formData += '&editfilterform[tree]=';
-	formData += '&editfilterform[valuelist]=' + escape(filterType) + ":=:" + escape(filterValue);
+	formData += '&editfilterform[valuelist]=' + escape(filterType) + ":=:DEF:" + escape(filterValue);
 	formData += '&editfilterform[sorton]=date';
 	formData += '&editfilterform[sortorder]=desc';
 	formData += '&editfilterform[title]=' + escape(filterName);

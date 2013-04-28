@@ -292,7 +292,7 @@ class Services_User_Filters {
 				$tmpFilter = explode(':', urldecode($filterValue));
 				
 				# and create the actual filter
-				if (count($tmpFilter) >= 3) {
+				if (count($tmpFilter) >= 4) {
 					$filterValueList[] = Array('fieldname' => $tmpFilter[0],
 											 'operator' => $tmpFilter[1],
                                              'booloper' => $tmpFilter[2],

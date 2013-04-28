@@ -464,20 +464,24 @@ class Services_Search_QueryParser {
 									   $tmpFilter[1]);
 				} # if
 
-				# Default to a type-specific boolean operator, when none is given
+				# Default to a DEF boolean operator, when none is given
 				if (count($tmpFilter) < 4) { 
 					$tmpFilter = array($tmpFilter[0],
 							   $tmpFilter[1],
-							   'AND',
+							   'DEF',
 							   $tmpFilter[2]);
+                } # if
 
+                if ($tmpFilter[2] == 'DEF') {
 					/*
 					 * For some operators it just makes more sense to default to OR when no
 					 * default is given, so we do that.
 					 */
 					if (in_array(strtolower($tmpFilter[0]), array('poster', 'tag'))) {
 						$tmpFilter[2] = 'OR';
-					} # if
+					} else {
+                        $tmpFilter[2] = 'AND';
+                    } # else
 				} # if
 				
 				/*
@@ -557,7 +561,7 @@ class Services_Search_QueryParser {
 			} # if
 
 			# make sure the boolean operators are valid
-			if (!in_array($tmpFilterBoolOper, array('AND', 'OR'))) {
+			if (!in_array($tmpFilterBoolOper, array('AND', 'OR', 'DEF'))) {
 				break;
 			} # if
 
