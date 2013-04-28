@@ -817,32 +817,6 @@ class SpotTemplateHelper {
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
 		
-		// Stripped stuff like 'Subs by:..., -releasegroup, mpg, hd, subs, nlsubs, r1.hdtv.blabla, etc. for the usage of (the imdb) api('s).
-		// After that it wil remove the spaces left behind, replacing them with only one space.
-		// It will probably not filter all but it will filter a lot.
-		// It will only filter cat0 (beeld).
-		if ($spot['category'] == 0) {
-			$spot['cleantitle'] = preg_replace('/(([Ss][uU][Bb][Ss]) ([Mm][Aa][Dd][Ee]\s)?([bB][yY])\s?:?.{0,15}\S)|(~.+~)|' .
-											   '( \S{2,}( ?\/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
-											   '(\(\w+(\s\w+)?\))|(\S*([Ss][Uu][Bb](([Ss])|([Bb][Ee][Dd])))\S*)|((-\S+)$)|' .
-											   '([Nn][Ll])|([\s\/][Ee][Nn][Gg]?[\s\/])|(AC3)|(DD(5.1)?)|([Xx][Vv][Ii][Dd])|' .
-											   '([Dd][Ii][Vv][Xx])|([Tt][Ss])|(\d+\s([Mm]|[Kk]|[Gg])[Bb])|([Mm][Kk][Vv])|' . 
-											   '([xX]\d{3}([Hh][Dd])?)|([Dd][Ll])|([Bb][Ll][Uu]([Ee])?\s?-?[Rr][Aa][Yy])|' .
-											   '([Rr][Ee][Aa][Dd]\s?[Nn][Ff][Oo])|(([Hh][Dd])([Tt][Vv])?)|(R\d)|(S\d+E\d+)|' .
-											   '(2[Hh][Dd])|(5 1)|([Dd][Tt][Ss]-?[Hh][Dd])|([Aa][Vv][Cc])|' .
-											   '(([Bb][Dd])?[Rr][Ee][Mm][Uu][Xx])|([Nn][Tt][Ss][Cc])|([Pp][Aa][Ll])|' .
-											   '(\S+(\.\S+)+)|([Cc][Uu][Ss][Tt][Oo][Mm])|([Mm][Pp][Ee]?[Gg]-([Hh][Dd])?)/', 
-											   "", 
-											   $spot['title']);
-			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
-			if (empty($spot['cleantitle'])) {
-				// Use $spot['title'] if my regex screws up..
-				$spot['cleantitle']=$spot['title'];
-			} # if
-		} else {
-			// Prevent gigantic failures from happening.
-			$spot['cleantitle'] = $spot['title'];
-		}
 		return $spot;
 	} # formatSpot
 
