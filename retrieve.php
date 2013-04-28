@@ -32,6 +32,7 @@ try {
     if ($showTiming) {
         SpotTiming::enable();
         SpotTiming::enableHtml(false);
+        SpotTiming::disableExtra(true);
     } # if
 
     # Initialize translation to english

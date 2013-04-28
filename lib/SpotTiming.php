@@ -6,6 +6,7 @@ class SpotTiming {
 	static private $_inflight = array();
 	static private $_curlevel = 0;
     static private $_useHtml = true;
+    static private $_discardExtra = false;
 	
 	static function enable() {
 		self::$_disabled = false;
@@ -34,7 +35,11 @@ class SpotTiming {
 		if (self::$_disabled) return;
 
 		self::$_inflight[$name]['stop'] = microtime(true);
-		self::$_inflight[$name]['extra'] = $extra;
+        if (!self::$_discardExtra) {
+            self::$_inflight[$name]['extra'] = $extra;
+        } else {
+            self::$_inflight[$name]['extra'] = '';
+        } # else
 		self::$_inflight[$name]['level'] = self::$_curlevel;
 		self::$_curlevel--;
 
@@ -45,6 +50,10 @@ class SpotTiming {
     static function enableHtml($b) {
         self::$_useHtml = $b;
     } # setHtml
+
+    static function disableExtra($b) {
+        self::$_discardExtra = $b;
+    } # disableExtra
 
     private static function doHeader() {
         if (self::$_useHtml) {
