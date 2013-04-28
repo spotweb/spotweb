@@ -336,7 +336,7 @@ function attachInfiniteScroll() {
 						$("div.spots").addClass("full");
 					}
 					$("#overlay").hide().removeClass('loading'); 
-					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
+					$("tbody#spots").append($($("div#overlay tbody#spots").html()).show())
 					$("div#overlay").empty();
 					$("a.spotlink").click(function(e) { e.preventDefault(); });
 					$(".showTipTip a.spotlink").each(applyTipTip);
