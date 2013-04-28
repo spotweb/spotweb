@@ -130,11 +130,15 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
 			 */
+            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 			$dbIdList = $this->_spotDao->matchSpotMessageIds($hdrList);
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
 
-			foreach($hdrList as $msgheader) {
+            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
+            foreach($hdrList as $msgheader) {
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-Until-ParseHeader');
 				$msgCounter++;
 				$this->debug('foreach-loop, start. msgId= ' . $msgCounter);
 
@@ -183,11 +187,15 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsRetrieved++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
-					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'], 
+                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-Until-ParseHeader');
+                    SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
+					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'],
 															$msgheader['From'], 
 															$msgheader['Date'],
 															$msgheader['Message-ID'],
 															$this->_rsakeys);
+                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
+                    SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-After-ParseHeader');
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
@@ -384,8 +392,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # catch
 				} # if prefetch image and/or nzb
 
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-After-ParseHeader');
 				$this->debug('foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
 
 			if (count($hdrList) > 0) {
 				$this->displayStatus("hdrparsed", $hdrsRetrieved);

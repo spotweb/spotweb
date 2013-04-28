@@ -133,7 +133,7 @@ try {
 											  $retroMode);
 	$newSpotCount = $retriever->perform();
 
-	## Creating filter counts
+    ## Creating filter counts
 	if ($newSpotCount > 0) {
 		$svcPrv_cacheSpotCount = new Services_Providers_CacheNewSpotCount($daoFactory->getUserFilterCountDao(),
 																		  $daoFactory->getUserFilterDao(),

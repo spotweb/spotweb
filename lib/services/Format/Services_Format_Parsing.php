@@ -228,7 +228,7 @@ class Services_Format_Parsing {
 			} # if
 		} # if
 
-		/* 
+		/*
 		 * Initialize some basic variables. We set 'verified' to false so we  can
 		 * exit this function at any time and the gathered data for this spot up til
 		 * then is stil ignored.
@@ -290,9 +290,9 @@ class Services_Format_Parsing {
 		 */
 		$validSubcats = array('a' => true, 'b' => true, 'c' => true, 'd' => true, 'z' => true);
 		$tmpCatBuild = '';
-		
 
-		/* And just try to extract all given subcategories */
+
+        /* And just try to extract all given subcategories */
 		for($i = 0; $i < $strCatListLen; $i++) {
 			/*
 			 * If the current character is not an number, we found the next
@@ -310,10 +310,10 @@ class Services_Format_Parsing {
 			$tmpCatBuild .= $strCatList[$i];
 		} # for
 
-		/*
-		 * subcatz is a subcategory introduced in later Spotnet formats, we prefer to
-		 * always have this subcategory so we just fake it if it's not listed.
-		 */
+        /*
+         * subcatz is a subcategory introduced in later Spotnet formats, we prefer to
+         * always have this subcategory so we just fake it if it's not listed.
+         */
 		if (empty($spot['subcatz'])) {
 			$spot['subcatz'] = SpotCategories::createSubcatz($spot['category'], $spot['subcata'] . $spot['subcatb'] . $spot['subcatd']);
 		} # if
@@ -331,7 +331,7 @@ class Services_Format_Parsing {
 			$subj = str_replace('\n', '', $subj);
 		} # if
 
-		if ($isRecentKey) {
+        if ($isRecentKey) {
 			$tmp = explode('|', $subj);
 
 			$spot['title'] = trim($tmp[0]);
@@ -380,9 +380,9 @@ class Services_Format_Parsing {
 			$spot['wassigned'] = false;
 		} # if doesnt need to be signed, pretend that it is
 
-		/*
-		 * Don't verify spots which are already verified
-		 */
+        /*
+         * Don't verify spots which are already verified
+         */
 		if ($spot['wassigned']) {
 			/*
 			 * There are currently two known methods to which Spots are signed,
@@ -408,20 +408,19 @@ class Services_Format_Parsing {
 				$signingMethod = 1;
 			} # else
 
-
-			switch($signingMethod) {
+            switch($signingMethod) {
 				case 1 : {
 					# the signature this header is signed with
 					$signature = $this->_util->spotUnprepareBase64($spot['headersign']);
-			
+
 					/*
 					 * Make sure the key specified is an actual known key 
 					 */
 					if (isset($rsaKeys[$spot['keyid']])) {
-						$spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+                        $spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
 					} # if
 
-					break;
+                    break;
 				} # SPOTSIGN_V1
 
 				case 2 : {
@@ -443,26 +442,26 @@ class Services_Format_Parsing {
 						 * We cannot use this as a full measure to check the spot's validness yet, 
 						 * because at least one Spotnet client feeds us invalid data for now
 						 */
-						if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
-							/* 
-							 * The users' public key (modulo) is posted in the header, lets 
-							 * try this.
-							 */
+                         if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+                             /*
+                              * The users' public key (modulo) is posted in the header, lets
+                              * try this.
+                              */
 							$spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
 						} # if
-					} # if
+                     } # if
 
 					break;
 				} # SPOTSIGN_V2
 			} # switch
 
-			/*
-			 * Even more recent spots, contain the users' full publickey
-			 * in the header. This allows us to uniquely identify and verify
-			 * the poster of the spot.
-			 *
-			 * Try to extract this information.
-			 */
+            /*
+             * Even more recent spots, contain the users' full publickey
+             * in the header. This allows us to uniquely identify and verify
+             * the poster of the spot.
+             *
+             * Try to extract this information.
+             */
 			if (($spot['verified']) && (!empty($spot['user-signature'])) && (!empty($spot['selfsignedpubkey']))) {
 				/*
 				 * Extract the public key

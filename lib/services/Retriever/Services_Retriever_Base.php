@@ -176,11 +176,14 @@ abstract class Services_Retriever_Base {
 			$this->displayStatus("curmsg", $curMsg);
 			$this->displayStatus("", "");
 
+            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
 			while ($curMsg < $this->_msgdata['last']) {
 				$timer = microtime(true);
 				
 				# get the list of headers (XOVER)
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':getOverview');
 				$hdrList = $this->_svcNntpText->getOverview($curMsg, ($curMsg + $increment));
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':getOverview');
 
 				$saveCurMsg = $curMsg;
 				# If no spots were found, just manually increase the
@@ -192,7 +195,9 @@ abstract class Services_Retriever_Base {
 				} # else
 				
 				# run the processing method
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':callProcess');
 				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg, $timer);
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':callProcess');
 				$processed += $processOutput['count'];
 				$headersProcessed += $processOutput['headercount'];
 				$highestMessageId = $processOutput['lastmsgid'];
@@ -200,8 +205,11 @@ abstract class Services_Retriever_Base {
 				# reset the start time to prevent a another retriever from starting
 				# during the intial retrieve which can take many hours 
 				$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
+
+                break;
 			} # while
-			
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
+
 			# we are done updating, make sure that if the newsserver deleted 
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
@@ -230,6 +238,8 @@ abstract class Services_Retriever_Base {
 		} # quit()
 		
 		function perform() {
+            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
 			/*
 			 * try to connect to the usenet server and select the group
 			 */
@@ -260,14 +270,17 @@ abstract class Services_Retriever_Base {
 			/*
 			 * and actually start looping till we retrieved all headers or articles
 			 */
+            SpotTiming::start(__CLASS__ . '::loopTillEnd()');
 			$newProcessedCount = $this->loopTillEnd($curMsg, $this->_settings->get('retrieve_increment'));
-			
+            SpotTiming::stop(__CLASS__ . '::loopTillEnd()');
+
 			/* 
 			 * and cleanup
 			 */
 			$this->quit();
 			$this->_nntpCfgDao->setLastUpdate($this->_textServer['host']);
-			
+
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 			return $newProcessedCount;
 		} # perform
 		

@@ -46,9 +46,9 @@ class SpotTiming {
         if (self::$_useHtml) {
             echo '<table style="border: 1px solid black; border-collapse: collapse;" border=1><tr><th>Name</th><th>Time</th><th>Extra</th></tr>';
         } else {
-            echo "+" . str_repeat('-', 117) . '+' . PHP_EOL;
-            echo "|" . str_pad('Name', 30) . ' | ' . str_pad('Time', 20) . ' | ' . str_pad('Extra', 61) . '|' . PHP_EOL;
-            echo "|" . str_repeat('-', 117) . '|' . PHP_EOL;
+            echo "+" . str_repeat('-', 137) . '+' . PHP_EOL;
+            echo "|" . str_pad('Name', 50) . ' | ' . str_pad('Time', 20) . ' | ' . str_pad('Extra', 61) . '|' . PHP_EOL;
+            echo "|" . str_repeat('-', 137) . '|' . PHP_EOL;
         } # else
     } # doHeader
 
@@ -56,7 +56,7 @@ class SpotTiming {
         if (self::$_useHtml) {
             echo '</table><br><br><br><br>';
         } else {
-            echo "+" . str_repeat('-', 117) . '+' . PHP_EOL;
+            echo "+" . str_repeat('-', 137) . '+' . PHP_EOL;
         } # else
     } # doFooter
 
@@ -64,7 +64,7 @@ class SpotTiming {
         if (strlen($s) < $l) {
             $s = str_pad($s, $l);
         } else {
-            $s = substr($s, 0, $l - 4) . '...';
+            $s = substr($s, 0, $l - 3) . '...';
         } # else
 
         return $s;
@@ -78,7 +78,7 @@ class SpotTiming {
                 echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
             } # catch
         } else {
-            echo "|" . self::makeLen($values['name'], 30) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
+            echo "|" . self::makeLen($values['name'], 50) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
         } # else
     } # displayLine
 
