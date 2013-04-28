@@ -29,6 +29,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " reports" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
 					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
+                    case 'slowphprsa'       : echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible'; break;
 					case ''					: echo PHP_EOL; break;
 					
 					default					: echo $cat . $txt;

@@ -91,6 +91,9 @@ abstract class Services_Retriever_Base {
 			$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
 
 			# and fireup the nntp connection
+            if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
+                $this->displayStatus("slowphprsa");
+            } # if
 			$this->displayStatus("lastretrieve", $this->_nntpCfgDao->getLastUpdate($this->_textServer['host']));
 			$this->displayStatus("start", $this->_textServer['host']);
 
