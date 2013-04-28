@@ -502,7 +502,7 @@ class SpotCategories {
         return $subcatz;
     } # createSubcatZ
 
-    static function mapDepricatedGenreSubCategories($hcat, $subcatlist, $subcatz)
+    static function mapDeprecatedGenreSubCategories($hcat, $subcatlist, $subcatz)
     {
         # image
         if ($hcat == 0) {
