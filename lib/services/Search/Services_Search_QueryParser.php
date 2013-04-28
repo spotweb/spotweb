@@ -418,8 +418,8 @@ class Services_Search_QueryParser {
 		 *
 		 *
 		 *		- New type where there is a search[value] array, which contain values in the following shape:
-		 *		  type:operator:value. 
-		 *        For example, tag:=:spotweb. A shorthand is also available when the operator is left out (eg: tag:spotweb),
+		 *		  type:operator:boolop?:value. 
+		 *        For example, tag:=:AND:spotweb. The boolop is not required, and a shorthand is also available when the operator is left out (eg: tag:spotweb),
 		 *		  we assume the EQ operator was intended.
 		 *
 		 *		- Special kind of lists, there are a few values with a special meaning:
@@ -463,6 +463,22 @@ class Services_Search_QueryParser {
 									   '=',
 									   $tmpFilter[1]);
 				} # if
+
+				# Default to a type-specific boolean operator, when none is given
+				if (count($tmpFilter) < 4) { 
+					$tmpFilter = array($tmpFilter[0],
+							   $tmpFilter[1],
+							   'AND',
+							   $tmpFilter[2]);
+
+					/*
+					 * For some operators it just makes more sense to default to OR when no
+					 * default is given, so we do that.
+					 */
+					if (in_array(strtolower($tmpFilter[0]), array('poster', 'tag'))) {
+						$tmpFilter[2] = 'OR';
+					} # if
+				} # if
 				
 				/*
 				 * Create the actual filter, we add the array_slice part to
@@ -470,7 +486,8 @@ class Services_Search_QueryParser {
 				 */
 				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
 										 'operator' => $tmpFilter[1],
-										 'value' => join(":", array_slice($tmpFilter, 2)));
+										 'booloper' => $tmpFilter[2],
+										 'value' => join(":", array_slice($tmpFilter, 3)));
 										 
 				/*
 				 * and create the actual filter list. Before appending it,
@@ -526,6 +543,7 @@ class Services_Search_QueryParser {
 		foreach($filterValueList as $filterRecord) {
 			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
 			$tmpFilterOperator = $filterRecord['operator'];
+			$tmpFilterBoolOper = strtoupper($filterRecord['booloper']);
 			$tmpFilterValue = $filterRecord['value'];
 
 			# When no match for friendly name -> column name is found, ignore the search
@@ -535,6 +553,11 @@ class Services_Search_QueryParser {
 
 			# make sure the operators are valid
 			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '=', '!='))) {
+				break;
+			} # if
+
+			# make sure the boolean operators are valid
+			if (!in_array($tmpFilterBoolOper, array('AND', 'OR'))) {
 				break;
 			} # if
 
@@ -563,7 +586,7 @@ class Services_Search_QueryParser {
 				if (!isset($textSearchFields[$filterFieldMapping[$tmpFilterFieldname]])) {
 					$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]] = array();
 				} # if
-				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
+				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue, 'booloper' => $tmpFilterBoolOper);
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots', 'whitelistedspotters'))) {
 				/*
 				 * Some fieldnames are mere dummy fields which map to actual
@@ -685,11 +708,7 @@ class Services_Search_QueryParser {
 				$ftsEng = dbfts_abs::Factory($this->_dbEng);
 				$parsedTextQueryResult = $ftsEng->createTextQuery($searches, $additionalFields);
 
-				if (in_array($searches[0]['fieldname'], array('s.poster', 's.tag', 's.title'))) {
-					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';
-				} else {
-					$filterValueSql['AND'][] = ' (' . implode(' AND ', $parsedTextQueryResult['filterValueSql']) . ') ';
-				} # if
+				$filterValueSql['AND'][] = ' (' . implode(' ' . $searches[0]['booloper'] . ' ', $parsedTextQueryResult['filterValueSql']) . ') ';
 
 				$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
 				$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);

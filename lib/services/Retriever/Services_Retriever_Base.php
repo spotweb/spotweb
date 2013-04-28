@@ -107,7 +107,7 @@ abstract class Services_Retriever_Base {
 		 * Given a list of messageids, check if we can find the corresponding
 		 * articlenumber on the NNTP server. 
 		 */
-		function searchMessageid($messageIdList) {
+		function searchMessageId($messageIdList) {
 			$this->debug('searchMessageId=' . serialize($messageIdList));
 			
 			if (empty($messageIdList) || $this->_retro) {
