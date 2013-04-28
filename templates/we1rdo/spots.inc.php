@@ -5,6 +5,8 @@
 		require_once "includes/filters.inc.php";
 	} # if
 
+    SpotTiming::start('tpl:spotsinc-afterinclude');
+
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
@@ -257,9 +259,11 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			</div>
 			<div class="clear"></div>
 
-<?php 
+<?php
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
 		/* Render de footer template */
 		require_once "includes/footer.inc.php";
 	} # if
+
+    SpotTiming::stop('tpl:spotsinc-afterinclude');

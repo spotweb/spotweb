@@ -1,4 +1,6 @@
 <?php
+    SpotTiming::start('tpl:filters');
+
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$count_newspots = ($currentSession['user']['prefs']['count_newspots']);
 	$show_multinzb_checkbox = ($currentSession['user']['prefs']['show_multinzb']);
@@ -362,3 +364,5 @@
 					</ul>
 				</div>
 
+<?php
+    SpotTiming::stop('tpl:filters');
