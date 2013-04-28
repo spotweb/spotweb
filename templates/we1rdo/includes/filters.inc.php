@@ -192,14 +192,14 @@
 <?php if (!isset($ageFilter)) { $ageFilter = ''; } ?>
 							<li><select name="search[value][]">
 								<option value=""><?php echo _('Show all'); ?></option>
-								<option value="date:>:-1 day" <?php echo $ageFilter == ">-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 day'); ?></option>
-								<option value="date:>:-3 days" <?php echo $ageFilter == ">-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 days'); ?></option>
-								<option value="date:>:-1 week" <?php echo $ageFilter == ">-1 week" ? 'selected="selected""' : "" ?>><?php echo _('1 week'); ?></option>
-								<option value="date:>:-2 weeks" <?php echo $ageFilter == ">-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weeks'); ?></option>
-								<option value="date:>:-1 month" <?php echo $ageFilter == ">-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 month'); ?></option>
-								<option value="date:>:-3 months" <?php echo $ageFilter == ">-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 months'); ?></option>
-								<option value="date:>:-6 months" <?php echo $ageFilter == ">-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 months'); ?></option>
-								<option value="date:>:-1 year" <?php echo $ageFilter == ">-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 year'); ?></option>
+								<option value="date:>:DEF:-1 day" <?php echo $ageFilter == ">-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 day'); ?></option>
+								<option value="date:>:DEF:-3 days" <?php echo $ageFilter == ">-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 days'); ?></option>
+								<option value="date:>:DEF:-1 week" <?php echo $ageFilter == ">-1 week" ? 'selected="selected""' : "" ?>><?php echo _('1 week'); ?></option>
+								<option value="date:>:DEF:-2 weeks" <?php echo $ageFilter == ">-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weeks'); ?></option>
+								<option value="date:>:DEF:-1 month" <?php echo $ageFilter == ">-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 month'); ?></option>
+								<option value="date:>:DEF:-3 months" <?php echo $ageFilter == ">-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 months'); ?></option>
+								<option value="date:>:DEF:-6 months" <?php echo $ageFilter == ">-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 months'); ?></option>
+								<option value="date:>:DEF:-1 year" <?php echo $ageFilter == ">-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 year'); ?></option>
 							</select></li>
 						</ul>
 					

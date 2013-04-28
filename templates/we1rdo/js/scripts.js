@@ -1733,8 +1733,8 @@ function initSliders() {
         slide: function( event, ui ) {
             var minSize = Math.round((ui.values[0] / max * ((ui.values[0] / max))) * max);
             var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
-            $( "#min-filesize" ).val( "filesize:>:" + minSize );
-            $( "#max-filesize" ).val( "filesize:<:" + maxSize );
+            $( "#min-filesize" ).val( "filesize:>:DEF:" + minSize );
+            $( "#max-filesize" ).val( "filesize:<:DEF:" + maxSize );
             $( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
             }
         });
