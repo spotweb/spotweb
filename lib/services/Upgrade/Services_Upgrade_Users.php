@@ -314,9 +314,9 @@ class Services_Upgrade_Users {
              * In earlier versions, we always appended "sabnzbd/" to the URL, so we do this once
              * manually
              */
-            if ($this->_settings->get('settingsversion') < 0.26) {
+            if ($this->_settings->get('securityversion') < 0.31) {
                 if (!empty($user['prefs']['nzbhandling']['sabnzbd']['url'])) {
-                    $user['prefs']['nzbhandling']['sabnzbd']['url'] = 'sabnzbd/' . $user['prefs']['nzbhandling']['sabnzbd']['url'];
+                    $user['prefs']['nzbhandling']['sabnzbd']['url'] = $user['prefs']['nzbhandling']['sabnzbd']['url'] . 'sabnzbd/';
                 } # if
             } # if
 
