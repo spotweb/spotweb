@@ -8,7 +8,7 @@ class Services_Upgrade_Settings {
 
 	function update() {
 		/* 
-		 * Make sure some versionumbers are always in the db, so
+		 * Make sure some versionnumbers are always in the db, so
 		 * comparisons always work
 		 */
 		$this->setIfNot("settingsversion", "0.00");

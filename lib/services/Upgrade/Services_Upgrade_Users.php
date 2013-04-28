@@ -316,7 +316,7 @@ class Services_Upgrade_Users {
              */
             if ($this->_settings->get('settingsversion') < 0.26) {
                 if (!empty($user['prefs']['nzbhandling']['sabnzbd']['url'])) {
-                    $user['prefs']['nzbhandling']['sabnzbd']['url'] = 'sabnzbd/' . $user['prefs']['nzbhandling']['sabnzbd']['url'];
+                    $user['prefs']['nzbhandling']['sabnzbd']['url'] = $user['prefs']['nzbhandling']['sabnzbd']['url'] . 'sabnzbd/';
                 } # if
             } # if
 
