@@ -283,7 +283,7 @@ if (!$dialogembedded) { ?>
 					<!-- Sabnzbd -->
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'push-sabnzbd') || $tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'client-sabnzbd')) { ?>
 					<fieldset id="nzbhandling-fieldset-sabnzbd">
-						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]"><?php echo _('URL to SABnzbd (HTTP included and portnumber where SABnzbd is installed)?'); ?></label></dt>
+						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][url]"><?php echo _('URL to SABnzbd (HTTP, path and portnumber where SABnzbd is installed)?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][url]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['url']); ?>"></dd>
 
 						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]"><?php echo _('API key for SABnzbd?'); ?></label></dt>

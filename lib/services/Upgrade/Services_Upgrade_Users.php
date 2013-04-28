@@ -310,6 +310,16 @@ class Services_Upgrade_Users {
 				} # if
 			} # if
 
+            /*
+             * In earlier versions, we always appended "sabnzbd/" to the URL, so we do this once
+             * manually
+             */
+            if ($this->_settings->get('settingsversion') < 0.26) {
+                if (!empty($user['prefs']['nzbhandling']['sabnzbd']['url'])) {
+                    $user['prefs']['nzbhandling']['sabnzbd']['url'] = 'sabnzbd/' . $user['prefs']['nzbhandling']['sabnzbd']['url'];
+                } # if
+            } # if
+
 			# update the user record in the database			
 			$this->_userDao->setUser($user);
 		} # foreach

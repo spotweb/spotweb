@@ -10,7 +10,7 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		$sabnzbd = $nzbHandling['sabnzbd'];
 
 		# prepare sabnzbd url
-		$this->_url = $sabnzbd['url'] . 'sabnzbd/api?mode=addurl&apikey=' . $sabnzbd['apikey'] . '&output=jsonp';
+		$this->_url = $sabnzbd['url'] . 'api?mode=addurl&apikey=' . $sabnzbd['apikey'] . '&output=jsonp';
 	} # __construct
 
 	public function processNzb($fullspot, $nzblist)

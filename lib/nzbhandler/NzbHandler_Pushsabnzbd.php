@@ -16,7 +16,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		$this->_sabnzbd = $sabnzbd;
 		
 		# prepare sabnzbd url
-		$this->_url = $sabnzbd['url'] . 'sabnzbd/api?mode=addfile&apikey=' . $sabnzbd['apikey'] . '&output=text';
+		$this->_url = $sabnzbd['url'] . 'api?mode=addfile&apikey=' . $sabnzbd['apikey'] . '&output=text';
 	} # __construct
 	
 	public function processNzb($fullspot, $nzblist)
@@ -398,7 +398,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	 */
 	private function querySabnzbd($request)
 	{
-		$url = $this->_sabnzbd['url'] . "sabnzbd/api?" . $request . '&apikey=' . $this->_sabnzbd['apikey'] . '&output=json';
+		$url = $this->_sabnzbd['url'] . "api?" . $request . '&apikey=' . $this->_sabnzbd['apikey'] . '&output=json';
 		$output = @file_get_contents($url);
 		
 		return $output;
