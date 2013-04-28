@@ -1774,16 +1774,18 @@ function initSliders() {
 
 // used by editsettings form
 function initDatePicker() {
-    $( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
-        dateFormat: "yy-mm-dd",
-        defaultDate: retrieveNewerThanDate,
-        dayNamesMin: ['<t>Su</t>', '<t>Mo</t>', '<t>Tu</t>', '<t>We</t>', '<t>Th</t>', '<t>Fr</t>', '<t>Sa</t>' ],
-        monthNamesShort: ['<t>Jan</t>', '<t>Feb</t>', '<t>Mar</t>', '<t>Apr</t>', '<t>May</t>', '<t>Jun</t>', '<t>Jul</t>', '<t>Aug</t>', '<t>Sep</t>', '<t>Oct</t>', '<t>Nov</t>', '<t>Dec</t>'],
-        prevText: '<t>Previous</t>',
-        nextText: '<t>Next</t>',
-        numberOfMonths: 3,
-        stepMonths: 3,
-        minDate: new Date(2009, 10, 1),
-        maxDate: "today" });
+    if (typeof retrieveNewerThanDate != 'undefined') {
+        $( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
+            dateFormat: "yy-mm-dd",
+            defaultDate: retrieveNewerThanDate,
+            dayNamesMin: ['<t>Su</t>', '<t>Mo</t>', '<t>Tu</t>', '<t>We</t>', '<t>Th</t>', '<t>Fr</t>', '<t>Sa</t>' ],
+            monthNamesShort: ['<t>Jan</t>', '<t>Feb</t>', '<t>Mar</t>', '<t>Apr</t>', '<t>May</t>', '<t>Jun</t>', '<t>Jul</t>', '<t>Aug</t>', '<t>Sep</t>', '<t>Oct</t>', '<t>Nov</t>', '<t>Dec</t>'],
+            prevText: '<t>Previous</t>',
+            nextText: '<t>Next</t>',
+            numberOfMonths: 3,
+            stepMonths: 3,
+            minDate: new Date(2009, 10, 1),
+            maxDate: "today" });
+    } // retrieveNewerThanDate
 } // initDatePicker()
 
