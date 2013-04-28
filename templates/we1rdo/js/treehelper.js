@@ -1,4 +1,4 @@
-		$(function(){
+        function initializeCategoryTree() {
 			// console.time("12th-ready");
 
 			// Attach the dynatree widget to an existing <div id="tree"> element
@@ -70,16 +70,17 @@
 				return true;
 			});
 			// console.timeEnd("12th-ready");
-		});
+		} // initializeCategoryTree
 		
-		// Select or Deselect All checkboxes
-		var checked=false;
-		var frmname='';
 		function checkedAll(frmname) {
-			var valus= document.getElementById(frmname);
+            // Select or Deselect All checkboxes
+            var checked=false;
+			var values = document.getElementById(frmname);
+
             checked = !checked;
-			for (var i =0; i < valus.elements.length; i++) {
-				valus.elements[i].checked=checked;
+			for (var i =0; i < values.elements.length; i++) {
+				values.elements[i].checked=checked;
 			}
 			multinzb()
 		} // Select or Deselect All checkboxes
+

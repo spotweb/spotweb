@@ -14,7 +14,7 @@ class dbeng_mysql extends dbeng_abs {
 
     function connect($host, $user, $pass, $db) {
 		$this->_conn = mysql_connect($host, $user, $pass);
-		
+
 		if (!$this->_conn) {
 			throw new DatabaseConnectionException("Unable to connect to MySQL server: " . mysql_error());
 		} # if 

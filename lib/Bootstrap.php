@@ -28,6 +28,7 @@ class Bootstrap {
 	 * Boot up the Spotweb system
 	 */
 	public function boot() {
+        SpotTiming::start('bootstrap');
 		$daoFactory = $this->getDaoFactory();
 		$settings = $this->getSettings($daoFactory);
 		$spotReq = $this->getSpotReq($settings);
@@ -53,6 +54,7 @@ class Bootstrap {
 		libxml_disable_entity_loader(true);
 
 
+        SpotTiming::stop('bootstrap');
 		return array($settings, $daoFactory, $spotReq);
 	} # boot
 
@@ -62,6 +64,8 @@ class Bootstrap {
 	 * Spotweb
 	 */
 	public function getDaoFactory() {
+        SpotTiming::start(__FUNCTION__);
+
 		@include "dbsettings.inc.php";
         if (empty($dbsettings)) {
                 throw new InvalidOwnSettingsSettingException("No database settings have been entered, please use the 'install.php' wizard to install and configure Spotweb." . PHP_EOL .
@@ -78,14 +82,15 @@ class Bootstrap {
         $this->_dbSettings['user'] = '**overwritten**';
 
 		$dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
-		$dbCon->connect($dbsettings['host'], 
+		$dbCon->connect($dbsettings['host'],
 						$dbsettings['user'], 
 						$dbsettings['pass'], 
 						$dbsettings['dbname']);
-		
+
 		$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
 		$daoFactory->setConnection($dbCon);
 
+        SpotTiming::stop(__FUNCTION__);
 		return $daoFactory;
 	} # getDaoFactory
 

@@ -15,8 +15,7 @@ $.address.init(function() {
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
 		});
 
-$(function(){
-// console.time("10th-ready");
+function initSpotwebJs() {
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
 	$('.showTipTip a.spotlink').each(applyTipTip);
@@ -30,9 +29,26 @@ $(function(){
 		} else {
 			return true;
 		}
-    });	
-// console.timeEnd("10th-ready");
-});
+    });
+
+    attachInfiniteScroll();
+    attachKeyBindings();
+    attachSidebarBehaviour();
+    attachSidebarVisibility();
+    attachAdvancedSearchBehaviour();
+    attachDateSortBehaviour();
+    attachFilterVisibility();
+    attachMaintenanceButtonsBehaviour();
+
+    var BaseURL = createBaseURL();
+    var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+    $("#usermanagementtabs").tabs();
+    $("#editsettingstab").tabs();
+    attachEnablerBehaviour();
+    initializeUserPreferencesScreen();
+    initializeCategoryTree();
+    initSliders();
+} // initSpotwebJs
 
 // createBaseURL
 function createBaseURL() {
@@ -302,7 +318,7 @@ function closeDetails(scrollLocation) {
 }
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
-$(function(){
+function attachInfiniteScroll() {
 	//ready
 // console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
@@ -332,7 +348,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("2nd-ready");
-});
+} // attachInfiniteScroll
 
 // Haal de comments op en zet ze per batch op het scherm
 function loadComments(messageid,perpage,pagenr) {
@@ -546,7 +562,7 @@ function toggleImageSize() {
 }
 
 // Bind keys to functions
-$(function(){
+function attachKeyBindings() {
 // console.time("3rd-ready");
 	//ready
 	$('table.spots tbody tr').first().addClass('active');
@@ -567,7 +583,7 @@ $(function(){
 	$document.bind('keydown', 'm', downloadMultiNZB);
 	$document.bind('keydown', 'c', checkMultiNZB);
 // console.timeEnd("3rd-ready");
-});
+} // attachKeyBindings
 
 // Keyboard navigation functions
 function spotNav(direction) {	
@@ -659,20 +675,8 @@ function attachEnablerBehaviour() {
 } // attachEnablerBehaviour
 
 
-$(document).ready(function() {
-// console.time("4th-ready");
-	//ready
-	var BaseURL = createBaseURL();
-	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
-	$("#usermanagementtabs").tabs();
-	$("#editsettingstab").tabs();
-	attachEnablerBehaviour();
-	initializeUserPreferencesScreen();
-// console.timeEnd("4th-ready");
-});
-
 // Regel positie en gedrag van sidebar (fixed / relative)
-$().ready(function() {
+function attachSidebarBehaviour() {
 // console.time("5th-ready");
 	//ready
 	$('#filterscroll').bind('change', function() {
@@ -685,7 +689,7 @@ $().ready(function() {
 	var scrolling = $.cookie("scrolling");
 	toggleScrolling(scrolling);
 // console.timeEnd("5th-ready");
-});
+} // attachSidebarBehaviour
 
 function toggleScrolling(state) {
 	if (state == true || state == 'true') {
@@ -707,7 +711,7 @@ function getSidebarState() {
 	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '', expires: $COOKIE_EXPIRES, domain: '$COOKIE_HOST' });
 }
 
-$(function(){
+function attachSidebarVisibility() {
 // console.time("6th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
@@ -724,7 +728,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("6th-ready");
-});
+} // attachSidebarVisibility
 
 function toggleSidebarItem(id) {
 	var hide = $(id).next();
@@ -736,7 +740,7 @@ function toggleSidebarItem(id) {
 }
 
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
-$(function(){
+function attachAdvancedSearchBehaviour() {
 // console.time("7th-ready");
 	//ready
 	$("input.searchbox").focus(function(){
@@ -756,10 +760,10 @@ $(function(){
 		}
 	});
 // console.timeEnd("7th-ready");
-});
+} // attachAdvancedSearchBehaviour()
 
 // Pas sorteervolgorde aan voor datum
-$(function(){
+function attachDateSortBehaviour() {
 // console.time("8th-ready");
 	//ready
 	$("ul.sorting input").click(function() {
@@ -770,7 +774,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("8th-ready");
-});
+} // attachDateSortBehaviour
 
 // sidebarPanel zichtbaar maken / verbergen
 function toggleSidebarPanel(id) {
@@ -868,7 +872,7 @@ function downloadMultiNZB() {
 }
 
 // Toggle filter visibility
-$(function(){
+function attachFilterVisibility() {
 // console.time("9th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
@@ -886,7 +890,7 @@ $(function(){
 		});
 	}
 // console.timeEnd("9th-ready");
-});
+} // attachFilterVisibility
 
 function toggleFilter(id) {
 	$(id).parent().click(function(){ return false; });
@@ -912,11 +916,11 @@ function toggleFilter(id) {
 }
 
 // Maintenance buttons
-$(function(){
+function attachMaintenanceButtonsBehaviour() {
 	$("ul.maintenancebox a.retrievespots").click(function(){return false});
 	$("ul.maintenancebox a.erasedownloads").click(function(){return false});
 	$("ul.maintenancebox a.markasread").click(function(){return false});
-});
+} // attachMaintenanceButtionsBehaviour
 
 function retrieveSpots() {
 	var url = $("ul.maintenancebox a.retrievespots").attr("href");
@@ -1303,7 +1307,7 @@ function updateSabPanel(start,limit) {
 				$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', queue.nrofdownloads).replace('%3', queue.nrofdownloads));
 			}
 		} else if(queue.nrofdownloads != 0 && end == queue.nrofdownloads) {
-			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results/t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
+			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
 		}
 
 		if(queue.nrofdownloads == 1) {
@@ -1715,3 +1719,54 @@ function applyTipTip(){
 	$(this).attr("title", "");
 	$(this).tipTip({defaultPosition: 'bottom', maxWidth: 'auto', content: $dl});
 }
+
+function initSliders() {
+    var max = (1024*1024*1024)*350;
+
+    $( "#slider-filesize" ).slider({
+        range: true,
+        min: 0,
+        max: max,
+        step: ((1024*1024*1024)*350) / 1024,
+        values: [ sliderMinFileSize, sliderMaxFileSize ],
+        slide: function( event, ui ) {
+            var minSize = Math.round((ui.values[0] / max * ((ui.values[0] / max))) * max);
+            var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
+            $( "#min-filesize" ).val( "filesize:>:" + minSize );
+            $( "#max-filesize" ).val( "filesize:<:" + maxSize );
+            $( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
+            }
+        });
+
+        $( "#slider-reportcount" ).slider({
+        range: 'max',
+        min: 0,
+        max: 21,
+        step: 1,
+        values: [ sliderMaxReportCount ],
+        slide: function( event, ui ) {
+            $( "#max-reportcount" ).val( "reportcount:<=:" + ui.values[0]);
+
+            if (ui.values[0] == 21) {
+            /* In de submit handler wordt 21 gefiltered */
+            $( "#human-reportcount" ).text( "<t>Do not filter on # reports</t>" );
+            } else {
+            $( "#human-reportcount" ).text( "<t>Maximum %1 reports</t>".replace("%1", ui.values[0]) );
+            } // if
+        }
+        });
+
+        /* Filesizes */
+        $( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
+        $( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
+    $( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
+
+    /* Report counts */
+    var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
+    $( "#max-reportcount" ).val( "reportcount:<=:" + reportSlideValue);
+            if (reportSlideValue == 21) {
+                $( "#human-reportcount" ).text("<t>Do not filter on # reports</t>");
+                } else {
+                $( "#human-reportcount" ).text( "<t>Maximum %1 reports</t>".replace("%1", reportSlideValue));
+                } // if
+} // initSliders

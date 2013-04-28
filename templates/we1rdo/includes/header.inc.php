@@ -12,14 +12,11 @@
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_statics, '')) { ?>
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
-		<script type='text/javascript'>
-			// console.time("parse-js");
-		</script>
-		<script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 <?php } ?>
 		<script type='text/javascript'>
-			// console.timeEnd("parse-js");
-			/// console.time("parse-css");
+            var sliderMinFileSize = <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>;
+            var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?>;
+            var sliderMaxReportCount = <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?>;
 		</script>
 		<style type="text/css" media="screen,handheld,projection">
 			<?php echo $settings->get('customcss'); ?>
@@ -31,15 +28,6 @@
 <?php } ?>
 		<script type='text/javascript'>
 			// console.timeEnd("parse-css");
-		</script>
-		<script type='text/javascript'>
-			// Define some global variables showing or hiding specific parts of the UI
-			// based on users' security rights
-			var spotweb_security_allow_spotdetail = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_spotdetail, ''); ?>;
-			var spotweb_security_allow_view_spotimage = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_spotimage, ''); ?>;
-			var spotweb_security_allow_view_comments = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''); ?>;
-			var spotweb_currentfilter_params = "<?php echo str_replace('&amp;', '&', $tplHelper->convertFilterToQueryParams()); ?>";
-			var spotweb_retrieve_commentsperpage = <?php if ($settings->get('retrieve_full_comments')) { echo 250; } else { echo 10; } ?>;
 		</script>
 	</head>
 	<body>
