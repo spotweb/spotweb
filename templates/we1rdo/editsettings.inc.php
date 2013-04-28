@@ -7,7 +7,9 @@
             $tplHelper->redirect($http_referer);
 
             return ;
-        } # if
+        } else {
+            showResults($result, array('renderhtml' => 1));
+        } # else
     } # if
 
     $nntp_nzb = $this->_settings->get('nntp_nzb');
@@ -27,6 +29,7 @@
     if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
         $retrieve_newer_than = 1254373200; // 2009-11-01
     } # if
+    echo "<script type='text/javascript'>var retrieveNewerThanDate = " . $retrieve_newer_than . ";</script>";
 ?>
 </div>
 	<div id='toolbar'>
@@ -248,22 +251,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 <!-- Einde Custom Stylesheet -->
 
 <?php } ?>
-
-<script>
-$(function() {
-	$( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
-									dateFormat: "yy-mm-dd",
-									defaultDate: "<?php echo date("Y-m-d", $retrieve_newer_than); ?>",
-									dayNamesMin: ['<?php echo _('Su'); ?>', '<?php echo _('Mo'); ?>', '<?php echo _('Tu'); ?>', '<?php echo _('We'); ?>', '<?php echo _('Th'); ?>', '<?php echo _('Fr'); ?>', '<?php echo _('Sa'); ?>'],
-									monthNamesShort: ['<?php echo _('Jan'); ?>', '<?php echo _('Feb'); ?>', '<?php echo _('Mar'); ?>', '<?php echo _('Apr'); ?>', '<?php echo _('May'); ?>', '<?php echo _('Jun'); ?>', '<?php echo _('Jul'); ?>', '<?php echo _('Aug'); ?>', '<?php echo _('Sep'); ?>', '<?php echo _('Oct'); ?>', '<?php echo _('Nov'); ?>', '<?php echo _('Dec'); ?>'],
-									prevText: '<?php echo _('Previous'); ?>',
-									nextText: '<?php echo _('Next'); ?>',
-									numberOfMonths: 3,
-									stepMonths: 3,
-									minDate: new Date(2009, 10, 1),
-									maxDate: "today" });
-});
-</script>
 
 		<div class="editSettingsButtons">
 			<input class="greyButton" type="submit" name="editsettingsform[submitedit]" value="<?php echo _('Change'); ?>">
