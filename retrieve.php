@@ -25,9 +25,16 @@ try {
 	SpotTiming::disable();
 
 	# Initialize commandline arguments
-	SpotCommandline::initialize(array('force', 'debug', 'retro'), array('force' => false, 'debug' => false, 'retro' => false));
+	SpotCommandline::initialize(array('force', 'debug', 'retro', 'timing'), array('force' => false, 'timing' => false, 'debug' => false, 'retro' => false));
 
-	# Initialize translation to english 
+    # Allow for timing to be displayed after retrieval of spots
+    $showTiming = SpotCommandline::get('timing');
+    if ($showTiming) {
+        SpotTiming::enable();
+        SpotTiming::enableHtml(false);
+    } # if
+
+    # Initialize translation to english
 	SpotTranslation::initialize('en_US');
 
 	/*
@@ -133,6 +140,12 @@ try {
 											  $retroMode);
 	$newSpotCount = $retriever->perform();
 
+    # Show the cumulative timings of the spotsretrieval
+    if ($showTiming) {
+        SpotTiming::displayCumul();
+        SpotTiming::clear();
+    } # if
+
     ## Creating filter counts
 	if ($newSpotCount > 0) {
 		$svcPrv_cacheSpotCount = new Services_Providers_CacheNewSpotCount($daoFactory->getUserFilterCountDao(),
@@ -142,11 +155,18 @@ try {
 		echo 'Calculating how many spots are new';
 		$notifyNewArray = $svcPrv_cacheSpotCount->cacheNewSpotCount();
 		echo ', done.' . PHP_EOL;
+
+        # Show the cumulative timings of the caching of these spots
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
 	} # if
 
-	/*
-	 * Should we retrieve comments?
-	 */
+
+    /*
+     * Should we retrieve comments?
+     */
 	if ($settings->get('retrieve_comments')) {
 		$retriever = new Services_Retriever_Comments($daoFactory,
 													 $settings,
@@ -154,7 +174,14 @@ try {
 													 $forceMode,
 													 $retroMode);
 		$newCommentCount = $retriever->perform();
-	} # if
+
+        # Show the cumulative timings of the caching of these comments
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
+    } # if
+
 
 	/*
 	 * Retrieval of reports
@@ -165,6 +192,12 @@ try {
 													$debugLog,
 												    $forceMode);
 		$newReportCount = $retriever->perform();
+
+        # Show the cumulative timings of the caching of these reports
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
 	} # if
 	
 	/*
