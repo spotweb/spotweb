@@ -101,12 +101,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# The + operator is supported both by PostgreSQL and MySQL's FTS
-			$search['value'][] = "Titel:=:+\"" . trim($tvSearch) . "\" +" . $epSearch;
+			$search['value'][] = "Titel:=:DEF:+\"" . trim($tvSearch) . "\" +" . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
 			} else {
-				$search['value'][] = "Titel:=:\"" . $this->_params['artist'] . "\"";
+				$search['value'][] = "Titel:=:DEF:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
@@ -158,16 +158,20 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
-			$search['value'][] = "date:>:-" . $this->_params['maxage'] . "days";
+			$search['value'][] = "date:>:DEF:-" . $this->_params['maxage'] . "days";
 
+        /*
+         * We combine the "newznabapi" categories, with a custom extension for
+         * categories so we can filte deeper than the newznab API kan per default
+         */
 		$tmpCat = array();
 		foreach (explode(",", $this->_params['cat']) as $category) {
 			$tmpCat[] = $this->nabcat2spotcat($category);
 		} # foreach
-		$search['tree'] = implode(",", $tmpCat);
+		$search['tree'] = implode(",", $tmpCat) . ',' . $this->_params['spotcat'];
 
 		# Spots met een filesize 0 niet opvragen
-		$search['value'][] = "filesize:>:0";
+		$search['value'][] = "filesize:>:DEF:0";
 
 		$limit = $this->_currentSession['user']['prefs']['perpage'];
 		if ($this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)

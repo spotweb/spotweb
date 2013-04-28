@@ -180,7 +180,8 @@ try {
 						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', ''),
-						  'del' => $req->getDef('del', '')
+						  'del' => $req->getDef('del', ''),
+                          'spotcat' => $req->getDef('spotcat', '')
 					)
 			);
 			$page->render();
