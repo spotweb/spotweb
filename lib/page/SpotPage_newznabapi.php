@@ -137,7 +137,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # else
 
 			if (isset($movieTitle[1])) {
-				$search['value'][] = "Titel:=:+\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate;
+				$search['value'][] = "Titel:=:OR:+\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate;
 			} else {
 				error_log('Unable to retrieve imdb information for newznab API');
 
@@ -149,12 +149,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			// imdb sometimes returns the title translated, if so, pass the original title as well
 			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
 			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Titel:=:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
+				$search['value'][] = "Title:=:OR:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
 			} # if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
-			$search['value'][] = "Titel:=:+" . $searchTerm;
+			$search['value'][] = "Titel:=:OR:+" . $searchTerm;
 		} # elseif
 
 		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
