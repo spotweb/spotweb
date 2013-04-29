@@ -501,41 +501,59 @@ class SpotCategories {
 
 		return $subcatz;
 	} # createSubcatZ
-	
-	static function mapDepricatedGenreSubCategories($hcat, $subcatd, $subcatz)
+
+	static function mapDepricatedGenreSubCategories($hcat, $subcatlist, $subcatz)
 	{
 		# image
 		if ($hcat == 0) {
-			# erotica
+			# map deprecated adult categories
 			if ($subcatz == 'z3|') {
-		        # hetero
- 				$subcatd = self::replaceGenreSubCategory($subcatd, 'd23|', 'd75|');
-				$subcatd = self::replaceGenreSubCategory($subcatd, 'd24|', 'd74|');
-				$subcatd = self::replaceGenreSubCategory($subcatd, 'd25|', 'd73|');
-				$subcatd = self::replaceGenreSubCategory($subcatd, 'd26|', 'd72|');
-			}
-		} # if
-		
-		return $subcatd;
+				$subcatlist = self::replaceSubCategory($subcatlist, 'd23|', 'd75|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'd24|', 'd74|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'd25|', 'd73|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'd26|', 'd72|');
+			} # if
+		}
+		return $subcatlist;
 	}
 
-	# helper function for function mapDepricatedGenreSubCategories()
-	private static function replaceGenreSubCategory($subcatd, $oldsubcat, $newsubcat)
+	static function mapLanguageSubCategories($hcat, $subcatlist, $subcatz)
 	{
-		if (stripos($subcatd, $oldsubcat) !== false) {
-			# prevent new genre being listed twice
-			# if the new genre already exists, we replace the old genre with nothing
-			if (stripos($subcatd, $newsubcat) !== false) {
-				$subcatd = str_replace($oldsubcat, '', $subcatd);
+		# image
+		if ($hcat == 0) {
+			# map book language subcategories to audio/written instead of subtitle
+			# this is a deviation from https://github.com/Spotnet/Spotnet/wiki/Category-Codes
+			# https://github.com/spotweb/spotweb/issues/1724
+			if ($subcatz == 'z2|') {
+				# Dutch: C2/C3/C7 => C12 Note that Spotweb internally works with a 0-based index
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c1|', 'c11|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c2|', 'c11|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c6|', 'c11|');
+				# English: C4/C5/C8 => C11
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c3|', 'c10|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c4|', 'c10|');
+				$subcatlist = self::replaceSubCategory($subcatlist, 'c7|', 'c10|');
+			} # if
+		}
+		return $subcatlist;
+	}
+
+	private static function replaceSubCategory($subcatlist, $oldsubcat, $newsubcat)
+	{
+		if (stripos($subcatlist, $oldsubcat) !== false) {
+			# prevent new subcategory being listed twice
+			# if the new subcategory already exists, we replace the old subcategory with nothing
+			if (stripos($subcatlist, $newsubcat) !== false) {
+				$subcatlist = str_replace($oldsubcat, '', $subcatlist);
 			}
 			else {
-				$subcatd = str_replace($oldsubcat, $newsubcat, $subcatd);
+				$subcatlist = str_replace($oldsubcat, $newsubcat, $subcatlist);
 			}
 		}
-		
-		return $subcatd;
+
+		return $subcatlist;
 	}
-	
+
 	public static function startTranslation() {
 		/* 
 		 * Make sure we only translate once
