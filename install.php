@@ -10,6 +10,11 @@
 	} # catch
 	set_error_handler("ownWarning",E_WARNING);
 
+	if (file_exists('reallymyownsettings.php'))
+	{
+		include_once('reallymyownsettings.php');
+	}
+
 	/*
 	 * We output headers after already sending HTML, make
 	 * sure output buffering is turned on.
