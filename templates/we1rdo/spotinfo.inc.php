@@ -70,7 +70,7 @@
 <?php if ($show_nzb_button) { ?>
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="<?php echo _('Download NZB'); if ($spot['hasbeendownloaded']) {echo _('(this spot has already been downloaded)');} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
-						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="<?php echo _('Find NZB');?>"></a></th>
+						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="<?php echo _('Find NZB');?>" rel="nofollow"></a></th>
 <?php if ($show_watchlist_button) {
 echo "<th class='watch'>";
 echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='" . _('Delete from watchlist (w)') . "'> </a>";
@@ -127,7 +127,7 @@ echo "</th>";
 								<tr><th> <?php echo _('Date'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['stamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['stamp'], 'spotdetail'); ?> </td> </tr>
 								<tr><th> <?php echo _('Size'); ?> </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
 								<tr><td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
+								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>' rel="nofollow"><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
