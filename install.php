@@ -10,6 +10,11 @@
 	} # catch
 	set_error_handler("ownWarning",E_WARNING);
 
+	if (file_exists('reallymyownsettings.php'))
+	{
+		include_once('reallymyownsettings.php');
+	}
+
 	/*
 	 * We output headers after already sending HTML, make
 	 * sure output buffering is turned on.
@@ -148,12 +153,18 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$form = array('engine' => 'MySQL',
-					  'host' => 'localhost',
-					  'dbname' => 'spotweb',
-					  'user' => 'spotweb',
-					  'pass' => 'spotweb',
-					  'submit' => '');
+		if (!isset($settings['mydb'])) {
+			$form = array('engine' => 'MySQL',
+						  'host' => 'localhost',
+						  'dbname' => 'spotweb',
+						  'user' => 'spotweb',
+						  'pass' => 'spotweb',
+						  'submit' => '');
+		} else {
+			$form = $settings['mydb'];
+			unset($settings['mydb']);
+		} # else
+
 		if (isset($_POST['dbform'])) {
 			$form = array_merge($form, $_POST['dbform']);
 		} # if
@@ -215,13 +226,20 @@
 		global $_testInstall_Ok;
 
 		$serverList = simplexml_load_file('usenetservers.xml');
-		$form = array('name' => 'custom',
-					  'host' => '',
-					  'user' => '',
-					  'pass' => '',
-					  'port' => 119,
-					  'enc' => false,
-					  'submit' => '');
+
+		if (!isset($settings['mynntp'])) {
+			$form = array('name' => 'custom',
+					'host' => '',
+					'user' => '',
+					'pass' => '',
+					'port' => 119,
+					'enc' => false,
+					'submit' => '');
+		} else {
+			$form = $settings['mynntp'];
+			unset($settings['mynntp']);
+		} # else
+
 		if (isset($_POST['nntpform'])) {
 			$form = array_merge($form, $_POST['nntpform']);
 		} # if
@@ -362,13 +380,18 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$form = array('systemtype' => 'public',
-					  'username' => '', 'newpassword1' => '', 'newpassword2' => '', 'firstname' => '',
-					  'lastname' => '', 'mail' => '', 'userid' => -1);
+		if (!isset($settings['myadminuser'])) {
+			$form = array('systemtype' => 'public',
+						  'username' => '', 'newpassword1' => '', 'newpassword2' => '', 'firstname' => '',
+						  'lastname' => '', 'mail' => '', 'userid' => -1);
+		} else {
+			$form = $settings['myadminuser'];
+			unset($settings['myadminuser']);
+		}
+		
 		if (isset($_POST['settingsform'])) {
 			$form = array_merge($form, $_POST['settingsform']);
 		} # if
-
 		/*
 		 * Dit the user press submit? If so, try to
 		 * connect to the database

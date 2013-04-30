@@ -161,7 +161,6 @@ class SpotParser {
 		foreach($subcatList as $subcat) {
 			if (preg_match('/(\d+)([aAbBcCdDzZ])(\d+)/', preg_quote($subcat), $tmpMatches)) {
 				$subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
-				$tpl_spot['subcatlist'][] = $subCatVal;
 				$tpl_spot['subcat' . $subCatVal[0]] .= $subCatVal . '|';
 			} # if
 		} # foreach
@@ -176,7 +175,14 @@ class SpotParser {
 
 		# map deprecated genre categories to their new genre category
 		$tpl_spot['subcatd'] = SpotCategories::mapDepricatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
-		
+
+		# map language categories to their new language category
+		$tpl_spot['subcatc'] = SpotCategories::mapLanguageSubCategories($tpl_spot['category'], $tpl_spot['subcatc'], $tpl_spot['subcatz']);
+
+		# also use the updated categories in the spotinfo window
+		$merged = $tpl_spot['subcatz'] . $tpl_spot['subcata'] . $tpl_spot['subcatb'] . $tpl_spot['subcatc'] . $tpl_spot['subcatd'];
+		$tpl_spot['subcatlist'] = explode("|", rtrim($merged, "|"));
+
 		# and return the parsed XML
 		return $tpl_spot;
 	} # parseFull()
@@ -309,7 +315,10 @@ class SpotParser {
 		
 		# map deprecated genre categories to their new genre category
 		$spot['subcatd'] = SpotCategories::mapDepricatedGenreSubCategories($spot['category'], $spot['subcatd'], $spot['subcatz']);
-		
+
+		# map language categories to their new language category
+		$spot['subcatc'] = SpotCategories::mapLanguageSubCategories($spot['category'], $spot['subcatc'], $spot['subcatz']);
+
 		if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 			# Make sure its as simple as possible
 			$subj = str_replace('?= =?', '?==?', $subj);
