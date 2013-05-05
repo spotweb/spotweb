@@ -237,7 +237,7 @@ class SpotAlternateDownload {
 	 * @return String returns the url or null
 	 */
 	function getUrlForSpot() {
-	  if(!$this->hasUrlForSpot($this->spot)) {
+	  if(!$this->hasUrlForSpot()) {
 	    $this->nzb = false;
 	    return null;
 	  }
@@ -271,7 +271,7 @@ class SpotAlternateDownload {
 	  
 		if(!function_exists('curl_init')) {
 	    trigger_error('cURL is needed to get the nzb xml.', E_NOTICE);
-	    return $url;
+	    return null;
 	  }
 	  
 	  // Get the alternate url.
