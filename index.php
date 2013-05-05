@@ -337,7 +337,7 @@ try {
 		} # reportpost
 
 		case 'versioncheck' : {
-				$page = new SpotPage_versioncheck($db, $settings, $currentSession, array());
+				$page = new SpotPage_versioncheck($db, $settings, $currentSession);
 				$page->render();
 				break;
 		} # versioncheck
