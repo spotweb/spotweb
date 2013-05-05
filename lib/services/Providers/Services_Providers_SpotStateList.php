@@ -24,7 +24,7 @@ class Services_Providers_SpotStateList {
 	}
 
 	function removeFromWatchList($messageid, $ourUserId) {
-		return $tihs->_spotStateListDao->removeFromWatchList($messageid, $ourUserId);
+		return $this->_spotStateListDao->removeFromWatchList($messageid, $ourUserId);
 	}
 
 	function addToWatchList($messageid, $ourUserId) {

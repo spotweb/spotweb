@@ -10,7 +10,7 @@ function SpotPosting() {
 		self.uiDone();
 
 		// convert the processed form to post values
-		var dataString = $(self.commentForm).serialize()
+		var dataString = $(self.commentForm).serialize();
 		
 		// and actually process the call
 		$.ajax({  
@@ -43,14 +43,14 @@ function SpotPosting() {
 				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 			}
 		});
-	} // cbHashcashCalculated
+	}; // cbHashcashCalculated
 		
 	this.rpHashcashCalculated = function (self, hash) {
 			self.reportForm['postreportform[newmessageid]'].value = hash;
 			self.reportForm['postreportform[submitpost]'].value = 'Post';
 			self.uiDone();
 			
-			var dataString2 = $(self.reportForm).serialize()
+			var dataString2 = $(self.reportForm).serialize();
 			
 			$.ajax({  
 				type: "POST",  
@@ -72,7 +72,7 @@ function SpotPosting() {
 					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 				}
 			});
-	} // callback rpHashcashCalculated
+	}; // callback rpHashcashCalculated
 
 	this.spotHashcashCalculated = function (self, hash) {
 			// and enter the form's inputfields
@@ -85,7 +85,7 @@ function SpotPosting() {
 				url: "?page=postspot",  
 				dataType: "xml",
 				success: function(xml) {
-					var $dialdiv = $("#editdialogdiv")
+					var $dialdiv = $("#editdialogdiv");
 					var result = $(xml).find('result').text();
 					
 					var $formerrors = $dialdiv.find("ul.formerrors");
@@ -121,7 +121,7 @@ function SpotPosting() {
 					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
 				}
 			});
-	} // callback spotHashcashCalculated
+	}; // callback spotHashcashCalculated
 	
 	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
@@ -143,7 +143,7 @@ function SpotPosting() {
 		/* Nu vragen we om, asynchroon, een hashcash te berekenen. Zie comments van calculateCommentHashCash()
 		   waarom dit asynhcroon verloopt */
 		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr + '.', '@spot.net>', 0, this.cbHashcashCalculated);
-	} // postComment
+	}; // postComment
 	
 	this.postReport = function(reportForm, uiStart, uiDone) {
 		this.reportForm = reportForm;
@@ -158,7 +158,7 @@ function SpotPosting() {
 		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'));
 		
 		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr + '.', '@spot.net>', 0, this.rpHashcashCalculated);
-	} // postReport
+	}; // postReport
 
 	this.postNewSpot = function(newSpotForm, uiStart, uiDone) {
 		this.newSpotForm = newSpotForm;
@@ -166,7 +166,7 @@ function SpotPosting() {
 		this.uiDone = uiDone;
 
 		/* Clear the errors */
-		var $dialdiv = $("#editdialogdiv")
+		var $dialdiv = $("#editdialogdiv");
 		$dialdiv.find("ul.formerrors").empty();
 		$dialdiv.find("ul.forminformation").empty();
 				
@@ -175,7 +175,7 @@ function SpotPosting() {
 		var randomstr = newSpotForm['newspotform[randomstr]'].value;
 		
 		this.calculateCommentHashCash('<' + randomstr, '@spot.net>', 0, this.spotHashcashCalculated);
-	} // postNewSpot
+	}; // postNewSpot
 	
 	//
 	// We breken de make expensive hash op in stukken omdat 
@@ -211,5 +211,5 @@ function SpotPosting() {
 			} // else
 		} // if
 
-	} // calculateCommentHashCash
-};
+	}; // calculateCommentHashCash
+}

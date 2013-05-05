@@ -23,7 +23,7 @@ class Services_Nntp_SpotPosting {
 		$header .= "X-No-Archive: yes\r\n";
 		$header .= $additionalHeaders;
 
-		return $this->post(array($header, $message['body']));
+		return $this->_nntpEngine->post(array($header, $message['body']));
 	} # postPlainMessage
 
 	/*

@@ -857,7 +857,7 @@ class Net_NNTP_Protocol_Client
     	    	    	}
     	    	    	return true;
     	    	    	break;
-    	    	    case $encrypted === true:
+    	    	    case $encrypted === false:
     	    	    	if ($this->_logger) {
     	    	    	    $this->_logger->info('TLS encryption failed.');
     	    	    	}
@@ -928,7 +928,7 @@ class Net_NNTP_Protocol_Client
      * @param optional string $newsgroup
      * @param optional mixed $range
      *
-     * @return optional mixed (array) on success or (object) pear_error on failure
+     * @return array | optional mixed (array) on success or (object) pear_error on failure
      * @access protected
      */
     function cmdListgroup($newsgroup = null, $range = null)
@@ -1479,7 +1479,7 @@ class Net_NNTP_Protocol_Client
     /**
      *
      *
-     * @param timestamp $time
+     * @param $time
      * @param mixed $newsgroups (string or array of strings)
      * @param mixed $distribution (string or array of strings)
      *

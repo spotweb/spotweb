@@ -9,8 +9,8 @@ class Services_Posting_Spot {
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
-		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));
-		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('hdr'));
+		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
+		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
 	} # ctor
 
 	/*

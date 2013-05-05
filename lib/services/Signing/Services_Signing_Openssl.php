@@ -29,7 +29,7 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 			$pubKey['n'] = base64_decode($rsaKey['modulo']);
 			$pubKey['e'] = base64_decode($rsaKey['exponent']);
 
-			$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($pubKey));
+			$openSslPubKey = openssl_pkey_get_public($this->seclibToOpenSsl($pubKey));
 			$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
 			
 			# Keep caching the resource?

@@ -127,6 +127,8 @@ function openSpot(id,url) {
 		} // if
 		loadSpotImage();
 	});
+
+    return false;
 }
 
 /*
@@ -336,7 +338,7 @@ function attachInfiniteScroll() {
 						$("div.spots").addClass("full");
 					}
 					$("#overlay").hide().removeClass('loading'); 
-					$("tbody#spots").append($($("div#overlay tbody#spots").html()).show())
+					$("tbody#spots").append($($("div#overlay tbody#spots").html()).show());
 					$("div#overlay").empty();
 					$("a.spotlink").click(function(e) { e.preventDefault(); });
 					$(".showTipTip a.spotlink").each(applyTipTip);
@@ -378,6 +380,8 @@ function loadComments(messageid,perpage,pagenr) {
 		}
 	});
 	$("a.closeDetails").click(function() { xhr.abort() });
+
+    return false;
 }
 
 function postReportForm() {
@@ -545,6 +549,8 @@ function loadSpotImage() {
 			$(this).trigger("load");
 		}
 	});
+
+    return false;
 }
 
 function toggleImageSize() {
@@ -1098,35 +1104,32 @@ function drawGraph(currentSpeed,interval) {
 		});
 	});
 	var maxspeed = 0;
-	var i = 0;
-	for (i = 0; i <= numXLabels; i++) {
+	for (var i = 0; i <= numXLabels; i++) {
 		if(Math.round(speed[i].value) >= Math.round(maxspeed)) {
 			var maxspeed = speed[i].value;
 		}
-	};
+	}
 
 	var speedAxis = new Array();
-	var i = 0;
-	for (i = 0; i <= numYLabels; i++) {
+	for (var i = 0; i <= numYLabels; i++) {
 		speedAxis.push({
 			"count": i, 
 			"posx": offset.left - axisSpacing.x, 
 			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/numYLabels + offset.top, 
 			"value": Math.round(maxspeed * i/numYLabels)
 		});
-	};
+	}
 
 	var interval = interval / 1000;
 	var timeAxis = new Array();
-	var i = 0;
-	for (i = 0; i <= numXLabels; i++) {
+	for (var i = 0; i <= numXLabels; i++) {
 		timeAxis.push({
 			"count": i, 
 			"posx": intervalWidth * i + offset.left, 
 			"posy": elem.height - offset.bottom + axisSpacing.y, 
 			"value": interval * i
 		});
-	};
+	}
 
 	context.clearRect(0, 0, elem.width, elem.height);
 
@@ -1188,14 +1191,13 @@ function drawGraph(currentSpeed,interval) {
 		context.shadowBlur = 3;
 
 		var speedData = new Array();
-		var i = 0;
-		for (i = 0; i <= numXLabels; i++) {
+		for (var i = 0; i <= numXLabels; i++) {
 			speedData.push({
 				"count": i, 
 				"posx": offset.left + i*intervalWidth, 
 				"posy": (graph.height + offset.top) - (speed[i].value / maxspeed) * graph.height
 			});
-		};
+		}
 
 		context.beginPath();
 		context.moveTo(offset.left, elem.height - offset.bottom);
@@ -1219,7 +1221,7 @@ function updateSabPanel(start,limit) {
 		if(queue.paused) {var state = "resume";} else {var state = "pause";}
 		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
 		$("table.sabInfo td.state a.state").click(function(){
-			if(timeOut) {clearTimeout(timeOut)};
+			if(timeOut) {clearTimeout(timeOut)}
 			sabActions(start,limit,state+"queue");
 		});
 		$("table.sabInfo td.diskspace").html("<strong title='<t>Free space (complete)</t>'>"+queue.freediskspace+"</strong> / <strong title='<t>Totale space (complete)</t>'>"+queue.totaldiskspace+"</strong> <t>GB</t>");
@@ -1230,12 +1232,12 @@ function updateSabPanel(start,limit) {
 		});
 		$("td.speedlimit input[name=speedLimit]").keyup(function(e) {
 			if(e.keyCode == 13) {
-				if(timeOut) {clearTimeout(timeOut)}; 
+				if(timeOut) {clearTimeout(timeOut)}
 				sabActions(start,limit,'speedlimit');
 			}
 		});
 		$("td.speedlimit input[name=speedLimit]").blur(function(){
-			if(timeOut) {clearTimeout(timeOut)}; 
+			if(timeOut) {clearTimeout(timeOut)}
 			sabActions(start,limit,'speedlimit');
 		});
 		
@@ -1280,15 +1282,15 @@ function updateSabPanel(start,limit) {
 					$("table.sabQueue").append("<tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbremaining+" / "+slot.mbsize+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
 					
 					$("table.sabQueue tr."+index+" a.up").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
+						if(timeOut) {clearTimeout(timeOut)}
 						sabActions(start,limit,'up', slot.id);
 					});
 					$("table.sabQueue tr."+index+" a.down").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
+						if(timeOut) {clearTimeout(timeOut)}
 						sabActions(start,limit,'down', slot.id);
 					});
 					$("table.sabQueue tr."+index+" span.delete a").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
+						if(timeOut) {clearTimeout(timeOut)}
 						if(start+1 > queue.nrofdownloads-1) {
 							sabActions(start-(limit-start),limit-(limit-start),'delete', slot.id);
 						} else {
@@ -1713,7 +1715,9 @@ function applyTipTip(){
 	var list = $.map(categories, function(value, key){
 		if(value) {
 			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
-		}
+		} else {
+            return '';
+        } // else
 	});
 
 	$dl.append.apply($dl, list);

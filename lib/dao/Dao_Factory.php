@@ -1,8 +1,16 @@
 <?php
 
 abstract class Dao_Factory {
-	abstract public function setConnection(dbeng_abs $conn);
-	abstract public function getConnection();
+    /**
+     * @param dbeng_abs $conn
+     * @return void
+     */
+    abstract public function setConnection(dbeng_abs $conn);
+
+    /**
+     * @return dbeng_abs
+     */
+    abstract public function getConnection();
 
     /**
      * Factory method which returns specified DAO class

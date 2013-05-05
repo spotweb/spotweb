@@ -20,8 +20,8 @@ class SpotPage_getimage extends SpotPage_Abs {
 
 		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
-			$svcActn_SpeeDial = new Services_Action_SpeedDial($this->_daoFactory, $this->_spotSec, $this->_tplHelper);
-			$data = $svcActn_SpeeDial->createSpeedDialImage();
+			$svcActn_SpeedDial = new Services_Actions_SpeedDial($this->_daoFactory, $this->_spotSec, $this->_tplHelper);
+			$data = $svcActn_SpeedDial->createSpeedDialImage();
 			
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
 			/* Check whether the user has view statistics permissions */

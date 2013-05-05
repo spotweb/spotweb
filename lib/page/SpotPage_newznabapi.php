@@ -587,6 +587,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
 			} # switch
 		} # if
+
+        return '';
 	} # Cat2NewznabCat
 
 	function showApiError($errcode=42) {
@@ -710,6 +712,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 7020: return 'cat0_z2';
 		}
+
+        return '';
 	} # nabcat2spotcat
 
 	function spotAcat2nabcat() {

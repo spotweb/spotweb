@@ -31,7 +31,7 @@ class SpotPage_getnzbmobile extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		try {
-			$svcActnNzb = new Services_Actions_Nzb($this->_settings, $this->_daoFactory);
+			$svcActnNzb = new Services_Actions_DownloadNzb($this->_settings, $this->_daoFactory);
 			$svcActnNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 										$this->_action, $svcProvSpot, $svcProvNzb);
 			

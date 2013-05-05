@@ -666,8 +666,10 @@ class Services_Search_QueryParser {
 					$val = (float) trim(substr($tmpFilterValue, 0, -1));
 					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
 					switch($last) {
-						case 'g': $val *= (float) 1024;
-						case 'm': $val *= (float) 1024;
+                        /** @noinspection PhpMissingBreakStatementInspection */
+                        case 'g': $val *= (float) 1024;
+                        /** @noinspection PhpMissingBreakStatementInspection */
+                        case 'm': $val *= (float) 1024;
 						case 'k': $val *= (float) 1024;
 					} # switch
 					$tmpFilterValue = round($val, 0);

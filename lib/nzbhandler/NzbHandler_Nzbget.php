@@ -323,7 +323,7 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 	{
 		if ($this->getVersion() < "0.8.0") return false;
 
-		$name = cleanForFileSystem($name);
+		$name = $this->cleanForFileSystem($name);
 
 		$args = array('groupsetname', (int)0, $name, (int)$id);
 

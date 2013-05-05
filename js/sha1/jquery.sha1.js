@@ -35,7 +35,7 @@
 		
 		var rotateLeft = function(lValue, iShiftBits) {
 			return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
-		}
+		};
 		
 		var lsbHex = function(value) {
 			var string = "";

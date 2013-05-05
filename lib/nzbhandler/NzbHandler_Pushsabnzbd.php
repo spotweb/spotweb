@@ -276,7 +276,7 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 	 */
 	public function setCategory($id, $category)
 	{
-		$category = encodeurl($category);
+		$category = urlencode($category);
 		$output = $this->querySabnzbd("mode=change_cat&value=" .$id . "&value2=" . $category);
 		$response = json_decode($output, true);
 

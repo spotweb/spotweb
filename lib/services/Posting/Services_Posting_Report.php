@@ -9,14 +9,14 @@ class Services_Posting_Report {
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
-		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('post'));
-		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::instance('hdr'));
+		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
+		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
 	} # ctor
 
 	/*
 	 * Post a spam report
 	 */
-	public function postSpamReport(Service_User_Record $svcUserRecord, array $user, array $report) {
+	public function postSpamReport(Services_User_Record $svcUserRecord, array $user, array $report) {
 		$result = new Dto_FormResult();
 		$spotReportDao = $this->_daoFactory->getSpotReportDao();
 
@@ -67,7 +67,7 @@ class Services_Posting_Report {
 		 * used recently to prevent one calculated hashcash to be reused again
 		 * and again
 		 */
-		if (!$sportReportDao->isReportMessageIdUnique($report['newmessageid'])) {
+		if (!$spotReportDao->isReportMessageIdUnique($report['newmessageid'])) {
 			$result->addError(_('Replay attack!?'));
 		} # if
 
@@ -93,7 +93,7 @@ class Services_Posting_Report {
 										   $this->_settings->get('privatekey'),  # Server private key
 										   $this->_settings->get('report_group'),
 										   $report);
-			$sportReportDao->addPostedReport($user['userid'], $dbReport);
+			$spotReportDao->addPostedReport($user['userid'], $dbReport);
 		} # if
 		
 		return $result;
