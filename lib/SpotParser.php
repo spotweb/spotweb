@@ -550,7 +550,7 @@ class SpotParser {
 						} # case '=' 
 
 						case '?': {
-							if ($strInput[$startIndex + 1] == '=') {
+							if ($inputStr[$startIndex + 1] == '=') {
 								$startIndex += 2;
 							} # if
 

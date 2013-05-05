@@ -303,7 +303,7 @@ class Crypt_Hash {
                         resultant L byte string as the actual key to HMAC."
 
                         -- http://tools.ietf.org/html/rfc2104#section-2 */
-                    $key = strlen($this->key) > $this->b ? call_user_func($this->$hash, $this->key) : $this->key;
+                    $key = strlen($this->key) > $this->b ? call_user_func($this->hash, $this->key) : $this->key;
 
                     $key    = str_pad($key, $this->b, chr(0));      // step 1
                     $temp   = $this->ipad ^ $key;                   // step 2

@@ -563,7 +563,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
 		$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
 
-		SpotTiming::stop(__FUNCTION__, array($messageid, $spot));
+		SpotTiming::stop(__FUNCTION__, array($messageId, $spot));
 	} # removeExtraSpots
 
 	/*

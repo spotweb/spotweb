@@ -90,7 +90,7 @@ class Notifo_API {
   function send_notification($params) { return json_encode($this->sendNotification($params)); }
   function send_message($params) { return json_encode($this->sendMessage($params)); }
   function subscribe_user($username) { return json_encode($this->subscribeUser($username)); }
-  function send_request($url, $type, $data) { return json_encode($this->sendRequest($method, $type, $data)); }
+  function send_request($method, $type, $data) { return json_encode($this->sendRequest($method, $type, $data)); }
 
 } /* end class Notifo_API */
 
