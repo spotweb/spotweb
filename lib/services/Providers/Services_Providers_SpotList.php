@@ -20,7 +20,7 @@ class Services_Providers_SpotList {
 		/*
 		 * Actually fetch the spots from the database
 		 */
-		$spotResults = $this->_spotDao->getSpots($ourUserId, $start, $limit, $parsedSearch, false);
+		$spotResults = $this->_spotDao->getSpots($ourUserId, $start, $limit, $parsedSearch);
 
 		$spotCnt = count($spotResults['list']);
 		for ($i = 0; $i < $spotCnt; $i++) {
