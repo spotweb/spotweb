@@ -359,10 +359,9 @@ class SpotAlternateDownload {
 	 * @param String $url
 	 * @param String $body
 	 */
-	protected function downloadNzbFromBinsearch($url, $body) {
-	        
+	protected function downloadNzbFromBinsearch($url, $body) {    
 	  // Match to get the nzb id.
-	  preg_match('/\q\=([a-z0-9]*)&/i', $url, $matches);
+	  preg_match('/\q\=([a-z0-9]*)&*/i', $url, $matches);
 
 	  // This match is essential for the download
 	  if (!count($matches)) {
