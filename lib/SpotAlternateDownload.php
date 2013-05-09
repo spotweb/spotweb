@@ -348,6 +348,12 @@ class SpotAlternateDownload {
 	    return $this->downloadNzbFromNzbindex($url);
 	  }
 
+	  // NZB Club
+	  if (strpos($url, 'nzbclub.com') !== FALSE) {
+	    // This function does not use the $body var.
+	    return $this->downloadNzbFromNzbclub($url);
+	  }
+
 	  // No support found return ;(
 	  return false;
 	}
@@ -496,6 +502,17 @@ class SpotAlternateDownload {
     
     // Could not find the right download link.
     return false;
+	}
+	
+	/**
+	 * 
+	 * Tries to download the actual nzb from nzbclub
+	 * 
+	 * @param String $url
+	 */
+	protected function downloadNzbFromNzbclub($url) {
+	  $downloadUrl = str_replace('nzb_view', 'nzb_get', $url) . 'nzb';
+	  return $this->getAndDownloadNzb($downloadUrl);
 	}
 	
 	/**
