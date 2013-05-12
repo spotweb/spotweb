@@ -348,6 +348,12 @@ class SpotAlternateDownload {
 	    return $this->downloadNzbFromNzbindex($url);
 	  }
 
+	  // NZB Club
+	  if (strpos($url, 'nzbclub.com') !== FALSE) {
+	    // This function does not use the $body var.
+	    return $this->downloadNzbFromNzbclub($url);
+	  }
+
 	  // No support found return ;(
 	  return false;
 	}
@@ -359,10 +365,9 @@ class SpotAlternateDownload {
 	 * @param String $url
 	 * @param String $body
 	 */
-	protected function downloadNzbFromBinsearch($url, $body) {
-	        
+	protected function downloadNzbFromBinsearch($url, $body) {    
 	  // Match to get the nzb id.
-	  preg_match('/\q\=([a-z0-9]*)&/i', $url, $matches);
+	  preg_match('/\q\=([a-z0-9]*)&*/i', $url, $matches);
 
 	  // This match is essential for the download
 	  if (!count($matches)) {
@@ -497,6 +502,17 @@ class SpotAlternateDownload {
     
     // Could not find the right download link.
     return false;
+	}
+	
+	/**
+	 * 
+	 * Tries to download the actual nzb from nzbclub
+	 * 
+	 * @param String $url
+	 */
+	protected function downloadNzbFromNzbclub($url) {
+	  $downloadUrl = str_replace('nzb_view', 'nzb_get', $url) . 'nzb';
+	  return $this->getAndDownloadNzb($downloadUrl);
 	}
 	
 	/**
