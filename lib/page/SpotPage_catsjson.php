@@ -2,7 +2,7 @@
 class SpotPage_catsjson extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
 		$this->sendContentTypeHeader('json');
@@ -137,7 +137,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		echo "[";
 		
 		$hcatList = array();
-		foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
+        $typeCatTmp = '';
+        $hcatTmp = '';
+        foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
 			# The uer can opt to only show a specific category, if so, skip all others
 			if (($hcat_key != $this->_params['category']) && ($this->_params['category'] != '*')) {
 				continue;
@@ -179,7 +181,6 @@ class SpotPage_catsjson extends SpotPage_Abs {
 							$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
 							if ($isStrongNot) {
 								$isStrongNot = '"strongnot": true, "addClass": "strongnotnode", ';
-								$isSelected = 'true';
 							} else {
 								$isStrongNot = '';
 							} # if
