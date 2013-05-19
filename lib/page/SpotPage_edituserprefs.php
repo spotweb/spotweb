@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_edituserprefs extends SpotPage_Abs {
 	private $_editUserPrefsForm;
 	private $_userIdToEdit;

@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_editsettings extends SpotPage_Abs {
 	private $_editSettingsForm;
 	

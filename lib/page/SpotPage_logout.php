@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_logout extends SpotPage_Abs {
 	
 	function render() {

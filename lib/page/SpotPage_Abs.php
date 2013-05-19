@@ -1,4 +1,5 @@
 <?php
+
 abstract class SpotPage_Abs {
     /**
      * @var Dao_Factory

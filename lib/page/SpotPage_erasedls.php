@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_erasedls extends SpotPage_Abs {
 
 	function render() {

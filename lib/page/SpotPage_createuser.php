@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_createuser extends SpotPage_Abs {
 	private $_createUserForm;
 	

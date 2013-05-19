@@ -1,12 +1,4 @@
 <?php
-/*
- * FIXME
- * XXX
- * TODO
- *
- * * editting a security group (its permissions) doesn't work
- *
- */
 
 class SpotPage_editsecgroup extends SpotPage_Abs {
 	private $_editSecGroupForm;

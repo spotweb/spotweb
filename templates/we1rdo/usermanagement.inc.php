@@ -11,9 +11,9 @@
 	<div id="usermanagementtabs" class="ui-tabs">
 		<ul>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_other_users, '')) { ?>
-			<li><a href="?page=render&tplname=listusers" title="<?php echo _('Userlist'); ?>"><span><?php echo _('Userlist');?></span></a></li>
+			<li><a href="?page=render&amp;tplname=listusers" title="<?php echo _('Userlist'); ?>"><span><?php echo _('Userlist');?></span></a></li>
 <?php } ?>
-			<li><a href="?page=render&tplname=listgroups" title="<?php echo _('Grouplist'); ?>"><span><?php echo _('Grouplist'); ?></span></a></li>
+			<li><a href="?page=render&amp;tplname=listgroups" title="<?php echo _('Grouplist'); ?>"><span><?php echo _('Grouplist'); ?></span></a></li>
 		</ul>
 			
 <?php

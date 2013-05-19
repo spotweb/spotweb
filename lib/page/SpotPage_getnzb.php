@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_getnzb extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;

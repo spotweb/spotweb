@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_versioncheck extends SpotPage_Abs {
 
 	function render() {

@@ -121,10 +121,5 @@ for($i = 0; $i < $rows; $i++) {
 			</dd>
 		</fieldset>
 	</form>
-<?php } ?>
-
-<?php
-	require_once "includes/footer.inc.php";
-
-	} # if not only  xml
-	
+<?php }
+    }

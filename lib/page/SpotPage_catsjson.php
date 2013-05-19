@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_catsjson extends SpotPage_Abs {
 	private $_params;
 
