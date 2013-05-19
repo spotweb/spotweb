@@ -1,38 +1,48 @@
 <?php
 
-/*
- * TODO
- * XXX
- * FIXME
- */
-
 class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
-	} # __construct
+	} # ctor
 
-	function render() {
-		# we willen niet dat de API output gecached wordt
+    /**
+     * Generic render function, the actual processing happens elsewhere
+     * in this class
+     */
+    function render() {
+		# Don't let this output be cached
 		$this->sendExpireHeaders(true);
 
-		# CAPS function is used to query the server for supported features and the protocol version and other 
-		# meta data relevant to the implementation. This function doesn't require the client to provide any
-		# login information but can be executed out of "login session".
+        /*
+         * CAPS function is used to query the server for supported features and the protocol version and other
+         * meta data relevant to the implementation. This function doesn't require the client to provide any
+         * login information but can be executed out of "login session".
+         */
 		if ($this->_params['t'] == "caps" || $this->_params['t'] == "c") {
 			$this->caps();
 			return ;
 		} # if
 		
-		# Controleer de users' rechten
+		# Make sure the user has permissions to retrieve the index
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
-		$outputtype = ($this->_params['o'] == "json") ? "json" : "xml";
+        /*
+         * Determine the output type
+         */
+        if ($this->_params['o'] == 'json') {
+            $outputtype = 'json';
+        } else {
+            $outputtype = 'xml';
+        } # else
 
-		switch ($this->_params['t']) {
+        /*
+         * Main switch statement, determines what actually has to be done
+         */
+        switch ($this->_params['t']) {
 			case ""			: $this->showApiError(200); break;
 			case "search"	:
 			case "s"		:
@@ -47,16 +57,24 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case "get"		: $this->getNzb(); break;
 			default			: $this->showApiError(202);
 		} # switch
+
 	} # render()
 
-	function search($outputtype) {
-		# Controleer de users' rechten
+    /**
+     * Search the spotweb database for a specific piece of information
+     *
+     * @param $outputtype
+     */
+    function search($outputtype) {
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$search = array();
+		$searchParams = array();
 
-		if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
+        /**
+         * Now determine what type of information we are searching for using sabnzbd
+         */
+        if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
 			# validate input
 			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
 				$this->showApiError(201);
@@ -64,43 +82,62 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
-			# fetch remote content
-			$dom = new DomDocument();
-			$dom->prevservWhiteSpace = false;
+            /*
+             * Actually retrieve the information from imdb, based on the
+             * imdbid passed by the API
+             */
+            $svcMediaInfoTvrage = new Services_MediaInformation_Tvrage($this->_daoFactory->getCacheDao());
+            $svcMediaInfoTvrage->setSearchid($this->_params['rid']);
+            $tvRageInfo = $svcMediaInfoTvrage->retrieveInfo();
 
-			if (!@list($http_code, $tvrage) = $spotsOverview->getFromWeb('http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->_params['rid'], false, 24*60*60)) {
-				$this->showApiError(300);
-				
-				 return ;
-			} # if
+            if (!$tvRageInfo->isValid()) {
+                $this->showApiError(300);
 
-			$dom->loadXML($tvrage['content']);
-			$showTitle = $dom->getElementsByTagName('showname');
-			# TVRage geeft geen 404 indien niet gevonden, dus vangen we dat zelf netjes op
-			if (!@$showTitle->item(0)->nodeValue) {
-				$this->showApiError(300);
-				
-				 return ;
-			} # if
-			$tvSearch = $showTitle->item(0)->nodeValue;
+                return ;
+            } # if
 
+
+            /*
+             * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
+             * we try to standardize all these types of season definitions into one format.
+             */
 			$epSearch = '';
-			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) || preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
+			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) ||
+                preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
 
-				if (strlen($this->_params['season']) < 3) {
-					$epSearch = (is_numeric($this->_params['season'])) ? 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT) : $this->_params['season'];
-				} else {
-					$epSearch = $this->_params['season'] . ' ';
-				} # else 
-
+                /*
+                 * Did we get passed a 4 digit season (most likely a year), or a
+                 * two digit season?
+                 */
+                if (strlen($this->_params['season']) < 3) {
+                    if (is_numeric($this->_params['season'])) {
+                        $epSearch = 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT);
+                    } else {
+                        $epSearch = $this->_params['season'];
+                    } # else
+                } else {
+                    $epSearch = $this->_params['season'] . ' ';
+                } # else
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
 				
 				return ;
 			} # if
 
-			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) || preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
-				$epSearch .= (is_numeric($this->_params['ep'])) ? 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT) : $this->_params['ep'];
+            /*
+             * And try to add an episode parameter, basically the same set of rules
+             * as for the season
+             */
+			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) ||
+                preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) ||
+                preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
+
+
+                    if (is_numeric($this->_params['ep'])) {
+                        $epSearch .= 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT);
+                    } else {
+                        $epSearch .= $this->_params['ep'];
+                    } # else
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 				
@@ -108,12 +145,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
 			# The + operator is supported both by PostgreSQL and MySQL's FTS
-			$search['value'][] = "Titel:=:DEF:+\"" . trim($tvSearch) . "\" +" . $epSearch;
+			$searchParams['value'][] = "Titel:=:DEF:+\"" . $tvRageInfo->getTitle() . "\" +" . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
 			} else {
-				$search['value'][] = "Titel:=:DEF:\"" . $this->_params['artist'] . "\"";
+				$searchParams['value'][] = "Titel:=:DEF:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
 			# validate input
@@ -127,77 +164,117 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} # if
 
-			# fetch remote content
-			if (!@list($http_code, $imdb) = $spotsOverview->getFromWeb('http://www.imdb.com/title/tt' . $this->_params['imdbid'] . '/', false, 24*60*60)) {
+			/*
+             * Actually retrieve the information from imdb, based on the
+			 * imdbid passed by the API
+			 */
+            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+            $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
+            $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+
+            if (!$imdbInfo->isValid()) {
 				$this->showApiError(300);
 				
 				return ;
 			} # if
 
-			preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb['content'], $movieTitle);
-
 			/* Extract the release date from the IMDB info page */
-			if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb['content'], $movieReleaseDate)) {
-				$movieReleaseDate = '+(' . $movieReleaseDate[1] . ')';
+			if ($imdbInfo->getReleaseYear() != null) {
+				$movieReleaseDate = '+(' . $imdbInfo->getReleaseYear() . ')';
 			} else {
-				$movieReleaseDate = '';
-			} # else
+                $movieReleaseDate = '';
+            } # else
 
-			if (isset($movieTitle[1])) {
-				$search['value'][] = "Titel:=:OR:+\"" . trim($movieTitle[1]) . "\" " . $movieReleaseDate;
-			} else {
-				error_log('Unable to retrieve imdb information for newznab API');
-
-				$this->showApiError(300);
-				return ;
-
-			} # else
+            /*
+             * Add movie title to the query
+             */
+			$searchParams['value'][] = "Titel:=:OR:+\"" . $imdbInfo->getTitle()  . "\" " . $movieReleaseDate;
 
 			// imdb sometimes returns the title translated, if so, pass the original title as well
-			preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb['content'], $originalTitle);
-			if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-				$search['value'][] = "Title:=:OR:+\"" . trim($originalTitle[1]) . "\" " . $movieReleaseDate;
-			} # if
+            if ($imdbInfo->getAlternateTitle() != null) {
+                $searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
+            } # if
 
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
-			$search['value'][] = "Titel:=:OR:+" . $searchTerm;
+			$searchParams['value'][] = "Titel:=:OR:+" . $searchTerm;
 		} # elseif
 
-		if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
-			$search['value'][] = "date:>:DEF:-" . $this->_params['maxage'] . "days";
+        /*
+         * When a user added a maximum age for queries, convert it to
+         * a Spotweb query as well
+         */
+        if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
+			$searchParams['value'][] = "date:>:DEF:-" . $this->_params['maxage'] . "days";
 
         /*
          * We combine the "newznabapi" categories, with a custom extension for
-         * categories so we can filte deeper than the newznab API kan per default
+         * categories so we can filter deeper than the newznab API can per default
          */
 		$tmpCat = array();
 		foreach (explode(",", $this->_params['cat']) as $category) {
 			$tmpCat[] = $this->nabcat2spotcat($category);
 		} # foreach
-		$search['tree'] = implode(",", $tmpCat) . ',' . $this->_params['spotcat'];
+		$searchParams['tree'] = implode(",", $tmpCat) . ',' . $this->_params['spotcat'];
 
-		# Spots met een filesize 0 niet opvragen
-		$search['value'][] = "filesize:>:DEF:0";
+		/*
+		 * Do not retrieve spots with a filesize of zero (these are very old spots,
+		 * which have no NZB linked to it) as they are useless for a API consumer
+		 */
+		$searchParams['value'][] = "filesize:>:DEF:0";
 
-		$limit = $this->_currentSession['user']['prefs']['perpage'];
-		if ($this->_params['limit'] != "" && is_numeric($this->_params['limit']) && $this->_params['limit'] < 500)
-			$limit = $this->_params['limit'];
+        /*
+         * Gather the preference of the results per page and use it in this
+         * system as well when no value is explicitly provided
+         */
+		if ((!empty($this->_params['limit'])) &&
+            (is_numeric($this->_params['limit'])) &&
+            ($this->_params['limit'] < 500)) {
+                $limit = $this->_params['limit'];
+        } else {
+            $limit = $this->_currentSession['user']['prefs']['perpage'];
+        } # else
 
-		$pageNr = ($this->_params['offset'] != "" && is_numeric($this->_params['offset'])) ? $this->_params['offset'] : 0;
-		$offset = $pageNr*$limit;
 
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($search, array('field' => 'stamp', 'direction' => 'DESC'), $this->_currentSession,
-							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+        if ((!empty($this->_params['offset'])) && (is_numeric($this->_params['offset']))) {
+            $pageNr = $this->_params['offset'];
+        } else {
+            $pageNr = 0;
+        } # else
 
-		$spots = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
-						$pageNr,
-						$limit,
-						$parsedSearch);
-		$this->showResults($spots, $offset, $outputtype);
+        /*
+         * We get a bunch of query parameters, so now change this to the actual
+         * search query the user requested including the required sorting
+         */
+        $svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+
+        $svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+        $parsedSearch = $svcSearchQp->filterToQuery(
+            $searchParams,
+            array(
+                'field' => 'stamp',
+                'direction' => 'DESC'
+            ),
+            $this->_currentSession,
+            $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
+
+        /*
+         * Actually fetch the spots, we always perform
+         * this action even when the watchlist is editted
+         */
+        $svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
+        $spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
+            $pageNr,
+            $this->_currentSession['user']['prefs']['perpage'],
+            $parsedSearch);
+
+		$this->showResults($spotsTmp, ($pageNr * $limit), $outputtype);
 	} # search
 
+    /*
+     * Actually create the XML or JSON output from the search
+     * results
+     */
 	function showResults($spots, $offset, $outputtype) {
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
@@ -352,7 +429,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			return ;
 		} # if
 
-		# Controleer de users' rechten
+		# Make sure the specific permissions are implemented
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 
 		# spot ophalen
@@ -366,9 +443,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} # catch
 
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
-		# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
-		# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
-		# wat een onbruikbaar resultaat oplevert
+		/*
+		 * Ugly @ operator, but we cannot reliably fix the library for the moment
+		 */
 		$spot = @$this->_tplHelper->formatSpot($fullSpot);
 
 		if ($outputtype == "json") {
