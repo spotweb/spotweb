@@ -4,8 +4,8 @@ define("SABNZBD_TIMEOUT",15);
 class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 {
 	private $_url = null;
-
 	private $_sabnzbd = null;
+    private $_credentials = null;
 	
 	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
@@ -17,7 +17,8 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		
 		# prepare sabnzbd url
 		$this->_url = $sabnzbd['url'] . 'api?mode=addfile&apikey=' . $sabnzbd['apikey'] . '&output=text';
-	} # __construct
+        $this->_credentials = base64_encode($sabnzbd['username'] . ":" . $sabnzbd['password']);
+    } # __construct
 	
 	public function processNzb($fullspot, $nzblist)
 	{
@@ -38,8 +39,13 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		# creeer de header
 		$header = array('Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY);
 
-		# bouw nu de content
-		$content = "--" . MULTIPART_BOUNDARY . "\r\n";
+        # add authorization options when a username was given
+        if (!empty($this->_sabnzbd['username'])) {
+            $header[] = "Authorization: Basic " . $this->_credentials;
+        } # if
+
+        # bouw nu de content
+        $content = "--" . MULTIPART_BOUNDARY . "\r\n";
 		$content .= 
             "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $nzb['filename'] . "\"\r\n" .
 			"Content-Type: " . $nzb['mimetype'] . "\r\n\r\n" . 

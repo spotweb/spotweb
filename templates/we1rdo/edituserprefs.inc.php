@@ -288,6 +288,12 @@ if (!$dialogembedded) { ?>
 
 						<dt><label for="edituserprefsform[nzbhandling][sabnzbd][apikey]"><?php echo _('API key for SABnzbd?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['apikey']); ?>"></dd>
+
+                        <dt><label for="edituserprefsform[nzbhandling][sabnzbd][username]"><?php echo _('Username for sabnzbd? (used for HTTP authentication, usually best be left empty)'); ?></label></dt>
+                        <dd><input type="input" name="edituserprefsform[nzbhandling][sabnzbd][username]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['username']); ?>" /></dd>
+
+                        <dt><label for="edituserprefsform[nzbhandling][sabnzbd][password]"><?php echo _('Password for sabnzbd?'); ?></label></dt>
+                        <dd><input type="password" name="edituserprefsform[nzbhandling][sabnzbd][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['sabnzbd']['password']); ?>"></dd>
 					</fieldset>
 <?php } ?>
 

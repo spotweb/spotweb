@@ -1,20 +1,27 @@
 <?php
 abstract class Services_Retriever_Base {
-		protected $_registry;
-		protected $_settings;
-		protected $_debug;
-		protected $_force;
-		protected $_retro;
+    protected $_registry;
+    protected $_settings;
+    protected $_debug;
+    protected $_force;
+    protected $_retro;
 
-		protected $_nntpCfgDao;
+    protected $_nntpCfgDao;
 
-		protected $_svcNntpText = null;
-		protected $_svcNntpBin = null;
+    /**
+     * @var Services_Nntp_Engine
+     */
+    protected $_svcNntpText = null;
 
-		protected $_textServer;
-		protected $_binServer;
-		
-		private $_msgdata;
+    /**
+     * @var Services_Nntp_Engine
+     */
+    protected $_svcNntpBin = null;
+
+    protected $_textServer;
+    protected $_binServer;
+
+    private $_msgdata;
 
 		/*
 		 * Returns the status in either xml or text format 
@@ -92,7 +99,7 @@ abstract class Services_Retriever_Base {
 
 			# and fireup the nntp connection
             if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
-                $this->displayStatus("slowphprsa");
+                $this->displayStatus('slowphprsa', '');
             } # if
 			$this->displayStatus("lastretrieve", $this->_nntpCfgDao->getLastUpdate($this->_textServer['host']));
 			$this->displayStatus("start", $this->_textServer['host']);
@@ -244,7 +251,7 @@ abstract class Services_Retriever_Base {
 			/*
 			 * try to connect to the usenet server and select the group
 			 */
-			$msgdata = $this->connect($this->getGroupName());
+			$this->connect($this->getGroupName());
 			
 			/*
 			 * Ask the implementation class for the highest articleid
