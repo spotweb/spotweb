@@ -3,11 +3,13 @@
 class Services_Nntp_EnginePool {
 	private static $_instances = array();
 	
-	/*
+	/**
 	 * Returns an Sevice_Nntp_Engine but tries to minimize
 	 * the amount of different objects and hence connections 
 	 * which are created by issueing existing NNTP engines
 	 * when possible
+     *
+     * @returns Services_Nntp_Engine Instance of Services_NNTP_Engine
 	 */
 	static public function pool(Services_Settings_Base $settings, $type) {
 		if (isset(self::$_instances[$type])) {
