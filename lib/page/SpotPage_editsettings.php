@@ -2,7 +2,7 @@
 class SpotPage_editsettings extends SpotPage_Abs {
 	private $_editSettingsForm;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editSettingsForm = $params['editsettingsform'];
 	} # ctor
@@ -24,7 +24,7 @@ class SpotPage_editsettings extends SpotPage_Abs {
 		$formAction = $this->_editSettingsForm['action'];
 		
 		# Are we trying to submit this form, or only rendering it?
-		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+        if (!empty($formAction)) {
 			switch($formAction) {
 				case 'edit'	: {
 					# Validate and apply all settings

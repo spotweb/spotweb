@@ -1,4 +1,12 @@
 <?php
+/*
+ * FIXME
+ * XXX
+ * TODO
+ *
+ * Nakijken
+ */
+
 class SpotPage_getnzbmobile extends SpotPage_Abs {
 	private $_messageid;
 	private $_action;

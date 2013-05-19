@@ -1,4 +1,11 @@
 <?php
+
+/*
+ * TODO
+ * XXX
+ * FIXME
+ */
+
 class SpotPage_newznabapi extends SpotPage_Abs {
 	private $_params;
 

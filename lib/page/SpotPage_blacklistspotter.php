@@ -1,8 +1,9 @@
 <?php
+
 class SpotPage_blacklistspotter extends SpotPage_Abs {
 	private $_blForm;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_blForm = $params['blform'];
 	} # ctor
@@ -11,7 +12,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 
-		# Make sure the editresult is set to 'not comited' per default
+		# Make sure the editresult is set to 'not comitted' per default
 		$result = new Dto_FormResult('notsubmitted');
 				
 		# Create the default blacklist information
@@ -61,8 +62,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs {
 		} # if
 		
 		#- display stuff -#
-		$this->template('blacklistspotter', array('blacklistspotter' => $blackList,
-											 'result' => $result));
+		$this->template('jsonresult', array('result' => $result));
 	} # render
 
 } # class SpotPage_blacklistspotter

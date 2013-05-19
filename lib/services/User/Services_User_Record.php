@@ -817,14 +817,14 @@ class Services_User_Record {
 	/*
 	 * Removes an user record
 	 */
-	function removeUser($userid) {
+	function removeUser($userId) {
 		$result = new Dto_FormResult('success');
 
 		# Do not allow the builtin accounts to be deleted
-		if ($this->_userIdToEdit <= SPOTWEB_ADMIN_USERID) {
+		if ($userId <= SPOTWEB_ADMIN_USERID) {
 			$result->addError(_('Admin and Anonymous can not be deleted'));
 		} else {
-			$this->_userDao->deleteUser($userid);
+			$this->_userDao->deleteUser($userId);
 		} # else
 
 		return $result;

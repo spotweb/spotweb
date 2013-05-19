@@ -1,16 +1,23 @@
 <?php
+
 class SpotPage_render extends SpotPage_Abs {
 	private $_tplname;
 	private $_params;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $tplName, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, $tplName, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
 		$this->_tplname = $tplName;
 		$this->_params = $params;
 	} # ctor
 
-	private function sanitizeTplName($tpl) {
+    /**
+     * Removes any pottentially 'dangerous' characters from a string
+     *
+     * @param $tpl
+     * @return string
+     */
+    private function sanitizeTplName($tpl) {
 		$validChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
 		
 		$newName = '';
@@ -23,7 +30,10 @@ class SpotPage_render extends SpotPage_Abs {
 		return $newName;
 	} # sanitizeTplName
 
-	function render() {
+    /**
+     * Actually render the template
+     */
+    function render() {
 		# sanitize the template name
 		$tplFile = $this->sanitizeTplName($this->_tplname);
 		

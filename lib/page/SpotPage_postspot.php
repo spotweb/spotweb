@@ -1,4 +1,11 @@
 <?php
+
+/*
+ * FIXME
+ * XXX
+ * TODO
+ */
+
 class SpotPage_postspot extends SpotPage_Abs {
 	private $_spotForm;
 	

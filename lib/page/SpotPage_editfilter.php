@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_editfilter extends SpotPage_Abs {
 	private $_editFilterForm;
 	private $_filterId;
@@ -8,7 +9,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 	private $_sortorder;
 	private $_data;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editFilterForm = $params['editfilterform'];
 		$this->_filterId = $params['filterid'];
@@ -52,7 +53,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 					
 					break;
 				} # case 'discardfilters'
-				
+
 				case 'setfiltersasdefault' : {
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
 

@@ -16,7 +16,6 @@ class SpotPage_getimage extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
 		
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
 
 		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
@@ -44,7 +43,6 @@ class SpotPage_getimage extends SpotPage_Abs {
             $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
 			$data = $providerSpotImage ->fetchGravatarImage($this->_image);
 		} else {
-            $svc_nntphdr_engine = Services_Nntp_EnginePool::pool($this->_settings, 'hdr');
             $svc_nntpnzb_engine = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 
 			/*

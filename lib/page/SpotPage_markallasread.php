@@ -1,4 +1,5 @@
 <?php
+
 class SpotPage_markallasread extends SpotPage_Abs {
 
 	function render() {

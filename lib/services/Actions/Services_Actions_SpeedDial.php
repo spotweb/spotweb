@@ -14,7 +14,7 @@ class Services_Actions_SpeedDial {
 	/*
 	 * Actually create the SpeedDial image
 	 */
-	function createSpeedDialImage() {
+	function createSpeedDialImage($userId, $headerServer) {
 		/*
 		 * Because the speeddial image shows stuff like last update and amount of new spots,
 		 * we want to make sure this is not a totally closed system
@@ -28,13 +28,13 @@ class Services_Actions_SpeedDial {
 										$this->_daoFactory->getUserFilterDao(),
 										$this->_daoFactory->getSpotDao(),
 										new Services_Search_QueryParser($this->_daoFactory->getConnection()));
-		$newSpots = $svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], '');
+		$newSpots = $svcCacheNewSpotCount->getNewCountForFilter($userId, '');
 
 		/*
 		 * Get the total amount of spots
 		 */
 		$totalSpots = $svcCacheNewSpotCount->getSpotCount('');
-		$lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
+		$lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getNntpConfigDao()->getLastUpdate($headerServer), 'lastupdate');
 
 		$svc_ImageSpeedDial = new Services_Image_SpeedDial();
 		return $svc_ImageSpeedDial->createSpeedDial($totalSpots, $newSpots, $lastUpdate);

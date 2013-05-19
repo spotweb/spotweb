@@ -51,13 +51,14 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
 			
 		$opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => realpath($sslCnfPath)));
+		openssl_pkey_export($opensslPrivKey, $privateKey, null, array('config' => realpath($sslCnfPath)));
 		$publicKey = openssl_pkey_get_details($opensslPrivKey);
 		$publicKey = $publicKey['key'];
 		openssl_free_key($opensslPrivKey);
 
 		return array('public' => $publicKey,
 					 'private' => $privateKey);
-	} # createPrivateKey 
+	} # createPrivateKey
 
 	/*
 	 * Helper function for parsing ASN.1
@@ -72,8 +73,8 @@ class Services_Signing_Openssl extends Services_Signing_Base {
             if ($component < $l) break;
         }
         return $i;
-	} 
-	
+	}
+
 	/*
 	 * Helper function for parsing ASN.1
 	 */

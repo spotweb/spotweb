@@ -1,4 +1,11 @@
 <?php
+
+/*
+ * FIXME
+ * XXX
+ * TODO
+ */
+
 class SpotPage_twitteroauth extends SpotPage_Abs {
 	private $_notificationService = array();
 	private $_params;

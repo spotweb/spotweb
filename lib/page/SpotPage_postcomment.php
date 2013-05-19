@@ -1,4 +1,11 @@
 <?php
+
+/*
+ * FIXME
+ * XXX
+ * TODO
+ */
+
 class SpotPage_postcomment extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_commentForm;

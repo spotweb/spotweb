@@ -1,9 +1,16 @@
 <?php
+
+/*
+ * FIXME
+ * XXX
+ * TODO
+ */
+
 class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 	private $_nzbHandler;
 	private $_params;
 
-	public function __construct() {
+	public function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;

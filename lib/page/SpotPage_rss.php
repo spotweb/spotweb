@@ -1,8 +1,9 @@
 <?php
+
 class SpotPage_rss extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
@@ -24,7 +25,8 @@ class SpotPage_rss extends SpotPage_Abs {
 		 * sortings, etc.
 		 */		
 		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
-		$parsedSearch = $svcUserFilter->filterToQuery(
+        $svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		$parsedSearch = $svcSearchQp->filterToQuery(
 							$this->_params['search'], 
 							array(
 								'field' => $this->_params['sortby'], 
@@ -72,9 +74,12 @@ class SpotPage_rss extends SpotPage_Abs {
 		foreach($spotsTmp['list'] as $spotHeaders) {
 			try {
 				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
-				# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
-				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
-				# wat een onbruikbare RSS oplevert
+
+                /*
+                 * We supress the error by using this ugly operator simply because the library
+                 * sometimes gives an notice and we cannot be bothered to fix it, but it does
+                 * give an incorrect and unusable RSS feed
+                 */
 				$spot = @$this->_tplHelper->formatSpot($spot);
 
 				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);

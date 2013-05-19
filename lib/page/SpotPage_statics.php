@@ -4,14 +4,14 @@ class SpotPage_statics extends SpotPage_Abs {
 	private $_params;
 	private $_currentCssFile;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
 		$this->_params = $params;
 	} # ctor
 
 	function cbFixCssUrl($needle) {
-		return 'URL(' . dirname($this->_currentCssFile) . '/' . trim($needle[1], '"\'') . ')';
+		return 'URL(' . $this->_currentCssFile . '/' . trim($needle[1], '"\'') . ')';
 	} # cbFixCssUrl
 	
 	function cbGetText($s) {
@@ -36,7 +36,7 @@ class SpotPage_statics extends SpotPage_Abs {
 			 * Usually i don't like regexe's as they are hard(er) to read,
 			 * but this saves a lot of parsing so worth it
 			 */
-			$this->_currentCssFile = $file;
+			$this->_currentCssFile = dirname($file);
 			$fc = preg_replace_callback('/url\(([^)]+)\)/i', array($this, 'cbFixCssUrl'), $fc);
 			
 			# also replace any internationalisation strings in JS. 

@@ -1,4 +1,12 @@
 <?php
+/*
+ * TODO
+ * XXX
+ * FIXME
+ *
+ * * Editten van spots is nog helemaal niet getest
+ */
+
 class SpotPage_editspot extends SpotPage_Abs {
 	private $_spotForm;
 	private $_messageId;

@@ -105,7 +105,7 @@ try {
 							'username' => $req->getDef('username', ''),
 							'apikey' => $req->getDef('apikey', '')));
 				} else {
-					$page = new SpotPage_getspot($daoFactory, $settings, $currentSession, $req->getDef('messageid', ''));
+					$page = new SpotPage_getspot($daoFactory, $settings, $currentSession, array('messageid' => $req->getDef('messageid', '')));
 				} # else
 				$page->render();
 				break;
@@ -189,8 +189,9 @@ try {
 		} # api
 
 		case 'rss' : {
+            $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
 			$page = new SpotPage_rss($daoFactory, $settings, $currentSession,
-					Array('search' => $req->getDef('search', $svcUserAuth->getIndexFilter($currentSession['user']['userid'])),
+					Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
 						  'sortdir' => $req->getDef('sortdir', ''),

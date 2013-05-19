@@ -71,7 +71,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
 					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
-                    case 'slowphprsa'       : echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible'; break;
+                    case 'slowphprsa'       : echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible' . PHP_EOL; break;
 					case ''					: echo PHP_EOL; break;
 					
 					default					: echo $cat . $txt;

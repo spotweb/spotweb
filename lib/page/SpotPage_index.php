@@ -1,9 +1,10 @@
 <?php
+
 class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 	private $_action;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		SpotTiming::start('SpotPage_Index::ctor');
 		parent::__construct($daoFactory, $settings, $currentSession);
 
@@ -34,7 +35,7 @@ class SpotPage_index extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
 		/*
-		 * When the user wants to perform a seearch, it needs specific search rights 
+		 * When the user wants to perform a search, it needs specific search rights
 		 * as well
 		 */
 		if (!empty($this->_params['search'])) {

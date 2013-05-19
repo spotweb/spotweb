@@ -4,8 +4,9 @@ class SpotPage_login extends SpotPage_Abs {
 	private $_loginForm;
 	private $_params;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_loginForm = $params['loginform'];
 		$this->_params = $params;
 	} # ctor
@@ -41,7 +42,7 @@ class SpotPage_login extends SpotPage_Abs {
 			if (!$tryLogin) {
 				/* Create an audit event */
 				if ($this->_settings->get('auditlevel') != SpotSecurity::spot_secaudit_none) {
-					$spotAudit = new SpotAudit($this->_db, $this->_settings, $this->_currentSession['user'], $this->_currentSession['session']['ipaddr']);
+					$spotAudit = new SpotAudit($this->_daoFactory, $this->_settings, $this->_currentSession['user'], $this->_currentSession['session']['ipaddr']);
 					$spotAudit->audit(SpotSecurity::spotsec_perform_login, 'incorrect user or pass', false);
 				} # if
 				
