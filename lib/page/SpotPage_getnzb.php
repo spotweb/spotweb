@@ -38,12 +38,16 @@ class SpotPage_getnzb extends SpotPage_Abs {
 			$svcActnNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 										$this->_action, $svcProvSpot, $svcProvNzb);
 			
-			if ($this->_action != 'display') {
-				$result = new Dto_FormResult('success');
-				$this->template('getnzb', array('result' => $result));
+			if ($this->_action == 'display') {
+                $this->sendContentTypeHeader("nzb");
+            } else {
+                $result = new Dto_FormResult('success');
+				$this->template('jsonresult', array('result' => $result));
 			} # if
 		}
 		catch(Exception $x) {
+            $this->sendContentTypeHeader("json");
+
 			$result = new Dto_FormResult('notsubmitted');
 			$result->addError($x->getMessage());
 			$this->template('jsonresult', array('result' => $result));

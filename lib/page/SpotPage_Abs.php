@@ -74,7 +74,8 @@ abstract class SpotPage_Abs {
 			case 'css'		: Header("Content-Type: text/css; charset=utf-8"); break;
 			case 'js'		: Header("Content-Type: application/javascript; charset=utf-8"); break;
 			case 'ico'		: Header("Content-Type: image/x-icon"); break;
-			
+            case 'nzb'		: Header("Content-Type: application/x-nzb"); break;
+
 			default 		: Header("Content-Type: text/html; charset=utf-8"); break;
 		} # switch
 		
