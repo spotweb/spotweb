@@ -23,7 +23,7 @@ class Services_NzbHandler_Save extends Services_NzbHandler_abs
 		$path = $this->makeNzbLocalPath($fullspot, $this->_localDir);
 		$filename = $path . $nzb['filename'];
 		
-		# Sla de NZB file op het lokale filesysteem op
+		# Save the NZB file on the local filesystem
 		if (file_put_contents($filename, $nzb['nzb']) === false)
 		{
 			throw new InvalidLocalDirException("Unable to write NZB file to: " . $filename);

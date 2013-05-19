@@ -373,7 +373,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 	 * The 'readonly' name/value pair is set to true to inform a template that SABnzbd
 	 * does not support assigning ad-hoc categories.
 	 */
-	public function getCategories()
+	public function getBuiltinCategories()
 	{
 		$output = $this->querySabnzbd("mode=queue&output=json");
 		$response = json_decode($output, true);

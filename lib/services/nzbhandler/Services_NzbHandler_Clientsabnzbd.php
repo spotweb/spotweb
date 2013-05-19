@@ -30,3 +30,4 @@ class Services_NzbHandler_Clientsabnzbd extends Services_NzbHandler_abs
 	} # generateNzbHandlerUrl
 
 } # class Services_NzbHandler_Clientsabnzbd
+

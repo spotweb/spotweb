@@ -63,19 +63,19 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 
 	# NzbHandler API functions
 
-        /**
-         * Check if handler is available
-         * @return boolean
-         */
-        public function isAvailable()
-        {
-            try {
-                $this -> getStatus ( );
-            } catch ( Exception $e ) {
-                return false;
-            }
-            return true;
+    /**
+     * Check if handler is available
+     * @return boolean
+     */
+    public function isAvailable()
+    {
+        try {
+            $this -> getStatus ( );
+        } catch ( Exception $e ) {
+            return false;
         }
+        return true;
+    }
 
 	/*
 	 * Return the supported API functions for this NzbHandler imlementation
@@ -361,9 +361,9 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 	 * free text field so that the user can assign a category name not defined in the
 	 * category list.
 	 */
-	public function getCategories()
+	public function getBuiltinCategories()
 	{
-		$result = parent::getCategories();
+		$result = parent::getBuiltinCategories();
 
 		// allow adding of adhoc categories
 		$result['readonly'] = false;

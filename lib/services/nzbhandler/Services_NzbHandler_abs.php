@@ -1,4 +1,5 @@
 <?php
+
 abstract class Services_NzbHandler_abs
 {
 	protected $_name = "Abstract";
@@ -15,7 +16,17 @@ abstract class Services_NzbHandler_abs
 		$this->_nameShort = $nameShort;
 	} # __construct
 
-	/**
+    /**
+     * Actually process the spot.
+     *
+     * @param $fullspot Array with fullspot information, needed for title and category
+     * @param $nzblist List of NZB's (or one) we need to process
+     * @return mixed
+     */
+    abstract public function processNzb($fullspot, $nzblist);
+
+
+    /**
 	 * Get the name of the application handling the nzb, e.g. "SabNZBd".
 	 */
 	public function getName()
@@ -44,13 +55,10 @@ abstract class Services_NzbHandler_abs
 	 * Set the short name of the application handling the nzb. This allows template
 	 * designers to adapt the application name if necessary
 	 */
-
 	public function setNameShort($name)
 	{
 		$this->_nameShort = $name;
 	} # setNameShort
-
-	abstract public function processNzb($fullspot, $nzblist);
 
 	public function generateNzbHandlerUrl($spot, $spotwebApiParam)
 	{
@@ -62,7 +70,8 @@ abstract class Services_NzbHandler_abs
 	} # generateNzbHandlerUrl
 
 	/*
-	 * Genereert een schone filename voor nzb files
+	 * Generates a clean filename with characters which are allowed
+	 * on most operating systems' filesystems
 	 */
 	protected function cleanForFileSystem($title)
 	{
@@ -81,23 +90,23 @@ abstract class Services_NzbHandler_abs
 	} # cleanForFileSystem
 
 	/*
-	 * Genereert het volledige path naar de NZB locatie waar files opgeslagen moeten worden
+	 * Generates the full path where the NZB files are to be stored
 	 */
 	protected function makeNzbLocalPath($fullspot, $path)
 	{
 		$category = $this->convertCatToSabnzbdCat($fullspot);
 
-		# add category to path als dat gevraagd is
+		# add category to path when asked for
 		$path = str_replace('$SABNZBDCAT', $this->cleanForFileSystem($category), $path);
 
-		# als de path niet eindigt met een backslash of forwardslash, voeg die zelf toe
+		# make sure the path adds with a trailing slash so we can just append the filename to it
 		$path = $this->addTrailingSlash($path);
 
 		return $path;
 	} # makeNzbLocalPath
 
 	/*
-	 * Voegt, indien nodig, een trailing slash toe
+	 * Adds, when necessary, a trailing slash to the directory path
 	 */
 	protected function addTrailingSlash($path)
 	{
@@ -109,7 +118,18 @@ abstract class Services_NzbHandler_abs
 		return $path;
 	} # addTrailingSlash
 
-	protected function sendHttpRequest($method, $url, $header, $content, $timeout = 15, $userAgent = 'Spotweb')
+    /**
+     * Send HTTP request
+     *
+     * @param $method
+     * @param $url
+     * @param $header
+     * @param $content
+     * @param int $timeout
+     * @param string $userAgent
+     * @return string
+     */
+    protected function sendHttpRequest($method, $url, $header, $content, $timeout = 15, $userAgent = 'Spotweb')
 	{
 		$stream_options = array('http' =>
 			array('timeout' => $timeout,
@@ -123,10 +143,20 @@ abstract class Services_NzbHandler_abs
 		return @file_get_contents($url, false, $ctx);
 	} # sendHttpRequest
 
-	protected function prepareNzb($fullspot, $nzblist)
+    /**
+     * Either compresses or merges the NZB files
+     *
+     * @param $fullspot array with full spot information
+     * @param $nzblist list of nzb files we want to process
+     * @return array contains the meta data and the nzb itself
+     */
+    protected function prepareNzb($fullspot, $nzblist)
 	{
-		# nu we alle nzb files hebben, trekken we de 'file' secties eruit,
-		# en plakken die in onze overkoepelende nzb
+        /*
+         * Depending on the requested action, we make sure this NZB
+         * file can be sent as one file as current download managers
+         * cannot process more than one file in one request.
+         */
 		$result = array();
 		switch($this->_nzbHandling['prepare_action'])
 		{
@@ -149,13 +179,17 @@ abstract class Services_NzbHandler_abs
 	} # prepareNzb
 
 	/*
-	 * Zet een Spot category om naar een sabnzbd category
+	 * Converts a Spot category into a category which can be
+	 * used for sabnzbd or other download manager
 	 */
 	protected function convertCatToSabnzbdCat($spot) {
-		# fix de category
+		# fix the category
 		$spot['category'] = (int) $spot['category'];
 
-		# vind een geschikte category
+        /*
+         * Retrieve the list of categories, and we user the default
+         * category per .. default
+         */
 		$sabnzbd = $this->_settings->get('sabnzbd');
 
 		if (isset($sabnzbd['categories'][$spot['category']]['default'])) {
@@ -164,6 +198,10 @@ abstract class Services_NzbHandler_abs
 			$category = '';
 		} # else
 
+        /*
+         * If we find a better match, than use that one, but else we use the
+         * default category defined
+         */
 		foreach($spot['subcatlist'] as $cat) {
 			if (isset($sabnzbd['categories'][$spot['category']][$cat])) {
 				$category = $sabnzbd['categories'][$spot['category']][$cat];
@@ -174,7 +212,7 @@ abstract class Services_NzbHandler_abs
 	} # convertCatToSabnzbdCat
 
 	/*
-	 * Voeg een lijst van NZB XML files samen tot 1 XML file
+	 * Merges a list of XML files into one
 	 */
 	protected function mergeNzbList($nzbList) {
 		$nzbXml = simplexml_load_string('<?xml version="1.0" encoding="iso-8859-1" ?>
@@ -196,11 +234,13 @@ abstract class Services_NzbHandler_abs
 	} # mergeNzbList
 
 	/*
-	 * Stop de lijst van NZB XML files in 1 zip file
+	 * Compresses the NZB files as one, so we can send the list of
+	 * NZB files as one.
 	 */
 	protected function zipNzbList($nzbList) {
 		$tmpZip = tempnam(sys_get_temp_dir(), 'SpotWebZip');
-		$zip = new ZipArchive;
+
+		$zip = new ZipArchive();
 		$res = $zip->open($tmpZip, ZipArchive::CREATE);
 		if ($res !== TRUE) {
 			throw new Exception("Unable to create temporary ZIP file: " . $res);
@@ -211,7 +251,10 @@ abstract class Services_NzbHandler_abs
 		} # foreach
 		$zip->close();
 
-		# lees de tempfile uit
+		/*
+		 * and read the ZIP file, so we can just process it as
+		 * opaque data
+		 */
 		$zipFile = file_get_contents($tmpZip);
 
 		# en wis de tijdelijke file
@@ -321,12 +364,13 @@ abstract class Services_NzbHandler_abs
 		return false;
 	} # resume
 
-	public function getCategories()
+	public function getBuiltinCategories()
 	{
-		# For NzbHandlers that do not use configurable categories, but simply create
-		# category directories on demand (e.g. NZBGet) we'll just use the categories
-		# that are configured in SpotWeb.
-
+		/*
+		 * For NzbHandlers that do not use configurable categories, but simply create
+	     * category directories on demand (e.g. NZBGet) we'll just use the categories
+		 * that are configured in SpotWeb.
+         */
 		$sabnzbd = $this->_settings->get('sabnzbd');
 
 		$allcategories = array();
@@ -342,7 +386,7 @@ abstract class Services_NzbHandler_abs
 		$result['categories'] = $allcategories;
 
 		return $result;
-	} # getCategories
+	} # getBuiltinCategories
 
 
 	public function getVersion()

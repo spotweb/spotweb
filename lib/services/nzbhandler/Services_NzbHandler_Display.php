@@ -12,7 +12,6 @@ class Services_NzbHandler_Display extends Services_NzbHandler_abs
 		
 		Header("Content-Type: " . $nzb['mimetype']);
 		
-		/* Een NZB file hoeft niet per se als attachment binnen te komen */
 		switch($this->_nzbHandling['prepare_action']) {
 			case 'zip'	: Header("Content-Disposition: attachment; filename=\"" . $nzb['filename'] . "\""); break;
 			default		: Header("Content-Disposition: inline; filename=\"" . $nzb['filename'] . "\"");

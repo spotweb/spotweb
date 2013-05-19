@@ -82,7 +82,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 					break;
 				# non download related actions
 				case 'getcategories':
-					$result = $this->_nzbHandler->getCategories();
+					$result = $this->_nzbHandler->getBuiltinCategories();
 					break;
 				case 'getversion':
 					$tmp = $this->_nzbHandler->getVersion();

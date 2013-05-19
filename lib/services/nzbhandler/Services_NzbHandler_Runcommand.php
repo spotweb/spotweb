@@ -9,7 +9,10 @@ class Services_NzbHandler_Runcommand extends Services_NzbHandler_abs
 	{
 		parent::__construct($settings, 'Runcommand', 'Run', $nzbHandling);
 
-		# als het commando leeg is, gooi een exception anders geeft php een warning
+        /*
+         * Make sure we don't try to run empty commands, as this will throw warnings
+         * in PHP
+         */
 		$this->_cmdToRun = $nzbHandling['command'];
 		if (empty($this->_cmdToRun))
 		{
