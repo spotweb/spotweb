@@ -1,11 +1,5 @@
 <?php
 
-/*
- * FIXME
- * XXX
- * TODO
- */
-
 class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 	private $_nzbHandler;
 	private $_params;
@@ -28,7 +22,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs {
 			return ;
 		} # if
 		
-		$nzbHandlerFactory = new NzbHandler_Factory();
+		$nzbHandlerFactory = new Services_NzbHandler_Factory();
 		$this->_nzbHandler = $nzbHandlerFactory->build($this->_settings, 
 					$this->_currentSession['user']['prefs']['nzbhandling']['action'], 
 					$this->_currentSession['user']['prefs']['nzbhandling']);

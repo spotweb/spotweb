@@ -40,7 +40,7 @@ class Services_Actions_DownloadNzb {
 		/*
 		 * send nzblist to NzbHandler plugin
 		 */
-		$nzbHandlerFactory = new NzbHandler_Factory();
+		$nzbHandlerFactory = new Services_NzbHandler_Factory();
 		$nzbHandler = $nzbHandlerFactory->build($this->_settings, $action, $currentSession['user']['prefs']['nzbhandling']);
 
 		$nzbHandler->processNzb($fullSpot, $nzbList);

@@ -1,6 +1,6 @@
 <?php
 
-class NzbHandler_Runcommand extends NzbHandler_abs
+class Services_NzbHandler_Runcommand extends Services_NzbHandler_abs
 {
 	private $_localDir = null;
 	private $_cmdToRun = null;
@@ -50,4 +50,4 @@ class NzbHandler_Runcommand extends NzbHandler_abs
 
 	} # processNzb
 
-} # class NzbHandler_Runcommand
+} # class Services_NzbHandler_Runcommand

@@ -1,5 +1,5 @@
 <?php
-class NzbHandler_Clientsabnzbd extends NzbHandler_abs
+class Services_NzbHandler_Clientsabnzbd extends Services_NzbHandler_abs
 {
 	private $_url = null;
 
@@ -29,4 +29,4 @@ class NzbHandler_Clientsabnzbd extends NzbHandler_abs
 		return $url;
 	} # generateNzbHandlerUrl
 
-} # class NzbHandler_Clientsabnzbd
+} # class Services_NzbHandler_Clientsabnzbd

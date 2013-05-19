@@ -1,6 +1,6 @@
 <?php
 
-class NzbHandler_Nzbget extends NzbHandler_abs
+class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 {
 	private $_host = null;
 	private $_timeout = null;
@@ -380,4 +380,4 @@ class NzbHandler_Nzbget extends NzbHandler_abs
 		return $this->sendrequest('version', null);
 	} # getVersion
 
-} # class NzbHandler_Nzbget
+} # class Services_NzbHandler_Nzbget

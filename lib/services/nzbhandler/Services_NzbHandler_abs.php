@@ -1,5 +1,5 @@
 <?php
-abstract class NzbHandler_abs
+abstract class Services_NzbHandler_abs
 {
 	protected $_name = "Abstract";
 	protected $_nameShort = "Abstract";
@@ -351,5 +351,5 @@ abstract class NzbHandler_abs
 		return false;
 	} # getVersion
 
-} # class NzbHandler_abs
+} # class Services_NzbHandler_abs
 

@@ -1,7 +1,7 @@
 <?php
 define("SABNZBD_TIMEOUT",15);
 
-class NzbHandler_Pushsabnzbd extends NzbHandler_abs
+class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 {
 	private $_url = null;
 	private $_sabnzbd = null;
@@ -410,4 +410,4 @@ class NzbHandler_Pushsabnzbd extends NzbHandler_abs
 		return $output;
 	} # querySabnzbd
 		
-} # class NzbHandler_Pushsabnzbd
+} # class Services_NzbHandler_Pushsabnzbd

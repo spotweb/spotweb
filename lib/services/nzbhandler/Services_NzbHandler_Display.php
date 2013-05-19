@@ -1,5 +1,5 @@
 <?php
-class NzbHandler_Display extends NzbHandler_abs
+class Services_NzbHandler_Display extends Services_NzbHandler_abs
 {
 	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
@@ -21,4 +21,4 @@ class NzbHandler_Display extends NzbHandler_abs
 
 	} # processNzb
 
-} # class NzbHandler_Display
+} # class Services_NzbHandler_Display

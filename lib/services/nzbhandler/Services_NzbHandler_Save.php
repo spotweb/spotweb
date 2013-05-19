@@ -1,5 +1,5 @@
 <?php
-class NzbHandler_Save extends NzbHandler_abs
+class Services_NzbHandler_Save extends Services_NzbHandler_abs
 {
 	private $_localDir = null;
 	
@@ -31,4 +31,4 @@ class NzbHandler_Save extends NzbHandler_abs
 		
 	} # processNzb
 
-} # class NzbHandler_Save
+} # class Services_NzbHandler_Save
