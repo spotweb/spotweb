@@ -4,7 +4,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_messageid = $params['messageid'];
@@ -21,7 +21,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
 			$svcActn_SpeedDial = new Services_Actions_SpeedDial($this->_daoFactory, $this->_spotSec, $this->_tplHelper);
-			$data = $svcActn_SpeedDial->createSpeedDialImage();
+			$data = $svcActn_SpeedDial->createSpeedDialImage($this->_currentSession['user']['userid'], $settings_nntp_hdr['host']);
 			
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
 			/* Check whether the user has view statistics permissions */
@@ -44,20 +44,12 @@ class SpotPage_getimage extends SpotPage_Abs {
             $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
 			$data = $providerSpotImage ->fetchGravatarImage($this->_image);
 		} else {
-			# init
-			$svc_nntphdr_engine = new Services_Nntp_Engine($settings_nntp_hdr);
-
-			/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
-			if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
-				$svc_nntpnzb_engine = $svc_nntphdr_engine;
-			} else {
-				$svc_nntpnzb_engine = new Services_Nntp_Engine($this->_settings->get('nntp_nzb'));
-			} # else
+            $svc_nntphdr_engine = Services_Nntp_EnginePool::pool($this->_settings, 'hdr');
+            $svc_nntpnzb_engine = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 
 			/*
 			 * Retrieve the full spot, we need it to be able to retrieve the image
 			 */
-            # and actually retrieve the spot
             $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
             $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $this->_messageid, false);
 
