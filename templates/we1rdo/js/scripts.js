@@ -976,10 +976,8 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	}); // ajax call om de form te submitten
 } // ajaxSubmitFormWithCb
 
-function requestNewUserApiKeyCbHandler(xml) {
-	var result = $(xml).find('newapikey').text();
-
-	$(".apikeyinputfield").val(result);
+function requestNewUserApiKeyCbHandler(data) {
+	$(".apikeyinputfield").val(data.data.apikey);
 } // requestNewUserApiKeyCbHandler
 
 function userLogout() {
