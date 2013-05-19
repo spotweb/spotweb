@@ -1,11 +1,12 @@
 <?php
+
 class SpotPage_getspot extends SpotPage_Abs {
 	private $_messageid;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $messageid) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
-		$this->_messageid = $messageid;
+		$this->_messageid = $params['messageid'];
 	} # ctor
 
 	function render() {
