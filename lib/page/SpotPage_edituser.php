@@ -3,7 +3,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	private $_editUserForm;
 	private $_userIdToEdit;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editUserForm = $params['edituserform'];
 		$this->_userIdToEdit = $params['userid'];
@@ -39,8 +39,13 @@ class SpotPage_edituser extends SpotPage_Abs {
 		if (!empty($formAction)) {
 			switch($formAction) {
 				case 'delete' : {
-					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
-					$result = $svcUserRecord->removeUser($this->_userIdToEdit);
+                    $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_user, '');
+
+                    if ($this->_userIdToEdit == $this->_currentSession['user']['userid']) {
+                        $result->addError('Cannot delete your own user');
+                    } else {
+                        $result = $svcUserRecord->removeUser($this->_userIdToEdit);
+                    } // removeUser
 
 					break;
 				} # case delete
