@@ -27,9 +27,18 @@ class Services_Providers_FullSpot {
 		$fullSpot = $this->_spotDao->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
-			/*
-			 * Retrieve a full loaded spot from the NNTP server
-			 */
+            /*
+             * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
+             * causes us to never get the spot, hence we throw this exception
+             */
+            $spotHeader = $this->_spotDao->getSpotHeader($msgId);
+            if (empty($spotHeader)) {
+                throw new Exception("Spot is not in our Spotweb database");
+            } # if
+
+            /*
+             * Retrieve a full loaded spot from the NNTP server
+             */
 			$newFullSpot = $this->_nntpSpotReading->readFullSpot($msgId);
 			$this->_spotDao->addFullSpots( array($newFullSpot) );
 			
@@ -52,15 +61,6 @@ class Services_Providers_FullSpot {
 			 * us all information is present and in always the same format
 			 */
 			$fullSpot = $this->_spotDao->getFullSpot($msgId, $ourUserId);
-		} # if
-
-
-		/*
-		 * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
-		 * causes us to never get the spot, hence we throw this exception
-		 */
-		if (empty($fullSpot)) {
-			throw new Exception("Spot is not in our Spotweb database");
 		} # if
 
 		/*
