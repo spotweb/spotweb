@@ -1107,7 +1107,7 @@ class SpotTemplateHelper {
 	} # getRandomStr
 	
 	/*
-	 * Geeft de naam van de Nzbhandler terug
+	 * Geeft de naam van de NzbHandler terug
 	 */
 	function getNzbHandlerName(){
 		return $this->_nzbHandler->getName();

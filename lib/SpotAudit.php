@@ -1,4 +1,5 @@
 <?php
+
 class SpotAudit {
 	private $_auditDao;
 	private $_user;

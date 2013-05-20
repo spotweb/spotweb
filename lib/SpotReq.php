@@ -83,19 +83,7 @@ class SpotReq {
 		return $protocol;
 	} # getRequestProtocol
 	
-    
-	function cleanup($var) {
-		if (is_array($var)) {
-			foreach($var as &$value) {
-				$value = $this->cleanup($value);
-			} # foreach
-		} else {
-			$var = trim($var);
-		} # else
-		
-		return $var;
-	} # cleanup }
-	
+
 	static function isXsrfValid($form) {
 		if (!isset($_POST[$form]['xsrfid'])) {
 			return false;
@@ -161,14 +149,6 @@ class SpotReq {
 		}
     }
 
-    function getSrvVar($varName, $defValue = '', $escapeType = 'none') {
-		if( isset($_SERVER[$varName]) ) {
-			return self::escape($_SERVER[$varName], $escapeType);
-		} else {
-			return $defValue;
-		}
-    }
-    
     function escape($var, $escapeType) {
 		if( is_array($var) ) {
 			foreach($var as $key => $value) {
