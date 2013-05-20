@@ -35,13 +35,15 @@ class SpotPage_getnzb extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
 		try {
+            if ($this->_action == 'display') {
+                $this->sendContentTypeHeader("nzb");
+            }  # if
+
 			$svcActnNzb = new Services_Actions_DownloadNzb($this->_settings, $this->_daoFactory);
 			$svcActnNzb->handleNzbAction($this->_messageid, $this->_currentSession,
 										$this->_action, $svcProvSpot, $svcProvNzb);
-			
-			if ($this->_action == 'display') {
-                $this->sendContentTypeHeader("nzb");
-            } else {
+
+            if ($this->_action != 'display') {
                 $result = new Dto_FormResult('success');
 				$this->template('jsonresult', array('result' => $result));
 			} # if
