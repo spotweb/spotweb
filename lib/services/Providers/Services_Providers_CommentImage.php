@@ -51,7 +51,7 @@ class Services_Providers_CommentImage {
 		SpotTiming::start(__FUNCTION__);
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
-		list($return_code, $data) = $this->_serviceHttp->getFromWeb($url, true, 60*60);
+		list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 60*60);
 
 		$dimensions = $this->_svc_ImageUtil->getImageDimensions($data);
 

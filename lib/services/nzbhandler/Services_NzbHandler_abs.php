@@ -119,31 +119,6 @@ abstract class Services_NzbHandler_abs
 	} # addTrailingSlash
 
     /**
-     * Send HTTP request
-     *
-     * @param $method
-     * @param $url
-     * @param $header
-     * @param $content
-     * @param int $timeout
-     * @param string $userAgent
-     * @return string
-     */
-    protected function sendHttpRequest($method, $url, $header, $content, $timeout = 15, $userAgent = 'Spotweb')
-	{
-		$stream_options = array('http' =>
-			array('timeout' => $timeout,
-					'method' => $method,
-					'user_agent' => 'Spotweb',
-					'header' => $header,
-					'content' => $content));
-
-		$ctx = stream_context_create($stream_options);
-
-		return @file_get_contents($url, false, $ctx);
-	} # sendHttpRequest
-
-    /**
      * Either compresses or merges the NZB files
      *
      * @param $fullspot array with full spot information
