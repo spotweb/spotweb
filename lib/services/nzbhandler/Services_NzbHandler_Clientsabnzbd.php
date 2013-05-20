@@ -1,4 +1,5 @@
 <?php
+
 class Services_NzbHandler_Clientsabnzbd extends Services_NzbHandler_abs
 {
 	private $_url = null;

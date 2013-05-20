@@ -1,4 +1,5 @@
 <?php
+
 class Services_NzbHandler_Save extends Services_NzbHandler_abs
 {
 	private $_localDir = null;

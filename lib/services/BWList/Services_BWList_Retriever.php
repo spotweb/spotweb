@@ -21,7 +21,7 @@ class Services_BWList_Retriever {
 		/*
 		 * Actually retrieve the list
 		 */
-		list($http_code, $items) = $this->_svcPrvHttp->getFromWeb($listUrl, false, 30*60);
+		list($http_code, $items) = $this->_svcPrvHttp->performCachedGet($listUrl, false, 30*60);
 
 		/* 
 		 * If the list didn't modify, that's enough to know

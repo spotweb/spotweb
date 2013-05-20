@@ -14,7 +14,7 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs {
          * we only support direct id lookups for now
          */
         $url = 'http://www.imdb.com/title/tt' . $this->getSearchid() . '/';
-        list($http_code, $imdb) = $this->_httpProvider->getFromWeb($url, false, 24*60*60);
+        list($http_code, $imdb) = $this->_httpProvider->performCachedGet($url, false, 24*60*60);
 
         if (empty($imdb)) {
             return $mediaInfo;

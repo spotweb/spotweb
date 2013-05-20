@@ -14,7 +14,7 @@ class Services_MediaInformation_Tvrage extends Services_MediaInformation_Abs {
          * we only support direct id lookups for now
          */
         $url = 'http://services.tvrage.com/feeds/showinfo.php?sid=' . $this->getSearchid() . '/';
-        list($http_code, $tvrage) = $this->_httpProvider->getFromWeb($url, false, 24*60*60);
+        list($http_code, $tvrage) = $this->_httpProvider->performCachedGet($url, false, 24*60*60);
         if (empty($tvrage)) {
             return $mediaInfo;
         } # if

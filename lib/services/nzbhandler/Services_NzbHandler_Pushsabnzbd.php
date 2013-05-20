@@ -5,7 +5,8 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 {
 	private $_url = null;
 	private $_sabnzbd = null;
-    private $_credentials = null;
+    private $_username = null;
+    private $_password = null;
 	
 	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
@@ -17,7 +18,9 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 		
 		# prepare sabnzbd url
 		$this->_url = $sabnzbd['url'] . 'api?mode=addfile&apikey=' . $sabnzbd['apikey'] . '&output=text';
-        $this->_credentials = base64_encode($sabnzbd['username'] . ":" . $sabnzbd['password']);
+
+        $this->_username = $sabnzbd['username'];
+        $this->_password = $sabnzbd['password'];
     } # __construct
 	
 	public function processNzb($fullspot, $nzblist)
@@ -29,41 +32,27 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 		# yes, using a local variable instead of the member variable is intentional
 		$url = $this->_url . '&nzbname=' . $title . '&cat=' . $category;
 
-		@define('MULTIPART_BOUNDARY', '--------------------------'.microtime(true));
-		# equivalent to <input type="file" name="nzbfile"/>
-		@define('FORM_FIELD', 'nzbfile'); 
+        /*
+         * Actually perform the HTTP POST
+         */
+        $svcProvHttp = new Services_Providers_Http(null);
+        $svcProvHttp->setUsername($this->_username);
+        $svcProvHttp->setPassword($this->_password);
+        $svcProvHttp->setMethod('POST');
+        $svcProvHttp->setUploadFiles(array(
+                array('name' => 'nzbfile',
+                      'filename' => $nzb['filename'],
+                      'mime' => $nzb['mimetype'],
+                      'nzb' => $nzb['nzb'])
+        ));
+        $output = $svcProvHttp->perform($url, null);
 
-		# dit is gecopieerd van:
-		#	http://stackoverflow.com/questions/4003989/upload-a-file-using-file-get-contents
-
-		# creeer de header
-		$header = array('Content-Type: multipart/form-data; boundary='.MULTIPART_BOUNDARY);
-
-        # add authorization options when a username was given
-        if (!empty($this->_sabnzbd['username'])) {
-            $header[] = "Authorization: Basic " . $this->_credentials;
-        } # if
-
-        # bouw nu de content
-        $content = "--" . MULTIPART_BOUNDARY . "\r\n";
-		$content .= 
-            "Content-Disposition: form-data; name=\"" . FORM_FIELD . "\"; filename=\"" . $nzb['filename'] . "\"\r\n" .
-			"Content-Type: " . $nzb['mimetype'] . "\r\n\r\n" . 
-			$nzb['nzb'] ."\r\n";
-			
-		# signal end of request (note the trailing "--")
-		$content .= "--".MULTIPART_BOUNDARY."--\r\n";
-
-		$output = $this->sendHttpRequest('POST', $url, $header, $content, SABNZBD_TIMEOUT);
-		
-		if ($output	=== false)
-		{
+		if ($output	=== false) {
 			error_log("Unable to open sabnzbd url: " . $url);
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
 		
-		if (strtolower(trim($output)) != 'ok')
-		{
+		if (strtolower(trim($output)) != 'ok') {
 			error_log("sabnzbd returned: " . $output);
 			throw new Exception("sabnzbd returned: " . $output);
 		} # if
@@ -176,7 +165,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 	 * SABnzbd API method: config
 	 * Set the maximum download rate
 	 */
-	public function setSpeedLimit(int $limit)
+	public function setSpeedLimit($limit)
 	{
 		$output = $this->querySabnzbd("mode=config&name=speedlimit&value=" . $limit . "&output=json");
 		$response = json_decode($output, true);
@@ -405,9 +394,13 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 	private function querySabnzbd($request)
 	{
 		$url = $this->_sabnzbd['url'] . "api?" . $request . '&apikey=' . $this->_sabnzbd['apikey'] . '&output=json';
-		$output = @file_get_contents($url);
-		
-		return $output;
+
+        $svcProvHttp = new Services_Providers_Http(null);
+        $svcProvHttp->setUsername($this->_username);
+        $svcProvHttp->setPassword($this->_password);
+        $tmpData = $svcProvHttp->perform($url, null);
+
+		return $tmpData['data'];
 	} # querySabnzbd
 		
 } # class Services_NzbHandler_Pushsabnzbd

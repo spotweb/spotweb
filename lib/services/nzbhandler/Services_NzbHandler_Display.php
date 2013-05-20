@@ -1,4 +1,5 @@
 <?php
+
 class Services_NzbHandler_Display extends Services_NzbHandler_abs
 {
 	function __construct(Services_Settings_Base $settings, array $nzbHandling)

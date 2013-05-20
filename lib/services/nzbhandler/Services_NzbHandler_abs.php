@@ -20,7 +20,7 @@ abstract class Services_NzbHandler_abs
      * Actually process the spot.
      *
      * @param $fullspot Array with fullspot information, needed for title and category
-     * @param $nzblist List of NZB's (or one) we need to process
+     * @param $nzblist array List of NZB's (or one) we need to process
      * @return mixed
      */
     abstract public function processNzb($fullspot, $nzblist);
@@ -122,7 +122,7 @@ abstract class Services_NzbHandler_abs
      * Either compresses or merges the NZB files
      *
      * @param $fullspot array with full spot information
-     * @param $nzblist list of nzb files we want to process
+     * @param $nzblist array list of nzb files we want to process
      * @return array contains the meta data and the nzb itself
      */
     protected function prepareNzb($fullspot, $nzblist)
@@ -267,7 +267,7 @@ abstract class Services_NzbHandler_abs
 		return false;
 	} # resumeQueue
 
-	public function setSpeedLimit(int $limit)
+	public function setSpeedLimit($limit)
 	{
 		# do nothing
 		return false;
