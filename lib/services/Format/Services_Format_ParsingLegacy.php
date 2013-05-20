@@ -49,7 +49,7 @@ class Services_Format_ParsingLegacy {
 						} # case '=' 
 
 						case '?': {
-							if ($strInput[$startIndex + 1] == '=') {
+							if ($inputStr[$startIndex + 1] == '=') {
 								$startIndex += 2;
 							} # if
 
