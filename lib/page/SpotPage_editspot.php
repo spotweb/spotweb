@@ -11,8 +11,9 @@ class SpotPage_editspot extends SpotPage_Abs {
 	private $_spotForm;
 	private $_messageId;
 
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
-				parent::__construct($daoFactory, $settings, $currentSession);
+    function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
+        parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_spotForm = $params['editspotform'];
 		$this->_messageId = $params['messageid'];
 	} # ctor
@@ -49,22 +50,27 @@ class SpotPage_editspot extends SpotPage_Abs {
 				case 'delete' : {
 					# check permissions
 					$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_delete_spot, '');
+
 					# assume success
 					$result->setResult('success');
+
 					# remove the spot from the database
-					$svcSpotRecord = new Services_Spot_Record($this->_daoFactory, $this->_currentSession);
-					$svcSpotRecord->deleteSpot($this->_messageId);
+                    $svcSpotEditor = new Services_Posting_Editor($this->_daoFactory, $this->_currentSession);
+					$svcSpotEditor->deleteSpot($this->_messageId);
+
 					break;
 				} # case 'delete'
 
 				case 'edit' : {
 					# create a fullspot xml from the data entered by the user and the original fullspot
-					$svcSpotRecord = new Services_Spot_Record($this->_daoFactory, $this->_currentSession);
-					$result = $svcSpotRecord->updateSpotXml($fullSpot, $this->_spotForm);
+					$svcSpotEditor = new Services_Posting_Editor($this->_daoFactory, $this->_currentSession);
+					$result = $svcSpotEditor->updateSpotXml($fullSpot, $this->_spotForm);
+
 					if ($result->isSuccess()) {
 						# update the spot in the database
-						$svcSpotRecord->updateSpot($this->_messageId, $result->getData('spotxml'));
-					}
+						$svcSpotEditor->updateSpot($this->_messageId, $result->getData('spotxml'));
+					} # if
+
 					break;
 				} # case 'edit'
 			} # switch

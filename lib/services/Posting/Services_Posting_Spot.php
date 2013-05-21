@@ -31,11 +31,6 @@ class Services_Posting_Spot {
 		$hdr_newsgroup = $this->_settings->get('hdr_group');
 		$bin_newsgroup = $this->_settings->get('nzb_group');
 
-		# Make sure the subcategories are in the proper format
-		if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) { 
-			$result->addError(_('Invalid subcategories given'));
-		} # if				
-
 		/*
 		 * We'll get the messageid's with <>'s but we always strip
 		 * them in Spotweb, so remove them
@@ -46,21 +41,28 @@ class Services_Posting_Spot {
 		$bin_newsgroup = 'alt.test';
 */
 
-		# create a list of the chosen subcategories
-		$spot['subcatlist'] = array_merge(
-									array($spot['subcata']), 
-									$spot['subcatb'], 
-									$spot['subcatc'], 
-									$spot['subcatd']
-								);
-
-
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
 			$result->addError(_('Hash was not calculated properly'));
 		} # if
 
-		# Read the contents of image so we can check it
+        # Verify several properties from the caller
+        $result->addData('spot', $spot);
+        $result->mergeResult($this->_spotValidator->verifyTitle($result));
+        $result->mergeResult($this->_spotValidator->verifyBody($spot, $result));
+        $result->mergeResult($this->_spotValidator->verifyCategories($spot, $result));
+        $result->mergeResult($this->_spotValidator->verifyWebsite($spot, $result));
+        $result->mergeResult($this->_spotValidator->verifyTag($spot, $result));
+
+        /*
+         * Retrieve the spot information from the result,
+         * and remove it again. We do not want to send the
+         * whole spot back to the caller
+         */
+        $spot = $result->getData('spot');
+        $result->removeData('spot');
+
+        # Read the contents of image so we can check it
 		$imageContents = file_get_contents($imageFilename);
 
 		# the image should be below 1MB
@@ -80,26 +82,6 @@ class Services_Posting_Spot {
 					  	       'height' => $tmpGdImageSize[1]);
 		} # if
 
-		# Body cannot be empty, very short or too long
-		$spot['body'] = trim($spot['body']);
-		if (strlen($spot['body']) < 30) {
-			$result->addError(_('Please enter a description'));
-		} # if
-		if (strlen($spot['body']) > 9000) {
-			$result->addError(_('Entered description is too long'));
-		} # if
-
-		# Title cannot be empty or very short
-		$spot['title'] = trim($spot['title']);
-		if (strlen($spot['title']) < 5) {
-			$result->addError(_('Enter a title'));
-		} # if
-		
-		# Subcategory should be valid
-		if (($spot['category'] < 0) || ($spot['category'] > count(SpotCategories::$_head_categories))) {
-			$result->addError(sprintf(_('Incorrect headcategory (%s)'), $spot['category']));
-		} # if
-		
 		/*
 		 * Load the NZB file as an XML file so we can make sure 
 		 * it's a valid XML and NZB file and we can determine the
@@ -141,82 +123,6 @@ class Services_Posting_Spot {
 		# Poster's  username
 		$spot['poster'] = $user['username'];
 		
-		# Fix up some overly long spot properties and other minor issues
-		$spot['tag'] = substr(trim($spot['tag'], " |;\r\n\t"), 0, 99);
-		$spot['website'] = substr(trim($spot['website']), 0, 449);
-		
-		/**
-		 * If the post's character do not fit into ISO-8859-1, we HTML
-		 * encode the UTF-8 characters so we can properly post the spots
-		 */
-		if (mb_detect_encoding($spot['title'], 'UTF-8, ISO-8859-1', true) == 'UTF-8') {
-			$spot['title'] = mb_convert_encoding($spot['title'], 'HTML-ENTITIES', 'UTF-8');
-		} # if
-
-		/*
-		 * Loop through all subcategories and check if they are valid in
-		 * our list of subcategories
-		 */
-		$subCatSplitted = array('a' => array(), 'b' => array(), 'c' => array(), 'd' => array(), 'z' => array());
-
-		foreach($spot['subcatlist'] as $subCat) {
-			$subcats = explode('_', $subCat);
-			# If not in our format
-			if (count($subcats) != 3) {
-				$result->addError(sprintf(_('Incorrect subcategories (%s)'), $subCat));
-			} else {
-				$subCatLetter = substr($subcats[2], 0, 1);
-				
-				$subCatSplitted[$subCatLetter][] = $subCat;
-				
-				if (!isset(SpotCategories::$_categories[$spot['category']][$subCatLetter][substr($subcats[2], 1)])) {
-					$result->addError(sprintf(_('Incorrect subcategories (%s)'), $subCat . ' !! ' . $subCatLetter . ' !! ' . substr($subcats[2], 1)));
-				} # if
-			} # else
-		} # foreach	
-
-		/*
-		 * Make sure all subcategories are in the format we expect, for
-		 * example we strip the 'cat' part and strip the z-subcat
-		 */
-		$subcatCount = count($spot['subcatlist']);
-		for($i = 0; $i < $subcatCount; $i++) {
-			$subcats = explode('_', $spot['subcatlist'][$i]);
-			
-			# If not in our format
-			if (count($subcats) != 3) {
-				$result->addError(sprintf(_('Incorrect subcategories (%s)'), $spot['subcatlist'][$i]));
-			} else {
-				$spot['subcatlist'][$i] = substr($subcats[2], 0, 1) . str_pad(substr($subcats[2], 1), 2, '0', STR_PAD_LEFT);
-				
-				# Explicitly add the 'z'-category - we derive it from the full categorynames we already have
-				$zcatStr = substr($subcats[1], 0, 1) . str_pad(substr($subcats[1], 1), 2, '0', STR_PAD_LEFT);
-				if ((is_numeric(substr($subcats[1], 1))) && (array_search($zcatStr, $spot['subcatlist']) === false)) {
-					$spot['subcatlist'][] = $zcatStr;
-				} # if
-			} # else			
-		} # for
-
-		# Make sure the spot isn't being posted in many categories
-		if (count($subCatSplitted['a']) > 1) {
-			$result->addError(_('You can only specify one format for a spot'));
-		} # if
-
-		# Make sure the spot has at least a format
-		if (count($subCatSplitted['a']) < 1) {
-			$result->addError(_('You need to specify a format for a spot'));
-		} # if
-		
-		# Make sure the spot isn't being posted for too many categories
-		if (count($spot['subcatlist']) > 10) {
-			$result->addError(_('Too many categories'));
-		} # if
-
-		# Make sure the spot isn't being posted for too many categories
-		if (count($spot['subcatlist']) < 2) {
-			$result->addError(_('At least one category need to be selected'));
-		} # if
-
 		# actually post the spot
 		if ($result->isSuccess()) {
 			/*

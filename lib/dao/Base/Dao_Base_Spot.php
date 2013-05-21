@@ -448,7 +448,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	/*
 	 * Update a spot in the spots and spotsfull tables after editing the spot
 	 */
-	function editSpot($fullSpot, $editor) {
+	function updateSpot($fullSpot, $editor) {
 		SpotTiming::start(__FUNCTION__);
 
 		/*
@@ -472,12 +472,12 @@ class Dao_Base_Spot implements Dao_Spot {
 						$fullSpot['subcatc'], $fullSpot['subcatd'], $fullSpot['subcatz'], $fullSpot['category'],
 						(int) time(), $editor, $fullSpot['messageid']));
 
-		#update spotsfull table
+		# update spotsfull table
 		$this->_conn->modify("UPDATE spotsfull SET fullxml = '%s' WHERE messageid = '%s'",
 				Array($fullSpot['fullxml'], $fullSpot['messageid']));
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));
-	}
+	} # updateSpot
 	
 	/*
 	 * Returns the oldest spot in the system
