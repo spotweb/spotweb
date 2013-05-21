@@ -16,17 +16,17 @@ function SpotPosting() {
 		$.ajax({  
 			type: "POST",  
 			url: "?page=postcomment",  
-			dataType: "xml",
+			dataType: "json",
 			data: dataString,  
-			success: function(xml) {
-				var result = $(xml).find('result').text();
+			success: function(data) {
+				var result = data.result;
 				if(result == 'success') {
-					var user = $(xml).find('user').text();
-					var spotterid = $(xml).find('spotterid').text();
-					var rating = $(xml).find('rating').text();
-					var text = $(xml).find('body').text();
+					var user = data.data.user;
+					var spotterid = data.data.spotterid;
+					var rating = data.data.rating;
+					var text = data.data.body;
 					var spotteridurl = 'http://'+window.location.host+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
-					var commentimage = $(xml).find('commentimage').text();
+					var commentimage = data.data.commentimage;
 
 					var data = "<li> <img class='commentavatar' src='" + commentimage + "'> <strong> <t>Posted by %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='spotterid' target='_parent' href='"+spotteridurl+"' title='<t>Search spots from %1</t>".replace("%1", spotterid) + "'>"+spotterid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
 
@@ -37,10 +37,15 @@ function SpotPosting() {
 						$("#commentslist > li:nth-child(even)").addClass('even');
 						$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 					});
-				}
+				} else {
+                    /*
+                     * At least let the caller know it has failed
+                     */
+                    alert(data.errors.join('\r\n'));
+                }
 			},
-			error: function(xml) {
-				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+			error: function(data) {
+				console.log('error: '+data);
 			}
 		});
 	}; // cbHashcashCalculated
