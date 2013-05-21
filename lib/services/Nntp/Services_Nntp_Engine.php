@@ -52,7 +52,7 @@ class Services_Nntp_Engine {
      * @return bool
      */
     private function tooManyErrors() {
-        return ($this->_connectionErrors > 3);
+        return ($this->_connectionErrors > 2);
     } # tooManyErrors
 
     /**
@@ -151,32 +151,16 @@ class Services_Nntp_Engine {
      */
     public function post($article) {
         $this->connect();
-
-        try {
-            /*
-             * We cannot run post() directly because it would
-             * trigger the autoloader
-             */
-            $tmpError = $this->_nntp->cmdPost();
-            if ($tmpError) {
-                return $this->_nntp->cmdPost2($article);
-            } else {
-                return $tmpError;
-            } # else
-        } catch (Exception $x) {
-            $this->registerError();
-
-            /**
-             * Try this operation again, but make sure we are not overloading
-             * the NNTP server with useless requests
-             */
-            if ($this->tooManyErrors()) {
-                throw $x;
-            } else {
-                return $this->post($article);
-            } # else
-        } # catch
-
+        /*
+         * We cannot run post() directly because it would
+         * trigger the autoloader
+         */
+        $tmpError = $this->_nntp->cmdPost();
+        if ($tmpError) {
+            return $this->_nntp->cmdPost2($article);
+        } else {
+            return $tmpError;
+        } # else
     } # post()
 
     /*
