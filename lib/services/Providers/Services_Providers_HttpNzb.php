@@ -1,10 +1,18 @@
 <?php
+/*
+ * FIXME
+ * XXX
+ * TODO
+ *
+ * Need to use the standard Services_Providers_Http class
+ *
+ */
 /**
  * 
  * This class is used to find alternate download urls for nzb's.
  *
  */
-class SpotAlternateDownload {
+class Services_Providers_HttpNzb {
   protected $spot                 = null;
   protected $alternateDownloadUrl = null;
   protected $nzb                  = null;
@@ -16,8 +24,7 @@ class SpotAlternateDownload {
 	/**
 	 * 
 	 * Check for specific string to check if we have an alternate download url.
-	 * @param array $this->spot
-	 */	
+	 */
 	public function hasUrlForSpot() {
 	  if ($this->alternateDownloadUrl) {
 	    return true;
@@ -70,7 +77,10 @@ class SpotAlternateDownload {
 	/**
 	 * 
 	 * Find the alternate url 
-	 * @param String $data String containing alternate url.
+	 * @param $url String containing alternate url.
+     * @param $currentUrl boolean Re-use the current URL
+     * @param $retries int Amount of retries to download the file
+     * @return boolean could the file be resolved?
 	 */
 	protected function resolveUrl($url, $currentUrl=false, $retries=0) {
 

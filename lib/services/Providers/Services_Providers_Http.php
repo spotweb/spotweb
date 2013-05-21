@@ -50,20 +50,24 @@ class Services_Providers_Http {
 		$this->_cacheDao = $cacheDao;
 	}  # ctor
 
-    /*
+    /**
      * Add files to a POST request with our custom boundary, this way we can
      * send the content-type without having to resort to temporary files.
      *
-     * @param $ch Handle to cURL resource object
-     * @param $postfields fields to post
-     * @param null $headers additional headers to send
+     * @param $ch resource Handle to cURL resource object
+     * @param $postFields array|null fields to post
+     * @param $file sarray|null additional headers to send
+     * @param $rawPostData array|null raw post data we will be sending
+     * @return void
      */
-    private function addPostFieldsToCurl($ch, array $postFields, array $files, $rawPostData) {
+    private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData) {
         /*
          * We need to create a unique  boundary string to be used between the
          * different attachments / post fields we use
          */
         $boundary = '----------------------------' . microtime(true);
+        $contentType = '';
+        $contentLength = 0;
 
         /*
          * Process the actual fields, we expect (for now) a very basic field system where
@@ -83,10 +87,10 @@ class Services_Providers_Http {
         if ($files != null) {
             foreach($files as $key => $val) {
                 $body[] = '--' . $boundary;
-                $body[] = 'Content-Disposition: form-data; name="' . $key . '"; filename="' . $val['filename'] . '"';
+                $body[] = 'Content-Disposition: form-data; name="' . $val['name'] . '"; filename="' . $val['filename'] . '"';
                 $body[] = 'Content-Type: ' . $val['mime'];
                 $body[] = '';
-                $body[] = urlencode($val['data']);
+                $body[] = $val['data'];
             } # foreach
         } # if
 
@@ -106,7 +110,7 @@ class Services_Providers_Http {
              * length.
              */
             $contentType = 'multipart/form-data; boundary=' . $boundary;
-            $content = join("\r\n", $body);
+            $content = implode("\r\n", $body);
             $contentLength = strlen($content);
 
             /*
@@ -125,10 +129,10 @@ class Services_Providers_Http {
             $content = $rawPostData;
         } # else
 
-
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Length: ' . $contentLength,
             'Content-Type: ' . $contentType,
+            'Expect: '
         ));
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
@@ -177,7 +181,7 @@ class Services_Providers_Http {
         if ((($this->getPostContent() != null) ||
              ($this->getUploadFiles() != null)) &&
             ($this->getMethod() == 'POST')) {
-            $this->addPostFieldsToCurl($ch, $this->getPostContent(), $this->getUploadFiles());
+            $this->addPostFieldsToCurl($ch, $this->getPostContent(), $this->getUploadFiles(), $this->getRawPostData());
         } # if
 
         /*
@@ -210,7 +214,7 @@ class Services_Providers_Http {
 
         } else {
             $http_code = 700; # Curl returned an error
-            $curl_info = array();
+            $curl_info = curl_getinfo($ch);
             $data = '';
         } # else
 

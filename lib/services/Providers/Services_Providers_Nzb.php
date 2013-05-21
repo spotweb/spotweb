@@ -36,7 +36,7 @@ class Services_Providers_Nzb {
             $nzb = null;
 
             // Search for alternate download urls
-            $alternateDownload = new SpotAlternateDownload($fullSpot);
+            $alternateDownload = new Services_Providers_HttpNzb($fullSpot);
 
             // Only return an alternate if there is one.
             if ($alternateDownload->hasNzb()) {
