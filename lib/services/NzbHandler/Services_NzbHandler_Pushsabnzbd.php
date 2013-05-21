@@ -43,7 +43,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
                 array('name' => 'nzbfile',
                       'filename' => $nzb['filename'],
                       'mime' => $nzb['mimetype'],
-                      'nzb' => $nzb['nzb'])
+                      'data' => $nzb['nzb'])
         ));
         $output = $svcProvHttp->perform($url, null);
 
@@ -51,10 +51,10 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 			error_log("Unable to open sabnzbd url: " . $url);
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
-		
-		if (strtolower(trim($output)) != 'ok') {
-			error_log("sabnzbd returned: " . $output);
-			throw new Exception("sabnzbd returned: " . $output);
+
+		if (strtolower(trim($output['data'])) != 'ok') {
+			error_log("sabnzbd returned: " . $output['data']);
+			throw new Exception("sabnzbd returned: " . $output['data']);
 		} # if
 	} # processNzb
 
