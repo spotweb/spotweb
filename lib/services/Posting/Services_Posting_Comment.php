@@ -10,7 +10,7 @@ class Services_Posting_Comment {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
-		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
+		$this->_nntp_hdr = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr'));
 	} # ctor
 
 	/*
@@ -21,9 +21,10 @@ class Services_Posting_Comment {
 		$commentDao = $this->_daoFactory->getCommentDao();
 
 		# Make sure the anonymous user and reserved usernames cannot post content
-		if (!$svcUserRecord->allowedToPost($this->_currentSession['user'])) {
+		if (!$svcUserRecord->allowedToPost($user)) {
 			$result->addError(_("You need to login to be able to post comments"));
 		} # if
+
 
 		# Retrieve the users' private key
 		$user['privatekey'] = $svcUserRecord->getUserPrivateRsaKey($user['userid']);
@@ -34,14 +35,10 @@ class Services_Posting_Comment {
 		 */			
 		$comment['newmessageid'] = substr($comment['newmessageid'], 1, -1);
 
-		# Retrieve the spot to which we are commenting
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, new Services_Nntp_SpotReading($this->_nntp_hdr));
-		$fullSpot = $svcProvFullSpot->fetchFullSpot($comment['inreplyto'], $user['userid']);
-
-		# we won't bother when the hashcash is not properly calculcated
-		if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
-			$result->addError(_('Hash was not calculated properly'));
-		} # if
+        # we won't bother when the hashcash is not properly calculcated
+        if (substr(sha1('<' . $comment['newmessageid'] . '>'), 0, 4) != '0000') {
+            $result->addError(_('Hash was not calculated properly'));
+        } # if
 
 		# Body cannot be either empty or very short
 		$comment['body'] = trim($comment['body']);
@@ -82,6 +79,10 @@ class Services_Posting_Comment {
 			$result->addError(_('MessageID too short!?'));
 		} # if
 
+        # Retrieve the spot to which we are commenting
+        $svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $this->_nntp_hdr);
+        $fullSpot = $svcProvFullSpot->fetchFullSpot($comment['inreplyto'], $user['userid']);
+
 		# Add the title as a comment property
 		$comment['title'] = 'Re: ' . $fullSpot['title'];
 		
@@ -97,12 +98,16 @@ class Services_Posting_Comment {
 		
 		# and actually post the comment
 		if ($result->isSuccess()) {
-			$this->_nntp_post->postComment($user,
-										   $this->_settings->get('privatekey'),  # Server private key
-										   $this->_settings->get('comment_group'),
-										   $comment);
+            try {
+                $this->_nntp_post->postComment($user,
+                                               $this->_settings->get('privatekey'),  # Server private key
+                                               $this->_settings->get('comment_group'),
+                                               $comment);
 
-			$commentDao->addPostedComment($user['userid'], $dbComment);
+                $commentDao->addPostedComment($user['userid'], $dbComment);
+            } catch(Exception $x) {
+                $result->addError($x->getMessage());
+            } # catch
 		} # if
 		
 		return $result;
