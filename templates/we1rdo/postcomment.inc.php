@@ -10,6 +10,12 @@ if (isset($result)) {
     } # if
 } # if
 
+/*
+ * If we are called driectly, exit
+ */
+if (!isset($spot)) {
+    return ;
+} # if
 
 ?>
 <form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post">

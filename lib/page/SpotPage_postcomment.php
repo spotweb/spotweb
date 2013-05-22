@@ -40,7 +40,7 @@ class SpotPage_postcomment extends SpotPage_Abs {
 		 * easier access
 		 */
 		$formAction = $this->_commentForm['action'];
-		
+
 		if ($formAction == 'post') {
 			# Make sure we use valid forms
 			$comment = array_merge($comment, $this->_commentForm);
@@ -57,14 +57,13 @@ class SpotPage_postcomment extends SpotPage_Abs {
 				if (!empty($this->_currentSession['user']['avatar'])) {
 					$comment['user-avatar'] = $this->_currentSession['user']['avatar'];
 				} else {
-					$tmpKey = $spotSigning->getPublicKey($this->_currentSession['user']['privatekey']);
-					$comment['user-key'] = $tmpKey['publickey'];
+					$comment['user-key'] = $spotSigning->getPublicKey($this->_currentSession['user']['publickey']);;
 				} # else
 				$commentImage = $this->_tplHelper->makeCommenterImageUrl($comment);
 
 				/* and return the result to the system */
 				$result->addData('user', $this->_currentSession['user']['username']);
-				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']));
+				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($comment['user-key']['modulo']));
 				$result->addData('rating', $comment['rating']);
 				$result->addData('body', $tmpBody);
 				$result->addData('commentimage', $commentImage);

@@ -177,7 +177,7 @@ class Services_Nntp_SpotPosting {
 		
 		# Create the From header
 		$spotnetFrom = $user['username'] . ' <' . 
-							$this->_spotParseUtil->spotPrepareBase64($userPubKey['publickey']['modulo']) . 
+							$this->_spotParseUtil->spotPrepareBase64($userPubKey['modulo']) .
 							'.' . 
 							$this->_spotParseUtil->spotPrepareBase64($user_signature['signature']) . '@';
 		$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParseUtil->spotPrepareBase64($header_signature['signature']) . ">\r\n";

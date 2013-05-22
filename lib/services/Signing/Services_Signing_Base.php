@@ -86,12 +86,20 @@ abstract class Services_Signing_Base {
 	function getPublicKey($privateKey) {
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		$rsa->loadKey($privateKey);
+        $rsa->loadKey($privateKey);
+
+        /*
+         * When we load a public key where a private key should
+         * be loaded, this makes sure we can use it after all
+         */
+        if ($rsa->publicExponent == false) {
+            $rsa->publicExponent = $rsa->exponent;
+        } # if
 
 		# extract the public key
 		$publicKey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
 
-		return array('publickey' => array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes())));
+		return array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes()));
 	} # getPublicKey
 
 	/*
