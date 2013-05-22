@@ -130,7 +130,7 @@ class Dao_Base_User implements Dao_User {
 	function deleteUser($userid) {
 		$this->_conn->modify("UPDATE users 
 								SET deleted = true
-								WHERE id = '%s'", 
+								WHERE id = %d",
 							Array( (int) $userid));
 	} # deleteUser
 
@@ -164,7 +164,7 @@ class Dao_Base_User implements Dao_User {
 		# update user preferences
 		$this->_conn->modify("UPDATE usersettings
 								SET otherprefs = '%s'
-								WHERE userid = '%s'", 
+								WHERE userid = %s",
 				Array(serialize($user['prefs']),
 					  (int) $user['userid']));
 	} # setUser
@@ -176,7 +176,7 @@ class Dao_Base_User implements Dao_User {
 	function setUserPassword($user) {
 		$this->_conn->modify("UPDATE users 
 								SET passhash = '%s'
-								WHERE id = '%s'", 
+								WHERE id = %d",
 				Array($user['passhash'],
 					  (int) $user['userid']));
 	} # setUserPassword
@@ -192,16 +192,16 @@ class Dao_Base_User implements Dao_User {
 		$this->_conn->modify("UPDATE usersettings
 								SET publickey = '%s',
 									privatekey = '%s'
-								WHERE userid = '%s'",
-				Array($publicKey, $privateKey, $userId));
+								WHERE userid = %d",
+				Array($publicKey, $privateKey, (int) $userId));
 	} # setUserRsaKeys 
 
 	/*
 	 * Retrieves the users' private key
 	 */
 	function getUserPrivateRsaKey($userId) {
-		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = '%s'", 
-					Array($userId));
+		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = %d",
+					Array( (int) $userId));
 	} # getUserPrivateRsaKey
 
 	/* 
@@ -274,7 +274,7 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function getGroupPerms($groupId) {
 		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = %d",
-					Array($groupId));
+					Array( (int) $groupId));
 	} # getgroupPerms
 	
 	/*
@@ -286,7 +286,7 @@ class Dao_Base_User implements Dao_User {
 		$tmpList = $this->_conn->arrayQuery('SELECT permissionid, objectid, deny FROM grouppermissions 
 												WHERE groupid IN 
 													(SELECT groupid FROM usergroups WHERE userid = %d ORDER BY prio)',
-											 Array($userId));
+											 Array( (int) $userId));
 
 		foreach($tmpList as $perm) {
 			# Voeg dit permissionid toe aan de lijst met permissies
@@ -310,7 +310,7 @@ class Dao_Base_User implements Dao_User {
 			return $this->_conn->arrayQuery("SELECT id,name,0 as \"ismember\" FROM securitygroups");
 		} else {
 			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
-										Array($userId));
+										Array( (int) $userId));
 		} # if
 	} # getGroupList
 	
@@ -319,7 +319,7 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function removePermFromSecGroup($groupId, $perm) {
 		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($groupId, $perm['permissionid'], $perm['objectid']));
+				Array( (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
 	} # removePermFromSecGroup
 
 	/*
@@ -327,7 +327,7 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
 		$this->_conn->modify("UPDATE grouppermissions SET deny = '%s' WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($this->_conn->bool2dt($perm['deny']), $groupId, $perm['permissionid'], $perm['objectid']));
+				Array($this->_conn->bool2dt($perm['deny']), (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
 	} # setDenyForPermFromSecGroup
 	
 	/*
@@ -335,21 +335,21 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function addPermToSecGroup($groupId, $perm) {
 		$this->_conn->modify("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES (%d, %d, '%s')",
-				Array($groupId, $perm['permissionid'], $perm['objectid']));
+				Array( (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
 	} # addPermToSecGroup
 
 	/*
 	 * Returns information about a specific security group
 	 */
 	function getSecurityGroup($groupId) {
-		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array($groupId));
+		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array( (int) $groupId));
 	} # getSecurityGroup
 		
 	/*
 	 * Updates a specific security group
 	 */
 	function setSecurityGroup($group) {
-		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], $group['id']));
+		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], (int) $group['id']));
 	} # setSecurityGroup
 	
 	/*
@@ -363,7 +363,7 @@ class Dao_Base_User implements Dao_User {
 	 * Removes a security group
 	 */
 	function removeSecurityGroup($groupId) {
-		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array($groupId));
+		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array( (int) $groupId));
 	} # removeSecurityGroup
 	
 	/*
@@ -375,7 +375,7 @@ class Dao_Base_User implements Dao_User {
 		
 		foreach($groupList as $groupInfo) {
 			$this->_conn->modify("INSERT INTO usergroups(userid,groupid,prio) VALUES(%d, %d, %d)",
-						Array($userId, $groupInfo['groupid'], $groupInfo['prio']));
+						Array((int) $userId, (int) $groupInfo['groupid'], (int) $groupInfo['prio']));
 		} # foreach
 	} # setUserGroupList
 
