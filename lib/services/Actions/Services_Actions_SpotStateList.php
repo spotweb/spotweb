@@ -1,6 +1,6 @@
 <?php
 
-class Services_Providers_SpotStateList {
+class Services_Actions_SpotStateList {
 	private $_spotStateListDao;
 
 	/*
@@ -40,4 +40,4 @@ class Services_Providers_SpotStateList {
 	}
 	
 
-} # Services_Providers_SpotStateList
+} # Services_Actions_SpotStateList

@@ -149,7 +149,7 @@ try {
 
     ## Creating filter counts
 	if ($newSpotCount > 0) {
-		$svcPrv_cacheSpotCount = new Services_Providers_CacheNewSpotCount($daoFactory->getUserFilterCountDao(),
+		$svcPrv_cacheSpotCount = new Services_Actions_CacheNewSpotCount($daoFactory->getUserFilterCountDao(),
 																		  $daoFactory->getUserFilterDao(),
 																		  $daoFactory->getSpotDao(),
 																		  new Services_Search_QueryParser($daoFactory->getConnection()));

@@ -62,7 +62,7 @@ class SpotTemplateHelper {
 	 */
 	function getNewCountForFilter($filterStr) {
         if ($this->_svcCacheNewSpotCount == null) {
-            $this->_svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+            $this->_svcCacheNewSpotCount = new Services_Actions_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
                                             $this->_daoFactory->getUserFilterDao(),
                                             $this->_daoFactory->getSpotDao(),
                                             new Services_Search_QueryParser($this->_daoFactory->getConnection()));

@@ -24,7 +24,7 @@ class Services_Actions_SpeedDial {
 		/*
 		 * Initialize the service to get the new spotcount for this user
 		 */
-		$svcCacheNewSpotCount = new Services_Providers_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+		$svcCacheNewSpotCount = new Services_Actions_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
 										$this->_daoFactory->getUserFilterDao(),
 										$this->_daoFactory->getSpotDao(),
 										new Services_Search_QueryParser($this->_daoFactory->getConnection()));

@@ -1,6 +1,6 @@
 <?php
 
-class Services_Providers_CacheNewSpotCount {
+class Services_Actions_CacheNewSpotCount {
 	private $_userFilterCountDao;
 	private $_userFilterDao;
 	private $_spotDao;
@@ -194,4 +194,4 @@ class Services_Providers_CacheNewSpotCount {
 	} # getSpotCount
 
 	
-} # Services_Providers_CacheNewSpotCount
+} # Services_Actions_CacheNewSpotCount

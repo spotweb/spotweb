@@ -65,7 +65,7 @@ class SpotPage_index extends SpotPage_Abs {
 			# Make sure the appropriate permissions are set
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_watchlist, '');
 
-			$svcSpotStateListDao = new Services_Providers_SpotStateList($this->_daoFactory->getSpotStateListDao());
+			$svcSpotStateListDao = new Services_Actions_SpotStateList($this->_daoFactory->getSpotStateListDao());
 			
 			switch($this->_action) {
 				case 'remove'	: $svcSpotStateListDao->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
