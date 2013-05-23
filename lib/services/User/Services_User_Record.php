@@ -1,4 +1,5 @@
 <?php
+
 class Services_User_Record {
 	private $_sessionDao;
 	private $_userDao;

@@ -63,19 +63,20 @@ function SpotPosting() {
 				dataType: "xml",
 				data: dataString2,  
 				success: function(xml) {
-					var result = $(xml).find('result').text();
-					var errors = $(xml).find('errors').text();
-					
-					if(result != 'success') {
-						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-						
-						$(".spamreport-button").attr('title', result + ': ' + errors);
-						alert('<t>Marking as spam was not successfull:</t> ' + errors);
-					} // else					
+                    var result = data.result;
+
+                    if(result != 'success') {
+                        var errors = data.errors.join('\r\n');
+
+                        console.log('error: ' + errors);
+
+                        $(".spamreport-button").attr('title', result + ': ' + errors);
+                        alert('<t>Marking as spam was not successful:</t> ' + errors);
+                    } // if
 				},
-				error: function(xml) {
-					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-				}
+                error: function(data) {
+                    console.log('error: '+data);
+                }
 			});
 	}; // callback rpHashcashCalculated
 

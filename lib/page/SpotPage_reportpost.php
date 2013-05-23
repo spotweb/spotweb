@@ -1,17 +1,12 @@
 <?php
 
-/*
- * FIXME
- * XXX
- * TODO
- */
-
 class SpotPage_reportpost extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_reportForm;
 	
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_reportForm = $params['reportform'];
 		$this->_inReplyTo = $params['inreplyto'];
 	} # ctor
@@ -23,7 +18,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_report_spam, '');
 				
 		# Create the default report a spot structure
-		$report = array('body' => 'This is SPAM!',
+		$report = array('body' => 'This message has been reported as spam',
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
 						 'randomstr' => '');
@@ -46,8 +41,9 @@ class SpotPage_reportpost extends SpotPage_Abs {
 
 			# can we report this spot as spam?
 			$svcPostReport = new Services_Posting_Report($this->_daoFactory, $this->_settings);
-			$result = $svcPostReport->postSpamReport($this->_currentSession['user'], $report);
-			
+            $svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+			$result = $svcPostReport->postSpamReport($svcUserRecord, $this->_currentSession['user'], $report);
+
 			if ($result->isSuccess()) {
 				# send a notification
 				$spotsNotifications->sendReportPosted($report['inreplyto']);

@@ -10,7 +10,7 @@ class Services_Posting_Report {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
-		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
+		$this->_nntp_hdr = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr'));
 	} # ctor
 
 	/*
@@ -40,7 +40,7 @@ class Services_Posting_Report {
 		$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
 
 		# retrieve the spot this is a report of
-		$svcProvFullSpot = new Services_Providers_FullSpot($sportReportDao->_spotDao, new Services_Nntp_SpotReading($this->_nntp_hdr));
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $this->_nntp_hdr);
 		$fullSpot = $svcProvFullSpot->fetchFullSpot($report['inreplyto'], $user['userid']);
 
 		# we won't bother when the hashcash is not properly calculcated
