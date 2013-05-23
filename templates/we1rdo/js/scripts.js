@@ -802,15 +802,30 @@ function toggleSidebarPanel(id) {
 }
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
-function downloadSabnzbd(id,url) {
+function downloadSabnzbd(id,url, dltype) {
 	$(".sab_"+id).removeClass("succes").addClass("loading");
 	
-	/* This is a cross-domain request, so success will never be called */
+	/*
+	 * Get the URL, do not rely on the result handler always
+	 * being called because in some cases (eg: client-sabnzbd)
+	 * it is a cross-domain request and will never be called
+	 */
 	$.get(url, function(data, textStatus, jqXHR) {
-		$(".sab_"+id).removeClass("loading").addClass("succes");
+        if (data.result == "success") {
+            $(".sab_"+id).removeClass("loading").addClass("succes");
+        } else {
+            $(".sab_"+id).removeClass("loading").addClass("failure");
+        } // else
 	});
-	
-	setTimeout( function() { $(".sab_"+id).removeClass("loading").addClass("succes"); }, 2000);
+
+    /*
+     * with client-sabnzbd we ask the browser to download a specific url,
+     * so we cannot keep track if this succeeds or not. Therefore,
+     * we just always set it to green
+     */
+	if (dltype = 'client-sabnzbd') {
+    	setTimeout( function() { $(".sab_"+id).removeClass("loading").addClass("succes"); }, 1000);
+    } // if
 }
 
 // Voorzie de span.newspots van link naar nieuwe spots binnen het filter

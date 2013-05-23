@@ -1,15 +1,9 @@
 <?php
 
-/*
- * FIXME
- * XXX
- * TODO
- */
-
 class SpotPage_postspot extends SpotPage_Abs {
 	private $_spotForm;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_spotForm = $params['spotform'];
 	} # ctor

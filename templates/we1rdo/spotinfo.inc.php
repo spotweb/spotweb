@@ -81,9 +81,9 @@ echo "</th>";
 } ?>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($spot['hasbeendownloaded']) { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
 <?php } else { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
 <?php } } ?>
 					</tr>
 				</tbody>

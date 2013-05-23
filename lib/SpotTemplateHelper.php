@@ -720,6 +720,7 @@ class SpotTemplateHelper {
 		
 		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
+        $spot['nzbhandlertype'] = $this->_currentSession['user']['prefs']['nzbhandling']['action'];
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		$spot['spoturl'] = $this->makeSpotUrl($spot);
 		$spot['caturl'] = $this->makeCatUrl($spot);
