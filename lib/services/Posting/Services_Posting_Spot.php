@@ -5,12 +5,16 @@ class Services_Posting_Spot {
 	private $_settings;
 	private $_nntp_post;
 	private $_nntp_hdr;
+    private $_spotValidator;
 
 	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
 		$this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
+
+
+        $this->_spotValidator = new Services_Posting_Validator();
 	} # ctor
 
 	/*
@@ -37,9 +41,10 @@ class Services_Posting_Spot {
 		 */			
 		$spot['newmessageid'] = substr($spot['newmessageid'], 1, -1);
 
+        /*
 		$hdr_newsgroup = 'alt.test';
 		$bin_newsgroup = 'alt.test';
-
+        */
 
 		# If the hashcash doesn't match, we will never post it
 		if (substr(sha1('<' . $spot['newmessageid'] . '>'), 0, 4) != '0000') {
@@ -48,11 +53,11 @@ class Services_Posting_Spot {
 
         # Verify several properties from the caller
         $result->addData('spot', $spot);
-        $result->mergeResult($this->_spotValidator->verifyTitle($result));
-        $result->mergeResult($this->_spotValidator->verifyBody($spot, $result));
-        $result->mergeResult($this->_spotValidator->verifyCategories($spot, $result));
-        $result->mergeResult($this->_spotValidator->verifyWebsite($spot, $result));
-        $result->mergeResult($this->_spotValidator->verifyTag($spot, $result));
+        $result = $this->_spotValidator->verifyTitle($result);
+        $result = $this->_spotValidator->verifyBody($result);
+        $result = $this->_spotValidator->verifyCategories($result);
+        $result = $this->_spotValidator->verifyWebsite($result);
+        $result = $this->_spotValidator->verifyTag($result);
 
         /*
          * Retrieve the spot information from the result,

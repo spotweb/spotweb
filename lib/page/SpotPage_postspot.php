@@ -66,7 +66,7 @@ class SpotPage_postspot extends SpotPage_Abs {
                 $nzbFilename = $uploadHandler->getTempName();
             } # if
 
-            # Make sure an NZB file was provided
+            # Make sure an picture was provided
             $uploadHandler = new Services_Providers_FileUpload('newspotform', 'imagefile');
             if (!$uploadHandler->isUploaded()) {
                 $result->addError(_('Please select a picture'));
@@ -91,8 +91,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 			
 			if ($result->isSuccess()) { 
 				$result->addData('user', $this->_currentSession['user']['username']);
-				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']));
-				$result->addData('body', $spot['body']);
+				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']['modulo']));
 
 				# en send a notification
 				// $spotsNotifications->sendSpotPosted($spot);

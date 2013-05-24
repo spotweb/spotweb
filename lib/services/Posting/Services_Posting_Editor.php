@@ -59,7 +59,7 @@ class Services_Posting_Editor {
 
         # Verify several properties from the caller
         $result->addData('spot', $spot);
-        $result = $this->_spotValidator->verifyTitle($result)   ;
+        $result = $this->_spotValidator->verifyTitle($result);
         $result = $this->_spotValidator->verifyBody($result);
         $result = $this->_spotValidator->verifyCategories($result);
         $result = $this->_spotValidator->verifyWebsite($result);

@@ -174,7 +174,9 @@ class Services_Posting_Validator {
 		} # if
 
 		# Make sure the spot isn't being posted for too many categories
-		if (count($spot['subcatlist']) < 2) {
+        # The "A"-subcategory, and the "Z" subcategory are always selected by
+        # the form, so we need to check for 3
+		if (count($spot['subcatlist']) < 3) {
 			$result->addError(_('At least one category need to be selected'));
 		} # if
 
