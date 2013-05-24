@@ -110,7 +110,8 @@ class SpotTiming {
                 $callCount = 0;
                 foreach(self::$_timings as $tmp) {
                     if ($tmp['name'] == $values['name']) {
-                        $totalTime += ($values['stop'] - $values['start']);
+
+                        $totalTime += ($tmp['stop'] - $tmp['start']);
                         $callCount++;
                     } # if
                 } # foreach
