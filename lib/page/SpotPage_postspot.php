@@ -79,7 +79,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 		if (($formAction == 'post') && ($result->isSuccess())) {
 			# Initialize notificatiesystem
-			// $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 			# Make sure we can post this spot, if so, make it happen
 			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
@@ -94,7 +94,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']['modulo']));
 
 				# en send a notification
-				// $spotsNotifications->sendSpotPosted($spot);
+				$spotsNotifications->sendSpotPosted($spot);
 			} # if
 		} # if
 		

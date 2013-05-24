@@ -2,11 +2,26 @@
 class SpotNotifications {
 	private $_notificationTemplate = array();
 	private $_notificationServices = array();
+    /**
+     * @var SpotSecurity
+     */
 	private $_spotSecTmp;
-	private $_spotSec;
-	private $_currentSession;
-	private $_settings;
-	private $_daoFactory;
+    /**
+     * @var SpotSecurity
+     */
+    private $_spotSec;
+    /**
+     * @var array
+     */
+    private $_currentSession;
+    /**
+     * @var Services_Settings_Base
+     */
+    private $_settings;
+    /**
+     * @var Dao_Factory
+     */
+    private $_daoFactory;
 
 	/*
 	 * Constants used for securing the system
@@ -109,7 +124,7 @@ echo 'Sending notification to user: ' . $userId . ' for filter: ' . $filterTitle
 	
 	/*
 	 * We can notify the user when the retrieve process has done
-	 * retrievinjg and actually retrieved new spots.
+	 * retrieving and actually retrieved new spots.
 	 */
 	function sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount) {
 		if ($newSpotCount > 0) {
