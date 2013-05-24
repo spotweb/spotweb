@@ -72,15 +72,3 @@
 			// console.timeEnd("12th-ready");
 		} // initializeCategoryTree
 		
-		function checkedAll(frmname) {
-            // Select or Deselect All checkboxes
-            var checked=false;
-			var values = document.getElementById(frmname);
-
-            checked = !checked;
-			for (var i =0; i < values.elements.length; i++) {
-				values.elements[i].checked=checked;
-			}
-			multinzb()
-		} // Select or Deselect All checkboxes
-

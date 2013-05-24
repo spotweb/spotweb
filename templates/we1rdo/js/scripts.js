@@ -47,7 +47,6 @@ function initSpotwebJs() {
     $("#editsettingstab").tabs();
     attachEnablerBehaviour();
     initializeUserPreferencesScreen();
-    initializeCategoryTree();
     initSliders();
 } // initSpotwebJs
 
@@ -754,6 +753,8 @@ function attachAdvancedSearchBehaviour() {
 		if($("form#filterform .advancedSearch").is(":hidden")) {
 			toggleSidebarPanel('.advancedSearch');
 		}
+
+        initializeCategoryTree();
 	});
 
 	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
