@@ -90,9 +90,9 @@ function SpotPosting() {
 				type: "POST",  
 				url: "?page=postspot",  
 				dataType: "xml",
-				success: function(xml) {
+				success: function(data) {
 					var $dialdiv = $("#editdialogdiv");
-					var result = $(xml).find('result').text();
+					var result = data.result;
 					
 					var $formerrors = $dialdiv.find("ul.formerrors");
 					$formerrors.empty();
@@ -100,9 +100,9 @@ function SpotPosting() {
 					$forminfo.empty();
 
 					if (result == 'success') {
-						// zet de information van het formulier in de infolijst
-						$('info', xml).each(function() {
-							$forminfo.append("<li>" + $(this).text() + "</li>");
+						// did we get any info field? if so, add it to the form
+						$(data.info).each(function() {
+							$forminfo.append("<li>" + this + "</li>");
 						}); // each
 						
 						/**
@@ -116,10 +116,9 @@ function SpotPosting() {
 						$("input[name='newspotform[nzbfile]']").val('');
 						$("input[name='newspotform[imagefile]']").val('');						
 					} else {						
-						// voeg nu de errors in de html
-						// zet de errors van het formulier in de errorlijst
-						$('errors', xml).each(function() {
-							$formerrors.append("<li>" + $(this).text() + "</li>");
+						// add errors of the XML
+						$(data.errors).each(function() {
+							$formerrors.append("<li>" + this + "</li>");
 						}); // each
 					} // if post was not succesful
 				}, // success()

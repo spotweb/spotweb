@@ -20,9 +20,11 @@ class SpotPage_postspot extends SpotPage_Abs {
 
 		# we need the spotuser system
 		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
-		
-		# creeer een default spot zodat het form altijd
-		# de waardes van het form kan renderen
+
+        /*
+         * Create a default form so we can be sure to always be able
+         * to render the form without notices or whatever
+         */
 		$spot = array('title' => '',
 					  'body' => '',
 					  'category' => 0,
@@ -45,7 +47,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 		# set the page title
 		$this->_pageTitle = "spot: post";
 
-		# zorg er voor dat alle variables ingevuld zijn
+		# Make sure all variables are merged with the default form
 		$spot = array_merge($spot, $this->_spotForm);
 
 		# If user tried to submit, validate the file uploads
@@ -67,7 +69,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 			# Initialize notificatiesystem
 			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
-			# valideer of we deze spot kunnen posten, en zo ja, doe dat dan
+			# Make sure we can post this spot, if so, make it happen
 			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
 			$result = $svcPostSpot->postSpot($svcUserRecord,
 									   $this->_currentSession['user'], 

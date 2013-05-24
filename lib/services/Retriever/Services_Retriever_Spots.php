@@ -61,12 +61,14 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
 					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
-					case 'hdrparsed'		: echo " (parsed " . $txt . " headers, "; break;
-					case 'fullretrieved'	: echo $txt . " full, "; break;
-					case 'verified'			: echo "verified " . $txt . ", "; break;
-					case 'modcount'			: echo "moderated " . $txt . ", "; break;
-					case 'skipcount'		: echo "skipped " . $txt . " of "; break;
-					case 'loopcount'		: echo $txt . " total messages)"; break;
+					case 'hdrparsed'		: echo " (parsed: " . $txt . ", "; break;
+                    case 'hdrindbcount'     : echo "in DB: " . $txt . ", "; break;
+                    case 'fullretrieved'	: echo "full: " . $txt . ", "; break;
+					case 'verified'			: echo "signed: " . $txt . ", "; break;
+                    case 'invalidcount'     : echo "invalid: " . $txt . ", "; break;
+					case 'modcount'			: echo "moderated: " . $txt . ", "; break;
+					case 'skipcount'		: echo "rtnn.skip: " . $txt . ", "; break;
+					case 'loopcount'		: echo "total: " . $txt . ")"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
 					case 'searchmsgid'		: echo "Looking for articlenumber for messageid" . PHP_EOL; break;
@@ -104,10 +106,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
 
 			$signedCount = 0;
-			$hdrsRetrieved = 0;
+			$hdrsParsed = 0;
 			$fullsRetrieved = 0;
+            $invalidCount = 0;
 			$msgCounter = 0;
 			$modCount = 0;
+            $headerInDbCount = 0;
 			$skipCount = 0;
 			$lastProcessedId = '';
 			$fullSpotDbList = array();
@@ -186,7 +190,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				 * We need some of those fields (for example KeyID)
 				 */
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
-					$hdrsRetrieved++;
+					$hdrsParsed++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
                     SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-Until-ParseHeader');
                     SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
@@ -204,6 +208,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					 * spots are ignored
 					 */
 					if (($spot === false) || (!$spot['verified'])){
+                        $invalidCount++;
 						continue;
 					} # if
 
@@ -255,6 +260,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # else
 				} else {
 					$lastProcessedId = $msgId;
+                    $headerInDbCount++;
 				} # else
 
 
@@ -399,18 +405,22 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
 
 			if (count($hdrList) > 0) {
-				$this->displayStatus("hdrparsed", $hdrsRetrieved);
+				$this->displayStatus("hdrparsed", $hdrsParsed);
+                $this->displayStatus("hdrindbcount", $headerInDbCount);
+                $this->displayStatus("verified", $signedCount);
+                $this->displayStatus("invalidcount", $invalidCount);
+                $this->displayStatus("skipcount", $skipCount);
+                $this->displayStatus("modcount", $modCount);
 				$this->displayStatus("fullretrieved", $fullsRetrieved);
-				$this->displayStatus("verified", $signedCount);
-				$this->displayStatus("modcount", $modCount);
-				$this->displayStatus("skipcount", $skipCount);
 				$this->displayStatus("loopcount", count($hdrList));
 			} else {
 				$this->displayStatus("hdrparsed", 0);
+                $this->displayStatus("hdrindbcount", 0);
+                $this->displayStatus("verified", 0);
+                $this->displayStatus("invalidcount", 0);
+                $this->displayStatus("skipcount", 0);
+                $this->displayStatus("modcount", 0);
 				$this->displayStatus("fullretrieved", 0);
-				$this->displayStatus("verified", 0);
-				$this->displayStatus("modcount", 0);
-				$this->displayStatus("skipcount", 0);
 				$this->displayStatus("loopcount", 0);
 			} # else
 
@@ -452,7 +462,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			
 			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
-			return array('count' => count($hdrList), 'headercount' => $hdrsRetrieved, 'lastmsgid' => $lastProcessedId);
+			return array('count' => count($hdrList), 'headercount' => $hdrsParsed, 'lastmsgid' => $lastProcessedId);
 		} # process()
 
 		/*
