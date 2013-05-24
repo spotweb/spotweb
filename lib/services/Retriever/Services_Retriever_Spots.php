@@ -66,8 +66,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                     case 'fullretrieved'	: echo "full: " . $txt . ", "; break;
 					case 'verified'			: echo "signed: " . $txt . ", "; break;
                     case 'invalidcount'     : echo "invalid: " . $txt . ", "; break;
-					case 'modcount'			: echo "moderated: " . $txt . ", "; break;
-					case 'skipcount'		: echo "rtnn.skip: " . $txt . ", "; break;
+					case 'modcount'			: echo "mod: " . $txt . ", "; break;
+					case 'skipcount'		: echo "rtntn.skip: " . $txt . ", "; break;
 					case 'loopcount'		: echo "total: " . $txt . ")"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " spots" . PHP_EOL; break;
@@ -98,7 +98,15 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				$this->_spotDao->removeExtraSpots($highestMessageId);
 			} # if
 		} # updateLastRetrieved
-		
+
+
+        /*
+         *
+         */
+        private function processHeaders($hdrList) {
+
+        } # processHeaders
+
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
@@ -143,7 +151,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
             foreach($hdrList as $msgheader) {
-                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-Until-ParseHeader');
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
 				$msgCounter++;
 				$this->debug('foreach-loop, start. msgId= ' . $msgCounter);
 
@@ -160,7 +168,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				/*
 				 * We keep track whether we actually fetched this header and fullspot
 				 * to add it to the database, because only then we can update the
-				 * titel from the spots title or rely on our database to fetch
+				 * title from the spots title or rely on our database to fetch
 				 * the fullspot
 				 */
 				$didFetchHeader = false;
@@ -192,7 +200,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsParsed++;
 					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
-                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-Until-ParseHeader');
+                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
                     SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
 					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'],
 															$msgheader['From'], 
@@ -200,7 +208,6 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 															$msgheader['Message-ID'],
 															$this->_rsakeys);
                     SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
-                    SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-After-ParseHeader');
 					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
@@ -221,7 +228,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 						# is this one of the defined valid commands?
 						if (in_array(strtolower($commandAr[0]), $validCommands) !== false) {
-							$moderationList[] = $commandAr[1];
+							$moderationList[$commandAr[1]] = 1;
 							$modCount++;
 						} # if
 						
@@ -230,6 +237,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * Don't add spots older than specified for the retention stamp
 						 */
 						if (($retentionStamp > 0) && ($spot['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+                            $skipCount++;
 							continue;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
 							$skipCount++;
@@ -263,6 +271,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                     $headerInDbCount++;
 				} # else
 
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getFullSpot');
 
 				/*
 				 * We don't want to retrieve the fullspot if we don't have the header
@@ -337,7 +346,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # if retrievefull
 				} # if fullspot is not in db yet
 
-				if ($this->_retrieveFull && $header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getFullSpot');
+                SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
+
+                if ($this->_retrieveFull && $header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
 					try {
 						/*
 						 * If we are running in 'retro' mode, it is possible both the header and spot are in the
@@ -345,13 +357,14 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * again
 						 */
 						if (!$didFetchFullSpot) {
-							$fullSpot = $this->_spotDao->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
+                            $fullSpot = $this->_spotDao->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
 							$fullSpot = array_merge($this->_svcSpotParser->parseFull($fullSpot['fullxml']), $fullSpot);
 						} # if
 
 						/*
 						 * Prefetch (cache) the spots' image
 						 */
+                        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 						if ($this->_prefetch_image) {
 							/*
 							 * If the spot is older than 30 days, and the image is on the web, we do not 
@@ -363,10 +376,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 							} # if
 						} # if
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 
-						/*
-						 * Prefetch (cache) the spots' NZB file
-						 */
+                        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzb');
+                        /*
+                         * Prefetch (cache) the spots' NZB file
+                         */
 						if ($this->_prefetch_nzb) {
 							/*
 							 * Only do so if we can expect an NZB file
@@ -377,6 +392,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzb');
 					}
 					catch(ParseSpotXmlException $x) {
 						; # swallow error
@@ -399,7 +415,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # catch
 				} # if prefetch image and/or nzb
 
-                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-After-ParseHeader');
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
 				$this->debug('foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');

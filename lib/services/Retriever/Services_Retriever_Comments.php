@@ -98,7 +98,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			$spotMsgIdRatingList = array();
 			
 			# Process each header
-			foreach($hdrList as $msgid => $msgheader) {
+			foreach($hdrList as $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
 

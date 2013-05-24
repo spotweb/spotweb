@@ -75,7 +75,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			$spotMsgIdList = array();
 			
 			# Process each header
-			foreach($hdrList as $msgid => $msgheader) {
+			foreach($hdrList as $msgheader) {
 				# Reset timelimit
 				set_time_limit(120);			
 
@@ -93,7 +93,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 						$msgheader['References'] = substr($tmpSubject[1], 1, strlen($tmpSubject[1]) - 2);
 						$spotMsgIdList[$msgheader['References']] = 1;
 
-						# prepare the spot to be added to the server
+						# prepare the report to be added to the database
 						$reportDbList[] = array('messageid' => $reportId,
 												 'fromhdr' => utf8_encode($msgheader['From']),
 												 'keyword' => utf8_encode($msgheader['keyword']),
