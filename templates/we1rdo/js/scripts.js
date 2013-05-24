@@ -421,10 +421,10 @@ function validateNntpServerSetting(settingsForm, serverArrayId) {
 	$.ajax({
 		type: "POST",
 		url: "?page=render&tplname=validatenntp", 
-		dataType: "xml",
+		dataType: "json",
 		data: formData,
-		success: function(xml) {
-			var result = $(xml).find('result').text();
+		success: function(data) {
+			var result = $data.results;
 			$("#servertest_" + serverArrayId + "_loading").hide();
 
 			/* Remove existing style and contents from from the string */
@@ -441,7 +441,7 @@ function validateNntpServerSetting(settingsForm, serverArrayId) {
 			} else {
 				$("#servertest_" + serverArrayId + "_result")
 					.addClass("servertest_" + serverArrayId + "_result_fail")
-					.text($(xml).find('error').text());
+					.text(data.error.join('\n'));
 			} // else
 		} // success
 	}); // ajax call om de form te submitten
@@ -456,9 +456,9 @@ function postBlacklistForm() {
 		$.ajax({
 			type: "POST",
 			url: this.action, 
-			dataType: "xml",
+			dataType: "json",
 			data: formdata,
-			success: function(xml) {
+			success: function(data) {
 				$(".blacklistuserlink_" + $("input[name='blacklistspotterform[spotterid]']").val()).remove();
 			} // success
 		}); // ajax call om de form te submitten
@@ -1491,8 +1491,8 @@ function bindSelectedSortableFilter() {
 					url: '?page=editfilter',
 					dataType: "html",
 					data: formdata,
-					success: function(xml) {
-						// alert(xml);
+					success: function(data) {
+						// alert(data);
 					} // success
 				}); // ajax call om de form te submitten
 			}

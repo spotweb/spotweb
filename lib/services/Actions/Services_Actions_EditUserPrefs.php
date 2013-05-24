@@ -21,7 +21,7 @@ class Services_Actions_EditUserPrefs {
 	} # ctor
 
 
-	function editUserPref(array $editUserPrefsForm, array $userPrefTemplate, array $spotUser) {
+	function editUserPref(array $editUserPrefsForm, array $userPrefTemplate, array $spotUser, $avatarFileName) {
 		/*
 		 * We want the anonymous' users account so we can use this users' preferences as a
 		 * template. This makes sure all properties are at least set.
@@ -64,30 +64,19 @@ class Services_Actions_EditUserPrefs {
 		} # if
 
 		if ($result->isSuccess()) {
-			# Make sure an NZB file was provided
-			if (isset($_FILES['edituserprefsform'])) {
-				$uploadError = $_FILES['edituserprefsform']['error']['avatar'];
-				
-				/*
-				 * Give a proper error if the file is too large, because changeAvatar() wont see
-				 * these errors so they cannot provide the error
-				 */
-				if (($uploadError == UPLOAD_ERR_FORM_SIZE) || ($uploadError == UPLOAD_ERR_INI_SIZE)) {
-					$result->addError(_("Uploaded file is too large"));
-				}  # if 
-				
-				if ($uploadError == UPLOAD_ERR_OK) {
-					$avatarResult  = $this->_svcUserRecord->changeAvatar(
-													$spotUser['userid'], 
-													file_get_contents($_FILES['edituserprefsform']['tmp_name']['avatar']));
 
-					/*
-					 * Merge the result of the avatar update to our
-					 * total result
-					 */
-					$result->mergeResult($avatarResult);
-				} # if
-			} # if
+			# Test to see if a new avatar was provided
+            if (!empty($avatarFileName)) {
+                $avatarResult  = $this->_svcUserRecord->changeAvatar(
+                    $spotUser['userid'],
+                    file_get_contents($avatarFileName));
+
+                /*
+                 * Merge the result of the avatar update to our
+                 * total result
+                 */
+                $result->mergeResult($avatarResult);
+            } # if
 		} # if
 
 		if ($result->isSuccess()) { 

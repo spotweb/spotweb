@@ -60,9 +60,9 @@ function SpotPosting() {
 			$.ajax({  
 				type: "POST",  
 				url: "?page=reportpost",  
-				dataType: "xml",
+				dataType: "json",
 				data: dataString2,  
-				success: function(xml) {
+				success: function(data) {
                     var result = data.result;
 
                     if(result != 'success') {
@@ -89,7 +89,7 @@ function SpotPosting() {
 			$(self.newSpotForm).ajaxSubmit({
 				type: "POST",  
 				url: "?page=postspot",  
-				dataType: "xml",
+				dataType: "json",
 				success: function(data) {
 					var $dialdiv = $("#editdialogdiv");
 					var result = data.result;
@@ -116,15 +116,15 @@ function SpotPosting() {
 						$("input[name='newspotform[nzbfile]']").val('');
 						$("input[name='newspotform[imagefile]']").val('');						
 					} else {						
-						// add errors of the XML
+						// add errors of the JSON
 						$(data.errors).each(function() {
 							$formerrors.append("<li>" + this + "</li>");
 						}); // each
 					} // if post was not succesful
 				}, // success()
-				error: function(xml) {
-					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-				}
+                error: function(data) {
+                    console.log('error: '+data);
+                }
 			});
 	}; // callback spotHashcashCalculated
 	

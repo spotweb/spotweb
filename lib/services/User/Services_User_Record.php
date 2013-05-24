@@ -795,8 +795,10 @@ class Services_User_Record {
 		return $result;
 	} # removeSecGroup
 
-	/*
+	/**
 	 * Retrieves an user record
+     *
+     * @returns array|bool
 	 */
 	function getUser($userid) {
 		return $this->_userDao->getUser($userid);

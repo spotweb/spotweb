@@ -34,24 +34,40 @@ class SpotPage_edituserprefs extends SpotPage_Abs {
 		if ($spotUser === false) {
 			$result->addError(sprintf(_('User %d can not be found'), $this->_userIdToEdit));
 		} # if
-		
-		/* 
-		 * bring the forms' action into the local scope for 
-		 * easier access
-		 */
+
+        /*
+         * bring the forms' action into the local scope for
+         * easier access
+         */
 		$formAction = $this->_editUserPrefsForm['action'];
 
-		# Are we trying to submit this form, or only rendering it?
+        /*
+         * Check to see if a file was uploaded, if so, handle any associated errors
+         */
+        $avatarFileName = '';
+        if ($formAction == 'edit') {
+            $uploadHandler = new Services_Providers_FileUpload('edituserprefsform', 'avatar');
+
+            if ($uploadHandler->isUploaded()) {
+                if (!$uploadHandler->success()) {
+                    $result->addError(_('Unable to update avatar') . '(' . $uploadHandler->errorText() . ')');
+                } else {
+                    $avatarFileName = $uploadHandler->getTempName();
+                } # else
+            } # if
+        } # if
+
+        # Are we trying to submit this form, or only rendering it?
 		if ((!empty($formAction)) && (!$result->isError())) {
 			switch($formAction) {
 				case 'edit'	: {
-					$svcActn_EditUserPrefs = new Services_Actions_EditUserPrefs($this->_daoFactory,
+                    $svcActn_EditUserPrefs = new Services_Actions_EditUserPrefs($this->_daoFactory,
                                                                                 $this->_settings,
                                                                                 $this->_spotSec);
 					$result = $svcActn_EditUserPrefs->editUserPref($this->_editUserPrefsForm,
                                                                    $this->_tplHelper->getTemplatePreferences(),
-																   $spotUser);
-					
+																   $spotUser,
+                                                                   $avatarFileName);
 					break;
 				} # case 'edit' 
 				

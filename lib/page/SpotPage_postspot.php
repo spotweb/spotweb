@@ -51,31 +51,43 @@ class SpotPage_postspot extends SpotPage_Abs {
 		$spot = array_merge($spot, $this->_spotForm);
 
 		# If user tried to submit, validate the file uploads
+        $nzbFilename = '';
+        $imgFilename = '';
 		if ($formAction == 'post') {
 			$result->setResult('success');
 
 			# Make sure an NZB file was provided
-			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
-				$result->addError(_('Please select NZB file'));
-			} # if
+            $uploadHandler = new Services_Providers_FileUpload('newspotform', 'nzbfile');
+            if (!$uploadHandler->isUploaded()) {
+                $result->addError(_('Please select NZB file'));
+            } elseif (!$uploadHandler->success()) {
+                $result->addError(_('Invalid NZB file') . ' (' . $uploadHandler->errorText() . ')');
+            } else {
+                $nzbFilename = $uploadHandler->getTempName();
+            } # if
 
-			# Make sure an imgae file was provided
-			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
-				$result->addError(_('Please select a picture'));
-			} # if
+            # Make sure an NZB file was provided
+            $uploadHandler = new Services_Providers_FileUpload('newspotform', 'imagefile');
+            if (!$uploadHandler->isUploaded()) {
+                $result->addError(_('Please select a picture'));
+            } elseif (!$uploadHandler->success()) {
+                $result->addError(_('Invalid picture') . ' (' . $uploadHandler->errorText() . ')');
+            } else {
+                $imgFilename = $uploadHandler->getTempName();
+            } # if
 		} # if
 
 		if (($formAction == 'post') && ($result->isSuccess())) {
 			# Initialize notificatiesystem
-			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
+			// $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
 			# Make sure we can post this spot, if so, make it happen
 			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
 			$result = $svcPostSpot->postSpot($svcUserRecord,
 									   $this->_currentSession['user'], 
 									   $spot,
-									   $_FILES['newspotform']['tmp_name']['imagefile'],
-									   $_FILES['newspotform']['tmp_name']['nzbfile']);
+									   $imgFilename,
+                                       $nzbFilename);
 			
 			if ($result->isSuccess()) { 
 				$result->addData('user', $this->_currentSession['user']['username']);
@@ -83,7 +95,7 @@ class SpotPage_postspot extends SpotPage_Abs {
 				$result->addData('body', $spot['body']);
 
 				# en send a notification
-				$spotsNotifications->sendSpotPosted($spot);
+				// $spotsNotifications->sendSpotPosted($spot);
 			} # if
 		} # if
 		
