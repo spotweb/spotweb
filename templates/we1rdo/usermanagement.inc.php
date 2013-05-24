@@ -17,4 +17,6 @@
 		</ul>
 			
 <?php
+    $toRunJsCode = 'initializeUserManagementPage();';
+
 	require_once "includes/footer.inc.php";

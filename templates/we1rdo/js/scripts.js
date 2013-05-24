@@ -36,18 +36,12 @@ function initSpotwebJs() {
     attachSidebarBehaviour();
     attachSidebarVisibility();
     attachAdvancedSearchBehaviour();
-    attachDateSortBehaviour();
     attachFilterVisibility();
     attachMaintenanceButtonsBehaviour();
 
     var BaseURL = createBaseURL();
     var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
-    $("#usermanagementtabs").tabs();
-    initDatePicker();
-    $("#editsettingstab").tabs();
     attachEnablerBehaviour();
-    initializeUserPreferencesScreen();
-    initSliders();
 } // initSpotwebJs
 
 // createBaseURL
@@ -618,6 +612,22 @@ function spotNav(direction) {
 }
 
 /*
+ * Initializes the user management page
+ */
+function initializeUserManagementPage() {
+    $("#usermanagementtabs").tabs();
+} // initializeUserManagementPage
+
+/*
+ Initiializes the settings pages
+ */
+function initializeSettingsPage() {
+    initDatePicker();
+    $("#editsettingstab").tabs();
+}
+
+
+/*
  * Initializes the user preferences screen
  */
 function initializeUserPreferencesScreen() {
@@ -755,6 +765,8 @@ function attachAdvancedSearchBehaviour() {
 		}
 
         initializeCategoryTree();
+        attachDateSortBehaviour();
+        initSliders();
 	});
 
 	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();

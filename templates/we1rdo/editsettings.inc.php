@@ -260,4 +260,5 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 	</div>
 </form>
 <?php
+    $toRunJsCode = 'initializeSettingsPage();';
 	require_once "includes/footer.inc.php";

@@ -14,6 +14,10 @@
 
         <script type='text/javascript'>
             initSpotwebJs();
+            <?php if (!empty($toRunJsCode)) {
+                echo $toRunJsCode;
+            } # if
+            ?>
         </script>
     <?php } ?>
 

@@ -556,6 +556,9 @@ if (!$dialogembedded) { ?>
 		echo "</fieldset>" . PHP_EOL;
 	} # notificationOptions
 
+// Initialzie the user preferences screen
 if (!$dialogembedded) {
-	require_once "includes/footer.inc.php";
+    $toRunJsCode = 'initializeUserPreferencesScreen();';
+    require_once "includes/footer.inc.php";
+
 } # if
