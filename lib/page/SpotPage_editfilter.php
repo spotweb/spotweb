@@ -69,24 +69,26 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				} # case 'exportfilters' 
 
 				case 'importfilters': {
-					if (isset($_FILES['filterimport'])) {
-						
-						if ($_FILES['filterimport']['error'] === UPLOAD_ERR_OK) {
-							$xml = file_get_contents($_FILES['filterimport']['tmp_name']);
-							try {
-								$filterList = $svcUserFilter->xmlToFilters($xml);
-								$svcUserFilter->setFilterList($this->_currentSession['user']['userid'], $filterList);
-							} catch(Exception $x) {
-								$result->addError(_('Uploaded Spotwebfilter in invalid'));
-							} # catch
-						} else {
-							$result->addError(sprintf(_('Error while uploading filter (%s)'), $_FILES['filterimport']['error']));
-						} # if
-					
-					} else {
-						$result->addError(_("Filter hasn't been uploaded"));
-					} # else
-					
+                    $uploadHandler = new Services_Providers_FileUpload('editfilterform', 'filterimport');
+
+                    if ($uploadHandler->isUploaded()) {
+                        if ($uploadHandler->success()) {
+
+                            try {
+                                $xml = file_get_contents($uploadHandler->getTempName());
+                                $filterList = $svcUserFilter->xmlToFilters($xml);
+                                $svcUserFilter->setFilterList($this->_currentSession['user']['userid'], $filterList);
+                            } catch(Exception $x) {
+                                $result->addError(_('Uploaded Spotwebfilter in invalid'));
+                            } # catch
+
+                        } else {
+                            $result->addError(sprintf(_('Error while uploading filter (%s)', $uploadHandler->errorText())));
+                        } # else
+                    } else {
+                        $result->addError(_("Filter hasn't been uploaded"));
+                    } # else
+
 					break;
 				} # case 'importfilters' 
 				
