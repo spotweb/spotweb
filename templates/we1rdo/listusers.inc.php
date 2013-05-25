@@ -31,7 +31,7 @@
 			# dit maakt het simpeler om te zien welke rechten een user heeft
 			if ($group['ismember']) {
 				if ($allow_edit_groupMembership) {
-					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&amp;groupid=' . $group['id'] . '\', \'editsecgroupform\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' . $group['name'] . '</a>, ';
+					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&amp;groupid=' . $group['id'] . '\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' . $group['name'] . '</a>, ';
 				} elseif ($allow_display_groupMembership) { 
 					$groupList .= $group['name'] . ', ';
 				} # if
@@ -45,7 +45,7 @@
 				<td> 
 <?php 
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', \'edituserform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' .
+				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' .
 				 $user['username'] . '</a>'; 
 ?> 
 				</td>
@@ -58,7 +58,7 @@
 				<td> 
 <?php 
 		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . vsprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']) . '\', \'?page=edituserprefs&userid=' . $user['userid'] . '&dialogembedded=1\', \'edituserprefsform\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>'; 
+				'onclick="return openDialog(\'editdialogdiv\', \'' . vsprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']) . '\', \'?page=edituserprefs&userid=' . $user['userid'] . '&dialogembedded=1\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>';
 ?> 
 				</td>
 		</tr>

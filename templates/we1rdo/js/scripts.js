@@ -52,7 +52,7 @@ function createBaseURL() {
 		var baseURL = window.location.protocol + '//' + window.location.hostname+':'+window.location.port+window.location.pathname;
 	}
 	return baseURL;
-}
+} // createBaseURL
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
 function detectScrollbar() {
@@ -125,9 +125,13 @@ function openSpot(id,url) {
     return false;
 }
 
-/*
- * Refresht een tab in een bepaalde tab lijst, 
- * kan als callback gegeven worden aan showDialog()
+/**
+ * Refreshes a tabs content when given a tabname,
+ * is primarily used a callback for ShowDialog(), so
+ * when the dialog is closed, the tab contents is
+ * refreshed.
+ *
+ * @returns void
  */
 function refreshTab(tabName) {    
 	var tab = $('#' + tabName);
@@ -137,19 +141,18 @@ function refreshTab(tabName) {
 } // refreshTab
 
 	
-/*
+/**
  * Helper function to open a dialog, a couple of parameters are required.
  *
- * divid = id of a dummy div which should be used to create a dialog
- * title = title of the dialogbox
- * url = URL of the HTML content to load into the dialog
- * formname = Formname, necessary to attach the submit buttons
- * buttonClick = Function to be called when the submit button is pressed
- * successAction = choice of 'autoclose', 'showresultonly', 'reload'
- * closeCb = Function which should be called when the dialog is closed
- * openCb = Function which should be called when the HTML content of the dialog is loaded
+ * @param divid id of a dummy div which should be used to create a dialog
+ * @param title title of the dialogbox
+ * @param url URL of the HTML content to load into the dialog
+ * @param buttonClick Function to be called when the submit button is pressed
+ * @param successAction choice of 'autoclose', 'showresultonly', 'reload'
+ * @param closeCb Function which should be called when the dialog is closed
+ * @param openCb Function which should be called when the HTML content of the dialog is loaded
  */
-function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb, openCb) {
+function openDialog(divid, title, url, buttonClick, successAction, closeCb, openCb) {
 	var $dialdiv = $("#" + divid);
 
     /*
