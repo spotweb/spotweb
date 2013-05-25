@@ -24,12 +24,10 @@ class SpotPage_statics extends SpotPage_Abs {
 		foreach($files as $file) {
 			$fc = file_get_contents($file) . PHP_EOL;
 			$fc = str_replace(
-				Array('$HTTP_S',
-					  '$COOKIE_EXPIRES',
+				Array('$COOKIE_EXPIRES',
 					  '$COOKIE_HOST'),
-				Array(SpotReq::getRequestProtocol(),
-				       $this->_settings->get('cookie_expires'),
-					   $this->_settings->get('cookie_host')),
+				Array($this->_settings->get('cookie_expires'),
+					  $this->_settings->get('cookie_host')),
 				$fc);
 
 			/*
