@@ -352,7 +352,7 @@
 <?php 
 		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
 			if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
-						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots()" class="greyButton retrievespots"><?php echo _('Retrieve'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots(this)" class="greyButton retrievespots"><?php echo _('Retrieve'); ?></a></li>
 <?php 		}
 		} ?>
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls'))) { ?>

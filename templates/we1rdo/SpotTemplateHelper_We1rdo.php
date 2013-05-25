@@ -123,6 +123,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 								'js/dynatree/jquery.dynatree.min.js',
 								'templates/we1rdo/js/scripts.js',
                                 'templates/we1rdo/js/spotdialogs.js',
+                                'templates/we1rdo/js/sabpanel.js',
 								'templates/we1rdo/js/we1rdopost.js',
 								'templates/we1rdo/js/treehelper.js',
 								'templates/we1rdo/js/jquery.ui.nestedSortable.js',
