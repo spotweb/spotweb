@@ -43,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath);
+		return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath());
 	} # getCacheDao
 
 	public function getAuditDao() {

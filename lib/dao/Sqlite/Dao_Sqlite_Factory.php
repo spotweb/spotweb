@@ -43,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Sqlite_Cache($this->_conn, $this->_cachePath);
+		return new Dao_Sqlite_Cache($this->_conn, $this->getCachePath());
 	} # getCacheDao
 
 	public function getAuditDao() {

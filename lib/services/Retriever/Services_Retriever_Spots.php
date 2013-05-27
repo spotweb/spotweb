@@ -503,7 +503,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				$this->_nntpCfgDao->setMaxArticleid($this->_textServer['host'], $endMsg);
 			} # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
-			
+
+            /*
+             * And remove old list of moderated spots
+             */
+            $this->_modListDao->deleteOldest();
+
+
 			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
 			return array('count' => count($hdrList), 'headercount' => $hdrsParsed, 'lastmsgid' => $lastProcessedId);
