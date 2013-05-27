@@ -36,7 +36,9 @@ class Bootstrap {
         /*
          * Set the cache path
          */
-        $daoFactory->setCachePath($settings->get('cache_path'));
+        if ($settings->exists('cache_path')) {
+            $daoFactory->setCachePath($settings->get('cache_path'));
+        } # if
 
 		/*
 		 * Run the validation of the most basic systems
