@@ -62,16 +62,14 @@ try {
             case 'mysql'                :
             case 'pdo_mysql'            : {
                 $results = $dbConnection->arrayQuery(
-                        'SELECT stamp, metadata, serialized, UNCOMPRESS(content) AS content FROM cache WHERE content IS NOT NULL LIMIT 100');
-
-                                              var_dump($results);
+                        'SELECT resourceid, stamp, metadata, serialized, cachetype, UNCOMPRESS(content) AS content FROM cache WHERE content IS NOT NULL LIMIT 100');
                 break;
             } # mysql
 
             case 'pgsql'                :
             case 'pdo_pgsql'            : {
                 $results = $dbConnection->arrayQuery(
-                        "SELECT stamp, metadata, serialized, content FROM cache WHERE content IS NOT NULL LIMIT 100");
+                        "SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100");
                 foreach($results as &$v) {
                     $v['content'] = stream_get_contents($v['content']);
                 } # foreach
@@ -81,7 +79,7 @@ try {
 
             case 'pdo_sqlite'          : {
                 $results = $dbConnection>arrayQuery(
-                    'SELECT stamp, metadata, serialized, content FROM cache WHERE content IS NOT NULL LIMIT 100');
+                    'SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100');
 
                 break;
             } # mysql
