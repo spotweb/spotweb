@@ -70,7 +70,7 @@ try {
 
             case 'pgsql'                :
             case 'pdo_pgsql'            : {
-                $results = $dbConnection(
+                $results = $dbConnection->arrayQuery(
                         "SELECT stamp, metadata, serialized, content FROM cache WHERE content IS NOT NULL LIMIT 100");
                 foreach($results as &$v) {
                     $v['content'] = stream_get_contents($v['content']);
@@ -80,7 +80,7 @@ try {
             } # case Postgresql
 
             case 'pdo_sqlite'          : {
-                $results = $dbConnection(
+                $results = $dbConnection>arrayQuery(
                     'SELECT stamp, metadata, serialized, content FROM cache WHERE content IS NOT NULL LIMIT 100');
 
                 break;
