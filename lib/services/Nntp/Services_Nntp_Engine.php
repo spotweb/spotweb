@@ -40,7 +40,22 @@ class Services_Nntp_Engine {
     /**
      * Register an operation as failed
      */
-    private function registerError() {
+    private function registerError($exception) {
+        /*
+         * Some exceptions are "final" and will not recover when
+         * just tried again.
+         *
+         * Error code 403 - 'No such article' - is one of them.
+         *
+         * If these happen, immediatly increase to the highest possible
+         * errors
+         */
+        if ($exception->getCode() == 430) {
+            $this->_connectionErrors = 9999;
+
+            return;
+        } # if
+
         $this->_connectionErrors++;
 
         sleep($this->_connectionErrors);
@@ -75,7 +90,7 @@ class Services_Nntp_Engine {
         try {
             return $this->_nntp->getOverview($first . '-' . $last);
         } catch (Exception $x) {
-            $this->registerError();
+            $this->registerError($x);
 
             /**
              * Try this operation again, but make sure we are not overloading
@@ -99,7 +114,7 @@ class Services_Nntp_Engine {
         try {
             return $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
         } catch (Exception $x) {
-            $this->registerError();
+            $this->registerError($x);
 
             /**
              * Try this operation again, but make sure we are not overloading
@@ -172,7 +187,7 @@ class Services_Nntp_Engine {
         try {
             return $this->_nntp->getHeader($msgid);
         } catch (Exception $x) {
-            $this->registerError();
+            $this->registerError($x);
 
             /**
              * Try this operation again, but make sure we are not overloading
@@ -196,7 +211,7 @@ class Services_Nntp_Engine {
         try {
             return $this->_nntp->getBody($msgid);
         } catch (Exception $x) {
-            $this->registerError();
+            $this->registerError($x);
 
             /**
              * Try this operation again, but make sure we are not overloading
@@ -290,7 +305,7 @@ class Services_Nntp_Engine {
             # Fetch the article
             $art = $this->_nntp->getArticle($msgId);
         } catch (Exception $x) {
-            $this->registerError();
+            $this->registerError($x);
 
             /**
              * Try this operation again, but make sure we are not overloading

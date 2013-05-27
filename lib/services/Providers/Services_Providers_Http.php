@@ -272,7 +272,7 @@ class Services_Providers_Http {
 						/*
 						 * Store the retrieved information in the cache
 						 */
-						if (($storeWhenRedirected) || ($info['redirect_count'] == 0)) {
+						if (($storeWhenRedirected) || ($curl_info['redirect_count'] == 0)) {
 							$this->_cacheDao->saveHttpCache($url_md5, $data);
 						} # if
 					} # if

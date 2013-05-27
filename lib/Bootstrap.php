@@ -6,7 +6,7 @@
  */
 define('SPOTWEB_SETTINGS_VERSION', '0.26');
 define('SPOTWEB_SECURITY_VERSION', '0.31');
-define('SPOTDB_SCHEMA_VERSION', '0.59');
+define('SPOTDB_SCHEMA_VERSION', '0.60');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 
 /*
@@ -32,6 +32,11 @@ class Bootstrap {
 		$daoFactory = $this->getDaoFactory();
 		$settings = $this->getSettings($daoFactory);
 		$spotReq = $this->getSpotReq($settings);
+
+        /*
+         * Set the cache path
+         */
+        $daoFactory->setCachePath($settings->get('cache_path'));
 
 		/*
 		 * Run the validation of the most basic systems

@@ -314,7 +314,6 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
-		$this->_conn->modify("DELETE FROM cache WHERE resourceid  IN (" . $msgIdList . ")");
 		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
 	} # removeSpots
 

@@ -14,6 +14,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		private $_spotDao;
 		private $_commentDao;
 		private $_cacheDao;
+        private $_modListDao;
 
 		/**
 		 * Server is the server array we are expecting to connect to
@@ -30,6 +31,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			$this->_spotDao = $daoFactory->getSpotDao();
 			$this->_commentDao = $daoFactory->getCommentDao();
 			$this->_cacheDao = $daoFactory->getCacheDao();
+            $this->_modListDao = $daoFactory->getModeratedRingBufferDao();
 			$this->_svcSpotParser = new Services_Format_Parsing();
 
 			# if we need to fetch images or nzb files, we need several service objects
@@ -149,6 +151,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
 
+            /*
+             * We get a list of spots which have been blacklisted before,
+             * we do this because when the 'buggy' flag is set, we else keep
+             * retrieving the same spots, nzb's and images over and over again
+             */
+            $preModdedList = $this->_modListDao->matchAgainst($hdrList);
+
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
             foreach($hdrList as $msgheader) {
                 SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
@@ -179,7 +188,16 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
-				
+
+                /*
+                 * If this message was already deleted in a previous run,
+                 * les not even consider it
+                 */
+                if (isset($preModdedList[$msgId])) {
+                    $skipCount++;
+                    continue;
+                } # if
+
 				/*
 				 * We prepare some variables to we don't have to perform an array
 				 * lookup for each check and the code is easier to read.
@@ -298,12 +316,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
 							$fullSpot = $this->_svcNntpTextReading->readFullSpot($msgId);
 							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
-							
+
 							# add this spot to the database
 							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
 							$didFetchFullSpot = true;
-							
+
 							/*
 							 * Some buggy NNTP servers give us the same messageid
 							 * in the same XOVER statement, hence we update the list of
@@ -311,8 +329,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 * to be added to the database
 							 */
 							$dbIdList['fullspot'][$msgId] = 1;
-							
-							/* 
+
+							/*
 							 * Overwrite the spots' title because the fullspot contains the title in
 							 * UTF-8 format.
 							 * We also overwrite the spotterid from the spotsfull because the spotterid
@@ -322,10 +340,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								$spotDbList[count($spotDbList) - 1]['title'] = $fullSpot['title'];
 								$spotDbList[count($spotDbList) - 1]['spotterid'] = $fullSpot['spotterid'];
 							} # if
-						} 
+						}
 						catch(ParseSpotXmlException $x) {
 							; # swallow error
-						} 
+						}
 						catch(Exception $x) {
 							/**
 							 * Sometimes we get an 'No such article' error for a header we just retrieved,
@@ -334,7 +352,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 */
 							if ($x->getCode() == 430) {
 								;
-							} 
+							}
 							# if the XML is unparseable, don't bother complaining about it
 							elseif ($x->getMessage() == 'String could not be parsed as XML') {
 								;
@@ -342,7 +360,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								throw $x;
 							} # else
 						} # catch
-						
+
 					} # if retrievefull
 				} # if fullspot is not in db yet
 
@@ -357,8 +375,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * again
 						 */
 						if (!$didFetchFullSpot) {
+                            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':daoGetFullSpot');
                             $fullSpot = $this->_spotDao->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
 							$fullSpot = array_merge($this->_svcSpotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+                            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':daoGetFullSpot');
 						} # if
 
 						/*
@@ -366,15 +386,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 */
                         SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 						if ($this->_prefetch_image) {
-							/*
-							 * If the spot is older than 30 days, and the image is on the web, we do not 
-							 * prefetch the image.
-							 */
-							if (is_array($fullSpot['image']) || ($fullSpot['stamp'] > (int) time()-30*24*60*60)) {
-								$this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
-								$this->_svcProvImage->fetchSpotImage($fullSpot);
-								$this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
-							} # if
+                            $this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
+
+                            if (!$this->_svcProvImage->hasCachedSpotImage($fullSpot)) {
+                                $this->_svcProvImage->fetchSpotImage($fullSpot);
+                            } # if
+
+                            $this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
 						} # if
                         SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 
@@ -388,7 +406,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
-								$this->_svcProvNzb->fetchNzb($fullSpot);
+
+                                if (!$this->_svcProvNzb->hasCachedNzb($fullSpot)) {
+                                    $this->_svcProvNzb->fetchNzb($fullSpot);
+                                } # if
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
@@ -396,7 +417,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					}
 					catch(ParseSpotXmlException $x) {
 						; # swallow error
-					} 
+					}
 					catch(Exception $x) {
 						/**
 						 * Sometimes we get an 'No such article' error for a header we just retrieved,
@@ -463,6 +484,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				default			: { 
 					$this->_spotDao->removeSpots($moderationList); 
 					$this->_commentDao->removeComments($moderationList);
+
+                    /*
+                     * If the spots actually get removed, we want to make
+                     * sure we write the deleted spots down. This prevents
+                     * us from retrieving and deleting them over and over again
+                     */
+                    $this->_modListDao->addToRingBuffer($moderationList);
 					
 					break;
 				} # default

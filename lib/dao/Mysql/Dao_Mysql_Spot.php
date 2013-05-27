@@ -10,13 +10,12 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
 			return;
 		} # if
 
-		$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
+		$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 							LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 							LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 							LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 							LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 							LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-							LEFT JOIN cache ON spots.messageid=cache.resourceid
 							WHERE spots.messageid  IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")");
 	} # removeSpots
 
@@ -26,13 +25,12 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
 	function deleteSpotsRetention($retention) {
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
-		$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted, cache USING spots
+		$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
 			LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
 			LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
 			LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 			LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 			LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-			LEFT JOIN cache ON spots.messageid=cache.resourceid
 			WHERE spots.stamp < " . (time() - $retention) );
 	} # deleteSpotsRetention
 

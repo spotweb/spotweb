@@ -11,9 +11,16 @@ class Services_Providers_Nzb {
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpSpotReading = $nntpSpotReading;
 	}  # ctor
-	
+
+    /*
+     * Returns if we have the nzb file already cached
+     */
+    function hasCachedNzb($fullSpot) {
+        return $this->_cacheDao->hasCachedNzb($fullSpot['messageid']);
+    } # hasCachedNzb
+
 	/* 
-	 * Geef de NZB file terug
+	 * Returns the NZB file
 	 */
 	function fetchNzb($fullSpot) {
 		SpotTiming::start(__FUNCTION__);
@@ -29,6 +36,7 @@ class Services_Providers_Nzb {
 			$nzb = $nzb['content'];
 			$this->_cacheDao->updateNzbCacheStamp($fullSpot['messageid']);
 		} else {
+            SpotTiming::start(__FUNCTION__ . '::cacheMiss');
 			/*
 			 * File is not in the cache yet, retrieve it from the appropriate store, and
 			 * store it in the cache
@@ -46,6 +54,8 @@ class Services_Providers_Nzb {
             } # else
 
 			$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb);
+
+            SpotTiming::stop(__FUNCTION__ . '::cacheMiss');
 		} # else
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));

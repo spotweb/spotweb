@@ -5,7 +5,7 @@ class Dao_Mysql_SpotStateList extends Dao_Base_SpotStateList {
 	/*
 	 * Add a specific state to a specific spot
 	 */
-	private function addToSpotStateList($list, $messageId, $ourUserId) {
+	public function addToSpotStateList($list, $messageId, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
 
 		$stamp = time();

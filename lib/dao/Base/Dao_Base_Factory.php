@@ -1,6 +1,21 @@
 <?php
 
  class Dao_Base_Factory extends Dao_Factory {
+
+     /*
+      * Actual cachepath to use
+      */
+     public function setCachePath($cachePath) {
+         throw new NotImplementedException();
+     } # setCachePath
+
+     /*
+      * Returns the currently configured cachepath
+      */
+     public function getCachePath() {
+         throw new NotImplementedException();
+     } # getCachePath
+
  	/*
  	 * Actual connection object to be used in
  	 * data retrieval
@@ -9,8 +24,10 @@
 		throw new NotImplementedException();
 	} # setConnection
 
-	/*
+	/**
 	 * Returns the currently passed connection object
+     *
+     * @return dbeng_abs
 	 */
 	public function getConnection() {
 		throw new NotImplementedException();
@@ -26,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Base_Cache($this->_conn);
+		return new Dao_Base_Cache($this->_conn, $this->_cachePath);
 	} # getCacheDao
 
 	public function getAuditDao() {
@@ -54,7 +71,7 @@
 	} # getCommentDao
 
 	public function getSpotReportDao() {
-		return new Dao_Base_Report($this->_conn);
+		return new Dao_Base_SpotReport($this->_conn);
 	} # getSpotReportDao
 
 	public function getSettingDao() {
@@ -72,5 +89,9 @@
 	public function getNntpConfigDao() {
 		return new Dao_Base_NntpConfig($this->_conn);
 	} # getNntpDao
+
+    public function getModeratedRingBufferDao() {
+        return new Dao_Base_ModeratedRingBuffer($this->_conn);
+    } # getModeratedRingBufferDao
 
 } // Dao_Base_Factory

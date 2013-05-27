@@ -15,11 +15,20 @@ class Services_Providers_SpotImage {
 		$this->_cacheDao = $cacheDao;
 		$this->_nntpSpotReading = $nntpSpotReading;
 	}  # ctor
-	
-	/*
-	 * Fetches an image either from the cache, the web or a
-	 * newsgroup depending on where the image is available
-	 */
+
+    /*
+     * Checks if we have the specified image in the cache,
+     * this prevents us from reading the image from disk
+     * when this is not necessary
+     */
+    public function hasCachedSpotImage($fullSpot) {
+        return ($this->_cacheDao->hasCachedSpotImage($fullSpot['messageid']));
+    } # hasCachedSpotImage
+
+    /*
+     * Fetches an image either from the cache, the web or a
+     * newsgroup depending on where the image is available
+     */
 	public function fetchSpotImage($fullSpot) {
 		SpotTiming::start(__FUNCTION__);
 		$return_code = 0;
@@ -105,8 +114,8 @@ class Services_Providers_SpotImage {
 				 */
 				if ($validImage) {
                     $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
-                                            array('content' => $imageString,
-                                                  'metadata' => $dimensions));
+                                                        $dimensions,
+                                                        $imageString);
                 } # if
 			} else {
 				$validImage = false;

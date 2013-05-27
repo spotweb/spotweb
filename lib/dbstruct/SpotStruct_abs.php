@@ -1,4 +1,5 @@
 <?php
+
 abstract class SpotStruct_abs {
 	protected $_dbcon;
 
@@ -562,11 +563,18 @@ abstract class SpotStruct_abs {
 		}
 		
 		# Drop old cache -- converting is too error prone
-		if (($schemaVer < 0.50) && ($this->tableExists('cache'))) {
-			$this->dropTable('cache');
-		} # if
-		if (($schemaVer < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
-			$this->renameTable('cache', 'cachetmp');
+		if ($schemaVer > 0.00 && ($schemaVer < 0.60)) {
+            /*
+             * If the current cache table is too large, we basically recommend the user
+             * to run the seperate cache-migration script. If it contains less than 501 records
+             *  we just drop it. This number is chosen arbitrarily.
+             */
+            $cacheCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cache WHERE content IS NOT NULL", array());
+            if ($cacheCount > 500) {
+                throw new SqlErrorException("Unable to upgrade your cache table. Please run the script 'migrate-cache.php' before this.");
+            } else {
+                $this->dropTable("cache");
+            } # else
 		} # if
 
 		# ---- cache table ---- #
@@ -575,11 +583,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
-		# ---- permaudit table ---- #
+        # ---- moderated ring buffer table ---- #
+        $this->createTable('moderatedringbuffer', "ascii");
+        $this->validateColumn('messageid', 'moderatedringbuffer', 'VARCHAR(128)', "''", true, 'ascii');
+        $this->alterStorageEngine("moderatedringbuffer", "InnoDB");
+
+        # ---- permaudit table ---- #
 		$this->createTable('permaudit', "ascii");
 		$this->validateColumn('stamp', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('userid', 'permaudit', 'INTEGER', "0", true, '');
@@ -714,6 +725,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
 		$this->validateIndex("idx_cache_2", "", "cache", array("cachetype", "stamp"));
 
+        # ---- Indexes on ring buffer of moderated messageids ----
+        $this->validateIndex("idx_moderatedringbuffer_1", "UNIQUE", "moderatedringbuffer", array("messageid"));
+
 		# Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -734,12 +748,8 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'spotsfull');
 		$this->dropColumn('userid', 'spotteridblacklist');
 		$this->dropColumn('userid', 'commentsfull');
-
-		##############################################################################################
-		# Drop old tables ######## ###################################################################
-		##############################################################################################		
-		$this->dropTable('webcache');
-		$this->dropTable('cachetmp');
+        $this->dropColumn('serialized', 'cache');
+        $this->dropColumn('content', 'cache');
 
 		# update the database with this specific schemaversion
 		$this->_dbcon->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());

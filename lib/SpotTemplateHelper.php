@@ -1127,7 +1127,7 @@ class SpotTemplateHelper {
 	 */
 	function getValidStatisticsGraphs(){
 		$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
-														  $this->_daoFactory->getCacheDao(),
+														  $this->_daoFactory->getCacheDao($this->_settings->get('cache_path')),
 														  0);
 		return $svcPrv_Stats->getValidStatisticsGraphs();
 	} # getValidStatisticsGraphs

@@ -1,7 +1,22 @@
 <?php
 
  class Dao_Mysql_Factory extends Dao_Factory {
- 	private $_conn;
+     private $_conn;
+     private $_cachePath;
+
+    /*
+     * Actual cachepath to use
+     */
+    public function setCachePath($cachePath) {
+        $this->_cachePath = $cachePath;
+    } # setCachePath
+
+    /*
+     * Returns the currently configured cachepath
+     */
+    public function getCachePath() {
+        return $this->_cachePath;
+    } # getCachePath
 
  	/*
  	 * Actual connection object to be used in
@@ -28,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Mysql_Cache($this->_conn);
+		return new Dao_Mysql_Cache($this->_conn, $this->getCachePath());
 	} # getCacheDao
 
 	public function getAuditDao() {
@@ -75,4 +90,8 @@
 		return new Dao_Mysql_NntpConfig($this->_conn);
 	} # getNntpConfigDao
 
-} // Dao_Mysql_Factory
+    public function getModeratedRingBufferDao() {
+        return new Dao_Mysql_ModeratedRingBuffer($this->_conn);
+    } # getModeratedRingBufferDao
+
+ } // Dao_Mysql_Factory
