@@ -88,7 +88,7 @@ try {
             if ($cacheItem['metadata']) {
                 $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
             } # if
-            
+
             echo '.';
             $cacheDao->putCacheContent($cacheItem['resourceid'], $cacheItem['cachetype'], $cacheItem['content'], $cacheItem['metadata']);
 

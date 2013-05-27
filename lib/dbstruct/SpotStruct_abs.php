@@ -573,7 +573,9 @@ abstract class SpotStruct_abs {
             if ($cacheCount > 500) {
                 throw new SqlErrorException("Unable to upgrade your cache table. Please run the script 'migrate-cache.php' before this.");
             } else {
-                $this->dropTable("cache");
+                if ($this->columnExists('cache', 'content')) {
+                    $this->dropTable("cache");
+                } # if
             } # else
 		} # if
 
