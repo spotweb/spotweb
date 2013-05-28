@@ -50,6 +50,7 @@ try {
      */
     echo "Removing serialized entries from database";
     $dbConnection->modify("DELETE FROM cache WHERE cachetype = 4");
+    $dbConnection->modify("DELETE FROM cache WHERE cachetype = 5");
     echo ", done. " . PHP_EOL;
 
     $counter = 1;
