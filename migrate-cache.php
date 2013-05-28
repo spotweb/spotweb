@@ -101,6 +101,10 @@ try {
         } # results
 
         echo ", done. " . PHP_EOL;
+
+        if (count($results) == 0) {
+            break;
+        } # if
     } # while
 
 }
