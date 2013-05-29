@@ -77,7 +77,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
      * @return void
      */
     function deleteOldest() {
-        $tmpValues = $this->_conn->arrayQuery("SELECT MIN(id) AS 'min', MAX(id) AS 'max' FROM moderatedringbuffer");
+        $tmpValues = $this->_conn->arrayQuery('SELECT MIN(id) AS "min", MAX(id) AS "max" FROM moderatedringbuffer');
         $tmpValues = $tmpValues[0];
 
         /*
