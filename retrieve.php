@@ -206,11 +206,6 @@ try {
 	 */
 	$daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
-	if (!$retroMode) {
-		$daoFactory->getCacheDao()->expireCache(30);
-	} # if
-
-
 	## External blacklist
 	$svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
 	$bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
