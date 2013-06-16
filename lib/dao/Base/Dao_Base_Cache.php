@@ -21,7 +21,30 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Removes items from the cache older than a specific amount of days
 	 */
 	function expireCache($expireDays) {
-        throw new NotImplementedException();
+        /*
+         * Calculate the filepath so we can remove the file from disk, we
+         * ignore any error which might be thrown because we cannot do
+         * anything about it anyway.
+         */
+        $expiredList = $this->_conn->arrayQuery("SELECT resourceid, cachetype, metadata FROM cache WHERE stamp < %d",
+                    Array((int) time() - $expireDays*24*60*60));
+
+        foreach($expiredList as $cacheItem) {
+            if (!empty($cacheItem)) {
+                $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
+            } # if
+
+            /*
+             * Always remove the item from the database, this way if the on-disk
+             * deletion fails, we won't keep trying it.
+             */
+            $this->removeCacheItem($cacheItem['resourceid'],$cacheItem['cachetype'], $cacheItem['metadata']);
+
+            $filePath = $this->calculateFilePath($cacheItem['resourceid'],$cacheItem['cachetype'], $cacheItem['metadata']);
+            if (@unlink($filePath) === false) {
+                throw new CacheIsCorruptException('Cache is corrupt, could not found on-disk resource for: '. $cacheItem['resourceid']);
+            } # if
+        } # cacheItem
 	} # expireCache
 
 	/*
@@ -36,8 +59,8 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Retrieves wether a specific resourceid is cached
     */
-    protected function removeCacheItem($resourceid, $cachetype) {
-        $this->_conn->exec("DELETE FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
+    protected function removeCacheItem($resourceId, $cachetype, $metaData) {
+        $this->_conn->exec("DELETE FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceId, $cachetype));
     } # removeCacheItem
 
     /*
@@ -101,7 +124,7 @@ class Dao_Base_Cache implements Dao_Cache {
         $filePath = $this->calculateFilePath($resourceId, $cacheType, $metaData);
 
         if (!file_exists($filePath)) {
-            $this->removeCacheItem($resourceId, $cacheType);
+            $this->removeCacheItem($resourceId, $cacheType, $metaData);
 
             throw new CacheIsCorruptException('Cache is corrupt, could not found on-disk resource for: '. $resourceId);
         } # if
