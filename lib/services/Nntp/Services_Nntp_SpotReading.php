@@ -114,7 +114,13 @@ class Services_Nntp_SpotReading {
 		} # foreach
 
 		if ($compressed) {
-			return gzinflate($this->_spotParseUtil->unspecialZipStr($bin));
+            /*
+             * We do this in two function calls, to make sure we do not need
+             * two copies of this potentially very large string in memory.
+             * This can save an Out-of-memory error.
+             */
+            $bin = $this->_spotParseUtil->unspecialZipStr($bin);
+			return gzinflate($bin);
 		} else {
 			return $this->_spotParseUtil->unspecialZipStr($bin);
 		} # else
