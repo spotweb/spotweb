@@ -4,6 +4,7 @@
 	require_once "lib/SpotClassAutoload.php";
 	try {
 		@include('settings.php');
+        @include('dbsettings.inc.php');
 	}
 	catch(Exception $x) {
 		// ignore errors
@@ -545,7 +546,7 @@
 	 * Only run the wizard when no database settings have been entered yet, to prevent
 	 * any information disclosure
 	 */
-	if ((isset($settings['db'])) && (isset($_GET['page']))) {
+	if ((isset($dbsettings)) && (isset($_GET['page']))) {
 		die("Spotweb has already been setup. If you want to run this wizard again, please remove the file 'dbsettings.inc.php'");
 	} # if
 
