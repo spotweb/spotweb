@@ -112,6 +112,7 @@ try {
 	if (($settings->get('retention') > 0) && (!$retroMode)) {
 		$spotDao = $daoFactory->getSpotDao();
         $cacheDao = $daoFactory->getCacheDao();
+        $commentDao = $daoFactory->getCommentDao();
 
 		switch ($settings->get('retentiontype')) {
 			case 'everything'		: {
@@ -120,7 +121,7 @@ try {
 
 			case 'fullonly'			: {
 				$cacheDao->expireCache($settings->get('retention'));
-				$spotDao->expireCommentsFull($settings->get('retention'));
+				$commentDao->expireCommentsFull($settings->get('retention'));
 				$spotDao->expireSpotsFull($settings->get('retention'));
 			} # case fullonly
 		} # switch
