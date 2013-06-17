@@ -33,6 +33,7 @@ class Services_Providers_SpotImage {
 		SpotTiming::start(__FUNCTION__);
 		$return_code = 0;
 		$validImage = false;
+        $imageString = '';
 
 		$data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid']);
 		if ($data !== false) {
@@ -61,11 +62,6 @@ class Services_Providers_SpotImage {
 			} catch(Exception $x) {
 				$validImage = false;
 				$return_code = $x->getCode();
-
-				# "No such article" error
-				if ($x->getCode() !== 430) {
-					throw $x;
-				} # else
 			} # catch
 		} elseif (empty($fullSpot['image'])) {
 			/*
