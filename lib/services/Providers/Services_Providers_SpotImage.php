@@ -123,7 +123,6 @@ class Services_Providers_SpotImage {
 			} # if	
 		} # if
 
-
 		/*
 		 * Did we get a return code other than 200 OK and 
 		 * other than 304 (Resource Not modified), create
