@@ -35,6 +35,7 @@ class Services_Image_Error {
 			case 700:	$text = _('No response from remote host'); break;
 			case 900:	$text = _('XML parse error'); break;
 			case 901:	$text = _('No image provided'); break;
+            case 997:	$text = _('Unable to write to cachepath'); break;
 			default:	$text = _('Unknown error');
 		} # switch
 

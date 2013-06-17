@@ -53,7 +53,9 @@ class Services_Providers_Nzb {
                 $nzb = $this->_nntpSpotReading->readBinary($fullSpot['nzb'], true);
             } # else
 
-			$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb);
+			if (!$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb)) {
+                error_log('Spotweb: Unable to save NZB file to cache, is cache directory writable?');
+            } # if
 
             SpotTiming::stop(__FUNCTION__ . '::cacheMiss');
 		} # else

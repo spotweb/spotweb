@@ -135,7 +135,7 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Stores the actual contenst for a given resourceid
      */
-    public function putCacheContent($resourceId, $cacheType, $content, $metaData) {
+    private function putCacheContent($resourceId, $cacheType, $content, $metaData) {
         /*
            * Get the unique filepath
            */
@@ -144,11 +144,16 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Create the directory
          */
+        $success = false;
         if (!is_writable(dirname($filePath))) {
-            mkdir(dirname($filePath), 0777, true);
+            $success = @mkdir(dirname($filePath), 0777, true);
         } # if
 
-        file_put_contents($filePath, $content);
+        if ($success) {
+            return (file_put_contents($filePath, $content) == strlen($content));
+        } else {
+            return false;
+        } # else
     } # putCacheContent
 
 	/*
@@ -190,7 +195,18 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Actually store the contents on disk
          */
-        $this->putCacheContent($resourceid, $cachetype, $content, $metadata);
+        if (!$this->putCacheContent($resourceid, $cachetype, $content, $metadata)) {
+            /*
+             * If we couldn't store the cache result, we have to actually remove the
+             * cache record again
+             */
+            $this->_conn->exec("DELETE FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
+                                        Array($resourceid, $cachetype));
+
+            return false;
+        } else {
+            return true;
+        }
 	} # saveCache
 
 	/*
