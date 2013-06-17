@@ -41,6 +41,8 @@
     <tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp'), false); ?> </td> </tr>
     <tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath'), false); ?> </td> </tr>
     <tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']), true); ?> </td> </tr>
+    <tr> <th colspan="3"> Cache directory </th> </tr>
+    <tr> <td colspan="2"> Cache directory is writable? </td> <td> <?php showResult(is_writable('./cache'), true); ?> </td> </tr>
 </table>
 <br />
 

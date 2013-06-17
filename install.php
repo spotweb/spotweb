@@ -62,6 +62,11 @@
         } # if
 
         /*
+         * Try to create the cache directory
+         */
+        @mkdir('./cache', 0777);
+
+        /*
          * Load the template
          */
         showTemplate("step-001.inc.php", array('privKey' => $privKey));
