@@ -20,7 +20,8 @@ class Dao_Base_Comment implements Dao_Comment {
 		
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
-	
+
+
 	/*
 	 * Remove extra comments
 	 */

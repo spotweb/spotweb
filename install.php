@@ -29,123 +29,42 @@
 
 	$_testInstall_Ok = true;
 	session_start();
-	
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-	<title>Test your Installation</title>
-	<style type='text/css'>
- 		* { font-family: Arial, Helvetica, sans-serif; }
- 		table {margin-left:auto; margin-right:auto; font-size:12px; color:#fff; width:800px; background-color:#666; border:0; border-collapse:collapse; border-spacing:0;}
-		table td {background-color:#CCC; color:#000; padding:4px; border:1px #fff solid;}
-		table th {background-color:#666; color:#fff; padding:4px; text-align:left; border-bottom:2px #fff solid; font-size:12px; font-weight:bold;} 
-		div#error {background-color:#e33b1a; border:1px solid #ab1c00; color:#fff; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
-		div#success {background-color:#cbffcb; border:1px solid #00ab00; color:#000; line-height:18px; padding:0;  text-align:center; vertical-align:top; margin:12px 15px 13px 5px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; font-weight:bold;}
 
-		.button { padding: 4px; padding-left: 10px; padding-right: 10px; margin: 0; border: 1px solid black; background-color: #fff; color: #666; text-decoration: none; }
-		table.tableresult tr { height: 34px; }
-	</style>
-	<script type='text/javascript'>
-		function toggleNntpField() {
-			var sel = document.getElementById('nntpselectbox');
-			var x = document.getElementById('customnntpfield');
-			if (x == null) { return ; } 
-			
-			if (sel.options[sel.selectedIndex].value == 'custom') { 
-				x.style.display = ''; 
-			} else {
-				x.style.display = 'none'; 
-			} // else
-		} // toggleNntpField
-		
-		toggleNntpField();
-	</script>
-</head>
-<body>
+    function showTemplate($tplname, $vars) {
+        global $settings;
+        global $_testInstall_Ok;
 
-<?php
+        /*
+         * Make the variables availbale to the local context
+         */
+        extract($vars, EXTR_REFS);
+
+        require_once "templates/installer/includes/header.inc.php";
+        require_once "templates/installer/" . $tplname;
+    } # showTemplate
+
 	function performAndPrintTests() {
 		global $settings;
 		global $_testInstall_Ok;
-?>
-		<table summary="PHP settings">
-			<tr> <th> PHP settings </th> <th> Value </th> <th> Result </th> </tr>
-			<tr> <td> PHP version </td> <td> <?php echo phpversion(); ?> </td> <td> <?php showResult((version_compare(PHP_VERSION, '5.3.0') >= 0), true, "", "PHP 5.3 or later is recommended"); ?> </td> </tr>
-			<tr> <td> timezone settings </td> <td> <?php echo ini_get("date.timezone"); ?> </td> <td> <?php showResult(ini_get("date.timezone"), true, "", "Please specify date.timezone in your PHP.ini"); ?> </td> </tr>
-			<tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), true, "", "Not empty, <strong>might</strong> be a problem"); ?> </td> </tr>
-			<tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, true, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
-			<tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), true, "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
-			<tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), true, "", "memory_limit below 128M"); ?> </td> </tr>
-		</table>
-		<br />
 
-		<table summary="PHP extensions">
-			<tr> <th colspan="2"> PHP extension </th> <th> Result </th> </tr>
-			<tr> <td colspan="2"> curl </td> <td> <?php showResult(extension_loaded('curl'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> DOM </td> <td> <?php showResult(extension_loaded('dom'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> gettext </td> <td> <?php showResult(extension_loaded('gettext'), false); ?> </td> </tr>
-			<tr> <td colspan="2"> mbstring </td> <td> <?php showResult(extension_loaded('mbstring'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> json </td> <td> <?php showResult(extension_loaded('json'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> xml </td> <td> <?php showResult(extension_loaded('xml'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
-			<tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
+        /*
+         * Load all the SSL signing code, we need it to create a private key
+         */
+        require_once "lib/services/Signing/Services_Signing_Base.php";
+        require_once "lib/services/Signing/Services_Signing_Php.php";
+        require_once "lib/services/Signing/Services_Signing_Openssl.php";
+        $spotSigning = Services_Signing_Base::factory();
+        $privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 
-			<tr> <th colspan="2"> Database support </th> <td> <?php showResult(extension_loaded('mysql') || extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> DB::mysql </td> <td> <?php showResult(extension_loaded('mysql'), false); ?> </td> </tr>
-			<tr> <td colspan="2"> DB::pdo_mysql </td> <td> <?php showResult(extension_loaded('pdo_mysql'), false); ?> </td> </tr>
-			<tr> <td colspan="2"> DB::pgsql </td> <td> <?php showResult(extension_loaded('pdo_pgsql'), false); ?> </td> </tr>
+        /* We need either one of those 3 extensions, so set the error flag manually */
+        if ( (!extension_loaded('openssl')) && (!extension_loaded('gmp')) && (!extension_loaded('bcmath'))) {
+            $_testInstall_Ok = false;
+        } # if
 
-		<?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
-			<tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>
-			<tr> <td colspan="2"> FreeType Support </td> <td> <?php showResult($gdInfo['FreeType Support'], true); ?> </td> </tr>
-			<tr> <td colspan="2"> GIF Read Support </td> <td> <?php showResult($gdInfo['GIF Read Support'], true); ?> </td> </tr>
-			<tr> <td colspan="2"> GIF Create Support </td> <td> <?php showResult($gdInfo['GIF Create Support'], true); ?> </td> </tr>
-			<tr> <td colspan="2"> JPEG Support </td> <td> <?php showResult($gdInfo['JPEG Support'] || $gdInfo['JPG Support'], true); ?> </td> </tr> <!-- Previous to PHP 5.3.0, the JPEG Support attribute was named JPG Support. -->
-			<tr> <td colspan="2"> PNG Support </td> <td> <?php showResult($gdInfo['PNG Support'], true); ?> </td> </tr>
-			<tr> <th colspan="3"> OpenSSL </th> </tr>
-		<?php require_once "lib/services/Signing/Services_Signing_Base.php";
-			require_once "lib/services/Signing/Services_Signing_Php.php";
-			require_once "lib/services/Signing/Services_Signing_Openssl.php";
-			$spotSigning = Services_Signing_Base::factory();
-			$privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
-			
-			/* We need either one of those 3 extensions, so set the error flag manually */
-			if ( (!extension_loaded('openssl')) && (!extension_loaded('gmp')) && (!extension_loaded('bcmath'))) {
-				$_testInstall_Ok = false;
-			} # if
-			
-		?>	<tr> <td rowspan="3"> At least 1 of these must be OK <br />these modules are sorted from fastest to slowest</td> <td> openssl </td> <td> <?php showResult(extension_loaded('openssl'), false); ?> </td> </tr>
-			<tr> <td> gmp </td> <td> <?php showResult(extension_loaded('gmp'), false); ?> </td> </tr>
-			<tr> <td> bcmath </td> <td> <?php showResult(extension_loaded('bcmath'), false); ?> </td> </tr>
-			<tr> <td colspan="2"> Can create private key? </td> <td> <?php showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']), true); ?> </td> </tr>
-		</table>
-		<br />
-
-		<table summary="Include files">
-			<tr> <th> Include files  </th> <th> Result </th> </tr>
-			<tr> <td> Settings file </td> <td> <?php $result=testInclude("settings.php"); echo showResult($result, true, $result); ?> </td> </tr>
-			<tr> <td> Own settings file </td> <td> <?php $result=testInclude("ownsettings.php"); echo showResult($result, true, $result, "optional"); ?> </td> </tr>
-		</table>
-		<br />
-
-		<?php if ($_testInstall_Ok) { ?>
-			<table summary="result" class="tableresult">
-				<tr> 
-						<th colspan="2"> Please continue to setup Spotweb </th> 
-						<th> <a href="?page=1" class="button" >Next</a> </th>
-				</tr>
-			</table>
-			<br />
-		<?php } else { ?>			
-			<table summary="result">
-				<tr> <th> Please fix above errors before you can continue to install Spotweb </th> </tr>
-			</table>
-			<br />
-		<?php }  ?>			
-
-		</body>
-		</html>
-<?php
+        /*
+         * Load the template
+         */
+        showTemplate("step-001.inc.php", array('privKey' => $privKey));
 	} # performAndPrintTests
 
 	function askDbSettings() {
@@ -193,34 +112,15 @@
 				/*
 				 * and call the next stage in the setup
 				 */
-				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=2');
+				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=3');
 			} 
 			catch(Exception $x) {
-	?>
-				<div id='error'><?php echo $x->getMessage(); ?>
-				<br /><br />
-				Please correct the errors in below form and try again
-				</div>
-	<?php
+                showTemplate("fatalerror.inc.php", array('x' => $x));
 			} # exception
 		} # if
 
 		if (!$databaseCreated) {
-	?>
-			<form name='dbform' method='POST'>
-			<table summary="PHP settings">
-				<tr> <th> Database settings </th> <th> </th> </tr>
-				<tr> <td colspan='2'> Spotweb needs an available MySQL or PostgreSQL database. The database needs to be created and you need to have an user account and password for this database. </td> </tr>
-				<tr> <td> type </td> <td> <select name='dbform[engine]'> <option value='pdo_mysql'>mysql</option> <option value='pdo_pgsql'>PostgreSQL</option> </select> </td> </tr>
-				<tr> <td> server </td> <td> <input type='text' length='40' name='dbform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
-				<tr> <td> database </td> <td> <input type='text' length='40' name='dbform[dbname]' value='<?php echo htmlspecialchars($form['dbname']); ?>' ></input></td> </tr>
-				<tr> <td> username </td> <td> <input type='text' length='40' name='dbform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
-				<tr> <td> password </td> <td> <input type='password' length='40' name='dbform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
-				<tr> <td colspan='2'> <input type='submit' name='dbform[submit]' value='Verify database'> </td> </tr>
-			</table>
-			</form>
-			<br />
-	<?php
+            showTemplate("step-002.inc.php", array('form' => $form));
 		} # else
 	} # askDbSettings
 
@@ -325,54 +225,17 @@
 				/*
 				 * and call the next stage in the setup
 				 */
-				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=3');
+				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=4');
 			} 
 			catch(Exception $x) {
-	?>
-				<div id='error'><?php echo $x->getMessage(); ?>
-				<br /><br />
-				Please correct the errors in below form and try again
-				</div>
-	<?php			
+                showTemplate("fatalerror.inc.php", array('x' => $x));
 			} # exception
 		} # if
 		
 		if (!$nntpVerified) {
-	?>
-			<form name='nntpform' method='POST'>
-			<table summary="PHP settings">
-				<tr> <th> Usenet server settings </th> <th> </th> </tr>
-				<tr> <td colspan='2'> Spotweb needs an usenet server. We have several usenet server profiles defined from which you can choose. If your server is not listed, please choose 'custom', more advanced options can be set from within Spotweb itself. </td> </tr>
-				<tr> <td> Usenet server </td> 
-				<td> 
-					<select id='nntpselectbox' name='nntpform[name]' onchange='toggleNntpField();'> 
-	<?php
-					foreach($serverList->usenetservers->server as $provider) {
-						$server = '';
-
-						/* Make sure the server is supported, eg filter out ssl only servers when openssl is not loaded */
-						if (extension_loaded('openssl') && isset($provider->ssl)) {
-							$server = $provider->ssl;
-						} elseif (isset($provider->plain)) {
-							$server = $provider->plain;
-						} # if
-
-						if (!empty($server)) {
-							echo "<option value='{$provider['name']}'" . (($provider['name'] == $form['name']) ? "selected='selected'" : '') . ">{$provider['name']}</option>";
-						} # if
-					} # foreach
-	?>
-						<option value='custom'>Custom</option>
-					</select> 
-				</td> </tr>
-				<tr id='customnntpfield' style='display: none;'> <td> server </td> <td> <input type='text' length='40' name='nntpform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
-				<tr> <td> username </td> <td> <input type='text' length='40' name='nntpform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
-				<tr> <td> password </td> <td> <input type='password' length='40' name='nntpform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
-				<tr> <td colspan='2'> <input type='submit' name='nntpform[submit]' value='Verify usenet server'> </td> </tr>
-			</table>
-			</form>
-			<br />
-	<?php
+            showTemplate("step-003.inc.php", array('form' => $form,
+                                                    'nntpVerified' > $nntpVerified,
+                                                    'serverList' => $serverList));
 		} # else
 	} # askNntpSettings
 	
@@ -436,8 +299,14 @@
 				 * validateUserRecord()
 				 */
 				$dbsettings = $_SESSION['spotsettings']['db'];
-				$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
-				$svcUserRecord = new Services_ValidateUser_Record($daoFactory, new Services_Settings_Base(array()));
+                $dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
+                $dbCon->connect($dbsettings['host'],
+                    $dbsettings['user'],
+                    $dbsettings['pass'],
+                    $dbsettings['dbname']);
+                $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
+                $daoFactory->setConnection($dbCon);
+				$svcUserRecord = new Services_ValidateUser_Record($daoFactory, new Services_Settings_Base());
 				$errorList = $svcUserRecord->validateUserRecord($form, false)->getErrors();
 
 				if (!empty($errorList)) {
@@ -450,37 +319,13 @@
 				Header("Location: " . $_SERVER['SCRIPT_NAME'] . '?page=99');
 			} 
 			catch(Exception $x) {
-	?>
-				<div id='error'><?php echo $x->getMessage(); ?>
-				<br /><br />
-				Please correct the errors in below form and try again
-				</div>
-	<?php
+                showTemplate("fatalerror.inc.php", array('x' => $x));
 			} # exception
 		} # if
 
 		if (!$userVerified) {
-	?>
-			<form name='settingsform' method='POST'>
-			<table summary="PHP settings">
-				<tr> <th colspan='2'> Spotweb type </th> </tr>
-				<tr> <td colspan='2'> Spotweb has several usages - it can be either run as a personal system, a shared system among friends or a completely public system. <br /> <br /> Please select the most appropriate usage below. </td> </tr>
-				<tr> <td nowrap="nowrap"> <input type="radio" name="settingsform[systemtype]" value="single">Single user</td> <td> Single user systems are one-user systems, not shared with friends or family members. Spotweb wil always be logged on using the below defined user and Spotweb will never ask for authentication. </td> </tr>
-				<tr> <td nowrap="nowrap"> <input type="radio" name="settingsform[systemtype]" value="shared">Shared</td> <td> Shared systems are Spotweb installations shared among friends or family members. You do have to logon using an useraccount, but the users who do log on are trusted to have no malicious intentions. </tr>
-				<tr> <td nowrap="nowrap"> <input type="radio" name="settingsform[systemtype]" value="public" checked="checked">Public</td> <td> Public systems are Spotweb installations fully open to the public. Because the installation is fully open, regular users do not have all the features available in Spotweb to help defend against certain malicious users.</tr>
-				<tr> <th colspan='2'> Administrative user </th> </tr>
-				<tr> <td colspan='2'> Spotweb will use below user information to create a user for use by Spotweb. The defined password will also be set as the password for the built-in 'admin' account. Please make sure to remember this password. </td> </tr>
-				<tr> <td> Username </td> <td> <input type='text' length='40' name='settingsform[username]' value='<?php echo htmlspecialchars($form['username']); ?>'></input> </td> </tr>
-				<tr> <td> Password </td> <td> <input type='password' length='40' name='settingsform[newpassword1]' value='<?php echo htmlspecialchars($form['newpassword1']); ?>'></input> </td> </tr>
-				<tr> <td> Password (confirm) </td> <td> <input type='password' length='40' name='settingsform[newpassword2]' value='<?php echo htmlspecialchars($form['newpassword2']); ?>'></input> </td> </tr>
-				<tr> <td> First name </td> <td> <input type='text' length='40' name='settingsform[firstname]' value='<?php echo htmlspecialchars($form['firstname']); ?>'></input> </td> </tr>
-				<tr> <td> Last name </td> <td> <input type='text' length='40' name='settingsform[lastname]' value='<?php echo htmlspecialchars($form['lastname']); ?>'></input> </td> </tr>
-				<tr> <td> Email address </td> <td> <input type='text' length='40' name='settingsform[mail]' value='<?php echo htmlspecialchars($form['mail']); ?>'></input> </td> </tr>
-				<tr> <td colspan='2'> <input type='submit' name='settingsform[submit]' value='Create system'> </td> </tr>
-			</table>
-			</form>
-			<br />
-	<?php
+            showTemplate("step-004.inc.php", array('form' => $form,
+                                                    'userVerified' => $userVerified));
 		} # else
 	} # askSpotwebSettings
 
@@ -614,47 +459,14 @@
 			@file_put_contents("dbsettings.inc.php", "<?php" . PHP_EOL . $dbConnectionString);
 			$createdDbSettings = file_exists("dbsettings.inc.php");
 
-?>
-
-			<table summary="PHP settings">
-				<tr> <th colspan='2'> Installation succesful </th> </tr>
-				<tr> <td colspan='2'> Spotweb has been installed successfully! </td> </tr>
-				<tr> <td colspan='2'> &nbsp; </td> </tr>
-<?php if (!$createdDbSettings) { ?>
-				<tr> 
-						<td> &rarr; </td>
-						<td> 
-								You need to create a textfile with the database settings in it. Please copy & paste the below
-							exactly in a file called <i>dbsettings.inc.php</i>.
-							<pre><?php echo "&lt;?php " . PHP_EOL . $dbConnectionString; ?>
-							</pre>
-				 		</td> 
-				</tr>
-<?php } ?>
-				<tr> 
-						<td> &rarr; </td>
-						<td> 
-							Spotweb retrieves its information from the newsservers, this is called "retrieving" or retrieval of Spots.
-							You need to schedule a retrieval job to run <i>retrieve.php</i> on a regular basis. The first time retrieval
-							is run this can take up to several hours before completion.
-				 		</td> 
-				</tr>
-			</table>
-
-			<?php echo '<!-- ' . $dbCreateOutput . ' -->'; ?>
-<?php		
+            showTemplate("step-final.inc.php", array('createdDbSettings' => $createdDbSettings,
+                                                     'dbCreateOutput' => $dbCreateOutput));
 		}  # try
 		catch(Exception $x) {
-	?>
-			<div id='error'><?php echo $x->getMessage(); ?>
-				<?php echo $x->getTraceAsString(); ?>
-			<br /><br />
-			</div>
-	<?php			
+            showTemplate("fatalerror.inc.php", array('x' => $x));
 		} # exception
 	} # createSystem
 	
-
 
 	function return_bytes($val) {
 		$val = trim($val);
@@ -693,8 +505,22 @@
 		return null;
 	} # showResult
 
+    /*
+     * Dummy translate function
+     */
+    if (!function_exists('_')) {
+        function _($s) {
+            return $s;
+        } # _()
+    } # if
+
 	function ownWarning($errno, $errstr) {
-		$GLOBALS['iserror'] = true;
+        /* don't show errors if they are being suppressed by silent (@) operator */
+        if (error_reporting() == 0) {
+            return;
+        }
+
+        $GLOBALS['iserror'] = true;
         error_log($errstr);
         echo $errstr;
 	} # ownWarning
@@ -721,12 +547,12 @@
 	/*
 	 * determine what page of the wizzard we are on, and display that one
 	 */
-	$pageNumber = (isset($_GET['page']) ? $_GET['page'] : 0);
+	$pageNumber = (isset($_GET['page']) ? $_GET['page'] : 1);
 	
 	switch($pageNumber) {
-		case 1			: askDbSettings(); break; 
-		case 2			: askNntpSettings(); break; 
-		case 3			: askSpotwebSettings(); break;
+		case 2			: askDbSettings(); break;
+		case 3			: askNntpSettings(); break;
+		case 4			: askSpotwebSettings(); break;
 		case 99			: createSystem(); break;
 		
 		default			: performAndPrintTests(); break;
