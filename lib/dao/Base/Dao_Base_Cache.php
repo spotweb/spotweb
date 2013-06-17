@@ -169,7 +169,7 @@ class Dao_Base_Cache implements Dao_Cache {
 			return $tmp[0];
 		} # if
 
-        echo 'Cache miss for resourceid: ' . $resourceid . PHP_EOL;
+        // echo 'Cache miss for resourceid: ' . $resourceid . PHP_EOL;
 
 		return false;
 	} # getCache
