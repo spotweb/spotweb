@@ -547,7 +547,9 @@
 	 * any information disclosure
 	 */
 	if ((isset($dbsettings)) && (isset($_GET['page']))) {
-		die("Spotweb has already been setup. If you want to run this wizard again, please remove the file 'dbsettings.inc.php'");
+        showTemplate("fatalerror.inc.php",
+                array('x' => new Exception("Spotweb has already been setup. If you want to run this wizard again, please remove the file 'dbsettings.inc.php'")));
+		die();
 	} # if
 
 	/*
