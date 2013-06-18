@@ -51,7 +51,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieves wether a specific resourceid is cached
 	 */
 	protected function isCached($resourceid, $cachetype) {
-		$tmpResult = $this->_conn->singleQuery("SELECT 1 FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
+		$tmpResult = $this->_conn->arrayQuery("SELECT 1 FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
 
 		return (!empty($tmpResult));
 	} # isCached
@@ -135,7 +135,7 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Stores the actual contenst for a given resourceid
      */
-    private function putCacheContent($resourceId, $cacheType, $content, $metaData) {
+    public function putCacheContent($resourceId, $cacheType, $content, $metaData) {
         /*
            * Get the unique filepath
            */

@@ -36,10 +36,10 @@ class SpotTemplateHelper {
 	 */
 	function getParentTemplates() {
 		return array();
-	} // getParentTemplates
+	} # getParentTemplates
 
 	/*
-	 * Set params - update de template list of parameters
+	 * Set params - update the template list of parameters
 	 */
 	function setParams($params) {
 		$this->_params = $params;
@@ -75,7 +75,7 @@ class SpotTemplateHelper {
 	 * Rturn the actual comments for a specific spot
 	 */
 	function getSpotComments($msgId, $start, $length) {
-		# Controleer de users' rechten
+		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
 		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
