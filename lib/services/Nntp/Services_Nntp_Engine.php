@@ -74,7 +74,7 @@ class Services_Nntp_Engine {
      * @return bool
      */
     private function tooManyErrors() {
-        return ($this->_connectionErrors > 2);
+        return ($this->_connectionErrors > 3);
     } # tooManyErrors
 
     /**
