@@ -58,7 +58,14 @@ class Services_Nntp_Engine {
 
         $this->_connectionErrors++;
 
+        /*
+         * Disconnect from the server, reconnect and
+         * sleep in between
+         */
+        $this->quit();
         sleep($this->_connectionErrors);
+        $this->_nntp->selectGroup($this->_currentgroup);
+        $this->connect();
     } # registerError
 
     /**
@@ -99,7 +106,7 @@ class Services_Nntp_Engine {
             if ($this->tooManyErrors()) {
                 throw $x;
             } else {
-                return $this->getOverview($first, last);
+                return $this->getOverview($first, $last);
             } # else
         } # catch
     } # getOverview()
