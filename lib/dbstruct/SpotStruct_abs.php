@@ -571,7 +571,7 @@ abstract class SpotStruct_abs {
              */
             $cacheCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cache WHERE content IS NOT NULL", array());
             if ($cacheCount > 500) {
-                throw new SqlErrorException("Unable to upgrade your cache table. Please run the script 'migrate-cache.php' before this.");
+                throw new CacheMustBeMigratedException();
             } else {
                 if ($this->columnExists('cache', 'content')) {
                     $this->dropTable("cache");

@@ -112,6 +112,12 @@ try {
 	echo "Basic database optimalisation done" . PHP_EOL;
 } 
 
+catch(CacheMustBeMigratedException $x) {
+    die("Your current Spotweb installation has an old way of storing Spotweb related files like images and NZB files. " . PHP_EOL .
+        "We provide the script 'migrate-cache.php' to migrate the cache without losing your data. Depending on the " . PHP_EOL .
+        "size of your cache this can take a very long time." . PHP_EOL . PHP_EOL .
+        "Please run the 'migrate-cache.php' script because attempting to run 'upgrade-db.php' again");
+}
 catch(SpotwebCannotBeUpgradedToooldException $x) {
 	die("Your current Spotweb installation is too old to be upgraded to this current version of Spotweb. " . PHP_EOL . 
 		"Please download an earlier version of Spotweb (https://github.com/spotweb/spotweb/zipball/" . $x->getMessage() . "), " . PHP_EOL .
