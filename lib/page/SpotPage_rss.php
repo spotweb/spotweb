@@ -82,7 +82,7 @@ class SpotPage_rss extends SpotPage_Abs {
                  */
 				$spot = @$this->_tplHelper->formatSpot($spot);
 
-				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+				$title = str_replace(array('<', '>', '&'), array('&#x3C;', '&#x3E;', '&amp;'), $spot['title']);
 				$poster = (empty($spot['spotterid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['spotterid'] . ")";
 
 				$guid = $doc->createElement('guid', $spot['messageid']);
