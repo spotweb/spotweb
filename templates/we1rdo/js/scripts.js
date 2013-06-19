@@ -467,7 +467,7 @@ function initializeUserManagementPage() {
 } // initializeUserManagementPage
 
 /*
- Initiializes the settings pages
+ Initializes the settings pages
  */
 function initializeSettingsPage() {
     initDatePicker();

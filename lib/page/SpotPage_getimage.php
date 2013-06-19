@@ -14,7 +14,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 	function render() {
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
-		
+
 		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
 
 		# Did the user request an SpeedDial image?
@@ -68,7 +68,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		} # else
 
 		header("Content-Type: " . image_type_to_mime_type($data['metadata']['imagetype']));
-		header("Content-Length: " . strlen($data['content'])); 
+		header("Content-Length: " . strlen($data['content']));
 		echo $data['content'];
 	} # render
 

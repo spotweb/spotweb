@@ -27,6 +27,7 @@ class Services_Image_Error {
 
 		# error info
 		switch ($errcode) {
+            case 5: 	$text = _('Access denied'); break;
 			case 200:	$text = _('Remote host sent bad data'); break;
 			case 400:	$text = _('Bad request'); break;
 			case 403:	$text = _('Permission denied from remote host'); break;

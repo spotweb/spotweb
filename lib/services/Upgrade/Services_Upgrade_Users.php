@@ -362,7 +362,7 @@ class Services_Upgrade_Users {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(1, " . SpotSecurity::spotsec_perform_login . ")");
 			
 			/* Default permissions for anonymous users */
-			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_login, SpotSecurity::spotsec_perform_search,
+			$anonPerms = array(SpotSecurity::spotsec_view_spots_index, SpotSecurity::spotsec_perform_search,
 							   SpotSecurity::spotsec_view_spotdetail, SpotSecurity::spotsec_retrieve_nzb, SpotSecurity::spotsec_view_spotimage,
 							   SpotSecurity::spotsec_view_statics, SpotSecurity::spotsec_create_new_user, SpotSecurity::spotsec_view_comments, 
 							   SpotSecurity::spotsec_view_spotcount_total);
