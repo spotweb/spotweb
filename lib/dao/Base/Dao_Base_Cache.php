@@ -304,7 +304,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieve a statistics count from the cache
 	 */
 	function getCachedStats($resourceId) {
-		return $this->getCache($resourceId, $this::Statistics);
+		return unserialize($this->getCache($resourceId, $this::Statistics));
 	} # getCachedStats
 
     /*
@@ -325,7 +325,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Save an HTTP resource into the cache
 	 */
 	function saveStatsCache($resourceId, $content) {
-		return $this->saveCache($resourceId, $this::Statistics, false, $content);
+		return $this->saveCache($resourceId, $this::Statistics, false, serialize($content));
 	} # saveStatsCache
 
 
