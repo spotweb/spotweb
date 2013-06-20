@@ -35,7 +35,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			$this->_svcSpotParser = new Services_Format_Parsing();
 
 			# if we need to fetch images or nzb files, we need several service objects
-			if ($this->_retrieveFull && ($this->_prefetch_image) || ($this->_prefetch_nzb)) {
+			if ($this->_retrieveFull || $this->_prefetch_image || $this->_prefetch_nzb) {
 				/*
 				 * NNTP Spot Reading engine
 				 */
