@@ -466,7 +466,8 @@
 			$createdDbSettings = file_exists("dbsettings.inc.php");
 
             showTemplate("step-final.inc.php", array('createdDbSettings' => $createdDbSettings,
-                                                     'dbCreateOutput' => $dbCreateOutput));
+                                                     'dbCreateOutput' => $dbCreateOutput,
+                                                     'dbConnectionString' => $dbConnectionString));
 		}  # try
 		catch(Exception $x) {
             showTemplate("fatalerror.inc.php", array('x' => $x));
