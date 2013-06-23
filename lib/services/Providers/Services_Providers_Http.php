@@ -158,6 +158,7 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_HEADER, 1);
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
 
         /*
          * If specified, pass authorization for this request
@@ -179,7 +180,8 @@ class Services_Providers_Http {
          * If we are passed fields to post to the server, actuall post them
          */
         if ((($this->getPostContent() != null) ||
-             ($this->getUploadFiles() != null)) &&
+             ($this->getUploadFiles() != null) ||
+             ($this->getRawPostData() != null)) &&
             ($this->getMethod() == 'POST')) {
             $this->addPostFieldsToCurl($ch, $this->getPostContent(), $this->getUploadFiles(), $this->getRawPostData());
         } # if

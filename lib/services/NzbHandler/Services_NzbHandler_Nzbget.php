@@ -51,12 +51,13 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
 		} # if
 
-		$response = json_decode($output, true);
+		$response = json_decode($output['data'], true);
 		if (is_array($response) && isset($response['error']) && isset($response['error']['code'])) {
 			error_log("NZBGet RPC: Method '" . $method . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
 			throw new Exception("NZBGet RPC: Method '" . $method . "', " . $response['error']['message'] . " (" . $response['error']['code'] . ")");
 		} elseif (is_array($response) && isset($response['result'])) {
 			$response = $response['result'];
+		}
 		return $response;
 	} # sendRequest
 
@@ -213,7 +214,7 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 	 * NZBGet API method: rate
 	 * Set the maximum download rate
 	 */
-	public function setSpeedLimit(int $limit)
+	public function setSpeedLimit($limit)
 	{
 		$args = array((int)$limit);
 
