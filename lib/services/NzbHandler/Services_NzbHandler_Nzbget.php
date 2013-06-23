@@ -5,8 +5,8 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 	private $_host = null;
 	private $_timeout = null;
 	private $_url = null;
-    private $_username = null;
-    private $_password = null;
+	private $_username = null;
+	private $_password = null;
 
 	function __construct(Services_Settings_Base $settings, array $nzbHandling)
 	{
@@ -16,8 +16,8 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 		$this->_host = $nzbget['host'];
 		$this->_timeout = $nzbget['timeout'];
 		$this->_url = "http://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
-        $this->_username = $nzbget['username'];
-        $this->_password = $nzbget['password'];
+		$this->_username = $nzbget['username'];
+		$this->_password = $nzbget['password'];
 	} # __construct
 
 	public function processNzb($fullspot, $nzblist)
@@ -35,16 +35,16 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 		$reqarr = array('version' => '1.1', 'method' => $method, 'params' => $args);
 		$content = json_encode($reqarr);
 
-        /*
-         * Actually perform the HTTP POST
-         */
-        $svcProvHttp = new Services_Providers_Http(null);
-        $svcProvHttp->setUsername($this->_username);
-        $svcProvHttp->setPassword($this->_password);
-        $svcProvHttp->setMethod('POST');
-        $svcProvHttp->setContentType('application/json');
-        $svcProvHttp->setRawPostData($content);
-        $output = $svcProvHttp->perform($this->_url, null);
+		/*
+		 * Actually perform the HTTP POST
+		 */
+		$svcProvHttp = new Services_Providers_Http(null);
+		$svcProvHttp->setUsername($this->_username);
+		$svcProvHttp->setPassword($this->_password);
+		$svcProvHttp->setMethod('POST');
+		$svcProvHttp->setContentType('application/json');
+		$svcProvHttp->setRawPostData($content);
+		$output = $svcProvHttp->perform($this->_url, null);
 
 		if ($output === false) {
 			error_log("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
@@ -63,19 +63,19 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 
 	# NzbHandler API functions
 
-    /**
-     * Check if handler is available
-     * @return boolean
-     */
-    public function isAvailable()
-    {
-        try {
-            $this -> getStatus ( );
-        } catch ( Exception $e ) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * Check if handler is available
+	 * @return boolean
+	 */
+	public function isAvailable()
+	{
+		try {
+			$this -> getStatus ( );
+		} catch ( Exception $e ) {
+			return false;
+		}
+		return true;
+	}
 
 	/*
 	 * Return the supported API functions for this NzbHandler imlementation
