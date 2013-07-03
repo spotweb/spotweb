@@ -64,8 +64,9 @@ class Services_Nntp_Engine {
          */
         $this->quit();
         sleep($this->_connectionErrors);
-        $this->_nntp->selectGroup($this->_currentgroup);
-        $this->connect();
+
+        // reconnect by selecting the group again
+        $this->selectGroup($this->_currentgroup);
     } # registerError
 
     /**
