@@ -63,6 +63,7 @@ class Services_Nntp_Engine {
          * sleep in between
          */
         $this->quit();
+        $this->_nntp = new Net_NNTP_Client();
         sleep($this->_connectionErrors);
 
         // reconnect by selecting the group again
