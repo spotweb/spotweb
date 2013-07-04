@@ -52,9 +52,11 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 			throw new Exception("Unable to open sabnzbd url: " . $url);
 		} # if
 		
-		if (strtolower(trim($output)) != 'ok') {
-			error_log("sabnzbd returned: " . $output);
-			throw new Exception("sabnzbd returned: " . $output);
+		if (strtolower(trim($output['data'])) != 'ok') {
+            $errorStr = 'sabnzbd push failed: ' . $output['data'] . ' (code: ' . $output['http_code'] . ' / ' . $output['curl_info'] . ')';
+
+			error_log($errorStr);
+			throw new Exception($errorStr);
 		} # if
 	} # processNzb
 
