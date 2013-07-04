@@ -147,11 +147,12 @@ class Services_Nntp_Engine {
 
         try {
             $this->_nntp->disconnect();
-            $this->_connected = false;
         }
         catch(Exception $x) {
             // dummy, we dont care about exceptions during quitting time
         } # catch
+
+        $this->_connected = false;
     } # quit()
 
     /*
