@@ -43,7 +43,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
                 array('name' => 'nzbfile',
                       'filename' => $nzb['filename'],
                       'mime' => $nzb['mimetype'],
-                      'nzb' => $nzb['nzb'])
+                      'data' => $nzb['nzb'])
         ));
         $output = $svcProvHttp->perform($url, null);
 
