@@ -65,6 +65,10 @@ function __autoload($class_name) {
 
             break;
         } # Math
+        case 'parse_model'		: {
+            require_once "vendor/fts_parser2/parse_model.php";
+            break;
+        } # 'Mobile'
 		default				: {
 			# Exceptions do not start with the word 'Exception', so we special case that
 			$isException = substr($class_name, -1 * strlen('Exception')) == 'Exception';
@@ -75,6 +79,7 @@ function __autoload($class_name) {
 
             if ($class_name == 'parse_model') {
                 require_once "vendor/fts_parser2/parse_model.php";
+                return ;
             } # if
 
 			if ($class_name == 'Registry') {
