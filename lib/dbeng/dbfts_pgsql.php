@@ -61,7 +61,7 @@ class dbfts_pgsql extends dbfts_abs {
                 /*
                  * Add the textqueries with an AND per search term
                  */
-                if (!empty($filterValueSql)) {
+                if (!empty($queryPart)) {
                     $filterValueSql[] = ' (' . implode(' AND ', $queryPart) . ') ';
                 } # if
             } # else
