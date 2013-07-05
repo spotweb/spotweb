@@ -51,7 +51,9 @@ class dbfts_pgsql extends dbfts_abs {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
-                    $queryPart[] = "to_tsquery('Dutch', '" . $this->_db->safe($o_parse->tsearch) . "')";
+                    $ts_query = "to_tsquery('Dutch', '" . $this->_db->safe($o_parse->tsearch) . "')";
+                    $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
+                    $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
                 } # if
 
                 if (!empty($o_parse->ilike)) {
