@@ -42,6 +42,8 @@ abstract class dbfts_abs {
 	 * Returns the correct FTS class for the given dbclass
 	 */
 	static function Factory(dbeng_abs $db) {
+        return new dbfts_pgsql($db);
+
 		if ($db instanceof dbeng_pdo_pgsql) {
 			return new dbfts_pgsql($db);
 		} elseif ($db instanceof dbeng_pdo_mysql) {

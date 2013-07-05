@@ -51,7 +51,7 @@ class dbfts_pgsql extends dbfts_abs {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
-                    $querypart[] = "to_tsquery(" . $this->_db->safe($o_parse->tsearch) . ")";
+                    $queryPart[] = "to_tsquery('Dutch', '" . $this->_db->safe($o_parse->tsearch) . "')";
                 } # if
 
                 if (!empty($o_parse->ilike)) {
@@ -61,7 +61,9 @@ class dbfts_pgsql extends dbfts_abs {
                 /*
                  * Add the textqueries with an AND per search term
                  */
-                $filterValueSql[] = ' (' . implode(' AND ', $queryPart) . ') ';
+                if (!empty($filterValueSql)) {
+                    $filterValueSql[] = ' (' . implode(' AND ', $queryPart) . ') ';
+                } # if
             } # else
 
 			$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
@@ -69,6 +71,8 @@ class dbfts_pgsql extends dbfts_abs {
 								  'autoadded' => true,
 								  'friendlyname' => null);
 		} # foreach
+
+        var_dump($filterValueSql);
 
 		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 		
