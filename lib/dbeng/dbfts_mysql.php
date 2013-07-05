@@ -75,7 +75,7 @@ class dbfts_mysql extends dbfts_abs {
 
             $newList = array();
             foreach($matches[0] as $word) {
-                $strippedWord = trim($word, "\r\n\t +-");
+                $strippedWord = trim($word, "\r\n\t "); // removed + and - from trim
                 if (strlen($strippedWord) > 0) {
                     $newList[] = $strippedWord;
                 } # if
@@ -247,6 +247,7 @@ class dbfts_mysql extends dbfts_abs {
 			 *		+empire +sun
 			 *		x-art (like search because it contains an -)
 			 *		50/50 (like search because it contains an /)
+			 *      Arvo -Lamentate (natural without like)
 			 */
 
 			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm && !$hashRequiredStopWord)) {
@@ -260,7 +261,6 @@ class dbfts_mysql extends dbfts_abs {
 			} # else
 
 /*
-            echo 'HasTooShortWords  : ' . (int) $hasTooShortWords . '<br>';
             echo 'hasStopWords      : ' . (int) $hasStopWords . '<br>';
             echo 'hasLongEnoughWords: ' . (int) $hasLongEnoughWords . '<br>';
             echo 'hasNoStopWords    : ' . (int) $hasNoStopWords . '<br>';
@@ -278,7 +278,17 @@ class dbfts_mysql extends dbfts_abs {
             $matchPart = '';
 			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') || ($searchMode == 'both-match-boolean')) {
                 foreach($this->splitWords($searchValue) as $splittedTerm) {
-    				$queryPart[] = ' ' . $field . " LIKE '%" . $this->_db->safe(trim($splittedTerm, "\"")) . "%'";
+                    /*
+                     * If the term contains an boolean operator in the beginning,
+                     * strip it
+                     */
+                    $filteredTerm = trim($splittedTerm, "\"");
+                    $filteredTerm = ltrim($filteredTerm, "+-~<>");
+                    $filteredTerm = rtrim($filteredTerm, "*");
+
+                    if (!empty($filteredTerm)) {
+                        $queryPart[] = ' ' . $field . " LIKE '%" . $this->_db->safe($filteredTerm) . "%'";
+                    } # if
                 } # foreach
 			} # if
 			
