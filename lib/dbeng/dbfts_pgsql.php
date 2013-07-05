@@ -25,12 +25,45 @@ class dbfts_pgsql extends dbfts_abs {
 			 */
 			$tmpSortCounter = count($additionalFields);
 
-			# Prepare the to_tsvector and to_tsquery strings
-			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
-			$ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
-			
-			$filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
-			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+            # Prepare the to_tsvector and to_tsquery strings
+            $ts_vector = "to_tsvector('Dutch', " . $field . ")";
+
+            /*
+             * Inititialize Digital Stratum's FTS2 parser so we can
+             * give the user somewhat normal search query parameters
+             */
+            $o_parse = new parse_model();
+            $o_parse->debug = false;
+            $o_parse->upper_op_only = true;
+            $o_parse->use_prepared_sql = false;
+            $o_parse->set_default_op('AND');
+
+            /*
+             * First try to the parse the query using this library,
+             * if that fails, fall back to letting PostgreSQL crudely
+             * parse it
+             */
+            if ($o_parse->parse($searchValue, $field) === false) {
+                $ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
+                $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
+                $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+            } else {
+                $queryPart = array();
+
+                if (!empty($o_parse->tsearch)) {
+                    $querypart[] = "to_tsquery(" . $this->_db->safe($o_parse->tsearch) . ")";
+                } # if
+
+                if (!empty($o_parse->ilike)) {
+                    $queryPart[] = $o_parse->ilike;
+                } # if
+
+                /*
+                 * Add the textqueries with an AND per search term
+                 */
+                $filterValueSql[] = ' (' . implode(' AND ', $queryPart) . ') ';
+            } # else
+
 			$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 								  'direction' => 'DESC',
 								  'autoadded' => true,

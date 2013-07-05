@@ -10,6 +10,34 @@ abstract class dbfts_abs {
 		$this->_db = $dbCon;		
 	} // ctor
 
+    /*
+     * Split a string with spaces, respect
+     * quotes.
+     */
+    protected function splitWords($s) {
+        /*
+         * Split on word boundaries, but include:
+         *  /
+         *  -
+         *  +
+         *  \
+         */
+        if (preg_match_all('([\\\/\+-\w]+|".+")', $s, $matches)) {
+
+            $newList = array();
+            foreach($matches[0] as $word) {
+                $strippedWord = trim($word, "\r\n\t "); // removed + and - from trim
+                if (strlen($strippedWord) > 0) {
+                    $newList[] = $strippedWord;
+                } # if
+            } # foreach
+
+            return $newList;
+        } else {
+            return array($s);
+        } # else
+    } # splitWords
+
 	/*
 	 * Returns the correct FTS class for the given dbclass
 	 */
@@ -50,6 +78,5 @@ abstract class dbfts_abs {
 					 'additionalFields' => $additionalFields,
 					 'sortFields' => array());
 	} # createTextQuery
-
 
 } # dbfts_abs

@@ -59,33 +59,6 @@ class dbfts_mysql extends dbfts_abs {
 							'yes', 'yet', 'you', 'you\'d', 'you\'ll', 'you\'re', 'you\'ve', 'your', 'yours', 'yourself', 
 							'yourselves', 'zero'); 
 
-    /*
-     * Split a string with spaces, respect
-     * quotes.
-     */
-    private function splitWords($s) {
-        /*
-         * Split on word boundaries, but include:
-         *  /
-         *  -
-         *  +
-         *  \
-         */
-        if (preg_match_all('([\\\/\+-\w]+|".+")', $s, $matches)) {
-
-            $newList = array();
-            foreach($matches[0] as $word) {
-                $strippedWord = trim($word, "\r\n\t "); // removed + and - from trim
-                if (strlen($strippedWord) > 0) {
-                    $newList[] = $strippedWord;
-                } # if
-            } # foreach
-
-            return $newList;
-        } else {
-            return array($s);
-        } # else
-    } # splitWords
 
 	/*
 	 * Constructs a query part to match textfields. Abstracted so we can use
