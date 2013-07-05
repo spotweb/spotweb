@@ -215,6 +215,9 @@ class Services_User_Authentication {
 			# always use the default template
 			$userRecord['active_tpl'] = $userRecord['user']['prefs']['normal_template'];
 
+            # create an IP address in the record because we need it
+            $userRecord['session'] = array('ipaddr' => $this->determineUsersIpAddress());
+
 			return $userRecord;
 		} else {
 			return false;

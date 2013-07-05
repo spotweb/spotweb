@@ -32,8 +32,10 @@ class Dao_Base_User implements Dao_User {
 		return false;
 	} # userEmailExists
 
-	/*
+	/**
 	 * Retrieves a user from the database
+     *
+     * @returns boolean|array
 	 */
 	function getUser($userid) {
 		$tmp = $this->_conn->arrayQuery(
