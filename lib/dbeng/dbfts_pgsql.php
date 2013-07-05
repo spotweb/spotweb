@@ -74,8 +74,6 @@ class dbfts_pgsql extends dbfts_abs {
 								  'friendlyname' => null);
 		} # foreach
 
-        var_dump($filterValueSql);
-
 		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 		
 		return array('filterValueSql' => $filterValueSql,
