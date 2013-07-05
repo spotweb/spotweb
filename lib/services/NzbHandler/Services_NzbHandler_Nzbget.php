@@ -73,7 +73,7 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 	 */
 	public function isAvailable()
 	{
-        if (!empty($this->_url)) {
+        if (empty($this->_url)) {
             return false;
         } # if
 
