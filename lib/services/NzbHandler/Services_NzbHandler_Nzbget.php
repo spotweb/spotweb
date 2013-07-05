@@ -32,6 +32,7 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 
 	private function sendRequest($method, $args)
 	{
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$reqarr = array('version' => '1.1', 'method' => $method, 'params' => $args);
 		$content = json_encode($reqarr);
 
@@ -46,9 +47,11 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 		$svcProvHttp->setRawPostData($content);
 		$output = $svcProvHttp->perform($this->_url, null);
 
-		if ($output === false) {
-			error_log("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
-			throw new Exception("ERROR: Could not decode json-data for NZBGet method '" . $method ."'");
+        if ($output['successful'] === false) {
+            $errorStr = "ERROR: Could not decode json-data for NZBGet method '" . $method ."', " . $output['errorstr'];
+
+            error_log($errorStr);
+			throw new Exception($errorStr);
 		} # if
 
 		$response = json_decode($output['data'], true);
@@ -58,6 +61,7 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 		} elseif (is_array($response) && isset($response['result'])) {
 			$response = $response['result'];
 		}
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($method, $args));
 		return $response;
 	} # sendRequest
 
@@ -69,8 +73,12 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 	 */
 	public function isAvailable()
 	{
+        if (!empty($this->_url)) {
+            return false;
+        } # if
+
 		try {
-			$this -> getStatus ( );
+            $this->sendrequest('status', null);
 		} catch ( Exception $e ) {
 			return false;
 		}

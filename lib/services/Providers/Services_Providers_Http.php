@@ -159,6 +159,7 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
+        curl_setopt ($ch, CURLOPT_VERBOSE, true);
 
         /*
          * If specified, pass authorization for this request
@@ -197,6 +198,7 @@ class Services_Providers_Http {
         } # if
 
         $response = curl_exec($ch);
+        $errorStr = curl_error($ch);
 
         /*
          * Curl returns false on some unspecified errors (eg: a timeout)
@@ -222,9 +224,20 @@ class Services_Providers_Http {
 
         curl_close($ch);
 
+        /*
+         * Sometimes we get an HTTP error of 0 back, which
+         * probably means a timeout or something, so fix up
+         * the error string manually.
+         */
+        if (($errorStr == '') && ($http_code == 0)) {
+            $errorStr = 'unable to connect to URL: ' . $url;
+        } # if
+
         SpotTiming::stop(__FUNCTION__, array($url));
         return array('http_code' => $http_code,
                      'data' => $data,
+                     'successful' => ($http_code == 200 || $http_code == 304),
+                     'errorstr' => 'http returncode: ' . $http_code . ' / ' . $errorStr,
                      'curl_info' => $curl_info);
     } # performGet
 	

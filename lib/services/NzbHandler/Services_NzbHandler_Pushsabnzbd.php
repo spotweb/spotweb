@@ -46,15 +46,9 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
                       'data' => $nzb['nzb'])
         ));
         $output = $svcProvHttp->perform($url, null);
+        $errorStr = 'sabnzbd push failed: ' . $output['errorstr'];
 
-		if ($output	=== false) {
-			error_log("Unable to open sabnzbd url: " . $url);
-			throw new Exception("Unable to open sabnzbd url: " . $url);
-		} # if
-		
-		if (strtolower(trim($output['data'])) != 'ok') {
-            $errorStr = 'sabnzbd push failed: ' . $output['data'] . ' (code: ' . $output['http_code'] . ' / ' . $output['curl_info'] . ')';
-
+		if (($output['successful'] === false) || (strtolower(trim($output['data'])) != 'ok')) {
 			error_log($errorStr);
 			throw new Exception($errorStr);
 		} # if
