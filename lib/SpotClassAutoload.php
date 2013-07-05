@@ -73,6 +73,10 @@ function __autoload($class_name) {
 				return ;
 			} # if
 
+            if ($class_name == 'parse_model') {
+                require_once "vendor/fts_parser2/parse_model.php";
+            } # if
+
 			if ($class_name == 'Registry') {
 				require_once "vendor/Lim_Registry/Registry.php";
 				return ;
