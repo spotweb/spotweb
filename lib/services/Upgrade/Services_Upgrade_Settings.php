@@ -75,9 +75,11 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('valid_templates', 
 				array(
 						'we1rdo' => 'we1rdo'
-				));; 
+				));;
+        $this->setIfNot('ms_translator_clientid', '');
+        $this->setIfNot('ms_translator_clientsecret', '');
 
-		$this->updateSettingsVersion();
+        $this->updateSettingsVersion();
 	} # update()
 	
 	/*

@@ -75,13 +75,10 @@ class SpotTemplateHelper {
 	 * Rturn the actual comments for a specific spot
 	 */
 	function getSpotComments($msgId, $start, $length) {
-		# Check users' permissions
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
+        $language = substr($this->_currentSession['user']['prefs']['user_language'], 0, 2);
 
-		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
-		$svcProvComments = new Services_Providers_Comments($this->_daoFactory->getCommentDao(), $svcNntpSpotReading);
-		
-		return $svcProvComments->fetchSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length);
+        $svcActnComments = new Services_Actions_GetComments($this->_settings, $this->_daoFactory, $this->_spotSec);
+        return $svcActnComments->getSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length, $language);
 	} # getSpotComments
 
     function getFullSpot($messageId) {

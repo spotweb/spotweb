@@ -14,6 +14,11 @@ class Services_Providers_Http {
      */
     private $_username = null;
     /**
+     * Token for HTTP Bearer authentication (used by OAuth)
+     * @var string
+     */
+    private $_bearerAuth = null;
+    /**
      * Password for HTTP basic authentication
      * @var string
      */
@@ -30,6 +35,10 @@ class Services_Providers_Http {
      * @var mixed
      */
     private $_postContent = null;
+    /**
+     * Array of 'key' => 'value' pairs of headers we want to send
+     */
+    private $_httpHeaders = array();
     /**
      * List of files to upload
      *
@@ -61,45 +70,45 @@ class Services_Providers_Http {
      * @return void
      */
     private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData) {
-        /*
-         * We need to create a unique  boundary string to be used between the
-         * different attachments / post fields we use
-         */
-        $boundary = '----------------------------' . microtime(true);
-        $contentType = '';
-        $contentLength = 0;
 
         /*
-         * Process the actual fields, we expect (for now) a very basic field system where
-         * there is either a key/value pair
+         * Files posted to another webserver, need to be in another format
+         * than a plain post data to be posted.
          */
-        $body = array();
-        if ($postFields != null) {
-            foreach($postFields as $key => $val) {
-                $body[] = '--' . $boundary;
-                $body[] = 'Content-Disposition: form-data; name="' . $key . '"';
-                $body[] = '';
-                $body[] = urlencode($val);
-            } # foreach
-        } # if
-
-        # process the file uploads
         if ($files != null) {
-            foreach($files as $key => $val) {
-                $body[] = '--' . $boundary;
-                $body[] = 'Content-Disposition: form-data; name="' . $val['name'] . '"; filename="' . $val['filename'] . '"';
-                $body[] = 'Content-Type: ' . $val['mime'];
-                $body[] = '';
-                $body[] = $val['data'];
-            } # foreach
-        } # if
+            /*
+             * We need to create a unique  boundary string to be used between the
+             * different attachments / post fields we use
+             */
+            $boundary = '----------------------------' . microtime(true);
+            $contentType = '';
+            $contentLength = 0;
 
-        /*
-         * If we are either posting fields or files, we can just set the
-         * mime type automatically, else we will use the header information
-         * as passed by the caller.
-         */
-        if ( ($files != null) || ($postFields != null)) {
+            /*
+             * Process the actual fields, we expect (for now) a very basic field system where
+             * there is either a key/value pair
+             */
+            $body = array();
+            if ($postFields != null) {
+                foreach($postFields as $key => $val) {
+                    $body[] = '--' . $boundary;
+                    $body[] = 'Content-Disposition: form-data; name="' . $key . '"';
+                    $body[] = '';
+                    $body[] = urlencode($val);
+                } # foreach
+            } # if
+
+            # process the file uploads
+            if ($files != null) {
+                foreach($files as $key => $val) {
+                    $body[] = '--' . $boundary;
+                    $body[] = 'Content-Disposition: form-data; name="' . $val['name'] . '"; filename="' . $val['filename'] . '"';
+                    $body[] = 'Content-Type: ' . $val['mime'];
+                    $body[] = '';
+                    $body[] = $val['data'];
+                } # foreach
+            } # if
+
             # signal end of request (note the trailing "--")
             $body[] = '--' . $boundary . '--';
             $body[] = '';
@@ -119,7 +128,15 @@ class Services_Providers_Http {
             if (!empty($rawPostData)) {
                 throw new Exception("Don't know how to handle post or fileupload and raw postdata");
             } # if
-        } else {
+        } elseif (($files == null) && ($postFields != null)) {
+            /*
+             * If we are not posting files, but are posting POST
+             * fields, we just take the easy way out.
+             */
+            $content = http_build_query($postFields);
+            $contentType = 'application/x-www-form-urlencoded';
+            $contentLength = strlen($content);
+        } elseif ($rawPostData != null) {
             /*
              * We are pasting a raw data stream, so ask the caller for
              * extra information
@@ -127,13 +144,19 @@ class Services_Providers_Http {
             $contentType = $this->getContentType();
             $contentLength = strlen($rawPostData);
             $content = $rawPostData;
+        } else {
+            throw new NotImplementedException('Unknown combination of POST/FILE/RAW posting data');
         } # else
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        /*
+         * Add our headers to the call
+         */
+        $this->addHttpHeaders(array(
             'Content-Length: ' . $contentLength,
             'Content-Type: ' . $contentType,
             'Expect: '
         ));
+
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
     } # addPostFieldsToCurl
@@ -154,7 +177,10 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt ($ch, CURLOPT_TIMEOUT, 15);
-        curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
+        // Don't use fail on error, because sometimes we do want to se
+        // the output of the content
+        //      curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
+        // eg, if a site returns an 400 we might want to know why.
         curl_setopt ($ch, CURLOPT_HEADER, 1);
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -169,6 +195,16 @@ class Services_Providers_Http {
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($ch, CURLOPT_USERPWD, $this->getUsername() . ':' . $this->getPassword());
         } // # if
+
+
+        /*
+         * OAuth 2.0 uses 'Bearer' authentication, we support this by manually sending the
+         * HTTP header field
+         */
+        $bearerAuth = $this->getBearerAuth();
+        if (!empty($bearerAuth)) {
+            $this->addHttpHeaders(array('Authorization: Bearer ' . $this->getBearerAuth()));
+        } # if
 
         /*
          * Should we be posting?
@@ -195,6 +231,14 @@ class Services_Providers_Http {
         if (($lastModTime != null) && ($lastModTime > 0)) {
             curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
             curl_setopt($ch, CURLOPT_TIMEVALUE, $lastModTime);
+        } # if
+
+        /*
+         * Send our custom HTTP headers
+         */
+        $httpHeaders = $this->getHttpHeaders();
+        if (!empty($httpHeaders)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHttpHeaders());
         } # if
 
         $response = curl_exec($ch);
@@ -415,4 +459,36 @@ class Services_Providers_Http {
     {
         return $this->_rawPostData;
     }
+    /**
+     * @param string $bearerAuth
+     */
+    public function setBearerAuth($bearerAuth)
+    {
+        $this->_bearerAuth = $bearerAuth;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBearerAuth()
+    {
+        return $this->_bearerAuth;
+    }
+
+    /**
+     * @param mixed $httpHeaders
+     */
+    public function addHttpHeaders($httpHeaders)
+    {
+        $this->_httpHeaders = array_merge($this->_httpHeaders, $httpHeaders);
+    } # addHttpHeaders
+
+    /**
+     * @return mixed
+     */
+    public function getHttpHeaders()
+    {
+        return $this->_httpHeaders;
+    } # getHttpHeaders
+
 } # Services_Providers_Http

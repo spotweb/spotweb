@@ -40,7 +40,12 @@
 					) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> 
 					<br />
 					<?php if ($commentIsModerated) { echo _('This comment is moderated') . '<br /><br />'; } ?>
-					<?php echo join("<br>", $comment['body']); ?>
+					<?php if (isset($comment['body_translated'])) {
+                                    echo join("<br>", $comment['body_translated']);
+                          } else {
+                                    echo join("<br>", $comment['body']);
+                          }
+                    ?>
 					</li>
 <?php	
 			} # if

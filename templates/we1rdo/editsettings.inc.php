@@ -68,7 +68,18 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[cookie_expires]"><?php echo _('Cookie expires after (in days)'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo htmlspecialchars($this->_settings->get('cookie_expires'), ENT_QUOTES); ?>"></dd>
+
+                    <!-- Add some explanation about the MS translator API -->
+                    <p>
+                        <?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires a so-called Client ID and a SecretID which you need to <a href="http://blogs.msdn.com/b/translation/p/gettingstarted1.aspx">request at Microsoft</a>. Please enter the values in below fields.'); ?>
+                    </p>
+                    <dt><label for="editsettingsform[ms_translator_clientid]"><?php echo _('Microsoft Translator API - Client ID'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_clientid]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientid'), ENT_QUOTES); ?>"></dd>
+
+                    <dt><label for="editsettingsform[ms_translator_clientsecret]"><?php echo _('Microsoft Translator API - Secret ID'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_clientsecret]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientsecret'), ENT_QUOTES); ?>"></dd>
 				</dl>
+
 			</fieldset>
 		</div>
 

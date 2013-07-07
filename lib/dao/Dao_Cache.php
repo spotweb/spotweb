@@ -5,6 +5,8 @@ interface Dao_Cache {
 	const SpotNzb			= 2;
 	const Web				= 3;
 	const Statistics		= 4;
+    const TranslaterToken   = 5;
+    const TranslatedComments= 6;
 
 	function expireCache($expireDays);
 
@@ -28,4 +30,9 @@ interface Dao_Cache {
 	function updateStatsCacheStamp($resourceId);
 	function saveStatsCache($resourceId, $content);
 
+    function getCachedTranslaterToken($resourceId);
+    function saveTranslaterTokenCache($resourceId, $expireTime, $content);
+
+    function getCachedTranslatedComments($resourceId, $language);
+    function saveTranslatedCommentCache($resourceId, $language, $content);
 } # Dao_Cache
