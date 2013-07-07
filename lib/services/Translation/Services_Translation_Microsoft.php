@@ -71,6 +71,11 @@ class Services_Translation_Microsoft {
         $tmpResult = $svcPrvHttp->perform(Services_Translation_Microsoft::authUrl, null);
 
         if (!$tmpResult['successful']) {
+            $tmpResult = @json_decode($tmpResult['data']);
+            if (!empty($tmpResult->error)) {
+                throw new Exception($tmpResult->error_description);
+            } # if
+
             return false;
         } # if
 
