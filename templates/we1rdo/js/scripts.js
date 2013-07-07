@@ -685,13 +685,19 @@ function downloadSabnzbd(id,url, dltype) {
 	 * being called because in some cases (eg: client-sabnzbd)
 	 * it is a cross-domain request and will never be called
 	 */
-	$.get(url, function(data, textStatus, jqXHR) {
-        if (data.result == "success") {
-            $(".sab_"+id).removeClass("loading").addClass("succes");
-        } else {
-            $(".sab_"+id).removeClass("loading").addClass("failure");
-        } // else
-	});
+    // post de data
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: function(data) {
+            if (data.result == "success") {
+                $(".sab_"+id).removeClass("loading").addClass("succes");
+            } else {
+                $(".sab_"+id).removeClass("loading").addClass("failure");
+            } // else
+        } // success
+    }); // ajax call om de form te submitten
 
     /*
      * with client-sabnzbd we ask the browser to download a specific url,
