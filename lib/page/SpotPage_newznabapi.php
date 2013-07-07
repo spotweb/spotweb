@@ -314,7 +314,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			
 			echo json_encode($doc);
 		} else {
-			# Opbouwen XML
+			# Create XML
 			$doc = new DOMDocument('1.0', 'utf-8');
 			$doc->formatOutput = true;
 
