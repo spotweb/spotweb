@@ -157,7 +157,8 @@
 		 * connect to the database
 		 */
 		$nntpVerified = false;
-		if ($form['submit'] === 'Verify usenet server') {
+		if (($form['submit'] === 'Verify usenet server') ||
+            ($form['submit'] === 'Skip validation')) {
 			try {
 				/*
 				 * Convert the selected NNTP name to an actual
@@ -217,8 +218,10 @@
 				} # else 
 				
 				/* and try to connect to the usenet server */
-				$nntp = new Services_Nntp_Engine($form['hdr']);
-				$nntp->validateServer();
+                if ($form['submit'] === 'Verify usenet server') {
+                    $nntp = new Services_Nntp_Engine($form['hdr']);
+				    $nntp->validateServer();
+                } # if
 
 				$nntpVerified = true;
 				/*

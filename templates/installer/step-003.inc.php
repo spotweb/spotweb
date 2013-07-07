@@ -27,7 +27,10 @@
 				<tr id='customnntpfield' style='display: none;'> <td> server </td> <td> <input type='text' length='40' name='nntpform[host]' value='<?php echo htmlspecialchars($form['host']); ?>'></input> </td> </tr>
 				<tr> <td> username </td> <td> <input type='text' length='40' name='nntpform[user]' value='<?php echo htmlspecialchars($form['user']); ?>'></input> </td> </tr>
 				<tr> <td> password </td> <td> <input type='password' length='40' name='nntpform[pass]' value='<?php echo htmlspecialchars($form['pass']); ?>'></input> </td> </tr>
-				<tr> <td colspan='2'> <input type='submit' name='nntpform[submit]' value='Verify usenet server'> </td> </tr>
+				<tr>
+                    <td> <input type='submit' name='nntpform[submit]' value='Verify usenet server'> </td>
+                    <td> <input type='submit' name='nntpform[submit]' value='Skip validation'> </td>
+                </tr>
 			</table>
 			</form>
 			<br />
