@@ -1,5 +1,6 @@
 <?php
 abstract class dbeng_pdo extends dbeng_abs {
+    protected $_rows_changed;
 	
 	/**
      * We don't want to rewrite all queries, so a small parser is written
