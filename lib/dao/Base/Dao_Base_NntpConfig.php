@@ -54,7 +54,7 @@ class Dao_Base_NntpConfig implements Dao_NntpConfig {
 			$runTime = 0;
 		} # if
 
-		$this->_conn->modify("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
+		$this->_conn->exec("UPDATE nntp SET nowrunning = %d WHERE server = '%s'", Array((int) $runTime, $server));
 		if ($this->_conn->rows() == 0) {
 			$this->_conn->modify("INSERT INTO nntp(server, nowrunning) VALUES('%s', %d)", Array($server, (int) $runTime));
 		} # if

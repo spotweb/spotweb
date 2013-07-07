@@ -70,10 +70,12 @@ class Dao_Base_Cache implements Dao_Cache {
         $filePath = $this->_cachePath . DIRECTORY_SEPARATOR;
 
         switch ($cacheType) {
-            case Dao_Cache::SpotImage       : $filePath .= 'image' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::SpotNzb         : $filePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Statistics      : $filePath .= 'stats' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Web             : $filePath .= 'web' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotImage           : $filePath .= 'image' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotNzb             : $filePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Statistics          : $filePath .= 'stats' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Web                 : $filePath .= 'web' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslaterToken     : $filePath .= 'translatertoken' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslatedComments  : $filePath .= 'translatedcomments' . DIRECTORY_SEPARATOR; break;
 
             default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
         } # switch
@@ -103,9 +105,11 @@ class Dao_Base_Cache implements Dao_Cache {
             } # switch
         } else {
             switch ($cacheType) {
-                case Dao_Cache::SpotNzb         : $filePath .= '.nzb'; break;
-                case Dao_Cache::Statistics      : $filePath .= '.stats'; break;
-                case Dao_Cache::Web             : $filePath .= '.http'; break;
+                case Dao_Cache::SpotNzb             : $filePath .= '.nzb'; break;
+                case Dao_Cache::Statistics          : $filePath .= '.stats'; break;
+                case Dao_Cache::Web                 : $filePath .= '.http'; break;
+                case Dao_Cache::TranslaterToken     : $filePath .= '.token'; break;
+                case Dao_Cache::TranslatedComments  : $filePath .= '.translatedcomments'; break;
 
                 default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
             } # switch
@@ -144,7 +148,7 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Create the directory
          */
-        $success = false;
+        $success = true;
         if (!is_writable(dirname($filePath))) {
             $success = @mkdir(dirname($filePath), 0777, true);
         } # if
@@ -304,7 +308,12 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieve a statistics count from the cache
 	 */
 	function getCachedStats($resourceId) {
-		return unserialize($this->getCache($resourceId, $this::Statistics));
+        $tmpStats = $this->getCache($resourceId, $this::Statistics);
+        if ($tmpStats !== false) {
+            return unserialize($tmpStats['content']);
+        } else {
+            return false;
+        } # if
 	} # getCachedStats
 
     /*
@@ -315,18 +324,67 @@ class Dao_Base_Cache implements Dao_Cache {
     } # hasCachedStats
 
 	/*
-	 * Update an HTTP resource from the cache
+	 * Update an statistics resource from the cache
 	 */
 	function updateStatsCacheStamp($resourceId) {
 		return $this->updateCacheStamp($resourceId, $this::Statistics);
 	} # updateStatsCacheStamp
 
 	/*
-	 * Save an HTTP resource into the cache
+	 * Save an statistics resource into the cache
 	 */
 	function saveStatsCache($resourceId, $content) {
 		return $this->saveCache($resourceId, $this::Statistics, false, serialize($content));
 	} # saveStatsCache
 
+    /*
+     * Returns an translater token from the cache
+     */
+    function getCachedTranslaterToken($resourceId) {
+        $tmpCache = $this->getCache($resourceId, $this::TranslaterToken);
+
+        if ($tmpCache === false) {
+            return false;
+        } # iuf
+
+        /*
+         * Make sure we don't return an translator token if its expired
+         */
+        if ($tmpCache['metadata'] < time()) {
+            return false;
+        } # if
+
+        return $tmpCache;
+    } # getCachedTranslaterToken
+
+    /*
+     * Saves an translater token into the cache
+     */
+    function saveTranslaterTokenCache($resourceId, $expireTime, $content) {
+        return $this->saveCache($resourceId, $this::TranslaterToken, $expireTime, $content);
+    } # saveTranslaterTokenCache
+
+    /*
+    * Retrieve a translated comment resource from the cache
+     */
+    function getCachedTranslatedComments($resourceId, $language) {
+        $tmpTranslations = $this->getCache($resourceId . '_' . $language, $this::TranslatedComments);
+        if ($tmpTranslations !== false) {
+            return unserialize($tmpTranslations['content']);
+        } else {
+            return false;
+        } # if
+    } # getCachedTranslatedComments
+
+    /*
+     * Save an translated comment resource into the cache
+     */
+    function saveTranslatedCommentCache($resourceId, $language, $translations) {
+        return $this->saveCache($resourceId . '_' . $language,
+                                $this::TranslatedComments,
+                                false,
+                                serialize($translations));
+    } # saveTranslatedCommentCache
 
 } # Dao_Base_Cache
+

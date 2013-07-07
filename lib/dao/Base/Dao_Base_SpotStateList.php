@@ -19,7 +19,7 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 
 		$stamp = time();
 
-		$this->_conn->modify("UPDATE spotstatelist SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+		$this->_conn->exec("UPDATE spotstatelist SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
 		if ($this->_conn->rows() == 0) {
 			$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
 				Array($messageId, (int) $ourUserId, $stamp));
