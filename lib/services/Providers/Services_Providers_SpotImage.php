@@ -112,7 +112,6 @@ class Services_Providers_SpotImage {
                     if (!$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
                                                                 $dimensions,
                                                                 $imageString)) {
-
                         $validImage = false;
                         $return_code = 997;
                     } # if

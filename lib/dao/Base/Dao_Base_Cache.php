@@ -154,10 +154,14 @@ class Dao_Base_Cache implements Dao_Cache {
         } # if
 
         if ($success) {
-            return (file_put_contents($filePath, $content) == strlen($content));
-        } else {
-            return false;
-        } # else
+            $success = (file_put_contents($filePath, $content) == strlen($content));
+        } # if
+
+        if ($!$success) {
+            error_log('Unable to write to cache directry (' . $filePath . ')');
+        } # if
+
+        return $success;
     } # putCacheContent
 
 	/*
