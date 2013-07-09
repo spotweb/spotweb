@@ -157,7 +157,7 @@ class Dao_Base_Cache implements Dao_Cache {
             $success = (file_put_contents($filePath, $content) == strlen($content));
         } # if
 
-        if ($!$success) {
+        if (!$success) {
             error_log('Unable to write to cache directry (' . $filePath . ')');
         } # if
 
