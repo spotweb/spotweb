@@ -314,7 +314,8 @@ class Dao_Base_Cache implements Dao_Cache {
 	function getCachedStats($resourceId) {
         $tmpStats = $this->getCache($resourceId, $this::Statistics);
         if ($tmpStats !== false) {
-            return unserialize($tmpStats['content']);
+            $tmpStats['content'] = $tmpStats['content'];
+            return $tmpStats;
         } else {
             return false;
         } # if
