@@ -151,7 +151,8 @@ class Services_Settings_Base {
 			$result->addError(_('Invalid retention setting'));
 		} # if
 
-		if (($settings['retrieve_newer_than'] = strtotime($settings['retrieve_newer_than'])) === false || $settings['retrieve_newer_than'] > time()) {
+		$settings['retrieve_newer_than'] = strtotime($settings['retrieve_newer_than']);
+        if (($settings['retrieve_newer_than'] === false) || $settings['retrieve_newer_than'] > time()) {
 			$result->addError(_('Invalid retrieve_newer_than setting'));
 		} elseif ($settings['retrieve_newer_than'] < 1230789600) {
 			/* We don't allow settings earlier than january 1st 2009 */

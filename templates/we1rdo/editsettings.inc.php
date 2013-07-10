@@ -26,10 +26,11 @@
         $nntp_post['isadummy'] = true;
     } # if
 
-    if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
+    $retrieve_newer_than = $this->_settings->get('retrieve_newer_than');
+    if ($retrieve_newer_than < 1254373200) {
         $retrieve_newer_than = 1254373200; // 2009-11-01
     } # if
-    echo "<script type='text/javascript'>var retrieveNewerThanDate = " . $retrieve_newer_than . ";</script>";
+    echo "<script type='text/javascript'>var retrieveNewerThanDate = '" . strftime('%d-%m-%Y', $retrieve_newer_than) . "';</script>";
 ?>
 </div>
 	<div id='toolbar'>

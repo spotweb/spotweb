@@ -1325,7 +1325,7 @@ function initSliders() {
 function initDatePicker() {
     if (typeof retrieveNewerThanDate != 'undefined') {
         $( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
-            dateFormat: "yy-mm-dd",
+            dateFormat: "dd-mm-yy",
             defaultDate: retrieveNewerThanDate,
             dayNamesMin: ['<t>Su</t>', '<t>Mo</t>', '<t>Tu</t>', '<t>We</t>', '<t>Th</t>', '<t>Fr</t>', '<t>Sa</t>' ],
             monthNamesShort: ['<t>Jan</t>', '<t>Feb</t>', '<t>Mar</t>', '<t>Apr</t>', '<t>May</t>', '<t>Jun</t>', '<t>Jul</t>', '<t>Aug</t>', '<t>Sep</t>', '<t>Oct</t>', '<t>Nov</t>', '<t>Dec</t>'],
