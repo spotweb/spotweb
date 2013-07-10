@@ -85,13 +85,15 @@ class dbfts_mysql extends dbfts_abs {
 		$serverSetting = $this->_db->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
+//        var_dump($searchFields);
+
 		foreach($searchFields as $searchItem) {
 			$hasTooShortWords = false;
 			$hasLongEnoughWords = false;
 			$hasStopWords = false;
 			$hasNoStopWords = false;
 			$hasSearchOpAsTerm = false;
-            $hashRequiredStopWord = false;
+            $hasRequiredStopWord = false;
 			
 			$searchMode = "match-natural";
 			$searchValue = trim($searchItem['value']);
@@ -183,21 +185,40 @@ class dbfts_mysql extends dbfts_abs {
 
                     /* If this stop word, is required, change the search to a normal search */
                     if ($term[0] == '+') {
-                        $hashRequiredStopWord = true;
+                        $hasRequiredStopWord = true;
                     } # if
 				} else {
 					/*
 					 * This extra check is necessary because when a query was to be done
-					 * for only short of stopwords (eg: "The Top") , we should fall back to
+					 * for only short or stopwords (eg: "The Top") , we should fall back to
 					 * a like anyway
 					 */
 					if (strlen($strippedTerm) >= $minWordLen) {
-						$hasNoStopWords = true;
+						$hasLongEnoughWords = true;
 					} # if
 
                     /* If this is a phrase search, disable the boolean searcher */
                     if ($term[0] == '"') {
-                        $hashRequiredStopWord = true;
+                        /*
+                         * The minimum length checker is done on individual words, so
+                         * this means that if ew search for (quotes included) "The Top"
+                         * we get a minimum word length of 9 instead of two times 3.
+                         *
+                         * As both words are too short, the FTS engine would never find
+                         * those. We work around this by making sure if its a phrase
+                         * search we check the individual words.
+                         */
+                        $tmpSplitted = explode(' ', $strippedTerm);
+                        foreach($tmpSplitted as $tmpTerm) {
+                            if (strlen($tmpTerm) <= $minWordLen) {
+                                $hasRequiredStopWord = true;
+                            } # if
+
+                            if (in_array(strtolower($tmpTerm), $this->stop_words) !== false) {
+                                $hasRequiredStopWord = true;
+                            } # if
+                        } # foreach
+                        // $hasRequiredStopWord = true;
                     } # if
 				} # else
 			} # foreach
@@ -221,27 +242,30 @@ class dbfts_mysql extends dbfts_abs {
 			 *		x-art (like search because it contains an -)
 			 *		50/50 (like search because it contains an /)
 			 *      Arvo -Lamentate (natural without like)
+			 *      +"Phantom" +(2013)          <- Shouldn't use a LIKE per se
+			 *      "The Top"                   <- Should use a LIKE as its to slow
 			 */
 
-			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm && !$hashRequiredStopWord)) {
+			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm && !$hasRequiredStopWord)) {
 				if ($hasStopWords && !$hasNoStopWords) {
 					$searchMode = 'normal';
 				} else {
 					$searchMode = 'both-' . $searchMode;
 				} # else
-			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm || $hashRequiredStopWord)) {
+			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm || $hasRequiredStopWord)) {
 				$searchMode = 'normal';
 			} # else
 
 /*
+
             echo 'hasStopWords      : ' . (int) $hasStopWords . '<br>';
             echo 'hasLongEnoughWords: ' . (int) $hasLongEnoughWords . '<br>';
             echo 'hasNoStopWords    : ' . (int) $hasNoStopWords . '<br>';
             echo 'hasSearchOpAsTerm : ' . (int) $hasSearchOpAsTerm . '<br>';
-            echo 'hasRequiredStopWrd: ' . (int) $hashRequiredStopWord . '<br>';
+            echo 'hasRequiredStopWrd: ' . (int) $hasRequiredStopWord . '<br>';
             echo 'searchmode        : ' . $searchMode . '<br>';
             die();
-*/
+ */
 
             /*
              * Start constructing the query. Sometimes we construct the query
