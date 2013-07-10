@@ -501,14 +501,16 @@ class Services_Providers_HttpNzb {
       // Search for the direct nzb download link :)
       if(trim(strtolower($a->nodeValue)) == 'download') {
         $url = $a->getAttribute('href');
-        
-        if(strpos($url, $matches[1]) !== false) {
-          // We just found a direct download link for our url.
-          // No need for posting, just another get using curl.
-          return $this->getAndDownloadNzb($url);
-        }
-      }
-    }
+
+        if (!empty($matches[1])) {
+            if(strpos($url, $matches[1]) !== false) {
+              // We just found a direct download link for our url.
+              // No need for posting, just another get using curl.
+              return $this->getAndDownloadNzb($url);
+            }
+        } # if
+      } # if
+    } # foreach
     
     // Could not find the right download link.
     return false;
