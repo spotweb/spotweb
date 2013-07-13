@@ -1,6 +1,4 @@
 <?php
-require_once "vendor/phpseclib/Crypt/RSA.php";
-
 abstract class Services_Signing_Base {
 
 	/* 
@@ -13,6 +11,14 @@ abstract class Services_Signing_Base {
 	 * Create a factory method
 	 */
 	static public function factory() {
+        /*
+         * Trigger the autoloader to load Crypt_RSA as
+         * we need it for 
+         */
+        if (class_exists('Crypt_RSA')) {
+
+        } # if
+
 		/*
 		 * Automatically select OpenSSL if
 		 * possible

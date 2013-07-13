@@ -1,5 +1,4 @@
 <?php
-require_once "vendor/phpseclib/Crypt/RSA.php";
 
 class Services_Signing_Openssl extends Services_Signing_Base {
 	/*
