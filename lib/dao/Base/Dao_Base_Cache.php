@@ -183,7 +183,7 @@ class Dao_Base_Cache implements Dao_Cache {
                             ' owner=' . $fileOwner . ', ' .
                             ' group=' . $fileGroup . ', ' .
                             ' thisUser=' . $phpUser . ', ' .
-                            ' perms= ' . $filePerms);
+                            ' perms= ' . substr(decoct($filePerms), 2) );
         } # if
 
         return $success;
