@@ -169,7 +169,7 @@ class Dao_Base_Cache implements Dao_Cache {
 
 
             if (function_exists('posix_getpwuid')) {
-                $fileGroup = posix_getgrid($fileGroup);
+                $fileGroup = posix_getgrgid($fileGroup);
                 $fileGroup = $fileGroup['name'];
 
                 $fileOwner = posix_getpwuid($fileOwner);
