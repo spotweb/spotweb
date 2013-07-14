@@ -13,7 +13,7 @@ abstract class Services_Signing_Base {
 	static public function factory() {
         /*
          * Trigger the autoloader to load Crypt_RSA as
-         * we need it for 
+         * we need it for
          */
         if (class_exists('Crypt_RSA')) {
 

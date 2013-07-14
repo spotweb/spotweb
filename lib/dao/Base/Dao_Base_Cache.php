@@ -158,7 +158,32 @@ class Dao_Base_Cache implements Dao_Cache {
         } # if
 
         if (!$success) {
-            error_log('Unable to write to cache directry (' . $filePath . ')');
+            /*
+             * Gather some diagnostics information to allow the operator to
+             * troubleshoot this easier.
+             */
+            $filePerms = fileperms($filePath);
+            $fileOwner = fileowner($filePath);
+            $fileGroup = filegroup($filePath);
+            $phpUser = get_current_user(); // appears to work for windows
+
+
+            if (function_exists('posix_getpwuid')) {
+                $fileGroup = posix_getgrid($fileGroup);
+                $fileGroup = $fileGroup['name'];
+
+                $fileOwner = posix_getpwuid($fileOwner);
+                $fileOwner = $fileOwner['name'];
+
+                $phpUser = posix_getpwuid(posix_geteuid());
+                $phpUser = $phpUser['name'];
+            } # if
+
+            error_log('Unable to write to cache directry (' . $filePath . '), ' .
+                            ' owner=' . $fileOwner . ', ' .
+                            ' group=' . $fileGroup . ', ' .
+                            ' thisUser=' . $phpUser . ', ' .
+                            ' perms= ' . $filePerms);
         } # if
 
         return $success;
