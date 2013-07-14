@@ -162,9 +162,9 @@ class Dao_Base_Cache implements Dao_Cache {
              * Gather some diagnostics information to allow the operator to
              * troubleshoot this easier.
              */
-            $filePerms = fileperms($filePath);
-            $fileOwner = fileowner($filePath);
-            $fileGroup = filegroup($filePath);
+            $filePerms = fileperms(dirname($filePath));
+            $fileOwner = fileowner(dirname($filePath));
+            $fileGroup = filegroup(dirname($filePath));
             $phpUser = get_current_user(); // appears to work for windows
 
 
