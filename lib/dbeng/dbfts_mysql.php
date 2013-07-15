@@ -93,28 +93,44 @@ class dbfts_mysql extends dbfts_abs {
 			$hasStopWords = false;
 			$hasNoStopWords = false;
 			$hasSearchOpAsTerm = false;
-            $hasRequiredStopWord = false;
-			
+            $hasPhraseWithOnlyInvalids = false;
+
 			$searchMode = "match-natural";
 			$searchValue = trim($searchItem['value']);
 			$field = $searchItem['fieldname'];
-			$tempSearchValue = str_replace(array('+', '-', '(', ')', 'AND', 'NOT', 'OR'), '', $searchValue);
 
 			/*
 			 * Look at each individual word. If it is shorter than $minWordLen, we have to perform
 			 * a LIKE search as well
+			 *
+			 * We do not use splitWords() here, because we need to have the lengths of the
+			 * individual words not of the phrase search.
+			 *
+			 * There is one exception, if a phrase search contains ONLY stop words, we cannot
+			 * use the FTS at all so we should be aware of that.
 			 */
-			$termList = $this->splitWords($tempSearchValue);
+            $tempSearchValue = str_replace(array('+', '-', '"', '(', ')', 'AND', 'NOT', 'OR'), '', $searchValue);
+			$termList = explode(' ', $tempSearchValue);
 			foreach($termList as $term) {
 				if ((strlen($term) < $minWordLen) && (strlen($term) > 0)) {
 					$hasTooShortWords = true;
 				} # if
 
 				if (strlen($term) >= $minWordLen) {
-					$hasLongEnoughWords = true;
+                    $hasLongEnoughWords = true;
 				} # if
+
+                /*
+                 * If the term is a stopword (things like: the, it, ...) we have to
+                 * fallback to a like search as well.
+                 */
+                if (in_array(strtolower($term), $this->stop_words) !== false) {
+                    $hasStopWords = true;
+                } else {
+                    $hasNoStopWords = true;
+                }# if
 			} # foreach
-			
+
 			/*
 			 * remove any double whitespace because else the MySQL matcher will never
 			 * find anything
@@ -176,53 +192,31 @@ class dbfts_mysql extends dbfts_abs {
 					$searchMode = 'match-boolean';
 				} # if
 
-				/*
-				 * If the term is a stopword (things like: the, it, ...) we have to
-				 * fallback to a like search as well. 
-				 */
-                if (in_array(strtolower($strippedTerm), $this->stop_words) !== false) {
-					$hasStopWords = true;
+                /*
+                 * We get the complete phrase here, we need to look into
+                 * the phrase terms, because if it only contains invalid terms
+                 * (eg: only stopwords, only shortwords, or a combination thereof),
+                 * we must disable the FTS completely.
+                 *
+                 */
+                if ((!$hasPhraseWithOnlyInvalids) && ($term[0] == '"')) {
+                    $tmpFoundValidTerms = false;
 
-                    /* If this stop word, is required, change the search to a normal search */
-                    if ($term[0] == '+') {
-                        $hasRequiredStopWord = true;
-                    } # if
-				} else {
-					/*
-					 * This extra check is necessary because when a query was to be done
-					 * for only short or stopwords (eg: "The Top") , we should fall back to
-					 * a like anyway
-					 */
-					if (strlen($strippedTerm) >= $minWordLen) {
-						$hasLongEnoughWords = true;
-					} # if
-
-                    /* If this is a phrase search, disable the boolean searcher */
-                    if ($term[0] == '"') {
-                        /*
-                         * The minimum length checker is done on individual words, so
-                         * this means that if ew search for (quotes included) "The Top"
-                         * we get a minimum word length of 9 instead of two times 3.
-                         *
-                         * As both words are too short, the FTS engine would never find
-                         * those. We work around this by making sure if its a phrase
-                         * search we check the individual words.
-                         */
-                        $tmpSplitted = explode(' ', $strippedTerm);
-                        foreach($tmpSplitted as $tmpTerm) {
-                            if (strlen($tmpTerm) <= $minWordLen) {
-                                $hasRequiredStopWord = true;
+                    $tmpTermList = explode(' ', $strippedTerm);
+                    foreach($tmpTermList as $tmpTerm) {
+                        if (strlen($tmpTerm) >= $minWordLen) {
+                            if (in_array(strtolower($tmpTerm), $this->stop_words) === false) {
+                                $tmpFoundValidTerms = true;
                             } # if
+                        } # if
+                    } # foreach
 
-                            if (in_array(strtolower($tmpTerm), $this->stop_words) !== false) {
-                                $hasRequiredStopWord = true;
-                            } # if
-                        } # foreach
-                        // $hasRequiredStopWord = true;
+                    if (!$tmpFoundValidTerms) {
+                        $hasPhraseWithOnlyInvalids = true;
                     } # if
-				} # else
+                } # if
 			} # foreach
-			
+
 			# Actually determine the searchmode
 			/* 
 			 * Test cases:
@@ -243,29 +237,32 @@ class dbfts_mysql extends dbfts_abs {
 			 *		50/50 (like search because it contains an /)
 			 *      Arvo -Lamentate (natural without like)
 			 *      +"Phantom" +(2013)          <- Shouldn't use a LIKE per se
-			 *      "The Top"                   <- Should use a LIKE as its to slow
+			 *      "The Top"                   <- Should use a LIKE as its only keywords
+			 *      +"Warehouse 13" +S04        <- Shouldn't use a LIKE per se
 			 */
 
-			if (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm && !$hasRequiredStopWord)) {
-				if ($hasStopWords && !$hasNoStopWords) {
+            if ($hasPhraseWithOnlyInvalids) {
+                $searchMode = 'normal';
+            } elseif (($hasTooShortWords || $hasStopWords) && ($hasLongEnoughWords || $hasNoStopWords) && (!$hasSearchOpAsTerm)) {
+				if (($hasStopWords && !$hasNoStopWords) || ($hasTooShortWords && !$hasLongEnoughWords)) {
 					$searchMode = 'normal';
 				} else {
 					$searchMode = 'both-' . $searchMode;
 				} # else
-			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm || $hasRequiredStopWord)) {
+			} elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm)) {
 				$searchMode = 'normal';
 			} # else
 
 /*
-
-            echo 'hasStopWords      : ' . (int) $hasStopWords . '<br>';
-            echo 'hasLongEnoughWords: ' . (int) $hasLongEnoughWords . '<br>';
-            echo 'hasNoStopWords    : ' . (int) $hasNoStopWords . '<br>';
-            echo 'hasSearchOpAsTerm : ' . (int) $hasSearchOpAsTerm . '<br>';
-            echo 'hasRequiredStopWrd: ' . (int) $hasRequiredStopWord . '<br>';
-            echo 'searchmode        : ' . $searchMode . '<br>';
+            echo 'hasStopWords              : ' . (int) $hasStopWords . '<br>';
+            echo 'hasLongEnoughWords        : ' . (int) $hasLongEnoughWords . '<br>';
+            echo 'hasTooShortWords          : ' . (int) $hasTooShortWords . '<br>';
+            echo 'hasNoStopWords            : ' . (int) $hasNoStopWords . '<br>';
+            echo 'hasSearchOpAsTerm         : ' . (int) $hasSearchOpAsTerm . '<br>';
+            echo 'hasPhraseWithOnlyInvalids : ' . (int) $hasPhraseWithOnlyInvalids . '<br>';
+            echo 'searchmode                : ' . $searchMode . '<br>';
             die();
- */
+*/
 
             /*
              * Start constructing the query. Sometimes we construct the query

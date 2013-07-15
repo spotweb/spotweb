@@ -179,7 +179,7 @@ class Dao_Base_Cache implements Dao_Cache {
                 $phpUser = $phpUser['name'];
             } # if
 
-            error_log('Unable to write to cache directry (' . $filePath . '), ' .
+            error_log('Unable to write to cache directory (' . $filePath . '), ' .
                             ' owner=' . $fileOwner . ', ' .
                             ' group=' . $fileGroup . ', ' .
                             ' thisUser=' . $phpUser . ', ' .
