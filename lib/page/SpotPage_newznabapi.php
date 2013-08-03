@@ -398,7 +398,28 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('value', $nabCat[0]);
 					$item->appendChild($attr);
 				} # if
-
+				
+				if ( !empty($spot['subcatc'])) {
+					$nabCat = explode("|",  $spot['subcatc']);
+					$count=0;
+					$subs=array();
+					
+					if ( in_array('c2',$nabCat)==true || in_array('c1',$nabCat)==true || in_array('c6',$nabCat)==true  ) {
+						$subs[$count] = 'dutch';
+						$count+=1;
+					} # if
+					if ( in_array('c3',$nabCat)==true || in_array('c4',$nabCat)==true || in_array('c7',$nabCat)==true) {
+						$subs[$count] = 'english';
+						$count+=1;
+					} # if
+					if ( $count!=0) {
+					$attr = $doc->createElement('newznab:attr');
+						$attr->setAttribute('name', 'subs');
+						$attr->setAttribute('value', implode(',', $subs));
+						$item->appendChild($attr);
+					}
+				} # if
+				
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'size');
 				$attr->setAttribute('value', $spot['filesize']);
@@ -551,7 +572,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$attr->setAttribute('value', $nabCat[0]);
 				$item->appendChild($attr);
 			} # if
-
+			
 			$attr = $doc->createElement('newznab:attr');
 			$attr->setAttribute('name', 'size');
 			$attr->setAttribute('value', $spot['filesize']);
