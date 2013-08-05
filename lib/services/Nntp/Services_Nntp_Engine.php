@@ -9,9 +9,10 @@ class Services_Nntp_Engine {
 
     /**
      * Registers how many errors there have been for this connection
-     * @var int
+     * @var float
      */
     private $_connectionErrors = 0;
+
     /**
      * Actual Net_NNTP's connection class
      *
@@ -71,6 +72,17 @@ class Services_Nntp_Engine {
     } # registerError
 
     /**
+     * Register a try of a command
+     */
+    private function registerTryCommand() {
+        /*
+         * We decrease with 0.25 points, so that each 4 sucessful commands
+         * give us another retry.
+         */
+        $this->_connectionErrors = $this->_connectionErrors - 0.25;
+    } # registerTryCommand
+
+    /**
      * Returns true when this connection has had too many errors
      *
      * @return bool
@@ -97,6 +109,8 @@ class Services_Nntp_Engine {
         $this->connect();
 
         try {
+            $this->registerTryCommand();
+
             return $this->_nntp->getOverview($first . '-' . $last);
         } catch (Exception $x) {
             $this->registerError($x);
@@ -121,6 +135,8 @@ class Services_Nntp_Engine {
         $this->connect();
 
         try {
+            $this->registerTryCommand();
+
             return $this->_nntp->getHeaderField('Message-ID', ($first . '-' . $last));
         } catch (Exception $x) {
             $this->registerError($x);
@@ -195,6 +211,8 @@ class Services_Nntp_Engine {
         $this->connect();
 
         try {
+            $this->registerTryCommand();
+
             return $this->_nntp->getHeader($msgid);
         } catch (Exception $x) {
             $this->registerError($x);
@@ -219,6 +237,8 @@ class Services_Nntp_Engine {
         $this->connect();
 
         try {
+            $this->registerTryCommand();
+
             return $this->_nntp->getBody($msgid);
         } catch (Exception $x) {
             $this->registerError($x);
@@ -312,6 +332,8 @@ class Services_Nntp_Engine {
 
 
         try {
+            $this->registerTryCommand();
+
             # Fetch the article
             $art = $this->_nntp->getArticle($msgId);
         } catch (Exception $x) {
