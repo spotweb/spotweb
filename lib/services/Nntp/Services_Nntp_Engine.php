@@ -79,7 +79,7 @@ class Services_Nntp_Engine {
          * We decrease with 0.25 points, so that each 4 sucessful commands
          * give us another retry.
          */
-        $this->_connectionErrors = $this->_connectionErrors - 0.25;
+        $this->_connectionErrors = max(0, $this->_connectionErrors - 0.25);
     } # registerTryCommand
 
     /**
