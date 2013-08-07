@@ -76,10 +76,10 @@ class Services_Nntp_Engine {
      */
     private function registerTryCommand() {
         /*
-         * We decrease with 0.25 points, so that each 4 sucessful commands
+         * We decrease with 0.10 points, so that each 10 sucessful commands
          * give us another retry.
          */
-        $this->_connectionErrors = max(0, $this->_connectionErrors - 0.25);
+        $this->_connectionErrors = max(0, $this->_connectionErrors - 0.10);
     } # registerTryCommand
 
     /**
