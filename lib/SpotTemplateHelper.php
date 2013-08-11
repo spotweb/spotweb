@@ -967,9 +967,7 @@ class SpotTemplateHelper {
 	 * Wanneer was de spotindex voor het laatst geupdate?
 	 */
 	function getLastSpotUpdates() {
-		# query wanneer de laatste keer de spots geupdate werden
-		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
-		return $this->_daoFactory->getNntpConfigDao()->getLastUpdate($nntp_hdr_settings['host']);
+		return $this->_daoFactory->getUsenetStateDao()->getLastUpdate();
 	} # getLastSpotUpdates
 	
 	/*

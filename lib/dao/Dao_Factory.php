@@ -93,9 +93,9 @@ abstract class Dao_Factory {
     /**
      * Factory method which returns specified DAO class
      *
-     * @return Dao_Base_NntpConfig
+     * @return Dao_Base_UsenetState
      */
-	abstract public function getNntpConfigDao();
+	abstract public function getUsenetStateDao();
     /**
      * Factory method which returns specified DAO class
      *

@@ -1,20 +1,59 @@
 <?php
 class Services_Retriever_Spots extends Services_Retriever_Base {
-		private $_rsakeys;
-		private $_retrieveFull;
-		private $_prefetch_image;
-		private $_prefetch_nzb;
+    /**
+     * @var array
+     */
+    private $_rsakeys;
+    /**
+     * @var boolean
+     */
+    private $_retrieveFull;
+    /**
+     * @var boolean
+     */
+    private $_prefetch_image;
+    /**
+     * @var boolean
+     */
+    private $_prefetch_nzb;
 
-		private $_svcNntpTextReading;
-		private $_svcNntpBinReading;
-		private $_svcProvNzb;
-		private $_svcProvImage;
-		private $_svcSpotParser;
+    /**
+     * @var Services_Nntp_SpotReading
+     */
+    private $_svcNntpTextReading;
+    /**
+     * @var Services_Nntp_SpotReading
+     */
+    private $_svcNntpBinReading;
+    /**
+     * @var Services_Providers_Nzb
+     */
+    private $_svcProvNzb;
+    /**
+     * @var Services_Providers_SpotImage
+     */
+    private $_svcProvImage;
+    /**
+     * @var Services_Format_Parsing
+     */
+    private $_svcSpotParser;
 
-		private $_spotDao;
-		private $_commentDao;
-		private $_cacheDao;
-        private $_modListDao;
+    /**
+     * @var Dao_Base_Spot
+     */
+    private $_spotDao;
+    /**
+     * @var Dao_Base_Comment
+     */
+    private $_commentDao;
+    /**
+     * @var Dao_Base_Cache
+     */
+    private $_cacheDao;
+    /**
+     * @var Dao_Base_ModeratedRingBuffer
+     */
+    private $_modListDao;
 
 		/**
 		 * Server is the server array we are expecting to connect to
@@ -61,7 +100,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
-					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
+					case 'curartnr'			: echo "Current article number:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'hdrparsed'		: echo " (parsed: " . $txt . ", "; break;
                     case 'hdrindbcount'     : echo "in DB: " . $txt . ", "; break;
@@ -83,10 +122,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		} # displayStatus
 		
 		/*
-		 * Remove any extraneous reports from the database because we assume
+		 * Remove any extraneous spots from the database because we assume
 		 * the highest messgeid in the database is the latest on the server.
 		 */
-		function updateLastRetrieved($highestMessageId) {
+		function removeTooNewRecords($highestMessageId) {
 			$this->debug('Highest messageid found: ' . $highestMessageId);
 
 			/*
@@ -99,21 +138,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			if (!$this->_textServer['buggy']) {
 				$this->_spotDao->removeExtraSpots($highestMessageId);
 			} # if
-		} # updateLastRetrieved
-
-
-        /*
-         *
-         */
-        private function processHeaders($hdrList) {
-
-        } # processHeaders
+		} # removeTooNewRecords
 
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg, $timer) {
-			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
+		function process($hdrList, $curArtNr, $increment, $timer) {
+			$this->displayStatus("progress", ($curArtNr) . " till " . ($increment));
 
 			$signedCount = 0;
 			$hdrsParsed = 0;
@@ -497,18 +528,15 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			} # switch
 			
 			# update the maximum article id
-			if ($this->_retro) {
-				$this->_nntpCfgDao->setMaxArticleid('spots_retro', $endMsg);
-			} else {
-				$this->_nntpCfgDao->setMaxArticleid($this->_textServer['host'], $endMsg);
-			} # if
-			$this->debug('loop finished, setMaxArticleId=' . serialize($endMsg));
+            if (count($spotDbList) > 0) {
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedId, $increment);
+            } # if
+			$this->debug('loop finished, setMaxArticleId=' . serialize($increment));
 
             /*
              * And remove old list of moderated spots
              */
             $this->_modListDao->deleteOldest();
-
 
 			$this->displayStatus("timer", round(microtime(true) - $timer, 2));
 
@@ -523,23 +551,27 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 'bin' => $this->_settings->get('hdr_group'));
 		} # getGroupName
 
-		/*
-		 * Highest articleid for the implementation in the database
-		 */
-		function getMaxArticleId() {
-			if ($this->_retro) {
-				return $this->_nntpCfgDao->getMaxArticleid('spots_retro');
-			} else {
-				return $this->_nntpCfgDao->getMaxArticleid($this->_textServer['host']);
-			} # if
-		} # getMaxArticleId
-		
-		/*
-		 * Returns the highest messageid in the database
-		 */
-		function getMaxMessageId() {
-			return $this->_spotDao->getMaxMessageId('headers');
-		} # getMaxMessageId
+        /*
+         * Last retrieved articlenumber as stored in the database
+         */
+        function getLastArticleNumber() {
+            return $this->_usenetStateDao->getLastArticleNumber(Dao_UsenetState::State_Spots);
+        } # getLastArticleNumber
 
-		
+        /*
+         * Last retrieved messageid as stored in the database
+         */
+        function getLastMessageId() {
+            return $this->_usenetStateDao->getLastMessageId(Dao_UsenetState::State_Spots);
+        } # getLastMessageId
+
+        /**
+         * Returns a list of messageid's where we can search for
+         *
+         * @return array
+         */
+        function getRecentRetrievedMessageIdList() {
+            return $this->_spotDao->getMaxMessageId('headers');
+        } # getRecentRetrievedMessageIdList
+
 } # Services_Retriever_Spots

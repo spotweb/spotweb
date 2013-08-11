@@ -86,9 +86,9 @@
 		return new Dao_Sqlite_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
-	public function getNntpConfigDao() {
-		return new Dao_Sqlite_NntpConfig($this->_conn);
-	} # getNntpConfigDao
+	public function getUsenetStateDao() {
+		return new Dao_Sqlite_UsenetState($this->_conn);
+	} # getUsenetStateDao
 
     public function getModeratedRingBufferDao() {
         return new Dao_Sqlite_ModeratedRingBuffer($this->_conn);

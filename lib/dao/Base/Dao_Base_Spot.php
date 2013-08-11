@@ -566,16 +566,22 @@ class Dao_Base_Spot implements Dao_Spot {
 		throw new NotImplementedException();
 	} # getSpotCountPerMonth
 
-	/*
+	/**
 	 * Returns the amount of spots per category
+     *
+     * @param int|boolean $limit Amount of days to get the spotcount for, or false to get without any limits
+     * @return array
 	 */
 	function getSpotCountPerCategory($limit) {
 		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
 		return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data;");
 	} # getSpotCountPerCategory
 
-	/*
-	 * Remove extra spots 
+	/**
+	 * Remove extra spots
+     *
+     * @param string $messageId All messages after the given messageid are to be removed
+     * @return void
 	 */
 	function removeExtraSpots($messageId) {
 		SpotTiming::start(__FUNCTION__);
@@ -600,8 +606,13 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__, array($messageId, $spot));
 	} # removeExtraSpots
 
-	/*
+	/**
 	 * Add the posted spot to the database
+     *
+     * @param int $userId
+     * @param array $spot
+     * @param string $fullXml
+     * @return void
 	 */
 	function addPostedSpot($userId, $spot, $fullXml) {
 		SpotTiming::start(__FUNCTION__);
@@ -621,8 +632,11 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__, array($userId, $spot, $fullXml));
 	} # addPostedSpot
 
-	/*
+	/**
 	 * Removes items from te commentsfull table older than a specific amount of days
+     *
+     * @param int $expireDays Spots older than $expireDays are to be deleted
+     * @return void
 	 */
 	function expireSpotsFull($expireDays) {
 		SpotTiming::start(__FUNCTION__);
@@ -632,9 +646,12 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__, array($expireDays));
 	} # expireSpotsFull
 
-	/* 
-	 * Makes sure a message has never been posted before or used before
-	 */
+    /**
+     * Makes sure a message has never been posted before or used before
+     *
+     * @param string $messageid Messageid to check if its unique
+     * @return bool
+     */
 	function isNewSpotMessageIdUnique($messageid) {
 		SpotTiming::start(__FUNCTION__);
 
@@ -653,8 +670,10 @@ class Dao_Base_Spot implements Dao_Spot {
 		return (empty($tmpResult));
 	} # isNewSpotMessageIdUnique
 
-	/*
+	/**
 	 * Returns the maximum timestamp of a spot in the database
+     *
+     * @return int
 	 */
 	function getMaxMessageTime() {
 		SpotTiming::start(__FUNCTION__);
@@ -670,9 +689,13 @@ class Dao_Base_Spot implements Dao_Spot {
 	} # getMaxMessageTime()
 
 
-	/* 
-	 * Returns the highest messageid from server 
-	 */
+    /**
+     * Returns the highest messageid from server
+     *
+     * @param $headers string Which type of header to get the last messageids from
+     * @throws Exception
+     * @return array
+     */
 	function getMaxMessageId($headers) {
 		SpotTiming::start(__FUNCTION__);
 
@@ -683,7 +706,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		} elseif ($headers == 'reports') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover ORDER BY id DESC LIMIT 5000");
 		} else {
-			throw new Exception("getMaxMessageId() header-type value is unknown");
+			throw new Exception("getLastMessageId() header-type value is unknown");
 		} # else
 		
 		if ($msgIds == null) {
@@ -699,7 +722,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__FUNCTION__, array($headers));
 
 		return $tempMsgIdList;
-	} # func. getMaxMessageId
+	} # func. getLastMessageId
 
 
 } # Dao_Base_Spot

@@ -24,9 +24,11 @@ define('SPOTWEB_ADMIN_USERID', 2);
 class Bootstrap {
     private $_dbSettings;
 
-	/*
-	 * Boot up the Spotweb system
-	 */
+    /**
+     * Boot up the Spotweb system
+     *
+     * @return (Services_Settings_Base|Dao_Factory_Base|SpotReq)[]
+     */
 	public function boot() {
         SpotTiming::start('bootstrap');
 		$daoFactory = $this->getDaoFactory();
@@ -66,9 +68,11 @@ class Bootstrap {
 	} # boot
 
 
-	/*
+	/**
 	 * Returns the DAO factory used by all of 
 	 * Spotweb
+     *
+     * @return Dao_Base_Factory
 	 */
 	public function getDaoFactory() {
         SpotTiming::start(__FUNCTION__);
@@ -141,15 +145,18 @@ class Bootstrap {
 	 */
 	public function getSettings(Dao_Factory $daoFactory) {
 		require_once "settings.php";
-		
-		return Services_Settings_Base::singleton($daoFactory->getSettingDao(), 
+
+        return Services_Settings_Base::singleton($daoFactory->getSettingDao(),
 									 			 $daoFactory->getBlackWhiteListDao(),
 									   			 $settings);
 	} # getSettings
 
-	/*
-	 * Instantiate an Request object
-	 */
+    /**
+     * Instantiate an Request object
+     *
+     * @param Services_Settings_Base $settings
+     * @return SpotReq
+     */
 	private function getSpotReq(Services_Settings_Base $settings) {
 		$req = new SpotReq();
 		$req->initialize($settings);

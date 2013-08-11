@@ -193,7 +193,8 @@ try {
 		$retriever = new Services_Retriever_Reports($daoFactory,
 												    $settings,
 													$debugLog,
-												    $forceMode);
+												    $forceMode,
+                                                    $retroMode);
 		$newReportCount = $retriever->perform();
 
         # Show the cumulative timings of the caching of these reports
@@ -232,7 +233,7 @@ try {
 			$settings_nntp_hdr = $settings->get('nntp_hdr');
 			$svcPrv_Stats = new Services_Providers_Statistics($daoFactory->getSpotDao(),
 															  $daoFactory->getCachedao(),
-												 			  $daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']));
+												 			  $daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots));
 
 			echo "Starting to create statistics " . PHP_EOL;
 			$svcPrv_Stats->createAllStatistics();

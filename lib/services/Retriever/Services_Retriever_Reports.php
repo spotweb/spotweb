@@ -4,8 +4,8 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $debug, $force) {
-			parent::__construct($daoFactory, $settings, $debug, $force, false);
+        function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $debug, $force, $retro) {
+			parent::__construct($daoFactory, $settings, $debug, $force, $retro);
 
 			$this->_reportDao = $daoFactory->getSpotReportDao();
 			$this->_spotDao = $daoFactory->getSpotDao();
@@ -22,8 +22,8 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
-					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
-					case 'progress'			: echo "Retrieving " . $txt; break;
+                    case 'curartnr'			: echo "Current article number:	" . $txt . "" . PHP_EOL; break;
+                    case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " reports"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
 					case 'totalprocessed'	: echo "Processed a total of " . $txt . " reports" . PHP_EOL; break;
@@ -40,7 +40,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 		 * Remove any extraneous reports from the database because we assume
 		 * the highest messgeid in the database is the latest on the server.
 		 */
-		function updateLastRetrieved($highestMessageId) {
+		function removeTooNewRecords($highestMessageId) {
 			/*
 			 * Remove any extraneous reports from the database because we assume
 			 * the highest messgeid in the database is the latest on the server.
@@ -51,13 +51,13 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			if (!$this->_textServer['buggy']) {
 				$this->_reportDao->removeExtraReports($highestMessageId);
 			} # if
-		} # updateLastRetrieved
+		} # removeTooNewRecords
 		
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg, $timer) {
-			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
+		function process($hdrList, $curArtNr, $increment, $timer) {
+			$this->displayStatus("progress", ($curArtNr) . " till " . ($increment));
 		
 			$lastProcessedId = '';
 			$reportDbList = array();
@@ -119,8 +119,12 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 
 			# update the last retrieved article			
 			$this->_reportDao->addReportRefs($reportDbList);
-			$this->_nntpCfgDao->setMaxArticleid('reports', $endMsg);
-			
+
+            # update the maximum article id
+            if (count($reportDbList) > 0) {
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Reports, $lastProcessedId, $increment);
+            } # if
+
 			# Calculate the amount of reports for a spot
 			$this->_spotDao->updateSpotReportCount($spotMsgIdList);
 			
@@ -135,18 +139,27 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 						 'bin' => '');
 		} # getGroupName
 
-		/*
-		 * Highest articleid for the implementation in the database
-		 */
-		function getMaxArticleId() {
-			return $this->_nntpCfgDao->getMaxArticleid('reports');
-		} # getMaxArticleId
+        /*
+         * Last retrieved articlenumber as stored in the database
+         */
+        function getLastArticleNumber() {
+            return $this->_usenetStateDao->getLastArticleNumber(Dao_UsenetState::State_Reports);
+        } # getLastArticleNumber
 
-		/*
-		 * Returns the highest messageid in the database
-		 */
-		function getMaxMessageId() {
-			return $this->_spotDao->getMaxMessageId('reports');
-		} # getMaxMessageId
-		
+        /*
+         * Last retrieved messageid as stored in the database
+         */
+        function getLastMessageId() {
+            return $this->_usenetStateDao->getLastMessageId(Dao_UsenetState::State_Reports);
+        } # getLastMessageId
+
+        /**
+         * Returns a list of messageid's where we can search for
+         *
+         * @return array
+         */
+        function getRecentRetrievedMessageIdList() {
+            return $this->_spotDao->getMaxMessageId('reports');
+        } # getRecentRetrievedMessageIdList
+
 } # Services_Retriever_Reports

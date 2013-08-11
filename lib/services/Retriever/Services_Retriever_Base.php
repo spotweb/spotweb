@@ -1,12 +1,14 @@
 <?php
 abstract class Services_Retriever_Base {
-    protected $_registry;
     protected $_settings;
     protected $_debug;
     protected $_force;
     protected $_retro;
 
-    protected $_nntpCfgDao;
+    /**
+     * @var Dao_Base_UsenetState
+     */
+    protected $_usenetStateDao;
 
     /**
      * @var Services_Nntp_Engine
@@ -31,13 +33,13 @@ abstract class Services_Retriever_Base {
 		/*
 		 * Actual processing of the headers
 		 */
-		abstract function process($hdrList, $curMsg, $increment, $timer);
+		abstract function process($hdrList, $curArtNr, $increment, $timer);
 		
 		/*
 		 * Remove any extraneous reports from the database because we assume
 		 * the highest messgeid in the database is the latest on the server.
 		 */
-		abstract function updateLastRetrieved($highestMessageId);
+		abstract function removeTooNewRecords($highestMessageId);
 		
 		/*
 		 * returns the name of the group we are expected to retrieve messages from
@@ -47,12 +49,17 @@ abstract class Services_Retriever_Base {
 		/*
 		 * Highest articleid for the implementation in the database
 		 */
-		abstract function getMaxArticleId();
+		abstract function getLastArticleNumber();
 		
 		/*
-		 * Returns the highest messageid in the database
+		 * Returns the highest messageid in the database (in Dao_UsenetState)
 		 */
-		abstract function getMaxMessageId();
+		abstract function getLastMessageId();
+
+        /*
+         * Returns the last messageid's retrieved lately
+         */
+        abstract function getRecentRetrievedMessageIdList();
 		
 		/*
 		 * default ctor 
@@ -70,7 +77,7 @@ abstract class Services_Retriever_Base {
 			/*
 			 * Create the specific DAO objects
 			 */
-			$this->_nntpCfgDao = $daoFactory->getNntpConfigDao();
+			$this->_usenetStateDao = $daoFactory->getUsenetStateDao();
 			/*
 			 * Create the service objects for both the NNTP binary group and the
 			 * textnews group. We only create a basic NNTP_Engine object, but we 
@@ -88,20 +95,20 @@ abstract class Services_Retriever_Base {
 		
 		function connect(array $groupList) {
 			# if an retriever instance is already running, stop this one
-			if ((!$this->_force) && ($this->_nntpCfgDao->isRetrieverRunning($this->_textServer['host']))) {
+			if ((!$this->_force) && ($this->_usenetStateDao->isRetrieverRunning())) {
 				throw new RetrieverRunningException();
 			} # if
 			
 			/*
 			 * and notify the system we are running
 			 */
-			$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
+			$this->_usenetStateDao->setRetrieverRunning(true);
 
 			# and fireup the nntp connection
             if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
                 $this->displayStatus('slowphprsa', '');
             } # if
-			$this->displayStatus("lastretrieve", $this->_nntpCfgDao->getLastUpdate($this->_textServer['host']));
+			$this->displayStatus("lastretrieve", $this->_usenetStateDao->getLastUpdate(Dao_UsenetState::State_Spots));
 			$this->displayStatus("start", $this->_textServer['host']);
 
 			/*
@@ -117,10 +124,10 @@ abstract class Services_Retriever_Base {
 		 * Given a list of messageids, check if we can find the corresponding
 		 * articlenumber on the NNTP server. 
 		 */
-		function searchMessageId($messageIdList) {
+		function searchMessageId($lastArticleNr, $lastMessageId, $messageIdList) {
 			$this->debug('searchMessageId=' . serialize($messageIdList));
 			
-			if (empty($messageIdList) || $this->_retro) {
+			if (empty($messageIdList)) {
 				return 0;
 			} # if
 				
@@ -128,21 +135,21 @@ abstract class Services_Retriever_Base {
 			
 			$found = false;
 			$decrement = 5000;
-			$curMsg = $this->_msgdata['last'];
+			$curArtNr = $this->_msgdata['last'];
 
 			# start searching 
-			while (($curMsg >= $this->_msgdata['first']) && (!$found)) {
+			while (($curArtNr >= $this->_msgdata['first']) && (!$found)) {
 				# Reset timelimit
 				set_time_limit(120);			
 				
-				$curMsg = max(($curMsg - $decrement), $this->_msgdata['first'] - 1);
+				$curArtNr = max(($curArtNr - $decrement), $this->_msgdata['first'] - 1);
 
 				# get the list of headers (XHDR) from the usenet server
-				$hdrList = $this->_svcNntpText->getMessageIdList($curMsg - 1, ($curMsg + $decrement));
+				$hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, ($curArtNr + $decrement));
 				$this->debug('getMessageIdList returned=' . serialize($hdrList));
 				
 				# Show what we are doing
-				$this->displayStatus('searchmsgidstatus', ($curMsg -1) . ' to ' . ($curMsg + $decrement));
+				$this->displayStatus('searchmsgidstatus', ($curArtNr -1) . ' to ' . ($curArtNr + $decrement));
 
 				/*
 				 * Reverse the list with messageids because we assume we are at a recent
@@ -153,7 +160,7 @@ abstract class Services_Retriever_Base {
 				
  				foreach($hdrList as $msgNum => $msgId) {
 					if (isset($messageIdList[$msgId])) {
-						$curMsg = $msgNum;
+						$curArtNr = $msgNum;
 						$found = true;
 						break;
 					} # if
@@ -161,52 +168,52 @@ abstract class Services_Retriever_Base {
 			} # while
 
 			$this->debug('getMessageIdList loop finished, found = ' . $found);
-			$this->debug('getMessageIdList loop finished, curMsg = ' . $curMsg);
+			$this->debug('getMessageIdList loop finished, curArtNr = ' . $curArtNr);
 			
-			return $curMsg;
+			return $curArtNr;
 		} # searchMessageId
 		
 		/*
 		 * Process all headers in $increment pieces and call the corresponding
 		 * actual implementation
 		 */
-		function loopTillEnd($curMsg, $increment = 1000) {
+		function loopTillEnd($curArticleNr, $increment = 1000) {
 			$processed = 0;
 			$headersProcessed = 0;
 			$highestMessageId = '';
 			
 			# make sure we handle articlenumber wrap arounds
-			if ($curMsg < $this->_msgdata['first']) {
-				$curMsg = $this->_msgdata['first'];
+			if ($curArticleNr < $this->_msgdata['first']) {
+				$curArticleNr = $this->_msgdata['first'];
 			} # if
 
 			$this->displayStatus("groupmessagecount", ($this->_msgdata['last'] - $this->_msgdata['first']));
 			$this->displayStatus("firstmsg", $this->_msgdata['first']);
 			$this->displayStatus("lastmsg", $this->_msgdata['last']);
-			$this->displayStatus("curmsg", $curMsg);
+			$this->displayStatus("curartnr", $curArticleNr);
 			$this->displayStatus("", "");
 
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
-			while ($curMsg < $this->_msgdata['last']) {
+			while ($curArticleNr < $this->_msgdata['last']) {
 				$timer = microtime(true);
 				
 				# get the list of headers (XOVER)
                 SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':getOverview');
-				$hdrList = $this->_svcNntpText->getOverview($curMsg, ($curMsg + $increment));
+				$hdrList = $this->_svcNntpText->getOverview($curArticleNr, ($curArticleNr + $increment));
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':getOverview');
 
-				$saveCurMsg = $curMsg;
+				$saveCurArtNr = $curArticleNr;
 				# If no spots were found, just manually increase the
 				# messagenumber with the increment to make sure we advance
-				if ((count($hdrList) < 1) || ($hdrList[count($hdrList)-1]['Number'] < $curMsg)) {
-					$curMsg += $increment;
+				if ((count($hdrList) < 1) || ($hdrList[count($hdrList)-1]['Number'] < $curArticleNr)) {
+					$curArticleNr += $increment;
 				} else {
-					$curMsg = ($hdrList[count($hdrList)-1]['Number'] + 1);
+					$curArticleNr = ($hdrList[count($hdrList)-1]['Number'] + 1);
 				} # else
 				
 				# run the processing method
                 SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':callProcess');
-				$processOutput = $this->process($hdrList, $saveCurMsg, $curMsg, $timer);
+				$processOutput = $this->process($hdrList, $saveCurArtNr, $curArticleNr, $timer);
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':callProcess');
 				$processed += $processOutput['count'];
 				$headersProcessed += $processOutput['headercount'];
@@ -214,7 +221,7 @@ abstract class Services_Retriever_Base {
 
 				# reset the start time to prevent a another retriever from starting
 				# during the intial retrieve which can take many hours 
-				$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], true);
+				$this->_usenetStateDao->setRetrieverRunning($this->_textServer['host'], true);
 			} # while
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
 
@@ -222,7 +229,7 @@ abstract class Services_Retriever_Base {
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
 				$this->debug('loopTillEnd() finished, highestMessageId = ' . $highestMessageId);
-				$this->updateLastRetrieved($highestMessageId);
+				$this->removeTooNewRecords($highestMessageId);
 			} # if
 	
 			$this->displayStatus("totalprocessed", $processed);
@@ -231,7 +238,7 @@ abstract class Services_Retriever_Base {
 
 		function quit() {
 			# notify the system we are not running anymore
-			$this->_nntpCfgDao->setRetrieverRunning($this->_textServer['host'], false);
+			$this->_usenetStateDao->setRetrieverRunning(false);
 			
 			# and disconnect
 			if (!is_null($this->_svcNntpText)) {
@@ -253,25 +260,36 @@ abstract class Services_Retriever_Base {
 			 */
 			$this->connect($this->getGroupName());
 			
-			/*
-			 * Ask the implementation class for the highest articleid
-			 * found on the system
-			 */
-			$curMsg = $this->getMaxArticleId();
+            /*
+             * If the user requested a 'retro' retrieve, lets
+             * just reset the messageid and articlenumber in the
+             * database
+             */
+            if ($this->_retro) {
+                $curArtNr = 0;
+            } else {
+                /*
+                 * Ask the implementation class for the highest articleid
+                 * found on the system
+                 */
+                $curArtNr = $this->getLastArticleNumber();
+            } # if
 
-			/*
-			 * If this usenet server is new for us, we just assume
-			 * we have to start from zero. Else we do a lookup from
-			 * the messageid to find the correct articlenumber.
-			 *
-			 * We cannot just use the articlenumber because the NNTP
-			 * spec allows a server to renumber of course.
-			 */
-			if (($curMsg != 0) && (!$this->_retro)) {
-				$curMsg = $this->searchMessageId($this->getMaxMessageId());
+            /*
+             * If our database is empty, we just assume
+             * we have to start from zero. Else we do a lookup from
+             * the messageid to find the correct articlenumber.
+             *
+             * We cannot just use the articlenumber because the NNTP
+             * spec allows a server to renumber of course.
+             */
+            if ($curArtNr != 0) {
+				$curArtNr = $this->searchMessageId($this->getLastArticleNumber(),
+                                                   $this->getLastMessageId(),
+                                                   $this->getRecentRetrievedMessageIdList());
 				
 				if ($this->_textServer['buggy']) {
-					$curMsg = max(1, $curMsg - 15000);
+					$curArtNr = max(1, $curArtNr - 15000);
 				} # if
 			} # if
 
@@ -279,14 +297,14 @@ abstract class Services_Retriever_Base {
 			 * and actually start looping till we retrieved all headers or articles
 			 */
             SpotTiming::start(__CLASS__ . '::loopTillEnd()');
-			$newProcessedCount = $this->loopTillEnd($curMsg, $this->_settings->get('retrieve_increment'));
+			$newProcessedCount = $this->loopTillEnd($curArtNr, $this->_settings->get('retrieve_increment'));
             SpotTiming::stop(__CLASS__ . '::loopTillEnd()');
 
 			/* 
 			 * and cleanup
 			 */
 			$this->quit();
-			$this->_nntpCfgDao->setLastUpdate($this->_textServer['host']);
+			$this->_usenetStateDao->setLastUpdate(Dao_UsenetState::State_Spots);
 
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 			return $newProcessedCount;

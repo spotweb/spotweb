@@ -86,9 +86,9 @@
 		return new Dao_Mysql_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
-	public function getNntpConfigDao() {
-		return new Dao_Mysql_NntpConfig($this->_conn);
-	} # getNntpConfigDao
+	public function getUsenetStateDao() {
+		return new Dao_Mysql_UsenetState($this->_conn);
+	} # getUsenetStateDao
 
     public function getModeratedRingBufferDao() {
         return new Dao_Mysql_ModeratedRingBuffer($this->_conn);

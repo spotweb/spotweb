@@ -32,7 +32,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# init
 			$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
 															  $this->_daoFactory->getCacheDao(),
-												 			  $this->_daoFactory->getNntpConfigDao()->getLastUpdate($settings_nntp_hdr['host']));
+												 			  $this->_daoFactory->getUsenetStateDao()->getLastUpdate());
 			$data = $svcPrv_Stats->renderStatImage($graph, $limit);
 
 

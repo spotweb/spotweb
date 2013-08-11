@@ -28,7 +28,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					case 'groupmessagecount': echo "Appr. Message count: 	" . $txt . "" . PHP_EOL; break;
 					case 'firstmsg'			: echo "First message number:	" . $txt . "" . PHP_EOL; break;
 					case 'lastmsg'			: echo "Last message number:	" . $txt . "" . PHP_EOL; break;
-					case 'curmsg'			: echo "Current message:	" . $txt . "" . PHP_EOL; break;
+                    case 'curartnr'			: echo "Current article number:	" . $txt . "" . PHP_EOL; break;
 					case 'progress'			: echo "Retrieving " . $txt; break;
 					case 'loopcount'		: echo ", found " . $txt . " comments"; break;
 					case 'timer'			: echo " in " . $txt . " seconds" . PHP_EOL; break;
@@ -46,7 +46,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		 * Remove any extraneous reports from the database because we assume
 		 * the highest messgeid in the database is the latest on the server.
 		 */
-		function updateLastRetrieved($highestMessageId) {
+		function removeTooNewRecords($highestMessageId) {
 			/*
 			 * Remove any extraneous comments from the database because we assume
 			 * the highest messgeid in the database is the latest on the server.
@@ -57,13 +57,13 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			if (!$this->_textServer['buggy']) {
 				$this->_commentDao->removeExtraComments($highestMessageId);
 			} # if
-		} # updateLastRetrieved
+		} # removeTooNewRecords
 		
 		/*
 		 * Actually process the retrieved headers from XOVER
 		 */
-		function process($hdrList, $curMsg, $endMsg, $timer) {
-			$this->displayStatus("progress", ($curMsg) . " till " . ($endMsg));
+		function process($hdrList, $curArtNr, $increment, $timer) {
+			$this->displayStatus("progress", ($curArtNr) . " till " . ($increment));
 		
 			$lastProcessedId = '';
 			$commentDbList = array();
@@ -273,17 +273,18 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 				$fullComments = array_merge($fullComments, $fullComment);
 			} # while
 
-			if ($this->_retro) {
-				$this->_nntpCfgDao->setMaxArticleid('comments_retro', $endMsg);
-			} else {
-				$this->_nntpCfgDao->setMaxArticleid('comments', $endMsg);
-			} # if
+
 			$this->_commentDao->addComments($commentDbList, $fullComments);
 
-			/*
-			 * Recalculate the average spotrating and update the amount
-			 * of unverified comments
-			 */
+            # update the maximum article id
+            if (count($commentDbList) > 0) {
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Comments, $lastProcessedId, $increment);
+            } # if
+
+            /*
+             * Recalculate the average spotrating and update the amount
+             * of unverified comments
+             */
 			$this->_spotDao->updateSpotRating($spotMsgIdRatingList);
 			$this->_spotDao->updateSpotCommentCount($spotMsgIdList);
 			
@@ -299,21 +300,26 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		} # getGroupName
 		
 		/*
-		 * Highest articleid for the implementation in the database
+		 * Last retrieved articlenumber as stored in the database
 		 */
-		function getMaxArticleId() {
-			if ($this->_retro) {
-				return $this->_nntpCfgDao->getMaxArticleid('comments_retro');
-			} else {
-				return $this->_nntpCfgDao->getMaxArticleid('comments');
-			} # if
-		} # getMaxArticleId
+		function getLastArticleNumber() {
+			return $this->_usenetStateDao->getLastArticleNumber(Dao_UsenetState::State_Comments);
+		} # getLastArticleNumber
 
-		/*
-		 * Returns the highest messageid in the database
-		 */
-		function getMaxMessageId() {
-			return $this->_spotDao->getMaxMessageId('comments');
-		} # getMaxMessageId
-		
+        /*
+         * Last retrieved messageid as stored in the database
+         */
+		function getLastMessageId() {
+            return $this->_usenetStateDao->getLastMessageId(Dao_UsenetState::State_Comments);
+		} # getLastMessageId
+
+        /**
+         * Returns a list of messageid's where we can search for
+         *
+         * @return array
+         */
+        function getRecentRetrievedMessageIdList() {
+            return $this->_spotDao->getMaxMessageId('comments');
+        } # getRecentRetrievedMessageIdList
+
 } # Services_Retriever_Comments

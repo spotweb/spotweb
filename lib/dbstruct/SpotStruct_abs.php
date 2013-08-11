@@ -368,14 +368,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
-		# ---- nntp table ---- #
-		$this->createTable('nntp', "utf8"); 
-		$this->validateColumn('server', 'nntp', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('maxarticleid', 'nntp', 'INTEGER', NULL, false, '');
-		$this->validateColumn('nowrunning', 'nntp', 'INTEGER', "0", false, '');
-		$this->validateColumn('lastrun', 'nntp', 'INTEGER', "0", false, '');
-		$this->validateColumn('serverdatelastrun', 'nntp', 'VARCHAR(14)', "00000000000000", false, 'ascii');
-		$this->alterStorageEngine("nntp", "InnoDB");
+		# ---- uspstate table ---- #
+		$this->createTable('usenetstate', "utf8");
+		$this->validateColumn('infotype', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('curarticlenr', 'usenetstate', 'INTEGER', "0", false, '');
+		$this->validateColumn('curmessageid', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('lastretrieved', 'usenetstate', 'INTEGER', "0", false, '');
+        $this->validateColumn('nowrunning', 'usenetstate', 'INTEGER', "0", false, '');
+		$this->alterStorageEngine("usenetstate", "InnoDB");
 		
 		# ---- commentsxover table ---- #
 		$this->createTable('commentsxover', "ascii"); 
@@ -648,7 +648,7 @@ abstract class SpotStruct_abs {
 						  3 => 'tag'));
 
 		# ---- Indexes on nntp ----
-		$this->validateIndex("idx_nntp_1", "UNIQUE", "nntp", array("server"));
+		$this->validateIndex("idx_uspconfig_1", "UNIQUE", "uspconfig", array("server"));
 		
 		# ---- Indexes on spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));
@@ -752,6 +752,11 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'commentsfull');
         $this->dropColumn('serialized', 'cache');
         $this->dropColumn('content', 'cache');
+
+        ##############################################################################################
+        # Drop old tables ############################################################################
+        ##############################################################################################
+        $this->dropTable("nntp");
 
 		# update the database with this specific schemaversion
 		$this->_dbcon->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
