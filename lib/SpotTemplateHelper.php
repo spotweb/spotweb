@@ -967,7 +967,7 @@ class SpotTemplateHelper {
 	 * Wanneer was de spotindex voor het laatst geupdate?
 	 */
 	function getLastSpotUpdates() {
-		return $this->_daoFactory->getUsenetStateDao()->getLastUpdate();
+		return $this->_daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots);
 	} # getLastSpotUpdates
 	
 	/*
