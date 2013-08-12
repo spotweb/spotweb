@@ -17,16 +17,14 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 					);
 	} # getTemplatePreferences
 
-	function cat2color($spot) {
-		switch( (int) $spot['category']) {
-			case 0: return 'blue'; break;
-			case 1: return 'orange'; break;
-			case 2: return 'green'; break;
-			case 3: return 'red'; break;
-		} # switch
-		
-		return '-';
-	} # cat2color
+	function cat2CssClass($spot) {
+        $categoryCss = 'spotcat' . $spot['category'];
+        if (!empty($spot['subcatz'])) {
+            $categoryCss .= ' spotcat' . $spot['category'] . '_' . substr($spot['subcatz'], 0, -1);
+        } # if
+
+		return $categoryCss;
+	} # cat2CssClass
 	
 	function filter2cat($s) {
 		$cat = 0;

@@ -24,7 +24,7 @@
 	
 ?>
 
-		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
+		<div id="details" class="details <?php echo $tplHelper->cat2CssClass($spot) ?>">
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
 		if ($currentSession['user']['userid'] > 2) { ?>
 			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">

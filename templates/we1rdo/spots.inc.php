@@ -137,7 +137,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		echo "\t\t\t\t\t\t\t";
-		echo "<tr class='" . $tplHelper->cat2color($spot);
+		echo "<tr class='" . $tplHelper->cat2CssClass($spot);
 		if ($spot['hasbeendownloaded']) {
 			echo " downloadedspot";
 			
