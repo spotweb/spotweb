@@ -42,8 +42,13 @@ class Services_Providers_HttpNzb {
 	    foreach ($matches as $needle) {
 	      if (strpos($this->spot['website'], $needle) !== false) {
 	        // Stop search we have a match
-	        $this->alternateDownloadUrl = $this->resolveUrl($this->spot['website']);
-	        return true;
+              $this->alternateDownloadUrl = $this->resolveUrl($this->spot['website']);
+              if ($this->alternateDownloadUrl === false) {
+                  return false;
+              } else {
+                  return true;
+              } # else
+
 	      }
 	    }
 	  }
@@ -64,7 +69,12 @@ class Services_Providers_HttpNzb {
       
 	        if ($url) {
 	          $this->alternateDownloadUrl = $this->resolveUrl($url);
-	          return true;
+
+                if ($this->alternateDownloadUrl === false) {
+                    return false;
+                } else {
+                    return true;
+                } # else
 	        }
 	      }
 	    }
@@ -173,7 +183,7 @@ class Services_Providers_HttpNzb {
        return $finalUrl;
      }
     } else {
-      trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+        return false;
     }
     
     // Close handle (will occur on error)
