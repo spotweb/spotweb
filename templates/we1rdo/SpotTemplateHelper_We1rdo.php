@@ -29,13 +29,13 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 	function filter2cat($s) {
 		$cat = 0;
 		if (stripos($s, 'cat0') !== false) {
-			return "blue";
+			return "spotcat0";
 		} elseif (stripos($s, 'cat1') !== false) {
-			return "orange";
+			return "spotcat1";
 		} elseif (stripos($s, 'cat2') !== false) {
-			return "green";
+			return "spotcat2";
 		} elseif (stripos($s, 'cat3') !== false) {
-			return "red";
+			return "spotcat3";
 		} # else
 
         return "N/A";

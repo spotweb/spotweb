@@ -217,37 +217,37 @@ div.filter ul a {
 	font-weight:bold;
 }
 
-div.filter > ul > li.blue a {background-color:#daecff;}
-div.filter > ul > li.orange a {background-color:#fffad3;}
-div.filter > ul > li.green a {background-color:#cbffcb;}
-div.filter > ul > li.red a {background-color:#fedede;}
+div.filter > ul > li.spotcat0 a {background-color:#daecff;}
+div.filter > ul > li.spotcat1 a {background-color:#fffad3;}
+div.filter > ul > li.spotcat2 a {background-color:#cbffcb;}
+div.filter > ul > li.spotcat3 a {background-color:#fedede;}
 
 div.filter a span.newspots {color:#333; margin:0px 3px 0px 5px; padding:0 3px; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px;}
 div.filter li a.selected span.newspots {background-color:#222; color:#fff;}
 
 div.filter li span.toggle {display:block; float:right; width:15px; height:14px; margin:2px; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; background:url(../img/sprite.png) no-repeat -77px -98px;}
-div.filter li.blue span.toggle {background-color:#62aefd; border:1px solid #006cab; color:#006cab;}
-div.filter li.orange span.toggle {background-color:#f2d87c; border:1px solid #cd9f00; color:#cd9f00;}
-div.filter li.green span.toggle {background-color:#84f484; border:1px solid #00ab00; color:#00ab00;}
-div.filter li.red span.toggle {background-color:#f99797; border:1px solid #ab1c00; color:#ab1c00;}
+div.filter li.spotcat0 span.toggle {background-color:#62aefd; border:1px solid #006cab; color:#006cab;}
+div.filter li.spotcat1 span.toggle {background-color:#f2d87c; border:1px solid #cd9f00; color:#cd9f00;}
+div.filter li.spotcat2 span.toggle {background-color:#84f484; border:1px solid #00ab00; color:#00ab00;}
+div.filter li.spotcat3 span.toggle {background-color:#f99797; border:1px solid #ab1c00; color:#ab1c00;}
 
 div.filter li span.inclusive {display:block; float:right; width:15px; line-height:14px; margin:2px;}
-div.filter li.blue span.inclusive {color:#62aefd;}
-div.filter li.orange span.inclusive {color:#f2d87c;}
-div.filter li.green span.inclusive {color:#84f484;}
-div.filter li.red span.inclusive {color:#f99797;}
+div.filter li.spotcat0 span.inclusive {color:#62aefd;}
+div.filter li.spotcat1 span.inclusive {color:#f2d87c;}
+div.filter li.spotcat2  span.inclusive {color:#84f484;}
+div.filter li.spotcat3 span.inclusive {color:#f99797;}
 
 div.filter li span.newspots,
 div.filter a.selected {background-color:#c8c8c8;}
 div.filter a.external {background-color:#ececec;}
-div.filter li.blue span.newspots {background-color:#a6d1ff; color:#00456c;}
-div.filter > ul > li.blue a.selected {background-color:#a6d1ff;}
-div.filter li.orange span.newspots {background-color:#f1d872; color:#875b00;}
-div.filter > ul > li.orange a.selected {background-color:#f1d872;}
-div.filter li.green span.newspots {background-color:#8cef8c; color:#006f00;}
-div.filter > ul > li.green a.selected {background-color:#8cef8c;}
-div.filter li.red span.newspots {background-color:#fca9a9; color:#771400;}
-div.filter > ul > li.red a.selected {background-color:#fca9a9;}
+div.filter li.spotcat0 span.newspots {background-color:#a6d1ff; color:#00456c;}
+div.filter > ul > li.spotcat0 a.selected {background-color:#a6d1ff;}
+div.filter li.spotcat1 span.newspots {background-color:#f1d872; color:#875b00;}
+div.filter > ul > li.spotcat1 a.selected {background-color:#f1d872;}
+div.filter li.spotcat2 span.newspots {background-color:#8cef8c; color:#006f00;}
+div.filter > ul > li.spotcat2 a.selected {background-color:#8cef8c;}
+div.filter li.spotcat3 span.newspots {background-color:#fca9a9; color:#771400;}
+div.filter > ul > li.spotcat3 a.selected {background-color:#fca9a9;}
 
 div.filter > ul > li a:hover {background-color:#fff;}
 div.filter > ul > li a:hover span.newspots {background-color:#fff; color:#000;}
