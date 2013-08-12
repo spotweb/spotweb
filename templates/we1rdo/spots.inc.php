@@ -59,7 +59,7 @@
 							<th class='multinzb'> 
 								<form action="" method="GET" id="checkboxget" name="checkboxget">
 									<input type='hidden' name='page' value='getnzb'>
-									<input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
+									<input type='checkbox' name='checkall' onclick='toggleAllMultiNzb();'>
 							</th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];

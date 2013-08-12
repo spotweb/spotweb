@@ -746,20 +746,28 @@ function multinzb() {
 	}
 }
 
-function uncheckMultiNZB() {
-	$("table.spots input[type=checkbox]").attr("checked", false);
-	$('div.notifications').fadeOut();
-}
-
 function checkMultiNZB() {
-	if($("tr.active input[type=checkbox]").is(":checked")) {
-		$("tr.active input[type=checkbox]").attr('checked', false);
+	if($("tr.active td.multinzb input[type=checkbox]").is(":checked")) {
+		$("tr.active td.multinzb input[type=checkbox]").attr('checked', false);
 		multinzb()
 	} else {
-		$("tr.active input[type=checkbox]").attr('checked', true);
+		$("tr.active td.multinzb input[type=checkbox]").attr('checked', true);
 		multinzb()
 	}
 }
+
+function toggleAllMultiNzb() {
+    var val = $('th.multinzb input[type=checkbox]').attr('checked');
+    if (typeof val == "undefined") {
+        val = false;
+    } // if
+
+    $('td.multinzb input[type=checkbox]').each(function() {
+        $(this).attr('checked', val);
+    });
+    multinzb();
+} // toggleAllMultinzb
+
 
 function downloadMultiNZB() {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
@@ -1337,4 +1345,3 @@ function initDatePicker() {
             maxDate: "today" });
     } // retrieveNewerThanDate
 } // initDatePicker()
-
