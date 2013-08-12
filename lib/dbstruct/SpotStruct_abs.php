@@ -648,7 +648,7 @@ abstract class SpotStruct_abs {
 						  3 => 'tag'));
 
 		# ---- Indexes on nntp ----
-		$this->validateIndex("idx_uspconfig_1", "UNIQUE", "uspconfig", array("server"));
+		$this->validateIndex("idx_usenetstate_1", "UNIQUE", "usenetstate", array("infotype"));
 		
 		# ---- Indexes on spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));

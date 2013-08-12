@@ -60,6 +60,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			$this->displayStatus("progress", ($curArtNr) . " till " . ($increment));
 		
 			$lastProcessedId = '';
+            $lastProcessedArtNr = 0;
 			$reportDbList = array();
 
 			/**
@@ -81,10 +82,12 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 
 				# strip the <>'s from the reference
 				$reportId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
+                $artNr = $msgheader['Number'];
 
-				# Prepare the report to be added to the server when the report isn't in the database yet
+                # Prepare the report to be added to the server when the report isn't in the database yet
 				if (!isset($dbIdList[$reportId])) {
 					$lastProcessedId = $reportId;
+                    $lastProcessedArtNr = $artNr;
 					
 					# Extract the keyword and the messageid its reporting about
 					$tmpSubject = explode(' ', $msgheader['Subject']);
@@ -122,7 +125,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 
             # update the maximum article id
             if (count($reportDbList) > 0) {
-                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Reports, $lastProcessedId, $increment);
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Reports, $lastProcessedArtNr, $lastProcessedId);
             } # if
 
 			# Calculate the amount of reports for a spot

@@ -126,10 +126,23 @@ abstract class Services_Retriever_Base {
 		 */
 		function searchMessageId($lastArticleNr, $lastMessageId, $messageIdList) {
 			$this->debug('searchMessageId=' . serialize($messageIdList));
-			
+
+            /*
+             * If no messageid's are stored in the database,
+             * start the retrieval from zero
+             */
 			if (empty($messageIdList)) {
 				return 0;
 			} # if
+
+            /*
+             * We now request the articlenumber from the usenet server,
+             * if we get the same messageid back, we assume all is well and
+             * we can just continue where we left off.
+             */
+            if ($this->_svcNntpText->getMessageIdByArticleNumber($lastArticleNr) == $lastMessageId) {
+                return $lastArticleNr;
+            } # if
 				
 			$this->displayStatus('searchmsgid', '');
 			

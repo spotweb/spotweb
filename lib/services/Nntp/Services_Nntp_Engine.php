@@ -46,7 +46,7 @@ class Services_Nntp_Engine {
          * Some exceptions are "final" and will not recover when
          * just tried again.
          *
-         * Error code 403 - 'No such article' - is one of them.
+         * Error code 430 - 'No such article' - is one of them.
          *
          * If these happen, immediatly increase to the highest possible
          * errors
@@ -83,11 +83,22 @@ class Services_Nntp_Engine {
     } # registerTryCommand
 
     /**
+     * Sometimes we want to be able to reset the errorcount
+     * from outside, mostly in the case of error 430 (No Such Article),
+     * as this error is handled by an upper layer
+     */
+    public function resetErrorCount() {
+        $this->_connectionErrors = 0;
+    } # resetErrorCount
+
+    /**
      * Returns true when this connection has had too many errors
      *
      * @return bool
      */
     private function tooManyErrors() {
+        echo 'Currently registered errorcount: ' . $this->_connectionErrors . PHP_EOL;
+
         return ($this->_connectionErrors > 3);
     } # tooManyErrors
 
@@ -126,6 +137,31 @@ class Services_Nntp_Engine {
             } # else
         } # catch
     } # getOverview()
+
+    /*
+     * Get a single messageid given a single articlenumber
+     */
+    public function getMessageIdByArticleNumber($artNr) {
+        $this->connect();
+
+        try {
+            $this->registerTryCommand();
+
+            return substr($this->_nntp->getHeaderField('Message-ID', $artNr), 1, -1);
+        } catch (Exception $x) {
+            $this->registerError($x);
+
+            /**
+             * Try this operation again, but make sure we are not overloading
+             * the NNTP server with useless requests
+             */
+            if ($this->tooManyErrors()) {
+                throw $x;
+            } else {
+                return $this->getMessageIdByArticleNumber($artNr);
+            } # else
+        } # catch
+    } # getMessageIdByArticleNumber
 
     /*
      * Get a list of messageid's within a range, same as XOVER

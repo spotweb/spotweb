@@ -66,6 +66,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			$this->displayStatus("progress", ($curArtNr) . " till " . ($increment));
 		
 			$lastProcessedId = '';
+            $lastProcessedArtNr = 0;
 			$commentDbList = array();
 			$fullCommentDbList = array();
 
@@ -104,6 +105,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 
 				# strip the <>'s from the reference
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
+                $artNr = $msgheader['Number'];
 
 				/*
 				 * We prepare some variables to we don't have to perform an array
@@ -184,10 +186,12 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 
 						$header_isInDb = true;
 						$lastProcessedId = $commentId;
+                        $lastProcessedArtNr = $artNr;
 						$didFetchHeader = true;
 					} # if
 				} else {
 					$lastProcessedId = $commentId;
+                    $lastProcessedArtNr = $artNr;
 				} # else
 
 				/*
@@ -243,7 +247,11 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 							 * swallow the error
 							 */
 							if ($x->getCode() == 430) {
-								;
+                                /*
+                                 * Reset error count, so other errors are actually re-tried
+                                 */
+                                $this->_svcNntpText->resetErrorCount();
+                                $this->_svcNntpBin->resetErrorCount();
 							} 
 							# if the XML is unparseable, don't bother complaining about it
 							elseif ($x->getMessage() == 'String could not be parsed as XML') {
@@ -278,7 +286,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 
             # update the maximum article id
             if (count($commentDbList) > 0) {
-                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Comments, $lastProcessedId, $increment);
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Comments, $lastProcessedArtNr, $lastProcessedId);
             } # if
 
             /*

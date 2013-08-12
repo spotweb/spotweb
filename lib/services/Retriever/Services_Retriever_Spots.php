@@ -155,6 +155,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             $headerInDbCount = 0;
 			$skipCount = 0;
 			$lastProcessedId = '';
+            $lastProcessedArtNr = 0;
 			$fullSpotDbList = array();
 			$spotDbList = array();
 			$moderationList = array();
@@ -219,6 +220,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 				# messageid to check
 				$msgId = substr($msgheader['Message-ID'], 1, -1);
+                $artNr = $msgheader['Number'];
 
                 /*
                  * If this message was already deleted in a previous run,
@@ -306,6 +308,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								$dbIdList['spot'][$msgId] = 1;
 								$header_isInDb = true;
 								$lastProcessedId = $msgId;
+                                $lastProcessedArtNr = $artNr;
 								$didFetchHeader = true;
 
 								if ($spot['wassigned']) {
@@ -317,6 +320,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # else
 				} else {
 					$lastProcessedId = $msgId;
+                    $lastProcessedArtNr = $artNr;
                     $headerInDbCount++;
 				} # else
 
@@ -382,7 +386,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 * swallow the error
 							 */
 							if ($x->getCode() == 430) {
-								;
+                                /*
+                                 * Reset error count, so other errors are actually re-tried
+                                 */
+                                $this->_svcNntpText->resetErrorCount();
+                                $this->_svcNntpBin->resetErrorCount();
 							}
 							# if the XML is unparseable, don't bother complaining about it
 							elseif ($x->getMessage() == 'String could not be parsed as XML') {
@@ -456,8 +464,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * swallow the error
 						 */
 						if ($x->getCode() == 430) {
-							;
-						} 
+                            /*
+                             * Reset error count, so other errors are actually re-tried
+                             */
+                            $this->_svcNntpText->resetErrorCount();
+                            $this->_svcNntpBin->resetErrorCount();
+						}
 							# if the XML is unparseable, don't bother complaining about it
 						elseif ($x->getMessage() == 'String could not be parsed as XML') {
 							;
@@ -529,7 +541,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			
 			# update the maximum article id
             if (count($spotDbList) > 0) {
-                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedId, $increment);
+                $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedArtNr, $lastProcessedId);
             } # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($increment));
 

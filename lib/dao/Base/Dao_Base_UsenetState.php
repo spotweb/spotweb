@@ -9,6 +9,8 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
 	 */
 	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
+
+        $this->initialize();
 	} # ctor
 
     /*
@@ -21,7 +23,7 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
          */
         foreach(array('Base', 'Spots', 'Comments', 'Reports') as $infoType) {
 
-            $result = $this->_conn->singleQuery("SELECT FROM usenetstate WHERE infotype = '%s'", Array($infoType));
+            $result = $this->_conn->arrayQuery("SELECT 1 FROM usenetstate WHERE infotype = '%s'", Array($infoType));
             if (empty($result)) {
                 $this->_conn->modify("INSERT INTO usenetstate(infotype) VALUES('%s')", Array($infoType));
             } # if
