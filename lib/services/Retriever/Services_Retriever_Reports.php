@@ -92,7 +92,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 					# Extract the keyword and the messageid its reporting about
 					$tmpSubject = explode(' ', $msgheader['Subject']);
 					if (count($tmpSubject) > 2) {
-						$msgheader['keyword'] = $tmpSubject[0];
+						$msgheader['keyword'] = mb_convert_encoding($tmpSubject[0], 'ASCII');
 						$msgheader['References'] = substr($tmpSubject[1], 1, strlen($tmpSubject[1]) - 2);
 						$spotMsgIdList[$msgheader['References']] = 1;
 

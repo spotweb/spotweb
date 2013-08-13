@@ -26,6 +26,7 @@ class dbeng_mysql extends dbeng_abs {
 		
 		# Set that we will be talking in utf8
 		$this->rawExec("SET NAMES utf8;"); # mysql_set_charset is not compatible with older PHP versions
+        $this->rawExec("SET CHARACTER_SET utf8;"); # mysql_set_charset is not compatible with older PHP versions
 
         return true;
     } # connect()
