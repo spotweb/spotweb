@@ -166,9 +166,10 @@ class Services_Providers_Http {
      *
      * @param $url string to retrieve
      * @param $lastModTime int Last modification time, can be null
+     * @param int $redirTries Amount of tries already passed to follow a redirect
      * @return mixed array with first element the HTTP code, and second with the data (if any)
      */
-    public function perform($url, $lastModTime) {
+    public function perform($url, $lastModTime = null, $redirTries = 0) {
         SpotTiming::start(__FUNCTION__);
 
         $ch = curl_init();
@@ -186,6 +187,14 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt ($ch, CURLOPT_VERBOSE, true);
+
+        // Only use these curl options if no open base dir is set and php mode is off.
+        $manualRedirect = false;
+        if (ini_get('open_basedir') <> '' || ini_get('safe_mode')) {
+            $manualRedirect = true;
+            curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt ($ch, CURLOPT_MAXREDIRS, 1);
+        } # if
 
         /*
          * If specified, pass authorization for this request
@@ -219,7 +228,7 @@ class Services_Providers_Http {
         if ((($this->getPostContent() != null) ||
              ($this->getUploadFiles() != null) ||
              ($this->getRawPostData() != null)) &&
-            ($this->getMethod() == 'POST')) {
+             ($this->getMethod() == 'POST')) {
             $this->addPostFieldsToCurl($ch, $this->getPostContent(), $this->getUploadFiles(), $this->getRawPostData());
         } # if
 
@@ -259,6 +268,32 @@ class Services_Providers_Http {
             } else {
                 $data = '';
             } # else
+
+            /*
+             * We also follow redirects, but PHP's safemode doesn't allow
+             * for redirects, so fix those as well.
+             */
+            $effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            if ((
+                    ($effectiveUrl != $url) ||
+                    ($http_code == 301) ||
+                    ($http_code == 302)
+                ) &&
+                (
+                     $manualRedirect
+                )
+               ) {
+                if (preg_match('/Location:(.*?)\n/', $response, $matches)) {
+                    $redirUrl = trim(array_pop($matches));
+
+                    $redirTries++;
+
+                    if ($redirTries < 20) {
+                        return $this->perform($redirUrl, $lastModTime, $redirTries);
+                    } # if
+                } # if
+            } # if
+
 
         } else {
             $http_code = 700; # Curl returned an error
