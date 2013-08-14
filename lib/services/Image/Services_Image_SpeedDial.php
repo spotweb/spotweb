@@ -38,7 +38,7 @@ class Services_Image_SpeedDial {
 		imagedestroy($img['resource']);
 
 		$dimensions = $this->_svcImageUtil->getImageDimensions($imageString);
-		return array('metadata' => $dimensions, 'expire' => true, 'content' => $imageString);
+		return array('metadata' => $dimensions, 'ttl' => time() + (60 * 60), 'content' => $imageString);
 	} # createSpeedDial
 
 } # Services_Image_SpeedDial

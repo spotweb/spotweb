@@ -37,13 +37,15 @@ class Services_Providers_SpotImage {
 
 		$data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid']);
 		if ($data !== false) {
-			$this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid']);
+            $this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid'], $data);
+
+            SpotTiming::stop(__FUNCTION__);
 			
 			return $data;
 		} # if
 
 		/*
-		 * Determine whether the spot is stored on an NNTP serve or a web resource,
+		 * Determine whether the spot is stored on an NNTP server or a web resource,
 		 * older spots are stored on an HTTP server
 		 */
 		if (is_array($fullSpot['image'])) {
@@ -77,7 +79,7 @@ class Services_Providers_SpotImage {
 			 * We don't want the HTTP layer of this code to cache the image, because
 			 * we want to cache / store additional information in the cache for images
 			 */
-			list($return_code, $imageString) = $this->_serviceHttp->performCachedGet($fullSpot['image'], false, 0);
+			list($return_code, $imageString) = $this->_serviceHttp->perform($fullSpot['image'], null, 0);
 			if (($return_code == 200) || ($return_code == 304)) {
 				$validImage = true;
 			} # else
@@ -87,8 +89,10 @@ class Services_Providers_SpotImage {
 		 * Now validate the resource we have retrieved from the server
 		 */
 		if ($validImage) {
+            SpotTiming::start('fetchSpotImage::getImageDimensions()');
 			$svc_ImageUtil = new Services_Image_Util();
 			$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
+            SpotTiming::stop('fetchSpotImage::getImageDimensions()', array());
 
 			/*
 			 * If this is not a valid image, create a dummy error code, 
@@ -113,10 +117,16 @@ class Services_Providers_SpotImage {
 				 * and store the file in the cache
 				 */
 				if ($validImage) {
+                    /*
+                     * This is an actual SpotImage
+                     */
+                    $dimensions['is_tempimage'] = false;
+
                     SpotTiming::start('fetchSpotImage::savingToCache()');
                     if (!$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
                                                                 $dimensions,
-                                                                $imageString)) {
+                                                                $imageString,
+                                                                false)) {
                         $validImage = false;
                         $return_code = 997;
                     } # if
@@ -141,6 +151,15 @@ class Services_Providers_SpotImage {
 
             $imageString = $errorImage['content'];
             $dimensions = $errorImage['metadata'];
+
+            /*
+             * Store a copy of the error image so we don't request
+             * the same image over and over.
+             */
+            $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
+                $dimensions,
+                $imageString,
+                true);
 		} # if
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));

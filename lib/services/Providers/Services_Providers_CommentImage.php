@@ -57,7 +57,7 @@ class Services_Providers_CommentImage {
 
 		$data = array('content' => $data);
 		$data['metadata'] = $dimensions;
-		$data['expire'] = true;
+		$data['ttl'] = (24 * 7 * 60 * 60);
 		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
 	} # getAvatarImage

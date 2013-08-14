@@ -19,6 +19,10 @@ class SpotTiming {
         self::clear();
 	} #disable
 
+    static function isEnabled() {
+        return !self::$_disabled;
+    } # isEnabled
+
     static function clear() {
         self::$_inflight = array();
         self::$_timings = array();

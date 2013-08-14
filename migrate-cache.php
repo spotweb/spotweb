@@ -91,7 +91,7 @@ try {
             } # if
 
             echo '.';
-            $cacheDao->putCacheContent($cacheItem['resourceid'], $cacheItem['cachetype'], $cacheItem['content'], $cacheItem['metadata']);
+            $cacheDao->putCacheContent($cacheItem['resourceid'], $cacheItem['cachetype'], $cacheItem['content'], $cacheItem['metadata'], 0);
 
             /*
              * Actually invalidate the cache content

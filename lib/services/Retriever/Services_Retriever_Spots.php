@@ -416,7 +416,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						if (!$didFetchFullSpot) {
                             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':daoGetFullSpot');
                             $fullSpot = $this->_spotDao->getFullSpot($msgId, SPOTWEB_ANONYMOUS_USERID);
+                            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':retrieveParseFullSpot');
 							$fullSpot = array_merge($this->_svcSpotParser->parseFull($fullSpot['fullxml']), $fullSpot);
+                            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':retrieveParseFullSpot', array());
                             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':daoGetFullSpot');
 						} # if
 

@@ -32,7 +32,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			# init
 			$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
 															  $this->_daoFactory->getCacheDao(),
-												 			  $this->_daoFactory->getUsenetStateDao()->getLastUpdate());
+												 			  $this->_daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots));
 			$data = $svcPrv_Stats->renderStatImage($graph, $limit);
 
 
@@ -41,7 +41,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
 
             $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
-			$data = $providerSpotImage ->fetchGravatarImage($this->_image);
+			$data = $providerSpotImage->fetchGravatarImage($this->_image);
 		} else {
             $svc_nntpnzb_engine = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 
@@ -61,7 +61,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 		} # else
 
 		# Images are allowed to be cached on the client unless the provider explicitly told us not to
-		if (isset($data['expire'])) {
+		if (isset($data['ttl']) && ($data['ttl'] > 0)) {
 			$this->sendExpireHeaders(true);
 		} else {
 			$this->sendExpireHeaders(false);

@@ -60,7 +60,7 @@ class Services_Providers_Statistics {
 			case 'spotspercategory' : $data = $this->createStatsPerCategory($dateLimit); break;
 		} # switch
 
-		$data['expire'] = true;
+		$data['ttl'] = (24 * 60 * 60);
 		return $data;
 	} # renderStatImage
 	

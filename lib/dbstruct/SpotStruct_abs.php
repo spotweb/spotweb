@@ -585,6 +585,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
+        $this->validateColumn('ttl', 'cache', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
         # ---- moderated ring buffer table ---- #

@@ -26,8 +26,9 @@ class Dao_Base_Cache implements Dao_Cache {
          * ignore any error which might be thrown because we cannot do
          * anything about it anyway.
          */
-        $expiredList = $this->_conn->arrayQuery("SELECT resourceid, cachetype, metadata FROM cache WHERE stamp < %d",
-                    Array((int) time() - $expireDays*24*60*60));
+        $expiredList = $this->_conn->arrayQuery("SELECT resourceid, cachetype, metadata FROM cache WHERE stamp < %d OR ((ttl + stamp) > %d)",
+                    Array((int) time() - $expireDays*24*60*60,
+                          (int) time()));
 
         foreach($expiredList as $cacheItem) {
             if (!empty($cacheItem)) {
@@ -51,16 +52,23 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieves wether a specific resourceid is cached
 	 */
 	protected function isCached($resourceid, $cachetype) {
-		$tmpResult = $this->_conn->arrayQuery("SELECT 1 FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceid, $cachetype));
+		$tmpResult = $this->_conn->arrayQuery("SELECT 1 FROM cache WHERE resourceid = '%s' AND cachetype = '%s' AND (ttl + stamp) < %d",
+                    Array($resourceid, $cachetype, time()));
 
 		return (!empty($tmpResult));
 	} # isCached
 
     /*
-     * Retrieves wether a specific resourceid is cached
-    */
+     * Removes an item from the cache
+     */
     protected function removeCacheItem($resourceId, $cachetype, $metaData) {
         $this->_conn->exec("DELETE FROM cache WHERE resourceid = '%s' AND cachetype = '%s'", Array($resourceId, $cachetype));
+
+        /*
+         * Remove the item from disk and ignore any errors
+         */
+        $filePath = $this->calculateFilePath($resourceId, $cachetype, $metaData);
+        @unlink($filePath);
     } # removeCacheItem
 
     /*
@@ -193,10 +201,21 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Returns the resource from the cache table, if we have any
 	 */
 	protected function getCache($resourceid, $cachetype) {
-		$tmp = $this->_conn->arrayQuery("SELECT stamp, metadata FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
+		$tmp = $this->_conn->arrayQuery("SELECT stamp, ttl, metadata FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
                         array($resourceid, $cachetype));
 
 		if (!empty($tmp)) {
+            /*
+             * Make sure the entry is not expired
+             */
+            if ($tmp[0]['ttl'] > 0) {
+                if (($tmp[0]['stamp'] + $tmp[0]['ttl']) > time()) {
+                    $this->removeCacheItem($resourceid, $cachetype, unserialize($tmp[0]['metadata']));
+
+                    return false;
+                } # if
+            } # if
+
             $tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
             $tmp[0]['content'] = $this->getCacheContent($resourceid, $cachetype, $tmp[0]['metadata']);
 			return $tmp[0];
@@ -210,19 +229,19 @@ class Dao_Base_Cache implements Dao_Cache {
 	/*
 	 * Add a resource to the cache
 	 */
-	protected function saveCache($resourceid, $cachetype, $metadata, $content) {
+	protected function saveCache($resourceid, $cachetype, $metadata, $ttl, $content) {
         if ($metadata) {
             $serializedMetadata = serialize($metadata);
         } else {
             $serializedMetadata = false;
         } # else
 
-        $this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s' WHERE resourceid = '%s' AND cachetype = '%s'",
-            Array(time(), $serializedMetadata, $resourceid, $cachetype));
+        $this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', ttl = %d WHERE resourceid = '%s' AND cachetype = '%s'",
+            Array(time(), $serializedMetadata, $ttl, $resourceid, $cachetype));
 
         if ($this->_conn->rows() == 0) {
-            $this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,metadata) VALUES ('%s', '%s', %d, '%s')",
-                Array($resourceid, $cachetype, time(), $serializedMetadata));
+            $this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,ttl,metadata) VALUES ('%s', '%s', %d, %d, '%s')",
+                Array($resourceid, $cachetype, time(), ttl, $serializedMetadata));
         } # if
 
         /*
@@ -246,7 +265,11 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Refreshen the cache timestamp to prevent it from being stale
 	 */
 	protected function updateCacheStamp($resourceid, $cachetype) {
-		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s'", Array(time(), $resourceid, $cachetype));
+        /*
+         * We do not want to update the cache timestamp of items where
+         * expiration is set as this could extend the lifetime of those items
+         */
+		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s' WHERE ttl = 0", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
 
 	/*
@@ -274,7 +297,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Save an NZB file into the cache
 	 */
 	function saveNzbCache($resourceId, $content) {
-		return $this->saveCache($resourceId, $this::SpotNzb, false, $content);
+		return $this->saveCache($resourceId, $this::SpotNzb, false, 0, $content);
 	} # saveNzbCache
 
 	/*
@@ -302,7 +325,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Save an HTTP resource into the cache
 	 */
 	function saveHttpcache($resourceId, $content) {
-		return $this->saveCache($resourceId, $this::Web, false, $content);
+		return $this->saveCache($resourceId, $this::Web, false, 0, $content);
 	} # saveHttpcache
 
 	/*
@@ -322,15 +345,21 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Update an image resource from the cache
      */
-	function updateSpotImageCacheStamp($resourceId) {
-		return $this->updateCacheStamp($resourceId, $this::SpotImage);
+	function updateSpotImageCacheStamp($resourceId, $metadata) {
+        return $this->updateCacheStamp($resourceId, $this::SpotImage);
 	} # updateSpotImageCacheStamp
 
 	/*
 	 * Save an image resource into the cache
 	 */
-	function saveSpotImageCache($resourceId, $metadata, $content) {
-		return $this->saveCache($resourceId, $this::SpotImage, $metadata, $content);
+	function saveSpotImageCache($resourceId, $metadata, $content, $performExpire) {
+        if ($performExpire) {
+            $ttl = 7 * 24 * 60 * 60;
+        } else {
+            $ttl = 0;
+        } # else
+
+		return $this->saveCache($resourceId, $this::SpotImage, $metadata, $ttl, $content);
 	} # saveSpotImagecache
 
 	/*
@@ -364,7 +393,7 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Save an statistics resource into the cache
 	 */
 	function saveStatsCache($resourceId, $content) {
-		return $this->saveCache($resourceId, $this::Statistics, false, serialize($content));
+		return $this->saveCache($resourceId, $this::Statistics, false, 0, serialize($content));
 	} # saveStatsCache
 
     /*
@@ -391,7 +420,7 @@ class Dao_Base_Cache implements Dao_Cache {
      * Saves an translater token into the cache
      */
     function saveTranslaterTokenCache($resourceId, $expireTime, $content) {
-        return $this->saveCache($resourceId, $this::TranslaterToken, $expireTime, $content);
+        return $this->saveCache($resourceId, $this::TranslaterToken, $expireTime, 0,$content);
     } # saveTranslaterTokenCache
 
     /*
@@ -413,6 +442,7 @@ class Dao_Base_Cache implements Dao_Cache {
         return $this->saveCache($resourceId . '_' . $language,
                                 $this::TranslatedComments,
                                 false,
+                                0,
                                 serialize($translations));
     } # saveTranslatedCommentCache
 
