@@ -241,7 +241,7 @@ class Dao_Base_Cache implements Dao_Cache {
 
         if ($this->_conn->rows() == 0) {
             $this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,ttl,metadata) VALUES ('%s', '%s', %d, %d, '%s')",
-                Array($resourceid, $cachetype, time(), ttl, $serializedMetadata));
+                Array($resourceid, $cachetype, time(), $ttl, $serializedMetadata));
         } # if
 
         /*
