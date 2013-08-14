@@ -9,6 +9,7 @@
             var spotweb_security_allow_view_comments = <?php echo (int) $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''); ?>;
             var spotweb_currentfilter_params = "<?php echo str_replace('&amp;', '&', $tplHelper->convertFilterToQueryParams()); ?>";
             var spotweb_retrieve_commentsperpage = <?php if ($settings->get('retrieve_full_comments')) { echo 250; } else { echo 10; } ?>;
+            var spotweb_nzbhandler_type = '<?php echo $tplHelper->getNzbHandlerType(); ?>';
         </script>
         <script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 

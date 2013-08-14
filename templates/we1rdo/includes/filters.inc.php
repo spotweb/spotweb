@@ -9,7 +9,7 @@
 			<div id="toolbar">
 				<div class="notifications">
 					<?php if ($show_multinzb_checkbox) { ?>
-					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selection'); ?>">[x]</a></p>
+					<p class="multinzb"><a class="button" onclick="downloadMultiNZB(spotweb_nzbhandler_type)" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selection'); ?>">[x]</a></p>
 					<?php } ?>
 				</div>
 

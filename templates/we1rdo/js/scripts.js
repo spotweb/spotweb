@@ -428,7 +428,7 @@ function attachKeyBindings() {
 	$document.bind('keydown', 'w', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
 	$document.bind('keydown', 't', function(){openNewWindow()});
 	$document.bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
-	$document.bind('keydown', 'm', downloadMultiNZB);
+	$document.bind('keydown', 'm', function(){downloadMultiNZB(spotweb_nzbhandler_type)});
 	$document.bind('keydown', 'c', checkMultiNZB);
 // console.timeEnd("3rd-ready");
 } // attachKeyBindings
@@ -769,16 +769,50 @@ function toggleAllMultiNzb() {
 } // toggleAllMultinzb
 
 
-function downloadMultiNZB() {
+function downloadMultiNZB(dltype) {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count > 0) {
-		var url = '?page=getnzb';
+		var url = '?page=getnzb&action=' + dltype;
 		$('td.multinzb input[type=checkbox]:checked').each(function() {
 			url += '&messageid%5B%5D='+$(this).val();
 		});
-		window.location = url;
-		$("table.spots input[type=checkbox]").attr("checked", false);
-		multinzb();
+
+        /*
+         * Add loading to all NZB's being downloaded
+         */
+        $(".sabnzbd-button").removeClass("succes").addClass("loading");
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function(data) {
+                if (data.result == "success") {
+                    $(".sabnzbd-button").removeClass("loading").addClass("succes");
+                } else {
+                    $(".sabnzbd-button").removeClass("loading").addClass("failure");
+                } // else
+
+                $("table.spots input[type=checkbox]").attr("checked", false);
+                multinzb();
+            } // success
+        }); // ajax call om de form te submitten
+
+        /*
+         * with client-sabnzbd we ask the browser to download a specific url,
+         * so we cannot keep track if this succeeds or not. Therefore,
+         * we just always set it to green
+         */
+        if (dltype == 'client-sabnzbd') {
+            setTimeout( function() {
+                $(".sabnzbd-button").removeClass("loading").addClass("succes");
+
+                $("table.spots input[type=checkbox]").attr("checked", false);
+                multinzb();
+            }, 1000);
+
+        } // if
+
 	}
 }
 

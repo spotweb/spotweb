@@ -1105,14 +1105,21 @@ class SpotTemplateHelper {
 	/*
 	 * Geeft de naam van de NzbHandler terug
 	 */
-	function getNzbHandlerName(){
-		return $this->_nzbHandler->getName();
-	} # getNzbHandlerName
+	function getNzbHandlerType(){
+		return $this->_currentSession['user']['prefs']['nzbhandling']['action'];
+	} # getNzbHandlerType
 
-	/*
-	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
-	 * voor de geselecteerde NzbHandler
-	 */
+    /*
+     * Returns name of nzbhandler action
+     */
+    function getNzbHandlerName(){
+        return $this->_nzbHandler->getName();
+    } # getNzbHandlerName
+
+    /*
+     * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
+     * voor de geselecteerde NzbHandler
+     */
 	function getNzbHandlerApiSupport(){
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
