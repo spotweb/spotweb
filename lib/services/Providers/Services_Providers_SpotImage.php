@@ -79,7 +79,10 @@ class Services_Providers_SpotImage {
 			 * We don't want the HTTP layer of this code to cache the image, because
 			 * we want to cache / store additional information in the cache for images
 			 */
-			list($return_code, $imageString) = $this->_serviceHttp->perform($fullSpot['image'], null, 0);
+			$tmpPerform = $this->_serviceHttp->perform($fullSpot['image'], null, 0);
+            $return_code = $tmpPerform['http_code'];
+            $imageString = $tmpPerform['data'];
+            
 			if (($return_code == 200) || ($return_code == 304)) {
 				$validImage = true;
 			} # else
