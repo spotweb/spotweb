@@ -57,7 +57,9 @@ class Services_Providers_SpotImage {
 					$segmentList[] = $seg;
 				} # foreach
 
-				$imageString = $this->_nntpSpotReading->readBinary($segmentList, false);
+                SpotTiming::start('fetchSpotImage::readBinary()');
+                $imageString = $this->_nntpSpotReading->readBinary($segmentList, false);
+                SpotTiming::stop('fetchSpotImage::readBinary()');
 				$validImage = true;
 			} catch(Exception $x) {
 				$validImage = false;
@@ -98,23 +100,27 @@ class Services_Providers_SpotImage {
 				 * JPEG 
 				 */
 				if ($dimensions['isbmp']) {
+                    SpotTiming::start('fetchSpotImage::convertToBmp()');
 					$svc_ImageBmpConverter = new Services_Image_BmpConverter();
 					$imageString = $svc_ImageBmpConverter->convertBmpImageStringToJpeg($imageString, $dimensions);
 
 					$dimensions = $svc_ImageUtil->getImageDimensions($imageString);
 					$validImage = ($dimensions !== false);
+                    SpotTiming::stop('fetchSpotImage::convertToBmp()', serialize($validImage));
 				} # if
 
 				/* 
 				 * and store the file in the cache
 				 */
 				if ($validImage) {
+                    SpotTiming::start('fetchSpotImage::savingToCache()');
                     if (!$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
                                                                 $dimensions,
                                                                 $imageString)) {
                         $validImage = false;
                         $return_code = 997;
                     } # if
+                    SpotTiming::stop('fetchSpotImage::savingToCache()', serialize($validImage));
                 } # if
 			} else {
 				$validImage = false;
@@ -128,8 +134,10 @@ class Services_Providers_SpotImage {
 		 * an error code image
 		 */
 		if (!$validImage) {
+            SpotTiming::start('fetchSpotImage::createErrorImage()');
 			$svc_ImageError = new Services_Image_Error();
 			$errorImage = $svc_ImageError->createErrorImage($return_code);
+            SpotTiming::stop('fetchSpotImage::createErrorImage()');
 
             $imageString = $errorImage['content'];
             $dimensions = $errorImage['metadata'];
