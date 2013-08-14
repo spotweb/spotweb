@@ -19,12 +19,10 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 			}
 
 			try {
-				$this->_conn = new PDO('mysql:' . $db_conn . ';dbname=' .
-                                        $db,
+				$this->_conn = new PDO('mysql:' . $db_conn . ';dbname=' . $db . ';charset=utf8',
                                         $user,
                                         $pass,
-                                        array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
-                                              PDO::MYSQL_ATTR_FOUND_ROWS => true));
+                                        array(PDO::MYSQL_ATTR_FOUND_ROWS => true));
 			} catch (PDOException $e) {
 				throw new DatabaseConnectionException($e->getMessage(), -1);
 			}
