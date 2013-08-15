@@ -269,7 +269,7 @@ class Dao_Base_Cache implements Dao_Cache {
          * We do not want to update the cache timestamp of items where
          * expiration is set as this could extend the lifetime of those items
          */
-		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s' WHERE ttl = 0", Array(time(), $resourceid, $cachetype));
+		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s' AND ttl = 0", Array(time(), $resourceid, $cachetype));
 	} # updateCacheStamp
 
 	/*

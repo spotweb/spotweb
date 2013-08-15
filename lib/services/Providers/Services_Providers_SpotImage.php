@@ -82,7 +82,7 @@ class Services_Providers_SpotImage {
 			$tmpPerform = $this->_serviceHttp->perform($fullSpot['image'], null, 0);
             $return_code = $tmpPerform['http_code'];
             $imageString = $tmpPerform['data'];
-            
+
 			if (($return_code == 200) || ($return_code == 304)) {
 				$validImage = true;
 			} # else
