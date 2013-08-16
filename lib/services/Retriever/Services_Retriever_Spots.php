@@ -407,7 +407,22 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getFullSpot');
                 SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
 
-                if ($this->_retrieveFull && $header_isInDb && ($this->_prefetch_image || $this->_prefetch_nzb)) {
+                /*
+                 * If both the image and the NZB file are already in the cache,
+                 * or we are set to not prefetch them, don't bother to retrieve
+                 * the full spot either from the database
+                 */
+                $needPrefetch = ($this->_prefetch_image || $this->_prefetch_nzb);
+                if ((!$this->_retrieveFull) || (!$header_isInDb)) {
+                    $needPrefetch = false;
+                } # if
+
+                if ($needPrefetch) {
+                    $needPrefetch = (!isset($cachedIdList[Dao_Cache::SpotImage][$fullSpot['messageid']])) ||
+                                    (!isset($cachedIdList[Dao_Cache::SpotNzb][$fullSpot['messageid']]));
+                } # if
+
+                if ($needPrefetch) {
 					try {
 						/*
 						 * If we are running in 'retro' mode, it is possible both the header and spot are in the
