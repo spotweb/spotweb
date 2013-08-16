@@ -463,14 +463,14 @@ class Dao_Base_Cache implements Dao_Cache {
         $idList = array();
         $msgIdList = $this->_conn->arrayValToInOffset($resourceIdList, 'Message-ID', 1, -1);
 
-        $rs = $this->_conn->arrayQuery("SELECT resourceid, infotype
+        $rs = $this->_conn->arrayQuery("SELECT resourceid, cachetype
                                             FROM cache
                                             WHERE resourceid IN (" . $msgIdList . ")
                                             AND (ttl + stamp) < %d",
                                 array(time()));
 
         foreach($rs as $msgids) {
-            $idList[$msgids['infotype']][$msgids['resourceid']] = 1;
+            $idList[$msgids['cachetype']][$msgids['resourceid']] = 1;
         } # foreach
 
         return $idList;
