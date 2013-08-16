@@ -418,8 +418,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                 } # if
 
                 if ($needPrefetch) {
-                    $needPrefetch = (!isset($cachedIdList[Dao_Cache::SpotImage][$fullSpot['messageid']])) ||
-                                    (!isset($cachedIdList[Dao_Cache::SpotNzb][$fullSpot['messageid']]));
+                    $needPrefetch = (!isset($cachedIdList[Dao_Cache::SpotImage][$msgId])) ||
+                                    (!isset($cachedIdList[Dao_Cache::SpotNzb][$msgId]));
                 } # if
 
                 if ($needPrefetch) {
