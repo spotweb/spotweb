@@ -15,8 +15,8 @@ class Services_Providers_Nzb {
     /*
      * Returns if we have the nzb file already cached
      */
-    function hasCachedNzb($fullSpot) {
-        return $this->_cacheDao->hasCachedNzb($fullSpot['messageid']);
+    function hasCachedNzb($messageId) {
+        return $this->_cacheDao->hasCachedNzb($messageId);
     } # hasCachedNzb
 
 	/* 

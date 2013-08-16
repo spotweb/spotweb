@@ -21,8 +21,8 @@ class Services_Providers_SpotImage {
      * this prevents us from reading the image from disk
      * when this is not necessary
      */
-    public function hasCachedSpotImage($fullSpot) {
-        return ($this->_cacheDao->hasCachedSpotImage($fullSpot['messageid']));
+    public function hasCachedSpotImage($messageId) {
+        return ($this->_cacheDao->hasCachedSpotImage($messageId));
     } # hasCachedSpotImage
 
     /*

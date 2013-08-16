@@ -26,7 +26,7 @@ class Dao_Base_Cache implements Dao_Cache {
          * ignore any error which might be thrown because we cannot do
          * anything about it anyway.
          */
-        $expiredList = $this->_conn->arrayQuery("SELECT resourceid, cachetype, metadata FROM cache WHERE stamp < %d OR ((ttl + stamp) > %d)",
+        $expiredList = $this->_conn->arrayQuery("SELECT resourceid, cachetype, metadata FROM cache WHERE stamp < %d OR ((ttl + stamp) < %d)",
                     Array((int) time() - $expireDays*24*60*60,
                           (int) time()));
 

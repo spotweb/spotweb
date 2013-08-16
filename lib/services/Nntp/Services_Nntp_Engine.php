@@ -68,6 +68,7 @@ class Services_Nntp_Engine {
         sleep($this->_connectionErrors);
 
         // reconnect by selecting the group again
+        echo 'Re-selecting group: ' . $this->_currentgroup . PHP_EOL;
         $this->selectGroup($this->_currentgroup);
     } # registerError
 

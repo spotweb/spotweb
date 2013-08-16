@@ -429,7 +429,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						if ($this->_prefetch_image) {
                             $this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
 
-                            if (!$this->_svcProvImage->hasCachedSpotImage($fullSpot)) {
+                            if (!$this->_svcProvImage->hasCachedSpotImage($fullSpot['messageid'])) {
                                 $this->_svcProvImage->fetchSpotImage($fullSpot);
                             } # if
 
@@ -448,7 +448,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
 
-                                if (!$this->_svcProvNzb->hasCachedNzb($fullSpot)) {
+                                if (!$this->_svcProvNzb->hasCachedNzb($fullSpot['messageid'])) {
                                     $this->_svcProvNzb->fetchNzb($fullSpot);
                                 } # if
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
