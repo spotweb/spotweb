@@ -446,5 +446,35 @@ class Dao_Base_Cache implements Dao_Cache {
                                 serialize($translations));
     } # saveTranslatedCommentCache
 
+    /**
+     * Returns an array with per resourceid whether is
+     * has a valid cache record. This can significantly
+     * reduce the amount of queries we fire during retrieve
+     *
+     * @param $resourceIdList
+     * @return array
+     */
+    function getMassCacheRecords($resourceIdList) {
+        if (count($resourceIdList) < 1) {
+            return array();
+        } # if
+
+        # Prepare a list of values
+        $idList = array();
+        $msgIdList = $this->_conn->arrayValToInOffset($resourceIdList, 'Message-ID', 1, -1);
+
+        $rs = $this->_conn->arrayQuery("SELECT resourceid, infotype
+                                            FROM cache
+                                            WHERE resourceid IN (" . $msgIdList . ")
+                                            AND (ttl + stamp) < %d",
+                                array(time()));
+
+        foreach($rs as $msgids) {
+            $idList[$msgids['infotype']][$msgids['resourceid']] = 1;
+        } # foreach
+
+        return $idList;
+    } # getMassCacheRecords
+
 } # Dao_Base_Cache
 

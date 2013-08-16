@@ -10,6 +10,8 @@ interface Dao_Cache {
 
 	function expireCache($expireDays);
 
+    function getMassCacheRecords($resourceIdList);
+
 	function getCachedNzb($resourceId);
     function hasCachedNzb($resourceId);
 	function updateNzbCacheStamp($resourceId);

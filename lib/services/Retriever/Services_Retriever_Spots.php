@@ -179,6 +179,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 */
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 			$dbIdList = $this->_spotDao->matchSpotMessageIds($hdrList);
+            $cachedIdList = $this->_spotDao->getMassCacheRecords($hdrList);
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 
 			$this->debug('dbIdList=' . serialize($dbIdList));
@@ -429,7 +430,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						if ($this->_prefetch_image) {
                             $this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
 
-                            if (!$this->_svcProvImage->hasCachedSpotImage($fullSpot['messageid'])) {
+                            if (isset($cachedIdList[Dao_Cache::SpotImage][$fullSpot['messageid']])) {
                                 $this->_svcProvImage->fetchSpotImage($fullSpot);
                             } # if
 
@@ -448,7 +449,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
 								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
 
-                                if (!$this->_svcProvNzb->hasCachedNzb($fullSpot['messageid'])) {
+                                if (isset($cachedIdList[Dao_Cache::SpotNzb][$fullSpot['messageid']])) {
                                     $this->_svcProvNzb->fetchNzb($fullSpot);
                                 } # if
 								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
