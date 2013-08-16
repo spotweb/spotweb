@@ -184,7 +184,6 @@ class Services_Providers_Http {
         // eg, if a site returns an 400 we might want to know why.
         curl_setopt ($ch, CURLOPT_HEADER, 1);
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt ($ch, CURLOPT_VERBOSE, true);
 
@@ -194,7 +193,9 @@ class Services_Providers_Http {
             $manualRedirect = true;
             curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt ($ch, CURLOPT_MAXREDIRS, 1);
-        } # if
+        } else {
+            curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
+        } # else
 
         /*
          * If specified, pass authorization for this request
