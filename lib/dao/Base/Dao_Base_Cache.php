@@ -209,7 +209,7 @@ class Dao_Base_Cache implements Dao_Cache {
              * Make sure the entry is not expired
              */
             if ($tmp[0]['ttl'] > 0) {
-                if (($tmp[0]['stamp'] + $tmp[0]['ttl']) > time()) {
+                if (($tmp[0]['stamp'] + $tmp[0]['ttl']) < time()) {
                     $this->removeCacheItem($resourceid, $cachetype, unserialize($tmp[0]['metadata']));
 
                     return false;
