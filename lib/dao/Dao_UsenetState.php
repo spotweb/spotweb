@@ -1,9 +1,10 @@
 <?php
 
 interface Dao_UsenetState {
-    const State_Spots           = 'spots';
-    const State_Comments        = 'comments';
-    const State_Reports         = 'reports';
+    const State_Base            = 'Base';
+    const State_Spots           = 'Spots';
+    const State_Comments        = 'Comments';
+    const State_Reports         = 'Reports';
 
     function initialize();
 
