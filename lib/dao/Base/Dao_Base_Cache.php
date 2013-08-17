@@ -296,8 +296,14 @@ class Dao_Base_Cache implements Dao_Cache {
 	/*
 	 * Save an NZB file into the cache
 	 */
-	function saveNzbCache($resourceId, $content) {
-		return $this->saveCache($resourceId, $this::SpotNzb, false, 0, $content);
+	function saveNzbCache($resourceId, $content, $performExpire) {
+        if ($performExpire) {
+            $ttl = 7 * 24 * 60 * 60;
+        } else {
+            $ttl = 0;
+        } # else
+
+		return $this->saveCache($resourceId, $this::SpotNzb, false, $ttl, $content);
 	} # saveNzbCache
 
 	/*

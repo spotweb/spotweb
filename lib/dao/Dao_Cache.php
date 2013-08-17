@@ -15,7 +15,7 @@ interface Dao_Cache {
 	function getCachedNzb($resourceId);
     function hasCachedNzb($resourceId);
 	function updateNzbCacheStamp($resourceId);
-	function saveNzbCache($resourceId, $content);
+	function saveNzbCache($resourceId, $content, $performExpire);
 
 	function getCachedHttp($resourceId);
     function hasCachedHttp($resourceId);

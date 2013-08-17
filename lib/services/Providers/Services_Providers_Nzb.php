@@ -53,7 +53,18 @@ class Services_Providers_Nzb {
                 $nzb = $this->_nntpSpotReading->readBinary($fullSpot['nzb'], true);
             } # else
 
-			if (!$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb)) {
+            /*
+             * If the returned NZB is empty, lets create a dummy (invalid) NZB file
+             * we can store. This way, we prevent hitting the usenet or HTTP server
+             * over and over again for invalid NZB files.
+             */
+            $mustExpire = false;
+            if (empty($nzb)) {
+                $nzb = '<xml><error>Invalid NZB file, unable to retrieve correct NZB file</error></xml>';
+                $mustExpire = true;
+            } # if
+
+            if (!$this->_cacheDao->saveNzbCache($fullSpot['messageid'], $nzb, $mustExpire)) {
                 error_log('Spotweb: Unable to save NZB file to cache, is cache directory writable?');
             } # if
 
