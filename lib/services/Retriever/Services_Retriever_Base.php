@@ -112,9 +112,12 @@ abstract class Services_Retriever_Base {
 			$this->displayStatus("start", $this->_textServer['host']);
 
 			/*
-			 * Select the group
+			 * Select the group. We don't need the bin selectGroup() command per se, as
+			 * we use articleid's there. We do however want to select it, because
+			 * the sendNoop() call uses a selectgroup
 			 */
 			$this->_msgdata = $this->_svcNntpText->selectGroup($groupList['text']);;
+            $this->_svcNntpBin->selectGroup($groupList['bin']);
 			
 			return $this->_msgdata;
 		} # connect
