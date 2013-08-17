@@ -117,8 +117,10 @@ abstract class Services_Retriever_Base {
 			 * the sendNoop() call uses a selectgroup
 			 */
 			$this->_msgdata = $this->_svcNntpText->selectGroup($groupList['text']);;
-            $this->_svcNntpBin->selectGroup($groupList['bin']);
-			
+            if (!empty($groupList['bin'])) {
+                $this->_svcNntpBin->selectGroup($groupList['bin']);
+            } # if
+
 			return $this->_msgdata;
 		} # connect
 		
