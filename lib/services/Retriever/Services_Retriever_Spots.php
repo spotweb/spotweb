@@ -558,7 +558,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			} # switch
 			
 			# update the maximum article id
-            if (count($spotDbList) > 0) {
+            if (!empty($lastProcessedId) & ($lastProcessedArtNr > 0)) {
                 $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedArtNr, $lastProcessedId);
             } # if
 			$this->debug('loop finished, setMaxArticleId=' . serialize($increment));

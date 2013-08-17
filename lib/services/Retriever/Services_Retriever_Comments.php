@@ -285,7 +285,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			$this->_commentDao->addComments($commentDbList, $fullComments);
 
             # update the maximum article id
-            if (count($commentDbList) > 0) {
+            if (!empty($lastProcessedId) & ($lastProcessedArtNr > 0)) {
                 $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Comments, $lastProcessedArtNr, $lastProcessedId);
             } # if
 

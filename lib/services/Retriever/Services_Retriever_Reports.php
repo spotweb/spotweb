@@ -124,7 +124,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 			$this->_reportDao->addReportRefs($reportDbList);
 
             # update the maximum article id
-            if (count($reportDbList) > 0) {
+            if (!empty($lastProcessedId) & ($lastProcessedArtNr > 0)) {
                 $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Reports, $lastProcessedArtNr, $lastProcessedId);
             } # if
 
