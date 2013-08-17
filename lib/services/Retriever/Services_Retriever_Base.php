@@ -239,7 +239,10 @@ abstract class Services_Retriever_Base {
 				# during the intial retrieve which can take many hours 
 				$this->_usenetStateDao->setRetrieverRunning(true);
 
-                echo PHP_EOL . $processed . ' -> ' . SpotTiming::isEnabled(). PHP_EOL;
+                /*
+                 * Make sure if we run with timing on, we do not fetch too many
+                 * spots as that would make us run out of memory
+                 */
                 if (($processed > 3000) && (SpotTiming::isEnabled())) {
                     break ;
                 } # if
