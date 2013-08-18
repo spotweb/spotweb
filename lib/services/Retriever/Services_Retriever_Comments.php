@@ -221,7 +221,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 							 * files and stuff. Basically, we limit the length of comments
 							 * if they are too large to prevent memory issues.
 							 */
-							if ((!isset($fullComment[0])) || (strlen(implode('', $fullComment[0]['body'])) > (1024*100))) {
+							if ((!isset($fullComment[0])) || (strlen(implode('', $fullComment[0]['body'])) > (1024*10))) {
 								continue;
 							} # if
 
