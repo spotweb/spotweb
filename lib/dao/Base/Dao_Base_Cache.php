@@ -138,7 +138,7 @@ class Dao_Base_Cache implements Dao_Cache {
         if (!file_exists($filePath)) {
             $this->removeCacheItem($resourceId, $cacheType, $metaData);
 
-            throw new CacheIsCorruptException('Cache is corrupt, could not found on-disk resource for: '. $resourceId);
+            throw new CacheIsCorruptException('Cache is corrupt, could not find on-disk resource for: '. $resourceId);
         } # if
 
         return file_get_contents($filePath);
