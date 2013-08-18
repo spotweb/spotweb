@@ -762,9 +762,7 @@ class SpotTemplateHelper {
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
 			# en tags over meerdere lijnen toch nog werkt. We voegen een extra \n toe
 			# om zeker te zijn dat we altijd een array terugkrijgen
-			$tmpBody = implode("\n", $comments[$i]['body']);
-			$tmpBody = $this->formatContent($tmpBody);
-			$comments[$i]['body'] = explode("\n", $tmpBody);
+            $comments[$i]['body'] = $this->formatContent($comments[$i]['body']);
 		} # for
 
 		return $comments;

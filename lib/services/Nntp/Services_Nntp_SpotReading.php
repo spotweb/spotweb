@@ -82,8 +82,17 @@ class Services_Nntp_SpotReading {
 					$tmpAr['spotterid'] = $this->_spotParseUtil->calculateSpotterId($tmpAr['user-key']['modulo']);
 				} # if
 
-				# encode the body for UTF8
-				$tmpAr['body'] = array_map('utf8_encode', $tmpAr['body']);
+                # encode the body for UTF8 and transform it from an array to an EOL delimited string
+                $tmpAr['body'] = utf8_encode(implode("\r\n", $tmpAr['body']));
+
+                /*
+                 * Some comments are not actual comments but incorreclty posted NZB
+                 * files and stuff. Basically, we limit the length of comments
+                 * if they are too large to prevent memory issues.
+                 */
+                if (strlen($tmpAr['body']) > (1024*10)) {
+                    $tmpAr['body'] = substr($tmpAr, 0, (1024*10));
+                } # if
 
 				$comments[] = $tmpAr; 
 			} catch(Exception $x) {

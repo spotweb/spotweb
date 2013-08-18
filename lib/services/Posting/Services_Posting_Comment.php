@@ -45,7 +45,7 @@ class Services_Posting_Comment {
 		if (strlen($comment['body']) < 2) {
 			$result->addError(_('Please enter a comment'));
 		} # if
-		if (strlen($comment['body']) > 9000) {
+		if (strlen($comment['body']) > (1024*10)) {
 			$result->addError(_('Comment is too long'));
 		} # if
 		

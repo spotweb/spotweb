@@ -215,15 +215,6 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					if ($this->_retrieveFull) {
 						try {
 							$fullComment = $this->_svcNntpTextReading->readComments(array(array('messageid' => $commentId)));
-							
-							/*
-							 * Some comments are not actual comments but incorreclty posted NZB
-							 * files and stuff. Basically, we limit the length of comments
-							 * if they are too large to prevent memory issues.
-							 */
-							if ((!isset($fullComment[0])) || (strlen(implode('', $fullComment[0]['body'])) > (1024*10))) {
-								continue;
-							} # if
 
 							# Add this comment to the datbase and mark it as such
 							$fullCommentDbList[] = $fullComment;

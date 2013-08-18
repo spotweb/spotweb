@@ -70,7 +70,7 @@ class Services_Actions_GetComments {
         } # if
 
         foreach($comments as &$comment) {
-            $tmpBody = implode("\r\n", $comment['body']);
+            $tmpBody = $comment['body'];
 
             if (isset($translated[$tmpBody])) {
                 $comment['body_translated'] = $translated[$tmpBody];
@@ -95,7 +95,7 @@ class Services_Actions_GetComments {
              */
             if (!empty($translations)) {
                 foreach($translations as $v) {
-                    $tmpBody = implode("\r\n", $v['body']);
+                    $tmpBody = $v['body'];
                     $translated[$tmpBody] = $v['body_translated'];
                 } # foreach
 
@@ -103,7 +103,7 @@ class Services_Actions_GetComments {
                  * Convert the comments once again
                  */
                 foreach($comments as &$comment) {
-                    $tmpBody = implode("\r\n", $comment['body']);
+                    $tmpBody = $comment['body'];
                     if (isset($translated[$tmpBody])) {
                         $comment['body_translated'] = $translated[$tmpBody];
                     } # else

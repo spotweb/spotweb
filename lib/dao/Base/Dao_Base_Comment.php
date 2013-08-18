@@ -135,7 +135,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			 */
 			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
 			$comment['user-key'] = serialize($comment['user-key']);
-			$comment['body'] = substr(implode("\r\n", $comment['body']), 0, 65534);
+			$comment['body'] = substr($comment['body'], 0, (1024*10));
 			$comment['verified'] = $this->_conn->bool2dt($comment['verified']);
 		} # foreach
 
@@ -175,7 +175,6 @@ class Dao_Base_Comment implements Dao_Comment {
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
 				$commentList[$i]['user-key'] = unserialize($commentList[$i]['user-key']);
-				$commentList[$i]['body'] = explode("\r\n", $commentList[$i]['body']);
 			} # if
 		} # for
 

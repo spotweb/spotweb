@@ -41,9 +41,9 @@
 					<br />
 					<?php if ($commentIsModerated) { echo _('This comment is moderated') . '<br /><br />'; } ?>
 					<?php if (isset($comment['body_translated'])) {
-                                    echo join("<br>", $comment['body_translated']);
+                                    echo nl2br($comment['body_translated']);
                           } else {
-                                    echo join("<br>", $comment['body']);
+                                    echo nl2br($comment['body']);
                           }
                     ?>
 					</li>
