@@ -100,6 +100,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			
 			# Process each header
 			foreach($hdrList as $msgheader) {
+                $this->debug('foreach-loop: iter-start');
+
 				# Reset timelimit
 				set_time_limit(120);			
 
@@ -107,16 +109,23 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
                 $artNr = $msgheader['Number'];
 
-				/*
-				 * We prepare some variables to we don't have to perform an array
-				 * lookup for each check and the code is easier to read.
-				 */
+                $this->debug('foreach-loop: processing: ' . $commentId . ', artNr=' . $artNr);
+
+                /*
+                 * We prepare some variables to we don't have to perform an array
+                 * lookup for each check and the code is easier to read.
+                 */
 				$header_isInDb = isset($dbIdList['comment'][$commentId]);
 				$fullcomment_isInDb = isset($dbIdList['fullcomment'][$commentId]);
 
-				/*
-				 * Do we have the comment in the database already? If not, lets process it 
-				 */
+                $this->debug('foreach-loop: headerIsInDb: ' .
+                                    (int) $header_isInDb. ', fullComment=' .
+                                    (int) $fullcomment_isInDb . ', retrieveFull= ' .
+                                    (int) $this->_retrieveFull);
+
+                /*
+                 * Do we have the comment in the database already? If not, lets process it
+                 */
 				if (!$header_isInDb || (!$fullcomment_isInDb && $this->_retrieveFull)) {
 					/*
 					 * Because not all usenet servers pass the reference field properly,
@@ -127,9 +136,11 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					$msgheader['stamp'] = strtotime($msgheader['Date']);
 
-					/*
-					 * Don't add older comments than specified for the retention stamp
-					 */
+                    $this->debug('foreach-loop: msgHeader=' . serialize($msgheader));
+
+                    /*
+                     * Don't add older comments than specified for the retention stamp
+                     */
 					if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
 						continue;
 					} # if
@@ -214,7 +225,9 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					
 					if ($this->_retrieveFull) {
 						try {
+                            $this->debug('foreach-loop: readFullComment start:' . $commentId);
 							$fullComment = $this->_svcNntpTextReading->readComments(array(array('messageid' => $commentId)));
+                            $this->debug('foreach-loop: readFullComment finished:' . $commentId);
 
 							# Add this comment to the datbase and mark it as such
 							$fullCommentDbList[] = $fullComment;
@@ -254,7 +267,10 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 						
 					} # if retrievefull
 				} # if fullcomment is not in db yet
+
+                $this->debug('foreach-loop: iter-stop');
 			} # foreach
+            $this->debug('foreach-loop: done');
 
 			if (count($hdrList) > 0) {
 				$this->displayStatus("loopcount", count($hdrList));
