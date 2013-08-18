@@ -162,7 +162,11 @@ class Dao_Base_Cache implements Dao_Cache {
         } # if
 
         if ($success) {
-            $success = (file_put_contents($filePath, $content) == strlen($content));
+            $success = (file_put_contents($filePath, $content) === strlen($content));
+
+            if ($success) {
+                @chmod($filePath, 0777);
+            } # if
         } # if
 
         if (!$success) {
