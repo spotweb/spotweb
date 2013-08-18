@@ -36,15 +36,10 @@ class Dao_Base_Cache implements Dao_Cache {
             } # if
 
             /*
-             * Always remove the item from the database, this way if the on-disk
+             * Always remove the item from the database and filesystem, this way if the on-disk
              * deletion fails, we won't keep trying it.
              */
             $this->removeCacheItem($cacheItem['resourceid'],$cacheItem['cachetype'], $cacheItem['metadata']);
-
-            $filePath = $this->calculateFilePath($cacheItem['resourceid'],$cacheItem['cachetype'], $cacheItem['metadata']);
-            if (@unlink($filePath) === false) {
-                throw new CacheIsCorruptException('Cache is corrupt, could not found on-disk resource for: '. $cacheItem['resourceid']);
-            } # if
         } # cacheItem
 	} # expireCache
 
