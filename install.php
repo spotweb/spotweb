@@ -134,7 +134,11 @@
 		global $settings;
 		global $_testInstall_Ok;
 
-		$serverList = simplexml_load_file('usenetservers.xml');
+        /*
+         * Loading the file directly seems to sometimes result
+         * in a weird error. GH issue #1861
+         */
+		$serverList = simplexml_load_string(file_get_contents('usenetservers.xml'));
 		if (!isset($settings['mynntp'])) {
 			$form = array('name' => 'custom',
 						  'host' => '',
