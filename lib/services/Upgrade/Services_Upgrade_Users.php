@@ -521,7 +521,10 @@ class Services_Upgrade_Users {
 				$appFilterId = $dbCon->lastInsertId('filters');
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows', 'vista', 0, " . $appFilterId . ", 'cat3_a0')");
 				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Mac / Linux / OS2', 'linux', 1, " . $appFilterId . ", 'cat3_a1,cat3_a2,cat3_a3')");
-				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'PDA / Navigation', 'pda', 2, " . $appFilterId . ", 'cat3_a4,cat3_a5,cat3_a6,cat3_a7')");
+                $dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Navigation', 'ipod', 1, " . $appFilterId . ", 'cat3_a5')");
+				$dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Windows Phone', 'pda', 2, " . $appFilterId . ", 'cat3_a4')");
+                $dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Apple iOS', 'mac', 2, " . $appFilterId . ", 'cat3_a6')");
+                $dbCon->rawExec("INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES(" . $user['userid'] . ", 'filter', 'Android', 'phone', 3, " . $appFilterId . ", 'cat3_a7')");
 			} # foreach
 		} # if
 	} # updateUserFilters
