@@ -91,7 +91,7 @@ class Services_Nntp_SpotReading {
                  * if they are too large to prevent memory issues.
                  */
                 if (strlen($tmpAr['body']) > (1024*10)) {
-                    $tmpAr['body'] = substr($tmpAr, 0, (1024*10));
+                    $tmpAr['body'] = substr($tmpAr['body'], 0, (1024*10));
                 } # if
 
 				$comments[] = $tmpAr; 

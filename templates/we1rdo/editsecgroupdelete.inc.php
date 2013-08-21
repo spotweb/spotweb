@@ -16,7 +16,7 @@
 <?php             } ?>
 			<input type="hidden" name="groupid" value="<?php echo $securitygroup['id']; ?>">
 
-			<dt>
+			<td>
 				Bevestig
 			</td>
 			<dd>
