@@ -70,8 +70,10 @@ class Services_Nntp_SpotReading {
 				$commentTpl = array('fromhdr' => '', 'stamp' => 0, 'user-signature' => '',
 									'user-key' => '', 'spotterid' => '', 'verified' => false,
 									'user-avatar' => '', 'fullxml' => '', 'messageid' => $comment['messageid']);
-									
+
+                SpotTiming::start('NntpSpotReading::readComments()->getArticle call');
 				$article = array_merge($commentTpl, $this->_nntpEngine->getArticle('<' . $comment['messageid'] . '>'));
+                SpotTiming::stop('NntpSpotReading::readComments()->getArticle call');
 				$tmpAr = $this->parseHeader($article['header'], $article);
 
 				/*
