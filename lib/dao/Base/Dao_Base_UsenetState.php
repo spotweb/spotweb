@@ -9,8 +9,6 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
 	 */
 	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
-
-        $this->initialize();
 	} # ctor
 
     /*

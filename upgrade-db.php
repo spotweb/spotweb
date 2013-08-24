@@ -43,6 +43,7 @@ try {
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
 	$svcUpgradeBase->settings();
+    $svcUpgradeBase->usenetState();
 	echo "Settings update done" . PHP_EOL;
 	$svcUpgradeBase->users($settings);
 	echo "Updating users" . PHP_EOL;

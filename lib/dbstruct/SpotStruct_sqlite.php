@@ -19,6 +19,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE cache");
         $this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
+        $this->_dbcon->rawExec("ANALYZE usenetstate");
 	} # analyze
 
 	/*

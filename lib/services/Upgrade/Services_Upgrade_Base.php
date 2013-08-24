@@ -18,6 +18,15 @@ class Services_Upgrade_Base {
 		$svcUpgradeSettings->update();
 	} # settings
 
+    /*
+     * Initialize the usenet state settings
+     */
+    public function usenetState() {
+        /* Create the usenet settings */
+        $usenetDao = $this->_daoFactory->getUsenetStateDao();
+        $usenetDao->initialize();
+    } # usenetState()
+
 	/*
 	 * Upgrade de users
 	 */

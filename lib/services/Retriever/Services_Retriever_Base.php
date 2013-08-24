@@ -78,6 +78,7 @@ abstract class Services_Retriever_Base {
 			 * Create the specific DAO objects
 			 */
 			$this->_usenetStateDao = $daoFactory->getUsenetStateDao();
+            $this->_usenetStateDao->initialize();
 			/*
 			 * Create the service objects for both the NNTP binary group and the
 			 * textnews group. We only create a basic NNTP_Engine object, but we 
