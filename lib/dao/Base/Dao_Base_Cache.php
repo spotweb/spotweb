@@ -129,14 +129,15 @@ class Dao_Base_Cache implements Dao_Cache {
          * Get the unique filepath
          */
         $filePath = $this->calculateFilePath($resourceId, $cacheType, $metaData);
+        $cacheContent = file_get_contents($filePath);
 
-        if (!file_exists($filePath)) {
+        if ($cacheContent === false) {
             $this->removeCacheItem($resourceId, $cacheType, $metaData);
 
             throw new CacheIsCorruptException('Cache is corrupt, could not find on-disk resource for: '. $resourceId);
         } # if
 
-        return file_get_contents($filePath);
+        return $cacheContent;
     } # getCacheContent
 
     /*
@@ -472,7 +473,7 @@ class Dao_Base_Cache implements Dao_Cache {
                                             FROM cache
                                             WHERE resourceid IN (" . $msgIdList . ")
                                             AND (ttl + stamp) < %d",
-                                array(time()));
+                                array((int) time()));
 
         foreach($rs as $msgids) {
             $idList[$msgids['cachetype']][$msgids['resourceid']] = 1;
