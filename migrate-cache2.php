@@ -66,7 +66,7 @@ try {
         $counter++;
         echo "Migrating cache content, items " . (($counter - 1) * 1000) . ' to ' . ($counter * 1000);
 
-        $results = $dbConnection->arrayQuery('SELECT id, cachetype, metadata FROM cache LIMIT 1001 OFFSET ' . ($counter * 1000) );
+        $results = $dbConnection->arrayQuery('SELECT id, cachetype, metadata FROM cache LIMIT 1001 OFFSET ' . (($counter - 1) * 1000) );
 
         foreach($results as $cacheItem) {
             $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
