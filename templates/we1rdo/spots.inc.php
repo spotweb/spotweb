@@ -1,4 +1,5 @@
 <?php
+
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
 		require_once "includes/header.inc.php";

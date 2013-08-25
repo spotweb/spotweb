@@ -579,6 +579,10 @@ abstract class SpotStruct_abs {
             } # else
 		} # if
 
+        if ($schemaVer > 0.60 && ($schemaVer < 0.63)) {
+            throw new CacheMustBeMigrated2Exception();
+        } # new storage format
+
 		# ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');

@@ -35,7 +35,7 @@ abstract class dbeng_abs {
 	
 	/*
 	 * Executes the query with $params as parameters. All parameters are 
-	 * parsed through sthe safe() function to prevent SQL injection.
+	 * parsed through the safe() function to prevent SQL injection.
 	 *
 	 * Returns a single associative array when query succeeds, returns 
 	 * an exception when the query fails.

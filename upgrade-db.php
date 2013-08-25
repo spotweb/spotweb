@@ -117,7 +117,13 @@ catch(CacheMustBeMigratedException $x) {
     die("Your current Spotweb installation has an old way of storing Spotweb related files like images and NZB files. " . PHP_EOL .
         "We provide the script 'migrate-cache.php' to migrate the cache without losing your data. Depending on the " . PHP_EOL .
         "size of your cache this can take a very long time." . PHP_EOL . PHP_EOL .
-        "Please run the 'migrate-cache.php' script because attempting to run 'upgrade-db.php' again");
+        "Please run the 'migrate-cache.php' script because attempting to run 'upgrade-db.php' again will erase your cache completely" . PHP_EOL);
+}
+catch(CacheMustBeMigrated2Exception $x) {
+    die("Apologies for the inconvience, but Spotweb has once again changed the way we store files for cache. This " . PHP_EOL .
+        "means you need to run the script 'migrate-cache2.php' again.  " . PHP_EOL .
+        "Depending on the size of your cache this can take a very long time." . PHP_EOL . PHP_EOL .
+        "Please run the 'migrate-cache.php2' script again");
 }
 catch(SpotwebCannotBeUpgradedToooldException $x) {
 	die("Your current Spotweb installation is too old to be upgraded to this current version of Spotweb. " . PHP_EOL . 
