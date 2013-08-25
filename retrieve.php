@@ -11,6 +11,7 @@ try {
 	} # if
 
 	require_once "lib/SpotClassAutoload.php";
+    SpotClassAutoload::register();
 
 	/*
 	 * Initialize the Spotweb base classes

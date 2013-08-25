@@ -27,6 +27,7 @@ try {
     } # if
 
     require_once "lib/SpotClassAutoload.php";
+    SpotClassAutoload::register();
     require_once "lib/Bootstrap.php";
 
     /*

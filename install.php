@@ -2,6 +2,8 @@
 	error_reporting(2147483647);
 
 	require_once "lib/SpotClassAutoload.php";
+    SpotClassAutoload::register();
+
 	try {
 		@include('settings.php');
         @include('dbsettings.inc.php');
