@@ -83,7 +83,7 @@ try {
     /*
       * try to remove the directories
      */
-    $cacheBasePath = $this->_cachePath . DIRECTORY_SEPARATOR;
+    $cacheBasePath = '.' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
     rrmdir($cacheBasePath);
 
     /*
