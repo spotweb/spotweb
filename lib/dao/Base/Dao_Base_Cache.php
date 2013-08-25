@@ -150,7 +150,11 @@ class Dao_Base_Cache implements Dao_Cache {
          * We want to store at most 1000 file in one directory,
          * so we use this.
          */
-        $filePath .= floor($cacheId / 1000) . DIRECTORY_SEPARATOR . $cacheId;
+        if (floor($cacheId/ 1000) > 1000) {
+            $filePath .= implode(DIRECTORY_SEPARATOR, str_split($cacheId, 3)) . DIRECTORY_SEPARATOR . $cacheId;
+        } else {
+            $filePath .= floor($cacheId / 1000) . DIRECTORY_SEPARATOR . $cacheId;
+        } # else
 
         /*
          * And create an extension, because thats nicer.
