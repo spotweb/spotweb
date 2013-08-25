@@ -54,6 +54,10 @@ class SpotClassAutoload {
                 require "templates/" . strtolower($tpl_name) . "/" . "SpotTemplateHelper_" . ucfirst($tpl_name) . ".php";
                 break;
             } # SpotTemplateHelper
+            case 'Twig'         : {
+                require "vendor/" . str_replace(array('_', "\0"), array('/', ''), $class_name) . '.php';
+                break;
+            } # Twig
             case 'Net'			: {
                 $class_name = substr($class_name, 4);
 
