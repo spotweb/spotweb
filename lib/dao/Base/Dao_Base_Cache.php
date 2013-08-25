@@ -181,7 +181,25 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Migrate the cache from one storage format to another
      */
-    private function migrateCacheToNewStorage($oldFilePath, $filePath, $cacheType) {
+    public function migrateCacheToNewStorage($cacheId, $cacheType, $metaData) {
+        /*
+         * Get the unique filepath
+         */
+        $filePath = $this->calculateFilePath($cacheId, $cacheType, $metaData);
+        if (file_exists($filePath)) {
+            return ;
+        } # if
+
+        $oldFilePath = $this->oldCalculateFilePath($cacheId, $cacheType, $metaData);
+
+        if (!file_exists($oldFilePath)) {
+            $this->removeCacheItem($cacheId, $cacheType, $metaData);
+
+            echo PHP_EOL . 'Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' ' . $oldFilePath . ' -> ' . $filePath . PHP_EOL;
+
+            return ;
+        } # if
+
         /*
          * Move the file
          */
@@ -194,44 +212,6 @@ class Dao_Base_Cache implements Dao_Cache {
          * remove the directory
          */
         @unlink($oldFilePath);
-
-        if (!function_exists('rrmdir'))
-        {
-            function rrmdir($dir) {
-                if (is_dir($dir)) {
-                    $objects = scandir($dir);
-                    foreach ($objects as $object) {
-
-                        if (count($objects) != 2) {
-                            if ($object != "." && $object != "..") {
-                                if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object);
-                            }
-                        }
-                    }
-                    reset($objects);
-                    @rmdir($dir);
-                }
-            }
-        } # if
-
-        /*
-         * try to remove the directories
-         */
-        $cacheBasePath = $this->_cachePath . DIRECTORY_SEPARATOR;
-
-        switch ($cacheType) {
-            case Dao_Cache::SpotImage           : $cacheBasePath .= 'image' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::SpotNzb             : $cacheBasePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Statistics          : $cacheBasePath .= 'stats' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Web                 : $cacheBasePath .= 'web' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslaterToken     : $cacheBasePath .= 'translatertoken' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslatedComments  : $cacheBasePath .= 'translatedcomments' . DIRECTORY_SEPARATOR; break;
-
-            default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
-        } # switch
-        $cacheBasePath .= substr($oldFilePath, strlen($cacheBasePath), 3);
-
-        rrmdir($cacheBasePath);
     } # migrateCacheToNewStorage
 
     /*

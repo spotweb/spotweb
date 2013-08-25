@@ -1,6 +1,22 @@
 <?php
 error_reporting(2147483647);
 
+function rrmdir($dir) {
+    if (is_dir($dir)) {
+        $objects = scandir($dir);
+        foreach ($objects as $object) {
+
+            if (count($objects) != 2) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object);
+                }
+            }
+        }
+        reset($objects);
+        @rmdir($dir);
+    }
+}
+
 try {
     /*
      * If we are run from another directory, try to change the current
@@ -54,7 +70,7 @@ try {
 
         foreach($results as $cacheItem) {
             $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
-            $cacheDao->getCacheContent($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
+            $cacheDao->migrateCacheToNewStorage($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
         } # results
 
         echo ", done. " . PHP_EOL;
@@ -63,6 +79,12 @@ try {
             break;
         } # if
     } # while
+
+    /*
+      * try to remove the directories
+     */
+    $cacheBasePath = $this->_cachePath . DIRECTORY_SEPARATOR;
+    rrmdir($cacheBasePath);
 
     /*
      * And actually start updating or creating the schema and settings
