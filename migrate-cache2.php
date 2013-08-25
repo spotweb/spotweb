@@ -83,6 +83,7 @@ try {
     /*
       * try to remove the directories
      */
+    echo "Removing old and empty cache directories (can take a while)..." . PHP_EOL;
     $cacheBasePath = '.' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
     rrmdir($cacheBasePath);
 
