@@ -38,6 +38,9 @@ function initSpotwebJs() {
     var BaseURL = createBaseURL();
     var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
     attachEnablerBehaviour();
+
+    attachDateSortBehaviour();
+    initSliders();
 } // initSpotwebJs
 
 /**
@@ -611,7 +614,12 @@ function attachAdvancedSearchBehaviour() {
 	//ready
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
-			toggleSidebarPanel('.advancedSearch');
+
+            toggleSidebarPanel('.advancedSearch');
+
+            if (!$('div#tree').data('dynatree')) {
+                initializeCategoryTree();
+            } // if
 		}
 
         /*
@@ -625,10 +633,6 @@ function attachAdvancedSearchBehaviour() {
                 return true;
             }
         });
-
-        initializeCategoryTree();
-        attachDateSortBehaviour();
-        initSliders();
 	});
 
 	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
