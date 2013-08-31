@@ -177,11 +177,15 @@ abstract class Services_NzbHandler_abs
          * If we find a better match, than use that one, but else we use the
          * default category defined
          */
-		foreach($spot['subcatlist'] as $cat) {
-			if (isset($sabnzbd['categories'][$spot['category']][$cat])) {
-				$category = $sabnzbd['categories'][$spot['category']][$cat];
-			} # if
-		} # foreach
+        foreach(array('a', 'b', 'c', 'd', 'z') as $subcatType) {
+            $subList = explode('|', $spot['subcat' . $subcatType]);
+
+            foreach($subList as $cat) {
+    			if (isset($sabnzbd['categories'][$spot['category']][$cat])) {
+	    			$category = $sabnzbd['categories'][$spot['category']][$cat];
+		    	} # if
+		    } # foreach
+        } # foreach
 
 		return $category;
 	} # convertCatToSabnzbdCat
