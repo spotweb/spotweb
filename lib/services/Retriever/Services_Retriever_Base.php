@@ -115,7 +115,7 @@ abstract class Services_Retriever_Base {
 			/*
 			 * Select the group. We don't need the bin selectGroup() command per se, as
 			 * we use articleid's there. We do however want to select it, because
-			 * the sendNoop() call uses a selectgroup
+			 * the sendNoop() call uses a selectgroup and some usenet servers require it.
 			 */
 			$this->_msgdata = $this->_svcNntpText->selectGroup($groupList['text']);;
             if (!empty($groupList['bin'])) {

@@ -578,7 +578,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 */
 		function getGroupName() {
 			return array('text' => $this->_settings->get('hdr_group'),
-						 'bin' => $this->_settings->get('hdr_group'));
+						 'bin' => $this->_settings->get('nzb_group'));
 		} # getGroupName
 
         /*
