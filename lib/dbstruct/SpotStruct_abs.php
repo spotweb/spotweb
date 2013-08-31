@@ -583,7 +583,23 @@ abstract class SpotStruct_abs {
             throw new CacheMustBeMigrated2Exception();
         } # new storage format
 
-		# ---- cache table ---- #
+        # Convert incorrect stored book subtitles
+        if ($schemaVer > 0.00 && ($schemaVer < 0.60)) {
+            /*
+             * A lot of posters use the old category mapping of Spotweb for epubs, but this
+             * is wrong and we don't want to propagate this error. Hence we fix the categories,
+             * in the database. The Spot parsers also fixup the categories.
+             */
+            echo "\tPerforming mass book category mapping update " . PHP_EOL;
+            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c2|', 'c11|'), 'c2|', 'c11|'), 'c1|', 'c11|')
+                                    WHERE
+                                            subcatz = 'z2|'
+                                            AND ((subcatc LIKE '%c1|%') OR (subcatc LIKE '%c2|%') OR ('subcatc' LIKE '%c6|%'))
+                                            AND (NOT subcatc LIKE '%c11|%')  LIMIT 10;
+                                ");
+        } # if
+
+        # ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
