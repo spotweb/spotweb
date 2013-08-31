@@ -815,11 +815,8 @@ parse_model
 
 				// tsearch gets its own token string because anything other than alpha-numeric
 				// will not work with tsearch, but will work with the ILIKE phrase.
-				if ( $this->isalnum($c) || $this->isspace($c) || $c == "'" || $c == '"' ) {
+				if ( $this->isalnum($c) || $c == '*' || $this->isspace($c) || $c == "'" || $c == '"' ) {
 					$this->token_tsearch .= $c;
-                    /* Support postgresql's wildcard character matching */
-                } else if (($c == '*') && ($state == self::DONE)) {
-                    $this->token_tsearch .= ':*';
                 } else {
 					$this->token_tsearch .= '=';
                 } # else
@@ -836,6 +833,17 @@ parse_model
 
 		if ( $this->debug )
 			echo sprintf("%-10s %-10s %s\n", 'Token:', $this->token_name_lookup[$current_token], $this->token_string);
+
+        /**
+         * Replace a trailing wildcard char with a valid operator,
+         * and replace all others with an =.
+         *
+         * we have to make sure we don't replace our own wildcard operator
+         */
+        if (substr($this->token_tsearch, -1) == '*') {
+            $this->token_tsearch = substr($this->token_tsearch, 0, -1) . ':*';
+        } # if
+        $this->token_tsearch = str_replace('*', '=', substr($this->token_tsearch, 0, -1));
 
 		// Consolidate 'AND', 'OR', and 'NOT' into '&',  '|',  and '!' respectively.
 		if ( $current_token == self::NOTWORD )
