@@ -815,10 +815,14 @@ parse_model
 
 				// tsearch gets its own token string because anything other than alpha-numeric
 				// will not work with tsearch, but will work with the ILIKE phrase.
-				if ( $this->isalnum($c) || $this->isspace($c) || $c == "'" || $c == '"' )
+				if ( $this->isalnum($c) || $this->isspace($c) || $c == "'" || $c == '"' ) {
 					$this->token_tsearch .= $c;
-				else
+                    /* Support postgresql's wildcard character matching */
+                } else if (($c == '*') && ($state == self::DONE)) {
+                    $this->token_tsearch .= ':*';
+                } else {
 					$this->token_tsearch .= '=';
+                } # else
 			}
 
 			if ( $state == self::DONE && $current_token == self::ID )
