@@ -181,7 +181,7 @@ class dbfts_mysql extends dbfts_abs {
 
                     $strippedTerm = trim($strippedTerm, "+-");
 				} # if
-				
+
 				if (strpos('*', substr($strippedTerm, -1)) !== false) {
 					$searchMode = 'match-boolean';
 

@@ -83,8 +83,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} # if
 
             /*
-             * Actually retrieve the information from imdb, based on the
-             * imdbid passed by the API
+             * Actually retrieve the information from TVRage, based on the
+             * tvrage passed by the API
              */
             $svcMediaInfoTvrage = new Services_MediaInformation_Tvrage($this->_daoFactory->getCacheDao());
             $svcMediaInfoTvrage->setSearchid($this->_params['rid']);
