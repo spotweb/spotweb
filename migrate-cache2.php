@@ -1,21 +1,28 @@
 <?php
 error_reporting(2147483647);
 
-function rrmdir($dir) {
-    if (is_dir($dir)) {
-        $objects = scandir($dir);
-        foreach ($objects as $object) {
+function cleanupDirs($dir, $curlevel) {
+    echo 'Scanning directory: ' . $dir . ' (level: ' . $curlevel . ')' . PHP_EOL;
 
-            if (count($objects) != 2) {
-                if ($object != "." && $object != "..") {
-                    if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object);
+    $objects = scandir($dir);
+    foreach ($objects as $object) {
+
+        if ($object != "." && $object != "..") {
+            if (strlen(basename($object)) == 3) {
+                if (is_dir($dir)) {
+                    cleanupDirs($dir."/".$object, $curlevel+1);
                 }
+            } elseif ($curlevel > 2) {
+                echo 'Removing file: ' . $dir."/".$object . PHP_EOL;
+                unlink($dir."/".$object);
             }
         }
-        reset($objects);
-        @rmdir($dir);
+
     }
-}
+
+    echo 'Trying to remove directory: ' . $dir . PHP_EOL;
+    @rmdir($dir);
+} # cleanupDirs
 
 try {
     /*
@@ -85,8 +92,17 @@ try {
       * try to remove the directories
      */
     echo "Removing old and empty cache directories (can take a while)..." . PHP_EOL;
+
+    /*
+     * Removing orphaned files
+     */
     $cacheBasePath = '.' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-    rrmdir($cacheBasePath);
+    cleanUpDirs($cacheBasePath . 'image' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'nzb' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'stats' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'web' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'translatedcomments' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'translatertoken' . DIRECTORY_SEPARATOR, 0);
 
     /*
      * And actually start updating or creating the schema and settings

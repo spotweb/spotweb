@@ -199,7 +199,7 @@ class Dao_Base_Cache implements Dao_Cache {
         if (!file_exists($oldFilePath)) {
             $this->_conn->exec("DELETE FROM cache WHERE id = %d", Array($cacheId));
             @unlink($oldFilePath);
-            
+
             echo PHP_EOL . 'Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' ' . $oldFilePath . ' -> ' . $filePath . PHP_EOL;
 
             return ;
