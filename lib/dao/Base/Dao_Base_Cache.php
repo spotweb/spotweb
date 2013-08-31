@@ -248,7 +248,7 @@ class Dao_Base_Cache implements Dao_Cache {
     } # getCacheContent
 
     /*
-     * Stores the actual contenst for a given resourceid
+     * Stores the actual content for a given resourceid
      */
     public function putCacheContent($cacheId, $cacheType, $content, $metaData) {
         /*

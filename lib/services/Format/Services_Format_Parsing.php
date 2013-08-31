@@ -184,6 +184,7 @@ class Services_Format_Parsing {
 
         # map deprecated genre categories to their new genre category
         $tpl_spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
+        $tpl_spot['subcatc'] = SpotCategories::mapLanguageSubCategories($tpl_spot['category'], $tpl_spot['subcatc'], $tpl_spot['subcatz']);
 
 		# and return the parsed XML
 		return $tpl_spot;
@@ -320,6 +321,7 @@ class Services_Format_Parsing {
 
         # map deprecated genre categories to their new genre category
         $spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($spot['category'], $spot['subcatd'], $spot['subcatz']);
+        $spot['subcatc'] = SpotCategories::mapLanguageSubCategories($spot['category'], $spot['subcatc'], $spot['subcatz']);
 
 		if ((strpos($subj, '=?') !== false) && (strpos($subj, '?=') !== false)) {
 			# This is an old format to parse, instantiate the legacy parsing
