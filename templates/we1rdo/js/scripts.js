@@ -38,9 +38,6 @@ function initSpotwebJs() {
     var BaseURL = createBaseURL();
     var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
     attachEnablerBehaviour();
-
-    attachDateSortBehaviour();
-    initSliders();
 } // initSpotwebJs
 
 /**
@@ -618,6 +615,9 @@ function attachAdvancedSearchBehaviour() {
             toggleSidebarPanel('.advancedSearch');
 
             if (!$('div#tree').data('dynatree')) {
+                attachDateSortBehaviour();
+                initSliders();
+
                 initializeCategoryTree();
             } // if
 		}
