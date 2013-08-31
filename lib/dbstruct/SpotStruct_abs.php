@@ -584,7 +584,7 @@ abstract class SpotStruct_abs {
         } # new storage format
 
         # Convert incorrect stored book subtitles
-        if ($schemaVer > 0.00 && ($schemaVer < 0.60)) {
+        if ($schemaVer > 0.00 && ($schemaVer < 0.64)) {
             /*
              * A lot of posters use the old category mapping of Spotweb for epubs, but this
              * is wrong and we don't want to propagate this error. Hence we fix the categories,
