@@ -591,11 +591,18 @@ abstract class SpotStruct_abs {
              * in the database. The Spot parsers also fixup the categories.
              */
             echo "\tPerforming mass book category mapping update " . PHP_EOL;
-            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c2|', 'c11|'), 'c2|', 'c11|'), 'c1|', 'c11|')
+            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c2|', 'c11|'), 'c2|', 'c11|'), 'c6|', 'c11|')
                                     WHERE
                                             subcatz = 'z2|'
                                             AND ((subcatc LIKE '%c1|%') OR (subcatc LIKE '%c2|%') OR ('subcatc' LIKE '%c6|%'))
                                             AND (NOT subcatc LIKE '%c11|%')  LIMIT 10;
+                                ");
+
+            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c3|', 'c10|'), 'c4|', 'c10|'), 'c7|', 'c10|')
+                                    WHERE
+                                            subcatz = 'z2|'
+                                            AND ((subcatc LIKE '%c3|%') OR (subcatc LIKE '%c4|%') OR ('subcatc' LIKE '%c7|%'))
+                                            AND (NOT subcatc LIKE '%c10|%')  LIMIT 10;
                                 ");
         } # if
 
