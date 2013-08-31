@@ -22,22 +22,7 @@ class Services_Providers_SpotList {
 		 */
 		$spotResults = $this->_spotDao->getSpots($ourUserId, $start, $limit, $parsedSearch);
 
-		$spotCnt = count($spotResults['list']);
-		for ($i = 0; $i < $spotCnt; $i++) {
-			/*
-			 * We get our subcategories concatenated with an | symbol,
-			 * we explode them so all subcategories are within their
-			 * own array item
-			 */
-			$spotResults['list'][$i]['subcatlist'] = explode("|", 
-							$spotResults['list'][$i]['subcata'] . 
-							$spotResults['list'][$i]['subcatb'] . 
-							$spotResults['list'][$i]['subcatc'] . 
-							$spotResults['list'][$i]['subcatd'] . 
-							$spotResults['list'][$i]['subcatz']);
-		} # foreach
-
-		SpotTiming::stop(__FUNCTION__, array($spotCnt));
+		SpotTiming::stop(__FUNCTION__, array());
 		return $spotResults;
 	} # fetchSpotList()
 	

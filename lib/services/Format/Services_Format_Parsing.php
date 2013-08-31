@@ -56,7 +56,7 @@ class Services_Format_Parsing {
 		# Create a template array so we always have the full fields to prevent ugly notices
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
-						  'filename' => '', 'newsgroup' => '', 'subcatlist' => array(), 'subcata' => '', 'subcatb' => '', 
+						  'filename' => '', 'newsgroup' => '', 'subcata' => '', 'subcatb' => '',
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '');
 
 		/*
@@ -169,7 +169,6 @@ class Services_Format_Parsing {
 		foreach($subcatList as $subcat) {
 			if (preg_match('/(\d+)([aAbBcCdDzZ])(\d+)/', preg_quote($subcat), $tmpMatches)) {
 				$subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
-				$tpl_spot['subcatlist'][] = $subCatVal;
 				$tpl_spot['subcat' . $subCatVal[0]] .= $subCatVal . '|';
 			} # if
 		} # foreach

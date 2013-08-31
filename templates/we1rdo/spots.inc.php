@@ -97,17 +97,21 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} # if
 
 		$catMap = array();
-		foreach($spot['subcatlist'] as $sub) {
-			$subcatType = substr($sub, 0, 1);
-			$subCatDesc = SpotCategories::SubcatDescription($spot['category'], $subcatType);
-			$catDesc = SpotCategories::Cat2Desc($spot['category'], $sub);
+        foreach(array('a', 'b', 'c', 'd', 'z') as $subcatType) {
+            $subList = explode('|', $spot['subcat' . $subcatType]);
+            foreach($subList as $sub) {
+                if (!empty($sub)) {
+            		$subCatDesc = SpotCategories::SubcatDescription($spot['category'], $subcatType);
+			        $catDesc = SpotCategories::Cat2Desc($spot['category'], $sub);
 
-			if (isset($catMap[$subCatDesc])) {
-				$catMap[$subCatDesc] .= ', ' . $catDesc;
-			} else {
-				$catMap[$subCatDesc] = $catDesc;
-			} # else
-		} # foreach
+                    if (isset($catMap[$subCatDesc])) {
+                        $catMap[$subCatDesc] .= ', ' . $catDesc;
+                    } else {
+                        $catMap[$subCatDesc] = $catDesc;
+                    } # else
+                } # if
+        	} # foreach
+        } # foreach
 		$catData = json_encode($catMap);
 	
 		if($spot['rating'] == 0) {
