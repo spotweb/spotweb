@@ -843,9 +843,12 @@ parse_model
         if (substr($this->token_tsearch, -1) == '*') {
             $this->token_tsearch = substr($this->token_tsearch, 0, -1) . ':*';
         } # if
-        $this->token_tsearch = str_replace('*', '=', substr($this->token_tsearch, 0, -1));
+        if (!empty($strpos) && (strpos('*', $this->token_tsearch) !== false)) {
+            $this->token_tsearch = str_replace('*', '=', substr($this->token_tsearch, 0, -1));
+        } # if
 
-		// Consolidate 'AND', 'OR', and 'NOT' into '&',  '|',  and '!' respectively.
+
+// Consolidate 'AND', 'OR', and 'NOT' into '&',  '|',  and '!' respectively.
 		if ( $current_token == self::NOTWORD )
 			$current_token = self::NOTOP;
 
