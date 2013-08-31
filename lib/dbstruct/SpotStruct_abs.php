@@ -584,13 +584,13 @@ abstract class SpotStruct_abs {
         } # new storage format
 
         # Convert incorrect stored book subtitles
-        if ($schemaVer > 0.00 && ($schemaVer < 0.64)) {
+        if ($schemaVer > 0.00 && ($schemaVer < 0.65)) {
             /*
              * A lot of posters use the old category mapping of Spotweb for epubs, but this
              * is wrong and we don't want to propagate this error. Hence we fix the categories,
              * in the database. The Spot parsers also fixup the categories.
              */
-            echo "\tPerforming mass book category mapping update " . PHP_EOL;
+            echo "Performing mass book category mapping update " . PHP_EOL;
             $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c2|', 'c11|'), 'c2|', 'c11|'), 'c6|', 'c11|')
                                     WHERE
                                             subcatz = 'z2|'
@@ -602,7 +602,7 @@ abstract class SpotStruct_abs {
                                     WHERE
                                             subcatz = 'z2|'
                                             AND ((subcatc LIKE '%c3|%') OR (subcatc LIKE '%c4|%') OR ('subcatc' LIKE '%c7|%'))
-                                            AND (NOT subcatc LIKE '%c10|%')  LIMIT 10;
+                                            AND (NOT subcatc LIKE '%c10|%');
                                 ");
         } # if
 
