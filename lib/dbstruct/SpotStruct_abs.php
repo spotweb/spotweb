@@ -595,14 +595,14 @@ abstract class SpotStruct_abs {
                                     WHERE
                                             subcatz = 'z2|'
                                             AND ((subcatc LIKE '%c1|%') OR (subcatc LIKE '%c2|%') OR ('subcatc' LIKE '%c6|%'))
-                                            AND (NOT subcatc LIKE '%c11|%')  LIMIT 10;
+                                            AND (NOT subcatc LIKE '%c11|%')
                                 ");
 
             $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c3|', 'c10|'), 'c4|', 'c10|'), 'c7|', 'c10|')
                                     WHERE
                                             subcatz = 'z2|'
                                             AND ((subcatc LIKE '%c3|%') OR (subcatc LIKE '%c4|%') OR ('subcatc' LIKE '%c7|%'))
-                                            AND (NOT subcatc LIKE '%c10|%');
+                                            AND (NOT subcatc LIKE '%c10|%')
                                 ");
         } # if
 
