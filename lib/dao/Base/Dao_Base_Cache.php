@@ -209,6 +209,7 @@ class Dao_Base_Cache implements Dao_Cache {
          * Move the file
          */
         @mkdir(dirname($filePath), 0777, true);
+        @chmod(dirname($filePath), 0777); // mkdir's chmod is masked with umask()
         rename($oldFilePath, $filePath);
         @chmod($filePath, 0777);
 
@@ -262,6 +263,7 @@ class Dao_Base_Cache implements Dao_Cache {
         $success = true;
         if (!is_writable(dirname($filePath))) {
             $success = @mkdir(dirname($filePath), 0777, true);
+            @chmod(dirname($filePath), 0777); // mkdir's chmod is masked with umask()
         } # if
 
         if ($success) {
