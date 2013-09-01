@@ -147,11 +147,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
                 $epSearch .= '*';
 
                 // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:DEF:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $epSearch . "\"";
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             } # else
 
 			# The + operator is supported both by PostgreSQL and MySQL's FTS
-			$searchParams['value'][] = "Titel:=:DEF:+\"" . $tvRageInfo->getTitle() . "\" +" . $epSearch;
+			$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $epSearch;
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
