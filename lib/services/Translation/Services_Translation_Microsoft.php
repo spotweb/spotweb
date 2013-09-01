@@ -160,7 +160,7 @@ class Services_Translation_Microsoft {
         $texts = $doc->createElement('Texts');
         foreach($list as $v) {
             $str = $doc->createElement('string');
-            $str->appendChild($doc->createTextNode(implode("\r\n", $v[$field])));
+            $str->appendChild($doc->createTextNode($v[$field]));
             $str->setAttribute('xmlns', 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
 
             $texts->appendChild($str);
@@ -188,7 +188,7 @@ class Services_Translation_Microsoft {
             $listCounter = 0;
 
             foreach($translated->TranslateArrayResponse as $tar) {
-                $list[$listCounter][$field . '_translated'] = explode("\r\n", $tar->TranslatedText);
+                $list[$listCounter][$field . '_translated'] = (string) $tar->TranslatedText;
 
                 $listCounter++;
             } # foreach
