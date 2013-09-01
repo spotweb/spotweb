@@ -237,7 +237,7 @@ class Dao_Base_Cache implements Dao_Cache {
              */
             $oldFilePath = $this->oldCalculateFilePath($cacheId, $cacheType, $metaData);
             if (@file_exists($oldFilePath)) {
-                $this->migrateCacheToNewStorage($oldFilePath, $cacheType, $filePath);
+                $this->migrateCacheToNewStorage($cacheId, $cacheType, $metaData);
             } else {
                 $this->removeCacheItem($cacheId, $cacheType, $metaData);
 
