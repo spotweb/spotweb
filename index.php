@@ -30,6 +30,21 @@ try {
 		$currentSession = $svcUserAuth->useOrStartSession(false);
 	} # if
 
+# --------------------------------
+    echo '<pre>';
+    $o_parse = new parse_model();
+    $o_parse->debug = true;
+    $o_parse->upper_op_only = true;
+    $o_parse->use_prepared_sql = false;
+    $o_parse->set_default_op('AND');
+
+    // $x = $o_parse->parse('+"Revolution (2012)" +"Season 2"', 'whee');
+    $x = $o_parse->parse('"Revolution (2012)" AND "Season 2"', 'whee');
+
+    var_dump($x);
+    var_dump($o_parse->tsearch);
+    die();
+# --------------------------------
 
     /*
      * If three is no user object, we don't have a security system

@@ -13,8 +13,8 @@ class dbfts_pgsql extends dbfts_abs {
          * + signs get incorrectly interpreted by the query
          * parser used for PostgreSQL by us, so for now we strip those.
          */
-        if (strpos('+-~<>', $searchTerm) !== false) {
-            $searchTerm = substr($searchTerm, 1, 0);
+        if (strpos('+-~<>', $searchTerm[0]) !== false) {
+            $searchTerm = substr($searchTerm, 1);
         } # if
 
         $searchTerm = str_replace(array('-', '+'),
