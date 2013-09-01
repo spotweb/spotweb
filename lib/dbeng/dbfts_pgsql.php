@@ -66,7 +66,7 @@ class dbfts_pgsql extends dbfts_abs {
              *
              * +"Revolution (2012)" +"Season 2"
              */
-            $searchFields = $this->prepareFtsQuery($searchValue);
+            $searchValue = $this->prepareFtsQuery($searchValue);
 
             /*
              * First try to the parse the query using this library,
