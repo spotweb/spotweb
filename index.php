@@ -30,10 +30,11 @@ try {
 		$currentSession = $svcUserAuth->useOrStartSession(false);
 	} # if
 
-	/*
-	 * If three is no user object, we don't have a security system
-	 * either. Without a security system we cannot boot, so fatal
-	 */
+
+    /*
+     * If three is no user object, we don't have a security system
+     * either. Without a security system we cannot boot, so fatal
+     */
 	if ($currentSession === false) {
 		if ($req->doesExist('apikey')) {
 			$currentSession = $svcUserAuth->useOrStartSession(true);

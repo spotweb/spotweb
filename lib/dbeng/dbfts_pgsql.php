@@ -1,6 +1,29 @@
 <?php
 
 class dbfts_pgsql extends dbfts_abs {
+
+    /**
+     * Prepare (mangle) an FTS query to make sure we can use them
+     *
+     * @param $searchTerm
+     * @return string
+     */
+    private function prepareFtsQuery($searchTerm) {
+        /*
+         * + signs get incorrectly interpreted by the query
+         * parser used for PostgreSQL by us, so for now we strip those.
+         */
+        if (strpos('+-~<>', $searchTerm) !== false) {
+            $searchTerm = substr($searchTerm, 1, 0);
+        } # if
+
+        $searchTerm = str_replace(array('-', '+'),
+                                  array(' NOT ', ' AND '),
+                                  $searchTerm);
+
+        return $searchTerm;
+    } # prepareFtsQuery
+
 	/*
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
@@ -37,6 +60,13 @@ class dbfts_pgsql extends dbfts_abs {
             $o_parse->upper_op_only = true;
             $o_parse->use_prepared_sql = false;
             $o_parse->set_default_op('AND');
+
+            /*
+             * Do some preparation for the searchvalue, test cases:
+             *
+             * +"Revolution (2012)" +"Season 2"
+             */
+            $searchFields = $this->prepareFtsQuery($searchValue);
 
             /*
              * First try to the parse the query using this library,
