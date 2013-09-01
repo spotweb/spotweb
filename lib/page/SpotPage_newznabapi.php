@@ -145,6 +145,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} else {
                 // Complete season search, add wildcard character to season
                 $epSearch .= '*';
+
+                // and search for the text 'Season ' ...
+                $searchParams['value'][] = "Titel:=:DEF:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $epSearch . "\"";
             } # else
 
 			# The + operator is supported both by PostgreSQL and MySQL's FTS
