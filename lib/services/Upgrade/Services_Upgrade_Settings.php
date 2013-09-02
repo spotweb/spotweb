@@ -52,7 +52,7 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('retrieve_comments', true);
 		$this->setIfNot('retrieve_full_comments', false);
 		$this->setIfNot('retrieve_reports', true);
-		$this->setIfNot('retrieve_increment', 1000);
+		$this->setIfNot('retrieve_increment', 5000);
 		$this->setIfNot('spot_moderation', 'act');
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);
