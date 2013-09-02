@@ -617,7 +617,6 @@ function attachAdvancedSearchBehaviour() {
             if (!$('div#tree').data('dynatree')) {
                 attachDateSortBehaviour();
                 initSliders();
-
                 initializeCategoryTree();
             } // if
 		}
@@ -776,6 +775,14 @@ function toggleAllMultiNzb() {
 function downloadMultiNZB(dltype) {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count > 0) {
+        /*
+         * with client-sabnzbd we override to display as we cannot send
+         * multiple NZB files to the server just yet
+         */
+        if (dltype == 'client-sabnzbd') {
+            dltype = 'display';
+        } // if
+
 		var url = '?page=getnzb&action=' + dltype;
 		$('td.multinzb input[type=checkbox]:checked').each(function() {
 			url += '&messageid%5B%5D='+$(this).val();
@@ -802,20 +809,6 @@ function downloadMultiNZB(dltype) {
             } // success
         }); // ajax call om de form te submitten
 
-        /*
-         * with client-sabnzbd we ask the browser to download a specific url,
-         * so we cannot keep track if this succeeds or not. Therefore,
-         * we just always set it to green
-         */
-        if (dltype == 'client-sabnzbd') {
-            setTimeout( function() {
-                $(".sabnzbd-button").removeClass("loading").addClass("succes");
-
-                $("table.spots input[type=checkbox]").attr("checked", false);
-                multinzb();
-            }, 1000);
-
-        } // if
 
 	}
 }
