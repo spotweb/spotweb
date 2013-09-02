@@ -346,7 +346,7 @@ class Net_NNTP_Protocol_Client
 			
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
-				usleep(50000);
+				usleep(25000);
                 continue;
             }
 
@@ -694,7 +694,10 @@ class Net_NNTP_Protocol_Client
     	    $this->_logger->info("Connection to $transport://$host:$port has been established.");
     	}
 
-    	// Retrive the server's initial response.
+        // set a stream timeout for each operation
+        stream_set_timeout($this->_socket, 240);
+
+        // Retrive the server's initial response.
     	$response = $this->_getStatusResponse();
 
         switch ($response) {
