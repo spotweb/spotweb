@@ -1,6 +1,9 @@
 <?php
 	require_once "includes/basic-html-header.inc.php";
 ?>
+<?php
+        if ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid') {
+?>
 			<div class='permdenied'>
 				<p>
 					<?php echo sprintf(_('Access denied for [%s (%d::%s)]'), $tplHelper->permToString($exception->getPermId()), $exception->getPermId(), $exception->getObject()); ?> </strong>
@@ -9,6 +12,9 @@
 		</div>
 	
 	<br>
+<?php
+    }
+?>
 	
 	<?php
         /*
