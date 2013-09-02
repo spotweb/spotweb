@@ -296,6 +296,11 @@ class Net_NNTP_Protocol_Client
             $this->throwError('Failed to read from socket...!');
         }
 
+        $streamStatus = stream_get_meta_data($this->_socket);
+        if ($streamStatus['timed_out']) {
+            $this->throwError('Connection timed out');
+        }
+
     	//
     	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	    $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
@@ -335,12 +340,18 @@ class Net_NNTP_Protocol_Client
         // Continue until connection is lost
         while (!feof($this->_socket)) {
 
-            // Retrieve and append up to 1024 characters from the server.
-            $recieved = @fgets($this->_socket, 1024);
+            // Retrieve and append up to 8192 characters from the server.
+            $recieved = @fgets($this->_socket, 8192);
 
             if ($recieved === false) {
                 $this->throwError('Failed to read line from socket.', null);
     	    }
+
+            $streamStatus = stream_get_meta_data($this->_socket);
+            if ($streamStatus['timed_out']) {
+                $this->throwError('Connection timed out');
+            }
+
 
             $line .= $recieved;
 			
