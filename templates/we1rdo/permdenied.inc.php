@@ -2,7 +2,7 @@
 	require_once "includes/basic-html-header.inc.php";
 ?>
 <?php
-        if ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid') {
+        if ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) {
 ?>
 			<div class='permdenied'>
 				<p>
