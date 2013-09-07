@@ -256,6 +256,8 @@ class Services_Nntp_Engine {
         } catch (Exception $x) {
             $this->registerError($x);
 
+            echo PHP_EOL . 'getHeader(): Failed to retrieve article: ' . $msgid . PHP_EOL;
+
             /**
              * Try this operation again, but make sure we are not overloading
              * the NNTP server with useless requests
@@ -281,6 +283,8 @@ class Services_Nntp_Engine {
             return $this->_nntp->getBody($msgid);
         } catch (Exception $x) {
             $this->registerError($x);
+
+            echo PHP_EOL . 'getBody(): Failed to retrieve article: ' . $msgid . PHP_EOL;
 
             /**
              * Try this operation again, but make sure we are not overloading
@@ -378,7 +382,7 @@ class Services_Nntp_Engine {
         } catch (Exception $x) {
             $this->registerError($x);
 
-            echo PHP_EOL . 'Failed to retrieve article: ' . $msgId . PHP_EOL;
+            echo PHP_EOL . 'getArticle(): Failed to retrieve article: ' . $msgId . PHP_EOL;
             /**
              * Try this operation again, but make sure we are not overloading
              * the NNTP server with useless requests
