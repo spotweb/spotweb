@@ -378,6 +378,7 @@ class Services_Nntp_Engine {
         } catch (Exception $x) {
             $this->registerError($x);
 
+            echo PHP_EOL . 'Failed to retrieve article: ' . $msgId . PHP_EOL;
             /**
              * Try this operation again, but make sure we are not overloading
              * the NNTP server with useless requests
@@ -385,7 +386,7 @@ class Services_Nntp_Engine {
             if ($this->tooManyErrors()) {
                 throw $x;
             } else {
-                return $this->getArticle($msgid);
+                return $this->getArticle($msgId);
             } # else
         } # catch
 
