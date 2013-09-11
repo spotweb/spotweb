@@ -14,10 +14,12 @@ class Dao_Base_Comment implements Dao_Comment {
 	/* 
 	 * Makes sure an messageid is not already used for a posting of a comment
 	 */
-	function isCommentMessageIdUnique($messageid) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'",
-						Array($messageid));
-		
+	function isCommentMessageIdUnique($messageId) {
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = :messageid",
+            array(
+                ':messageid' => array($messageId, PDO::PARAM_STR)
+            ));
+
 		return (empty($tmpResult));
 	} # isCommentMessageIdUnique
 
@@ -26,11 +28,13 @@ class Dao_Base_Comment implements Dao_Comment {
 	 * Remove extra comments
 	 */
 	function removeExtraComments($messageId) {
-		# Retrieve the database id for the messageid given
-		$commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = '%s'", Array($messageId));
+        $commentId = $this->_conn->singleQuery("SELECT id FROM commentsxover WHERE messageid = :messageid",
+            array(
+                ':messageid' => array($messageId, PDO::PARAM_STR)
+            ));
 		
 		/* 
-		* If this spot doesn't exist, we have some kind of logical error
+		* If this comment doesn't exist, we have some kind of logical error
 		* or database corruption. Cry about it
 		*/
 		if (empty($commentId)) {
@@ -41,7 +45,10 @@ class Dao_Base_Comment implements Dao_Comment {
 		 * remove all spots later inserted than the last spot we have
 		 * retrieved from the usenet server.
 		 */
-		$this->_conn->modify("DELETE FROM commentsxover WHERE id > %d", Array($commentId));
+		$this->_conn->modify("DELETE FROM commentsxover WHERE id > :id",
+            array(
+                ':id' => array($commentId, PDO::PARAM_INT)
+            ));
 	} # removeExtraComments
 
 	/*
@@ -50,14 +57,16 @@ class Dao_Base_Comment implements Dao_Comment {
 	function addPostedComment($userId, $comment) {
 		$this->_conn->modify(
 				"INSERT INTO commentsposted(ouruserid, messageid, inreplyto, randompart, rating, body, stamp)
-					VALUES('%d', '%s', '%s', '%s', '%d', '%s', %d)", 
-				Array((int) $userId,
-					  $comment['newmessageid'],
-					  $comment['inreplyto'],
-					  $comment['randomstr'],
-					  (int) $comment['rating'],
-					  $comment['body'],
-					  (int) time()));
+					VALUES(:ouruserid, :messageid, :inreplyto, :randompart, :rating, :body, :stamp)",
+            array(
+                ':ouruserid' => array($userId, PDO::PARAM_INT),
+                ':newmessageid' => array($comment['newmessageid'], PDO::PARAM_STR),
+                ':inreplyto' => array($comment['inreplyto'], PDO::PARAM_STR),
+                ':randompart' => array($comment['randomstr'], PDO::PARAM_STR),
+                ':rating' => array($comment['rating'], PDO::PARAM_INT),
+                ':body' => array($comment['body'], PDO::PARAM_STR),
+                ':stamp' => array(time(), PDO::PARAM_INT)
+            ));
 	} # addPostedComment
  
  	/*
@@ -110,7 +119,7 @@ class Dao_Base_Comment implements Dao_Comment {
 	function addComments($comments, $fullComments = array()) {
 		$this->_conn->batchInsert($comments,
 								  "INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp) VALUES ",
-								  "('%s', '%s', %d, %d)",
+								  "(%s, %s, %d, %d)",
 								  Array('messageid', 'nntpref', 'rating', 'stamp')
 								  );
 
@@ -141,7 +150,7 @@ class Dao_Base_Comment implements Dao_Comment {
 
 		$this->_conn->batchInsert($fullComments,
 								  "INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ",
-								  "('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
+								  "(%s, %s, %d, %s, %s, %s, %s, %s, %s)",
 								  Array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
 								  );
 	} # addFullComments
@@ -168,10 +177,15 @@ class Dao_Base_Comment implements Dao_Comment {
 														bl.idtype AS idtype
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
-													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = '%s'))
-													WHERE c.nntpref = '%s' AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = " . $this->_conn->safe( (int) $userId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
-													ORDER BY c.id", array($this->_conn->bool2dt(false), $nntpRef));
-		$commentListCount = count($commentList);
+													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = :doubled))
+													WHERE c.nntpref = :nntpref AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = :ouruserid) OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
+													ORDER BY c.id",
+            array(
+                ':doubled' => array(false, PDO::PARAM_BOOL),
+                ':nntpref' => array($nntpRef, PDO::PARAM_STR),
+                ':ouruserid' => array($userId, PDO::PARAM_INT)
+            ));
+ 		$commentListCount = count($commentList);
 		for($i = 0; $i < $commentListCount; $i++) {
 			if ($commentList[$i]['havefull']) {
 				$commentList[$i]['user-key'] = unserialize($commentList[$i]['user-key']);
@@ -196,11 +210,14 @@ class Dao_Base_Comment implements Dao_Comment {
 		 */
 		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
 									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
-												AND (sl.ouruserid = %d)
+												AND (sl.ouruserid = :ouruserid)
 									WHERE nntpref IN (" . $this->_conn->arrayKeyToIn($nntpRefList) . ") 
  										  AND (cx.stamp > sl.seen) 
 								   GROUP BY nntpref",
-								   Array((int) $ourUserId));
+            array(
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
+
 		$commentCount = array();
 		foreach($tmp as $cCount) {
 			$commentCount[$cCount['nntpref']] = $cCount['ccount'];
@@ -231,14 +248,20 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		$this->_conn->modify("UPDATE commentsxover SET moderated = '%s' WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList) . ")", Array($this->_conn->bool2dt(true)));
+		$this->_conn->modify("UPDATE commentsxover SET moderated = :moderated WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList) . ")",
+            array(
+                ':moderated' => array(true, PDO::PARAM_BOOL)
+            ));
 	} # markCommentsModerated
 
 	/*
 	 * Removes items from te commentsfull table older than a specific amount of days
 	 */
 	function expireCommentsFull($expireDays) {
-		return $this->_conn->modify("DELETE FROM commentsfull WHERE stamp < %d", Array((int) time() - ($expireDays*24*60*60)));
+		return $this->_conn->modify("DELETE FROM commentsfull WHERE stamp < :stamp",
+            array(
+                ':stamp' => array(time() - ($expireDays*24*60*60), PDO::PARAM_INT)
+            ));
 	} # expireCommentsFull
 
 

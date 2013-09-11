@@ -13,7 +13,7 @@ abstract class dbeng_abs {
 		 * password)
 		 */
 		switch ($engine) {
-			case 'mysql'		: return new dbeng_mysql(); break;
+			case 'mysql'		:
 			case 'pdo_mysql'	: return new dbeng_pdo_mysql(); break; 
 			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
 			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
@@ -45,7 +45,6 @@ abstract class dbeng_abs {
 	/*
 	 * Executes the query with $params as parameters. All parameters are 
 	 * parsed through sthe safe() function to prevent SQL injection.
-	 *
 	 *
 	 * Returns an array of associative arrays when query succeeds, returns 
 	 * an exception when the query fails.
@@ -91,7 +90,7 @@ abstract class dbeng_abs {
 	/*
 	 * Prepares the query string by running vsprintf() met safe() thrown around it
 	 */
-	function prepareSql($s, $p) {
+	private function prepareSql($s, $p) {
 		/*
 		 * When no parameters are given, we don't run vsprintf(). This makes sure
 		 * we can use arrayQuery() and singleQuery() with for example LIKE statements 
@@ -125,9 +124,9 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe($k) . "', ";
+			$tmpList .= $this->safe($k) . ",";
 		} # foreach
-		return substr($tmpList, 0, -2);
+		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
 
 	/*
@@ -137,10 +136,10 @@ abstract class dbeng_abs {
 	function arrayValToInOffset($ar, $val, $valOffset, $valEnd) {
 		$tmpList = '';
 
-		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe(substr($v[$val], $valOffset, $valEnd)) . "', ";
+		foreach($ar as $v) {
+			$tmpList .= $this->safe(substr($v[$val], $valOffset, $valEnd)) . ",";
 		} # foreach
-		return substr($tmpList, 0, -2);
+		return substr($tmpList, 0, -1);
 	} # arrayValToInOffset
 
 	/*
@@ -150,10 +149,10 @@ abstract class dbeng_abs {
 	function arrayValToIn($ar, $val) {
 		$tmpList = '';
 
-		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe($v[$val]) . "', ";
+		foreach($ar as $v) {
+			$tmpList .= $this->safe($v[$val]) . ",";
 		} # foreach
-		return substr($tmpList, 0, -2);
+		return substr($tmpList, 0, -1);
 	} # arrayValToIn
 
 	/*
@@ -180,7 +179,7 @@ abstract class dbeng_abs {
 				 * from any injection
 				 */
 				$itemValues = array();
-				foreach($fields as $idx => $field) {
+				foreach($fields as $field) {
 					$itemValues[] = $this->safe($item[$field]);
 				} # foreach
 

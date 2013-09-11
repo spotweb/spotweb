@@ -9,8 +9,14 @@ class Dao_Mysql_SpotStateList extends Dao_Base_SpotStateList {
 		SpotTiming::start(__FUNCTION__);
 
 		$stamp = time();
-		$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d) ON DUPLICATE KEY UPDATE " . $list . " = %d",
-								Array($messageId, (int) $ourUserId, $stamp, $stamp));
+		$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ")
+		                      VALUES (:messageid, :ouruserid, :stamp1) ON DUPLICATE KEY UPDATE " . $list . " = :stamp2",
+            array(
+                ':messageid' => array($messageId, PDO::PARAM_STR),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT),
+                ':stamp1' => array($stamp, PDO::PARAM_INT),
+                ':stamp2' => array($stamp, PDO::PARAM_INT)
+            ));
 
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
 	} # addToSpotStateList

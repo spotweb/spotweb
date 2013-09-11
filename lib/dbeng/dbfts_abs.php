@@ -64,14 +64,13 @@ abstract class dbfts_abs {
 		throw new NotImplementedException("createTextQuery() is running unoptimized while it shouldnt. Please report to the author");
 		
 		# Initialize some basic variables so our return statements are simple
-        /** @noinspection PhpUnreachableStatementInspection */
         $filterValueSql = array();
 
 		foreach($searchFields as $searchItem) {
 			$searchValue = trim($searchItem['value']);
 			$field = $searchItem['fieldname'];
 			
-			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE '%"  . $this->safe($searchValue) . "%') ";
+			$filterValueSql[] = " (" . $searchItem['fieldname'] . " LIKE "  . $this->safe('%' . $searchValue. '%') . ") ";
 		} # foreach
 
 		return array('filterValueSql' => $filterValueSql,

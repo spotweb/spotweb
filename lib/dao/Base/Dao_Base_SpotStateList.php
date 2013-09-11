@@ -19,10 +19,19 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 
 		$stamp = time();
 
-		$this->_conn->exec("UPDATE spotstatelist SET " . $list . " = %d WHERE messageid = '%s' AND ouruserid = %d", array($stamp, $messageId, $ourUserId));
+		$this->_conn->exec("UPDATE spotstatelist SET " . $list . " = :stamp WHERE messageid = :messageid AND ouruserid = :ouruserid",
+            array(
+                ':stamp' => array($stamp, PDO::PARAM_INT),
+                ':messageid' => array($messageId, PDO::PARAM_STR),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 		if ($this->_conn->rows() == 0) {
-			$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES ('%s', %d, %d)",
-				Array($messageId, (int) $ourUserId, $stamp));
+			$this->_conn->modify("INSERT INTO spotstatelist (messageid, ouruserid, " . $list . ") VALUES (:messageid, :ouruserid, :stamp)",
+                array(
+                    ':messageid' => array($messageId, PDO::PARAM_STR),
+                    ':ouruserid' => array($ourUserId, PDO::PARAM_INT),
+                    ':stamp' => array($stamp, PDO::PARAM_INT)
+                ));
 		} # if
 
 		SpotTiming::stop(__FUNCTION__, array($list, $messageId, $ourUserId, $stamp));
@@ -41,8 +50,16 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 	 */
 	function markAllAsRead($ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET seen = NULL WHERE (ouruserid = %d) AND (download IS NULL) AND (watch IS NULL) ", array( (int) $ourUserId));
-		$this->_conn->modify("UPDATE spotstatelist SET seen = %d WHERE (ouruserid = %d) AND (download IS NOT NULL) OR (watch IS NOT NULL) ", array( (int) time(), (int) $ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET seen = NULL WHERE (ouruserid = :ouruserid) AND (download IS NULL) AND (watch IS NULL) ",
+            array(
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
+
+		$this->_conn->modify("UPDATE spotstatelist SET seen = :stamp WHERE (ouruserid = :ouruserid) AND (download IS NOT NULL) OR (watch IS NOT NULL) ",
+            array(
+                ':stamp' => array(time(), PDO::PARAM_INT),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 		SpotTiming::stop(__FUNCTION__, array($ourUserId));
 	} # markAllAsRead
 
@@ -51,7 +68,10 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 	 */
 	function clearDownloadList($ourUserId) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spotstatelist SET download = NULL WHERE ouruserid = %d", array( (int) $ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET download = NULL WHERE ouruserid = :ouruserid",
+            array(
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 		SpotTiming::stop(__FUNCTION__, array($ourUserId));
 	} # clearDownloadList
 
@@ -69,8 +89,11 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList {
 	function removeFromWatchList($messageid, $ourUserId) {
 		SpotTiming::start(__FUNCTION__);
 
-		$this->_conn->modify("UPDATE spotstatelist SET watch = NULL WHERE messageid = '%s' AND ouruserid = %d LIMIT 1",
-				Array($messageid, (int) $ourUserId));
+		$this->_conn->modify("UPDATE spotstatelist SET watch = NULL WHERE messageid = :messageid AND ouruserid = :ouruserid LIMIT 1",
+            array(
+                ':messageid' => array($messageid, PDO::PARAM_STR),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 
 		SpotTiming::stop(__FUNCTION__, array($messageid, $ourUserId));
 	} # removeFromWatchList

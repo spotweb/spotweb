@@ -116,13 +116,13 @@ class Dao_Base_Spot implements Dao_Spot {
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
-									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2)) " .
-									 $criteriaFilter . " 
+									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
+									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) " .
+									 $criteriaFilter . "
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 
-		/* 
+		/*
 		 * Did we get more results than originally asked? Remove the last element
 		 * and set the flag we have gotten more results than originally asked for
 		 */
@@ -158,7 +158,10 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.reportcount AS reportcount,
 												s.moderated AS moderated
 											  FROM spots AS s
-											  WHERE s.messageid = '%s'", Array($msgId));
+											  WHERE s.messageid = :messageid",
+            array(
+                ':messageid' => array($msgId, PDO::PARAM_STR)
+            ));
 		SpotTiming::stop(__FUNCTION__);
 
 		if (empty($tmpArray)) {
@@ -204,12 +207,18 @@ class Dao_Base_Spot implements Dao_Spot {
 												f.fullxml AS fullxml,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
 												FROM spots AS s
-												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . "))
-												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
+												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = :ouruserid1))
+												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = :ouruserid2) OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = :ouruserid3)) AND (wl.idtype = 2))
 												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
-										  WHERE s.messageid = '%s'", Array($messageId));
+										  WHERE s.messageid = :messageid",
+            array(
+                ':ouruserid1' => array($ourUserId, PDO::PARAM_INT),
+                ':ouruserid2' => array($ourUserId, PDO::PARAM_INT),
+                ':ouruserid3' => array($ourUserId, PDO::PARAM_INT),
+                ':messageid' => array($messageId, PDO::PARAM_STR)
+            ));
 		if (empty($tmpArray)) {
 			return null;
 		} # if
@@ -327,8 +336,12 @@ class Dao_Base_Spot implements Dao_Spot {
 		} # if
 
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid IN (" . 
-								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")", Array($this->_conn->bool2dt(true)));
+		$this->_conn->modify("UPDATE spots SET moderated = :moderated WHERE messageid IN (" .
+								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")",
+            array(
+                ':moderated' => array(true, PDO::PARAM_BOOL)
+            ));
+
 		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
 	} # markSpotsModerated
 
@@ -339,8 +352,11 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__FUNCTION__);
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
-		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
-		$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
+		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < :time",
+            array(
+                ':time' => array(time() - $retention, PDO::PARAM_INT)
+            ));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in
 							(SELECT messageid FROM spots)") ;
 		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
 							(SELECT messageid FROM commentsxover WHERE commentsxover.nntpref not in 
@@ -393,7 +409,7 @@ class Dao_Base_Spot implements Dao_Spot {
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
 														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
 									VALUES",
-								  "('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
+								  "(%s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s)",
 								  Array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
 								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
 								  );
@@ -414,8 +430,13 @@ class Dao_Base_Spot implements Dao_Spot {
 	 */
 	function updateSpotInfoFromFull($fullSpot) {
 		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET title = '%s', spotterid = '%s' WHERE messageid = '%s'",
-							Array($fullSpot['title'], $fullSpot['spotterid'], $fullSpot['messageid']));
+		$this->_conn->modify("UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid",
+            array(
+                ':title' => array($fullSpot['title'], PDO::PARAM_STR),
+                ':spotterid' => array($fullSpot['spotterid'], PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+            ));
+
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));
 	} # updateSpotInfoFromFull
 
@@ -437,7 +458,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->batchInsert($fullSpots,
 								  "INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES",
-								  "('%s', '%s', '%s', '%s', '%s', '%s')",
+								  "(%s, %s, %s, %s, %s, %s)",
 								  Array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
 								  );
 
@@ -464,16 +485,40 @@ class Dao_Base_Spot implements Dao_Spot {
 		$fullSpot['category'] = (int) $fullSpot['category'];
 
 		# update spots table
-		$this->_conn->modify("UPDATE spots SET title = '%s', tag = '%s', subcata = '%s', 
-				subcatb = '%s', subcatc = '%s', subcatd = '%s', subcatz = '%s', category = %d, editstamp = %d, 
-				editor = '%s' WHERE messageid = '%s'",
-				Array($fullSpot['title'], $fullSpot['tag'], $fullSpot['subcata'], $fullSpot['subcatb'], 
-						$fullSpot['subcatc'], $fullSpot['subcatd'], $fullSpot['subcatz'], $fullSpot['category'],
-						(int) time(), $editor, $fullSpot['messageid']));
+		$this->_conn->modify("UPDATE spots
+                                SET title = :title,
+                                    tag = :tag,
+                                    subcata = :subcata,
+				                    subcatb = :subcatb,
+				                    subcatc = :subcatc,
+				                    subcatd = :subcatd,
+				                    subcatz = :subcatz,
+				                    category = :category,
+				                    editstamp = :editstamp,
+				                    editor = :editor
+				                WHERE messageid = :messageid",
+            array(
+                ':title' => array($fullSpot['title'], PDO::PARAM_STR),
+                ':tag' => array($fullSpot['tag'], PDO::PARAM_STR),
+                ':subcata' => array($fullSpot['subcata'], PDO::PARAM_STR),
+                ':subcatb' => array($fullSpot['subcata'], PDO::PARAM_STR),
+                ':subcatc' => array($fullSpot['subcatb'], PDO::PARAM_STR),
+                ':subcatd' => array($fullSpot['subcatd'], PDO::PARAM_STR),
+                ':subcatz' => array($fullSpot['subcatz'], PDO::PARAM_STR),
+                ':category' => array($fullSpot['category'], PDO::PARAM_INT),
+                ':editstamp' => array(time(), PDO::PARAM_INT),
+                ':editor' => array($editor, PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR),
+            ));
 
 		# update spotsfull table
-		$this->_conn->modify("UPDATE spotsfull SET fullxml = '%s' WHERE messageid = '%s'",
-				Array($fullSpot['fullxml'], $fullSpot['messageid']));
+		$this->_conn->modify("UPDATE spotsfull
+		                         SET fullxml = :fullxml
+		                       WHERE messageid = :messageid",
+            array(
+                ':fullxml' => array($fullSpot['fullxml'], PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+            ));
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpot));
 	} # updateSpot
@@ -530,7 +575,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		if (empty($sqlFilter)) {
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
-			$query = "SELECT COUNT(1) FROM spots AS s 
+			$query = "SELECT COUNT(1) FROM spots AS s
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
@@ -573,8 +618,14 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return array
 	 */
 	function getSpotCountPerCategory($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data;");
+        if (!empty($limit)) {
+            return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots WHERE stamp > :stamp GROUP BY data",
+                array(
+                    ':stamp' => array(strtotime("-1 " . $limit), PDO::PARAM_INT)
+                ));
+        } else {
+            return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots GROUP BY data");
+        } # else
 	} # getSpotCountPerCategory
 
 	/**
@@ -600,10 +651,17 @@ class Dao_Base_Spot implements Dao_Spot {
 			return ;
 		} # if
 
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-		$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > :id)",
+            array(
+                ':id' => array($spot['id'], PDO::PARAM_INT)
+            ));
+		$this->_conn->modify("DELETE FROM spots WHERE id > :id",
+            array(
+            ':id' => array($spot['id'], PDO::PARAM_INT)
+        ));
 
-		SpotTiming::stop(__FUNCTION__, array($messageId, $spot));
+
+        SpotTiming::stop(__FUNCTION__, array($messageId, $spot));
 	} # removeExtraSpots
 
 	/**
@@ -619,15 +677,17 @@ class Dao_Base_Spot implements Dao_Spot {
 
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
-					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
-				Array((int) $userId,
-					  $spot['newmessageid'],
-					  (int) time(),
-					  $spot['title'],
-					  $spot['tag'],
-					  (int) $spot['category'],
-					  implode(',', $spot['subcatlist']),
-					  $fullXml));
+					VALUES(:ouruserid, :messageid, :stamp, :title, :tag, :category, :subcats, :fullxml)",
+            array(
+                ':ouruserid' => array($userId, PDO::PARAM_INT),
+                ':time' => array(time(), PDO::PARAM_INT),
+                ':title' => array($spot['title'], PDO::PARAM_STR),
+                ':tag' => array($spot['tag'], PDO::PARAM_STR),
+                ':category' => array($spot['category'], PDO::PARAM_INT),
+                ':subcats' => array(implode(',', $spot['subcatlist']), PDO::PARAM_STR),
+                ':fullxml' => array($fullXml, PDO::PARAM_STR)
+            )
+        );
 
 		SpotTiming::stop(__FUNCTION__, array($userId, $spot, $fullXml));
 	} # addPostedSpot
@@ -641,7 +701,10 @@ class Dao_Base_Spot implements Dao_Spot {
 	function expireSpotsFull($expireDays) {
 		SpotTiming::start(__FUNCTION__);
 
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < :stamp)",
+            array(
+                ':stamp' => array(time() - ($expireDays*24*60*60), PDO::PARAM_INT)
+            ));
 
 		SpotTiming::stop(__FUNCTION__, array($expireDays));
 	} # expireSpotsFull
@@ -660,11 +723,13 @@ class Dao_Base_Spot implements Dao_Spot {
 		 * know to prevent a user from spamming the spotweb system by using existing
 		 * but valid spots
 		 */
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = :messageid1
 												  UNION
-											    SELECT messageid FROM spots WHERE messageid = '%s'",
-						Array($messageid, $messageid));
-
+											    SELECT messageid FROM spots WHERE messageid = :messageid2",
+            array(
+                ':messageid1' => array($messageid, PDO::PARAM_STR),
+                ':messageid2' => array($messageid, PDO::PARAM_STR)
+            ));
 		SpotTiming::stop(__FUNCTION__, array($messageid));
 		
 		return (empty($tmpResult));

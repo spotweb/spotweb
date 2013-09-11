@@ -10,6 +10,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
     public function __construct(dbeng_abs $conn) {
         $this->_conn = $conn;
     } # ctor
+
     /**
      * @param array $messageIds
      * @return boolean
@@ -41,7 +42,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         # prepare a list of IN values
         $this->_conn->batchInsert($idList,
             "INSERT INTO moderatedringbuffer(messageid) VALUES ",
-            "('%s')",
+            "(%s)",
             Array('messageid'));
     } # addToRingBuffer
 
@@ -84,7 +85,10 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
          * If we have more than 15000 items, delete them
          */
         if (($tmpValues['max'] - $tmpValues['min']) > 15000) {
-            $this->_conn->modify('DELETE FROM moderatedringbuffer WHERE id > %d', array($tmpValues['max'] - 15000));
+            $this->_conn->modify('DELETE FROM moderatedringbuffer WHERE id >:id',
+                array(
+                    ':id' => array($tmpValues['max'] - 15000, PDO::PARAM_INT)
+                ));
         } # if
     } # deleteOldest
 

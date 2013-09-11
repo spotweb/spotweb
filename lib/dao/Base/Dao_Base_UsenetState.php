@@ -21,9 +21,16 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
          */
         foreach(array('Base', 'Spots', 'Comments', 'Reports') as $infoType) {
 
-            $result = $this->_conn->arrayQuery("SELECT 1 FROM usenetstate WHERE infotype = '%s'", Array($infoType));
+            $result = $this->_conn->arrayQuery("SELECT 1 FROM usenetstate WHERE infotype = :infotype",
+                array(
+                    ':infotype' => array($infoType, PDO::PARAM_STR)
+                ));
+
             if (empty($result)) {
-                $this->_conn->modify("INSERT INTO usenetstate(infotype) VALUES('%s')", Array($infoType));
+                $this->_conn->modify("INSERT INTO usenetstate(infotype) VALUES(:infotype)",
+                    array(
+                        ':infotype' => array($infoType, PDO::PARAM_STR)
+                    ));
             } # if
 
         } # foreach
@@ -34,10 +41,12 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
 	 * Update of insert the maximum article id in de database.
 	 */
 	function setMaxArticleId($infoType, $articleNumber, $messageId) {
-		$this->_conn->exec("UPDATE usenetstate SET curarticlenr = %d, curmessageid = '%s' WHERE infotype = '%s'",
-                    Array((int) $articleNumber,
-                          $messageId,
-                          $infoType));
+		$this->_conn->exec("UPDATE usenetstate SET curarticlenr = :curarticlenr, curmessageid = :curmessageid WHERE infotype = :infotype",
+            array(
+                ':curarticlenr' => array($articleNumber, PDO::PARAM_INT),
+                ':curmessageid' => array($messageId, PDO::PARAM_STR),
+                ':infotype' => array($infoType, PDO::PARAM_STR)
+            ));
 	} # setMaxArticleId()
 
 	/*
@@ -45,18 +54,24 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
 	 * exist yet, we create the record and return a 0
 	 */
 	function getLastArticleNumber($infoType) {
-		return $this->_conn->singleQuery("SELECT curarticlenr FROM usenetstate WHERE infotype = '%s'", Array($infoType));
+		return $this->_conn->singleQuery("SELECT curarticlenr FROM usenetstate WHERE infotype = :infotype",
+            array(
+                ':infotype' => array($infoType, PDO::PARAM_STR)
+            ));
 	} # getLastArticleNumber
 
     function getLastMessageId($infoType) {
-        return $this->_conn->singleQuery("SELECT curmessageid FROM usenetstate WHERE infotype = '%s'", Array($infoType));
+        return $this->_conn->singleQuery("SELECT curmessageid FROM usenetstate WHERE infotype = :infotype",
+            array(
+                ':infotype' => array($infoType, PDO::PARAM_STR)
+            ));
     } # getLastMessageId
 
     /*
      * Is the retriever already running?
      */
 	function isRetrieverRunning() {
-		$nowRunning = $this->_conn->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'", array());
+		$nowRunning = $this->_conn->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 		return ((!empty($nowRunning)) && ($nowRunning > (time() - 900)));
 	} # isRetrieverRunning
 
@@ -70,21 +85,31 @@ class Dao_Base_UsenetState implements Dao_UsenetState {
 			$runTime = 0;
 		} # if
 
-		$this->_conn->exec("UPDATE usenetstate SET nowrunning = %d WHERE infotype = 'Base'", Array((int) $runTime));
+		$this->_conn->exec("UPDATE usenetstate SET nowrunning = :nowrunning WHERE infotype = 'Base'",
+            array(
+                ':nowrunning' => array($runTime, PDO::PARAM_INT)
+            ));
 	} # setRetrieverRunning
 
 	/*
 	 * Updates the timestamp of the last run of the retriever
 	 */
 	function setLastUpdate($infoType) {
-		return $this->_conn->modify("UPDATE usenetstate SET lastretrieved = '%d' WHERE infotype = '%s'", Array(time(), $infoType));
+		return $this->_conn->modify("UPDATE usenetstate SET lastretrieved = :lastretrieved WHERE infotype = :infotype",
+            array(
+                ':lastretrieved' => array(time(), PDO::PARAM_INT),
+                ':infotype' => array($infoType, PDO::PARAM_STR)
+            ));
 	} # getLastUpdate
 
 	/*
 	 * Returns the lastrun timestamp for the server
 	 */
 	function getLastUpdate($infoType) {
-		return $this->_conn->singleQuery("SELECT lastretrieved FROM usenetstate WHERE infotype = '%s'", Array($infoType));
+		return $this->_conn->singleQuery("SELECT lastretrieved FROM usenetstate WHERE infotype = :infotype",
+            array(
+                ':infotype' => array($infoType, PDO::PARAM_STR)
+            ));
 	} # getLastUpdate
 
 } # Dao_Base_UsenetState

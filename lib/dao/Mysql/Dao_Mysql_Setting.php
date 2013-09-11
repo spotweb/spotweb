@@ -14,8 +14,16 @@ class Dao_Mysql_Setting extends Dao_Base_Setting {
 			$serialized = false;
 		} # if
 		
-		$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES ('%s', '%s', '%s') ON DUPLICATE KEY UPDATE value = '%s', serialized = %s",
-							Array($name, $value, $this->_conn->bool2dt($serialized), $value, $this->_conn->bool2dt($serialized)));
+		$this->_conn->modify("INSERT INTO settings(name, value, serialized)
+		                                VALUES (:name, :value1, :serialized1)
+		                                ON DUPLICATE KEY UPDATE value = :value2, serialized = :serialized2",
+            array(
+                ':name' => array($name, PDO::PARAM_STR),
+                ':value1' => array($value, PDO::PARAM_STR),
+                ':serialized1' => array($serialized, PDO::PARAM_BOOL),
+                ':value2' => array($value, PDO::PARAM_STR),
+                ':serialized2' => array($serialized, PDO::PARAM_BOOL)
+            ));
 	} # updateSetting
 
 

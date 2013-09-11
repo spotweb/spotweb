@@ -16,14 +16,21 @@ class Dao_Base_User implements Dao_User {
 	 * Returns the user id for a given username
 	 */
 	function findUserIdForName($username) {
-		return $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($username));
+		return $this->_conn->singleQuery("SELECT id FROM users WHERE username = :username",
+            array(
+                ':username' => array($username, PDO::PARAM_STR)
+            ));
 	} # findUserIdForName
 
 	/*
 	 * Determines whether an email address exists
 	 */
 	function userEmailExists($mail) {
-		$tmpResult = $this->_conn->singleQuery("SELECT id FROM users WHERE mail = '%s'", Array($mail));
+		$tmpResult = $this->_conn->singleQuery("SELECT id FROM users WHERE mail = :mail",
+            array(
+                ':mail' => array($mail, PDO::PARAM_STR)
+            ));
+
 		
 		if (!empty($tmpResult)) {
 			return $tmpResult;
@@ -55,8 +62,10 @@ class Dao_Base_User implements Dao_User {
 								s.otherprefs AS prefs
 						 FROM users AS u
 						 JOIN usersettings s ON (u.id = s.userid)
-						 WHERE u.id = %d AND NOT DELETED",
-				 Array( (int) $userid ));
+						 WHERE u.id = :userid AND NOT DELETED",
+            array(
+                ':userid' => array($userid, PDO::PARAM_INT)
+            ));
 
 		if (!empty($tmp)) {
 			/*
@@ -116,8 +125,11 @@ class Dao_Base_User implements Dao_User {
 								MAX(ipaddr) AS lastipaddr
 							FROM users AS u
 							LEFT JOIN (SELECT userid, lasthit, ipaddr, devicetype FROM sessions WHERE sessions.userid = userid ORDER BY lasthit) AS ss ON (u.id = ss.userid)
-							WHERE (deleted = '%s')
-							GROUP BY u.id, u.username", array($this->_conn->bool2dt(false)));
+							WHERE (deleted = :isdeleted)
+							GROUP BY u.id, u.username",
+            array(
+                ':isdeleted' => array(false, PDO::PARAM_BOOL)
+            ));
 
 		SpotTiming::stop(__FUNCTION__, array());
 		return $tmpResult;
@@ -132,8 +144,10 @@ class Dao_Base_User implements Dao_User {
 	function deleteUser($userid) {
 		$this->_conn->modify("UPDATE users 
 								SET deleted = true
-								WHERE id = %d",
-							Array( (int) $userid));
+								WHERE id = :userid",
+            array(
+                ':userid' => array($userid, PDO::PARAM_INT)
+            ));
 	} # deleteUser
 
 	/*
@@ -142,33 +156,37 @@ class Dao_Base_User implements Dao_User {
 	function setUser($user) {
 		# Update users' information / settings
 		$this->_conn->modify("UPDATE users 
-								SET firstname = '%s',
-									lastname = '%s',
-									mail = '%s',
-									apikey = '%s',
-									lastlogin = %d,
-									lastvisit = %d,
-									lastread = %d,
-									lastapiusage = %d,
-									deleted = '%s'
-								WHERE id = %d", 
-				Array($user['firstname'],
-					  $user['lastname'],
-					  $user['mail'],
-					  $user['apikey'],
-					  (int) $user['lastlogin'],
-					  (int) $user['lastvisit'],
-					  (int) $user['lastread'],
-					  (int) $user['lastapiusage'],
-					  $this->_conn->bool2dt($user['deleted']),
-					  (int) $user['userid']));
+								SET firstname = :firstname,
+									lastname = :lastname,
+									mail = :mail,
+									apikey = :apikey,
+									lastlogin = :lastlogin,
+									lastvisit = :lastvisit,
+									lastread = :lastread,
+									lastapiusage = :lastapiusage,
+									deleted = :isdeleted
+								WHERE id = :userid",
+            array(
+                ':firstname' => array($user['firstname'], PDO::PARAM_STR),
+                ':lastname' => array($user['lastname'], PDO::PARAM_STR),
+                ':mail' => array($user['mail'], PDO::PARAM_STR),
+                ':apikey' => array($user['apikey'], PDO::PARAM_STR),
+                ':lastlogin' => array($user['lastlogin'], PDO::PARAM_INT),
+                ':lastvisit' => array($user['lastvisit'], PDO::PARAM_INT),
+                ':lastread' => array($user['lastread'], PDO::PARAM_INT),
+                ':lastapiusage' => array($user['lastapiusage'], PDO::PARAM_INT),
+                ':isdeleted' => array($user['deleted'], PDO::PARAM_BOOL),
+                ':userid' => array($user['userid'], PDO::PARAM_INT)
+            ));
 
 		# update user preferences
 		$this->_conn->modify("UPDATE usersettings
-								SET otherprefs = '%s'
-								WHERE userid = %s",
-				Array(serialize($user['prefs']),
-					  (int) $user['userid']));
+								SET otherprefs = :otherprefs
+								WHERE userid = :userid",
+            array(
+                ':otherprefs' => array(serialize($user['prefs']), PDO::PARAM_STR),
+                ':userid' => array($user['userid'], PDO::PARAM_INT)
+            ));
 	} # setUser
 
 	/*
@@ -177,10 +195,12 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function setUserPassword($user) {
 		$this->_conn->modify("UPDATE users 
-								SET passhash = '%s'
-								WHERE id = %d",
-				Array($user['passhash'],
-					  (int) $user['userid']));
+								SET passhash = :passhash
+								WHERE id = :userid",
+            array(
+                ':passhash' => array($user['passhash'], PDO::PARAM_STR),
+                ':userid' => array($user['userid'], PDO::PARAM_INT)
+            ));
 	} # setUserPassword
 
 	/*
@@ -192,18 +212,24 @@ class Dao_Base_User implements Dao_User {
 	function setUserRsaKeys($userId, $publicKey, $privateKey) {
 		# eerst updaten we de users informatie
 		$this->_conn->modify("UPDATE usersettings
-								SET publickey = '%s',
-									privatekey = '%s'
-								WHERE userid = %d",
-				Array($publicKey, $privateKey, (int) $userId));
-	} # setUserRsaKeys 
+								SET publickey = :publickey,
+									privatekey = :privatekey
+								WHERE userid = :userid",
+            array(
+                ':publickey' => array($publicKey, PDO::PARAM_STR),
+                ':privatekey' => array($privateKey, PDO::PARAM_STR),
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
+	} # setUserRsaKeys
 
 	/*
 	 * Retrieves the users' private key
 	 */
 	function getUserPrivateRsaKey($userId) {
-		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = %d",
-					Array( (int) $userId));
+		return $this->_conn->singleQuery("SELECT privatekey FROM usersettings WHERE userid = :userid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 	} # getUserPrivateRsaKey
 
 	/* 
@@ -216,15 +242,17 @@ class Dao_Base_User implements Dao_User {
 		} # if
 
 		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastread, deleted) 
-										VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-								Array($user['username'], 
-									  $user['firstname'],
-									  $user['lastname'],
-									  $user['passhash'],
-									  $user['mail'],
-									  $user['apikey'],
-									  $stamp,
-									  $this->_conn->bool2dt(false)));
+										VALUES(:username, :firstname, :lastname, :passhash, :mail, :apilkey, :lastread, :isdeleted)",
+            array(
+                ':username' => array($user['username'], PDO::PARAM_STR),
+                ':firstname' => array($user['firstname'], PDO::PARAM_STR),
+                ':lastname' => array($user['lastname'], PDO::PARAM_STR),
+                ':passhash' => array($user['pashash'], PDO::PARAM_STR),
+                ':mail' => array($user['mail'], PDO::PARAM_STR),
+                ':apikey' => array($user['apikey'], PDO::PARAM_STR),
+                ':lastread' => array($stamp, PDO::PARAM_INT),
+                ':isdeleted' => array(false, PDO::PARAM_BOOL)
+            ));
 
 		/*
 		 * Now we just re-fetch the userrecords' id to know the users id in
@@ -233,14 +261,20 @@ class Dao_Base_User implements Dao_User {
 		 * Very ugly, but we don't have a reliable lastInsertId() method exposd
 		 * in our database class
 		 */
-		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = '%s'", Array($user['username']));
+		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = :username",
+            array(
+                ':username' => $user['username']
+            ));
 
 		/* 
 		 * and create an empty usersettings record 
 		 */
 		$this->_conn->modify("INSERT INTO usersettings(userid, privatekey, publickey, otherprefs) 
-										VALUES('%s', '', '', 'a:0:{}')",
-								Array((int)$user['userid']));
+										VALUES(:userid, '', '', 'a:0:{}')",
+            array(
+                ':userid' => array($user['userid'], PDO::PARAM_INT)
+            ));
+
 		return $user;
 	} # addUser
 
@@ -251,9 +285,16 @@ class Dao_Base_User implements Dao_User {
 	 */
 	function authUser($username, $passhash) {
 		if ($username === false) {
-			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE apikey = '%s' AND NOT DELETED", Array($passhash));
+			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE apikey = :apikey AND NOT DELETED",
+                array(
+                    ':apikey' => array($passhash, PDO::PARAM_STR)
+                ));
 		} else {
-			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = '%s' AND passhash = '%s' AND NOT DELETED", Array($username, $passhash));
+			$tmp = $this->_conn->arrayQuery("SELECT id FROM users WHERE username = :username AND passhash = :passhash AND NOT DELETED",
+                array(
+                    ':username' => array($username, PDO::PARAM_STR),
+                    ':passhash' => array($passhash, PDO::PARAM_STR)
+                ));
 		} # if
 
 		if (empty($tmp)) {
@@ -267,7 +308,11 @@ class Dao_Base_User implements Dao_User {
 	 * Updates a users' setting with an base64 encoded image
 	 */
 	function setUserAvatar($userId, $imageEncoded) {
-		$this->_conn->modify("UPDATE usersettings SET avatar = '%s' WHERE userid = %d", Array( $imageEncoded, (int) $userId));
+		$this->_conn->modify("UPDATE usersettings SET avatar = :avatar WHERE userid = :userid",
+            array(
+                ':avatar' => array($imageEncoded, PDO::PARAM_STR),
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 	} # setUserAvatar
 
 
@@ -275,8 +320,10 @@ class Dao_Base_User implements Dao_User {
 	 * Returns the permissions from a specific group
 	 */
 	function getGroupPerms($groupId) {
-		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = %d",
-					Array( (int) $groupId));
+		return $this->_conn->arrayQuery("SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = :groupid",
+            array(
+                ':groupid' => array($groupId, PDO::PARAM_INT)
+            ));
 	} # getgroupPerms
 	
 	/*
@@ -287,8 +334,10 @@ class Dao_Base_User implements Dao_User {
 		$permList = array();
 		$tmpList = $this->_conn->arrayQuery('SELECT permissionid, objectid, deny FROM grouppermissions 
 												WHERE groupid IN 
-													(SELECT groupid FROM usergroups WHERE userid = %d ORDER BY prio)',
-											 Array( (int) $userId));
+													(SELECT groupid FROM usergroups WHERE userid = :userid ORDER BY prio)',
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 
 		foreach($tmpList as $perm) {
 			# Voeg dit permissionid toe aan de lijst met permissies
@@ -311,8 +360,13 @@ class Dao_Base_User implements Dao_User {
 		if ($userId == null) {
 			return $this->_conn->arrayQuery("SELECT id,name,0 as \"ismember\" FROM securitygroups");
 		} else {
-			return $this->_conn->arrayQuery("SELECT sg.id,name,ug.userid IS NOT NULL as \"ismember\" FROM securitygroups sg LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = %d)",
-										Array( (int) $userId));
+			return $this->_conn->arrayQuery("SELECT sg.id,name,
+			                                        ug.userid IS NOT NULL as \"ismember\"
+			                                 FROM securitygroups sg
+			                                    LEFT JOIN usergroups ug ON (sg.id = ug.groupid) AND (ug.userid = :userid)",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT)
+                ));
 		} # if
 	} # getGroupList
 	
@@ -320,64 +374,99 @@ class Dao_Base_User implements Dao_User {
 	 * Remove a permission from a security group
 	 */
 	function removePermFromSecGroup($groupId, $perm) {
-		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array( (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
+		$this->_conn->modify("DELETE FROM grouppermissions WHERE (groupid = :groupid) AND (permissionid = :permissionid) AND (objectid = :objectid)",
+            array(
+                ':groupid' => array($groupId, PDO::PARAM_INT),
+                ':permissionid' => array($perm['permissionid'], PDO::PARAM_INT),
+                ':objectid' => array($perm['objetid'], PDO::PARAM_STR)
+            ));
 	} # removePermFromSecGroup
 
 	/*
 	 * Sets a permission to deny within a security group
 	 */
 	function setDenyForPermFromSecGroup($groupId, $perm) {
-		$this->_conn->modify("UPDATE grouppermissions SET deny = '%s' WHERE (groupid = %d) AND (permissionid = %d) AND (objectid = '%s')", 
-				Array($this->_conn->bool2dt($perm['deny']), (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
+		$this->_conn->modify("UPDATE grouppermissions
+		                        SET deny = :isdenied
+		                        WHERE (groupid = :groupid) AND (permissionid = :permissionid) AND (objectid = :objectid)",
+            array(
+                ':isdenied' => array($perm['deny'], PDO::PARAM_BOOL),
+                ':groupid' => array($groupId, PDO::PARAM_INT),
+                ':permissionid' => array($perm['permissionid'], PDO::PARAM_INT),
+                ':objectid' => array($perm['objectid'], PDO::PARAM_STR)
+            ));
 	} # setDenyForPermFromSecGroup
 	
 	/*
 	 * Adds a permission to a security group
 	 */
 	function addPermToSecGroup($groupId, $perm) {
-		$this->_conn->modify("INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES (%d, %d, '%s')",
-				Array( (int) $groupId, (int) $perm['permissionid'], $perm['objectid']));
+		$this->_conn->modify("INSERT INTO grouppermissions(groupid, permissionid, objectid)
+		                        VALUES (:groupid, :permissionid, :objectid)",
+            array(
+                ':groupid' => array($groupId, PDO::PARAM_INT),
+                ':permissionid' => array($perm['permissionid'], PDO::PARAM_INT),
+                ':objectid' => array($perm['objectid'], PDO::PARAM_STR)
+            ));
 	} # addPermToSecGroup
 
 	/*
 	 * Returns information about a specific security group
 	 */
 	function getSecurityGroup($groupId) {
-		return $this->_conn->arrayQuery("SELECT id,name FROM securitygroups WHERE id = %d", Array( (int) $groupId));
+		return $this->_conn->arrayQuery("SELECT id, name FROM securitygroups WHERE id = :id",
+            array(
+                ':id' => array($groupId, PDO::PARAM_INT)
+            ));
 	} # getSecurityGroup
 		
 	/*
 	 * Updates a specific security group
 	 */
 	function setSecurityGroup($group) {
-		$this->_conn->modify("UPDATE securitygroups SET name = '%s' WHERE id = %d", Array($group['name'], (int) $group['id']));
+		$this->_conn->modify("UPDATE securitygroups SET name = :groupname WHERE id = :groupid",
+            array(
+                ':groupname' => array($group['name'], PDO::PARAM_STR),
+                ':groupid' => array($group['id'], PDO::PARAM_INT)
+            ));
 	} # setSecurityGroup
 	
 	/*
 	 * Adds a security group
 	 */
 	function addSecurityGroup($groupName) {
-		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES ('%s')", Array($groupName));
+		$this->_conn->modify("INSERT INTO securitygroups(name) VALUES (:groupname)",
+            array(
+                ':groupname' => array($groupName, PDO::PARAM_STR)
+            ));
 	} # addSecurityGroup
 
 	/*
 	 * Removes a security group
 	 */
 	function removeSecurityGroup($groupId) {
-		$this->_conn->modify("DELETE FROM securitygroups WHERE id = %d", Array( (int) $groupId));
+        $this->_conn->modify("DELETE FROM securitygroups WHERE id = :groupid",
+            array(
+                ':groupid' => array($groupId, PDO::PARAM_INT)
+            ));
 	} # removeSecurityGroup
 	
 	/*
 	 * Updates the users' securitygroup membership list
 	 */
 	function setUserGroupList($userId, $groupList) {
-		# We wissen eerst huidige group membership
-		$this->_conn->modify("DELETE FROM usergroups WHERE userid = %d", array($userId));
-		
+        $this->_conn->modify("DELETE FROM usergroups WHERE userid = :userid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
+
 		foreach($groupList as $groupInfo) {
-			$this->_conn->modify("INSERT INTO usergroups(userid,groupid,prio) VALUES(%d, %d, %d)",
-						Array((int) $userId, (int) $groupInfo['groupid'], (int) $groupInfo['prio']));
+			$this->_conn->modify("INSERT INTO usergroups(userid, groupid, prio) VALUES(:userid, :groupid, :prio)",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT),
+                    ':groupid' => array($groupInfo['groupid'], PDO::PARAM_INT),
+                    ':prio' => array($groupInfo['prio'], PDO::PARAM_INT)
+                ));
 		} # foreach
 	} # setUserGroupList
 

@@ -1,6 +1,9 @@
 <?php
 class dbeng_pdo_mysql extends dbeng_pdo {
-	protected $_conn;
+    /**
+     * @var PDO
+     */
+    protected $_conn;
 
 	function __construct() {
     	/* 
@@ -42,11 +45,5 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		return '0';
 	} # bool2dt
 	
-	function safe($s) {
-		$search=array("\\","\0","\n","\r","\x1a","'",'"');
-		$replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
-		return str_replace($search, $replace, $s);
-	} # safe
-
 
 } # class

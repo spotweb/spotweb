@@ -1,5 +1,4 @@
 <?php
-
 class Dao_Base_Cache implements Dao_Cache {
     private     $_cachePath     = '';
     protected   $_conn;
@@ -26,9 +25,11 @@ class Dao_Base_Cache implements Dao_Cache {
          * ignore any error which might be thrown because we cannot do
          * anything about it anyway.
          */
-        $expiredList = $this->_conn->arrayQuery("SELECT id, resourceid, cachetype, metadata FROM cache WHERE stamp < %d OR ((ttl + stamp) < %d)",
-                    Array((int) time() - $expireDays*24*60*60,
-                          (int) time()));
+        $expiredList = $this->_conn->arrayQuery("SELECT id, resourceid, cachetype, metadata FROM cache WHERE stamp < :stamp1 OR ((ttl + stamp) < :stamp2)",
+            array(':stamp1' => array(time() - $expireDays*24*60*60, PDO::PARAM_INT),
+                  ':stamp2' => array(time(), PDO::PARAM_INT)
+            ));
+
 
         foreach($expiredList as $cacheItem) {
             if (!empty($cacheItem)) {
@@ -47,9 +48,11 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieves wether a specific resourceid is cached
 	 */
 	protected function isCached($resourceid, $cachetype) {
-		$tmpResult = $this->_conn->arrayQuery("SELECT 1 FROM cache WHERE resourceid = '%s' AND cachetype = '%s' AND (ttl + stamp) < %d",
-                    Array($resourceid, $cachetype, time()));
-
+		$tmpResult = $this->_conn->arrayQuery("SELECT 1 FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype AND (ttl + stamp) < :expirestamp",
+            array(':resourceid' => array($resourceid, PDO::PARAM_STR),
+                  ':cachetype' => array($cachetype, PDO::PARAM_INT),
+                  ':expirestamp' => array(time(), PDO::PARAM_INT)
+            ));
 		return (!empty($tmpResult));
 	} # isCached
 
@@ -57,7 +60,10 @@ class Dao_Base_Cache implements Dao_Cache {
      * Removes an item from the cache
      */
     protected function removeCacheItem($cacheId, $cachetype, $metaData) {
-        $this->_conn->exec("DELETE FROM cache WHERE id = %d", Array($cacheId));
+        $this->_conn->exec("DELETE FROM cache WHERE id = :cacheid",
+            array(
+                ':cacheid' => array($cacheId, PDO::PARAM_INT)
+            ));
 
         /*
          * Remove the item from disk and ignore any errors
@@ -73,8 +79,10 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Get the cache id
          */
-        $cacheRow = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE id = %d",
-            array($cacheId));
+        $cacheRow = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE id = :cacheid",
+            array(
+                ':cacheid' => array($cacheId, PDO::PARAM_INT)
+            ));
         $resourceId = $cacheRow;
 
         $filePath = $this->_cachePath . DIRECTORY_SEPARATOR;
@@ -197,7 +205,10 @@ class Dao_Base_Cache implements Dao_Cache {
         $oldFilePath = $this->oldCalculateFilePath($cacheId, $cacheType, $metaData);
 
         if (!file_exists($oldFilePath)) {
-            $this->_conn->exec("DELETE FROM cache WHERE id = %d", Array($cacheId));
+            $this->_conn->exec("DELETE FROM cache WHERE id = :cacheid",
+                array(
+                    ':cacheid' => array($cacheId, PDO::PARAM_INT)
+                ));
             @unlink($oldFilePath);
 
             echo PHP_EOL . 'Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' ' . $oldFilePath . ' -> ' . $filePath . PHP_EOL;
@@ -310,8 +321,11 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Returns the resource from the cache table, if we have any
 	 */
 	protected function getCache($resourceid, $cachetype) {
-		$tmp = $this->_conn->arrayQuery("SELECT id, stamp, ttl, metadata FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
-                        array($resourceid, $cachetype));
+		$tmp = $this->_conn->arrayQuery("SELECT id, stamp, ttl, metadata FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype",
+            array(
+                ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                ':cachetype' => array($cachetype, PDO::PARAM_INT)
+            ));
 
 		if (!empty($tmp)) {
             /*
@@ -345,19 +359,34 @@ class Dao_Base_Cache implements Dao_Cache {
             $serializedMetadata = false;
         } # else
 
-        $this->_conn->exec("UPDATE cache SET stamp = %d, metadata = '%s', ttl = %d WHERE resourceid = '%s' AND cachetype = '%s'",
-            Array(time(), $serializedMetadata, $ttl, $resourceid, $cachetype));
+        $this->_conn->exec("UPDATE cache SET stamp = :stamp, metadata = :metadata, ttl = :ttl WHERE resourceid = :resourceid AND cachetype = :cachetype",
+            array(
+                ':stamp' => array(time(), PDO::PARAM_INT),
+                ':metadata' => array($serializedMetadata, PDO::PARAM_STR),
+                ':ttl' => array($ttl, PDO::PARAM_INT),
+                ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                ':cachetype' => array($cachetype, PDO::PARAM_INT)
+            ));
 
         if ($this->_conn->rows() == 0) {
-            $this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,ttl,metadata) VALUES ('%s', '%s', %d, %d, '%s')",
-                Array($resourceid, $cachetype, time(), $ttl, $serializedMetadata));
+            $this->_conn->modify("INSERT INTO cache(resourceid,cachetype,stamp,ttl,metadata) VALUES (:resourceid, :cachetype, :stamp, :ttl, :metadata)",
+                array(
+                    ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                    ':cachetype' => array($cachetype, PDO::PARAM_INT),
+                    ':stamp' => array(time(), PDO::PARAM_INT),
+                    ':ttl' => array($ttl, PDO::PARAM_INT),
+                    ':metadata' => array($serializedMetadata, PDO::PARAM_STR)
+                ));
         } # if
 
         /*
          * Get the cache id
          */
-        $cacheRow = $this->_conn->singleQuery("SELECT id FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
-            array($resourceid, $cachetype));
+        $cacheRow = $this->_conn->singleQuery("SELECT id FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype",
+            array(
+                ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                ':cachetype' => array($cachetype, PDO::PARAM_INT)
+            ));
 
         /*
          * Actually store the contents on disk
@@ -367,8 +396,11 @@ class Dao_Base_Cache implements Dao_Cache {
              * If we couldn't store the cache result, we have to actually remove the
              * cache record again
              */
-            $this->_conn->exec("DELETE FROM cache WHERE resourceid = '%s' AND cachetype = '%s'",
-                                        Array($resourceid, $cachetype));
+            $this->_conn->exec("DELETE FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype",
+                array(
+                    ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                    ':cachetype' => array($cachetype, PDO::PARAM_INT)
+                ));
 
             return false;
         } else {
@@ -384,7 +416,12 @@ class Dao_Base_Cache implements Dao_Cache {
          * We do not want to update the cache timestamp of items where
          * expiration is set as this could extend the lifetime of those items
          */
-		$this->_conn->exec("UPDATE cache SET stamp = %d WHERE resourceid = '%s' AND cachetype = '%s' AND ttl = 0", Array(time(), $resourceid, $cachetype));
+		$this->_conn->exec("UPDATE cache SET stamp = :stamp WHERE resourceid = :resourceid AND cachetype = :cachetype AND ttl = 0",
+            array(
+                ':stamp' => array(time(), PDO::PARAM_INT),
+                ':resourceid' => array($resourceid, PDO::PARAM_STR),
+                ':cachetype' => array($cachetype, PDO::PARAM_INT)
+            ));
 	} # updateCacheStamp
 
 	/*
@@ -587,8 +624,10 @@ class Dao_Base_Cache implements Dao_Cache {
         $rs = $this->_conn->arrayQuery("SELECT resourceid, cachetype
                                             FROM cache
                                             WHERE resourceid IN (" . $msgIdList . ")
-                                            AND (ttl + stamp) < %d",
-                                array((int) time()));
+                                            AND (ttl + stamp) < :stamp",
+            array(
+                ':stamp' => array(time(), PDO::PARAM_INT)
+            ));
 
         foreach($rs as $msgids) {
             $idList[$msgids['cachetype']][$msgids['resourceid']] = 1;

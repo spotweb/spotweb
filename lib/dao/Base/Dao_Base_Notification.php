@@ -15,24 +15,40 @@ class Dao_Base_Notification implements Dao_Notification {
 	 * Adds a new notification
 	 */
 	function addNewNotification($userId, $objectId, $type, $title, $body) {
-		$this->_conn->modify("INSERT INTO notifications(userid,stamp,objectid,type,title,body,sent) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s')",
-					Array($userId, (int) time(), $objectId, $type, $title, $body, $this->_conn->bool2dt(false)));
+		$this->_conn->modify("INSERT INTO notifications(userid, stamp, objectid, type, title, body, sent)
+		                        VALUES(:userid, :stamp, :objectid, :type, :title, :body, :sent)",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT),
+                ':stamp' => array(time(), PDO::PARAM_INT),
+                ':objectid' => array($objectId, PDO::PARAM_STR),
+                ':type' => array($type, PDO::PARAM_STR),
+                ':title' => array($title, PDO::PARAM_STR),
+                ':body' => array($body, PDO::PARAM_STR),
+                ':sent' => array(false, PDO::PARAM_BOOL)
+            ));
 	} # addNewNotification
 	
 	/*
 	 * Retrieves unsent notifications for a specific user
 	 */
 	function getUnsentNotifications($userId) {
-		return $this->_conn->arrayQuery("SELECT id,userid,objectid,type,title,body FROM notifications WHERE userid = %d AND NOT SENT;",
-					Array($userId));
+		return $this->_conn->arrayQuery("SELECT id, userid, objectid, type, title, body FROM notifications WHERE userid = :userid AND NOT SENT",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 	} # getUnsentNotifications
 
 	/* 
 	 * Update a notification
 	 */
 	function updateNotification($msg) {
-		$this->_conn->modify("UPDATE notifications SET title = '%s', body = '%s', sent = '%s' WHERE id = %d",
-					Array($msg['title'], $msg['body'], $this->_conn->bool2dt($msg['sent']), $msg['id']));
+		$this->_conn->modify("UPDATE notifications SET title = :title, body = :body, sent = :sent WHERE id = :id",
+            array(
+                ':title' => array($msg['title'], PDO::PARAM_STR),
+                ':body' => array($msg['body'], PDO::PARAM_STR),
+                ':sent' => array($msg['sent'], PDO::PARAM_BOOL),
+                ':id' => array($msg['id'], PDO::PARAM_INT)
+            ));
 	} // updateNotification
 	
 

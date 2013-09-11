@@ -17,7 +17,7 @@ class Dao_Base_Setting implements Dao_Setting {
 	function getAllSettings() {
 		$tmpSettings = array();
 
-		$dbSettings = $this->_conn->arrayQuery('SELECT name,value,serialized FROM settings');
+		$dbSettings = $this->_conn->arrayQuery('SELECT name, value, serialized FROM settings');
 		foreach($dbSettings as $item) {
 			if ($item['serialized']) {
 				$item['value'] = unserialize($item['value']);
@@ -33,7 +33,10 @@ class Dao_Base_Setting implements Dao_Setting {
 	 * Removes a setting from the database
 	 */
 	function removeSetting($name) {
-		$this->_conn->exec("DELETE FROM settings WHERE name = '%s'", Array($name));
+		$this->_conn->exec("DELETE FROM settings WHERE name = :name",
+            array(
+                ':name' => array($name, PDO::PARAM_STR)
+            ));
 	} # removeSetting
 	
 	/*
@@ -48,9 +51,20 @@ class Dao_Base_Setting implements Dao_Setting {
 			$serialized = false;
 		} # if
 		
-		$this->_conn->exec("UPDATE settings SET value = '%s', serialized = '%s' WHERE name = '%s'", Array($value, $this->_conn->bool2dt($serialized), $name));
+		$this->_conn->exec("UPDATE settings SET value = :value, serialized = :serialized WHERE name = :name",
+            array(
+                ':value' => array($value, PDO::PARAM_STR),
+                ':serialized' => array($serialized, PDO::PARAM_BOOL),
+                ':name' => array($name, PDO::PARAM_STR)
+            ));
+
 		if ($this->_conn->rows() == 0) {
-			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES('%s', '%s', '%s')", Array($name, $value, $this->_conn->bool2dt($serialized)));
+			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES(:name, :value, :serialized)",
+                array(
+                    ':name' => array($name, PDO::PARAM_STR),
+                    ':value' => array($value, PDO::PARAM_STR),
+                    ':serialized' => array($serialized, PDO::PARAM_BOOL)
+                ));
 		} # if
 	} # updateSetting
 

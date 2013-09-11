@@ -1,4 +1,5 @@
 <?php
+
 class dbeng_pdo_sqlite extends dbeng_pdo {
 	protected $_conn;
 	
@@ -19,11 +20,5 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 				throw new DatabaseConnectionException($e->getMessage(), -1);
 		} # catch
 	} # connect()
-	
-	function safe($s) {
-		return SQLite3::escapeString($s);
-		// sqlite module is deprecated in more recnt PHP versions, hence wont work
-		// 	return sqlite_escape_string($s);
-	} # safe
-	
+
 } # class

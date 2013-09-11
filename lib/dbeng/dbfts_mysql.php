@@ -281,14 +281,14 @@ class dbfts_mysql extends dbfts_abs {
                     $filteredTerm = rtrim($filteredTerm, "*");
 
                     if (!empty($filteredTerm)) {
-                        $queryPart[] = ' ' . $field . " LIKE '%" . $this->_db->safe($filteredTerm) . "%'";
+                        $queryPart[] = ' ' . $field . " LIKE " . $this->_db->safe('%' . $filteredTerm . '%');
                     } # if
                 } # foreach
 			} # if
 			
 			if (($searchMode == 'match-natural') || ($searchMode == 'both-match-natural')) {
 				/* Natural language mode always defaults in MySQL 5.0 en 5.1, but cannot be explicitly defined in MySQL 5.0 */
-				$matchPart = " MATCH(" . $field . ") AGAINST ('" . $this->_db->safe($searchValue) . "')";
+				$matchPart = " MATCH(" . $field . ") AGAINST (" . $this->_db->safe($searchValue) . ")";
 				$queryPart[] = $matchPart;
 			} # if 
 
@@ -297,7 +297,7 @@ class dbfts_mysql extends dbfts_abs {
              * stopwords because stopwords are not in the index and cannot be found
              */
 			if (($searchMode == 'match-boolean') || ($searchMode == 'both-match-boolean')) {
-                $matchPart = " MATCH(" . $field . ") AGAINST ('" . $this->_db->safe($searchValue) . "' IN BOOLEAN MODE)";
+                $matchPart = " MATCH(" . $field . ") AGAINST (" . $this->_db->safe($searchValue) . " IN BOOLEAN MODE)";
 				$queryPart[] = $matchPart;
 			} # if
 

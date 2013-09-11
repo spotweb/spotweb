@@ -74,14 +74,14 @@ class dbfts_pgsql extends dbfts_abs {
              * parse it
              */
             if ($o_parse->parse($searchValue, $field) === false) {
-                $ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
+                $ts_query = "plainto_tsquery('Dutch', " . $this->_db->safe(strtolower($searchValue)) . ")";
                 $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
                 $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
             } else {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
-                    $ts_query = "to_tsquery('Dutch', '" . $this->_db->safe($o_parse->tsearch) . "')";
+                    $ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch) . ")";
                     $queryPart[] = " " . $ts_vector . " @@ " . $ts_query;
                     $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
                 } # if

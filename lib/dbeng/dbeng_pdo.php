@@ -16,45 +16,19 @@ abstract class dbeng_pdo extends dbeng_abs {
             return $this->_conn->prepare($s);
         } # if
 
-		$pattern = '/(\'?\%[dsb]\'?)/';
-        $matches = array();
-        preg_match_all($pattern, $s, $matches);
-        $s = preg_replace($pattern, '?', $s);
-
 		$stmt = $this->_conn->prepare($s);
-        $idx=1;
-		$totalCount = count($p);
-        foreach ($matches[1] as $m) {
-			if ($idx > ($totalCount+1)) {
-                break;
-            } # if
-			
-            if (is_null($p[$idx-1])) {	
-                $stmt->bindValue($idx, null, PDO::PARAM_NULL);
-            } else {
-                switch ($m) {
-                    case '%d': {
-						# We convet explicitly to strval because PDO changes a zero to an '' 
-						$p[$idx-1] = strval($p[$idx-1]);
-                        $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_INT);
-                        break;
-					} 
-					case "'%b'": {
-						$stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_LOB);
-						break;
-					} 
-                    default: {
-                        $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_STR);
-					} 
-                }
-            }
-            $idx++;
+        if (!$stmt instanceof PDOStatement) {
+            throw new Exception(print_r($stmt, true));
         }
-		
-		if (!$stmt instanceof PDOStatement) {
-        	throw new Exception(print_r($stmt, true));
-        }
-        
+
+        /*
+         * Bind all parameters/values to the statement
+         */
+        foreach($p as $k => $v) {
+            $stmt->bindValue($k, $v[0], $v[1]);
+        } # foreach
+
+
         return $stmt;
 	}
 	public function rawExec($s) {
@@ -190,5 +164,20 @@ abstract class dbeng_pdo extends dbeng_abs {
 
 		return $tmpArray;
 	} # arrayQuery
+
+    /**
+     * Escape a string for insertion in a query.
+     *
+     * @param $s
+     * @return string
+     */
+    function safe($s) {
+        if (is_integer($s)) {
+            return $s;
+        } else {
+            return $this->_conn->quote($s);
+        } # else
+    } # safe
+
 
 } # class

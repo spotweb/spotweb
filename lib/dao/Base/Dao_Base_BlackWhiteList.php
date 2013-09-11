@@ -15,7 +15,10 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 * Removes an old black- and whitelist
 	 */
 	function removeOldList($listUrl, $idtype) {
-		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external') AND (idtype = %d)",Array((int) $idtype));
+		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (ouruserid = -1) AND (origin = 'external') AND (idtype = :idtype)",
+                array(
+                    ':idtype' => array($idtype, PDO::PARAM_INT)
+                ));
 	} # removeOldList
 	
 	/*
@@ -71,17 +74,42 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 			if ($updatelist[$updl] == 1) {
 				# Add new spotterid's to the list
 				$countnewlistspotterid++;
-				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES ('%s','-1',%d,'external')", Array($updl, (int) $idtype));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s'AND ouruserid != -1  AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
+				$this->_conn->modify("INSERT INTO spotteridblacklist (spotterid,ouruserid,idtype,origin) VALUES (:spotterid, '-1', :idtype,'external')",
+                        array(
+                           ':spotterid' => array($updl, PDO::PARAM_STR),
+                           ':idtype' => array($idtype, PDO::PARAM_INT)
+                        ));
+				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = :doubled WHERE spotterid = :spotterid AND ouruserid != -1  AND idtype = :idtype",
+                    array(
+                        ':doubled' => array(true, PDO::PARAM_BOOL),
+                        ':spotterid' => array($updl, PDO::PARAM_STR),
+                        ':idtype' => array($idtype, PDO::PARAM_INT)
+                    ));
+
 			} elseif ($updatelist[$updl] == 2) {
 				# Remove spotters which aren't on the list
 				$countdellistspotterid++;
-				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = '%s' WHERE spotterid = '%s' AND ouruserid != -1 AND idtype = %d ", Array($this->_conn->bool2dt(true), $updl, (int) $idtype));
+				$this->_conn->modify("DELETE FROM spotteridblacklist WHERE (spotterid = :spotterid) AND (ouruserid = -1) AND (origin = 'external')",
+                    array(
+                        ':spotterid' => array($updl, PDO::PARAM_STR)
+                    ));
+                $this->_conn->modify("UPDATE spotteridblacklist SET doubled = :doubled WHERE spotterid = :spotterid AND ouruserid != -1  AND idtype = :idtype",
+                    array(
+                        ':doubled' => array(true, PDO::PARAM_BOOL),
+                        ':spotterid' => array($updl, PDO::PARAM_STR),
+                        ':idtype' => array($idtype, PDO::PARAM_INT)
+                    ));
 			} elseif ($updatelist[$updl] == 4) {
 				$countnewlistspotterid++;
-				$this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = '%s') AND (ouruserid = -1) AND (origin = 'external')", Array($updl));
-				$this->_conn->modify("UPDATE spotteridblacklist SET doubled = (idtype = 1) WHERE spotterid = '%s' AND ouruserid != -1", Array($updl));
+                $this->_conn->modify("UPDATE spotteridblacklist SET idtype = 1 WHERE (spotterid = :spotterid) AND (ouruserid = -1) AND (origin = 'external')",
+                    array(
+                        ':spotterid' => array($updl, PDO::PARAM_STR)
+                    ));
+                $this->_conn->modify("UPDATE spotteridblacklist SET doubled = (idtype = 1) WHERE spotterid = :spotterid AND ouruserid != -1 ",
+                    array(
+                        ':spotterid' => array($updl, PDO::PARAM_STR),
+                        ':idtype' => array($idtype, PDO::PARAM_INT)
+                    ));
 			} # elseif
 		} # foreach
 
@@ -95,12 +123,28 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 * Adds a spotterid to the black- and whitelist
 	 */
 	function addSpotterToList($spotterId, $ourUserId, $origin, $idType) {
-		$existInList = $this->_conn->singleQuery("SELECT idtype FROM spotteridblacklist WHERE spotterid = '%s' AND ouruserid = %d", Array($spotterId, (int) $ourUserId));
+		$existInList = $this->_conn->singleQuery("SELECT idtype FROM spotteridblacklist WHERE spotterid = :spotterid AND ouruserid = :ouruserid",
+            array(
+                ':spotterid' => array($spotterId, PDO::PARAM_STR),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
+
 		if (empty($existInList)) {
-			$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid, idtype) VALUES ('%s', '%s', %d, %d)",
-						Array($spotterId, $origin, (int) $ourUserId, (int) $idType));
+			$this->_conn->modify("INSERT INTO spotteridblacklist(spotterid, origin, ouruserid, idtype) VALUES (:spotterid, :origin, :ouruserid, :idtype)",
+              array(
+                  ':spotterid' => array($spotterId, PDO::PARAM_STR),
+                  ':origin' => array($origin, PDO::PARAM_STR),
+                  ':ouruserid' => array($ourUserId, PDO::PARAM_INT),
+                  ':idtype' => array($idType, PDO::PARAM_INT)
+              ));
 		} else {
-			$this->_conn->modify("UPDATE spotteridblacklist SET idtype = %d, origin = '%s' WHERE spotterid = '%s' AND ouruserid = %d", Array( (int) $idType, $origin, $spotterId, (int) $ourUserId));
+            $this->_conn->modify("UPDATE spotteridblacklist SET idtype = :idtype, origin = :origin WHERE spotterid = :spotterid AND ouruserid = :ouruserid",
+                array(
+                    ':idtype' => array($idType, PDO::PARAM_INT),
+                    ':origin' => array($origin, PDO::PARAM_STR),
+                    ':spotterid' => array($spotterId, PDO::PARAM_STR),
+                    ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+                ));
 		}
 	} # addSpotterToList
 
@@ -108,8 +152,11 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 * Removes a specific spotter from the blacklist
 	 */
 	function removeSpotterFromList($spotterId, $ourUserId) {
-		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE ouruserid = %d AND spotterid = '%s'",
-					Array((int) $ourUserId, $spotterId));
+		$this->_conn->modify("DELETE FROM spotteridblacklist WHERE ouruserid = :ouruserid AND spotterid = :spotterid",
+            array(
+                ':spotterid' => array($spotterId, PDO::PARAM_STR),
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 	} # removeSpotterFromList
 	
 	/*
@@ -117,17 +164,22 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 * by this user (external items are not listed)
 	 */
 	function getSpotterList($ourUserId) {
-		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid, idtype FROM spotteridblacklist WHERE ouruserid = %d ORDER BY idtype",
-					Array((int) $ourUserId));
+		return $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid, idtype FROM spotteridblacklist WHERE ouruserid = :ouruserid ORDER BY idtype",
+            array(
+                ':ouruserid' => array($ourUserId, PDO::PARAM_INT)
+            ));
 	} # getSpotterList
 
 	/*
 	 * Returns one specific blacklisted record for a given spotterid
 	 */
 	function getBlacklistForSpotterId($userId, $spotterId) {
-		$tmp = $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE spotterid = '%s' and ouruserid = %d",
-					Array($spotterId, $userId));
-					
+		$tmp = $this->_conn->arrayQuery("SELECT spotterid, origin, ouruserid FROM spotteridblacklist WHERE spotterid = :spotterid and ouruserid = :ouruserid",
+            array(
+                ':spotterid' => array($spotterId, PDO::PARAM_STR),
+                ':ouruserid' => array($userId, PDO::PARAM_INT)
+            ));
+
 		if (!empty($tmp)) {
 			return $tmp[0];
 		} else {
