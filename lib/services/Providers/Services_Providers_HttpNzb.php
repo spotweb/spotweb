@@ -130,6 +130,8 @@ class Services_Providers_HttpNzb {
             'http://base64.derefer.me',
             'http://derefer.me',
             'http://alturl.com',
+            'http://tiny.cc',
+            'http://bit.ly',
         );
 
         // Search in the website url
