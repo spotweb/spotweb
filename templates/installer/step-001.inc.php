@@ -24,10 +24,9 @@
     <tr> <td colspan="2"> zip </td> <td> <?php showResult(extension_loaded('zip'), false, "", "You need this module to select multiple NZB files"); ?> </td> </tr>
     <tr> <td colspan="2"> zlib </td> <td> <?php showResult(extension_loaded('zlib'), true); ?> </td> </tr>
 
-    <tr> <th colspan="2"> Database support </th> <td> <?php showResult(extension_loaded('mysql') || extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'), true); ?> </td> </tr>
-    <tr> <td colspan="2"> DB::mysql </td> <td> <?php showResult(extension_loaded('mysql'), false); ?> </td> </tr>
-    <tr> <td colspan="2"> DB::pdo_mysql </td> <td> <?php showResult(extension_loaded('pdo_mysql'), false); ?> </td> </tr>
-    <tr> <td colspan="2"> DB::pgsql </td> <td> <?php showResult(extension_loaded('pdo_pgsql'), false); ?> </td> </tr>
+    <tr> <th colspan="2"> Database support </th> <td> <?php showResult(extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'), true); ?> </td> </tr>
+    <tr> <td colspan="2"> MySQL (PDO) </td> <td> <?php showResult(extension_loaded('pdo_mysql'), false); ?> </td> </tr>
+    <tr> <td colspan="2"> PostgreSQL (PDO) </td> <td> <?php showResult(extension_loaded('pdo_pgsql'), false); ?> </td> </tr>
 
     <?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
     <tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>
