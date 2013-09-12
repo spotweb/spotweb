@@ -111,6 +111,8 @@ try {
 	 * display the spots, so we delete nzb's, images, comments, etc.
 	 */
 	if (($settings->get('retention') > 0) && (!$retroMode)) {
+        echo "Removing Spot information which is beyond retention period,";
+
 		$spotDao = $daoFactory->getSpotDao();
         $cacheDao = $daoFactory->getCacheDao();
         $commentDao = $daoFactory->getCommentDao();
@@ -118,6 +120,7 @@ try {
 		switch ($settings->get('retentiontype')) {
 			case 'everything'		: {
 				$spotDao->deleteSpotsRetention($settings->get('retention'));
+                $cacheDao->expireCache($settings->get('retention'));
 			} # case everything
 
 			case 'fullonly'			: {
@@ -126,6 +129,8 @@ try {
 				$spotDao->expireSpotsFull($settings->get('retention'));
 			} # case fullonly
 		} # switch
+
+        echo ", done" . PHP_EOL;
 	} # if
 
 	$newSpotCount = 0;

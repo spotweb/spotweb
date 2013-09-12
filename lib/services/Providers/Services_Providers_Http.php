@@ -65,8 +65,11 @@ class Services_Providers_Http {
      *
      * @param $ch resource Handle to cURL resource object
      * @param $postFields array|null fields to post
-     * @param $file sarray|null additional headers to send
+     * @param $files
      * @param $rawPostData array|null raw post data we will be sending
+     * @throws NotImplementedException
+     * @throws Exception
+     * @internal param null|\sarray $file additional headers to send
      * @return void
      */
     private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData) {
@@ -100,7 +103,7 @@ class Services_Providers_Http {
 
             # process the file uploads
             if ($files != null) {
-                foreach($files as $key => $val) {
+                foreach($files as $val) {
                     $body[] = '--' . $boundary;
                     $body[] = 'Content-Disposition: form-data; name="' . $val['name'] . '"; filename="' . $val['filename'] . '"';
                     $body[] = 'Content-Type: ' . $val['mime'];
