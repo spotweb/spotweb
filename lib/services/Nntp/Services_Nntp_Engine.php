@@ -132,6 +132,7 @@ class Services_Nntp_Engine {
              */
             foreach($headerList as $k => $v) {
                 $headerList[$k]['Message-ID'] = substr($headerList[$k]['Message-ID'], 1, -1);
+                $headerList[$k]['References'] = substr($headerList[$k]['References'], 1, -1);
             } # foreach
 
             return $headerList;
