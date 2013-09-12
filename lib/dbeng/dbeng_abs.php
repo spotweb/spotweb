@@ -120,19 +120,6 @@ abstract class dbeng_abs {
 	 * Transforms an array of values to an list usable by an
 	 * IN statement
 	 */
-	function arrayValToInOffset($ar, $val, $valOffset, $valEnd) {
-		$tmpList = '';
-
-		foreach($ar as $v) {
-			$tmpList .= $this->safe(substr($v[$val], $valOffset, $valEnd)) . ",";
-		} # foreach
-		return substr($tmpList, 0, -1);
-	} # arrayValToInOffset
-
-	/*
-	 * Transforms an array of values to an list usable by an
-	 * IN statement
-	 */
 	function arrayValToIn($ar, $val) {
 		$tmpList = '';
 
