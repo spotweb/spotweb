@@ -82,12 +82,12 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         $tmpValues = $tmpValues[0];
 
         /*
-         * If we have more than 15000 items, delete them
+         * If we have more than 150000 items, delete them
          */
-        if (($tmpValues['max'] - $tmpValues['min']) > 15000) {
+        if (($tmpValues['max'] - $tmpValues['min']) > 150000) {
             $this->_conn->modify('DELETE FROM moderatedringbuffer WHERE id >:id',
                 array(
-                    ':id' => array($tmpValues['max'] - 15000, PDO::PARAM_INT)
+                    ':id' => array($tmpValues['max'] - 150000, PDO::PARAM_INT)
                 ));
         } # if
     } # deleteOldest
