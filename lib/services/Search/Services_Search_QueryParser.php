@@ -381,13 +381,13 @@ class Services_Search_QueryParser {
 					 */
 					if (count($subcats) == 1) {
 						if (in_array($subcats[0][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_dbEng->safe($subcats[0]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = " . $this->_dbEng->safe($subcats[0] . '|') . ")))";
 						} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
 							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[0] . '|%') . ")))";
 						} # if
 					} elseif (count($subcats) == 2) {
 						if (in_array($subcats[1][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_dbEng->safe($subcats[1]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_dbEng->safe($subcats[1] . '|') . ")))";
 						} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
 							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[1] . '|%') . ")))";
 						} # if
