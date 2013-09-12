@@ -413,8 +413,10 @@ class Dao_Base_Spot implements Dao_Spot {
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
 														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
 									VALUES",
-								  "(%s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %d, %d, %s, %s)",
-								  Array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
+                                        PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
+                                        PDO::PARAM_INT, PDO::PARAM_STR),
+								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
 								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
 								  );
 
@@ -462,8 +464,8 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->batchInsert($fullSpots,
 								  "INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES",
-								  "(%s, %s, %s, %s, %s, %s)",
-								  Array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
+                                  array(PDO::PARAM_STR, PDO::PARAM_BOOL, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR),
+								  array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
 								  );
 
 		SpotTiming::stop(__FUNCTION__, array($fullSpots));

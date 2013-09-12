@@ -119,8 +119,8 @@ class Dao_Base_Comment implements Dao_Comment {
 	function addComments($comments, $fullComments = array()) {
 		$this->_conn->batchInsert($comments,
 								  "INSERT INTO commentsxover(messageid, nntpref, spotrating, stamp) VALUES ",
-								  "(%s, %s, %d, %d)",
-								  Array('messageid', 'nntpref', 'rating', 'stamp')
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT),
+								  array('messageid', 'nntpref', 'rating', 'stamp')
 								  );
 
 		if (!empty($fullComments)) {
@@ -151,8 +151,8 @@ class Dao_Base_Comment implements Dao_Comment {
 
 		$this->_conn->batchInsert($fullComments,
 								  "INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ",
-								  "(%s, %s, %d, %s, %s, %s, %s, %s, %s)",
-								  Array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_BOOL, PDO::PARAM_STR),
+								  array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
 								  );
 	} # addFullComments
 

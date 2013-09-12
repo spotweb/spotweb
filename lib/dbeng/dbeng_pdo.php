@@ -3,15 +3,13 @@ abstract class dbeng_pdo extends dbeng_abs {
     protected $_rows_changed;
 	
 	/**
-     * We don't want to rewrite all queries, so a small parser is written
-	 * which rewrites the queries. Ugly, but it works.
      *
      * @param string $s
      * @param array $p
      * @return PDOStatement
      * @throws Exception When PDO statement cannot be created
      */
-	public function prepareSql($s, $p) {
+	private function prepareSql($s, $p) {
 		if (empty($p)) {
             return $this->_conn->prepare($s);
         } # if
@@ -36,7 +34,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		try {
 			$stmt = $this->_conn->query($s);
 		} catch(PDOException $x) {
-			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1], -1);
 		} # catch
 		SpotTiming::stop(__FUNCTION__,array($s));
 		
@@ -68,7 +66,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
 		} catch(PDOException $x) {
-			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1], -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
 		SpotTiming::stop(__FUNCTION__, array($s, $p));
@@ -179,5 +177,69 @@ abstract class dbeng_pdo extends dbeng_abs {
         } # else
     } # safe
 
+    /*
+     * Transforms an array of values to an list usable by an
+     * IN statement
+     */
+    function batchInsert($ar, $sql, $typs, $fields) {
+        $this->beginTransaction();
+
+        /*
+         * Sanity check
+         */
+        if (count($typs) <> count($fields)) {
+            die('Programming error for: ' . $sql);
+        } # if
+
+        /*
+         * Databases usually have a maximum packet size length,
+         * so just sending down 100kbyte of text usually ends
+         * up in tears.
+         */
+        $chunks = array_chunk($ar, $this->_batchInsertChunks);
+
+        foreach($chunks as $items) {
+            $insertArray = array();
+            $fieldCounter = 1;
+            $placeHolderPerRow = '(' . substr(str_repeat('?,', count($fields)), 0, -1) . '),';
+            $placeHolders = substr(str_repeat($placeHolderPerRow, count($items)), 0, -1);
+
+            /*
+             * The amount of placeholders might change
+             * between the first N chunks and the last one
+             * so we need to prepare it
+             */
+            $stmt = $this->_conn->prepare($sql . $placeHolders);
+            if (!$stmt instanceof PDOStatement) {
+                throw new Exception(print_r($stmt, true));
+            } # if
+
+            foreach($items as $item) {
+                /*
+                 * Add this items' fields to an array in
+                 * the correct order and nicely escaped
+                 * from any injection
+                 */
+                $itemValues = array();
+                $typeCounter = 0;
+                foreach($fields as $field) {
+                    $stmt->bindValue($fieldCounter, $item[$field], $typs[$typeCounter]);
+
+                    $fieldCounter++;
+                    $typeCounter++;
+                } # foreach
+
+                array_push($insertArray, $itemValues);
+            } # foreach
+
+            # Actually insert the batch
+            if (!empty($insertArray)) {
+                $stmt->execute();
+            } # if
+
+        } # foreach
+
+        $this->commit();
+    } # batchInsert
 
 } # class

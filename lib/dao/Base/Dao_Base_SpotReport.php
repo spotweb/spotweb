@@ -64,8 +64,8 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	function addReportRefs($reportList) {
 		$this->_conn->batchInsert($reportList,
 								  "INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES",
-								  "(%s, %s, %s, %s)",
-								  Array('messageid', 'fromhdr', 'keyword', 'nntpref')
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR),
+								  array('messageid', 'fromhdr', 'keyword', 'nntpref')
 								  );
 	} # addReportRefs
 

@@ -42,8 +42,8 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         # prepare a list of IN values
         $this->_conn->batchInsert($idList,
             "INSERT INTO moderatedringbuffer(messageid) VALUES ",
-            "(%s)",
-            Array('messageid'));
+            array(PDO::PARAM_STR),
+            array('messageid'));
     } # addToRingBuffer
 
     /**
