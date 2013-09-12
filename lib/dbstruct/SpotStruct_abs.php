@@ -610,9 +610,9 @@ abstract class SpotStruct_abs {
          * In version 0.65 we made a misttake in inserting categories, so delete the last 10.000 spots
          * and let them be retrieved again
          */
-        if ($schemaVer = 0.65) {
-            $maxSpotsId = $this->_dbcon->singleQuery("SELECT MAX(iD) FROM spots");
-            $this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpotsId);
+        if ($schemaVer == 0.65) {
+            $maxSpotsId = $this->_dbcon->singleQuery("SELECT MAX(id) FROM spots");
+            $this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) ($maxSpotsId - 15000));
 
             // invalidate usenetstate so we re-retrieve the spots
             $this->_dbcon->rawExec("UPDATE usenetstate SET curmessageid = '' WHERE infotype = 'Spots'");
