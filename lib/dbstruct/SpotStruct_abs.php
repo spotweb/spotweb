@@ -38,6 +38,11 @@ abstract class SpotStruct_abs {
 	 */
 	abstract function swDtToNative($colType);
 
+    /*
+     * Converts a boolean type to database native representation
+     */
+    abstract function bool2dt($b);
+
 	/*
 	 * Converts a database native datatype to a spotweb native
 	 * datatype
@@ -479,7 +484,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('lastvisit', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastread', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastapiusage', 'users', "INTEGER", "0", true, '');
-		$this->validateColumn('deleted', 'users', "BOOLEAN", $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('deleted', 'users', "BOOLEAN", $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("users", "InnoDB");
 
 		# ---- sessions ---- #
@@ -502,7 +507,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->_dbcon->bool2dt(false), true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
@@ -520,7 +525,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
 		$this->validateColumn('body', 'notifications', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, ''); 
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
 		# ---- filters ----
@@ -535,7 +540,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
-		$this->validateColumn('enablenotify', 'filters', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('enablenotify', 'filters', 'BOOLEAN', $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("filters", "InnoDB");
 
 		# ---- filtercounts ----
@@ -553,7 +558,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('idtype', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
-		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 		
 		# Update old blacklisttable
@@ -638,7 +643,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('userid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'permaudit', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('result', 'permaudit', "BOOLEAN", $this->_dbcon->bool2dt(true), true, '');
+		$this->validateColumn('result', 'permaudit', "BOOLEAN", $this->bool2dt(true), true, '');
 		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(45)", "''", true, 'ascii');
 		$this->alterStorageEngine("permaudit", "InnoDB");
 

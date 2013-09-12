@@ -21,7 +21,18 @@ class SpotStruct_pgsql extends SpotStruct_abs {
         $this->_dbcon->rawExec("VACUUM ANALYZE moderatedringbuffer");
         $this->_dbcon->rawExec("VACUUM ANALYZE usenetstate");
 	} # analyze
-	
+
+    /*
+     * Returns a database specific representation of a boolean value
+     */
+    function bool2dt($b) {
+        if ($b) {
+            return 'true';
+        } # if
+
+        return 'false';
+    } # bool2dt
+
 	/*
 	 * Converts a 'spotweb' internal datatype to a 
 	 * database specific datatype

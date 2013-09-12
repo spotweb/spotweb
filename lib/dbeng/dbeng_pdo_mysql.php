@@ -34,16 +34,6 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		} # if
 	} # connect()
 
-	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	function bool2dt($b) {
-		if ($b) {
-			return '1';
-		} # if
-		
-		return '0';
-	} # bool2dt
-	
+
 
 } # class

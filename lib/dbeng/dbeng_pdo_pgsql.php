@@ -10,17 +10,6 @@ class dbeng_pdo_pgsql extends dbeng_pdo {
 		$this->_batchInsertChunks = 250;
 	}
 
-	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	function bool2dt($b) {
-		if ($b) {
-			return 'true';
-		} # if
-		
-		return 'false';
-	} # bool2dt
-
 	function connect($host, $user, $pass, $db) {
 		if (!$this->_conn instanceof PDO) {
 			$db_conn = "host=" . $host;

@@ -21,11 +21,22 @@ class SpotStruct_mysql extends SpotStruct_abs {
         $this->_dbcon->rawExec("ANALYZE TABLE moderatedringbuffer");
         $this->_dbcon->rawExec("ANALYZE TABLE usenetstate");
 	} # analyze
-	
-	/*
-	 * Converts a 'spotweb' internal datatype to a 
-	 * database specific datatype
-	 */
+
+    /*
+     * Returns a database specific representation of a boolean value
+    */
+    function bool2dt($b) {
+        if ($b) {
+            return '1';
+        } # if
+
+        return '0';
+    } # bool2dt
+
+    /*
+     * Converts a 'spotweb' internal datatype to a
+     * database specific datatype
+     */
 	function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'int(11)'; break;

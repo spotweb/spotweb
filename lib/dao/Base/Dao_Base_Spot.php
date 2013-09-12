@@ -457,7 +457,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		 * Prepare the array for insertion
 		 */
 		foreach($fullSpots as &$fullSpot) {
-			$fullSpot['verified'] = $this->_conn->bool2dt($fullSpot['verified']);
+			$fullSpot['verified'] = (bool) $fullSpot['verified'];
 			$fullSpot['user-key'] = base64_encode(serialize($fullSpot['user-key']));
 		} # foreach
 

@@ -57,11 +57,6 @@ abstract class dbeng_abs {
 	abstract function safe($s);	
 	
 	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	abstract function bool2dt($b);
-
-	/*
 	 * Returns the amount of effected rows
 	 */
 	abstract function rows();

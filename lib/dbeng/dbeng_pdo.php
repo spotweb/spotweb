@@ -41,17 +41,6 @@ abstract class dbeng_pdo extends dbeng_abs {
 		return $stmt;
 	}
 
-	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	function bool2dt($b) {
-		if ($b) {
-			return '1';
-		} # if
-		
-		return '0';
-	} # bool2dt
-
 	/**
      * Execute the query and saves the rowcount in a property for later retrieval
      *
