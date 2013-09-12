@@ -106,7 +106,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 				set_time_limit(120);			
 
 				# strip the <>'s from the reference
-				$commentId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
+				$commentId = $msgheader['Message-ID'];
                 $artNr = $msgheader['Number'];
 
                 $this->debug('foreach-loop: processing: ' . $commentId . ', artNr=' . $artNr);

@@ -89,7 +89,7 @@ class Dao_Base_Comment implements Dao_Comment {
 		/*
 		 * Prepare the list of messageid's we want to match
 		 */
-		$msgIdList = $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1);
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as comment, messageid AS fullcomment FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");

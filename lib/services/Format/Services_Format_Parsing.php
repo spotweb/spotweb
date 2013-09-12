@@ -235,7 +235,7 @@ class Services_Format_Parsing {
 		 */
 		$spot['verified'] = false;
 		$spot['filesize'] = 0;
-		$spot['messageid'] = substr($messageid, 1, strlen($messageid) - 2);
+		$spot['messageid'] = $messageid;
 		$spot['stamp'] = strtotime($date);
 
 		/*

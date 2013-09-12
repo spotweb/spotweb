@@ -619,7 +619,7 @@ class Dao_Base_Cache implements Dao_Cache {
 
         # Prepare a list of values
         $idList = array();
-        $msgIdList = $this->_conn->arrayValToInOffset($resourceIdList, 'Message-ID', 1, -1);
+        $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID');
 
         $rs = $this->_conn->arrayQuery("SELECT resourceid, cachetype
                                             FROM cache

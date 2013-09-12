@@ -47,11 +47,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
      */
     private $_commentDao;
     /**
-     * @var Dao_Base_Cache
+     * @var Dao_Cache
      */
     private $_cacheDao;
     /**
-     * @var Dao_Base_ModeratedRingBuffer
+     * @var Dao_ModeratedRingBuffer
      */
     private $_modListDao;
 
@@ -220,7 +220,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				set_time_limit(120);
 
 				# messageid to check
-				$msgId = substr($msgheader['Message-ID'], 1, -1);
+				$msgId = $msgheader['Message-ID'];
                 $artNr = $msgheader['Number'];
 
                 /*

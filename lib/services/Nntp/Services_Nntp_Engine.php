@@ -125,7 +125,16 @@ class Services_Nntp_Engine {
         try {
             $this->registerTryCommand();
 
-            return $this->_nntp->getOverview($first . '-' . $last);
+            $headerList = $this->_nntp->getOverview($first . '-' . $last);
+
+            /*
+             * Remove the <> around the messageid
+             */
+            foreach($headerList as $k => $v) {
+                $headerList[$k]['Message-ID'] = substr($headerList[$k]['Message-ID'], 1, -1);
+            } # foreach
+
+            return $headerList;
         } catch (Exception $x) {
             $this->registerError($x);
 

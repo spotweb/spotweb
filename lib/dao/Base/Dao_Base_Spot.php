@@ -551,7 +551,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__FUNCTION__);
 
 		# Prepare a list of values
-		$msgIdList = $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1);
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
 
 		# Because MySQL doesn't know anything about full joins, we use this trick
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")

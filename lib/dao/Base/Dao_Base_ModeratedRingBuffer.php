@@ -59,7 +59,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         /*
          * Prepare the list of messageid's we want to match
          */
-        $msgIdList = $this->_conn->arrayValToInOffset($messageIds, 'Message-ID', 1, -1);
+        $msgIdList = $this->_conn->arrayValToIn($messageIds, 'Message-ID');
         $rs = $this->_conn->arrayQuery("SELECT messageid FROM moderatedringbuffer WHERE messageid IN (" . $msgIdList . ")");
 
         /*

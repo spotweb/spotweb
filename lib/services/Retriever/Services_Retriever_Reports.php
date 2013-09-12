@@ -81,7 +81,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base {
 				set_time_limit(120);			
 
 				# strip the <>'s from the reference
-				$reportId = substr($msgheader['Message-ID'], 1, strlen($msgheader['Message-ID']) - 2);
+				$reportId = $msgheader['Message-ID'];
                 $artNr = $msgheader['Number'];
 
                 # Prepare the report to be added to the server when the report isn't in the database yet
