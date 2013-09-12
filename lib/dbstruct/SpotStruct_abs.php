@@ -613,6 +613,9 @@ abstract class SpotStruct_abs {
         if ($schemaVer = 0.65) {
             $maxSpotsId = $this->_dbcon->singleQuery("SELECT MAX(iD) FROM spots");
             $this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpotsId);
+
+            // invalidate usenetstate so we re-retrieve the spots
+            $this->_dbcon->rawExec("UPDATE usenetstate SET curmessageid = '' WHERE infotype = 'Spots'");
         } # if
 
         # ---- cache table ---- #
