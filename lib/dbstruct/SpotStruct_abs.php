@@ -606,6 +606,15 @@ abstract class SpotStruct_abs {
                                 ");
         } # if
 
+        /*
+         * In version 0.65 we made a misttake in inserting categories, so delete the last 10.000 spots
+         * and let them be retrieved again
+         */
+        if ($schemaVer = 0.65) {
+            $maxSpotsId = $this->_dbcon->singleQuery("SELECT MAX(iD) FROM spots");
+            $this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) $maxSpotsId);
+        } # if
+
         # ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');

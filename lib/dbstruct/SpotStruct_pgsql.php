@@ -56,16 +56,22 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 	
 	/* checks if an index exists */
 	function indexExists($idxname, $tablename) {
-		$q = $this->_dbcon->arrayQuery("SELECT indexname FROM pg_indexes WHERE schemaname = CURRENT_SCHEMA() AND tablename = '%s' AND indexname = '%s'",
-				Array($tablename, $idxname));
+		$q = $this->_dbcon->arrayQuery("SELECT indexname FROM pg_indexes WHERE schemaname = CURRENT_SCHEMA() AND tablename = :tablename AND indexname = :idxname",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':idxname' => array($idxname, PDO::PARAM_STR),
+            ));
 		return !empty($q);
 	} # indexExists
 
 	/* checks if a column exists */
 	function columnExists($tablename, $colname) {
 		$q = $this->_dbcon->arrayQuery("SELECT column_name FROM information_schema.columns 
-											WHERE table_schema = CURRENT_SCHEMA() AND table_name = '%s' AND column_name = '%s'",
-									Array($tablename, $colname));
+											WHERE table_schema = CURRENT_SCHEMA() AND table_name = :tablename AND column_name = :colname",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':colname' => array($colname, PDO::PARAM_STR),
+            ));
 		return !empty($q);
 	} # columnExists
 
@@ -246,7 +252,10 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 
 	/* checks if a table exists */
 	function tableExists($tablename) {
-		$q = $this->_dbcon->arrayQuery("SELECT tablename FROM pg_tables WHERE schemaname = CURRENT_SCHEMA() AND (tablename = '%s')", array($tablename));
+		$q = $this->_dbcon->arrayQuery("SELECT tablename FROM pg_tables WHERE schemaname = CURRENT_SCHEMA() AND (tablename = :tablename)",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+            ));
 		return !empty($q);
 	} # tableExists
 
@@ -301,11 +310,16 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 											JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
 										WHERE constraint_type = 'FOREIGN KEY' 
 										  AND tc.TABLE_SCHEMA = CURRENT_SCHEMA()
-										  AND tc.TABLE_NAME = '%s'
-										  AND kcu.COLUMN_NAME = '%s'
-										  AND ccu.table_name = '%s'
-										  AND ccu.column_name = '%s'",
-								Array($tablename, $colname, $reftable, $refcolumn));
+										  AND tc.TABLE_NAME = :tablename
+										  AND kcu.COLUMN_NAME = :colname
+										  AND ccu.table_name = :reftable
+										  AND ccu.column_name = :refcolumn",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':colname' => array($colname, PDO::PARAM_STR),
+                ':reftable' => array($reftable, PDO::PARAM_STR),
+                ':refcolumn' => array($refcolumn, PDO::PARAM_STR),
+            ));
 		if (!empty($q)) {
 			foreach($q as $res) {
 				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " DROP CONSTRAINT " . $res['constraint_name']);
@@ -329,11 +343,16 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 											JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
 										WHERE constraint_type = 'FOREIGN KEY' 
 										  AND tc.TABLE_SCHEMA = CURRENT_SCHEMA()
-										  AND tc.TABLE_NAME = '%s'
-										  AND kcu.COLUMN_NAME = '%s'
-										  AND ccu.table_name = '%s'
-										  AND ccu.column_name = '%s'",
-								Array($tablename, $colname, $reftable, $refcolumn));
+										  AND tc.TABLE_NAME = :tablename
+										  AND kcu.COLUMN_NAME = :colname
+										  AND ccu.table_name = :reftable
+										  AND ccu.column_name = :refcolumn",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':colname' => array($colname, PDO::PARAM_STR),
+                ':reftable' => array($reftable, PDO::PARAM_STR),
+                ':refcolumn' => array($refcolumn, PDO::PARAM_STR),
+            ));
 		if (empty($q)) {
 			$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD FOREIGN KEY (" . $colname . ") 
 										REFERENCES " . $reftable . " (" . $refcolumn . ") " . $action);
@@ -359,9 +378,12 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 											   collation_name AS \"COLLATION_NAME\"
 										FROM information_schema.COLUMNS 
 										WHERE TABLE_SCHEMA = CURRENT_SCHEMA() 
-										  AND TABLE_NAME = '%s'
-										  AND COLUMN_NAME = '%s'",
-							Array($tablename, $colname));
+										  AND TABLE_NAME = :tablename
+										  AND COLUMN_NAME = :colname",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':colname' => array($colname, PDO::PARAM_STR),
+            ));
 		if (!empty($q)) {
 			$q = $q[0];
 
@@ -391,8 +413,12 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		$q = $this->_dbcon->arrayQuery("SELECT * 
 										FROM pg_indexes 
 										WHERE schemaname = CURRENT_SCHEMA()
-										  AND tablename = '%s'
-										  AND indexname = '%s'", Array($tablename, $idxname));
+										  AND tablename = :tablename
+										  AND indexname = :idxname",
+            array(
+                ':tablename' => array($tablename, PDO::PARAM_STR),
+                ':idxname' => array($idxname, PDO::PARAM_STR)
+            ));
 		if (empty($q)) {
 			return array();
 		} # if

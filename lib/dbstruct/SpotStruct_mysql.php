@@ -58,13 +58,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	
 	/* checks if an index exists */
 	function indexExists($idxname, $tablename) {
-		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = :keyname",
+            array(
+                ':keyname' => array($idxname, PDO::PARAM_STR)
+            ));
 		return !empty($q);
 	} # indexExists
 
 	/* checks if a column exists */
 	function columnExists($tablename, $colname) {
-		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = '%s'", Array($colname));
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = :fieldname",
+            array(
+                ':fieldname' => array($colname, PDO::PARAM_STR)
+            ));
 		return !empty($q);
 	} # columnExists
 

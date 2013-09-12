@@ -391,6 +391,9 @@ class Dao_Base_Spot implements Dao_Spot {
 			 * Cut off some strings to a maximum value as defined in the
 			 * database. We don't cut off the unique keys as we rather
 			 * have Spotweb error out than corrupt it
+			 *
+			 * We NEED to cast integers to actual integers to make sure our
+			 * batchInsert() call doesn't fail.
 			 */
 			$spot['poster'] = substr($spot['poster'], 0, 127);
 			$spot['title'] = substr($spot['title'], 0, 127);
@@ -404,6 +407,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['stamp'] = (int) $spot['stamp'];
 			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
 		} # foreach
+        unset($spot);
 
 		$this->_conn->batchInsert($spots,
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 

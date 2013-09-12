@@ -146,6 +146,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			$comment['user-key'] = serialize($comment['user-key']);
 			$comment['body'] = substr($comment['body'], 0, (1024*10));
 			$comment['verified'] = $this->_conn->bool2dt($comment['verified']);
+            $comment['stamp'] = (int) $comment['stamp'];
 		} # foreach
 
 		$this->_conn->batchInsert($fullComments,

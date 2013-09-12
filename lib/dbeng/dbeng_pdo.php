@@ -172,7 +172,7 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return string
      */
     function safe($s) {
-        if (is_integer($s)) {
+        if (is_integer($s) || is_double($s)) {
             return $s;
         } else {
             return $this->_conn->quote($s);
