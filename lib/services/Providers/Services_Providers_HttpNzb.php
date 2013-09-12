@@ -161,7 +161,17 @@ class Services_Providers_HttpNzb {
 
                     if (isset($matches[1])) {
                         $url = $matches[1];
-                    }
+                    } else {
+                        /*
+                         * We get the body before it has been converted
+                         * to HTML from the UBB code. We try to extract
+                         * the URL from the body anyway
+                         */
+                        preg_match("(([^=])((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*))", $this->spot['description'], $matches);
+                        if (isset($matches[2])) {
+                            $url = $matches[2];
+                        } # if
+                    } # else
 
 
                     if ($url) {
