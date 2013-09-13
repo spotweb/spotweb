@@ -113,7 +113,6 @@ function openSpot(id,url) {
 		$(window).bind("resize", detectScrollbar);
 
 		postCommentsForm();
-		postReportForm();
 		postBlacklistForm();
 		
 		if (spotweb_retrieve_commentsperpage > 0) {
@@ -226,10 +225,8 @@ function loadComments(messageid,perpage,pagenr) {
 }
 
 function postReportForm() {
-	$("form.postreportform").submit(function(){ 
-		new SpotPosting().postReport(this,postReportUiStart,postReportUiDone);
-		return false;
-	});	
+    new SpotPosting().postReport($('form.postreportform')[0], postReportUiStart, postReportUiDone);
+    return false;
 }
 
 function blacklistSpotterId(spotterId) {

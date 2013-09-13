@@ -25,18 +25,6 @@
 ?>
 
 		<div id="details" class="details <?php echo $tplHelper->cat2CssClass($spot) ?>">
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-		if ($currentSession['user']['userid'] > 2) { ?>
-			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
-				<input type="hidden" name="postreportform[submitpost]" value="Post">
-				<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
-				<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
-				<input type="hidden" name="postreportform[newmessageid]" value="">
-				<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
-			</form>
-<?php } # if
-	} # if 
-?>
 			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeListAction(); ?>" method="post">
 				<input type="hidden" name="blacklistspotterform[submitaddspotterid]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
@@ -64,7 +52,7 @@
 		if ($currentSession['user']['userid'] > 2) {
 			if (!$tplHelper->isReportPlaced($spot['messageid'])) {
 ?>
-						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="<?php echo _('Report this spot as spam'); ?>"></a> </th>
+						<th class="spamreport"><a onclick="openDialog('editdialogdiv', '<?php echo _('Report spam'); ?>', '?page=render&tplname=reportspot&data[messageid]=<?php echo urlencode($spot['messageid']); ?>', postReportForm, 'autoclose', null, null);" class="spamreport-button" title="<?php echo _('Report this spot as spam'); ?>"></a> </th>
 <?php 		} else { ?>
 						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="<?php echo _('You already reported this spot as spam'); ?>"></a> </th>
 <?php 	}	} } ?>
@@ -197,7 +185,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 
 				var messageid = $('#messageid').val();
 				postCommentsForm();
-				postReportForm();
 				postBlacklistForm();
 				if (spotweb_retrieve_commentsperpage > 0) {
 					loadComments(messageid,spotweb_retrieve_commentsperpage,'0');

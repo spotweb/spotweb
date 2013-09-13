@@ -13,12 +13,18 @@ function postCommentUiDone() {
 
 function postReportUiStart() {
 	$(".spamreport-button").addClass("loading");
+    $("#postReportFormSubmitButton").addClass("loading");
 } // postReportUiStart
 
 function postReportUiDone() {
 	$(".spamreport-button").removeClass("loading");
 	$(".spamreport-button").addClass("success");
 	$(".spamreport-button").attr("title", "<t>You already reported this spot as spam</t>");
+
+    // close the dialog of the report reason
+    var $dialdiv = $("#editdialogdiv");
+    $dialdiv.dialog('close');
+    $dialdiv.empty();
 } // postReportUiDone
 
 function postSpotUiStart() {

@@ -525,10 +525,7 @@ div.details form.postcommentform dd.rating span {display:inline-block; width:16p
 div.details table.spotinfo td.rating span.active,
 div.details form.postcommentform dd.rating span.active {background-position:-56px -80px;}
 
-div.details form.postreportform fieldset {padding:0; margin:0; border:0;}
-div.details form.postreportform fieldset dl {margin:0;}
-div.details form.postreportform fieldset dd {margin:0;}
-div.details form.postreportform input.greyButton {display:inline; margin: 0;}
+#postReportFormSubmitButton.loading {background:transparent url(../img/loading.gif) no-repeat 50% 50%; margin:4px; }
 
 div.details table.spotinfo a.addspotterasfilter,
 div.details table.spotinfo a.addtagasfilter {background:url(../img/sprite.png) no-repeat -88px -146px; background-color: black; text-decoration: none; min-width: 16px;  }

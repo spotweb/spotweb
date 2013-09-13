@@ -4,7 +4,7 @@
  * @param divid id of a dummy div which should be used to create a dialog
  * @param title title of the dialogbox
  * @param url URL of the HTML content to load into the dialog
- * @param buttonClick Function to be called when the submit button is pressed
+ * @param presubmitHook Function to be called when the submit button is pressed
  * @param successAction choice of 'autoclose', 'showresultonly', 'reload'
  * @param closeCb Function which should be called when the dialog is closed
  * @param openCb Function which should be called when the HTML content of the dialog is loaded

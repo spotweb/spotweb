@@ -30,7 +30,7 @@ class Services_Posting_Report {
 
 		# Make sure no spam report has already been posted by this user to prevent flooding
 		if ($spotReportDao->isReportPlaced($report['inreplyto'], $user['userid'])) {
-			$result->addError(_('This spot has already been marked as spam'));
+			$result->addError(_('This spot has already been reported'));
 		} # if
 		
 		/*
@@ -51,7 +51,7 @@ class Services_Posting_Report {
 		# Body cannot be empty or very short
 		$report['body'] = trim($report['body']);
 		if (strlen($report['body']) < 2) {
-			$result->addError(_('Please provide a report body'));
+			$result->addError(_('Please provide a reason why this Spot should be reported'));
 		} # if
 		
 		# controleer dat de messageid waarop we replyen overeenkomt
