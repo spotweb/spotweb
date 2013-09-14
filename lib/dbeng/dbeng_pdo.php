@@ -17,7 +17,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		$stmt = $this->_conn->prepare($s);
         if (!$stmt instanceof PDOStatement) {
             $x = $stmt->errorInfo();
-            throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1] . ' ' . $x->errorInfo[2], -1);
+            throw new SqlErrorException(implode(': ', $x), -1);
         }
 
         /*
@@ -35,7 +35,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		try {
 			$stmt = $this->_conn->query($s);
 		} catch(PDOException $x) {
-			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1] . ' ' . $x->errorInfo[2], -1);
+			throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
 		SpotTiming::stop(__FUNCTION__,array($s));
 		
@@ -56,7 +56,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
 		} catch(PDOException $x) {
-            throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1] . ' ' . $x->errorInfo[2], -1);
+            throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
 		SpotTiming::stop(__FUNCTION__, array($s, $p));
@@ -202,7 +202,7 @@ abstract class dbeng_pdo extends dbeng_abs {
             $stmt = $this->_conn->prepare($sql . $placeHolders);
             if (!$stmt instanceof PDOStatement) {
                 $x = $stmt->errorInfo();
-                throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1] . ' ' . $x->errorInfo[2], -1);
+                throw new SqlErrorException(implode(': ', $x), -1);
             } # if
 
             foreach($items as $item) {
@@ -228,7 +228,7 @@ abstract class dbeng_pdo extends dbeng_abs {
                 try {
                     $stmt->execute();
                 } catch(PDOException $x) {
-                    throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[1] . ' ' . $x->errorInfo[2], -1);
+                    throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
                 } # catch
             } # if
 
