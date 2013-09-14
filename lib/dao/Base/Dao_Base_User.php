@@ -247,7 +247,7 @@ class Dao_Base_User implements Dao_User {
                 ':username' => array($user['username'], PDO::PARAM_STR),
                 ':firstname' => array($user['firstname'], PDO::PARAM_STR),
                 ':lastname' => array($user['lastname'], PDO::PARAM_STR),
-                ':passhash' => array($user['pashash'], PDO::PARAM_STR),
+                ':passhash' => array($user['passhash'], PDO::PARAM_STR),
                 ':mail' => array($user['mail'], PDO::PARAM_STR),
                 ':apikey' => array($user['apikey'], PDO::PARAM_STR),
                 ':lastread' => array($stamp, PDO::PARAM_INT),
