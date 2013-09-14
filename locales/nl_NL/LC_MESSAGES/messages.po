@@ -1,4 +1,4 @@
-# This file is distributed under the same license as the SpotWeb package. 
+# This file is distributed under the same license as the SpotWeb package.
 # Copyright (c) 2013, Spotweb
 # All rights reserved.
 # 
@@ -1880,3 +1880,48 @@ msgstr "Gewhitelist door gebruiker"
 
 msgid "Minimum number of spamreports before showing spamreports icon?"
 msgstr "Minimaal aantal spamreports voor tonen spamreports icoon?"
+
+msgid "Change user preferences"
+msgstr "Wijzig gebruiker voorkeuren"
+
+msgid "Administrators"
+msgstr "Beheerders"
+
+msgid "Anonymous user - closed system"
+msgstr "Anonieme gebruiker - gesloten systeem"
+
+msgid "Anonymous user - open system"
+msgstr "Anonieme gebruiker - open systeem"
+
+msgid "Authenticated users"
+msgstr "Geverifieerde gebruikers"
+
+msgid "Trusted users"
+msgstr "Vertrouwde gebruikers"
+
+msgid "Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires a so-called Client ID and a SecretID which you need to request at Microsoft. Please enter the values in below fields."
+
+msgstr "Spotweb kan gebruik maken van de Microsoft Translator API om reacties en spotomschrijving te vertalen naar de gebruikers eigen taal. Dit vereist een Client ID en een SecretID welke aangevraagd kan worden via Microsoft. Gelieve deze gegevens hieronder in te vullen."
+
+msgid "Note:"
+msgstr "Opmerking:"
+
+msgid "The edited spot will not be posted to usenet. The changes will only be visible for users of this Spotweb site."
+msgstr "De aangepaste spot zal niet geplaatst worden naar usenet. De wijzigingen zijn alleen zichtbaar voor gebruikers van deze Spotweb site."
+
+msgid "Deleting a spot will remove the spot from this Spotweb site only. It will not be removed from other websites and/or other Spotnet clients."
+msgstr "Een gewiste spot word alleen verwijderd van deze Spotweb site. Het word niet verwijderd van andere websites en/of andere Spotnet clients."
+
+#: lib/SpotCategories.php
+
+msgid "Optimization software"
+msgstr "Optimalisatie software"
+
+msgid "Security software"
+msgstr "Beveiligingssoftware"
+
+msgid "System software"
+msgstr "Systeem software"
+
+msgid "Navigation systems"
+msgstr "Navigatie systemen"
