@@ -775,7 +775,7 @@ class SpotTemplateHelper {
 		# Prepare the spotlisting with an list of nntp items
 		$nntpRefList = array();
 		foreach($spotList as $spot) {
-			$nntpRefList[] = $spot['messageid'];
+			$nntpRefList['messageid'] = $spot['messageid'];
 		} # foreach
 
 		return $this->_daoFactory->getCommentDao()->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);

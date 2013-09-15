@@ -212,7 +212,7 @@ class Dao_Base_Comment implements Dao_Comment {
 		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
 									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
 												AND (sl.ouruserid = :ouruserid)
-									WHERE nntpref IN (" . $this->_conn->arrayKeyToIn($nntpRefList) . ") 
+									WHERE nntpref IN (" . $this->_conn->arrayValToIn($nntpRefList, 'messageid') . ")
  										  AND (cx.stamp > sl.seen) 
 								   GROUP BY nntpref",
             array(
