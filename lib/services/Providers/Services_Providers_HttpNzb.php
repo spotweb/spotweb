@@ -132,6 +132,8 @@ class Services_Providers_HttpNzb {
             'http://alturl.com',
             'http://tiny.cc',
             'http://bit.ly',
+            'http://goo.gl',
+            'http://hideref.org',
         );
 
         // Search in the website url
@@ -336,7 +338,28 @@ class Services_Providers_HttpNzb {
             if (preg_match('/meta.+?http-equiv\W+?refresh/i', $body)) {
                 preg_match('/content.+?url\W+?(.+?)\"/i', $body, $matches);
                 if (isset($matches[1])) {
-                    $url = $matches[1];
+                    /*
+                     * We can get either an relative redirect, or an fully
+                     * qualified redirect. Hideref, for example, uses an
+                     * relative direct. Look for those.
+                     *
+                     * parse_url() doesn't support relative url's, so we have
+                     * to do a guess ourselves.
+                     */
+                    $redirUrl = $matches[1];
+                    if ((stripos($redirUrl, 'http://') !== 0) &&
+                        (stripos($redirUrl, 'https://') !== 0) &&
+                        (stripos($redirUrl, '//') !== 0)) {
+                        $urlParts = parse_url($url);
+
+                        if ($redirUrl[0] == '/') {
+                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
+                        } else {
+                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . $redirUrl;
+                        } # if
+                    } # if
+
+                    $url = $redirUrl;
                 }
             }
 
