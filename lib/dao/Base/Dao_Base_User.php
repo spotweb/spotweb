@@ -242,7 +242,7 @@ class Dao_Base_User implements Dao_User {
 		} # if
 
 		$this->_conn->modify("INSERT INTO users(username, firstname, lastname, passhash, mail, apikey, lastread, deleted) 
-										VALUES(:username, :firstname, :lastname, :passhash, :mail, :apilkey, :lastread, :isdeleted)",
+										VALUES(:username, :firstname, :lastname, :passhash, :mail, :apikey, :lastread, :isdeleted)",
             array(
                 ':username' => array($user['username'], PDO::PARAM_STR),
                 ':firstname' => array($user['firstname'], PDO::PARAM_STR),
@@ -263,7 +263,7 @@ class Dao_Base_User implements Dao_User {
 		 */
 		$user['userid'] = $this->_conn->singleQuery("SELECT id FROM users WHERE username = :username",
             array(
-                ':username' => $user['username']
+                ':username' => array($user['username'], PDO::PARAM_STR),
             ));
 
 		/* 

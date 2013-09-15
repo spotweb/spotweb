@@ -64,7 +64,7 @@ class Services_Upgrade_Users {
 		# Manually update the userid so we can be sure anonymous == userid 1
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
-		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = '%s'", Array( (int) $currentId));
+		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = :userid", Array(':userid' => $currentId, PDO::PARAM_INT));
 	} # createAnonymous
 
 	/*
@@ -129,7 +129,7 @@ class Services_Upgrade_Users {
 		# Manually update the userid so we can be sure admin == userid 2
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
 		$dbCon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
-		$dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = '%s'", Array( (int) $currentId));
+        $dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = :userid", Array(':userid' => $currentId, PDO::PARAM_INT));
 	} # createAdmin
 
 	/*
@@ -146,7 +146,7 @@ class Services_Upgrade_Users {
 			/*
 			 * Remove current group membership
 			 */
-			$dbCon->rawExec("DELETE FROM usergroups WHERE userid = " . $user['userid']);
+			$dbCon->rawExec("DELETE FROM usergroups WHERE userid = " . (int) $user['userid']);
 			
 			/* 
 			 * Actually update the group membership, depending
