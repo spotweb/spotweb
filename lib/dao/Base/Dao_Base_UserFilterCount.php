@@ -159,7 +159,7 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 		foreach($filterList as $filter) {
 			$this->_conn->modify("UPDATE filtercounts
 										SET lastvisitspotcount = currentspotcount,
-											currentspotcount = :currentspotcound
+											currentspotcount = :currentspotcount
 										WHERE (filterhash = :filterhash)
 										  AND (userid = :userid)",
                 array(
