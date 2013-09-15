@@ -101,7 +101,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
              * we try to standardize all these types of season definitions into one format.
              */
-			$epSearch = '';
+			$episodeSearch = '';
+            $seasonSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) ||
                 preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
 
@@ -111,12 +112,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
                  */
                 if (strlen($this->_params['season']) < 3) {
                     if (is_numeric($this->_params['season'])) {
-                        $epSearch = 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT);
+                        $seasonSearch = 'S' . str_pad($this->_params['season'], 2, "0", STR_PAD_LEFT);
                     } else {
-                        $epSearch = $this->_params['season'];
+                        $seasonSearch = $this->_params['season'];
                     } # else
                 } else {
-                    $epSearch = $this->_params['season'] . ' ';
+                    $seasonSearch = $this->_params['season'] . ' ';
                 } # else
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
@@ -134,9 +135,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 
                     if (is_numeric($this->_params['ep'])) {
-                        $epSearch .= 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT);
+                        $episodeSearch .= 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT);
                     } else {
-                        $epSearch .= $this->_params['ep'];
+                        $episodeSearch .= $this->_params['ep'];
                     } # else
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
@@ -144,14 +145,21 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-                $epSearch .= '*';
+                $seasonSearch .= '*';
 
                 // and search for the text 'Season ' ...
                 $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             } # else
 
-			# The + operator is supported both by PostgreSQL and MySQL's FTS
-			$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $epSearch;
+			/*
+             * The + operator is supported both by PostgreSQL and MySQL's FTS
+			 *
+			 * We search both for S04E17 and S04 E17 (with a space)
+			 */
+			$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
+            if (!empty($episodeSearch)) {
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
+            } # if
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
