@@ -124,5 +124,4 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
 
-
 } # dbeng_abs

@@ -57,7 +57,7 @@ class Dao_Base_Comment implements Dao_Comment {
 	function addPostedComment($userId, $comment) {
 		$this->_conn->modify(
 				"INSERT INTO commentsposted(ouruserid, messageid, inreplyto, randompart, rating, body, stamp)
-					VALUES(:ouruserid, :messageid, :inreplyto, :randompart, :rating, :body, :stamp)",
+					VALUES(:ouruserid, :newmessageid, :inreplyto, :randompart, :rating, :body, :stamp)",
             array(
                 ':ouruserid' => array($userId, PDO::PARAM_INT),
                 ':newmessageid' => array($comment['newmessageid'], PDO::PARAM_STR),

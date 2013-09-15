@@ -683,9 +683,10 @@ class Dao_Base_Spot implements Dao_Spot {
 
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
-					VALUES(:ouruserid, :messageid, :stamp, :title, :tag, :category, :subcats, :fullxml)",
+					VALUES(:ouruserid, :newmessageid, :stamp, :title, :tag, :category, :subcats, :fullxml)",
             array(
                 ':ouruserid' => array($userId, PDO::PARAM_INT),
+                ':newmessageid' => array($spot['newmessageid'], PDO::PARAM_STR),
                 ':time' => array(time(), PDO::PARAM_INT),
                 ':title' => array($spot['title'], PDO::PARAM_STR),
                 ':tag' => array($spot['tag'], PDO::PARAM_STR),
