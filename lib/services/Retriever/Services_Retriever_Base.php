@@ -1,7 +1,6 @@
 <?php
 abstract class Services_Retriever_Base {
     protected $_settings;
-    protected $_debug;
     protected $_force;
     protected $_retro;
 
@@ -64,10 +63,9 @@ abstract class Services_Retriever_Base {
 		/*
 		 * default ctor 
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $debug, $force, $retro) {
+		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $force, $retro) {
 			$this->_daoFactory = $daoFactory;
 			$this->_settings = $settings;
-			$this->_debug = $debug;
 			$this->_retro = $retro;
 			$this->_force = $force;
 
@@ -88,12 +86,6 @@ abstract class Services_Retriever_Base {
 			$this->_svcNntpBin = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 		} # ctor
 
-		function debug($s) {
-			if ($this->_debug) {
-				echo 'DEBUG: ' . microtime(true) . ':' . $s . PHP_EOL;
-			} # if
-		} # debug
-		
 		function connect(array $groupList) {
 			# if an retriever instance is already running, stop this one
 			if ((!$this->_force) && ($this->_usenetStateDao->isRetrieverRunning())) {
@@ -131,7 +123,7 @@ abstract class Services_Retriever_Base {
 		 * articlenumber on the NNTP server. 
 		 */
 		function searchMessageId($lastArticleNr, $lastMessageId, $messageIdList) {
-			$this->debug('searchMessageId=' . serialize($messageIdList));
+			SpotDebug::msg(SpotDebug::TRACE, 'searchMessageId=' . serialize($messageIdList));
 
             /*
              * If no messageid's are stored in the database,
@@ -165,7 +157,7 @@ abstract class Services_Retriever_Base {
 
 				# get the list of headers (XHDR) from the usenet server
 				$hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, ($curArtNr + $decrement));
-				$this->debug('getMessageIdList returned=' . serialize($hdrList));
+				SpotDebug::msg(SpotDebug::TRACE, 'getMessageIdList returned=' . serialize($hdrList));
 				
 				# Show what we are doing
 				$this->displayStatus('searchmsgidstatus', ($curArtNr -1) . ' to ' . ($curArtNr + $decrement));
@@ -186,8 +178,8 @@ abstract class Services_Retriever_Base {
 				} # for
 			} # while
 
-			$this->debug('getMessageIdList loop finished, found = ' . $found);
-			$this->debug('getMessageIdList loop finished, curArtNr = ' . $curArtNr);
+			SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, found = ' . $found);
+			SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, curArtNr = ' . $curArtNr);
 			
 			return $curArtNr;
 		} # searchMessageId
@@ -255,7 +247,7 @@ abstract class Services_Retriever_Base {
 			# we are done updating, make sure that if the newsserver deleted
 			# earlier retrieved messages, we remove them from our database
 			if ($highestMessageId != '') {
-				$this->debug('loopTillEnd() finished, highestMessageId = ' . $highestMessageId);
+				SpotDebug::msg(SpotDebug::DEBUG, 'loopTillEnd() finished, highestMessageId = ' . $highestMessageId);
 				$this->removeTooNewRecords($highestMessageId);
 			} # if
 	

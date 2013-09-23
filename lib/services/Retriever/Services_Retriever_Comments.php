@@ -7,8 +7,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $debug, $force, $retro) {
-			parent::__construct($daoFactory, $settings, $debug, $force, $retro);
+		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $force, $retro) {
+			parent::__construct($daoFactory, $settings, $force, $retro);
 			
 			$this->_spotDao = $daoFactory->getSpotDao();
 			$this->_commentDao = $daoFactory->getCommentDao();
@@ -100,7 +100,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			
 			# Process each header
 			foreach($hdrList as $msgheader) {
-                $this->debug('foreach-loop: iter-start');
+                SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-start');
 
 				# Reset timelimit
 				set_time_limit(120);			
@@ -109,7 +109,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 				$commentId = $msgheader['Message-ID'];
                 $artNr = $msgheader['Number'];
 
-                $this->debug('foreach-loop: processing: ' . $commentId . ', artNr=' . $artNr);
+                SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: processing: ' . $commentId . ', artNr=' . $artNr);
 
                 /*
                  * We prepare some variables to we don't have to perform an array
@@ -118,7 +118,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 				$header_isInDb = isset($dbIdList['comment'][$commentId]);
 				$fullcomment_isInDb = isset($dbIdList['fullcomment'][$commentId]);
 
-                $this->debug('foreach-loop: headerIsInDb: ' .
+                SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: headerIsInDb: ' .
                                     (int) $header_isInDb. ', fullComment=' .
                                     (int) $fullcomment_isInDb . ', retrieveFull= ' .
                                     (int) $this->_retrieveFull);
@@ -136,7 +136,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					$msgheader['stamp'] = strtotime($msgheader['Date']);
 
-                    $this->debug('foreach-loop: msgHeader=' . serialize($msgheader));
+                    SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop: msgHeader=' . serialize($msgheader));
 
                     /*
                      * Don't add older comments than specified for the retention stamp
@@ -225,9 +225,9 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					
 					if ($this->_retrieveFull) {
 						try {
-                            $this->debug('foreach-loop: readFullComment start:' . $commentId);
+                            SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: readFullComment start:' . $commentId);
 							$fullComment = $this->_svcNntpTextReading->readComments(array(array('messageid' => $commentId)));
-                            $this->debug('foreach-loop: readFullComment finished:' . $commentId);
+                            SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: readFullComment finished:' . $commentId);
 
 							# Add this comment to the datbase and mark it as such
 							$fullCommentDbList[] = $fullComment;
@@ -268,9 +268,9 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					} # if retrievefull
 				} # if fullcomment is not in db yet
 
-                $this->debug('foreach-loop: iter-stop');
+                SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-stop');
 			} # foreach
-            $this->debug('foreach-loop: done');
+            SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: done');
 
 			if (count($hdrList) > 0) {
 				$this->displayStatus("loopcount", count($hdrList));

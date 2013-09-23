@@ -94,6 +94,11 @@ try {
 	 * output
 	 */
 	$debugLog = SpotCommandline::get('debug');
+    if ($debugLog) {
+        SpotDebug::enable(SpotDebug::TRACE);
+    } else {
+        SpotDebug::disable();
+    } # if
 
 	/*
 	 * Retro mode will allow os to start from the beginning and retrieve
@@ -144,7 +149,6 @@ try {
 	 */
 	$retriever = new Services_Retriever_Spots($daoFactory, 
 											  $settings,
-											  $debugLog,
 											  $forceMode,
 											  $retroMode);
 	$newSpotCount = $retriever->perform();
@@ -179,7 +183,6 @@ try {
 	if ($settings->get('retrieve_comments')) {
 		$retriever = new Services_Retriever_Comments($daoFactory,
 													 $settings,
-													 $debugLog,
 													 $forceMode,
 													 $retroMode);
 		$newCommentCount = $retriever->perform();
@@ -198,7 +201,6 @@ try {
 	if ($settings->get('retrieve_reports') && !$retroMode) {
 		$retriever = new Services_Retriever_Reports($daoFactory,
 												    $settings,
-													$debugLog,
 												    $forceMode,
                                                     $retroMode);
 		$newReportCount = $retriever->perform();

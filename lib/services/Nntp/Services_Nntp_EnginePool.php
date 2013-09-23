@@ -12,6 +12,8 @@ class Services_Nntp_EnginePool {
      * @returns Services_Nntp_Engine Instance of Services_NNTP_Engine
 	 */
 	static public function pool(Services_Settings_Base $settings, $type) {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '::pool:(' . $type . ') called');
+
 		if (isset(self::$_instances[$type])) {
 			return self::$_instances[$type];
 		} # if

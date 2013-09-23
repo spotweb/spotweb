@@ -42,6 +42,7 @@ class Services_Nntp_Engine {
      * Register an operation as failed
      */
     private function registerError($exception) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->registerError() called: " . $exception->getMessage());
         /*
          * Some exceptions are "final" and will not recover when
          * just tried again.
@@ -52,6 +53,8 @@ class Services_Nntp_Engine {
          * errors
          */
         if ($exception->getCode() == 430) {
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->registerError() was: article not found");
+
             $this->_connectionErrors = 9999;
 
             return;
@@ -66,6 +69,8 @@ class Services_Nntp_Engine {
         $this->quit();
         $this->_nntp = new Net_NNTP_Client();
         sleep($this->_connectionErrors);
+
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->registerError() errorCount is now: " . $this->_connectionErrors);
 
         // reconnect by selecting the group again
         if (!empty($this->_currentgroup)) {
@@ -90,6 +95,8 @@ class Services_Nntp_Engine {
      * as this error is handled by an upper layer
      */
     public function resetErrorCount() {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->resetErrorCount()");
+
         $this->_connectionErrors = 0;
     } # resetErrorCount
 
@@ -99,7 +106,7 @@ class Services_Nntp_Engine {
      * @return bool
      */
     private function tooManyErrors() {
-        echo 'Currently registered errorcount: ' . $this->_connectionErrors . PHP_EOL;
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->tooManyErrors() == " . $this->_connectionErrors);
 
         return ($this->_connectionErrors > 3);
     } # tooManyErrors
@@ -109,6 +116,7 @@ class Services_Nntp_Engine {
      * Select a group as active group
      */
     public function selectGroup($group) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->selectGroup(" . $group . ")");
         $this->connect();
 
         $this->_currentgroup = $group;
@@ -120,6 +128,7 @@ class Services_Nntp_Engine {
      * Returns an overview (XOVER) from first id to lastid
      */
     public function getOverview($first, $last) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getOverView(" . $first . "," . $last . ")");
         $this->connect();
 
         try {
@@ -155,6 +164,7 @@ class Services_Nntp_Engine {
      * Get a single messageid given a single articlenumber
      */
     public function getMessageIdByArticleNumber($artNr) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getMessageIdByArticleNumber(" . $artNr . ")");
         $this->connect();
 
         try {
@@ -181,6 +191,7 @@ class Services_Nntp_Engine {
      * but only for messageids
      */
     public function getMessageIdList($first, $last) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getMessageIdList(" . $first . "," . $last . ")");
         $this->connect();
 
         try {
@@ -206,6 +217,8 @@ class Services_Nntp_Engine {
      * Disconnect from the server if we are connected
      */
     public function quit() {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->quit()");
+
         if (!$this->_connected) {
             return ;
         } # if
@@ -225,6 +238,8 @@ class Services_Nntp_Engine {
      * connection alive
      */
     public function sendNoop() {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->sendNoop()");
+
         if (!$this->_connected) {
             return ;
         } # if
@@ -240,6 +255,7 @@ class Services_Nntp_Engine {
      * array with head and body as elements
      */
     public function post($article) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->post() -> " . serialize(article));
         $this->connect();
         /*
          * We cannot run post() directly because it would
@@ -257,6 +273,7 @@ class Services_Nntp_Engine {
      * Returns the header of an messageid
      */
     public function getHeader($msgid) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getHeader(" . $msgid . ")");
         $this->connect();
 
         try {
@@ -285,6 +302,7 @@ class Services_Nntp_Engine {
      * Returns the body of an messageid
      */
     public function getBody($msgid) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getBody(" . $msgid . ")");
         $this->connect();
 
         try {
@@ -314,6 +332,7 @@ class Services_Nntp_Engine {
      * if necessary
      */
     public function connect() {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect()");
         /*
          * Store the username and password in it,
          * we will not put it in member variables
@@ -365,6 +384,8 @@ class Services_Nntp_Engine {
                 throw new NntpException('Error while connecting to server (server did not respond)', -1);
             } # if
 
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect called, trying to authenticate?: " . $tmpUser . ", " . $tmpPass . ".");
+
             if (!empty($tmpUser)) {
                 $authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
             } # if
@@ -379,6 +400,7 @@ class Services_Nntp_Engine {
      * header and body part
      */
     public function getArticle($msgId) {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->getArticle(" . $msgId . ")");
         $this->connect();
 
         $result = array('header' => array(), 'body' => array());
@@ -429,6 +451,7 @@ class Services_Nntp_Engine {
      * server
      */
     public function validateServer() {
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->validateServer()");
         /*
          * We need to select a group, because authentication
          * is not always entered but sometimes required

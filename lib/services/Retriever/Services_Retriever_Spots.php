@@ -59,9 +59,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $debug, $force, $retro) {
-			parent::__construct($daoFactory, $settings, $debug, $force, $retro);
-			
+		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $force, $retro) {
+			parent::__construct($daoFactory, $settings, $force, $retro);
+
 			$this->_rsakeys = $this->_settings->get('rsa_keys');
 			$this->_retrieveFull = $this->_settings->get('retrieve_full');
 			$this->_prefetch_image = $this->_settings->get('prefetch_image');
@@ -126,7 +126,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 * the highest messgeid in the database is the latest on the server.
 		 */
 		function removeTooNewRecords($highestMessageId) {
-			$this->debug('Highest messageid found: ' . $highestMessageId);
+			SpotDebug::msg(SpotDebug::DEBUG, 'Highest messageid found: ' . $highestMessageId);
 
 			/*
 			 * Remove any extraneous spots from the database because we assume
@@ -170,8 +170,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			} else {
 				$retentionStamp = 0;
 			} # else
-			$this->debug('retentionStamp=' . $retentionStamp);
-			$this->debug('hdrList=' . serialize($hdrList));
+			SpotDebug::msg(SpotDebug::DEBUG, 'retentionStamp=' . $retentionStamp);
+			SpotDebug::msg(SpotDebug::TRACE, 'hdrList=' . serialize($hdrList));
 			
 			/**
 			 * We ask the database to match our messageid's we just retrieved with
@@ -182,7 +182,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             $cachedIdList = $this->_cacheDao->getMassCacheRecords($hdrList);
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 
-			$this->debug('dbIdList=' . serialize($dbIdList));
+			SpotDebug::msg(SpotDebug::TRACE, 'dbIdList=' . serialize($dbIdList));
 
             /*
              * We get a list of spots which have been blacklisted before,
@@ -195,7 +195,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             foreach($hdrList as $msgheader) {
                 SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
 				$msgCounter++;
-				$this->debug('foreach-loop, start. msgId= ' . $msgCounter);
+				SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, start. msgId= ' . $msgCounter);
 
 				/* 
 				 * Keep te usenet server alive when processing is slow.
@@ -251,7 +251,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				 */
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsParsed++;
-					$this->debug('foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
+					SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
                     SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
                     SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
 					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'],
@@ -260,7 +260,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 															$msgheader['Message-ID'],
 															$this->_rsakeys);
                     SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
-					$this->debug('foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
+					SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, parsingXover, done. msgId= ' . $msgCounter);
 
 					/*
 					 * When a parse error occurred, we ignore the spot, also unverified
@@ -349,9 +349,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						$fullSpot = array();
 						try {
 							$fullsRetrieved++;
-							$this->debug('foreach-loop, getFullSpot, start. msgId= ' . $msgId);
+							SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getFullSpot, start. msgId= ' . $msgId);
 							$fullSpot = $this->_svcNntpTextReading->readFullSpot($msgId);
-							$this->debug('foreach-loop, getFullSpot, done. msgId= ' . $msgId);
+							SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 
 							# add this spot to the database
 							$fullSpotDbList[] = $fullSpot;
@@ -443,13 +443,13 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 */
                         SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 						if ($this->_prefetch_image) {
-                            $this->debug('foreach-loop, getImage(), start. msgId= ' . $msgId);
+                            SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getImage(), start. msgId= ' . $msgId);
 
                             if (!isset($cachedIdList[Dao_Cache::SpotImage][$fullSpot['messageid']])) {
                                 $this->_svcProvImage->fetchSpotImage($fullSpot);
                             } # if
 
-                            $this->debug('foreach-loop, getImage(), done. msgId= ' . $msgId);
+                            SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getImage(), done. msgId= ' . $msgId);
 						} # if
                         SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getImage');
 
@@ -462,12 +462,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							 * Only do so if we can expect an NZB file
 							 */
 							if (!empty($fullSpot['nzb']) && $fullSpot['stamp'] > 1290578400) {
-								$this->debug('foreach-loop, getNzb(), start. msgId= ' . $msgId);
+								SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getNzb(), start. msgId= ' . $msgId);
 
                                 if (!isset($cachedIdList[Dao_Cache::SpotNzb][$fullSpot['messageid']])) {
                                     $this->_svcProvNzb->fetchNzb($fullSpot);
                                 } # if
-								$this->debug('foreach-loop, getNzb(), done. msgId= ' . $msgId);
+								SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getNzb(), done. msgId= ' . $msgId);
 							} # if
 						} # if
                         SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzb');
@@ -498,7 +498,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				} # if prefetch image and/or nzb
 
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
-				$this->debug('foreach-loop, done. msgId= ' . $msgCounter);
+				SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
 
@@ -527,8 +527,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * number found
 			 */
 			$this->_spotDao->addSpots($spotDbList, $fullSpotDbList);
-			$this->debug('added Spots, spotDbList=' . serialize($spotDbList));
-			$this->debug('added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
+			SpotDebug::msg(SpotDebug::TRACE, 'added Spots, spotDbList=' . serialize($spotDbList));
+			SpotDebug::msg(SpotDebug::TRACE, 'added Spots, fullSpotDbList=' . serialize($fullSpotDbList));
 
 			/*
 			 * Actually act on the moderation settings. We cannot process this inline
@@ -561,7 +561,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             if (!empty($lastProcessedId) && ($lastProcessedArtNr > 0)) {
                 $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedArtNr, $lastProcessedId);
             } # if
-			$this->debug('loop finished, setMaxArticleId=' . serialize($increment));
+			SpotDebug::msg(SpotDebug::DEBUG, 'loop finished, setMaxArticleId=' . serialize($increment));
 
             /*
              * And remove old list of moderated spots
