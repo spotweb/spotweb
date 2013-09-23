@@ -213,7 +213,7 @@ class Services_Providers_Statistics {
 			 */
 			$this->_cacheDao->saveStatsCache($resourceid, $preparedData);
 		} else {
-			$preparedData = $rs['content'];
+			$preparedData = $rs;
 		} # else
 
 		return $preparedData;
