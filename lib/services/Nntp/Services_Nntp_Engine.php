@@ -334,10 +334,11 @@ class Services_Nntp_Engine {
     public function connect() {
         SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect()");
         /*
-         * Store the username and password in it,
-         * we will not put it in member variables
-         * because they might show up in a stack
-         * trace
+         * Store the username and password in it, we will not put it in member variables
+         * because they might show up in a stack trace.
+         *
+         * We keep an array of tmpUser and tmpPass because when different servers are
+         * used for diffferent types of retrieval we need to be able to store seperate passwords
          */
         static $tmpUser;
         static $tmpPass;
@@ -371,8 +372,8 @@ class Services_Nntp_Engine {
          * reconstructing it, we cannot simple
          */
         if (($this->_user !== '*FILTERED*') && ($this->_pass !== '*FILTERED*')) {
-            $tmpUser = $this->_user;
-            $tmpPass = $this->_pass;
+            $tmpUser[$this->_server] = $this->_user;
+            $tmpPass[$this->_server] = $this->_pass;
 
             $this->_user = '*FILTERED*';
             $this->_pass = '*FILTERED*';
@@ -384,10 +385,10 @@ class Services_Nntp_Engine {
                 throw new NntpException('Error while connecting to server (server did not respond)', -1);
             } # if
 
-            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect called, trying to authenticate?: " . $tmpUser . ", " . $tmpPass . ".");
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect called, trying to authenticate?: " . $tmpUser[$this->_server] . ", " . $tmpPass[$this->_server] . ".");
 
-            if (!empty($tmpUser)) {
-                $authed = $this->_nntp->authenticate($tmpUser, $tmpPass);
+            if (!empty($tmpUser[$this->_server])) {
+                $authed = $this->_nntp->authenticate($tmpUser[$this->_server], $tmpPass[$this->_server]);
             } # if
 
         } catch(Exception $x){
