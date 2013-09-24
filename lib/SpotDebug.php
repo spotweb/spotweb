@@ -9,7 +9,7 @@ class SpotDebug {
     const ERROR              = 50;
     const FATAL              = 60;
 
-    static private $_level = 0;
+    static private $_level = self::DISABLED;
 
     static function enable($lvl) {
         self::$_level = $lvl;
