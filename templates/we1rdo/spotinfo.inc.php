@@ -170,30 +170,32 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 		</div>
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
-		<script type="text/javascript">
-			// Attach an onLoad() listener to the image so we can bring the image into view
-			loadSpotImage();
-
-			$(document).ready(function(){
-				$("#details").addClass("external");
-
-				$("a[href^='http']").attr('target','_blank');
-
-				$("a.closeDetails").click(function(){ 
-					window.close();
-				});
-
-				var messageid = $('#messageid').val();
-				postCommentsForm();
-				postBlacklistForm();
-				if (spotweb_retrieve_commentsperpage > 0) {
-					loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
-				} // if
-			});
-
-			function addText(text,element_id) {
-				document.getElementById(element_id).value += text;
-			}
-		</script>
 <?php
 require_once "includes/footer.inc.php";
+?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Attach an onLoad() listener to the image so we can bring the image into view
+        loadSpotImage();
+
+        $("#details").addClass("external");
+
+        $("a[href^='http']").attr('target','_blank');
+
+        $("a.closeDetails").click(function(){
+            window.close();
+        });
+
+        var messageid = $('#messageid').val();
+        postCommentsForm();
+        postBlacklistForm();
+        if (spotweb_retrieve_commentsperpage > 0) {
+            loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+        } // if
+    });
+
+    function addText(text,element_id) {
+        document.getElementById(element_id).value += text;
+    }
+</script>
