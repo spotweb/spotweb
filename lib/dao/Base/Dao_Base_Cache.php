@@ -26,7 +26,7 @@ class Dao_Base_Cache implements Dao_Cache {
          * anything about it anyway.
          */
         $expiredList = $this->_conn->arrayQuery("SELECT id, resourceid, cachetype, metadata FROM cache WHERE stamp < :stamp1 OR ((ttl + stamp) < :stamp2)",
-            array(':stamp1' => array(time() - $expireDays*24*60*60, PDO::PARAM_INT),
+            array(':stamp1' => array(time() - ($expireDays*24*60*60), PDO::PARAM_INT),
                   ':stamp2' => array(time(), PDO::PARAM_INT)
             ));
 
