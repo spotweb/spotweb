@@ -218,8 +218,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          * When a user added a maximum age for queries, convert it to
          * a Spotweb query as well
          */
-        if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage']))
+        if ($this->_params['maxage'] != "" && is_numeric($this->_params['maxage'])) {
 			$searchParams['value'][] = "date:>:DEF:-" . $this->_params['maxage'] . "days";
+        } # if
 
         /*
          * We combine the "newznabapi" categories, with a custom extension for

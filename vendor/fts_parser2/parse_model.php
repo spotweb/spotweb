@@ -507,20 +507,24 @@ parse_model
 		case self::QSTRING :
 
 			$this->quoted_to_tsearch();
-			$this->keywords[] = $this->token_string;
 
-			$this->ilike .= ($this->expr_cache['last'] != '' && $this->ilike != ''
-			? " {$this->expr_cache['last']} " : '') .
-			( $this->lparen_count > 0 ? str_repeat('(', $this->lparen_count - $this->ilike_paren) : '' ) .
-			$this->db_field . ($this->expr_cache['not'] != '' ? " {$this->expr_cache['not']}" : '') . " ILIKE ";
+            // we cannot use empty() because 0 would also return true
+            if (strlen($this->token_string) <> 0) {
+                $this->keywords[] = $this->token_string;
 
-			$this->db_field_count++;
-			$this->db_ilike_data[":ilike_data" . $this->db_field_count] = "%" . $this->token_string . "%";
+                $this->ilike .= ($this->expr_cache['last'] != '' && $this->ilike != ''
+                ? " {$this->expr_cache['last']} " : '') .
+                ( $this->lparen_count > 0 ? str_repeat('(', $this->lparen_count - $this->ilike_paren) : '' ) .
+                $this->db_field . ($this->expr_cache['not'] != '' ? " {$this->expr_cache['not']}" : '') . " ILIKE ";
 
-			if ( $this->use_prepared_sql == false )
-				$this->ilike .= "'%" . str_replace("'", $this->esc_char . "'", $this->token_string) . "%'";
-			else
-				$this->ilike .= ":ilike_data" . $this->db_field_count;
+                $this->db_field_count++;
+                $this->db_ilike_data[":ilike_data" . $this->db_field_count] = "%" . $this->token_string . "%";
+
+                if ( $this->use_prepared_sql == false )
+                    $this->ilike .= "'%" . str_replace("'", $this->esc_char . "'", $this->token_string) . "%'";
+                else
+                    $this->ilike .= ":ilike_data" . $this->db_field_count;
+            }
 
 			// Remember how many paren levels deep the ILIKE clause is.
 			if ( $this->lparen_count > $this->ilike_paren )
@@ -591,7 +595,7 @@ parse_model
 		if ( $this->expr_cache['not'] == 'NOT' )
 			$save = '|';
 
-		$this->tsearch .= '(';
+        $tmpBuild = '(';
 
 		$a = explode(' ', $this->token_tsearch);
 
@@ -600,11 +604,14 @@ parse_model
 			if ( strlen($str) < 2 || isset($this->stopwords[$str]) )
 				continue;
 
-			$this->tsearch .= $op . $str;
+			$tmpBuild .= $op . $str;
 			$op = $save;
 		}
 
-		$this->tsearch .= ')';
+        // dont add empty strings (eg: search for ""Whee"")
+        if ($tmpBuild <> '(') {
+            $this->tsearch .= $tmpBuild . ')';
+        }
 	}
 	// quoted_to_tsearch()
 

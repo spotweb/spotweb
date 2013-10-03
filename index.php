@@ -12,9 +12,9 @@ try {
 	SpotTiming::enable();
 	SpotTiming::start('total');
 
-	/*
-	 * Initialize the Spotweb base classes
-	 */
+    /*
+     * Initialize the Spotweb base classes
+     */
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
