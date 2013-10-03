@@ -27,7 +27,7 @@ class Dto_MediaInformation {
      */
     public function setAlternateTitle($alternateTitle)
     {
-        $this->_alternateTitle = trim($alternateTitle);
+        $this->_alternateTitle = trim($alternateTitle, " \t\n\r\0\x0B\"'");
     }
 
     /**
@@ -43,7 +43,7 @@ class Dto_MediaInformation {
      */
     public function setReleaseYear($releaseYear)
     {
-        $this->_releaseYear = trim($releaseYear);
+        $this->_releaseYear = trim($releaseYear, " \t\n\r\0\x0B\"'");
     }
 
     /**
@@ -59,7 +59,7 @@ class Dto_MediaInformation {
      */
     public function setTitle($title)
     {
-        $this->_title = trim($title);
+        $this->_title = trim($title, " \t\n\r\0\x0B\"'");
     }
 
     /**
