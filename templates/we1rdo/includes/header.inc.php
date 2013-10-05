@@ -13,11 +13,6 @@
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 <?php } ?>
-		<script type='text/javascript'>
-            var sliderMinFileSize = <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>;
-            var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?>;
-            var sliderMaxReportCount = <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?>;
-		</script>
 		<style type="text/css" media="screen,handheld,projection">
 			<?php echo $settings->get('customcss'); ?>
 		</style>		

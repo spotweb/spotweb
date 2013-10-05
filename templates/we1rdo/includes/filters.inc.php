@@ -100,10 +100,12 @@
 	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
 	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
 	# en reportcount niet juist zetten
-	foreach($parsedsearch['filterValueList'] as $filterType) {
+    $textSearchCount = 0;
+    foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
 			$searchType = $filterType['fieldname'];
 			$searchText = $filterType['value'];
+            $textSearchCount++;
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
 			$minFilesize = $filterType['value'];
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
@@ -130,7 +132,7 @@
 	} # if
 
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst
-	if (count($parsedsearch['filterValueList']) > 1) {
+	if ($textSearchCount > 1) {
 		$searchText = '';
 		$searchType = 'Title';
 	} # if
@@ -141,9 +143,16 @@
 			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['booloper']) . ':' . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
 		} # if
 	} # foreach
-
 ?>
-					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
+
+
+<script type='text/javascript'>
+    var sliderMinFileSize = <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>;
+    var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?>;
+    var sliderMaxReportCount = <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?>;
+</script>
+
+				<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
 	$filterColCount = 4;
 ?>
@@ -159,7 +168,7 @@
 						</ul>
 
 <?php
-	if (count($parsedsearch['filterValueList']) > 0) {
+	if ($textSearchCount > 0) {
 ?>
 						<h4><?php echo _('Active filters:'); ?></h4>
 						<table class='search currentfilterlist'>
@@ -167,7 +176,7 @@
 	foreach($parsedsearch['filterValueList'] as $filterType) {
 		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
 ?>
-							<tr> <th> <?php echo ($filterType['fieldname'] == 'Title') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlspecialchars($filterType['booloper'], ENT_QUOTES, 'UTF-8'); ?> </td> </td><td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo ($filterType['fieldname'] == 'Title') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlspecialchars($filterType['booloper'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
