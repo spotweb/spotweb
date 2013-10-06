@@ -99,7 +99,7 @@ try {
              */
             $dbConnection->modify("UPDATE cache SET content = NULL where resourceid = :resourceid AND cachetype = :cachetype",
                        array(':resourceid' => array($cacheItem['resourceid'], PDO::PARAM_STR),
-                             ':cachetype' => array($cacheItem['cachetype'], PDO::PARAM_INT));
+                             ':cachetype' => array($cacheItem['cachetype'], PDO::PARAM_INT)));
         } # results
 
         echo ", done. " . PHP_EOL;
