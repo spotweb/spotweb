@@ -27,12 +27,12 @@ class Bootstrap {
     /**
      * Boot up the Spotweb system
      *
-     * @return (Services_Settings_Base|Dao_Factory_Base|SpotReq)[]
+     * @return array (Services_Settings_Container|Dao_Factory_Base|SpotReq)[]
      */
 	public function boot() {
         SpotTiming::start('bootstrap');
 		$daoFactory = $this->getDaoFactory();
-		$settings = $this->getSettings($daoFactory);
+		$settings = $this->getSettings($daoFactory, true);
 		$spotReq = $this->getSpotReq($settings);
 
         /*
@@ -46,7 +46,7 @@ class Bootstrap {
 		 * Run the validation of the most basic systems
 		 * in Spotweb
 		 */
-		$this->validate($settings);
+		$this->validate(new Services_Settings_Base($settings, $daoFactory->getBlackWhiteListDao()));
 
 		/*
 		 * Disable the timing part as soon as possible because it 
@@ -68,12 +68,13 @@ class Bootstrap {
 	} # boot
 
 
-	/**
-	 * Returns the DAO factory used by all of 
-	 * Spotweb
+    /**
+     * Returns the DAO factory used by all of
+     * Spotweb
      *
+     * @throws DatabaseConnectionException
      * @return Dao_Base_Factory
-	 */
+     */
 	public function getDaoFactory() {
         SpotTiming::start(__FUNCTION__);
 
@@ -140,24 +141,43 @@ class Bootstrap {
 		} # if
 	} # validate
 
-	/*
+	/**
 	 * Bootup the settings system
 	 */
-	public function getSettings(Dao_Factory $daoFactory) {
-		require_once "settings.php";
+	public function getSettings(Dao_Factory $daoFactory, $requireDb) {
+        $settingsContainer = Services_Settings_Container::singleton();
 
-        return Services_Settings_Base::singleton($daoFactory->getSettingDao(),
-									 			 $daoFactory->getBlackWhiteListDao(),
-									   			 $settings);
+        /**
+         * Add a database source
+         */
+        try {
+            $dbSource = new Services_Settings_DbContainer();
+            $dbSource->initialize(array('dao' => $daoFactory->getSettingDao()));
+            $settingsContainer->addSource($dbSource);
+        } catch(Exception $x) {
+            if ($requireDb) {
+                throw $x;
+            } # if
+        } # catch
+
+        /**
+         * Add the file (ownsettings.php etc) source to override settings
+         */
+        require "settings.php";
+        $fileSource = new Services_Settings_FileContainer();
+        $fileSource->initialize($settings);
+        $settingsContainer->addSource($fileSource);
+
+        return $settingsContainer;
 	} # getSettings
 
     /**
      * Instantiate an Request object
      *
-     * @param Services_Settings_Base $settings
+     * @param Services_Settings_Container $settings
      * @return SpotReq
      */
-	private function getSpotReq(Services_Settings_Base $settings) {
+	private function getSpotReq(Services_Settings_Container $settings) {
 		$req = new SpotReq();
 		$req->initialize($settings);
 

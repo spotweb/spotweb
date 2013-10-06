@@ -3,110 +3,22 @@
  * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
  */
 class Services_Settings_Base {
-	private static $_instance = null;
-	private $_settingsDao;
-	private $_blackWhiteListDao;
-
-	/* Merged array with all settings (both db, and php) */
-	private static $_settings;
-	/* Settings which originated from PHP */
-	private static $_phpSettings;
-	/* Settings which originated from the database */
-	private static $_dbSettings;
+    /**
+     * @var Services_Settings_Container
+     */
+    private $_settings;
+    /**
+     * @var Dao_BlackWhiteList
+     */
+    private $_blackWhiteListDao;
 
 	/*
 	 * Private constructor, class is singleton
 	 */
-	private function __construct(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao) {
-		$this->_settingsDao = $settingsDao;
+	public function __construct(Services_Settings_Container $settings, Dao_BlackWhiteList $blackWhiteListDao) {
+		$this->_settings = $settings;
 		$this->_blackWhiteListDao = $blackWhiteListDao;
 	} # ctor
-	
-	/* 
-	 * Services_Settings_Base is a singleton class, this function instantiates SpotSetttings
-	 */
-	public static function singleton(Dao_Setting $settingsDao, Dao_BlackWhiteList $blackWhiteListDao, array $phpSettings) {
-		if (self::$_instance === null) {
-			self::$_instance = new Services_Settings_Base($settingsDao, $blackWhiteListDao);
-			
-			# Make sure the PHP settings are stored in the class individually
-			self::$_phpSettings = $phpSettings;
-			
-			# Retrieve all settings and prepare those
-			self::$_dbSettings = $settingsDao->getAllSettings();
-
-			# merge them
-			self::$_settings = array_merge(self::$_dbSettings, self::$_phpSettings);
-
-			/*
-			 * When no specific NNTP header / comments server is entered, we override these with the NZB server
-			 * header. This allows us to always assume those are entered by the user.
-			 */
-			if ((empty(self::$_settings['nntp_hdr']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
-				self::$_settings['nntp_hdr'] = self::$_settings['nntp_nzb'];
-			} # if
-
-			# Same for the NNTP upload server
-			if ((empty(self::$_settings['nntp_post']['host'])) && (!empty(self::$_settings['nntp_nzb']))) {
-				self::$_settings['nntp_post'] = self::$_settings['nntp_nzb'];
-			} # if
-		} # if
-		
-		return self::$_instance;
-	} # singleton
-
-	/*
-	 * Returns the value of a setting
-	 */
-	function get($name) {
-		return self::$_settings[$name];
-	} # get
-
-	/*
-	 * Removes a certain setting from the database. If it is a PHP setting,
-	 * it will return the next time this class is instantiated.
-	 */
-	function remove($name) {
-		unset(self::$_settings[$name]);
-		
-		$this->_settingsDao->removeSetting($name);
-	} # remove
-	
-	/*
-	 *
-	 * Returns whether a specific setting originated from the
-	 * database or the (own)settings.php file. If both contain
-	 * the setting, the PHP takes precedence.
-	 */
-	function getOrigin($name) {
-		if (isset(self::$_phpSettings[$name])) {
-			return "php";
-		} else {
-			return "db";
-		} # if
-	} # getOrigin
-
-	/*
-	 * Updates a setting. It will throw an exception if the
-	 * setting is set from within PHP to ensure we don't create
-	 * an setting which seems to revert magically.
-	 *
-	 * Otherwise directly persists the setting, so be careful
-	 */
-	function set($name, $value) {
-		/*
-		 * If setting originates from PHP, throw an exception
-		 */
-		if (isset(self::$_phpSettings[$name])) {
-			throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '" . $name . '"');
-		} # if
-		
-		# Make sure we update our own settings system
-		self::$_settings[$name] = $value;
-		self::$_dbSettings[$name] = $value;
-		
-		$this->_settingsDao->updateSetting($name, $value);
-	} # set
 	
 	/*
 	 * Validate settings
@@ -242,7 +154,7 @@ class Services_Settings_Base {
 		# Store settings
 		foreach ($settings as $key => $value) {
 			# and write these updated settings to the database
-			$this->set($key, $value);
+			$this->_settings->set($key, $value);
 		} # foreach
 	} # setSettings
 
@@ -251,7 +163,7 @@ class Services_Settings_Base {
 	 */
 	function schemaValid() {
 		# Is our database still up to date
-		return ($this->get('schemaversion') == SPOTDB_SCHEMA_VERSION);
+		return ($this->_settings->get('schemaversion') == SPOTDB_SCHEMA_VERSION);
 	} # schemaValid
 	
 	
@@ -260,21 +172,7 @@ class Services_Settings_Base {
 	 */
 	function settingsValid() {
 		# Is our settings list still valid?
-		return ($this->get('settingsversion') == SPOTWEB_SETTINGS_VERSION);
+		return ($this->_settings->get('settingsversion') == SPOTWEB_SETTINGS_VERSION);
 	} # settingsValid
 
-	/* 
-	 * Does the setting actually exist?
-	 */
-	function exists($name) {
-		return isset(self::$_settings[$name]);
-	} # isSet
-
-    /*
-     * Returns a list of all settings in an array
-     */
-    function getAllSettings() {
-        return self::$_settings;
-    } # getAllSettings
-
-} # class Services_Settings_Base
+} # class Services_Settings_Container

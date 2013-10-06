@@ -4,7 +4,7 @@ class SpotPage_reportpost extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_reportForm;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_reportForm = $params['reportform'];

@@ -4,7 +4,7 @@ class SpotPage_edituser extends SpotPage_Abs {
 	private $_editUserForm;
 	private $_userIdToEdit;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editUserForm = $params['edituserform'];
 		$this->_userIdToEdit = $params['userid'];

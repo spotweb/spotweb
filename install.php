@@ -284,14 +284,6 @@
 				 * the settings in the database
 				 */
 				$_SESSION['spotsettings']['adminuser'] = $form;
-
-				/*
-				 * Very ugly hack. We create an empty Services_Settings_Base class
-				 * so this will satisfy the constructor in the system.
-				 * It's ugly, I know.
-				 */
-				class Services_Settings_Base { } ;
-
 				/*
 				 * Override the Service_User_Record class so we can override userEmailExists()
 				 * to not require database access.
@@ -309,10 +301,16 @@
 					} # validateUserRecord
 				}
 
-				/*
-				 * And initiate the user system, this allows us to use
-				 * validateUserRecord()
-				 */
+                /*
+                 * Get the schema version and other constants
+                 */
+                require_once "lib/Bootstrap.php";
+                $bootstrap = new Bootstrap();
+
+                /*
+                 * And initiate the user system, this allows us to use
+                 * validateUserRecord()
+                 */
 				$dbsettings = $_SESSION['spotsettings']['db'];
                 $dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
                 $dbCon->connect($dbsettings['host'],
@@ -321,7 +319,7 @@
                     $dbsettings['dbname']);
                 $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
                 $daoFactory->setConnection($dbCon);
-				$svcUserRecord = new Services_ValidateUser_Record($daoFactory, new Services_Settings_Base());
+				$svcUserRecord = new Services_ValidateUser_Record($daoFactory, $bootstrap->getSettings($daoFactory, false));
 				$errorList = $svcUserRecord->validateUserRecord($form, false)->getErrors();
 
 				if (!empty($errorList)) {
@@ -381,10 +379,7 @@
 			$dbStruct = SpotStruct_abs::factory($dbsettings['engine'], $daoFactory->getConnection());
 			$dbStruct->updateSchema();
 
-			$spotSettings = Services_Settings_Base::singleton($daoFactory->getSettingDao(),
-															  $daoFactory->getBlackWhiteListDao(),
-															  $settings);
-
+            $spotSettings = $bootstrap->getSettings($daoFactory, false);
 			$svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $spotSettings, $dbsettings['engine']);
 
 			/*

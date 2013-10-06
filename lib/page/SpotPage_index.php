@@ -4,7 +4,7 @@ class SpotPage_index extends SpotPage_Abs {
 	private $_params;
 	private $_action;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, array $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
 		SpotTiming::start('SpotPage_Index::ctor');
 		parent::__construct($daoFactory, $settings, $currentSession);
 

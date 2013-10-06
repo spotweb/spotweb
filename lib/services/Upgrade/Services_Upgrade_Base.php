@@ -4,7 +4,7 @@ class Services_Upgrade_Base {
 	private $_daoFactory;
 	private $_dbStruct;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $dbEngine) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $dbEngine) {
 		$this->_daoFactory = $daoFactory;
 		$this->_dbStruct = SpotStruct_abs::factory($dbEngine, $daoFactory->getConnection());
 		$this->_settings = $settings;

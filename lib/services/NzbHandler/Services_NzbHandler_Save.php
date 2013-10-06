@@ -4,7 +4,7 @@ class Services_NzbHandler_Save extends Services_NzbHandler_abs
 {
 	private $_localDir = null;
 	
-	function __construct(Services_Settings_Base $settings, array $nzbHandling)
+	function __construct(Services_Settings_Container $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'Save', 'Save', $nzbHandling);
 		

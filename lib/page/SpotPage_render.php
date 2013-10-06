@@ -4,7 +4,7 @@ class SpotPage_render extends SpotPage_Abs {
 	private $_tplname;
 	private $_params;
 	
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession, $tplName, array $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, $tplName, array $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 		
 		$this->_tplname = $tplName;

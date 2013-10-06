@@ -59,7 +59,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 		 * Server is the server array we are expecting to connect to
 		 * db - database object
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $force, $retro) {
+		function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $force, $retro) {
 			parent::__construct($daoFactory, $settings, $force, $retro);
 
 			$this->_rsakeys = $this->_settings->get('rsa_keys');

@@ -9,7 +9,7 @@ class Services_Actions_EditUserPrefs {
 	private $_svcUserAuth;
 	private $_spotSec;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, SpotSecurity $spotSec) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, SpotSecurity $spotSec) {
         $this->_daoFactory = $daoFactory;
         $this->_settings = $settings;
 

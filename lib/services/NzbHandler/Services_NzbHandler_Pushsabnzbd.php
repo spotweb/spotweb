@@ -8,7 +8,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
     private $_username = null;
     private $_password = null;
 	
-	function __construct(Services_Settings_Base $settings, array $nzbHandling)
+	function __construct(Services_Settings_Container $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'SABnzbd', 'SAB', $nzbHandling);
 		

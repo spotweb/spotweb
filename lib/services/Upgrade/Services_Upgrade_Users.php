@@ -4,7 +4,7 @@ class Services_Upgrade_Users {
 	private $_userDao;
 	private $_settings;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings) {
 		$this->_dbCon = $daoFactory->getConnection();
 		$this->_userDao = $daoFactory->getUserDao();
 		$this->_settings = $settings;
@@ -64,7 +64,7 @@ class Services_Upgrade_Users {
 		# Manually update the userid so we can be sure anonymous == userid 1
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'anonymous'");
 		$dbCon->exec("UPDATE users SET id = 1 WHERE username = 'anonymous'");
-		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = :userid", Array(':userid' => $currentId, PDO::PARAM_INT));
+		$dbCon->exec("UPDATE usersettings SET userid = 1 WHERE userid = :userid", Array(':userid' => array($currentId, PDO::PARAM_INT)));
 	} # createAnonymous
 
 	/*
@@ -129,7 +129,7 @@ class Services_Upgrade_Users {
 		# Manually update the userid so we can be sure admin == userid 2
 		$currentId = $dbCon->singleQuery("SELECT id FROM users WHERE username = 'admin'");
 		$dbCon->exec("UPDATE users SET id = 2 WHERE username = 'admin'");
-        $dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = :userid", Array(':userid' => $currentId, PDO::PARAM_INT));
+        $dbCon->exec("UPDATE usersettings SET userid = 2 WHERE userid = :userid", Array(':userid' => array($currentId, PDO::PARAM_INT)));
 	} # createAdmin
 
 	/*

@@ -12,7 +12,7 @@ class SpotTemplateHelper {
     protected $_treeFilterCache = null;
 	
 	
-	function __construct(Services_Settings_Base $settings, $currentSession, Dao_Factory $daoFactory, $params) {
+	function __construct(Services_Settings_Container $settings, $currentSession, Dao_Factory $daoFactory, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
 		$this->_daoFactory = $daoFactory;

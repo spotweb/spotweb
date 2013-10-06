@@ -8,7 +8,7 @@ abstract class Services_NzbHandler_abs
 	protected $_nzbHandling = null;
 	protected $_settings = null;
 
-	function __construct(Services_Settings_Base $settings, $name, $nameShort, array $nzbHandling)
+	function __construct(Services_Settings_Container $settings, $name, $nameShort, array $nzbHandling)
 	{
 		$this->_settings = $settings;
 		$this->_nzbHandling = $nzbHandling;

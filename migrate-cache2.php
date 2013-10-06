@@ -43,7 +43,7 @@ try {
      */
     $bootstrap = new Bootstrap();
     $daoFactory = $bootstrap->getDaoFactory();
-    $settings = $bootstrap->getSettings($daoFactory);
+    $settings = $bootstrap->getSettings($daoFactory, true);
     $dbSettings = $bootstrap->getDbSettings();
 
     /*

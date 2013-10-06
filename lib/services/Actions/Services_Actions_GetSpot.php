@@ -5,7 +5,7 @@ class Services_Actions_GetSpot {
 	private $_daoFactory;
 	private $_spotSec;
 
-	function __construct(Services_Settings_Base $settings, Dao_Factory $daoFactory, SpotSecurity $spotSec) {
+	function __construct(Services_Settings_Container $settings, Dao_Factory $daoFactory, SpotSecurity $spotSec) {
 		$this->_settings = $settings;
 		$this->_daoFactory = $daoFactory;
 		$this->_spotSec = $spotSec;

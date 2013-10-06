@@ -63,7 +63,7 @@ abstract class Services_Retriever_Base {
 		/*
 		 * default ctor 
 		 */
-		function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $force, $retro) {
+		function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $force, $retro) {
 			$this->_daoFactory = $daoFactory;
 			$this->_settings = $settings;
 			$this->_retro = $retro;

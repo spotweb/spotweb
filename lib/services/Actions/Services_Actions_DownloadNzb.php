@@ -4,7 +4,7 @@ class Services_Actions_DownloadNzb {
 	private $_settings;
 	private $_daoFactory;
 	
-	function __construct(Services_Settings_Base $settings, Dao_Factory $daoFactory) {
+	function __construct(Services_Settings_Container $settings, Dao_Factory $daoFactory) {
 		$this->_settings = $settings;
 		$this->_daoFactory = $daoFactory;
 	} # ctor

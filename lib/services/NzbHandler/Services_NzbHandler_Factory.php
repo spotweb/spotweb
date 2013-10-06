@@ -2,7 +2,7 @@
 
 class Services_NzbHandler_Factory
 {
-	public static function build(Services_Settings_Base $settings, $action, array $nzbHandling)
+	public static function build(Services_Settings_Container $settings, $action, array $nzbHandling)
 	{
         /*
          * We explicitly add new handlers, because we cannot be sure

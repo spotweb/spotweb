@@ -21,7 +21,7 @@ class Services_Translation_Microsoft {
     protected $_settings;
     protected $_cacheDao;
 
-    public function __construct(Services_Settings_Base $settings, Dao_Cache $cacheDao) {
+    public function __construct(Services_Settings_Container $settings, Dao_Cache $cacheDao) {
         $this->_settings = $settings;
         $this->_cacheDao = $cacheDao;
 

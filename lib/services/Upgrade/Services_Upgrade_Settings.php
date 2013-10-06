@@ -2,7 +2,7 @@
 class Services_Upgrade_Settings {
 	private $_settings;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings) {
 		$this->_settings = $settings;
 	} # ctor
 

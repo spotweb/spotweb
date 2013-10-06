@@ -34,7 +34,7 @@ class SpotNotifications {
     const notifytype_user_added			    = 'user_added';
 	const notifytype_newspots_for_filter	= 'newspots_for_filter';
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, array $currentSession) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;

@@ -4,7 +4,7 @@ class Services_NzbHandler_Clientsabnzbd extends Services_NzbHandler_abs
 {
 	private $_url = null;
 
-	function __construct(Services_Settings_Base $settings, array $nzbHandling)
+	function __construct(Services_Settings_Container $settings, array $nzbHandling)
 	{
 		parent::__construct($settings, 'SABnzbd', 'SAB', $nzbHandling);
 

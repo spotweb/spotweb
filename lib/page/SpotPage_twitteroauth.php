@@ -10,7 +10,7 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 	private $_notificationService = array();
 	private $_params;
 
-	function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings, $currentSession, $params) {
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $currentSession, $params) {
 		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;

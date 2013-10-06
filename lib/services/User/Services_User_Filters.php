@@ -5,7 +5,7 @@ class Services_User_Filters {
 	private $_daoFactory;
 	private $_settings;
 
-	public function __construct(Dao_Factory $daoFactory, Services_Settings_Base $settings) {
+	public function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings) {
 		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 
