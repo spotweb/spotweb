@@ -29,7 +29,8 @@ class SpotPage_editsettings extends SpotPage_Abs {
 			switch($formAction) {
 				case 'edit'	: {
 					# Validate and apply all settings
-					$result = $this->_settings->validateSettings($this->_editSettingsForm);
+                    $svcSettings = new Services_Settings_Base($this->_settings, $this->_daoFactory->getBlackWhiteListDao());
+					$result = $svcSettings->validateSettings($this->_editSettingsForm);
 
 					if ($result->isSuccess()) { 
 						# and actually update the user in the database
