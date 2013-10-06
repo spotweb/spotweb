@@ -97,8 +97,9 @@ try {
             /*
              * Actually invalidate the cache content
              */
-            $dbConnection->modify("UPDATE cache SET content = NULL where resourceid = '%s' AND cachetype = %d",
-                       Array($cacheItem['resourceid'], $cacheItem['cachetype']));
+            $dbConnection->modify("UPDATE cache SET content = NULL where resourceid = :resourceid AND cachetype = :cachetype",
+                       array(':resourceid' => array($cacheItem['resourceid'], PDO::PARAM_STR),
+                             ':cachetype' => array($cacheItem['cachetype'], PDO::PARAM_INT));
         } # results
 
         echo ", done. " . PHP_EOL;
