@@ -218,21 +218,25 @@ try {
 	$daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
 	## External blacklist
-	$svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
-	$bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
-	if ($bwResult === false) {
-		echo "Blacklist not modified, no need to update" . PHP_EOL;
-	} else {
-		echo "Finished updating blacklist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
-	} # else
+    if ($settings->get('external_blacklist')) {
+        $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
+        $bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
+        if ($bwResult === false) {
+            echo "Blacklist not modified, no need to update" . PHP_EOL;
+        } else {
+            echo "Finished updating blacklist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+        } # else
+    } # if
 
 	## External whitelist
-	$bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
-	if ($bwResult === false) {
-		echo "Whitelist not modified, no need to update" . PHP_EOL;
-	} else {
-		echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
-	} # else
+    if ($settings->get('external_whitelist')) {
+        $bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
+        if ($bwResult === false) {
+            echo "Whitelist not modified, no need to update" . PHP_EOL;
+        } else {
+            echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+        } # else
+    } # if
 
 
 	## Statistics
@@ -256,7 +260,7 @@ try {
 	$spotsNotifications = new SpotNotifications($daoFactory, $settings, $userSession);
 	if (!empty($notifyNewArray)) {
 		foreach($notifyNewArray as $userId => $newSpotInfo) {
-			foreach($newSpotInfo as $filterInfo) {
+	 		foreach($newSpotInfo as $filterInfo) {
 				if (($filterInfo['newcount'] > 0) && ($filterInfo['enablenotify'])) {
 					$spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
 				} # if
