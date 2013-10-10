@@ -35,7 +35,7 @@ class SpotPage_editsettings extends SpotPage_Abs {
 					if ($result->isSuccess()) { 
 						# and actually update the user in the database
 						$newSettings = $result->getData('settings');
-						$this->_settings->setSettings($newSettings);
+						$svcSettings->setSettings($newSettings);
 					} # if
 					
 					break;
