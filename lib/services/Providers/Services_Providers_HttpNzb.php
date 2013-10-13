@@ -394,7 +394,7 @@ class Services_Providers_HttpNzb {
         }
 
         // NZB Index
-        if (strpos($url, 'nzbindex.nl') !== FALSE) {
+        if ((strpos($url, 'nzbindex.nl') !== FALSE) || (strpos($url, 'nzbindex.com') !== FALSE)) {
             // This function does not use the $body var.
             return $this->downloadNzbFromNzbindex($url);
         }
@@ -543,7 +543,7 @@ class Services_Providers_HttpNzb {
      * Tries to download the actual nzb from nzbindex
      *
      * @param String $url
-     * @param String $body
+     * @internal param String $body
      * @return bool|mixed
      */
     protected function downloadNzbFromNzbindex($url) {
@@ -577,7 +577,7 @@ class Services_Providers_HttpNzb {
         curl_close($ch);
 
         // Match to get the nzb id.
-        preg_match('/\q\=([a-z0-9]*)&/i', $url, $matches);
+        preg_match('/\q\=([a-z0-9]*)/i', $url, $matches);
 
         // This match is essential for the download
         if (!count($matches)) {
