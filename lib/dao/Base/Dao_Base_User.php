@@ -378,7 +378,7 @@ class Dao_Base_User implements Dao_User {
             array(
                 ':groupid' => array($groupId, PDO::PARAM_INT),
                 ':permissionid' => array($perm['permissionid'], PDO::PARAM_INT),
-                ':objectid' => array($perm['objetid'], PDO::PARAM_STR)
+                ':objectid' => array($perm['objectid'], PDO::PARAM_STR)
             ));
 	} # removePermFromSecGroup
 
