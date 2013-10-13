@@ -134,6 +134,8 @@ class Services_Providers_HttpNzb {
             'http://bit.ly',
             'http://goo.gl',
             'http://hideref.org',
+            'http://tiny.cc',
+            'http://www.dereferer.org',
         );
 
         // Search in the website url
