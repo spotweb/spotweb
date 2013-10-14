@@ -77,7 +77,8 @@ class SpotPage_editfilter extends SpotPage_Abs {
                             try {
                                 $xml = file_get_contents($uploadHandler->getTempName());
                                 $filterList = $svcUserFilter->xmlToFilters($xml);
-                                $svcUserFilter->setFilterList($this->_currentSession['user']['userid'], $filterList);
+                                $svcUserFilter->setFilterList($this->_currentSession['user']['userid'],
+                                                              $filterList->getData('filters'));
                             } catch(Exception $x) {
                                 $result->addError(_('Uploaded Spotwebfilter in invalid'));
                             } # catch
