@@ -57,6 +57,14 @@ class Services_Posting_Editor {
          */
         $spot = $this->cleanseUpdates($updatesToApply);
 
+        /*
+         * subcat must be an array so let's make it an array if it is not,
+         * otherwise we get in trouble in the verifyCategories() method
+         */
+        if (!is_array($spot['subcatb'])) { $spot['subcatb'] = array(); }
+        if (!is_array($spot['subcatc'])) { $spot['subcatc'] = array(); }
+        if (!is_array($spot['subcatd'])) { $spot['subcatd'] = array(); }
+
         # Verify several properties from the caller
         $result->addData('spot', $spot);
         $result = $this->_spotValidator->verifyTitle($result);
