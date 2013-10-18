@@ -44,6 +44,8 @@ class Services_Providers_HttpNzb {
         }
 
         if (!function_exists('curl_init')) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), curl not installed');
+
             trigger_error('cURL is needed to get the nzb xml.', E_NOTICE);
             return null;
         }
@@ -53,9 +55,13 @@ class Services_Providers_HttpNzb {
 
         // If there is no alternate url return;
         if (!$url) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), failed to find url for spot');
+
             $this->nzb = false;
             return null;
         }
+
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), url: ' . $url);
 
         // Initialize curl.
         $ch = curl_init($url);
@@ -81,9 +87,13 @@ class Services_Providers_HttpNzb {
             // If the xml is well formed this will result in true thus returning the xml.
             // Suppress errors if the string is not well formed, where testing here.
             if (@simplexml_load_string($body)) {
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), found nzb');
+
                 $this->nzb = $body;
                 return $this->nzb;
             } else if ($body) {
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), found body but not a valid XML');
+
                 // we did not get a direct link to an nzb file.
                 // more parsing is needed t(*_*t)
                 $this->nzb = $this->downloadNzbFrom($url, $body);
@@ -140,8 +150,14 @@ class Services_Providers_HttpNzb {
 
         // Search in the website url
         if (isset($this->spot['website'])) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website = ' . $this->spot['website']);
+
             foreach ($matches as $needle) {
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website needle = ' . $needle);
+
                 if (strpos($this->spot['website'], $needle) !== false) {
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website match');
+
                     // Stop search we have a match
                     $this->alternateDownloadUrl = $this->resolveUrl($this->spot['website']);
                     if ($this->alternateDownloadUrl === false) {
@@ -157,7 +173,10 @@ class Services_Providers_HttpNzb {
         // We have no alternate yet lets spider the description.
         if (isset($this->spot['description'])) {
             foreach ($matches as $needle) {
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), content looking for ' . $needle);
+
                 if (strpos($this->spot['description'], $needle) !== false) {
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), needle match');
 
                     // Stop search we have a match, get the url from the description
                     $url = false;
@@ -177,6 +196,7 @@ class Services_Providers_HttpNzb {
                         } # if
                     } # else
 
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), needle match, url: ' . $url);
 
                     if ($url) {
                         $this->alternateDownloadUrl = $this->resolveUrl($url);
@@ -204,6 +224,7 @@ class Services_Providers_HttpNzb {
      * @return boolean could the file be resolved?
      */
     protected function resolveUrl($url, $currentUrl = false, $retries = 0) {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), url=' . $url);
 
         if (!function_exists('curl_init')) {
             trigger_error('cURL is needed to resolve alternate download urls.', E_NOTICE);
@@ -225,6 +246,8 @@ class Services_Providers_HttpNzb {
         // Only use these curl options if no open base dir is set and php mode is off.
         $manualResolving = true;
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == false) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), setting to manualresolve');
+
             $manualResolving = false;
             $chOptions[CURLOPT_FOLLOWLOCATION] = true;
             $chOptions[CURLOPT_MAXREDIRS] = 20;
@@ -240,12 +263,16 @@ class Services_Providers_HttpNzb {
             $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
             $HTTPcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), finalUrl=' . $finalUrl);
+
             // Close handle
             curl_close($ch);
 
             if ($finalUrl) {
                 // We found the final url let return it.
                 if ($currentUrl == $finalUrl) {
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), returning finalUrl=' . $finalUrl);
+
                     return $finalUrl;
                 }
 
@@ -258,6 +285,7 @@ class Services_Providers_HttpNzb {
                         $url = trim(array_pop($matches));
                     }
 
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), httpCode= ' . $HTTPcode . ', url= ' . $url);
 
                     // We found a redirect url inside the page.
                     if ($url != $finalUrl) {
@@ -309,8 +337,11 @@ class Services_Providers_HttpNzb {
      * Returns the new url if one is found. If there is no new url it will return the input url.
      *
      * @param String $url
+     * @return string
      */
     protected function resolveMetaRefreshOnUrl($url) {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), url= ' . $url);
+
         if (!function_exists('curl_init')) {
             trigger_error('cURL is needed to resolve meta refresh urls.', E_NOTICE);
             return $url;
@@ -340,6 +371,8 @@ class Services_Providers_HttpNzb {
             if (preg_match('/meta.+?http-equiv\W+?refresh/i', $body)) {
                 preg_match('/content.+?url\W+?(.+?)\"/i', $body, $matches);
                 if (isset($matches[1])) {
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), matches[1]= ' . $maches[1]);
+
                     /*
                      * We can get either an relative redirect, or an fully
                      * qualified redirect. Hideref, for example, uses an
@@ -352,7 +385,11 @@ class Services_Providers_HttpNzb {
                     if ((stripos($redirUrl, 'http://') !== 0) &&
                         (stripos($redirUrl, 'https://') !== 0) &&
                         (stripos($redirUrl, '//') !== 0)) {
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), we have gotten an correct url');
+
                         $urlParts = parse_url($url);
+
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), parse_url: ' . json_encode($urlParts));
 
                         if ($redirUrl[0] == '/') {
                             $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
@@ -361,6 +398,7 @@ class Services_Providers_HttpNzb {
                         } # if
                     } # if
 
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), after metafresh, url = : ' . $url);
                     $url = $redirUrl;
                 }
             }
@@ -388,6 +426,9 @@ class Services_Providers_HttpNzb {
      * @return bool|mixed
      */
     protected function downloadNzbFrom($url, $body) {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->downloadNzbfrom() ' . $url);
+
+
         // Binsearch
         if (strpos($url, 'binsearch.info') !== FALSE) {
             return $this->downloadNzbFromBinsearch($url, $body);
