@@ -46,6 +46,12 @@ class Services_Providers_Http {
      */
     private $_uploadFiles = null;
     /**
+     * Cookie string to send with request
+     *
+     * @var string
+     */
+    private $_cookie = null;
+    /**
      * POST data which is intended to be sent as one stream of data to the
      * server without local processing.
      *
@@ -175,12 +181,19 @@ class Services_Providers_Http {
     public function perform($url, $lastModTime = null, $redirTries = 0) {
         SpotTiming::start(__FUNCTION__);
 
+        /*
+         * Default our effectiveUrl to be the current URL,
+         * so this way we can always return the effectiveUrl
+         */
+        $effectiveUrl = $url;
+
         $ch = curl_init();
         curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
         curl_setopt ($ch, CURLOPT_URL, $url);
         curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt ($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt ($ch, CURLOPT_ENCODING, '');
         // Don't use fail on error, because sometimes we do want to se
         // the output of the content
         //      curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
@@ -189,6 +202,11 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt ($ch, CURLOPT_VERBOSE, true);
+
+        // send a cookie with the request if defined
+        if ($this->getCookie() !== null) {
+            curl_setopt ($ch, CURLOPT_COOKIE, $this->getCookie());
+        } # if
 
         // Only use these curl options if no open base dir is set and php mode is off.
         $manualRedirect = false;
@@ -268,7 +286,7 @@ class Services_Providers_Http {
              * Server responded with 304 (Resource not modified)
              */
             if ($http_code != 304) {
-                $data = substr($response, -$curl_info['download_content_length']);
+                $data = substr($response, $curl_info['header_size']);
             } else {
                 $data = '';
             } # else
@@ -298,6 +316,45 @@ class Services_Providers_Http {
                 } # if
             } # if
 
+            // Get the url.
+            if (preg_match('/meta.+?http-equiv\W+?refresh/i', $response)) {
+                preg_match('/content.+?url\W+?(.+?)\"/i', $response, $matches);
+                if (isset($matches[1])) {
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '-perform(), matches[1]= ' . $matches[1]);
+
+                    /*
+                     * We can get either an relative redirect, or an fully
+                     * qualified redirect. Hideref, for example, uses an
+                     * relative direct. Look for those.
+                     *
+                     * parse_url() doesn't support relative url's, so we have
+                     * to do a guess ourselves.
+                     */
+                    $redirUrl = $matches[1];
+                    if ((stripos($redirUrl, 'http://') !== 0) &&
+                        (stripos($redirUrl, 'https://') !== 0) &&
+                        (stripos($redirUrl, '//') !== 0)) {
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), we have gotten an correct url');
+
+                        $urlParts = parse_url($url);
+
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), parse_url: ' . json_encode($urlParts));
+
+                        if ($redirUrl[0] == '/') {
+                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
+                        } else {
+                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . $redirUrl;
+                        } # if
+                    } # if
+
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), after metafresh, url = : ' . $url);
+                    $redirTries++;
+
+                    if ($redirTries < 20) {
+                        return $this->perform($redirUrl, $lastModTime, $redirTries);
+                    } # if
+                } # if
+            } # if
 
         } else {
             $http_code = 700; # Curl returned an error
@@ -319,6 +376,7 @@ class Services_Providers_Http {
         SpotTiming::stop(__FUNCTION__, array($url));
         return array('http_code' => $http_code,
                      'data' => $data,
+                     'finalurl' => $effectiveUrl,
                      'successful' => ($http_code == 200 || $http_code == 304),
                      'errorstr' => 'http returncode: ' . $http_code . ' / ' . $errorStr,
                      'curl_info' => $curl_info);
@@ -528,6 +586,21 @@ class Services_Providers_Http {
     public function getHttpHeaders()
     {
         return $this->_httpHeaders;
-    } # getHttpHeaders
+    }
+
+    /**
+     * @param null $cookie
+     */
+    public function setCookie($cookie) {
+        $this->_cookie = $cookie;
+    } # setCookie
+
+    /**
+     * @return null
+     */
+    public function getCookie() {
+        return $this->_cookie;
+    } # getCookie
+
 
 } # Services_Providers_Http

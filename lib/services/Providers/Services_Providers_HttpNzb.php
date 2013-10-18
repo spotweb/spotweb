@@ -16,9 +16,11 @@ class Services_Providers_HttpNzb {
     protected $spot = null;
     protected $alternateDownloadUrl = null;
     protected $nzb = null;
+    protected $_cacheDao = null;
 
-    public function __construct($spot) {
+    public function __construct(array $spot, Dao_Cache $cacheDao) {
         $this->spot = $spot;
+        $this->_cacheDao = $cacheDao;
     }
 
     public function hasNzb() {
@@ -39,14 +41,7 @@ class Services_Providers_HttpNzb {
             // \O/ We already found an nzb before. Return the xml!
             return $this->nzb;
         } else if ($this->nzb === false) {
-            // We already did a curl request and this results in a badly formed xml.
-            return null;
-        }
-
-        if (!function_exists('curl_init')) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), curl not installed');
-
-            trigger_error('cURL is needed to get the nzb xml.', E_NOTICE);
+            // We already did a http request and this results in a badly formed xml.
             return null;
         }
 
@@ -63,29 +58,16 @@ class Services_Providers_HttpNzb {
 
         SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), url: ' . $url);
 
-        // Initialize curl.
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_ENCODING => '',
-            CURLOPT_NOBODY => FALSE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-        );
-        curl_setopt_array($ch, $chOptions);
-
-        // Execute
-        $body = curl_exec($ch);
+        // Initialize http class.
+        $svcHttp = new Services_Providers_Http($this->_cacheDao);
+        $result = $svcHttp->perform($url);
 
         // Check if any error occured
-        if (!curl_errno($ch)) {
-            // Close handle
-            curl_close($ch);
+        if ($result['successful']) {
             // Load the body into simplexml.
             // If the xml is well formed this will result in true thus returning the xml.
             // Suppress errors if the string is not well formed, where testing here.
+            $body = $result['data'];
             if (@simplexml_load_string($body)) {
                 SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), found nzb');
 
@@ -102,13 +84,10 @@ class Services_Providers_HttpNzb {
                 $this->nzb = false;
             }
         } else {
-            trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+            trigger_error($result['errorstr']);
         }
 
-        // Close handle (will occur on error)
-        curl_close($ch);
-
-        // Return nothing we have a curl error.
+        // Return nothing we have a http error.
         return null;
     }
 
@@ -219,203 +198,23 @@ class Services_Providers_HttpNzb {
      *
      * Find the alternate url
      * @param $url String containing alternate url.
-     * @param $currentUrl boolean Re-use the current URL
-     * @param $retries int Amount of retries to download the file
      * @return boolean could the file be resolved?
      */
-    protected function resolveUrl($url, $currentUrl = false, $retries = 0) {
+    protected function resolveUrl($url) {
         SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), url=' . $url);
 
-        if (!function_exists('curl_init')) {
-            trigger_error('cURL is needed to resolve alternate download urls.', E_NOTICE);
-            return $url;
-        }
+        // Initialize download retrieval class
+        $svcHttp = new Services_Providers_Http($this->_cacheDao);
+        $result = $svcHttp->perform($url);
 
-        // Initialize curl and follow redirects.
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_HEADER => TRUE,
-            CURLOPT_NOBODY => TRUE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-        );
-
-        // Only use these curl options if no open base dir is set and php mode is off.
-        $manualResolving = true;
-        if (ini_get('open_basedir') == '' && ini_get('safe_mode') == false) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), setting to manualresolve');
-
-            $manualResolving = false;
-            $chOptions[CURLOPT_FOLLOWLOCATION] = true;
-            $chOptions[CURLOPT_MAXREDIRS] = 20;
-        }
-
-        curl_setopt_array($ch, $chOptions);
+        // Check if any error occured
+        if (!$result['successful']) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), not succesful=' . $result['errorstr']);
+            return false;
+        } # if
 
         // Execute (save responce to var for manual following redirects)
-        $header = curl_exec($ch);
-
-        // Check if any error occured
-        if (!curl_errno($ch)) {
-            $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-            $HTTPcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), finalUrl=' . $finalUrl);
-
-            // Close handle
-            curl_close($ch);
-
-            if ($finalUrl) {
-                // We found the final url let return it.
-                if ($currentUrl == $finalUrl) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), returning finalUrl=' . $finalUrl);
-
-                    return $finalUrl;
-                }
-
-                // We have a php config using safe mode or open_basedir.
-                // Lets do some manual matching for redirects.
-                if ($manualResolving) {
-
-                    if ($HTTPcode == 301 || $HTTPcode == 302) {
-                        preg_match('/Location:(.*?)\n/', $header, $matches);
-                        $url = trim(array_pop($matches));
-                    }
-
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), httpCode= ' . $HTTPcode . ', url= ' . $url);
-
-                    // We found a redirect url inside the page.
-                    if ($url != $finalUrl) {
-                        // Lets try to resolve this again there might be more redirects.
-                        // Recursive call.
-                        if ($retries == 20) {
-                            // Lets stop trying recursive we have to many redirects.
-                            return $url;
-                        }
-
-                        // Recursive call coming up :)
-                        // Do no return we need to continue for meta refresh checks.
-                        $finalUrl = $this->resolveUrl($url, $url, $retries++);
-                    }
-
-                }
-
-                // Lets try to find a meta refresh on the page of the current url.
-                $url = $this->resolveMetaRefreshOnUrl($finalUrl);
-
-                // We found a meta refresh url inside the page.
-                if ($url != $finalUrl) {
-                    // Lets try to resolve this again there might be more redirects.
-                    // Recursive call.
-                    if ($retries == 2) {
-                        // Lets stop trying recursive we have to many redirects.
-                        return $url;
-                    }
-
-                    return $this->resolveUrl($url, $url, $retries++);
-                }
-
-                return $finalUrl;
-            }
-        } else {
-            return false;
-        }
-
-        // Close handle (will occur on error)
-        curl_close($ch);
-
-        // Return input url, due to error the url could not be resolved.
-        return $url;
-    }
-
-    /**
-     *
-     * Checks for a meta refresh tag on the page given by url.
-     * Returns the new url if one is found. If there is no new url it will return the input url.
-     *
-     * @param String $url
-     * @return string
-     */
-    protected function resolveMetaRefreshOnUrl($url) {
-        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), url= ' . $url);
-
-        if (!function_exists('curl_init')) {
-            trigger_error('cURL is needed to resolve meta refresh urls.', E_NOTICE);
-            return $url;
-        }
-        $url = trim($url);
-
-        // Initialize curl
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_ENCODING => '',
-            CURLOPT_NOBODY => FALSE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-        );
-        curl_setopt_array($ch, $chOptions);
-
-        // Execute
-        $body = curl_exec($ch);
-
-        // Check if any error occured
-        if (!curl_errno($ch)) {
-
-            // Get the url.
-            if (preg_match('/meta.+?http-equiv\W+?refresh/i', $body)) {
-                preg_match('/content.+?url\W+?(.+?)\"/i', $body, $matches);
-                if (isset($matches[1])) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), matches[1]= ' . $maches[1]);
-
-                    /*
-                     * We can get either an relative redirect, or an fully
-                     * qualified redirect. Hideref, for example, uses an
-                     * relative direct. Look for those.
-                     *
-                     * parse_url() doesn't support relative url's, so we have
-                     * to do a guess ourselves.
-                     */
-                    $redirUrl = $matches[1];
-                    if ((stripos($redirUrl, 'http://') !== 0) &&
-                        (stripos($redirUrl, 'https://') !== 0) &&
-                        (stripos($redirUrl, '//') !== 0)) {
-                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), we have gotten an correct url');
-
-                        $urlParts = parse_url($url);
-
-                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), parse_url: ' . json_encode($urlParts));
-
-                        if ($redirUrl[0] == '/') {
-                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
-                        } else {
-                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . $redirUrl;
-                        } # if
-                    } # if
-
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveMetaRefrshOnurl(), after metafresh, url = : ' . $url);
-                    $url = $redirUrl;
-                }
-            }
-
-            // Close handle
-            curl_close($ch);
-
-            return $url;
-        } else {
-            trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
-        }
-
-        // Close handle (will occur on error)
-        curl_close($ch);
-
-        // Return input url, due to error the url could not be resolved.
-        return $url;
+        return $result['finalurl'];
     }
 
     /**
@@ -533,51 +332,27 @@ class Services_Providers_HttpNzb {
      * @param array $postdata
      * @return bool|mixed
      */
-    protected function postAndDownloadNzb($url, Array $postdata) {
-
-        $fields_string = null;
-        foreach ($postdata as $key => $value) {
-            $fields_string .= $key . '=' . urlencode($value) . '&';
-        }
-        rtrim($fields_string, '&');
-
-        // Initialize curl.
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_ENCODING => '',
-            CURLOPT_NOBODY => FALSE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-            CURLOPT_POST => TRUE,
-            CURLOPT_POSTFIELDS => $fields_string
-        );
-        curl_setopt_array($ch, $chOptions);
-
-        // Execute
-        $body = curl_exec($ch);
+    protected function postAndDownloadNzb($url, array $postdata) {
+        // Initialize download retrieval class
+        $svcHttp = new Services_Providers_Http($this->_cacheDao);
+        $svcHttp->setPostContent($postdata);
+        $svcHttp->setMethod('POST');
+        $result = $svcHttp->perform($url);
 
         // Check if any error occured
-        if (!curl_errno($ch)) {
-            // Close handle
-            curl_close($ch);
+        if (!$result['successful']) {
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->postAndDownloadNzb(), not succesful=' . $result['errorstr']);
+            return false;
+        } # if
 
-            // Load the body into simplexml.
-            // If the xml is well formed this will result in true thus returning the xml.
-            // Suppress errors if the string is not well formed, where testing here.
-            if (@simplexml_load_string($body)) {
-                return $body;
-            } else {
-                return false;
-            }
-
+        // Load the body into simplexml.
+        // If the xml is well formed this will result in true thus returning the xml.
+        // Suppress errors if the string is not well formed, where testing here.
+        if (@simplexml_load_string($result['data'])) {
+            return $result['data'];
         } else {
-            trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
-        }
-
-        return false;
+            return false;
+        } # else
     }
 
     /**
@@ -588,34 +363,19 @@ class Services_Providers_HttpNzb {
      * @return bool|mixed
      */
     protected function downloadNzbFromNzbindex($url) {
-        // New curl request to get the page again
+        // New http request to get the page again
         // This time do a request with the cookie that accepts the Disclaimer agreement.
 
-        // Initialize curl.
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_ENCODING => '',
-            CURLOPT_NOBODY => FALSE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-            CURLOPT_COOKIE => 'agreed=true'
-        );
-        curl_setopt_array($ch, $chOptions);
-
-        // Execute
-        $body = curl_exec($ch);
+        // Initialize download retrieval class
+        $svcHttp = new Services_Providers_Http($this->_cacheDao);
+        $svcHttp->setCookie('agreed=true');
+        $result = $svcHttp->perform($url);
 
         // Check if any error occured
-        if (curl_errno($ch)) {
-            trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+        if (!$result['successful']) {
+            trigger_error($result['errorstr']);
             return false;
         }
-
-        // Close handle
-        curl_close($ch);
 
         // Match to get the nzb id.
         preg_match('/\q\=([a-z0-9]*)/i', $url, $matches);
@@ -628,6 +388,7 @@ class Services_Providers_HttpNzb {
         $dom = new DOMDocument;
 
         // Suppress errors, html does not have to be well formed to function.
+        $body = $result['data'];
         @$dom->loadHTML($body);
 
         // Fetch a tags from the result page.
@@ -640,7 +401,7 @@ class Services_Providers_HttpNzb {
                 if (!empty($matches[1])) {
                     if (strpos($url, $matches[1]) !== false) {
                         // We just found a direct download link for our url.
-                        // No need for posting, just another get using curl.
+                        // No need for posting, just another get using http.
                         return $this->getAndDownloadNzb($url);
                     }
                 } # if
@@ -658,41 +419,25 @@ class Services_Providers_HttpNzb {
      * @return bool|mixed
      */
     protected function getAndDownloadNzb($url) {
-        // Initialize curl.
-        $ch = curl_init($url);
-        $chOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_FAILONERROR => 1,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_ENCODING => '',
-            CURLOPT_NOBODY => FALSE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-        );
-        curl_setopt_array($ch, $chOptions);
-
-        // Execute
-        $body = curl_exec($ch);
+        // Initialize download retrieval class
+        $svcHttp = new Services_Providers_Http($this->_cacheDao);
+        $result = $svcHttp->perform($url);
 
         // Check if any error occured
-        if (!curl_errno($ch)) {
-            // Close handle
-            curl_close($ch);
-
-            // Load the body into simplexml.
-            // If the xml is well formed this will result in true thus returning the xml.
-            // Suppress errors if the string is not well formed, where testing here.
-            if (@simplexml_load_string($body)) {
-                return $body;
-            } else {
-                return false;
-            }
-        } else {
-            trigger_error(curl_errno($ch) . ': ' . curl_error($ch));
+        if (!$result['successful']) {
+            trigger_error($result['errorstr']);
+            return false;
         }
 
-        // Close handle (will occur on error)
-        curl_close($ch);
+        // Load the body into simplexml.
+        // If the xml is well formed this will result in true thus returning the xml.
+        // Suppress errors if the string is not well formed, where testing here.
+        $body = $result['data'];
+        if (@simplexml_load_string($body)) {
+            return $body;
+        } else {
+            return false;
+        }
 
         return false;
     }
