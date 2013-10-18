@@ -102,6 +102,12 @@ abstract class Dao_Factory {
      * @return Dao_Base_ModeratedRingBuffer
      */
     abstract public function getModeratedRingBufferDao();
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_DebugLog
+     */
+    abstract public function getDebugLogDao();
 
     /**
      * Factory class which instantiates the specified DAO factory object

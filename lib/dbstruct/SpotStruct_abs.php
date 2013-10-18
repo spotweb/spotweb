@@ -647,7 +647,15 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(45)", "''", true, 'ascii');
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
-		##############################################################################################
+        # ---- debuglog table ---- #
+        $this->createTable('debuglog', "ascii");
+        $this->validateColumn('stamp', 'debuglog', 'INTEGER', "0", true, '');
+        $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, '');
+        $this->validateColumn('level', 'debuglog', 'INTEGER', "0", true, '');
+        $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
+        $this->alterStorageEngine("debuglog", "InnoDB");
+
+        ##############################################################################################
 		### Remove old sessions ######################################################################
 		##############################################################################################
 		# Remove sessions with only one hit, older than one day

@@ -94,4 +94,8 @@
         return new Dao_Sqlite_ModeratedRingBuffer($this->_conn);
     } # getModeratedRingBufferDao
 
+     public function getDebugLogDao() {
+         return new Dao_Sqlite_DebugLog($this->_conn);
+     } # getDebugLogDao
+
 } // Dao_Sqlite_Factory

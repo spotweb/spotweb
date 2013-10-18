@@ -95,7 +95,7 @@ try {
 	 */
 	$debugLog = SpotCommandline::get('debug');
     if ($debugLog) {
-        SpotDebug::enable(SpotDebug::TRACE);
+        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
     } else {
         SpotDebug::disable();
     } # if
@@ -238,6 +238,10 @@ try {
         } # else
     } # if
 
+    ## Remove expired debuglogs
+    echo "Expiring debuglog entries, if any, ";
+    $daoFactory->getDebugLogDao()->expire();
+    echo "done. " . PHP_EOL;
 
 	## Statistics
 	if ($settings->get('prepare_statistics') && $newSpotCount > 0) {

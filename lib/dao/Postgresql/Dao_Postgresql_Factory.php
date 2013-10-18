@@ -94,4 +94,8 @@
         return new Dao_Postgresql_ModeratedRingBuffer($this->_conn);
     } # getModeratedRingBufferDao
 
+     public function getDebugLogDao() {
+         return new Dao_Postgresql_DebugLog($this->_conn);
+     } # getDebugLogDao
+
 } // Dao_Postgresql_Factory

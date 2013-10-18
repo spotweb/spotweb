@@ -94,4 +94,8 @@
         return new Dao_Mysql_ModeratedRingBuffer($this->_conn);
     } # getModeratedRingBufferDao
 
+     public function getDebugLogDao() {
+         return new Dao_Mysql_DebugLog($this->_conn);
+     } # getDebugLogDao
+
  } // Dao_Mysql_Factory

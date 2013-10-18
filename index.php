@@ -18,6 +18,13 @@ try {
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
+    /*
+     * Enable debug logging mechanism if timing is enabled
+     */
+    if ($settings->get('enable_timing')) {
+        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
+    } # if
+
 	# helper functions for passed variables
 	$page = $req->getDef('page', 'index');
 

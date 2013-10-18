@@ -10,9 +10,11 @@ class SpotDebug {
     const FATAL              = 60;
 
     static private $_level = self::DISABLED;
+    static private $_debugLogDao = null;
 
-    static function enable($lvl) {
+    static function enable($lvl, Dao_DebugLog $debugLogDao) {
         self::$_level = $lvl;
+        self::$_debugLogDao = $debugLogDao;
     } # enable()
 
     static function disable() {
@@ -22,7 +24,8 @@ class SpotDebug {
 
     static function msg($lvl, $msg) {
         if (self::$_level <= $lvl) {
-            echo microtime(true) . ': ' . $msg . PHP_EOL;
+            // echo microtime(true) . ': ' . $msg . PHP_EOL;
+            self::$_debugLogDao->add($lvl, microtime(true), $msg);
         }
     } # msg
 
