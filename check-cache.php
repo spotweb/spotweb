@@ -65,7 +65,7 @@ try {
             $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
             try {
                 $cacheDao->getCacheContent($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
-            } catch(Excepion $x) {
+            } catch(CacheIsCorruptException $x) {
                 echo PHP_EOL . '  Trying to fetch ' . $cacheItem['resourceid'] . ' again' . PHP_EOL;
 
                 switch($cacheItem['cachetype']) {
