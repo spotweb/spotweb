@@ -59,7 +59,7 @@ class Dao_Base_Cache implements Dao_Cache {
     /*
      * Removes an item from the cache
      */
-    protected function removeCacheItem($cacheId, $cachetype, $metaData) {
+    public function removeCacheItem($cacheId, $cachetype, $metaData) {
         $this->_conn->exec("DELETE FROM cache WHERE id = :cacheid",
             array(
                 ':cacheid' => array($cacheId, PDO::PARAM_INT)
