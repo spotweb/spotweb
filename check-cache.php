@@ -66,7 +66,7 @@ try {
             try {
                 $cacheDao->getCacheContent($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
             } catch(CacheIsCorruptException $x) {
-                echo PHP_EOL . '  Trying to fetch ' . $cacheItem['resourceid'] . ' again' . PHP_EOL;
+                echo PHP_EOL . '  Trying to fetch #' . $cacheItem['id'] . ' for ' . $cacheItem['resourceid'] . ' again' . PHP_EOL;
 
                 switch($cacheItem['cachetype']) {
                     case Dao_Cache::SpotNzb             : {
