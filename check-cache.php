@@ -66,15 +66,18 @@ try {
             try {
                 $cacheDao->getCacheContent($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
             } catch(CacheIsCorruptException $x) {
-                echo PHP_EOL . '  Trying to fetch #' . $cacheItem['id'] . ' for ' . $cacheItem['resourceid'] . ' again' . PHP_EOL;
+                echo PHP_EOL . '  Trying to fetch #' . $cacheItem['id'] . ' for ' . $cacheItem['resourceid'] . ' again, ';
 
                 switch($cacheItem['cachetype']) {
                     case Dao_Cache::SpotNzb             : {
                         try {
                             $fullSpot = $svcFullSpot->fetchFullSpot($cacheItem['resourceid'], 1);
                             $svcNzb->fetchNzb($fullSpot);
+
+                            $cacheInfo = $cacheDao->getCachedNzb($cacheItem['resourceid']);
+                            echo 'retrieved NZB as ' . $cacheInfo['id'] . PHP_EOL;
                         } catch(Exception $x) {
-                            echo PHP_EOL . '    Error redownload NZB: '. $x->getMessage() . PHP_EOL;
+                            echo 'error redownloading NZB: '. $x->getMessage() . PHP_EOL;
                         } # catch
 
                         break;
@@ -84,8 +87,11 @@ try {
                         try {
                             $fullSpot = $svcFullSpot->fetchFullSpot($cacheItem['resourceid'], 1);
                             $svcImage->fetchSpotImage($fullSpot);
+
+                            $cacheInfo = $cacheDao->getCachedSpotImage($cacheItem['resourceid']);
+                            echo 'retrieved image as ' . $cacheInfo['id'] . PHP_EOL;
                         } catch(Exception $x) {
-                            echo PHP_EOL . '    Error redownload image: '. $x->getMessage() . PHP_EOL;
+                            echo 'error redownloading image: '. $x->getMessage() . PHP_EOL;
                         } # catch
 
                         break;
