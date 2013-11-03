@@ -147,6 +147,11 @@ class Dao_Base_Comment implements Dao_Comment {
 			$comment['body'] = substr($comment['body'], 0, (1024*10));
 			$comment['verified'] = (bool) $comment['verified'];
             $comment['stamp'] = (int) $comment['stamp'];
+
+            /*
+             * Make sure we only store valid utf-8
+             */
+            $comment['body'] = mb_convert_encoding($comment['body'], 'UTF-8', 'UTF-8');
 		} # foreach
 
 		$this->_conn->batchInsert($fullComments,

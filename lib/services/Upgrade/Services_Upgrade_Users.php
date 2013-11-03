@@ -233,7 +233,7 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs'], 'perpage', 25);
 			$this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
 			$this->setSettingIfNot($user['prefs'], 'normal_template', 'we1rdo');
-			$this->setSettingIfNot($user['prefs'], 'mobile_template', 'we1rdo');
+			$this->setSettingIfNot($user['prefs'], 'mobile_template', 'mobile');
 			$this->setSettingIfNot($user['prefs'], 'tablet_template', 'we1rdo');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
             $this->setSettingIfNot($user['prefs'], 'mouseover_subcats', true);
@@ -445,6 +445,7 @@ class Services_Upgrade_Users {
 		########################################################################
 		if (($forceReset) || ($this->_settings->get('securityversion') < 0.29)) {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'we1rdo')");
+            $dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_select_template . ", 'mobile')");
 		} # if
 
 		########################################################################

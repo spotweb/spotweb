@@ -406,6 +406,14 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
 			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
+
+            /*
+             * Make sure we only store valid utf-8
+             */
+            $spot['poster'] = mb_convert_encoding($spot['poster'], 'UTF-8', 'UTF-8');
+            $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'UTF-8');
+            $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'UTF-8');
+
 		} # foreach
         unset($spot);
 
@@ -489,6 +497,12 @@ class Dao_Base_Spot implements Dao_Spot {
 		$fullSpot['subcatd'] = substr($fullSpot['subcatd'], 0, 63);
 		$fullSpot['subcatz'] = substr($fullSpot['subcatz'], 0, 63);
 		$fullSpot['category'] = (int) $fullSpot['category'];
+
+        /*
+         * Make sure we only store valid utf-8
+         */
+        $fullSpot['title'] = mb_convert_encoding($fullSpot['title'], 'UTF-8', 'UTF-8');
+        $fullSpot['tag'] = mb_convert_encoding($fullSpot['tag'], 'UTF-8', 'UTF-8');
 
 		# update spots table
 		$this->_conn->modify("UPDATE spots
