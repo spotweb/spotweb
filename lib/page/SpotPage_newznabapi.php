@@ -305,6 +305,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$data['fromname']		= $spot['poster'];
 				$data['completion']		= 100;
 
+                $cat = array();
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$data['categoryID'] = $nabCat[0];
