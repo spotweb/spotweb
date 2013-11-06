@@ -69,9 +69,10 @@ class SpotClassAutoload {
                 break;
             } # net
             case 'Crypt'		: {
-                require 'vendor/phpseclib/Crypt/Hash.php';
-                require 'vendor/phpseclib/Crypt/Random.php';
-                require 'vendor/phpseclib/Crypt/RSA.php';
+                // we cannot determine class load order, so use require_once
+                require_once 'vendor/phpseclib/Crypt/Hash.php';
+                require_once 'vendor/phpseclib/Crypt/Random.php';
+                require_once 'vendor/phpseclib/Crypt/RSA.php';
 
                 break;
             }
