@@ -701,7 +701,7 @@ class Dao_Base_Spot implements Dao_Spot {
             array(
                 ':ouruserid' => array($userId, PDO::PARAM_INT),
                 ':newmessageid' => array($spot['newmessageid'], PDO::PARAM_STR),
-                ':time' => array(time(), PDO::PARAM_INT),
+                ':stamp' => array(time(), PDO::PARAM_INT),
                 ':title' => array($spot['title'], PDO::PARAM_STR),
                 ':tag' => array($spot['tag'], PDO::PARAM_STR),
                 ':category' => array($spot['category'], PDO::PARAM_INT),
