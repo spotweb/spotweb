@@ -79,7 +79,7 @@ class Services_Nntp_SpotPosting {
 			/* 
 			 * Split the body in parts of 900 characters
 			 */
-			$message['body'] = chunk_split($this->_spotParseUtil->specialZipstr($chunk), 900);
+			$message['body'] = $this->safe_chunk($this->_spotParseUtil->specialZipstr($chunk), 900);
 
 			/*
 			 * Create an unique messageid and store it so we can return it
@@ -119,7 +119,7 @@ class Services_Nntp_SpotPosting {
 		 * And add the X-User-Avatar header if user has an avatar specified
 		 */
 		if (!empty($user['avatar'])) {
-			$tmpAvatar = explode("\r\n", chunk_split($user['avatar'], 900));
+			$tmpAvatar = explode("\r\n", $this->safe_chunk($user['avatar'], 900));
 			
 			foreach($tmpAvatar as $avatarChunk) {
 				if (strlen(trim($avatarChunk)) > 0) {
@@ -183,7 +183,7 @@ class Services_Nntp_SpotPosting {
 		$header = 'From: ' . $spotnetFrom . $spotHeader . '.' . $this->_spotParseUtil->spotPrepareBase64($header_signature['signature']) . ">\r\n";
 		
 		# Add the Spotnet XML file, but split it in chunks of 900 characters
-		$tmpXml = explode("\r\n", chunk_split($spot['spotxml'], 900));
+		$tmpXml = explode("\r\n", $this->safe_chunk($spot['spotxml'], 900));
 		foreach($tmpXml as $xmlChunk) {
 			if (strlen(trim($xmlChunk)) > 0) {
 				$header .= 'X-XML: ' . $xmlChunk . "\r\n";
@@ -207,5 +207,41 @@ class Services_Nntp_SpotPosting {
 
 		return $this->postSignedMessage($user, $serverPrivKey, $newsgroup, $report, $addHeaders);
 	} # reportSpotAsSpam
+
+
+    /**
+     * Function which mirrors chunk_split() of PHP, but tries to avoid
+     * putting a whitespace character at the end of the line, because
+     * some usenet servers discard that.
+     *
+     * @param $data
+     * @param $maxLen
+     * @param string $end
+     * @return string
+     */
+    private function safe_chunk($data, $maxLen, $end = "\r\n") {
+        /*
+         * We have to protect ourselves against having
+         * only spaces in the stream, so we start with
+         * the half of $maxLen, and work ourway up
+         */
+        $minLength = ceil($maxLen / 2);
+        $totalChunk = '';
+
+        while (strlen($data) > 0) {
+            $sChunk = substr($data, 0, $minLength);
+            $eChunk = substr($data, $minLength, $minLength);
+
+            $eChunkLen = strlen($eChunk);
+            while ((substr($eChunk, $eChunkLen - 1, 1) == ' ') && ($eChunkLen > 0)) {
+                $eChunkLen--;
+            } // while
+
+            $totalChunk .= $sChunk . substr($eChunk, 0, $eChunkLen) . $end;
+            $data = substr($data, strlen($sChunk . substr($eChunk, 0, $eChunkLen)));
+        } // while
+
+        return $totalChunk;
+    } // safe_chunk
 
 } # Services_Nntp_SpotPosting
