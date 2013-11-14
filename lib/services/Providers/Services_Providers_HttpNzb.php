@@ -125,6 +125,7 @@ class Services_Providers_HttpNzb {
             'http://hideref.org',
             'http://tiny.cc',
             'http://www.dereferer.org',
+            'http://www.nzsearch.net'
         );
 
         // Search in the website url
@@ -244,6 +245,11 @@ class Services_Providers_HttpNzb {
             // This function does not use the $body var.
             return $this->downloadNzbFromNzbclub($url);
         }
+
+        // NZB search
+        if (strpos($url, 'nzbsearch.net') != FALSE) {
+            return $this->downloadNzbFromNzbSearch($url, $body);
+        } // nzbsearch
 
         // No support found return ;(
         return false;
@@ -453,6 +459,26 @@ class Services_Providers_HttpNzb {
         $downloadUrl = str_replace('nzb_view', 'nzb_get', $url) . 'nzb';
         return $this->getAndDownloadNzb($downloadUrl);
     }
+
+    /**
+     * Tries to download the actual nzb from nzbindex
+     *
+     * @param String $url
+     * @internal param String $body
+     * @return bool|mixed
+     */
+    protected function downloadNzbFromNzbSearch($url, $body) {
+        // Match to get the nzb id.
+        preg_match('/nzb_get.aspx\?mid=([a-zA-Z0-9]*)/i', $body, $matches);
+
+        // This match is essential for the download
+        if (!count($matches)) {
+            return false;
+        }
+
+        return $this->getAndDownloadNzb('http://www.nzbsearch.net/' . $matches[0]);
+    }
+
 
 }
 
