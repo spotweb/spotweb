@@ -776,7 +776,7 @@ function downloadMultiNZB(dltype) {
          * with client-sabnzbd we override to display as we cannot send
          * multiple NZB files to the server just yet
          */
-        if (dltype == 'client-sabnzbd') {
+        if (dltype == 'client-sabnzbd' || dltype == 'disable') {
             dltype = 'display';
         } // if
 
@@ -790,21 +790,29 @@ function downloadMultiNZB(dltype) {
          */
         $(".sabnzbd-button").removeClass("succes").addClass("loading");
 
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: "json",
-            success: function(data) {
-                if (data.result == "success") {
-                    $(".sabnzbd-button").removeClass("loading").addClass("succes");
-                } else {
-                    $(".sabnzbd-button").removeClass("loading").addClass("failure");
-                } // else
+        if (dltype != 'display') {
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(data) {
+                    if (data.result == "success") {
+                        $(".sabnzbd-button").removeClass("loading").addClass("succes");
+                    } else {
+                        $(".sabnzbd-button").removeClass("loading").addClass("failure");
+                    } // else
 
-                $("table.spots input[type=checkbox]").attr("checked", false);
-                multinzb();
-            } // success
-        }); // ajax call om de form te submitten
+                    $("table.spots input[type=checkbox]").attr("checked", false);
+                    multinzb();
+                } // success
+            }); // ajax call om de form te submitten
+        } else {
+            window.location.href = url;
+
+            $(".sabnzbd-button").removeClass("loading").addClass("succes");
+            $("table.spots input[type=checkbox]").attr("checked", false);
+            multinzb();
+        }
 
 
 	}
