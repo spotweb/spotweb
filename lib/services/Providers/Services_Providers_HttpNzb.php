@@ -267,7 +267,7 @@ class Services_Providers_HttpNzb {
         preg_match('/\q\=([a-z0-9]*)&*/i', $url, $matches);
 
         // This match is essential for the download
-        if (!count($matches)) {
+        if ((!count($matches)) && (!empty($matches[1]))) {
             return false;
         }
 
