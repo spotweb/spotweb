@@ -125,7 +125,6 @@ class Services_Providers_HttpNzb {
             'http://hideref.org',
             'http://tiny.cc',
             'http://www.dereferer.org',
-            'http://www.nzsearch.net'
         );
 
         // Search in the website url
