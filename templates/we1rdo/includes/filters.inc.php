@@ -148,7 +148,7 @@
 
 <script type='text/javascript'>
     var sliderMinFileSize = <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>;
-    var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?>;
+    var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : (1024*1024*1024) * 512; ?>;
     var sliderMaxReportCount = <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?>;
 </script>
 

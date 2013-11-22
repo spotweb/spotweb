@@ -1314,25 +1314,75 @@ function applyTipTip(){
 	$(this).tipTip({defaultPosition: 'bottom', maxWidth: 'auto', content: $dl});
 }
 
-function initSliders() {
-    var max = (1024*1024*1024)*350;
+function findNearest(possibleValues, realValues, includeLeft, includeRight, value) {
+    var nearest = null;
+    var realValue = null;
+    var diff = null;
+    for (var i = 0; i < possibleValues.length; i++) {
+        if ((includeLeft && possibleValues[i] <= value) || (includeRight && possibleValues[i] >= value)) {
+            var newDiff = Math.abs(value - possibleValues[i]);
+            if (diff == null || newDiff < diff) {
+                nearest = possibleValues[i];
+                realValue = realValues[i];
+                diff = newDiff;
+            }
+        }
+    }
+    return [nearest, realValue];
+}
 
-    $( "#slider-filesize" ).slider({
+function initSliders() {
+    var _1MB = 1024 * 1024;
+    var _1GB = 1024 * 1024 * 1024;
+
+    var realValues     = [0, _1MB, _1MB * 10, _1MB * 50, _1MB * 512, _1GB, _1GB * 4, _1GB * 6, _1GB * 8, _1GB * 12, _1GB * 16, _1GB * 24, _1GB * 32, _1GB * 48, _1GB * 64, _1GB * 96, _1GB * 128, _1GB * 256];
+    var possibleValues = [0,    1,         2,         3,          6,   10,       11,       12,       13,        14,        15,        16,        17,        18,        19,        20,         25,         30];
+    if (realValues.length != possibleValues.length) {
+        alert('error in code: possibleValues and realValues array length do not match up');
+    } // if
+
+    var max = possibleValues[possibleValues.length - 1];
+
+    /*
+     * convert the current sliderMinFileSize and sliderMaxFileSize
+     * to values appropriate in the system
+     */
+    var convertedSliderMinFileSize = findNearest(realValues, possibleValues, true, false, sliderMinFileSize)[1];
+    var convertedSliderMaxFileSize = findNearest(realValues, possibleValues, true, false, sliderMaxFileSize)[1];
+
+    var slider = $( "#slider-filesize" ).slider({
         range: true,
+        step: 1,
         min: 0,
         max: max,
-        step: ((1024*1024*1024)*350) / 1024,
-        values: [ sliderMinFileSize, sliderMaxFileSize ],
+        values: [ convertedSliderMinFileSize, convertedSliderMaxFileSize ],
         slide: function( event, ui ) {
-            var minSize = Math.round((ui.values[0] / max * ((ui.values[0] / max))) * max);
-            var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
-            $( "#min-filesize" ).val( "filesize:>:DEF:" + minSize );
-            $( "#max-filesize" ).val( "filesize:<:DEF:" + maxSize );
-            $( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
+            /*
+             * code copied from: http://stackoverflow.com/questions/967372/jquery-slider-how-to-make-step-size-change
+             */
+            var includeLeft = event.keyCode != $.ui.keyCode.RIGHT;
+            var includeRight = event.keyCode != $.ui.keyCode.LEFT;
+            var fixedValues = findNearest(possibleValues, realValues, includeLeft, includeRight, ui.value);
+
+//            console.log('findNearest(' + ui.value + ') => ' + fixedValues[0] + ' (' + fixedValues[1] + ')');
+
+            if (ui.value == ui.values[0]) {
+                slider.slider('values', 0, fixedValues[0]);
+                $( "#min-filesize" ).val( "filesize:>:DEF:" + fixedValues[1]);
+                sliderMinFileSize = fixedValues[1];
+            } else {
+                slider.slider('values', 1, fixedValues[0]);
+                $( "#max-filesize" ).val( "filesize:<:DEF:" + fixedValues[1]);
+                sliderMaxFileSize = fixedValues[1];
+            } // else
+
+            $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
+
+            return false;
             }
         });
 
-        $( "#slider-reportcount" ).slider({
+    $( "#slider-reportcount" ).slider({
         range: 'max',
         min: 0,
         max: 21,
@@ -1350,10 +1400,12 @@ function initSliders() {
         }
         });
 
-        /* Filesizes */
-        $( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
-        $( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
-    $( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
+    /* Filesizes */
+    var nearestMin = findNearest(possibleValues, realValues, true, false, convertedSliderMinFileSize);
+    var nearestMax = findNearest(possibleValues, realValues, false, true, convertedSliderMaxFileSize);
+    $( "#min-filesize" ).val( "filesize:>:DEF:" + nearestMin[1]);
+    $( "#max-filesize" ).val( "filesize:<:DEF:" + nearestMax[1]);
+    $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
 
     /* Report counts */
     var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
