@@ -31,13 +31,13 @@ abstract class dbeng_pdo extends dbeng_abs {
         return $stmt;
 	}
 	public function rawExec($s) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		try {
 			$stmt = $this->_conn->query($s);
 		} catch(PDOException $x) {
 			throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
-		SpotTiming::stop(__FUNCTION__,array($s));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__,array($s));
 		
 		return $stmt;
 	}
@@ -51,7 +51,7 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @throws SqlErrorException SQL exception when an SQL error occurs during execution
      */
     public function exec($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		try {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
@@ -59,7 +59,7 @@ abstract class dbeng_pdo extends dbeng_abs {
             throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
-		SpotTiming::stop(__FUNCTION__, array($s, $p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s, $p));
  
     	return $stmt;
     }
@@ -69,13 +69,13 @@ abstract class dbeng_pdo extends dbeng_abs {
 	 * thrown if a error occurs
 	 */
 	function modify($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		$res = $this->exec($s, $p);
         $res->closeCursor();
 		unset($res);
 		
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
 	} # modify
 	
 	/* 
@@ -119,12 +119,12 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function singleQuery($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
         $row = $stmt->fetch();
         $stmt->closeCursor();
 		unset($stmt);
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
         
 		return $row[0];
 	} # singleQuery
@@ -142,13 +142,13 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function arrayQuery($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
 		$tmpArray = $stmt->fetchAll();
 
         $stmt->closeCursor();
 		unset($stmt);
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
 
 		return $tmpArray;
 	} # arrayQuery

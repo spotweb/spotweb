@@ -95,7 +95,7 @@ class SpotTiming {
                 echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
             } # catch
         } else {
-            echo "|" . self::makeLen($values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
+            echo "|" . self::makeLen(str_pad('', $values['level'], '.') . $values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
         } # else
     } # displayLine
 
@@ -106,14 +106,14 @@ class SpotTiming {
 
         self::doHeader();
         foreach(array_reverse(self::$_timings) as $values) {
-            if (!isset($processed[$values['name']])) {
+            if (!isset($processed[$values['level'] . $values['name']])) {
                 /*
                  * Create a sum of all actions with the same name
                 */
                 $totalTime = 0;
                 $callCount = 0;
                 foreach(self::$_timings as $tmp) {
-                    if ($tmp['name'] == $values['name']) {
+                    if (($tmp['name'] == $values['name']) && ($tmp['level'] == $values['level'])) {
 
                         $totalTime += ($tmp['stop'] - $tmp['start']);
                         $callCount++;
@@ -127,7 +127,7 @@ class SpotTiming {
                 self::displayLine($values);
             }  # if
 
-            $processed[$values['name']] = true;
+            $processed[$values['level'] . $values['name']] = true;
         } # foreach
 
         self::doFooter();

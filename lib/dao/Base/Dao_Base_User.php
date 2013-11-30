@@ -83,7 +83,7 @@ class Dao_Base_User implements Dao_User {
 	 * Retrieve a list of userids and some basic properties
 	 */
 	function getUserList() {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		$tmpResult = $this->_conn->arrayQuery(
 						"SELECT u.id AS userid,
@@ -104,7 +104,7 @@ class Dao_Base_User implements Dao_User {
 			} # for
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array());
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array());
 		return $tmpResult;
 	} # getUserList
 
@@ -112,7 +112,7 @@ class Dao_Base_User implements Dao_User {
 	 * Retrieves a list of users with their last login time etc
 	 */
 	function getUserListForDisplay() {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		$tmpResult = $this->_conn->arrayQuery(
 						"SELECT u.id AS userid,
@@ -131,7 +131,7 @@ class Dao_Base_User implements Dao_User {
                 ':isdeleted' => array(false, PDO::PARAM_BOOL)
             ));
 
-		SpotTiming::stop(__FUNCTION__, array());
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array());
 		return $tmpResult;
 	} # getUserListForDisplay
 

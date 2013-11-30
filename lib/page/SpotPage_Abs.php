@@ -128,7 +128,7 @@ abstract class SpotPage_Abs {
 			} # if
 		} # foreach
 		
-		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':' . $tpl, array($params));
 	} # template
 	
 	/*

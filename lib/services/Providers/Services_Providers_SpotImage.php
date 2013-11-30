@@ -30,7 +30,7 @@ class Services_Providers_SpotImage {
      * newsgroup depending on where the image is available
      */
 	public function fetchSpotImage($fullSpot) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$return_code = 0;
 		$validImage = false;
         $imageString = '';
@@ -39,7 +39,7 @@ class Services_Providers_SpotImage {
 		if ($data !== false) {
             $this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid'], $data);
 
-            SpotTiming::stop(__FUNCTION__);
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 			
 			return $data;
 		} # if
@@ -165,7 +165,7 @@ class Services_Providers_SpotImage {
                 true);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 		return array('content' => $imageString,
 					 'metadata' => $dimensions);
 	} # fetchSpotImage

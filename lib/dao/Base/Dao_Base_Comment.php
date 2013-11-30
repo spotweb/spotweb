@@ -165,7 +165,7 @@ class Dao_Base_Comment implements Dao_Comment {
 	 * Retrieves the full comments 
 	 */
 	function getCommentsFull($userId, $nntpRef) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# eactually retrieve the comment
 		$commentList = $this->_conn->arrayQuery("SELECT c.messageid AS messageid, 
@@ -198,7 +198,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			} # if
 		} # for
 
-		SpotTiming::stop(__FUNCTION__);
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 		return $commentList;
 	} # getCommentsFull
 

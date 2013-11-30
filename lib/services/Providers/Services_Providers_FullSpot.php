@@ -17,7 +17,7 @@ class Services_Providers_FullSpot {
 	 * Returns a full spot array
 	 */
 	function fetchFullSpot($msgId, $ourUserId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * First try the database for the spot, because if it
@@ -71,7 +71,7 @@ class Services_Providers_FullSpot {
 		$parsedXml = $spotParser->parseFull($fullSpot['fullxml']);
 		$fullSpot = array_merge($parsedXml, $fullSpot);
 
-		SpotTiming::stop(__FUNCTION__, array($msgId, $ourUserId, $fullSpot));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $ourUserId, $fullSpot));
 		
 		return $fullSpot;
 	} # fetchFullSpot

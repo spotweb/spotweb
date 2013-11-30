@@ -16,7 +16,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * restrictions of $parsedSearch
 	 */
 	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$offset = (int) $pageNr * (int) $limit;
 
 		/*
@@ -132,7 +132,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			array_pop($tmpResult);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 
@@ -140,7 +140,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * Returns the header information of a spot
 	 */
 	function getSpotHeader($msgId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -162,7 +162,7 @@ class Dao_Base_Spot implements Dao_Spot {
             array(
                 ':messageid' => array($msgId, PDO::PARAM_STR)
             ));
-		SpotTiming::stop(__FUNCTION__);
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 
 		if (empty($tmpArray)) {
 			return null;
@@ -243,7 +243,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		# en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET spotrating = 
@@ -255,7 +255,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotRating
 
 	/*
@@ -267,7 +267,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots 
 								SET commentcount = 
 									(SELECT COUNT(1) as commentcount 
@@ -277,7 +277,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotCommentCount
 
 	/*
@@ -289,7 +289,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots 
 								SET reportcount = 
 									(SELECT COUNT(1) as reportcount 
@@ -299,7 +299,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
 
 	/*
@@ -311,7 +311,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# prepare a list of IN values
 		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
@@ -323,7 +323,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # removeSpots
 
 	/*
@@ -335,21 +335,21 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots SET moderated = :moderated WHERE messageid IN (" .
 								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")",
             array(
                 ':moderated' => array(true, PDO::PARAM_BOOL)
             ));
 
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # markSpotsModerated
 
 	/*
 	 * Remove older spots from the database
 	 */
 	function deleteSpotsRetention($retention) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
 		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < :time",
@@ -369,14 +369,14 @@ class Dao_Base_Spot implements Dao_Spot {
 							(SELECT messageid FROM spots)") ;
 		$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
 							(SELECT messageid FROM spots)") ;
-		SpotTiming::stop(__FUNCTION__, array($retention));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($retention));
 	} # deleteSpotsRetention
 
 	/*
 	 * Add a lis tof spots to the database
 	 */
 	function addSpots($spots, $fullSpots = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		foreach($spots as &$spot) {
 			/*
 			 * Manually check whether filesize is really a numeric value
@@ -432,7 +432,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$this->addFullSpots($fullSpots);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($spots, $fullSpots));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spots, $fullSpots));
 	} # addSpot()
 
 	/*
@@ -443,7 +443,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * more fidelity encoding.
 	 */
 	function updateSpotInfoFromFull($fullSpot) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid",
             array(
                 ':title' => array($fullSpot['title'], PDO::PARAM_STR),
@@ -451,7 +451,7 @@ class Dao_Base_Spot implements Dao_Spot {
                 ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
             ));
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 	} # updateSpotInfoFromFull
 
 	/*
@@ -459,7 +459,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * table as it will remove the spot from the list
 	 */
 	function addFullSpots($fullSpots) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/* 
 		 * Prepare the array for insertion
@@ -476,14 +476,14 @@ class Dao_Base_Spot implements Dao_Spot {
 								  array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
 								  );
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpots));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpots));
 	} # addFullSpot
 
 	/*
 	 * Update a spot in the spots and spotsfull tables after editing the spot
 	 */
 	function updateSpot($fullSpot, $editor) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * Cut off some strings to a maximum value as defined in the
@@ -540,7 +540,7 @@ class Dao_Base_Spot implements Dao_Spot {
                 ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
             ));
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 	} # updateSpot
 	
 	/*
@@ -562,7 +562,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return $idList;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Prepare a list of values
 		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
@@ -582,7 +582,7 @@ class Dao_Base_Spot implements Dao_Spot {
 				$idList['fullspot'][$msgids['fullspot']] = 1;
 			} # if
 		} # foreach
-		SpotTiming::stop(__FUNCTION__, array($hdrList, $idList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($hdrList, $idList));
 
 		return $idList;
 	} # matchMessageIds 
@@ -591,7 +591,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * Returns the amount of spots currently in the database
 	 */
 	function getSpotCount($sqlFilter) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		if (empty($sqlFilter)) {
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
@@ -602,7 +602,7 @@ class Dao_Base_Spot implements Dao_Spot {
 						WHERE " . $sqlFilter . " AND (bl.spotterid IS NULL)";
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
-		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($sqlFilter));
 		if ($cnt == null) {
 			return 0;
 		} else {
@@ -655,7 +655,7 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return void
 	 */
 	function removeExtraSpots($messageId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Retrieve the actual spot
 		$spot = $this->getSpotHeader($messageId);
@@ -681,7 +681,7 @@ class Dao_Base_Spot implements Dao_Spot {
         ));
 
 
-        SpotTiming::stop(__FUNCTION__, array($messageId, $spot));
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageId, $spot));
 	} # removeExtraSpots
 
 	/**
@@ -693,7 +693,7 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return void
 	 */
 	function addPostedSpot($userId, $spot, $fullXml) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
@@ -710,7 +710,7 @@ class Dao_Base_Spot implements Dao_Spot {
             )
         );
 
-		SpotTiming::stop(__FUNCTION__, array($userId, $spot, $fullXml));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($userId, $spot, $fullXml));
 	} # addPostedSpot
 
 	/**
@@ -720,14 +720,14 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return void
 	 */
 	function expireSpotsFull($expireDays) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < :stamp)",
             array(
                 ':stamp' => array(time() - ($expireDays*24*60*60), PDO::PARAM_INT)
             ));
 
-		SpotTiming::stop(__FUNCTION__, array($expireDays));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($expireDays));
 	} # expireSpotsFull
 
     /**
@@ -737,7 +737,7 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return bool
      */
 	function isNewSpotMessageIdUnique($messageid) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/* 
 		 * We use a union between our own messageids and the messageids we already
@@ -751,7 +751,7 @@ class Dao_Base_Spot implements Dao_Spot {
                 ':messageid1' => array($messageid, PDO::PARAM_STR),
                 ':messageid2' => array($messageid, PDO::PARAM_STR)
             ));
-		SpotTiming::stop(__FUNCTION__, array($messageid));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageid));
 		
 		return (empty($tmpResult));
 	} # isNewSpotMessageIdUnique
@@ -762,14 +762,14 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return int
 	 */
 	function getMaxMessageTime() {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$stamp = $this->_conn->singleQuery("SELECT MAX(stamp) AS stamp FROM spots");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($stamp));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($stamp));
 
 		return $stamp;
 	} # getMaxMessageTime()
@@ -783,7 +783,7 @@ class Dao_Base_Spot implements Dao_Spot {
      * @return array
      */
 	function getMaxMessageId($headers) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		if ($headers == 'headers') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 5000");
@@ -805,7 +805,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$tempMsgIdList['<' . $msgIds[$i]['messageid'] . '>'] = 1;
 		} # for
 
-		SpotTiming::stop(__FUNCTION__, array($headers));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($headers));
 
 		return $tempMsgIdList;
 	} # func. getLastMessageId

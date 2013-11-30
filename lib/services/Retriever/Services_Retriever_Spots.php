@@ -179,8 +179,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 */
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
 			$dbIdList = $this->_spotDao->matchSpotMessageIds($hdrList);
-            $cachedIdList = $this->_cacheDao->getMassCacheRecords($hdrList);
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':matchSpotMessageIds');
+            SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':getMassCacheRecords');
+            $cachedIdList = $this->_cacheDao->getMassCacheRecords($hdrList);
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':getMassCacheRecords');
 
 			SpotDebug::msg(SpotDebug::TRACE, 'dbIdList=' . serialize($dbIdList));
 

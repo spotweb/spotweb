@@ -23,7 +23,7 @@ class Services_Providers_Nzb {
 	 * Returns the NZB file
 	 */
 	function fetchNzb($fullSpot) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * Retrieve the NZB from the cache
@@ -68,10 +68,10 @@ class Services_Providers_Nzb {
                 error_log('Spotweb: Unable to save NZB file to cache, is cache directory writable?');
             } # if
 
-            SpotTiming::stop(__FUNCTION__ . '::cacheMiss');
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . '::cacheMiss');
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 
 		return $nzb;
 	} # fetchNzb

@@ -28,7 +28,7 @@ class Services_Providers_Comments {
 		 */
 		$totalCommentsNeeded = ($start + $length);
 		
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * Retrieve a list of comments currently in the database, if 
@@ -83,7 +83,7 @@ class Services_Providers_Comments {
                      * us that we make some progress at least.
                      */
                     $tempList = $this->_nntpSpotReading->readComments(array_slice($fullComments, $lastHaveFullOffset + 1, 1));
-					SpotTiming::stop(__FUNCTION__ . ':nntp:readComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
+					SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':nntp:readComments()', array(array_slice($fullComments, $lastHaveFullOffset + 1, $length), $start, $length));
 				
 					$lastHaveFullOffset += 1; // was + $length
 					foreach($tempList as $comment) {
@@ -120,7 +120,7 @@ class Services_Providers_Comments {
 			$fullComments = array_slice($fullComments , $start, $length);
 		} # if
 
-        SpotTiming::stop(__FUNCTION__, array($msgId, $start, $length));
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $start, $length));
 		return $fullComments;
 	} # fetchSpotComments()
 

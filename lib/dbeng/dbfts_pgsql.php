@@ -29,7 +29,7 @@ class dbfts_pgsql extends dbfts_abs {
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields, $additionalFields) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * Initialize some basic values which are used as return values to
@@ -104,7 +104,7 @@ class dbfts_pgsql extends dbfts_abs {
 								  'friendlyname' => null);
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 		
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),

@@ -24,7 +24,7 @@ class SpotPage_index extends SpotPage_Abs {
 	} # ctor
 
 	function render() {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Give an page title
 		$this->_pageTitle = _("overview");
@@ -123,7 +123,7 @@ class SpotPage_index extends SpotPage_Abs {
 								'prevPage' => $prevPage,
 								'parsedsearch' => $parsedSearch,
 								'data' => $this->_params['data']));
-		SpotTiming::stop(__FUNCTION__);
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 	} # render()
 	
 } # class SpotPage_index

@@ -179,7 +179,7 @@ class Services_Providers_Http {
      * @return mixed array with first element the HTTP code, and second with the data (if any)
      */
     public function perform($url, $lastModTime = null, $redirTries = 0) {
-        SpotTiming::start(__FUNCTION__);
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
         /*
          * Default our effectiveUrl to be the current URL,
@@ -373,7 +373,7 @@ class Services_Providers_Http {
             $errorStr = 'unable to connect to URL: ' . $url;
         } # if
 
-        SpotTiming::stop(__FUNCTION__, array($url));
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($url));
         return array('http_code' => $http_code,
                      'data' => $data,
                      'finalurl' => $effectiveUrl,
@@ -386,7 +386,7 @@ class Services_Providers_Http {
 	 * Retrieves an URL from the web and caches it when so required
 	 */
 	function performCachedGet($url, $storeWhenRedirected, $ttl = 900) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$url_md5 = md5($url);
 		
 		/*
@@ -440,7 +440,7 @@ class Services_Providers_Http {
 			$data = $content['content'];
 		} # else
 
-		SpotTiming::stop(__FUNCTION__, array($url, $storeWhenRedirected, $ttl));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($url, $storeWhenRedirected, $ttl));
 
 		return array($http_code, $data);
 	} # performCachedGet

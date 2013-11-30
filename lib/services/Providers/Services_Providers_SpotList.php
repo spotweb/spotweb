@@ -15,14 +15,14 @@ class Services_Providers_SpotList {
 	 * Returns a list of spots
 	 */
 	function fetchSpotList($ourUserId, $start, $limit, $parsedSearch) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		/*
 		 * Actually fetch the spots from the database
 		 */
 		$spotResults = $this->_spotDao->getSpots($ourUserId, $start, $limit, $parsedSearch);
 
-		SpotTiming::stop(__FUNCTION__, array());
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array());
 		return $spotResults;
 	} # fetchSpotList()
 	

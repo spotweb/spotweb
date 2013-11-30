@@ -76,7 +76,7 @@ class Bootstrap {
      * @return Dao_Base_Factory
      */
 	public function getDaoFactory() {
-        SpotTiming::start(__FUNCTION__);
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		@include "dbsettings.inc.php";
         if (empty($dbsettings)) {
@@ -102,7 +102,7 @@ class Bootstrap {
 		$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
 		$daoFactory->setConnection($dbCon);
 
-        SpotTiming::stop(__FUNCTION__);
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 		return $daoFactory;
 	} # getDaoFactory
 

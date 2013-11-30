@@ -8,7 +8,7 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot {
      * Remove older spots from the database
      */
     function deleteSpotsRetention($retention) {
-        SpotTiming::start(__FUNCTION__);
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
         $retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
         $this->_conn->modify("DELETE FROM spots WHERE spots.stamp < :time",
@@ -27,7 +27,7 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot {
 							(SELECT 1 FROM spots WHERE spots.messageid = spotstatelist.messageid)") ;
         $this->_conn->modify("DELETE FROM reportsposted WHERE NOT EXISTS
 							  (SELECT 1 FROM spots WHERE spots.messageid = reportsposted.inreplyto)") ;
-        SpotTiming::stop(__FUNCTION__, array($retention));
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($retention));
     } # deleteSpotsRetention
 
 	/*

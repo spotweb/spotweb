@@ -17,7 +17,7 @@ class Services_Providers_CommentImage {
 	 * Returns an the data of an gravatar comments url
 	 */
 	public function fetchGravatarImage($imageParams) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$imgDefaults = array('md5' => false,
 							 'size' => 80,
@@ -39,7 +39,7 @@ class Services_Providers_CommentImage {
 
 		$data = $this->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
 
-		SpotTiming::stop(__FUNCTION__, array());
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array());
 
 		return $data;
 	} # fetchGravatarImage
@@ -48,7 +48,7 @@ class Services_Providers_CommentImage {
 	 * Returns an Spotweb commenters' avatar image
 	 */
 	private function getAvatarImage($md5, $size, $default, $rating) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
 
 		list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 60*60);
@@ -58,7 +58,7 @@ class Services_Providers_CommentImage {
 		$data = array('content' => $data);
 		$data['metadata'] = $dimensions;
 		$data['ttl'] = (24 * 7 * 60 * 60);
-		SpotTiming::stop(__FUNCTION__, array($md5, $size, $default, $rating));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
 	} # getAvatarImage
 
