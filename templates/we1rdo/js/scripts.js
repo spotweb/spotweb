@@ -615,6 +615,8 @@ function attachAdvancedSearchBehaviour() {
                 attachDateSortBehaviour();
                 initSliders();
                 initializeCategoryTree();
+
+                $("input[name='search[unfiltered]']").prop('checked') ? $("div#tree").hide() : $("div#tree").show();
             } // if
 		}
 
@@ -631,15 +633,16 @@ function attachAdvancedSearchBehaviour() {
         });
 	});
 
-	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
 	$("input[name='search[unfiltered]']").click(function() {
-		if($("div#tree").is(":visible")) {
+		if($("input[name='search[unfiltered]']").prop('checked')) {
 			$("div#tree").hide();
 			$("ul.clearCategories label").html('<t>Use categories</t>');
 		} else {
 			$("div#tree").show();
 			$("ul.clearCategories label").html("<t>Don't use categories</t>");
 		}
+
+        return true;
 	});
 // console.timeEnd("7th-ready");
 } // attachAdvancedSearchBehaviour()
@@ -1007,10 +1010,10 @@ function submitFilterBtn(searchform) {
 	
 	// als de slider niet gewijzigd is van de default waardes, dan submitten
 	// we heel de slider niet
-	if ($('#min-filesize').val() == 'filesize:>:0') { 
+	if ($('#min-filesize').val() == 'filesize:>:DEF:0') {
 		$('form#filterform').find('#min-filesize').remove();
 	} // if
-	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
+	if ($('#max-filesize').val() == 'filesize:<:DEF:274877906944') {
 		$('form#filterform').find('#max-filesize').remove();
 	} // if
 	
