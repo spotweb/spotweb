@@ -230,6 +230,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                  * les not even consider it
                  */
                 if (isset($preModdedList[$msgId])) {
+                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
                     $skipCount++;
                     continue;
                 } # if
@@ -269,6 +270,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					 * spots are ignored
 					 */
 					if (($spot === false) || (!$spot['verified'])){
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
+
                         $invalidCount++;
 						continue;
 					} # if
@@ -291,6 +294,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						 * Don't add spots older than specified for the retention stamp
 						 */
 						if (($retentionStamp > 0) && ($spot['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+                            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
+
                             $skipCount++;
 							continue;
 						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
@@ -344,6 +349,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					 * Don't add older fullspots than specified for the retention stamp
 					 */
 					if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getFullSpot');
+
 						continue;
 					} # if
 
