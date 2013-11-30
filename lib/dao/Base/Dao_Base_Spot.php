@@ -176,7 +176,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * spot is not in the database, this function returns NULL
 	 */
 	function getFullSpot($messageId, $ourUserId) {
-		SpotTiming::start('SpotDb::' . __FUNCTION__);
+		SpotTiming::start(__CLASS__ . __FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -220,6 +220,8 @@ class Dao_Base_Spot implements Dao_Spot {
                 ':messageid' => array($messageId, PDO::PARAM_STR)
             ));
 		if (empty($tmpArray)) {
+            SpotTiming::stop(__CLASS__ . __FUNCTION__, array($messageId, $ourUserId));
+
 			return null;
 		} # if
 		$tmpArray = $tmpArray[0];
@@ -230,7 +232,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 
-		SpotTiming::stop('SpotDb::' . __FUNCTION__, array($messageId, $ourUserId));
+		SpotTiming::stop(__CLASS__ . __FUNCTION__, array($messageId, $ourUserId));
 		return $tmpArray;		
 	} # getFullSpot()
 
@@ -243,8 +245,9 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		# en update de spotrating
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
+        # en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET spotrating = 
 									(SELECT AVG(spotrating) as spotrating 
@@ -668,6 +671,8 @@ class Dao_Base_Spot implements Dao_Spot {
 		 * Ignore this error
 		 */
 		if (empty($spot)) {
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageId, $spot));
+
 			return ;
 		} # if
 
@@ -796,6 +801,8 @@ class Dao_Base_Spot implements Dao_Spot {
 		} # else
 		
 		if ($msgIds == null) {
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($headers));
+
 			return array();
 		} # if
 

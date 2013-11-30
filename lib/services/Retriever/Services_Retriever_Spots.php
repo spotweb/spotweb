@@ -231,6 +231,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                  */
                 if (isset($preModdedList[$msgId])) {
                     SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
+
                     $skipCount++;
                     continue;
                 } # if
@@ -255,7 +256,6 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
 					$hdrsParsed++;
 					SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
-                    SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
                     SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
 					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'],
 															$msgheader['From'], 
@@ -486,6 +486,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 						; # swallow error
 					}
 					catch(Exception $x) {
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':retrieveParseFullSpot', array());
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':daoGetFullSpot');
+
 						/**
 						 * Sometimes we get an 'No such article' error for a header we just retrieved,
 						 * if we want to retrieve the full article. This is messed up, but let's just
@@ -508,6 +511,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				} # if prefetch image and/or nzb
 
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
 				SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
