@@ -217,26 +217,30 @@ try {
 	 */
 	$daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
-	## External blacklist
-    if ($settings->get('external_blacklist')) {
-        $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
-        $bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
-        if ($bwResult === false) {
-            echo "Blacklist not modified, no need to update" . PHP_EOL;
-        } else {
-            echo "Finished updating blacklist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
-        } # else
-    } # if
+	try {
+		## External blacklist
+		if ($settings->get('external_blacklist')) {
+			$svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
+			$bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
+			if ($bwResult === false) {
+				echo "Blacklist not modified, no need to update" . PHP_EOL;
+			} else {
+				echo "Finished updating blacklist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+			} # else
+		} # if
 
-	## External whitelist
-    if ($settings->get('external_whitelist')) {
-        $bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
-        if ($bwResult === false) {
-            echo "Whitelist not modified, no need to update" . PHP_EOL;
-        } else {
-            echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
-        } # else
-    } # if
+		## External whitelist
+		if ($settings->get('external_whitelist')) {
+			$bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
+			if ($bwResult === false) {
+				echo "Whitelist not modified, no need to update" . PHP_EOL;
+			} else {
+				echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+			} # else
+		} # if
+	} catch (Exception $e) {
+		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!"
+	}
 
     ## Remove expired debuglogs
     echo "Expiring debuglog entries, if any, ";
