@@ -61,7 +61,7 @@ class SpotTemplateHelper {
 	 * Returns te amount of spots (for a specific filter) which are new for this user
 	 */
 	function getNewCountForFilter($filterStr) {
-        if ($this->_svcCacheNewSpotCount == null) {
+        if ($this->_svcCacheNewSpotCount === null) {
             $this->_svcCacheNewSpotCount = new Services_Actions_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
                                             $this->_daoFactory->getUserFilterDao(),
                                             $this->_daoFactory->getSpotDao(),

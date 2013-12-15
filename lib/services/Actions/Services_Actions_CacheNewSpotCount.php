@@ -27,7 +27,7 @@ class Services_Actions_CacheNewSpotCount {
 		/*
 		 * If necessary, fill the cache 
 		 */
-		if ($this->_cachedSpotCount == null) {
+		if ($this->_cachedSpotCount === null) {
 			$this->_cachedSpotCount = $this->_userFilterCountDao->getNewCountForFilters($userId);
 		 } # if
 
