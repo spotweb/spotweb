@@ -239,7 +239,7 @@ try {
 			} # else
 		} # if
 	} catch (Exception $e) {
-		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!"
+		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
 	}
 
     ## Remove expired debuglogs
