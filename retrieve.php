@@ -238,7 +238,7 @@ try {
 				echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
 			} # else
 		} # if
-	} catch (Exception $e) {
+	} catch (CorruptBWListException $e) {
 		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
 	}
 
