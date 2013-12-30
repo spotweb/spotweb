@@ -18,6 +18,7 @@ try {
 	 */
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
+    $spotDao = $daoFactory->getSpotDao();
 
 	/*
 	 * disable timing, all queries which are ran by retrieve this would make it use
@@ -118,7 +119,6 @@ try {
 	if (($settings->get('retention') > 0) && (!$retroMode)) {
         echo "Removing Spot information which is beyond retention period,";
 
-		$spotDao = $daoFactory->getSpotDao();
         $cacheDao = $daoFactory->getCacheDao();
         $commentDao = $daoFactory->getCommentDao();
 
@@ -147,6 +147,7 @@ try {
 	/*
 	 * Actually retrieve spots from the server
 	 */
+    $currentMaxSpotId = $spotDao->getMaxSpotId();
 	$retriever = new Services_Retriever_Spots($daoFactory, 
 											  $settings,
 											  $forceMode,
@@ -158,6 +159,16 @@ try {
         SpotTiming::displayCumul();
         SpotTiming::clear();
     } # if
+
+    ## Create collections, if enabled
+    if ($settings->get('create_collections')) {
+        echo "Creating collections starting from " . $currentMaxSpotId . ", ";
+
+        $svcPrvCreateColl = new Services_Collections_Create($daoFactory);
+        $svcPrvCreateColl->createCollections($currentMaxSpotId, null);
+
+        echo ", done" . PHP_EOL;
+    } // if
 
     ## Creating filter counts
 	if ($newSpotCount > 0) {
