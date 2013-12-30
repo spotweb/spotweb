@@ -20,6 +20,8 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE cache");
         $this->_dbcon->rawExec("ANALYZE TABLE moderatedringbuffer");
         $this->_dbcon->rawExec("ANALYZE TABLE usenetstate");
+        $this->_dbcon->rawExec("ANALYZE TABLE collections");
+        $this->_dbcon->rawExec("ANALYZE TABLE mastercollections");
 	} # analyze
 
     /*

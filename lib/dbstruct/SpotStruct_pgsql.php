@@ -20,6 +20,8 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("VACUUM ANALYZE cache");
         $this->_dbcon->rawExec("VACUUM ANALYZE moderatedringbuffer");
         $this->_dbcon->rawExec("VACUUM ANALYZE usenetstate");
+        $this->_dbcon->rawExec("VACUUM ANALYZE collections");
+        $this->_dbcon->rawExec("VACUUM ANALYZE mastercollections");
 	} # analyze
 
     /*

@@ -361,6 +361,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
 		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
+        $this->validateColumn('collectionid', 'spots', "INTEGER", NULL, false, '');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
@@ -655,6 +656,21 @@ abstract class SpotStruct_abs {
         $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
         $this->alterStorageEngine("debuglog", "InnoDB");
 
+        # ---- mastercollections table ---- #
+        $this->createTable('mastercollections', "ascii");
+        $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->validateColumn('tmdbid', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('tvrageid', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("mastercollections", "InnoDB");
+
+        # ---- collections table ---- #
+        $this->createTable('collections', "ascii");
+        $this->validateColumn('mcid', 'collections', 'INTEGER', "0", true, '');
+        $this->validateColumn('season', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('episode', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('year', 'collections', 'INTEGER', NULL, false, '');
+        $this->alterStorageEngine("collections", "InnoDB");
+
         ##############################################################################################
 		### Remove old sessions ######################################################################
 		##############################################################################################
@@ -783,7 +799,13 @@ abstract class SpotStruct_abs {
         # ---- Indexes on ring buffer of moderated messageids ----
         $this->validateIndex("idx_moderatedringbuffer_1", "UNIQUE", "moderatedringbuffer", array("messageid"));
 
-		# Create foreign keys where possible
+        # ---- Indexes on mastercollections ----
+        $this->validateIndex("idx_mastercollections_1", "UNIQUE", "mastercollections", array("title"));
+
+        # ---- Indexes on collections ----
+        $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "year"));
+
+        # Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('usergroups', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -795,7 +817,9 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('reportsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-		
+        $this->addForeignKey('spots', 'collectionid', 'collections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('collections', 'mcid', 'mastercollections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+
 		##############################################################################################
 		# Drop old columns ###########################################################################
 		##############################################################################################
