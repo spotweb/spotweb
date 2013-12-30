@@ -79,7 +79,8 @@ class Dao_Base_Collections implements Dao_Collections {
              * Make sure the master title record is in the local cache
              */
             if (!isset(self::$mc_CacheList[$result['title'] . '|' . $result['cattype']])) {
-                self::$mc_CacheList[$result['title']] = array('mcid' => $result['mcid'],
+                self::$mc_CacheList[$result['title'] . '|' . $result['cattype']] =
+                                                  array('mcid' => $result['mcid'],
                                                               'cattype' =>  $result['cattype'],
                                                               'collections' => array(),
                                                         );
