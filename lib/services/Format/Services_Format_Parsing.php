@@ -261,6 +261,7 @@ class Services_Format_Parsing {
 		$spot['subcatz'] = '';
 		$spot['wassigned'] = false;
 		$spot['spotterid'] = '';
+        $spot['collectionid'] = null;
 		$isRecentKey = $spot['keyid'] <> 1;
 		
 		/* 
