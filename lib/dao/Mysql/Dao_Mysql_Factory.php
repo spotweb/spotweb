@@ -98,4 +98,8 @@
          return new Dao_Mysql_DebugLog($this->_conn);
      } # getDebugLogDao
 
+     public function getCollectionsDao() {
+         return new Dao_Mysql_Collections($this->_conn);
+     } # getCollectionsDao
+
  } // Dao_Mysql_Factory

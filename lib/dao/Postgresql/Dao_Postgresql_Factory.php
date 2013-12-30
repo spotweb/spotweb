@@ -98,4 +98,8 @@
          return new Dao_Postgresql_DebugLog($this->_conn);
      } # getDebugLogDao
 
-} // Dao_Postgresql_Factory
+     public function getCollectionsDao() {
+         return new Dao_Postgresql_Collections($this->_conn);
+     } # getCollectionsDao
+
+ } // Dao_Postgresql_Factory

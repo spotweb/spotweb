@@ -98,4 +98,8 @@
          return new Dao_Sqlite_DebugLog($this->_conn);
      } # getDebugLogDao
 
+     public function getCollectionsDao() {
+         return new Dao_Sqlite_Collections($this->_conn);
+     } # getCollectionsDao
+
 } // Dao_Sqlite_Factory
