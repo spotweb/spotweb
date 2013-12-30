@@ -473,9 +473,38 @@ class SpotTemplateHelper {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:=:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makePosterUrl
 
-	/*
-	 * Creeert een linkje naar een zoekopdracht op spotterid
-	 */
+    /*
+     * Creates an collection search URL
+     */
+    function makeCollectionSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeCollectionSearchUrl
+
+    /*
+     * Creates an season search URL
+    */
+    function makeSeasonSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;search[value][]=Season:=:' . urlencode($spot['season']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeSeasonSearchUrl
+
+    /*
+     * Creates an episode search URL
+    */
+    function makeEpisodeSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+        $seasonFilter = '';
+        if (!empty($spot['season'])) {
+            $seasonFilter = '&amp;search[value][]=Season:=:' . urlencode($spot['season']);
+        } // season
+
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;search[value][]=Episode:=:' . urlencode($spot['episode']) . $seasonFilter . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeSeasonSearchUrl
+
+    /*
+     * Creeert een linkje naar een zoekopdracht op spotterid
+     */
 	function makeSpotterIdUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=SpotterID:=:' . urlencode($spot['spotterid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeSpotterIdUrl

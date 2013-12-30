@@ -214,6 +214,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[retrieve_reports]"><?php echo _('Retrieve reports'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[retrieve_reports]" <?php if ($this->_settings->get('retrieve_reports')) { echo 'checked="checked"'; } ?>></dd>
+
+                    <dt><label for="editsettingsform[create_collections]"><?php echo _('Create collections of multiple spots?'); ?></label></dt>
+                    <dd><input type="checkbox" name="editsettingsform[create_collections]" <?php if ($this->_settings->get('create_collections')) { echo 'checked="checked"'; } ?>></dd>
 				</dl>
 			</fieldset>
 		</div>

@@ -108,13 +108,17 @@ class Dao_Base_Spot implements Dao_Spot {
  												s.editstamp AS editstamp,
  												s.editor AS editor,
 												f.verified AS verified,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype,
+												COALESCE(mc.title, s.title) AS cleantitle,
+												mc.id as mcid
 												" . $extendedFieldList . "
 									 FROM spots AS s " . 
 									 $additionalTableList . 
 									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
+									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid)
+									 LEFT JOIN collections AS c ON (s.collectionid = c.id)
+									 LEFT JOIN mastercollections AS mc on (mc.id = c.mcid)
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
 									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) " .
@@ -205,9 +209,20 @@ class Dao_Base_Spot implements Dao_Spot {
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype,
+												COALESCE(mc.title, s.title) AS cleantitle,
+												mc.tmdbid as \"tmdbid\",
+												mc.tvrageid as \"tvrageid\",
+												mc.id as \"mcid\",
+												mc.tmdbid as \"tmdbid\",
+												mc.tvrageid as \"tvrageid\",
+												c.season as \"season\",
+												c.episode as \"episode\",
+												c.year as \"release_year\"
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = :ouruserid1))
+									            LEFT JOIN collections AS c ON (s.collectionid = c.id)
+            									LEFT JOIN mastercollections AS mc on (mc.id = c.mcid)
 												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = :ouruserid2) OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = :ouruserid3)) AND (wl.idtype = 2))
 												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
@@ -409,6 +424,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
 			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
+            $spot['collectionid'] = $spot['collectionid'];
 
             /*
              * Make sure we only store valid utf-8
@@ -417,18 +433,24 @@ class Dao_Base_Spot implements Dao_Spot {
             $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'UTF-8');
             $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'UTF-8');
 
+            if (is_array($spot['collectionid'])) {
+                var_dump($spot);
+                die();
+            }
+
 		} # foreach
         unset($spot);
 
 		$this->_conn->batchInsert($spots,
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp,
+														filesize, spotterid, collectionid)
 									VALUES",
                                   array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
                                         PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
-                                        PDO::PARAM_INT, PDO::PARAM_STR),
+                                        PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_INT),
 								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', 'collectionid')
 								  );
 
 		if (!empty($fullSpots)) {

@@ -21,7 +21,20 @@
 	if (is_array($spot['image'])) {
 		$imgMinWidth = min(260, $spot['image']['width']);
 	} # if
-	
+
+    /* Create an episode string, if so required */
+    $episodeString = '';
+    if (!empty($spot['season'])) {
+        $episodeString .= '<a href="' . $tplHelper->makeSeasonSearchUrl($spot) . '">' . _('season') . ' ' .$spot['season'] . "</a>";
+    } // if
+
+    if (!empty($spot['episode'])) {
+        if (!empty($episodeString)) {
+            $episodeString .= ', ';
+        } // if
+
+        $episodeString .= '<a href="' . $tplHelper->makeEpisodeSearchUrl($spot) . '">' . _('episode') . ' ' .$spot['episode'] . "</a>";
+    } // if
 ?>
 
 		<div id="details" class="details <?php echo $tplHelper->cat2CssClass($spot) ?>">
@@ -119,6 +132,21 @@ echo "</th>";
 								<tr><th> <?php echo _('Date'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['stamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['stamp'], 'spotdetail'); ?> </td> </tr>
 								<tr><th> <?php echo _('Size'); ?> </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
 								<tr><td class="break" colspan="2">&nbsp;</td> </tr>
+                                <?php
+                                    if ($spot['mcid'] !== null) {
+                                ?>
+                                        <tr><th> <?php echo _('Collection'); ?> </th> <td> <a href="<?php echo $tplHelper->makeCollectionSearchUrl($spot); ?>"><?php echo $spot['cleantitle']; if ($spot['release_year'] !== null) { echo '(' . $spot['release_year'] . ')'; } ?> </a> </td> </tr>
+                                <?php
+                                        if (!empty($episodeString)) {
+                                ?>
+                                        <tr><th> <?php echo _('Episode'); ?> </th> <td> <?php echo $episodeString; ?> </td> </tr>
+                                <?php
+                                        }
+                                ?>
+                                        <tr><td class="break" colspan="2">&nbsp;</td> </tr>
+                                <?php
+                                    } // if
+                                ?>
 								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>' rel="nofollow"><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
