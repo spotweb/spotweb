@@ -121,7 +121,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	function singleQuery($s, $p = array()) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_NUM);
         $stmt->closeCursor();
 		unset($stmt);
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));

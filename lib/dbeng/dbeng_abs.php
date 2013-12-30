@@ -111,10 +111,10 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
 
-	/*
-	 * Transforms an array of values to an list usable by an
-	 * IN statement
-	 */
+    /*
+     * Transforms an array of values to an list usable by an
+     * IN statement
+     */
 	function arrayValToIn($ar, $val) {
 		$tmpList = '';
 
