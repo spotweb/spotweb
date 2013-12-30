@@ -20,10 +20,10 @@ class Services_ParseCollections_Music extends Services_ParseCollections_Abstract
          */
         $tmpPos = strpos($this->spot['title'], '-');
         if ($tmpPos === false) {
-            return new Dto_CollectionInfo($this->prepareCollName($this->spot['title']), null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($this->spot['title']), null, null, null);
         } else {
             $artist = substr($this->spot['title'], 0, $tmpPos);
-            return new Dto_CollectionInfo($this->prepareCollName($artist), null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($artist), null, null, null);
         } // else
     }
 }

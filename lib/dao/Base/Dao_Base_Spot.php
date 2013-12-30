@@ -801,6 +801,21 @@ class Dao_Base_Spot implements Dao_Spot {
 		return $stamp;
 	} # getMaxMessageTime()
 
+    /**
+     * Returns the highest id of a spot in the database
+     */
+    function getMaxSpotId() {
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
+        $id = $this->_conn->singleQuery("SELECT MAX(id) AS id FROM spots");
+        if ($id == null) {
+            $id = 0;
+        } # if
+
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($id));
+
+        return $id;
+    } // getMaxSpotId
 
     /**
      * Returns the highest messageid from server

@@ -61,6 +61,7 @@ class Dao_Base_Collections implements Dao_Collections {
                                                            mc.title,
                                                            mc.tmdbid,
                                                            mc.tvrageid,
+                                                           mc.cattype,
                                                            c.season,
                                                            c.episode,
                                                            c.year
@@ -70,23 +71,24 @@ class Dao_Base_Collections implements Dao_Collections {
 
         // and merge it into the cache
         foreach($resultList as $result) {
-            $collection = new Dto_CollectionInfo($result['title'], $result['season'], $result['episode'], $result['year']);
+            $collection = new Dto_CollectionInfo($result['cattype'], $result['title'], $result['season'], $result['episode'], $result['year']);
             $collection->setMcId($result['mcid']);
             $collection->setId($result['cid']);
 
             /*
              * Make sure the master title record is in the local cache
              */
-            if (!isset(self::$mc_CacheList[$result['title']])) {
+            if (!isset(self::$mc_CacheList[$result['title'] . '|' . $result['cattype']])) {
                 self::$mc_CacheList[$result['title']] = array('mcid' => $result['mcid'],
-                                                              'collections' => array()
+                                                              'cattype' =>  $result['cattype'],
+                                                              'collections' => array(),
                                                         );
             } // if
 
             /*
              * And add it to the local cache array
              */
-            self::$mc_CacheList[$result['title']]['collections'][] = $collection;
+            self::$mc_CacheList[$result['title'] . '|' . $result['cattype']]['collections'][] = $collection;
         } // foreach
     } // loadCollectionCache
 
@@ -99,7 +101,8 @@ class Dao_Base_Collections implements Dao_Collections {
      */
     protected function matchCreateSpecificCollection(Dto_CollectionInfo $collToFind) {
         $title = $collToFind->getTitle();
-        foreach(self::$mc_CacheList[$title]['collections'] as $collection) {
+        $catType = $collToFind->getCatType();
+        foreach(self::$mc_CacheList[$title . '|' . $catType]['collections'] as $collection) {
             if ($collToFind->equalColl($collection)) {
                 return $collection;
             } // if
@@ -121,7 +124,7 @@ class Dao_Base_Collections implements Dao_Collections {
         $collToFind->setId($this->_conn->lastInsertId('collections'));
 
         // and add it to the cache
-        self::$mc_CacheList[$title]['collections'][] = $collToFind;
+        self::$mc_CacheList[$title . '|' . $catType]['collections'][] = $collToFind;
 
         return $collToFind;
     } // matchCreateSpecificCollection
@@ -155,9 +158,10 @@ class Dao_Base_Collections implements Dao_Collections {
         foreach($spotList as & $spot) {
             if ($spot['collectionInfo'] !== null) {
                 $title = $spot['collectionInfo']->getTitle();
+                $catType = $spot['collectionInfo']->getCatType();
 
-                if (isset(self::$mc_CacheList[$title])) {
-                    $spot['collectionInfo']->setMcId(self::$mc_CacheList[$title]['mcid']);
+                if (isset(self::$mc_CacheList[$title . '|' . $catType])) {
+                    $spot['collectionInfo']->setMcId(self::$mc_CacheList[$title . '|' . $catType]['mcid']);
 
                     /*
                      * Try to find this specific collection id. If it isn't matched,
@@ -167,7 +171,7 @@ class Dao_Base_Collections implements Dao_Collections {
                      */
                     $spot['collectionInfo'] = $this->matchCreateSpecificCollection($spot['collectionInfo']);
                 } else {
-                    $toFetch[$spot['collectionInfo']->getTitle()] = 1;
+                    $toFetch[$spot['collectionInfo']->getTitle()] = $spot['collectionInfo']->getCatType();
                 } // else
             } // if
         } // foreach
@@ -186,16 +190,18 @@ class Dao_Base_Collections implements Dao_Collections {
                  * Make sure the master title record is in the db, if we didn't get it
                  * the first time, create it now.
                  */
-                if (!isset(self::$mc_CacheList[$key])) {
-                    $this->_conn->exec('INSERT INTO mastercollections(title, tmdbid, tvrageid)
-                                              VALUES (:title, NULL, NULL)',
+                if (!isset(self::$mc_CacheList[$key . '|' . $val])) {
+                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, tmdbid, tvrageid)
+                                              VALUES (:title, :cattype, NULL, NULL)',
                         array(
                             ':title' => array($key, PDO::PARAM_STR),
+                            ':cattype' => array($val, PDO::PARAM_INT)
                         ));
 
                     // add the newly generated mastercollection to the local cache
-                    self::$mc_CacheList[$key] = array('mcid' => $this->_conn->lastInsertId('mastercollections'),
-                                                      'collections' => array());
+                    self::$mc_CacheList[$key . '|' . $val] = array('mcid' => $this->_conn->lastInsertId('mastercollections'),
+                                                                   'cattype' => $val,
+                                                                   'collections' => array());
                 } // if
             } // foreach
 

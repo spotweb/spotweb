@@ -1,6 +1,12 @@
 <?php
 
 class Dto_CollectionInfo {
+    const CATTYPE_BOOKS         = 1;
+    const CATTYPE_GAMES         = 2;
+    const CATTYPE_MOVIES        = 3;
+    const CATTYPE_MUSIC         = 4;
+    const CATTYPE_TV            = 5;
+
     /**
      * Cleaned up title
      *
@@ -31,14 +37,20 @@ class Dto_CollectionInfo {
      * @var int Id in the database of this collection
      */
     private $id = null;
+    /**
+     * @var int Category types
+     */
+    private $catType;
 
     /**
+     * @param $catType
      * @param $title
      * @param $season
      * @param $episode
      * @param year
      */
-    public function __construct($title, $season, $episode, $year) {
+    public function __construct($catType, $title, $season, $episode, $year) {
+        $this->setCatType($catType);
         $this->setTitle($title);
         $this->setSeason($season);
         $this->setEpisode($episode);
@@ -52,6 +64,7 @@ class Dto_CollectionInfo {
     public function equalColl(Dto_CollectionInfo $compare) {
         // do not use equals() as we only compare a subet
         return (
+                    ($this->getCatType() == $compare->getCatType()) &&
                     ($this->getTitle() == $compare->getTitle()) &&
                     ($this->getSeason() == $compare->getSeason()) &&
                     ($this->getEpisode() == $compare->getEpisode()) &&
@@ -153,5 +166,20 @@ class Dto_CollectionInfo {
     public function getMcId() {
         return $this->mcId;
     }
+
+    /**
+     * @param int $catType
+     */
+    public function setCatType($catType) {
+        $this->catType = $catType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCatType() {
+        return $this->catType;
+    }
+
 
 } 

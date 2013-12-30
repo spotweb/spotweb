@@ -9,7 +9,6 @@ class Services_Providers_SpotList {
 	public function __construct(Dao_Spot $spotDao) {
 		$this->_spotDao = $spotDao;
 	}  # ctor
-	
 
 	/*
 	 * Returns a list of spots

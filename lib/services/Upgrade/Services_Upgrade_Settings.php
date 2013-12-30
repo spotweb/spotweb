@@ -78,6 +78,7 @@ class Services_Upgrade_Settings {
 				));;
         $this->setIfNot('ms_translator_clientid', '');
         $this->setIfNot('ms_translator_clientsecret', '');
+        $this->setIfNot('create_collections', true);
 
         $this->updateSettingsVersion();
 	} # update()

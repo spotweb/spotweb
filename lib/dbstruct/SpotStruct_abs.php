@@ -659,6 +659,7 @@ abstract class SpotStruct_abs {
         # ---- mastercollections table ---- #
         $this->createTable('mastercollections', "ascii");
         $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->validateColumn('cattype', 'mastercollections', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdbid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('tvrageid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->alterStorageEngine("mastercollections", "InnoDB");
@@ -800,7 +801,7 @@ abstract class SpotStruct_abs {
         $this->validateIndex("idx_moderatedringbuffer_1", "UNIQUE", "moderatedringbuffer", array("messageid"));
 
         # ---- Indexes on mastercollections ----
-        $this->validateIndex("idx_mastercollections_1", "UNIQUE", "mastercollections", array("title"));
+        $this->validateIndex("idx_mastercollections_1", "UNIQUE", "mastercollections", array("title", "cattype"));
 
         # ---- Indexes on collections ----
         $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "year"));

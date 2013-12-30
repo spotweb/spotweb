@@ -83,10 +83,10 @@ class Services_ParseCollections_Tv extends Services_ParseCollections_Abstract {
             $episode = null;
             $season = $matches[1] . $matches[2];
         } else {
-            return new Dto_CollectionInfo($this->prepareCollName($this->spot['title']), null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_TV, $this->prepareCollName($this->spot['title']), null, null, null);
         } // if
 
         $titleStr = substr($this->spot['title'], 0, strpos($title, $matches[0]));
-        return new Dto_CollectionInfo($this->prepareCollName($titleStr), $season, $episode, $year);
+        return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_TV, $this->prepareCollName($titleStr), $season, $episode, $year);
     } // parseSpot
 }

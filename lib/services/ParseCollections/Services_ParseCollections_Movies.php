@@ -58,6 +58,6 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
             $titleStr = $title;
         } // else
 
-        return new Dto_CollectionInfo($this->prepareCollName($titleStr), $season, $episode, $year);
+        return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES, $this->prepareCollName($titleStr), $season, $episode, $year);
     } // parseSpot
 }

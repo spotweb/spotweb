@@ -30,13 +30,13 @@ class Services_ParseCollections_Books extends Services_ParseCollections_Abstract
                 $season = $matches[3];
                 $titleStr = substr($this->spot['title'], 0, strpos($this->spot['title'], $matches[0]));
 
-                return new Dto_CollectionInfo($this->prepareCollName($titleStr), $season, $episode, null);
+                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($titleStr), $season, $episode, null);
             } else {
-                return new Dto_CollectionInfo($this->prepareCollName($this->spot['title']), null, null, null);
+                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($this->spot['title']), null, null, null);
             } // else
         } else {
             $author = substr($this->spot['title'], 0, $tmpPos);
-            return new Dto_CollectionInfo($this->prepareCollName($author), null, null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($author), null, null, null, null);
         } // else
 
         return null;
