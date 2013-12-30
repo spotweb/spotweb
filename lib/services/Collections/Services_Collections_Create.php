@@ -42,7 +42,7 @@ class Services_Collections_Create {
             /**
              * Get the current list of spots
              */
-            $parsedSearch['filter'] = ' (s.id > ' . (int) ($startingPoint) . ') ';
+            $parsedSearch['filter'] = ' (s.id > ' . (int) ($startingPoint) . ') AND (s.collectionid IS NULL) ';
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,
                 $increment,
