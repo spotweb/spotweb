@@ -1,18 +1,53 @@
 <?php
+/* ************************************************************************ */
+/* ************************************************************************ */
+/* ************************************************************************ */
+/*       Please do not modify this file. You can override settings          */
+/*     in a file named 'ownsettings.php' which will be automatically        */
+/*                included for every Spotweb installation.                  */
+/* ************************************************************************ */
+/* ************************************************************************ */
+/* ************************************************************************ */
 
-# Waar is SpotWeb geinstalleerd (voor de buitenwereld), deze link is nodig voor zaken als de RSS feed en de 
-# sabnzbd integratie. Let op de afsluitende slash "/"!
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * Where is Spotweb intalled / accessible for the outside world?
+ * We try to automatically create the proper URL to this site, but 
+ * if this somehow fails please set it yourselve. Spotweb url is used
+ * for things like pushing the NZB file to your download manager, and
+ * in notifications to users.
+ */
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
     $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
 } else {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
 
-# Waar staat je OpenSSL.cnf ? Deze file moet leesbaar zijn voor de webserver als je de OpenSSL
-# extensie geinstalleerd hebt
+/*
+ * Where is your 'openssl.cnf' file stored? This file needs to be readable
+ * for OpenSSL to function. OpenSSL greatly speeds up the verifying and
+ * signing of new keys.
+ */
 $settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
 
-# Cookie host
+/*
+ * Define a cookie host. We try to automtaically set this, but feel
+ * free to override this in the correct place.
+ * 
+ * Make sure you set a valid cookie host if you do decide to override
+ * this as it will cause issues with logging in etc if you don't.
+ */
 if (isset($_SERVER['HTTP_HOST'])) {
 	// Strip leading periods
 	$cookie_domain = ltrim($_SERVER['HTTP_HOST'], '.');
@@ -27,8 +62,10 @@ if (isset($_SERVER['HTTP_HOST'])) {
 	$cookie_domain = '.' . $cookie_domain[0];
 } # if
 
-// Per RFC 2109, cookie domains must contain at least one dot other than the
-// first. For hosts such as 'localhost' or IP Addresses we don't set a cookie domain.
+/*
+ * Per RFC 2109, cookie domains must contain at least one dot other than the
+ * first. For hosts such as 'localhost' or IP Addresses we don't set a cookie domain.
+ */
 if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_var(ltrim($cookie_domain, '.'), FILTER_VALIDATE_IP)) {
 	$settings['cookie_host'] = $cookie_domain;
 	unset($cookie_domain);
@@ -36,9 +73,14 @@ if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_
 	$settings['cookie_host'] = '';
 } # else
 
-# vertaal de categorieen uit spots (zie SpotCategories.php) naar sabnzbd categorieen
+/*
+ * translate Spotweb 'categories' to Sabnzbd+ categories. We use a very basic default,
+ * but feel free to overide them from within your ownsettings.php
+ *
+ * Currently these categories are system wide.
+ */
 $settings['sabnzbd']['categories'] = Array(
-		0	=> Array('default' 	=> "movies",				# Default categorie als niets anders matched
+		0	=> Array('default' 	=> "movies",				# Default categorie when nothing else matches
 					 'a5'		=> "books",
 					 'd2'		=> "anime",
 					 'd11'		=> "tv",
@@ -46,7 +88,6 @@ $settings['sabnzbd']['categories'] = Array(
 		1	=> Array('default'	=> 'music'),
 		2	=> Array('default'	=> 'games'),
 		3	=> Array('default'	=> 'apps',
-					 'a3'		=> 'consoles',
 					 'a3'		=> 'consoles',
 					 'a4'		=> 'consoles',
 					 'a5'		=> 'consoles',
@@ -61,20 +102,27 @@ $settings['sabnzbd']['categories'] = Array(
 					 'a14'		=> 'pda',
 					 'a15'		=> 'pda')
 	);
-					 
-#
-# Include eventueel eigen settings, dit is ook een PHP file. 
-# Settings welke hierin staan zullen de instellingen van deze file overiden.
-#
-# We raden aan om je instellingen in deze eigen file te zetten zodat bij een upgrade
-# je instellingen bewaard blijven.
-#
-if (@file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
-if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }	# <== deze lijn mag je eventueel verwijderen	
 
-# QuickLinks, we testen eerst of hij niet al door iemand anders is gezet in ownsettings.php en
-# anders vullen we hem zelf op. We kunnen dit niet boven ownsettings.php plaatsen want dan missen
-# we de keep_watchlist en keep_downloadlist settings.
+/*
+ * Include, if any, ownsettings which should also be a valid PHP file.
+ * Settings set in this file, will override settings from this file,
+ * so please always use the 'ownsettings.php' file.
+ *
+ */					 
+if (@file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }
+if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }
+
+/*
+ * List of quicklinks. First we test whether those are set within the 'ownsettings.php' file,
+ * because if they are we don't want to override or add to them.
+ *
+ * We cannot create this before ownsetings.php (so an user could add/change existing links),
+ * because in earlier versions of Spotweb we tested for 'keep_watchlist' and 'keep_downloads'
+ * settings in this file. 
+ *
+ * If we would change it now, it would break compatibility with existing installations, and we
+ * don't want to do that until we move this configuration to the settings page in whole.
+ */
 if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'] = Array();
 	$settings['quicklinks'][] = Array('Reset filters', "home", "?search[tree]=&amp;search[unfiltered]=true", "", Array(SpotSecurity::spotsec_view_spots_index, ''), null);
@@ -87,23 +135,35 @@ if (!isset($settings['quicklinks'])) {
 	$settings['quicklinks'][] = Array('Documentation', "help", "https://github.com/spotweb/spotweb/wiki", "external", Array(SpotSecurity::spotsec_view_spots_index, ''), null);
 } # if isset
 
-# Als de OpenSSL module geladen is, moet de openssl_cnf_path naar een 
-# leesbare configuratie file wijzen
+/*
+ * When the OpenSSL module is loaded, make sure the "openssl_cnf_path"
+ * setting variable points to an readable cnf file.
+ */
 if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"))) {
 	throw new InvalidOwnSettingsSettingException("openssl_cnf_path does not contain a readable OpenSSL configuration filepath");
 } # if
 
-# Voeg een sluitende slash toe als die er nog niet is
+
+/* 
+ * Add a closing slash to the Spotweb url
+ */
 if (substr($settings['spotweburl'], -1) != '/') {
 	$settings['spotweburl'] .= '/';
 } # if
 
-# Preferences lokaal niet meer toestaan
+/*
+ * In older Spotweb versions, users could set preferences
+ * in this file. We don't allow this anymore as they are
+ * set per user.
+ */
 if (isset($settings['prefs'])) {
 	throw new InvalidOwnSettingsSettingException("Preferences are set per user, not in your ownsettings.php");
 } # if
 
-# deprecated settings niet meer toestaan
+/*
+ * Several settings are deprecated. Don't allow them to be set
+ * in this system anymore.
+ */
 $ownsettingserror = '';
 $array = array('blacklist_url', 'cookie_expires', 'deny_robots', 'enable_stacktrace', 'enable_timing', 'external_blacklist', 'nntp_hdr', 
 	'nntp_nzb', 'nntp_post', 'prefetch_image', 'prefetch_nzb', 'retention', 'retrieve_comments', 'retrieve_full', 'retrieve_full_comments', 
@@ -135,16 +195,5 @@ foreach($settings['quicklinks'] as $link) {
 if (!empty($settings['db'])) {
 		throw new InvalidOwnSettingsSettingException("You need to remove the database settings from your ownsettings.php file and open install.php from your webbrowser. If you are upgrading, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
 } # if
-
-/*
- * Allow database settings to be entered in dbsettings.inc.php
- */
-@include "dbsettings.inc.php";
-if (empty($dbsettings)) {
-		throw new InvalidOwnSettingsSettingException("No databasesettings have been entered, please use the 'install.php' wizard to install and configure Spotweb" . PHP_EOL . 
-									"If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
-} else {
-	$settings['db'] = $dbsettings;
-} # else
 
 if (file_exists('reallymyownsettings.php')) { include_once('reallymyownsettings.php'); }

@@ -1,16 +1,12 @@
 <?php
 
 class SpotNotificationTemplate {
-	protected $_db;
 	protected $_settings;
 	protected $_currentSession;
-	protected $_spotSec;
-	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
-		$this->_db = $db;
+
+	function __construct(Services_Settings_Container $settings, array $currentSession) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
-		$this->_spotSec = $currentSession['security'];
 	} # ctor
 
 	/*
@@ -40,7 +36,7 @@ class SpotNotificationTemplate {
 		# en de rest is daadwerkelijke buffer
 		$notificationArray = explode("\n", $notificationContent);
 		
-		SpotTiming::stop(__FUNCTION__ . ':notifications:' . $tpl, array($params));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':notifications:' . $tpl, array($params));
 		
 		return array('title' => $notificationArray[0],
 					 'body' => array_slice($notificationArray, 2));

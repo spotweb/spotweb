@@ -1,11 +1,12 @@
 <?php
+
 class SpotPage_catsjson extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		
-		$this->sendContentTypeHeader('html');
+		$this->sendContentTypeHeader('json');
 
 		$this->_params = $params;
 	} # ctor
@@ -26,7 +27,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	 * logic whatsoever
 	 */
 	function renderSelectBox() {
-		# stuur een 'always cache' header zodat dit gecached kan worden
+		/*
+		 * The categorylisting is very static, so ask the user to always cache
+		 */
 		$this->sendExpireHeaders(false);
 		
 		$category = $this->_params['category'];
@@ -37,7 +40,7 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		
 		/* Validate the selected category */
 		if (!isset(SpotCategories::$_head_categories[$category])) {
-			return '';
+			return;
 		} # if
 
 		$returnArray = array();
@@ -69,9 +72,32 @@ class SpotPage_catsjson extends SpotPage_Abs {
 					} # if
 					
 					break;
-			} # case subcatz
+			} # case subcata, subcatb, subcatc, subcatd
+			
+			# Used to show all (including deprecated) categories. This is required when editing
+			# a spot since some spots still use deprecated categories which we don't want to lose.
+			# Depreicated categories will be marked as such.
+			case 'subcata_old':
+			case 'subcatb_old':
+			case 'subcatc_old':
+			case 'subcatd_old': {
+					$scType = $this->_params['rendertype'][6];
+
+					if (isset(SpotCategories::$_categories[$category][$scType])) {
+						foreach(SpotCategories::$_categories[$category][$scType] as $key => $value) {
+							if (in_array('z'. $genre, $value[1])) {
+								$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0];
+							} # if
+							elseif (in_array('z'. $genre, $value[2])) {
+								$returnArray['cat' . $category . '_z' . $genre . '_' . $scType . $key] = $value[0] . " (" . _("deprecated") . ")";
+							} # elseif
+						} # foreach
+					} # if
+
+					break;
+				} # case subcata_old, subcatb_old, subcatc_old, subcatd_old
 		} # switch
-		
+
 		if (isset(SpotCategories::$_subcat_descriptions[$category][$scType])) {
 			echo json_encode(
 						array('title' => SpotCategories::$_subcat_descriptions[$category][$scType],
@@ -84,25 +110,26 @@ class SpotPage_catsjson extends SpotPage_Abs {
 	} # renderSelectBox
 	
 	/*
-	 * Geeft JSON terug interpreteerbaar voor DynaTree om de categorylist als boom
-	 * te kunnen weergeven
+	 * Returns a JSON back for DynaTree so it can render the categorylist as a tree
 	 */
 	function categoriesToJson() {
-		# stuur een expires header zodat dit niet gecached is, hierin staat 
-		# state van de boom
+		/*
+		 * Don't allow the tree to be cached, it contains the current state of the
+		 * tree
+		 */
 		$this->sendExpireHeaders(true);
 
 		/* First parse the search string so we know which items to select and which not */
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'], 
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		$parsedSearch = $svcSearchQp->filterToQuery($this->_params['search'], 
 													  array(),
 													  $this->_currentSession,
-													  $spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
+													  $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 		if ($this->_params['disallowstrongnot']) {
 			$parsedSearch['strongNotList'] = '';
 		} # if
-		$compressedCatList = ',' . $spotsOverview->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
+		$compressedCatList = ',' . $svcSearchQp->compressCategorySelection($parsedSearch['categoryList'], $parsedSearch['strongNotList']);
 //error_log($this->_params['search']['tree']);
 //var_dump($parsedSearch);
 //var_dump($compressedCatList);
@@ -111,7 +138,9 @@ class SpotPage_catsjson extends SpotPage_Abs {
 		echo "[";
 		
 		$hcatList = array();
-		foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
+        $typeCatTmp = '';
+        $hcatTmp = '';
+        foreach(SpotCategories::$_head_categories as $hcat_key => $hcat_val) {
 			# The uer can opt to only show a specific category, if so, skip all others
 			if (($hcat_key != $this->_params['category']) && ($this->_params['category'] != '*')) {
 				continue;
@@ -153,7 +182,6 @@ class SpotPage_catsjson extends SpotPage_Abs {
 							$isStrongNot = strpos($compressedCatList, ',~cat' . $hcat_key . '_z' . $type_key . ',') !== false ? true : false;
 							if ($isStrongNot) {
 								$isStrongNot = '"strongnot": true, "addClass": "strongnotnode", ';
-								$isSelected = 'true';
 							} else {
 								$isStrongNot = '';
 							} # if

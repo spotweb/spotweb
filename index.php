@@ -1,87 +1,49 @@
 <?php
 error_reporting(2147483647);
+ini_set('display_errors', 1);
 
 require_once "lib/SpotClassAutoload.php";
-require_once "lib/SpotTranslation.php";
+SpotClassAutoload::register();
+
 #- main() -#
 try {
 	SpotTranslation::initialize('en_US');
 	
 	SpotTiming::enable();
 	SpotTiming::start('total');
-	SpotTiming::start('settings');
-	require_once "settings.php";
-	SpotTiming::stop('settings');
-	
-	# database object
-	$db = new SpotDb($settings['db']);
-	$db->connect();
 
-	/*
-	 * Create the setting object as soon as possible because 
-	 * we need it for a lot of stuff
-	 */
-	$settings = SpotSettings::singleton($db, $settings);
+    /*
+     * Initialize the Spotweb base classes
+     */
+	$bootstrap = new Bootstrap();
+	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
-	/*
-	 * Disable the timing part as soon as possible because it 
-	 * gobbles memory
-	 */
-	if (!$settings->get('enable_timing')) {
-		SpotTiming::disable();
-	} # if
+    /*
+     * Enable debug logging mechanism if timing is enabled
+     */
+    if ($settings->get('enable_timing')) {
+        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
+    } # if
 
-	/*
-	 * The basics has been setup, lets check if the schema needs
-	 * updating
-	 */
-	if (!$settings->schemaValid()) {
-		throw new SchemaNotUpgradedException();
-	} # if
-
-	/*
-	 * Does our global setting table need updating? 
-	 */
-	if (!$settings->settingsValid()) {
-		throw new SettingsNotUpgradedException();
-	} # if
-
-	/*
-	 * Because users are asked to modify ownsettings.php themselves, it is 
-	 * possible they create a mistake and accidentally create output from it.
-	 *
-	 * This output breaks a lot of stuff like download integration, image generation
-	 * and more.
-	 *
-	 * We try to check if any output has been submitted, and if so, we refuse
-	 * to continue to prevent all sorts of confusing bug reports
-	 */
-	if ((headers_sent()) || ((int) ob_get_length() > 0)) {
-		throw new OwnsettingsCreatedOutputException();
-	} # if
-	
 	# helper functions for passed variables
-	$req = new SpotReq();
-	$req->initialize($settings);
-
 	$page = $req->getDef('page', 'index');
 
 	# Retrieve the users object of the user which is logged on
 	SpotTiming::start('auth');
-	$spotUserSystem = new SpotUserSystem($db, $settings);
+	$svcUserAuth = new Services_User_Authentication($daoFactory, $settings);
 	if ($req->doesExist('apikey')) {
-		$currentSession = $spotUserSystem->verifyApi($req->getDef('apikey', ''));
+		$currentSession = $svcUserAuth->verifyApi($req->getDef('apikey', ''));
 	} else {
-		$currentSession = $spotUserSystem->useOrStartSession(false);
+		$currentSession = $svcUserAuth->useOrStartSession(false);
 	} # if
 
-	/*
-	 * If three is no user object, we don't have a security system
-	 * either. Without a security system we cannot boot, so fatal
-	 */
+    /*
+     * If three is no user object, we don't have a security system
+     * either. Without a security system we cannot boot, so fatal
+     */
 	if ($currentSession === false) {
 		if ($req->doesExist('apikey')) {
-			$currentSession = $spotUserSystem->useOrStartSession(true);
+			$currentSession = $svcUserAuth->useOrStartSession(true);
 			
 			throw new PermissionDeniedException(SpotSecurity::spotsec_consume_api, 'invalid API key');
 		} else {
@@ -111,7 +73,7 @@ try {
 	$req->setUserId($currentSession['user']['userid']);
 
 	/*
-	 * Only now it is safe to check wether the user is actually alowed 
+	 * Only now it is safe to check wether the user is actually allowed
 	 * to authenticate with an API key 
 	 */
 	if ($req->doesExist('apikey')) {
@@ -130,8 +92,9 @@ try {
 	SpotTiming::start('renderpage');
 	switch($page) {
 		case 'render' : {
-				$page = new SpotPage_render($db, $settings, $currentSession, $req->getDef('tplname', ''),
-							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+    			$page = new SpotPage_render($daoFactory, $settings, $currentSession, $req->getDef('tplname', ''),
+							Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 								  'data' => $req->getDef('data', array()),
 								  'messageid' => $req->getDef('messageid', ''),
 								  'pagenr' => $req->getDef('pagenr', 0),
@@ -145,20 +108,20 @@ try {
 
 		case 'getspot' : {
 				if (strpos($_SERVER['HTTP_USER_AGENT'], "SABnzbd+") === 0) {
-					$page = new SpotPage_getnzb($db, $settings, $currentSession,
+					$page = new SpotPage_getnzb($daoFactory, $settings, $currentSession,
 						Array('messageid' => $req->getDef('messageid', ''),
 							'action' => $req->getDef('action', 'display'),
 							'username' => $req->getDef('username', ''),
 							'apikey' => $req->getDef('apikey', '')));
 				} else {
-					$page = new SpotPage_getspot($db, $settings, $currentSession, $req->getDef('messageid', ''));
+					$page = new SpotPage_getspot($daoFactory, $settings, $currentSession, array('messageid' => $req->getDef('messageid', '')));
 				} # else
 				$page->render();
 				break;
 		} # getspot
 
 		case 'getnzb' : {
-				$page = new SpotPage_getnzb($db, $settings, $currentSession,
+				$page = new SpotPage_getnzb($daoFactory, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display'),
 									  'username' => $req->getDef('username', ''),
@@ -168,7 +131,7 @@ try {
 		}
 
 		case 'getnzbmobile' : {
-				$page = new SpotPage_getnzbmobile($db, $settings, $currentSession,
+				$page = new SpotPage_getnzbmobile($daoFactory, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'action' => $req->getDef('action', 'display')));
 				$page->render();
@@ -176,40 +139,41 @@ try {
 		} # getnzbmobile
 
 		case 'erasedls' : {
-				$page = new SpotPage_erasedls($db, $settings, $currentSession);
+				$page = new SpotPage_erasedls($daoFactory, $settings, $currentSession);
 				$page->render();
 				break;
 		} # erasedls
 
 		case 'catsjson' : {
-				$page = new SpotPage_catsjson(
-									$db, 
-									$settings, 
-									$currentSession,
-									Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
-									      'subcatz' => $req->getDef('subcatz', '*'),
-										  'category' => $req->getDef('category', '*'),
-										  'rendertype' => $req->getDef('rendertype', 'tree'),
-										  'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
-				$page->render();
-				break;
-		} # getspot
+                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+                $page = new SpotPage_catsjson(
+                                        $daoFactory,
+                                        $settings,
+                                        $currentSession,
+                                        Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
+                                              'subcatz' => $req->getDef('subcatz', '*'),
+                                              'category' => $req->getDef('category', '*'),
+                                              'rendertype' => $req->getDef('rendertype', 'tree'),
+                                              'disallowstrongnot' => $req->getDef('disallowstrongnot', '')));
+                    $page->render();
+                    break;
+        } # catsjson
 
 		case 'markallasread' : {
-				$page = new SpotPage_markallasread($db, $settings, $currentSession);
+				$page = new SpotPage_markallasread($daoFactory, $settings, $currentSession);
 				$page->render();
 				break;
 		} # markallasread
 
 		case 'getimage' : {
-			$page = new SpotPage_getimage($db, $settings, $currentSession,
+			$page = new SpotPage_getimage($daoFactory, $settings, $currentSession,
 								Array('messageid' => $req->getDef('messageid', ''),
 									  'image' => $req->getDef('image', Array())));
 			$page->render();
 			break;
 		}
 		case 'newznabapi' : {
-			$page = new SpotPage_newznabapi($db, $settings, $currentSession,
+			$page = new SpotPage_newznabapi($daoFactory, $settings, $currentSession,
 					Array('t' => $req->getDef('t', ''),
 						  'messageid' => $req->getDef('id', ''),
 						  'apikey' => $req->getDef('apikey', ''),
@@ -225,7 +189,8 @@ try {
 						  'extended' => $req->getDef('extended', ''),
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', ''),
-						  'del' => $req->getDef('del', '')
+						  'del' => $req->getDef('del', ''),
+                          'spotcat' => $req->getDef('spotcat', '')
 					)
 			);
 			$page->render();
@@ -233,8 +198,9 @@ try {
 		} # api
 
 		case 'rss' : {
-			$page = new SpotPage_rss($db, $settings, $currentSession,
-					Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+            $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+			$page = new SpotPage_rss($daoFactory, $settings, $currentSession,
+					Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 						  'page' => $req->getDef('page', 0),
 						  'sortby' => $req->getDef('sortby', ''),
 						  'sortdir' => $req->getDef('sortdir', ''),
@@ -246,28 +212,28 @@ try {
 		} # rss
 
 		case 'statics' : {
-				$page = new SpotPage_statics($db, $settings, $currentSession,
+				$page = new SpotPage_statics($daoFactory, $settings, $currentSession,
 							Array('type' => $req->getDef('type', '')));
 				$page->render();
 				break;
 		} # statics
 
 		case 'createuser' : {
-				$page = new SpotPage_createuser($db, $settings, $currentSession,
+				$page = new SpotPage_createuser($daoFactory, $settings, $currentSession,
 							Array('createuserform' => $req->getForm('createuserform')));
 				$page->render();
 				break;
 		} # createuser
 
 		case 'editsettings' : {
-				$page = new SpotPage_editsettings($db, $settings, $currentSession,
+				$page = new SpotPage_editsettings($daoFactory, $settings, $currentSession,
 							Array('editsettingsform' => $req->getForm('editsettingsform')));
 				$page->render();
 				break;
 		} # editsettings
 
 		case 'edituserprefs' : {
-				$page = new SpotPage_edituserprefs($db, $settings, $currentSession,
+				$page = new SpotPage_edituserprefs($daoFactory, $settings, $currentSession,
 							Array('edituserprefsform' => $req->getForm('edituserprefsform'),
 								  'userid' => $req->getDef('userid', ''),
 								  'data' => $req->getDef('data', array()),
@@ -277,7 +243,7 @@ try {
 		} # edituserprefs
 
 		case 'editsecgroup' : {
-				$page = new SpotPage_editsecgroup($db, $settings, $currentSession,
+				$page = new SpotPage_editsecgroup($daoFactory, $settings, $currentSession,
 							Array('editsecgroupform' => $req->getForm('editsecgroupform'),
 							      'groupid' => $req->getDef('groupid', 0)));
 				$page->render();
@@ -285,7 +251,7 @@ try {
 		} # editsecgroup
 
 		case 'editfilter' : {
-				$page = new SpotPage_editfilter($db, $settings, $currentSession,
+				$page = new SpotPage_editfilter($daoFactory, $settings, $currentSession,
 							Array('editfilterform' => $req->getForm('editfilterform'),
 								  'orderfilterslist' => $req->getDef('orderfilterslist', array()),
 								  'search' => $req->getDef('search', array()),
@@ -298,15 +264,23 @@ try {
 		} # editfilter
 
 		case 'edituser' : {
-				$page = new SpotPage_edituser($db, $settings, $currentSession,
+				$page = new SpotPage_edituser($daoFactory, $settings, $currentSession,
 							Array('edituserform' => $req->getForm('edituserform'),
 								  'userid' => $req->getDef('userid', '')));
 				$page->render();
 				break;
 		} # edituser
 
+		case 'editspot' : {
+			$page = new SpotPage_editspot($daoFactory, $settings, $currentSession,
+							Array('editspotform' => $req->getForm('editspotform'),
+								  'messageid' => $req->getDef('messageid', '')));
+			$page->render();
+			break;
+		} # editspot
+
 		case 'login' : {
-				$page = new SpotPage_login($db, $settings, $currentSession,
+				$page = new SpotPage_login($daoFactory, $settings, $currentSession,
 							Array('loginform' => $req->getForm('loginform'),
 							      'data' => $req->getDef('data', array())));
 				$page->render();
@@ -314,7 +288,7 @@ try {
 		} # login
 
 		case 'postcomment' : {
-				$page = new SpotPage_postcomment($db, $settings, $currentSession,
+				$page = new SpotPage_postcomment($daoFactory, $settings, $currentSession,
 							Array('commentform' => $req->getForm('postcommentform'),
 								  'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
@@ -322,14 +296,14 @@ try {
 		} # postcomment
 
 		case 'postspot' : {
-				$page = new SpotPage_postspot($db, $settings, $currentSession,
+				$page = new SpotPage_postspot($daoFactory, $settings, $currentSession,
 							Array('spotform' => $req->getForm('newspotform')));
 				$page->render();
 				break;
 		} # postspot
 		
 		case 'reportpost' : {
-				$page = new SpotPage_reportpost($db, $settings, $currentSession, 
+				$page = new SpotPage_reportpost($daoFactory, $settings, $currentSession, 
 							Array ('reportform' => $req->getForm('postreportform'),
 								   'inreplyto' => $req->getDef('inreplyto', '')));
 				$page->render();
@@ -337,38 +311,41 @@ try {
 		} # reportpost
 
 		case 'versioncheck' : {
-				$page = new SpotPage_versioncheck($db, $settings, $currentSession, array());
+				$page = new SpotPage_versioncheck($daoFactory, $settings, $currentSession, array());
 				$page->render();
 				break;
 		} # versioncheck
 
 		case 'blacklistspotter' : {
-				$page = new SpotPage_blacklistspotter($db, $settings, $currentSession, 
+				$page = new SpotPage_blacklistspotter($daoFactory, $settings, $currentSession, 
 							Array ('blform' => $req->getForm('blacklistspotterform')));
 				$page->render();
 				break;
 		} # blacklistspotter
 		
 		case 'logout' : {
-				$page = new SpotPage_logout($db, $settings, $currentSession);
+				$page = new SpotPage_logout($daoFactory, $settings, $currentSession);
 				$page->render();
 				break;
 		} # logout
 
-		case 'sabapi' : {
-			$page = new SpotPage_sabapi($db, $settings, $currentSession);
-			$page->render();
-			break;
-		} # sabapi
-
 		case 'nzbhandlerapi' : {
-			$page = new SpotPage_nzbhandlerapi($db, $settings, $currentSession);
+			$page = new SpotPage_nzbhandlerapi($daoFactory, $settings, $currentSession,
+							Array('nzbhandlerapikey' => $req->getDef('nzbhandlerapikey', ''),
+								   'action' => $req->getDef('action', ''),
+								   'limit' => $req->getDef('limit', ''),
+								   'id' => $req->getDef('id', ''),
+								   'category' => $req->getDef('category', ''),
+								   'priority' => $req->getDef('priority', ''),
+								   'password' => $req->getDef('password', ''),
+								   'name' => $req->getDef('name', ''))
+						);
 			$page->render();
 			break;
 		} # nzbhandlerapi
 		
 		case 'twitteroauth' : {
-			$page = new SpotPage_twitteroauth($db, $settings, $currentSession,
+			$page = new SpotPage_twitteroauth($daoFactory, $settings, $currentSession,
 					Array('action' => $req->getDef('action', ''),
 						  'pin' => $req->getDef('pin', '')));
 			$page->render();
@@ -376,7 +353,7 @@ try {
 		} # twitteroauth
 
 		case 'statistics' : {
-			$page = new SpotPage_statistics($db, $settings, $currentSession,
+			$page = new SpotPage_statistics($daoFactory, $settings, $currentSession,
 					Array('limit' => $req->getDef('limit', '')));
 			$page->render();
 			break;
@@ -385,12 +362,13 @@ try {
 		default : {
 				SpotTiming::start('renderpage->case-default');
 				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
-					$page = new SpotPage_getimage($db, $settings, $currentSession,
+					$page = new SpotPage_getimage($daoFactory, $settings, $currentSession,
 							Array('messageid' => $req->getDef('messageid', ''),
 								  'image' => array('type' => 'speeddial')));
 				} else {
-					$page = new SpotPage_index($db, $settings, $currentSession,
-							Array('search' => $req->getDef('search', $spotUserSystem->getIndexFilter($currentSession['user']['userid'])),
+					$svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+					$page = new SpotPage_index($daoFactory, $settings, $currentSession,
+							Array('search' => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
 								  'pagenr' => $req->getDef('pagenr', 0),
 								  'sortby' => $req->getDef('sortby', ''),
 								  'sortdir' => $req->getDef('sortdir', ''),
@@ -401,7 +379,7 @@ try {
 				} # if
 				SpotTiming::stop('renderpage->case-default');
 				$page->render();
-				break;
+                break;
 		} # default
 	} # switch
 	SpotTiming::stop('renderpage');
@@ -409,8 +387,8 @@ try {
 	# timing
 	SpotTiming::stop('total');
 
-	# enable of disable de timer
-	if (($settings->get('enable_timing')) && (!in_array($req->getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'getnzbmobile', 'markallasread', 'rss', 'newznabapi')))) {
+	# enable or disable timer
+	if (($settings->get('enable_timing')) && (!in_array($req->getDef('page', ''), array('catsjson', 'statics', 'getnzb', 'getnzbmobile', 'markallasread')))) {
 		SpotTiming::display();
 	} # if
 }
@@ -424,7 +402,7 @@ catch(PermissionDeniedException $x) {
 	 * to render an error page
 	 */	
 	if (! ($page instanceof SpotPage_Abs)) {
-		$page = new SpotPage_render($db, $settings, $currentSession, '', array());
+		$page = new SpotPage_render($daoFactory, $settings, $currentSession, '', array());
 	} # if
 	
 	$page->permissionDenied($x, $page, $req->getHttpReferer());
@@ -437,24 +415,24 @@ catch(InvalidOwnSettingsSettingException $x) {
 
 catch(OwnsettingsCreatedOutputException $x) {
 	echo "ownsettings.php or dbsettings.inc.php created output. Please make sure theese files do not contain a PHP closing tag ( ?> ) and no information before the PHP opening tag ( <?php )<br><br>" . PHP_EOL;
-	echo nl2br($x->getMessage());
+	echo nl2br($x->getMessage()). PHP_EOL;
 } # OwnsettingsCreatedOutputException
 
 catch(SchemaNotUpgradedException $x) {
-	echo "Database schema has been changed. Please run 'upgrade-db.php' from an console window";
+	echo "Database schema has been changed. Please run 'upgrade-db.php' from an console window". PHP_EOL;
 } # SchemaNotUpgradedException
 
 catch(SecurityNotUpgradedException $x) {
-	echo "Spotweb contains updated security settings. Please run 'upgrade-db.php' from a console window";
+	echo "Spotweb contains updated security settings. Please run 'upgrade-db.php' from a console window". PHP_EOL;
 } # SecurityNotUpgradedException
 
 catch(SettingsNotUpgradedException $x) {
-	echo "Spotweb contains updated global settings settings. Please run 'upgrade-db.php' from a console window";
+	echo "Spotweb contains updated global settings settings. Please run 'upgrade-db.php' from a console window". PHP_EOL;
 } # SecurityNotUpgradedException
 
 catch(DatabaseConnectionException $x) {
-	echo "Unable to connect to database:  <br>";
-	echo nl2br($x->getMessage()) . PHP_EOL . '<br>';
+	echo "Unable to connect to database:  <br>". PHP_EOL;
+	echo nl2br($x->getMessage()) . PHP_EOL . '<br>'. PHP_EOL;
 	echo "<br><br>Please make sure your database server is up and running and your connection parameters are set<br>" . PHP_EOL;
 } # DatabaseConnectionException
 
@@ -463,7 +441,7 @@ catch(Exception $x) {
 	if ((isset($settings) && is_object($settings) && $settings->get('enable_stacktrace')) || (!isset($settings))) { 
 		var_dump($x);
 	} # if
-	echo $x->getMessage();
-
+	echo $x->getMessage(). PHP_EOL;
+	
 	error_log('SpotWeb Exception occured: ' . $x->getMessage());
 } # catch

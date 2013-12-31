@@ -1,17 +1,23 @@
 <?php
-if (!empty($postresult)) {
-	include 'includes/form-xmlresult.inc.php';
-	
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($postresult, $formmessages, $tplHelper);
-} 
+include "includes/form-messages.inc.php";
 
-if (empty($postresult)) {
-	if (isset($formmessages)) {
-		include "includes/form-messages.inc.php"; 
-	} # if
+if (isset($result)) {
+    if ($result->isSubmitted()) {
+        /* Show the results in JSON */
+        showResults($result);
+
+        return;
+    } # if
+} # if
+
+/*
+ * If we are called driectly, exit
+ */
+if (!isset($spot)) {
+    return ;
+} # if
+
 ?>
-
 <form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post">
 	<input type="hidden" name="postcommentform[submitpost]" value="Post">
 	<input type="hidden" name="postcommentform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postcommentform'); ?>">
@@ -34,6 +40,3 @@ if (empty($postresult)) {
 		</dl>
 	</fieldset>
 </form>
-<?php
-	}
-?>

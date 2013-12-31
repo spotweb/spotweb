@@ -7,7 +7,7 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 * constructs a new Dao_Base_UserFilterCount object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
@@ -25,8 +25,11 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 				} # foreach
 			} # if
 			
-			$this->_conn->modify("DELETE FROM filters WHERE userid = %d AND id = %d", 
-					Array($userId, $filterId));
+			$this->_conn->modify("DELETE FROM filters WHERE userid = :userid AND id = :filterid",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT),
+                    ':filterid' => array($filterId, PDO::PARAM_INT)
+                ));
 		} # foreach
 	} # deleteFilter
 	
@@ -35,18 +38,20 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 */
 	function addFilter($userId, $filter) {
 		$this->_conn->modify("INSERT INTO filters(userid, filtertype, title, icon, torder, tparent, tree, valuelist, sorton, sortorder, enablenotify)
-								VALUES(%d, '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', '%s', '%s')",
-							Array((int) $userId,
-								  $filter['filtertype'],
-								  $filter['title'],
-								  $filter['icon'],
-								  (int) $filter['torder'],
-								  (int) $filter['tparent'],
-								  $filter['tree'],
-								  implode('&', $filter['valuelist']),
-								  $filter['sorton'],
-								  $filter['sortorder'],
-								  $this->_conn->bool2dt($filter['enablenotify'])));
+								VALUES(:userid, :filtertype, :title, :icon, :torder, :tparent, :tree, :valuelist, :sorton, :sortorder, :isenablenotify)",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT),
+                ':filtertype' => array($filter['filtertype'], PDO::PARAM_STR),
+                ':title' => array($filter['title'], PDO::PARAM_STR),
+                ':icon' => array($filter['icon'], PDO::PARAM_STR),
+                ':torder' => array($filter['torder'], PDO::PARAM_INT),
+                ':tparent' => array($filter['tparent'], PDO::PARAM_INT),
+                ':tree' => array($filter['tree'], PDO::PARAM_STR),
+                ':valuelist' => array(implode('&', $filter['valuelist']), PDO::PARAM_STR),
+                ':sorton' => array($filter['sorton'], PDO::PARAM_STR),
+                ':sortorder' => array($filter['sortorder'], PDO::PARAM_STR),
+                ':isenablenotify' => array($filter['enablenotify'], PDO::PARAM_BOOL),
+            ));
 		$parentId = $this->_conn->lastInsertId('filters');
 
 		foreach($filter['children'] as $tmpFilter) {
@@ -70,14 +75,17 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 * Removes all filters for a user
 	 */
 	function removeAllFilters($userId) {
-		$this->_conn->modify("DELETE FROM filters WHERE userid = %d", Array((int) $userId));
+		$this->_conn->modify("DELETE FROM filters WHERE userid = :userid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 	} # removeAllfilters
 
 	/*
 	 * Get a specific filter
 	 */
 	function getFilter($userId, $filterId) {
-		/* Haal de lijst met filter values op */
+		/* Retrieve this specific filter */
 		$tmpResult = $this->_conn->arrayQuery("SELECT id,
 													  userid,
 													  filtertype,
@@ -91,8 +99,11 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 													  sortorder,
 													  enablenotify 
 												FROM filters 
-												WHERE userid = %d AND id = %d",
-					Array((int) $userId, (int) $filterId));
+												WHERE userid = :userid AND id = :filterid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT),
+                ':filterid' => array($filterId, PDO::PARAM_INT)
+            ));
 		if (!empty($tmpResult)) {
 			return $tmpResult[0];
 		} else {
@@ -117,8 +128,10 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 													  sortorder,
 													  enablenotify 
 												FROM filters 
-												WHERE userid = %d AND filtertype = 'index_filter'",
-					Array((int) $userId));
+												WHERE userid = :userid AND filtertype = 'index_filter'",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 		if (!empty($tmpResult)) {
 			return $tmpResult[0];
 		} else {
@@ -132,19 +145,21 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 */
 	function updateFilter($userId, $filter) {
 		$tmpResult = $this->_conn->modify("UPDATE filters 
-												SET title = '%s',
-												    icon = '%s',
-													torder = %d,
-													tparent = %d,
-													enablenotify = '%s'
-												WHERE userid = %d AND id = %d",
-					Array($filter['title'], 
-						  $filter['icon'], 
-						  (int) $filter['torder'], 
-						  (int) $filter['tparent'], 
-						  $this->_conn->bool2dt($filter['enablenotify']),
-						  (int) $userId, 
-						  (int) $filter['id']));
+												SET title = :title,
+												    icon = :icon,
+													torder = :torder,
+													tparent = :tparent,
+													enablenotify = :isenablenotify
+												WHERE userid = :userid AND id = :filterid",
+            array(
+                ':title' => array($filter['title'], PDO::PARAM_STR),
+                ':icon' => array($filter['icon'], PDO::PARAM_STR),
+                ':torder' => array($filter['torder'], PDO::PARAM_INT),
+                ':tparent' => array($filter['tparent'], PDO::PARAM_INT),
+                ':isenablenotify' => array($filter['enablenotify'], PDO::PARAM_BOOL),
+                ':userid' => array($userId, PDO::PARAM_STR),
+                ':filterid' => array($filter['id'], PDO::PARAM_STR),
+            ));
 	} # updateFilter
 
 	/* 
@@ -170,9 +185,11 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 											  sortorder,
 											  enablenotify 
 										FROM filters 
-										WHERE userid = %d " . $filterTypeFilter . "
+										WHERE userid = :userid " . $filterTypeFilter . "
 										ORDER BY tparent,torder", /* was: id, tparent, torder */
-				Array($userId));
+            array(
+                ':userid' => array($userId,PDO::PARAM_INT)
+            ));
 	} # getPlainFilterList
 	
 	/*
@@ -219,8 +236,16 @@ class Dao_Base_UserFilter implements Dao_UserFilter {
 	 * Returns the user ids for this filter combination
 	 */
 	function getUsersForFilter($tree, $valuelist) {
-		return $this->_conn->arrayQuery("SELECT title, userid, enablenotify FROM filters INNER JOIN users ON (filters.userid = users.id) WHERE (NOT users.deleted) AND tree = '%s' AND valuelist = '%s'",
-				 Array($tree, $valuelist));
+		return $this->_conn->arrayQuery("SELECT title,
+		                                        userid,
+		                                        enablenotify
+		                                   FROM filters
+		                                   INNER JOIN users ON (filters.userid = users.id)
+		                                   WHERE (NOT users.deleted) AND tree = :tree AND valuelist = :valuelist",
+            array(
+                ':tree' => array($tree, PDO::PARAM_STR),
+                ':valuelist' => array($valuelist, PDO::PARAM_STR)
+            ));
 	} # getUsersForFilter
 
 } # Dao_UserFilter

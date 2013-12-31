@@ -1,80 +1,56 @@
 <?php
+
 class SpotPage_editsecgroup extends SpotPage_Abs {
 	private $_editSecGroupForm;
 	private $_groupId;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editSecGroupForm = $params['editsecgroupform'];
 		$this->_groupId = $params['groupid'];
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
-		# Controleer de users' rechten
+		$result = new Dto_FormResult('notsubmitted');
+
+		# Make sure the user has the appropriate rights
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
-		
-		# editsecgroup resultaat is standaard niet geprobeerd
-		$editResult = array();
 
-		# Instantieer het Spot user system
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		# Instantiate the user record system
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "spot: edit security groups";
-		
-		# haal de te editten securitygroup op 
-		$secGroup = $spotUserSystem->getSecGroup($this->_groupId);
 
+        /*
+         * Retrieve the requested group and merge results
+         */
+        if ($this->_groupId != 9999) {
+            $this->_editSecGroupForm = array_merge($svcUserRecord->getSecGroup($this->_groupId), $this->_editSecGroupForm);
+        } # if
+		
 		/* 
 		 * bring the forms' action into the local scope for 
 		 * easier access
 		 */
 		$formAction = $this->_editSecGroupForm['action'];
 		
-		# als de te wijzigen security group niet gevonden kan worden,
-		# geef dan een error
-		if ((empty($secGroup)) && ($formAction != 'addgroup')) {
-			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Group does\'nt exist');
-		} # if
-
-		# Als er een van de ingebouwde groepen geprobeerd bewerkt te worden, 
-		# geef dan ook een error.
-		if ((!empty($formAction)) && ($formAction != 'addgroup') && ($secGroup['id'] < 6)) { 
-			$editResult = array('result' => 'failure');
-			$formMessages['errors'][] = _('Built-in groups can not be edited');
-		} # if
-
-		# Is dit een submit van een form, of nog maar de aanroep?
-		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+		# Did the user submit already or are we just rendering the form?
+		if (!empty($formAction)) {
 			switch($formAction) {
 				case 'removegroup' : {
-					$spotUserSystem->removeSecGroup($secGroup);
-					$editResult = array('result' => 'success');
-					
+					$result = $svcUserRecord->removeSecGroup($this->_groupId);
 					break;
 				} # case 'removegroup'
 				
 				case 'addperm'	: {
-					$formMessages['errors'] = $spotUserSystem->addPermToSecGroup($this->_groupId, $this->_editSecGroupForm);
-					
-					if (!empty($formMessages['errors'])) {
-						$editResult = array('result' => 'failure');
-					} else {
-						$editResult = array('result' => 'success');
-					} # else
-					
+					$result = $svcUserRecord->addPermToSecGroup($this->_groupId, $this->_editSecGroupForm);
 					break;
 				} # case 'addperm' 
 				
 				case 'removeperm'	: {
-					$spotUserSystem->removePermFromSecGroup($this->_groupId,
+					$result = $svcUserRecord->removePermFromSecGroup($this->_groupId,
 															$this->_editSecGroupForm);
-					$editResult = array('result' => 'success');
-
 					break;
 				} # case 'removeparm' 
 				
@@ -82,44 +58,27 @@ class SpotPage_editsecgroup extends SpotPage_Abs {
 				case 'setdeny'		:  {
 					$this->_editSecGroupForm['deny'] = (bool) ($formAction == 'setdeny');
 				
-					$spotUserSystem->setDenyForPermFromSecGroup($this->_groupId,
+					$result = $svcUserRecord->setDenyForPermFromSecGroup($this->_groupId,
 																$this->_editSecGroupForm);
-					$editResult = array('result' => 'success');
-
 					break;
 				} # case 'setallow' / 'setdeny'
 				
-				case 'addgroup' : 
+				case 'addgroup' 	: {
+					$result = $svcUserRecord->addSecGroup($this->_editSecGroupForm['name']); 
+					break;
+				} # 'addgroup'
+
 				case 'changename'	: {
-					# update het security group record
-					$secGroup['name'] = $this->_editSecGroupForm['name'];
-				
-					# controleer en repareer alle preferences 
-					list ($formMessages['errors'], $secGroup) = $spotUserSystem->validateSecGroup($secGroup);
-
-					if (empty($formMessages['errors'])) {
-						# en update de database
-						switch($formAction) {
-							case 'changename'	: $spotUserSystem->setSecGroup($secGroup); break;
-							case 'addgroup'		: $spotUserSystem->addSecGroup($secGroup); break;
-						} # switch
-						
-						$editResult = array('result' => 'success');
-					} else {
-						$editResult = array('result' => 'failure');
-					} # if
-
+					$result = $svcUserRecord->setSecGroup($this->_groupId, $this->_editSecGroupForm['name']); 
 					break;
 				} # case 'changename' 
-				
 			} # switch
 		} # if
 
 		#- display stuff -#
-		$this->template('editsecgroup', array('securitygroup' => $secGroup,
-										    'formmessages' => $formMessages,
-											'http_referer' => $this->_editSecGroupForm['http_referer'],
-											'editresult' => $editResult));
+		$this->template('editsecgroup', array('securitygroup' => $this->_editSecGroupForm,
+										    'result' => $result,
+											'http_referer' => $this->_editSecGroupForm['http_referer']));
 	} # render
 	
 } # class SpotPage_editsecgroup

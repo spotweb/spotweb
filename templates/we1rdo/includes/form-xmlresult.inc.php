@@ -1,7 +1,10 @@
 <?php
-	function formResult2Xml($result, $formmessages, $tplHelper) {
+	function formResult2Xml($result) {
 		$output = '<xml>';
-		
+
+        /*
+         * First we output all errors, warnings and information fields
+         */
 		# output each field to the XML as seperate field, eg $createresult['username']
 		# wil become <username>blah
 		foreach($result as $key => $value) {

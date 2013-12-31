@@ -10,12 +10,11 @@ $db = new SpotDb($settings['db']);
 $db->connect();
 
 $db->getDbHandle()->rawExec("DELETE FROM filters WHERE userid <> 1");
-$userList = $db->getUserList("", 0, 9999999);
+$userList = $db->listUsers("", 0, 9999999);
 
 # loop through every user and fix it 
-foreach($userList as $user) {
+foreach($userList['list'] as $user) {
 	if ($user['userid'] != 1) {
-		echo "Copying filter from userid 1 to userid: " . $user['userid'] . PHP_EOL;
 		$db->copyFilterList(1, $user['userid']);
 	} # if
 } # foreach

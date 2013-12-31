@@ -15,7 +15,7 @@
 	$perm_allow_blackList = ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, ''));
 	
 	# Get the spot comments for each $perPage comments
-	$comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
+    $comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
 	$comments = $tplHelper->formatComments($comments);
 
 	# Does the user want to see avatars?
@@ -40,7 +40,12 @@
 					) @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> </strong> 
 					<br />
 					<?php if ($commentIsModerated) { echo _('This comment is moderated') . '<br /><br />'; } ?>
-					<?php echo join("<br>", $comment['body']); ?>
+					<?php if (isset($comment['body_translated'])) {
+                                    echo nl2br($comment['body_translated']);
+                          } else {
+                                    echo nl2br($comment['body']);
+                          }
+                    ?>
 					</li>
 <?php	
 			} # if

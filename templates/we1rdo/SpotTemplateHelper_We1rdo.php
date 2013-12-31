@@ -17,28 +17,28 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 					);
 	} # getTemplatePreferences
 
-	function cat2color($spot) {
-		switch( (int) $spot['category']) {
-			case 0: return 'blue'; break;
-			case 1: return 'orange'; break;
-			case 2: return 'green'; break;
-			case 3: return 'red'; break;
-		} # switch
-		
-		return '-';
-	} # cat2color
+	function cat2CssClass($spot) {
+        $categoryCss = 'spotcat' . $spot['category'];
+        if (!empty($spot['subcatz'])) {
+            $categoryCss .= ' spotcat' . $spot['category'] . '_' . substr($spot['subcatz'], 0, -1);
+        } # if
+
+		return $categoryCss;
+	} # cat2CssClass
 	
 	function filter2cat($s) {
 		$cat = 0;
 		if (stripos($s, 'cat0') !== false) {
-			return "blue";
+			return "spotcat0";
 		} elseif (stripos($s, 'cat1') !== false) {
-			return "orange";
+			return "spotcat1";
 		} elseif (stripos($s, 'cat2') !== false) {
-			return "green";
+			return "spotcat2";
 		} elseif (stripos($s, 'cat3') !== false) {
-			return "red";
+			return "spotcat3";
 		} # else
+
+        return "N/A";
 	} # filter2cat
 
 	function getFilterIcons() {
@@ -116,10 +116,12 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 								'js/jquery/jquery.form.js',
 								'js/jquery-json/jquery.json-2.3.js',
 								'js/sha1/jquery.sha1.js',
+                                'templates/we1rdo/js/jquery.address.js',
 								'js/posting/posting.js',
 								'js/dynatree/jquery.dynatree.min.js',
-								'templates/we1rdo/js/jquery.address.js',
 								'templates/we1rdo/js/scripts.js',
+                                'templates/we1rdo/js/spotdialogs.js',
+                                'templates/we1rdo/js/sabpanel.js',
 								'templates/we1rdo/js/we1rdopost.js',
 								'templates/we1rdo/js/treehelper.js',
 								'templates/we1rdo/js/jquery.ui.nestedSortable.js',
@@ -130,7 +132,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 			
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
-							 'templates/we1rdo/css/jquery-ui-1.8.13.custom.css',
+							 'templates/we1rdo/css/jquery-ui-1.8.23.custom.css',
 							 'templates/we1rdo/css/spoticons.css',
 							 'templates/we1rdo/css/style.css',
 							 'templates/we1rdo/css/tipTip.css'

@@ -1,15 +1,10 @@
-<?php 
-if (!empty($postresult)) {
-	include 'includes/form-xmlresult.inc.php';
+<?php
+include "includes/form-messages.inc.php";
 
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($postresult, $formmessages, $tplHelper);
-} 
+if (showResults($result)) {
+    return ;
+} # if
 
-if (empty($postresult)) {
-	if (isset($formmessages)) {
-		include "includes/form-messages.inc.php"; 
-	} # if
 ?>
 
 <div class="newspotdiv">
@@ -119,5 +114,3 @@ if (empty($postresult)) {
 	categorySelectChanged();
 </script>
 
-<?php
-	}

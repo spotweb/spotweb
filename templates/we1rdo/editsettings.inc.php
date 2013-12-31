@@ -1,30 +1,36 @@
 <?php
-if (!empty($editsettingsresult)) {
-	if ($editsettingsresult['result'] == 'success') {
-		$tplHelper->redirect($http_referer);
-		return ;
-	} # if
-} # if
+    require "includes/header.inc.php";
+    require "includes/form-messages.inc.php";
 
-require "includes/header.inc.php";
-include "includes/form-messages.inc.php";
-$nntp_nzb = $this->_settings->get('nntp_nzb');
-$nntp_hdr = $this->_settings->get('nntp_hdr');
-$nntp_post = $this->_settings->get('nntp_post');
+    if ($result->isSubmitted()) {
+        if ($result->isSuccess()) {
+            $tplHelper->redirect($http_referer);
 
-$tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
-if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
-	$nntp_hdr['isadummy'] = true;
-} # if
+            return ;
+        } else {
+            showResults($result, array('renderhtml' => 1));
+        } # else
+    } # if
 
-$tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
-if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
-	$nntp_post['isadummy'] = true;
-} # if
+    $nntp_nzb = $this->_settings->get('nntp_nzb');
+    $nntp_hdr = $this->_settings->get('nntp_hdr');
+    $nntp_post = $this->_settings->get('nntp_post');
 
-if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254373200) {
-	$retrieve_newer_than = 1254373200; // 2009-11-01
-} # if
+    $tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
+    if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
+        $nntp_hdr['isadummy'] = true;
+    } # if
+
+    $tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
+    if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
+        $nntp_post['isadummy'] = true;
+    } # if
+
+    $retrieve_newer_than = $this->_settings->get('retrieve_newer_than');
+    if ($retrieve_newer_than < 1254373200) {
+        $retrieve_newer_than = 1254373200; // 2009-11-01
+    } # if
+    echo "<script type='text/javascript'>var retrieveNewerThanDate = '" . strftime('%d-%m-%Y', $retrieve_newer_than) . "';</script>";
 ?>
 </div>
 	<div id='toolbar'>
@@ -33,7 +39,6 @@ if (($retrieve_newer_than = $this->_settings->get('retrieve_newer_than')) < 1254
 <form class="editsettingsform" name="editsettingsform" action="<?php echo $tplHelper->makeEditSettingsAction(); ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="editsettingsform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('editsettingsform'); ?>">
 	<input type="hidden" name="editsettingsform[http_referer]" value="<?php echo $http_referer; ?>">
-	<input type="hidden" name="editsettingsform[buttonpressed]" value="">
 	
 	<div id="editsettingstab" class="ui-tabs">
 		<ul>
@@ -64,7 +69,18 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 					<dt><label for="editsettingsform[cookie_expires]"><?php echo _('Cookie expires after (in days)'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo htmlspecialchars($this->_settings->get('cookie_expires'), ENT_QUOTES); ?>"></dd>
+
+                    <!-- Add some explanation about the MS translator API -->
+                    <p>
+                        <?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires a so-called Client ID and a SecretID which you need to <a href="http://blogs.msdn.com/b/translation/p/gettingstarted1.aspx">request at Microsoft</a>. Please enter the values in below fields.'); ?>
+                    </p>
+                    <dt><label for="editsettingsform[ms_translator_clientid]"><?php echo _('Microsoft Translator API - Client ID'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_clientid]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientid'), ENT_QUOTES); ?>"></dd>
+
+                    <dt><label for="editsettingsform[ms_translator_clientsecret]"><?php echo _('Microsoft Translator API - Secret ID'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_clientsecret]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientsecret'), ENT_QUOTES); ?>"></dd>
 				</dl>
+
 			</fieldset>
 		</div>
 
@@ -248,22 +264,6 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
 <?php } ?>
 
-<script>
-$(function() {
-	$( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
-									dateFormat: "yy-mm-dd",
-									defaultDate: "<?php echo date("Y-m-d", $retrieve_newer_than); ?>",
-									dayNamesMin: ['<?php echo _('Su'); ?>', '<?php echo _('Mo'); ?>', '<?php echo _('Tu'); ?>', '<?php echo _('We'); ?>', '<?php echo _('Th'); ?>', '<?php echo _('Fr'); ?>', '<?php echo _('Sa'); ?>'],
-									monthNamesShort: ['<?php echo _('Jan'); ?>', '<?php echo _('Feb'); ?>', '<?php echo _('Mar'); ?>', '<?php echo _('Apr'); ?>', '<?php echo _('May'); ?>', '<?php echo _('Jun'); ?>', '<?php echo _('Jul'); ?>', '<?php echo _('Aug'); ?>', '<?php echo _('Sep'); ?>', '<?php echo _('Oct'); ?>', '<?php echo _('Nov'); ?>', '<?php echo _('Dec'); ?>'],
-									prevText: '<?php echo _('Previous'); ?>',
-									nextText: '<?php echo _('Next'); ?>',
-									numberOfMonths: 3,
-									stepMonths: 3,
-									minDate: new Date(2009, 10, 1),
-									maxDate: "today" });
-});
-</script>
-
 		<div class="editSettingsButtons">
 			<input class="greyButton" type="submit" name="editsettingsform[submitedit]" value="<?php echo _('Change'); ?>">
 			<input class="greyButton" type="submit" name="editsettingsform[submitcancel]" value="<?php echo _('Cancel'); ?>">
@@ -272,4 +272,5 @@ $(function() {
 	</div>
 </form>
 <?php
+    $toRunJsCode = 'initializeSettingsPage();';
 	require_once "includes/footer.inc.php";

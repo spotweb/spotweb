@@ -1,19 +1,20 @@
 <?php
+
 class SpotAudit {
-	private $_db;
+	private $_auditDao;
 	private $_user;
 	private $_settings;
 	private $_ipaddr;
 
-	function __construct(SpotDb $db, SpotSettings $settings, array $user, $ipaddr) {
-		$this->_db = $db;
+	function __construct(Dao_Audit $auditDao, Services_Settings_Container $settings, array $user, $ipaddr) {
+		$this->_auditDao = $auditDao;
 		$this->_user = $user;
 		$this->_settings = $settings;
 		$this->_ipaddr = $ipaddr;
 	} # ctor
 	
 	function audit($perm, $objectid, $allowed) {
-		$this->_db->addAuditEntry($this->_user['userid'], $perm, $objectid, $allowed, $this->_ipaddr);
+		$this->_auditDao->addAuditEntry($this->_user['userid'], $perm, $objectid, $allowed, $this->_ipaddr);
 	} # audit
 	
 } # class SpotAudit

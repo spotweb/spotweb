@@ -1,82 +1,46 @@
 <?php
 abstract class dbeng_pdo extends dbeng_abs {
+    protected $_rows_changed;
 	
 	/**
-     * We don't want to rewrite all queries, so a small parser is written
-	 * which rewrites the queries. Ugly, but it works.
      *
      * @param string $s
      * @param array $p
      * @return PDOStatement
+     * @throws Exception When PDO statement cannot be created
      */
-	public function prepareSql($s, $p) {
+	private function prepareSql($s, $p) {
 		if (empty($p)) {
             return $this->_conn->prepare($s);
         } # if
 
-		$pattern = '/(\'?\%[dsb]\'?)/';
-        $matches = array();
-        preg_match_all($pattern, $s, $matches);
-        $s = preg_replace($pattern, '?', $s);
-
 		$stmt = $this->_conn->prepare($s);
-        $idx=1;
-		$totalCount = count($p);
-        foreach ($matches[1] as $m) {
-			if ($idx > ($totalCount+1)) {
-                break;
-            } # if
-			
-            if (is_null($p[$idx-1])) {	
-                $stmt->bindValue($idx, null, PDO::PARAM_NULL);
-            } else {
-                switch ($m) {
-                    case '%d': {
-						# We convet explicitly to strval because PDO changes a zero to an '' 
-						$p[$idx-1] = strval($p[$idx-1]);
-                        $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_INT);
-                        break;
-					} 
-					case "'%b'": {
-						$stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_LOB);
-						break;
-					} 
-                    default: {
-                        $stmt->bindParam($idx, $p[$idx-1], PDO::PARAM_STR);
-					} 
-                }
-            }
-            $idx++;
+        if (!$stmt instanceof PDOStatement) {
+            $x = $stmt->errorInfo();
+            throw new SqlErrorException(implode(': ', $x), -1);
         }
-		
-		if (!$stmt instanceof PDOStatement) {
-        	throw new Exception(print_r($stmt, true));
-        }
-        
+
+        /*
+         * Bind all parameters/values to the statement
+         */
+        foreach($p as $k => $v) {
+            $stmt->bindValue($k, $v[0], $v[1]);
+        } # foreach
+
+
         return $stmt;
 	}
 	public function rawExec($s) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		try {
 			$stmt = $this->_conn->query($s);
 		} catch(PDOException $x) {
-			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+			throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
-		SpotTiming::stop(__FUNCTION__,array($s));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__,array($s));
 		
 		return $stmt;
 	}
-
-	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	function bool2dt($b) {
-		if ($b) {
-			return '1';
-		} # if
-		
-		return '0';
-	} # bool2dt
 
 	/**
      * Execute the query and saves the rowcount in a property for later retrieval
@@ -84,17 +48,18 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @param string $s
      * @param array $p
      * @return PDOStatement
+     * @throws SqlErrorException SQL exception when an SQL error occurs during execution
      */
     public function exec($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		try {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
 		} catch(PDOException $x) {
-			throw new SqlErrorException( $x->errorInfo[0] . ': ' . $x->errorInfo[2], -1);
+            throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
-		SpotTiming::stop(__FUNCTION__, array($s, $p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s, $p));
  
     	return $stmt;
     }
@@ -104,13 +69,13 @@ abstract class dbeng_pdo extends dbeng_abs {
 	 * thrown if a error occurs
 	 */
 	function modify($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		$res = $this->exec($s, $p);
         $res->closeCursor();
 		unset($res);
 		
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
 	} # modify
 	
 	/* 
@@ -154,12 +119,12 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function singleQuery($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
         $row = $stmt->fetch();
         $stmt->closeCursor();
 		unset($stmt);
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
         
 		return $row[0];
 	} # singleQuery
@@ -177,15 +142,99 @@ abstract class dbeng_pdo extends dbeng_abs {
      * @return array
      */
 	function arrayQuery($s, $p = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
 		$tmpArray = $stmt->fetchAll();
 
         $stmt->closeCursor();
 		unset($stmt);
-		SpotTiming::stop(__FUNCTION__, array($s,$p));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
 
 		return $tmpArray;
 	} # arrayQuery
+
+    /**
+     * Escape a string for insertion in a query.
+     *
+     * @param $s
+     * @return string
+     */
+    function safe($s) {
+        if (is_integer($s) || is_double($s)) {
+            return $s;
+        } else {
+            return $this->_conn->quote($s);
+        } # else
+    } # safe
+
+    /*
+     * Transforms an array of values to an list usable by an
+     * IN statement
+     */
+    function batchInsert($ar, $sql, $typs, $fields) {
+        $this->beginTransaction();
+
+        /*
+         * Sanity check
+         */
+        if (count($typs) <> count($fields)) {
+            die('Programming error for: ' . $sql);
+        } # if
+
+        /*
+         * Databases usually have a maximum packet size length,
+         * so just sending down 100kbyte of text usually ends
+         * up in tears.
+         */
+        $chunks = array_chunk($ar, $this->_batchInsertChunks);
+
+        foreach($chunks as $items) {
+            $insertArray = array();
+            $fieldCounter = 1;
+            $placeHolderPerRow = '(' . substr(str_repeat('?,', count($fields)), 0, -1) . '),';
+            $placeHolders = substr(str_repeat($placeHolderPerRow, count($items)), 0, -1);
+
+            /*
+             * The amount of placeholders might change
+             * between the first N chunks and the last one
+             * so we need to prepare it
+             */
+            $stmt = $this->_conn->prepare($sql . $placeHolders);
+            if (!$stmt instanceof PDOStatement) {
+                $x = $stmt->errorInfo();
+                throw new SqlErrorException(implode(': ', $x), -1);
+            } # if
+
+            foreach($items as $item) {
+                /*
+                 * Add this items' fields to an array in
+                 * the correct order and nicely escaped
+                 * from any injection
+                 */
+                $itemValues = array();
+                $typeCounter = 0;
+                foreach($fields as $field) {
+                    $stmt->bindValue($fieldCounter, $item[$field], $typs[$typeCounter]);
+
+                    $fieldCounter++;
+                    $typeCounter++;
+                } # foreach
+
+                array_push($insertArray, $itemValues);
+            } # foreach
+
+            # Actually insert the batch
+            if (!empty($insertArray)) {
+                try {
+                    $stmt->execute();
+                } catch(PDOException $x) {
+                    throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
+                } # catch
+            } # if
+
+        } # foreach
+
+        $this->commit();
+    } # batchInsert
 
 } # class

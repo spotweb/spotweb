@@ -2,12 +2,30 @@
 
 abstract class dbeng_abs {
 	protected $_batchInsertChunks = 500;
-	private $_error	= '';
+
+	/*
+	 * Factory class which instantiates the specified DAO factory object
+	 */
+	public static function getDbFactory($engine) {
+		/* 
+		 * Erase username/password so it won't show up in any stacktrace,
+		 * only erase them if they exist (eg: sqlite has no username and
+		 * password)
+		 */
+		switch ($engine) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: return new dbeng_pdo_mysql(); break; 
+			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
+			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
+
+			default				: throw new Exception("Unknown database engine (" . $engine . ") factory specified");
+		} // switch
+	} # getDbFactory()
 	
 	/*
 	 * Connects to the database
 	 */
-	abstract function connect();
+	abstract function connect($host, $user, $pass, $db);
 	
 	/*
 	 * Executes the query and discards any output. Returns true of no
@@ -17,7 +35,7 @@ abstract class dbeng_abs {
 	
 	/*
 	 * Executes the query with $params as parameters. All parameters are 
-	 * parsed through sthe safe() function to prevent SQL injection.
+	 * parsed through the safe() function to prevent SQL injection.
 	 *
 	 * Returns a single associative array when query succeeds, returns 
 	 * an exception when the query fails.
@@ -27,7 +45,6 @@ abstract class dbeng_abs {
 	/*
 	 * Executes the query with $params as parameters. All parameters are 
 	 * parsed through sthe safe() function to prevent SQL injection.
-	 *
 	 *
 	 * Returns an array of associative arrays when query succeeds, returns 
 	 * an exception when the query fails.
@@ -39,11 +56,6 @@ abstract class dbeng_abs {
 	 */
 	abstract function safe($s);	
 	
-	/*
-	 * Returns a database specific representation of a boolean value
-	 */
-	abstract function bool2dt($b);
-
 	/*
 	 * Returns the amount of effected rows
 	 */
@@ -68,30 +80,17 @@ abstract class dbeng_abs {
 	 * Returns the last insertid
 	 */
 	abstract function lastInsertId($tableName);
-	
 
-	/*
-	 * Prepares the query string by running vsprintf() met safe() thrown around it
-	 */
-	function prepareSql($s, $p) {
-		/*
-		 * When no parameters are given, we don't run vsprintf(). This makes sure
-		 * we can use arrayQuery() and singleQuery() with for example LIKE statements 
-		 */
-		if (empty($p)) {
-			return $s;
-		} else {
-			$p = array_map(array($this, 'safe'), $p);
-			return vsprintf($s, $p);
-		} # else
-	} # prepareSql()
+    /*
+     * Transforms an array of values to an list usable by an
+     * IN statement
+     */
+    abstract function batchInsert($ar, $sql, $typs, $fields);
 
 	/*
 	 * Executes the query and returns the (resource or handle)
 	 */
-	function exec($s, $p = array()) {
-		return $this->rawExec($this->prepareSql($s, $p));
-	} # exec()
+	abstract function exec($s, $p = array());
 
 	/*
 	 * INSERT or UPDATE statement, doesn't return anything. Exception 
@@ -107,23 +106,10 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe($k) . "', ";
+			$tmpList .= $this->safe($k) . ",";
 		} # foreach
-		return substr($tmpList, 0, -2);
+		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
-
-	/*
-	 * Transforms an array of values to an list usable by an
-	 * IN statement
-	 */
-	function arrayValToInOffset($ar, $val, $valOffset, $valEnd) {
-		$tmpList = '';
-
-		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe(substr($v[$val], $valOffset, $valEnd)) . "', ";
-		} # foreach
-		return substr($tmpList, 0, -2);
-	} # arrayValToInOffset
 
 	/*
 	 * Transforms an array of values to an list usable by an
@@ -132,51 +118,10 @@ abstract class dbeng_abs {
 	function arrayValToIn($ar, $val) {
 		$tmpList = '';
 
-		foreach($ar as $k => $v) {
-			$tmpList .= "'" . $this->safe($v[$val]) . "', ";
+		foreach($ar as $v) {
+			$tmpList .= $this->safe($v[$val]) . ",";
 		} # foreach
-		return substr($tmpList, 0, -2);
+		return substr($tmpList, 0, -1);
 	} # arrayValToIn
-
-	/*
-	 * Transforms an array of values to an list usable by an
-	 * IN statement
-	 */
-	function batchInsert($ar, $sql, $tpl, $fields) {
-		$this->beginTransaction();
-		
-		/* 
-		 * Databases usually have a maximum packet size length,
-		 * so just sending down 100kbyte of text usually ends
-		 * up in tears.
-		 */
-		$chunks = array_chunk($ar, $this->_batchInsertChunks);
-
-		foreach($chunks as $items) {
-			$insertArray = array();
-
-			foreach($items as $item) {
-				/*
-				 * Add this items' fields to an array in 
-				 * the correct order and nicely escaped
-				 * from any injection
-				 */
-				$itemValues = array();
-				foreach($fields as $idx => $field) {
-					$itemValues[] = $this->safe($item[$field]);
-				} # foreach
-
-				$insertArray[] = vsprintf($tpl, $itemValues);
-			} # foreach
-
-			# Actually insert the batch
-			if (!empty($insertArray)) {
-				$this->modify($sql . implode(',', $insertArray), array());
-			} # if
-
-		} # foreach
-
-		$this->commit();
-	} # batchInsert
 
 } # dbeng_abs

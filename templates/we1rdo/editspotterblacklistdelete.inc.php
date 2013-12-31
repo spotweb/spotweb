@@ -14,7 +14,7 @@
 			<input type="hidden" name="blacklistspotterform[spotterid]" value="<?php echo $blSpotter['spotterid']; ?>">
 			<input type="hidden" name="blacklistspotterform[idtype]" value="1">
 
-			<dt>
+			<td>
 				Bevestig
 			</td>
 			<dd>

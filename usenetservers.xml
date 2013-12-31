@@ -393,18 +393,18 @@
 			</plain>
 		</server>
 
-<server name='Pure Usenet'>
-	<ssl>
-		<header ssl='yes' port='563'>news.pureusenet.nl</header>
-		<nzb ssl='yes' port='563'>news.pureusenet.nl</nzb>
-		<post ssl='yes' port='563'>post.pureusenet.nl</post>
-	</ssl>
-	<plain>
-		<header ssl='' port='119'>news.pureusenet.nl</header>
-		<nzb ssl='' port='119'>news.pureusenet.nl</nzb>
-		<post ssl='' port='119'>post.pureusenet.nl</post>
-	</plain>
-</server>
+		<server name='Pure Usenet'>
+			<ssl>
+				<header ssl='yes' port='563'>news.pureusenet.nl</header>
+				<nzb ssl='yes' port='563'>news.pureusenet.nl</nzb>
+				<post ssl='yes' port='563'>post.pureusenet.nl</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='119'>news.pureusenet.nl</header>
+				<nzb ssl='' port='119'>news.pureusenet.nl</nzb>
+				<post ssl='' port='119'>post.pureusenet.nl</post>
+			</plain>
+		</server>
 
 		<server name='Quicknet'>
 			<plain>
@@ -669,6 +669,19 @@
 				<post ssl='' port='119'>bignews.usenetmonster.com</post>
 			</plain>
 		</server>
+		
+		<server name='VoordeligUsenet.nl'>
+			<ssl>
+				<header ssl='yes' port='563'>reader.voordeligusenet.nl</header>
+				<nzb ssl='yes' port='563'>reader.voordeligusenet.nl</nzb>
+				<post ssl='yes' port='563'>reader.voordeligusenet.nl</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='119'>reader.voordeligusenet.nl</header>
+				<nzb ssl='' port='119'>reader.voordeligusenet.nl</nzb>
+				<post ssl='' port='119'>reader.voordeligusenet.nl</post>
+			</plain>
+		</server>
 
 		<server name='XLNED'>
 			<ssl>
@@ -719,9 +732,9 @@
 
 		<server name='XSNews'>
 			<ssl>
-				<header ssl='yes' port='563'>reader.xsnews.nl</header>
-				<nzb ssl='yes' port='563'>reader.xsnews.nl</nzb>
-				<post ssl='yes' port='563'>upload.xsnews.nl</post>
+				<header ssl='yes' port='443'>reader.xsnews.nl</header>
+				<nzb ssl='yes' port='443'>reader.xsnews.nl</nzb>
+				<post ssl='yes' port='443'>upload.xsnews.nl</post>
 			</ssl>
 			<plain>
 				<header ssl='' port='119'>reader.xsnews.nl</header>

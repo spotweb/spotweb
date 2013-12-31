@@ -1,27 +1,30 @@
 <?php
+
 class SpotPage_logout extends SpotPage_Abs {
 	
 	function render() {
+		$result = new Dto_FormResult('notsubmitted');
+
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_logout, '');
 							  
 		# Instanatiate the spotweb user system
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
+		$svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
 		
 		# make sure the logout isn't cached
 		$this->sendExpireHeaders(true);
 
 		# send the appropriate content-type header
-		$this->sendContentTypeHeader('xml');
+		$this->sendContentTypeHeader('json');
 		
 		# and remove the users' session if the user isn't the anonymous one
-		if ($this->_currentSession['user']['userid'] != $this->_settings->get('nonauthenticated_userid')) {
-			$spotUserSystem->removeSession($this->_currentSession['session']['sessionid']);
-
-			echo '<xml><result>OK</result></xml>';
+		if ($svcUserAuth->removeSession($this->_currentSession)) {
+			$result->setResult('success');
 		} else {
-			echo '<xml><result>ERROR</result></xml>';
+			$result->addError(_('Unable to remove session'));
 		} # else
+
+		$this->template('jsonresult', array('result' => $result));
 	} # render
 	
 } # class SpotPage_logout

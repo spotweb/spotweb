@@ -1,4 +1,5 @@
 <?php
+
 class Notifications_Factory {
 
 	public static function build($appName, $provider, array $dataArray) {

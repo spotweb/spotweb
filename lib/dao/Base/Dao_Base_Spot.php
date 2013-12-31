@@ -7,7 +7,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * constructs a new Dao_Base_Spot object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
@@ -16,8 +16,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * restrictions of $parsedSearch
 	 */
 	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
-		SpotTiming::start(__FUNCTION__);
-		$results = array();
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$offset = (int) $pageNr * (int) $limit;
 
 		/*
@@ -106,6 +105,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
 												s.spotterid AS spotterid,
+ 												s.editstamp AS editstamp,
+ 												s.editor AS editor,
 												f.verified AS verified,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
 												" . $extendedFieldList . "
@@ -115,13 +116,13 @@ class Dao_Base_Spot implements Dao_Spot {
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
 									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
-									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2)) " .
-									 $criteriaFilter . " 
+									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
+									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) " .
+									 $criteriaFilter . "
 									 ORDER BY " . $sortList . 
 								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
 
-		/* 
+		/*
 		 * Did we get more results than originally asked? Remove the last element
 		 * and set the flag we have gotten more results than originally asked for
 		 */
@@ -131,7 +132,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			array_pop($tmpResult);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
 
@@ -139,7 +140,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * Returns the header information of a spot
 	 */
 	function getSpotHeader($msgId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -157,11 +158,14 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.reportcount AS reportcount,
 												s.moderated AS moderated
 											  FROM spots AS s
-											  WHERE s.messageid = '%s'", Array($msgId));
-		SpotTiming::stop(__FUNCTION__);
+											  WHERE s.messageid = :messageid",
+            array(
+                ':messageid' => array($msgId, PDO::PARAM_STR)
+            ));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 
 		if (empty($tmpArray)) {
-			return ;
+			return null;
 		} # if
 
 		return $tmpArray[0];
@@ -172,7 +176,7 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * spot is not in the database, this function returns NULL
 	 */
 	function getFullSpot($messageId, $ourUserId) {
-		SpotTiming::start('SpotDb::' . __FUNCTION__);
+		SpotTiming::start(__CLASS__ . __FUNCTION__);
 		$tmpArray = $this->_conn->arrayQuery("SELECT s.id AS id,
 												s.messageid AS messageid,
 												s.category AS category,
@@ -191,6 +195,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.reportcount AS reportcount,
 												s.filesize AS filesize,
 												s.spotterid AS spotterid,
+												s.editstamp AS editstamp,
+												s.editor AS editor,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -201,14 +207,22 @@ class Dao_Base_Spot implements Dao_Spot {
 												f.fullxml AS fullxml,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
 												FROM spots AS s
-												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . "))
-												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) AND (wl.idtype = 2)) 
+												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = :ouruserid1))
+												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = :ouruserid2) OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = :ouruserid3)) AND (wl.idtype = 2))
 												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
 												JOIN spotsfull AS f ON f.messageid = s.messageid
-										  WHERE s.messageid = '%s'", Array($messageId));
+										  WHERE s.messageid = :messageid",
+            array(
+                ':ouruserid1' => array($ourUserId, PDO::PARAM_INT),
+                ':ouruserid2' => array($ourUserId, PDO::PARAM_INT),
+                ':ouruserid3' => array($ourUserId, PDO::PARAM_INT),
+                ':messageid' => array($messageId, PDO::PARAM_STR)
+            ));
 		if (empty($tmpArray)) {
-			return ;
+            SpotTiming::stop(__CLASS__ . __FUNCTION__, array($messageId, $ourUserId));
+
+			return null;
 		} # if
 		$tmpArray = $tmpArray[0];
 
@@ -218,7 +232,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$tmpArray['user-key'] = unserialize(base64_decode($tmpArray['user-key']));
 		} # if
 
-		SpotTiming::stop('SpotDb::' . __FUNCTION__, array($messageId, $ourUserId));
+		SpotTiming::stop(__CLASS__ . __FUNCTION__, array($messageId, $ourUserId));
 		return $tmpArray;		
 	} # getFullSpot()
 
@@ -231,8 +245,9 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
-		# en update de spotrating
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
+        # en update de spotrating
 		$this->_conn->modify("UPDATE spots 
 								SET spotrating = 
 									(SELECT AVG(spotrating) as spotrating 
@@ -243,7 +258,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotRating
 
 	/*
@@ -255,7 +270,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots 
 								SET commentcount = 
 									(SELECT COUNT(1) as commentcount 
@@ -265,7 +280,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotCommentCount
 
 	/*
@@ -277,7 +292,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots 
 								SET reportcount = 
 									(SELECT COUNT(1) as reportcount 
@@ -287,7 +302,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 GROUP BY nntpref)
 							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
 						");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
 
 	/*
@@ -299,7 +314,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# prepare a list of IN values
 		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
@@ -311,8 +326,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
-		$this->_conn->modify("DELETE FROM cache WHERE resourceid  IN (" . $msgIdList . ")");
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # removeSpots
 
 	/*
@@ -324,21 +338,28 @@ class Dao_Base_Spot implements Dao_Spot {
 			return;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET moderated = '%s' WHERE messageid IN (" . 
-								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")", Array($this->_conn->bool2dt(true)));
-		SpotTiming::stop(__FUNCTION__, array($spotMsgIdList));
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+		$this->_conn->modify("UPDATE spots SET moderated = :moderated WHERE messageid IN (" .
+								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")",
+            array(
+                ':moderated' => array(true, PDO::PARAM_BOOL)
+            ));
+
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # markSpotsModerated
 
 	/*
 	 * Remove older spots from the database
 	 */
 	function deleteSpotsRetention($retention) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
-		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < " . (time() - $retention) );
-		$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in 
+		$this->_conn->modify("DELETE FROM spots WHERE spots.stamp < :time",
+            array(
+                ':time' => array(time() - $retention, PDO::PARAM_INT)
+            ));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE spotsfull.messageid not in
 							(SELECT messageid FROM spots)") ;
 		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN 
 							(SELECT messageid FROM commentsxover WHERE commentsxover.nntpref not in 
@@ -351,16 +372,14 @@ class Dao_Base_Spot implements Dao_Spot {
 							(SELECT messageid FROM spots)") ;
 		$this->_conn->modify("DELETE FROM reportsposted WHERE reportsposted.inreplyto not in 
 							(SELECT messageid FROM spots)") ;
-		$this->_conn->modify("DELETE FROM cache WHERE (cache.cachetype = %d OR cache.cachetype = %d) AND cache.resourceid not in 
-							(SELECT messageid FROM spots)", Array(SpotCache::SpotImage, SpotCache::SpotNzb)) ;
-		SpotTiming::stop(__FUNCTION__, array($retention));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($retention));
 	} # deleteSpotsRetention
 
 	/*
 	 * Add a lis tof spots to the database
 	 */
 	function addSpots($spots, $fullSpots = array()) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		foreach($spots as &$spot) {
 			/*
 			 * Manually check whether filesize is really a numeric value
@@ -372,9 +391,12 @@ class Dao_Base_Spot implements Dao_Spot {
 			} # if
 			
 			/*
-			 * Cut off some strngs to a maximum value as defined in the
+			 * Cut off some strings to a maximum value as defined in the
 			 * database. We don't cut off the unique keys as we rather
 			 * have Spotweb error out than corrupt it
+			 *
+			 * We NEED to cast integers to actual integers to make sure our
+			 * batchInsert() call doesn't fail.
 			 */
 			$spot['poster'] = substr($spot['poster'], 0, 127);
 			$spot['title'] = substr($spot['title'], 0, 127);
@@ -387,14 +409,25 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
 			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
+
+            /*
+             * Make sure we only store valid utf-8
+             */
+            $spot['poster'] = mb_convert_encoding($spot['poster'], 'UTF-8', 'UTF-8');
+            $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'UTF-8');
+            $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'UTF-8');
+
 		} # foreach
+        unset($spot);
 
 		$this->_conn->batchInsert($spots,
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
 														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
 									VALUES",
-								  "('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
-								  Array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
+                                        PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
+                                        PDO::PARAM_INT, PDO::PARAM_STR),
+								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
 								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
 								  );
 
@@ -402,7 +435,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$this->addFullSpots($fullSpots);
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($spots, $fullSpots));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spots, $fullSpots));
 	} # addSpot()
 
 	/*
@@ -413,10 +446,15 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * more fidelity encoding.
 	 */
 	function updateSpotInfoFromFull($fullSpot) {
-		SpotTiming::start(__FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET title = '%s', spotterid = '%s' WHERE messageid = '%s'",
-							Array($fullSpot['title'], $fullSpot['spotterid'], $fullSpot['messageid']));
-		SpotTiming::stop(__FUNCTION__, array($fullSpot));
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+		$this->_conn->modify("UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid",
+            array(
+                ':title' => array($fullSpot['title'], PDO::PARAM_STR),
+                ':spotterid' => array($fullSpot['spotterid'], PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+            ));
+
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 	} # updateSpotInfoFromFull
 
 	/*
@@ -424,26 +462,90 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * table as it will remove the spot from the list
 	 */
 	function addFullSpots($fullSpots) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/* 
 		 * Prepare the array for insertion
 		 */
 		foreach($fullSpots as &$fullSpot) {
-			$fullSpot['verified'] = $this->_conn->bool2dt($fullSpot['verified']);
+			$fullSpot['verified'] = (bool) $fullSpot['verified'];
 			$fullSpot['user-key'] = base64_encode(serialize($fullSpot['user-key']));
 		} # foreach
 
 		$this->_conn->batchInsert($fullSpots,
 								  "INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES",
-								  "('%s', '%s', '%s', '%s', '%s', '%s')",
-								  Array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
+                                  array(PDO::PARAM_STR, PDO::PARAM_BOOL, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR),
+								  array('messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml')
 								  );
 
-		SpotTiming::stop(__FUNCTION__, array($fullSpots));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpots));
 	} # addFullSpot
 
+	/*
+	 * Update a spot in the spots and spotsfull tables after editing the spot
+	 */
+	function updateSpot($fullSpot, $editor) {
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
+		/*
+		 * Cut off some strings to a maximum value as defined in the
+		 * database. 
+		 */
+		$fullSpot['title'] = substr($fullSpot['title'], 0, 127);
+		$fullSpot['tag'] = substr($fullSpot['tag'], 0, 127);
+		$fullSpot['subcata'] = substr($fullSpot['subcata'], 0, 63);
+		$fullSpot['subcatb'] = substr($fullSpot['subcatb'], 0, 63);
+		$fullSpot['subcatc'] = substr($fullSpot['subcatc'], 0, 63);
+		$fullSpot['subcatd'] = substr($fullSpot['subcatd'], 0, 63);
+		$fullSpot['subcatz'] = substr($fullSpot['subcatz'], 0, 63);
+		$fullSpot['category'] = (int) $fullSpot['category'];
+
+        /*
+         * Make sure we only store valid utf-8
+         */
+        $fullSpot['title'] = mb_convert_encoding($fullSpot['title'], 'UTF-8', 'UTF-8');
+        $fullSpot['tag'] = mb_convert_encoding($fullSpot['tag'], 'UTF-8', 'UTF-8');
+
+		# update spots table
+		$this->_conn->modify("UPDATE spots
+                                SET title = :title,
+                                    tag = :tag,
+                                    subcata = :subcata,
+				                    subcatb = :subcatb,
+				                    subcatc = :subcatc,
+				                    subcatd = :subcatd,
+				                    subcatz = :subcatz,
+				                    category = :category,
+				                    editstamp = :editstamp,
+				                    editor = :editor
+				                WHERE messageid = :messageid",
+            array(
+                ':title' => array($fullSpot['title'], PDO::PARAM_STR),
+                ':tag' => array($fullSpot['tag'], PDO::PARAM_STR),
+                ':subcata' => array($fullSpot['subcata'], PDO::PARAM_STR),
+                ':subcatb' => array($fullSpot['subcata'], PDO::PARAM_STR),
+                ':subcatc' => array($fullSpot['subcatb'], PDO::PARAM_STR),
+                ':subcatd' => array($fullSpot['subcatd'], PDO::PARAM_STR),
+                ':subcatz' => array($fullSpot['subcatz'], PDO::PARAM_STR),
+                ':category' => array($fullSpot['category'], PDO::PARAM_INT),
+                ':editstamp' => array(time(), PDO::PARAM_INT),
+                ':editor' => array($editor, PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR),
+            ));
+
+		# update spotsfull table
+		$this->_conn->modify("UPDATE spotsfull
+		                         SET fullxml = :fullxml
+		                       WHERE messageid = :messageid",
+            array(
+                ':fullxml' => array($fullSpot['fullxml'], PDO::PARAM_STR),
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+            ));
+
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
+	} # updateSpot
+	
 	/*
 	 * Returns the oldest spot in the system
 	 */
@@ -463,10 +565,10 @@ class Dao_Base_Spot implements Dao_Spot {
 			return $idList;
 		} # if
 
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Prepare a list of values
-		$msgIdList = $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1);
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
 
 		# Because MySQL doesn't know anything about full joins, we use this trick
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
@@ -483,7 +585,7 @@ class Dao_Base_Spot implements Dao_Spot {
 				$idList['fullspot'][$msgids['fullspot']] = 1;
 			} # if
 		} # foreach
-		SpotTiming::stop(__FUNCTION__, array($hdrList, $idList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($hdrList, $idList));
 
 		return $idList;
 	} # matchMessageIds 
@@ -492,18 +594,18 @@ class Dao_Base_Spot implements Dao_Spot {
 	 * Returns the amount of spots currently in the database
 	 */
 	function getSpotCount($sqlFilter) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		if (empty($sqlFilter)) {
 			$query = "SELECT COUNT(1) FROM spots AS s";
 		} else {
-			$query = "SELECT COUNT(1) FROM spots AS s 
+			$query = "SELECT COUNT(1) FROM spots AS s
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
 						WHERE " . $sqlFilter . " AND (bl.spotterid IS NULL)";
 		} # else
 		$cnt = $this->_conn->singleQuery($query);
-		SpotTiming::stop(__FUNCTION__, array($sqlFilter));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($sqlFilter));
 		if ($cnt == null) {
 			return 0;
 		} else {
@@ -532,19 +634,31 @@ class Dao_Base_Spot implements Dao_Spot {
 		throw new NotImplementedException();
 	} # getSpotCountPerMonth
 
-	/*
+	/**
 	 * Returns the amount of spots per category
+     *
+     * @param int|boolean $limit Amount of days to get the spotcount for, or false to get without any limits
+     * @return array
 	 */
 	function getSpotCountPerCategory($limit) {
-		$filter = ($limit) ? "WHERE stamp > " . strtotime("-1 " . $limit) : '';
-		return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots " . $filter . " GROUP BY data;");
+        if (!empty($limit)) {
+            return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots WHERE stamp > :stamp GROUP BY data",
+                array(
+                    ':stamp' => array(strtotime("-1 " . $limit), PDO::PARAM_INT)
+                ));
+        } else {
+            return $this->_conn->arrayQuery("SELECT category AS data, COUNT(category) AS amount FROM spots GROUP BY data");
+        } # else
 	} # getSpotCountPerCategory
 
-	/*
-	 * Remove extra spots 
+	/**
+	 * Remove extra spots
+     *
+     * @param string $messageId All messages after the given messageid are to be removed
+     * @return void
 	 */
 	function removeExtraSpots($messageId) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Retrieve the actual spot
 		$spot = $this->getSpotHeader($messageId);
@@ -557,90 +671,124 @@ class Dao_Base_Spot implements Dao_Spot {
 		 * Ignore this error
 		 */
 		if (empty($spot)) {
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageId, $spot));
+
 			return ;
 		} # if
 
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > %d)", Array($spot['id']));
-		$this->_conn->modify("DELETE FROM spots WHERE id > %d", Array($spot['id']));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE id > :id)",
+            array(
+                ':id' => array($spot['id'], PDO::PARAM_INT)
+            ));
+		$this->_conn->modify("DELETE FROM spots WHERE id > :id",
+            array(
+            ':id' => array($spot['id'], PDO::PARAM_INT)
+        ));
 
-		SpotTiming::stop(__FUNCTION__, array($messageid, $spot));
+
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageId, $spot));
 	} # removeExtraSpots
 
-	/*
+	/**
 	 * Add the posted spot to the database
+     *
+     * @param int $userId
+     * @param array $spot
+     * @param string $fullXml
+     * @return void
 	 */
 	function addPostedSpot($userId, $spot, $fullXml) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$this->_conn->modify(
 				"INSERT INTO spotsposted(ouruserid, messageid, stamp, title, tag, category, subcats, fullxml) 
-					VALUES(%d, '%s', %d, '%s', '%s', %d, '%s', '%s')", 
-				Array((int) $userId,
-					  $spot['newmessageid'],
-					  (int) time(),
-					  $spot['title'],
-					  $spot['tag'],
-					  (int) $spot['category'],
-					  implode(',', $spot['subcatlist']),
-					  $fullXml));
+					VALUES(:ouruserid, :newmessageid, :stamp, :title, :tag, :category, :subcats, :fullxml)",
+            array(
+                ':ouruserid' => array($userId, PDO::PARAM_INT),
+                ':newmessageid' => array($spot['newmessageid'], PDO::PARAM_STR),
+                ':stamp' => array(time(), PDO::PARAM_INT),
+                ':title' => array($spot['title'], PDO::PARAM_STR),
+                ':tag' => array($spot['tag'], PDO::PARAM_STR),
+                ':category' => array($spot['category'], PDO::PARAM_INT),
+                ':subcats' => array(implode(',', $spot['subcatlist']), PDO::PARAM_STR),
+                ':fullxml' => array($fullXml, PDO::PARAM_STR)
+            )
+        );
 
-		SpotTiming::stop(__FUNCTION__, array($userId, $spot, $fullXml));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($userId, $spot, $fullXml));
 	} # addPostedSpot
 
-	/*
+	/**
 	 * Removes items from te commentsfull table older than a specific amount of days
+     *
+     * @param int $expireDays Spots older than $expireDays are to be deleted
+     * @return void
 	 */
 	function expireSpotsFull($expireDays) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
-		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < %d)", Array((int) time() - ($expireDays*24*60*60)));
+		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid IN (SELECT messageid FROM spots WHERE stamp < :stamp)",
+            array(
+                ':stamp' => array(time() - ($expireDays*24*60*60), PDO::PARAM_INT)
+            ));
 
-		SpotTiming::stop(__FUNCTION__, array($expireDays));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($expireDays));
 	} # expireSpotsFull
 
-	/* 
-	 * Makes sure a message has never been posted before or used before
-	 */
+    /**
+     * Makes sure a message has never been posted before or used before
+     *
+     * @param string $messageid Messageid to check if its unique
+     * @return bool
+     */
 	function isNewSpotMessageIdUnique($messageid) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/* 
 		 * We use a union between our own messageids and the messageids we already
 		 * know to prevent a user from spamming the spotweb system by using existing
 		 * but valid spots
 		 */
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = '%s'
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM commentsposted WHERE messageid = :messageid1
 												  UNION
-											    SELECT messageid FROM spots WHERE messageid = '%s'",
-						Array($messageid, $messageid));
-
-		SpotTiming::stop(__FUNCTION__, array($messageid));
+											    SELECT messageid FROM spots WHERE messageid = :messageid2",
+            array(
+                ':messageid1' => array($messageid, PDO::PARAM_STR),
+                ':messageid2' => array($messageid, PDO::PARAM_STR)
+            ));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($messageid));
 		
 		return (empty($tmpResult));
 	} # isNewSpotMessageIdUnique
 
-	/*
+	/**
 	 * Returns the maximum timestamp of a spot in the database
+     *
+     * @return int
 	 */
 	function getMaxMessageTime() {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$stamp = $this->_conn->singleQuery("SELECT MAX(stamp) AS stamp FROM spots");
 		if ($stamp == null) {
 			$stamp = time();
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($stamp));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($stamp));
 
 		return $stamp;
 	} # getMaxMessageTime()
 
 
-	/* 
-	 * Returns the highest messageid from server 
-	 */
+    /**
+     * Returns the highest messageid from server
+     *
+     * @param $headers string Which type of header to get the last messageids from
+     * @throws Exception
+     * @return array
+     */
 	function getMaxMessageId($headers) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		if ($headers == 'headers') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM spots ORDER BY id DESC LIMIT 5000");
@@ -649,10 +797,12 @@ class Dao_Base_Spot implements Dao_Spot {
 		} elseif ($headers == 'reports') {
 			$msgIds = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover ORDER BY id DESC LIMIT 5000");
 		} else {
-			throw new Exception("getMaxMessageId() header-type value is unknown");
+			throw new Exception("getLastMessageId() header-type value is unknown");
 		} # else
 		
 		if ($msgIds == null) {
+            SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($headers));
+
 			return array();
 		} # if
 
@@ -662,10 +812,10 @@ class Dao_Base_Spot implements Dao_Spot {
 			$tempMsgIdList['<' . $msgIds[$i]['messageid'] . '>'] = 1;
 		} # for
 
-		SpotTiming::stop(__FUNCTION__, array($headers));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($headers));
 
 		return $tempMsgIdList;
-	} # func. getMaxMessageId
+	} # func. getLastMessageId
 
 
 } # Dao_Base_Spot

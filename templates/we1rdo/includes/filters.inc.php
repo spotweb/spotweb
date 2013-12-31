@@ -1,4 +1,6 @@
 <?php
+    SpotTiming::start('tpl:filters');
+
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$count_newspots = ($currentSession['user']['prefs']['count_newspots']);
 	$show_multinzb_checkbox = ($currentSession['user']['prefs']['show_multinzb']);
@@ -7,7 +9,7 @@
 			<div id="toolbar">
 				<div class="notifications">
 					<?php if ($show_multinzb_checkbox) { ?>
-					<p class="multinzb"><a class="button" onclick="downloadMultiNZB()" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selection'); ?>">[x]</a></p>
+					<p class="multinzb"><a class="button" onclick="downloadMultiNZB(spotweb_nzbhandler_type)" title="<?php echo _('MultiNZB'); ?>"><span class="count"></span></a><a class="clear" onclick="uncheckMultiNZB()" title="<?php echo _('Reset selection'); ?>">[x]</a></p>
 					<?php } ?>
 				</div>
 
@@ -21,13 +23,13 @@
 <?php } ?>
 					<ul>
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '')) && ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid'))) { ?>
-					<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login&data[htmlheaderssent]=true', 'editsecgroupform', null, 'autoclose', function() { window.location.reload(); }, null); "><?php echo _('Login'); ?></a></li>
+					<li><a href="<?php echo $tplHelper->makeLoginAction(); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Login'); ?>', '?page=login&data[htmlheaderssent]=true', null, 'autoclose', function() { window.location.reload(); }, null); "><?php echo _('Login'); ?></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_create_new_user, '')) { ?>
-						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', 'createuserform', null, 'showresultsonly', null, null); "><?php echo _('Add user'); ?></a></li>
+						<li><a href="" onclick="return openDialog('editdialogdiv', '<?php echo _('Add user'); ?>', '?page=createuser', null, 'showresultsonly', null, null); "><?php echo _('Add user'); ?></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_user, '')) { ?>
-						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', 'edituserform', null, 'autoclose',  function() { window.location.reload(); }, null);"><?php echo _('Change user'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeEditUserUrl($currentSession['user']['userid'], 'edit'); ?>" onclick="return openDialog('editdialogdiv', '<?php echo _('Change user'); ?>', '?page=edituser&userid=<?php echo $currentSession['user']['userid'] ?>', null, 'autoclose',  function() { window.location.reload(); }, null);"><?php echo _('Change user'); ?></a></li>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_logout, '')) { ?>
 						<li><a href="#" onclick="userLogout()"><?php echo _('Log out'); ?></a></li>
@@ -79,7 +81,7 @@
 ?>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_post_spot, '') && $currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) { ?>
-				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', 'newspotform', function() { new spotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, 'autoclose', null, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
+				<div class="toolbarButton addspot"><p><a onclick="return openDialog('editdialogdiv', '<?php echo _('Add spot'); ?>', '<?php echo $tplHelper->getPageUrl('postspot'); ?>', function() { new SpotPosting().postNewSpot(this.form, postSpotUiStart, postSpotUiDone); return false; }, 'autoclose', null, null);" title='<?php echo _('Add spot'); ?>'><?php echo _('Add spot'); ?></a></p></div>
 <?php } ?>
 
 			<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between static or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
@@ -92,16 +94,18 @@
 	// om 100% juist in de UI weer te geven. We doen hierdoor een gok die altijd juist
 	// is zolang je maar zoekt via de UI.
 	// Voor uitgebreide filters tonen we een lijst met op dat moment actieve filters
-	$searchType = 'Titel'; 
+	$searchType = 'Title';
 	$searchText = '';
 	
 	# Zoek nu een filter op dat eventueel matched, dan gebruiken we die. We willen deze 
 	# boom toch doorlopen ook al is er meer dan 1 filter, anders kunnen we de filesize
 	# en reportcount niet juist zetten
-	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
+    $textSearchCount = 0;
+    foreach($parsedsearch['filterValueList'] as $filterType) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
 			$searchType = $filterType['fieldname'];
 			$searchText = $filterType['value'];
+            $textSearchCount++;
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == ">") {
 			$minFilesize = $filterType['value'];
 		} elseif ($filterType['fieldname'] == 'filesize' && $filterType['operator'] == "<") {
@@ -128,20 +132,27 @@
 	} # if
 
 	# als er meer dan 1 filter is, dan tonen we dat als een lijst
-	if (count($parsedsearch['filterValueList']) > 1) {
+	if ($textSearchCount > 1) {
 		$searchText = '';
-		$searchType = 'Titel';
+		$searchType = 'Title';
 	} # if
 
 	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
-			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
+			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['booloper']) . ':' . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
 		} # if
 	} # foreach
-
 ?>
-					<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
+
+
+<script type='text/javascript'>
+    var sliderMinFileSize = <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>;
+    var sliderMaxFileSize = <?php echo (isset($maxFilesize)) ? $maxFilesize : (1024*1024*1024) * 512; ?>;
+    var sliderMaxReportCount = <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?>;
+</script>
+
+				<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
 <?php
 	$filterColCount = 4;
 ?>
@@ -150,22 +161,22 @@
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title="<?php echo _("Close 'Advanced Search'"); ?>">[x]</a><?php echo _('Search on:'); ?></h4>
 						<ul class="search <?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
-							<li> <input type="radio" name="search[type]" value="Titel" <?php echo $searchType == "Titel" ? 'checked="checked"' : "" ?> ><label><?php echo _('Title'); ?></label></li>
+							<li> <input type="radio" name="search[type]" value="Title" <?php echo $searchType == "Title" ? 'checked="checked"' : "" ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label><?php echo _('Tag'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="SpotterID" <?php echo $searchType == "SpotterID" ? 'checked="checked"' : "" ?> ><label><?php echo _('SpotterID'); ?></label></li>
 						</ul>
 
 <?php
-	if (count($parsedsearch['filterValueList']) > 0) {
+	if ($textSearchCount > 0) {
 ?>
 						<h4><?php echo _('Active filters:'); ?></h4>
 						<table class='search currentfilterlist'>
 <?php
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Poster', 'Tag', 'SpotterID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
 ?>
-							<tr> <th> <?php echo _($filterType['fieldname']); ?> </th> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo ($filterType['fieldname'] == 'Title') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlspecialchars($filterType['booloper'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
@@ -190,14 +201,14 @@
 <?php if (!isset($ageFilter)) { $ageFilter = ''; } ?>
 							<li><select name="search[value][]">
 								<option value=""><?php echo _('Show all'); ?></option>
-								<option value="date:>:-1 day" <?php echo $ageFilter == ">-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 day'); ?></option>
-								<option value="date:>:-3 days" <?php echo $ageFilter == ">-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 days'); ?></option>
-								<option value="date:>:-1 week" <?php echo $ageFilter == ">-1 week" ? 'selected="selected""' : "" ?>><?php echo _('1 week'); ?></option>
-								<option value="date:>:-2 weeks" <?php echo $ageFilter == ">-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weeks'); ?></option>
-								<option value="date:>:-1 month" <?php echo $ageFilter == ">-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 month'); ?></option>
-								<option value="date:>:-3 months" <?php echo $ageFilter == ">-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 months'); ?></option>
-								<option value="date:>:-6 months" <?php echo $ageFilter == ">-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 months'); ?></option>
-								<option value="date:>:-1 year" <?php echo $ageFilter == ">-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 year'); ?></option>
+								<option value="date:>:DEF:-1 day" <?php echo $ageFilter == ">-1 day" ? 'selected="selected"' : "" ?>><?php echo _('1 day'); ?></option>
+								<option value="date:>:DEF:-3 days" <?php echo $ageFilter == ">-3 days" ? 'selected="selected""' : "" ?>><?php echo _('3 days'); ?></option>
+								<option value="date:>:DEF:-1 week" <?php echo $ageFilter == ">-1 week" ? 'selected="selected""' : "" ?>><?php echo _('1 week'); ?></option>
+								<option value="date:>:DEF:-2 weeks" <?php echo $ageFilter == ">-2 weeks" ? 'selected="selected"' : "" ?>><?php echo _('2 weeks'); ?></option>
+								<option value="date:>:DEF:-1 month" <?php echo $ageFilter == ">-1 month" ? 'selected="selected"' : "" ?>><?php echo _('1 month'); ?></option>
+								<option value="date:>:DEF:-3 months" <?php echo $ageFilter == ">-3 months" ? 'selected="selected"' : "" ?>><?php echo _('3 months'); ?></option>
+								<option value="date:>:DEF:-6 months" <?php echo $ageFilter == ">-6 months" ? 'selected="selected"' : "" ?>><?php echo _('6 months'); ?></option>
+								<option value="date:>:DEF:-1 year" <?php echo $ageFilter == ">-1 year" ? 'selected="selected"' : "" ?>><?php echo _('1 year'); ?></option>
 							</select></li>
 						</ul>
 					
@@ -223,7 +234,7 @@
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 						<h4><?php echo _('Filters'); ?></h4>
-						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Add a filter'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo addcslashes($tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(), "\\\'\"&\n\r<>"); ?>', 'editfilterform', null, 'autoclose', null, null); " class="greyButton addFilter"><?php echo _('Save search as filter'); ?></a>
+						<a onclick="return openDialog('editdialogdiv', '<?php echo _('Add a filter'); ?>', '?page=render&amp;tplname=editfilter&amp;data[isnew]=true<?php echo addcslashes($tplHelper->convertTreeFilterToQueryParams() .$tplHelper->convertTextFilterToQueryParams() . $tplHelper->convertSortToQueryParams(), "\\\'\"&\n\r<>"); ?>', null, 'autoclose', null, null); " class="greyButton addFilter"><?php echo _('Save search as filter'); ?></a>
 <?php } ?>
 				</div>
 			</form>
@@ -350,7 +361,7 @@
 <?php 
 		if ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) {
 			if ( ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_consume_api, ''))) { ?>
-						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots()" class="greyButton retrievespots"><?php echo _('Retrieve'); ?></a></li>
+						<li><a href="<?php echo $tplHelper->makeRetrieveUrl(); ?>" onclick="retrieveSpots(this)" class="greyButton retrievespots"><?php echo _('Retrieve'); ?></a></li>
 <?php 		}
 		} ?>
 <?php if (($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, '')) && ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls'))) { ?>
@@ -362,57 +373,5 @@
 					</ul>
 				</div>
 
-	<script>
-	$(function() {
-		// console.time("11th-ready");
-		var max = (1024*1024*1024)*350;
-		
-		$( "#slider-filesize" ).slider({
-			range: true,
-			min: 0,
-			max: max,
-			step: ((1024*1024*1024)*350) / 1024,
-			values: [ <?php echo (isset($minFilesize)) ? $minFilesize : "0"; ?>, <?php echo (isset($maxFilesize)) ? $maxFilesize : "375809638400"; ?> ],
-			slide: function( event, ui ) {
-				var minSize = Math.round((ui.values[0] / max * ((ui.values[0] / max))) * max);
-				var maxSize = Math.round((ui.values[1] / max * ((ui.values[1] / max))) * max);
-				$( "#min-filesize" ).val( "filesize:>:" + minSize );
-				$( "#max-filesize" ).val( "filesize:<:" + maxSize );
-				$( "#human-filesize" ).text( "Tussen " + format_size( minSize ) + " en " + format_size( maxSize ) );
-			}
-		});
-		
-		$( "#slider-reportcount" ).slider({
-			range: 'max',
-			min: 0,
-			max: 21,
-			step: 1,
-			values: [ <?php echo (isset($maxReportCount)) ? $maxReportCount : "21"; ?> ],
-			slide: function( event, ui ) {
-				$( "#max-reportcount" ).val( "reportcount:<=:" + ui.values[0]);
-
-				if (ui.values[0] == 21) {
-					/* In de submit handler wordt 21 gefiltered */
-					$( "#human-reportcount" ).text( "<?php echo _('Do not filter on # reports'); ?>" );
-				} else {
-					$( "#human-reportcount" ).text( "<?php echo _('Maximum %1 reports'); ?>".replace("%1", ui.values[0]) );
-				} // if
-			}
-		});
-
-		/* Filesizes */
-		$( "#min-filesize" ).val( "filesize:>:" + $( "#slider-filesize" ).slider( "values", 0 ) );
-		$( "#max-filesize" ).val( "filesize:<:" + $( "#slider-filesize" ).slider( "values", 1 ) );
-		$( "#human-filesize" ).text( "Tussen " + format_size( $( "#slider-filesize" ).slider( "values", 0 ) ) + " en " + format_size( $( "#slider-filesize" ).slider( "values", 1 ) ) );
-		
-		/* Report counts */
-		var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
-		$( "#max-reportcount" ).val( "reportcount:<=:" + reportSlideValue);
-		if (reportSlideValue == 21) {
-			$( "#human-reportcount" ).text("<?php echo _('Do not filter on # reports'); ?>");
-		} else {
-			$( "#human-reportcount" ).text( "<?php echo _('Maximum %1 reports'); ?>".replace("%1", reportSlideValue));
-		} // if
-		// console.timeEnd("11th-ready");
-	});
-	</script>
+<?php
+    SpotTiming::stop('tpl:filters');

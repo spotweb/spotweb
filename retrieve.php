@@ -1,225 +1,306 @@
 <?php
 error_reporting(2147483647);
 
-/*
- * If we are run from another directory, try to change the current
- * working directory to a directory the script is in
- */
-if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-	chdir(dirname(__FILE__));
-} # if
-
-require_once "lib/SpotTranslation.php";
-require_once "lib/SpotClassAutoload.php";
 try {
-	require_once "settings.php";
-} 
-catch(InvalidOwnSettingsSettingException $x) {
-	echo "There is an error in your ownsettings.php" . PHP_EOL . PHP_EOL;
-	echo $x->getMessage() . PHP_EOL;
-	die();
-} # InvalidOwnSettingsSetting
-
-require_once "lib/SpotTiming.php";
-require_once "lib/exceptions/ParseSpotXmlException.php";
-require_once "lib/exceptions/NntpException.php";
-
-/*
- * disable timing, all queries which are ran by retrieve this would make it use
- * large amounts of memory
- */
-SpotTiming::disable();
-
-# Initialize commandline arguments
-SpotCommandline::initialize(array('force', 'debug', 'retro'), array('force' => false, 'debug' => false, 'retro' => false));
-
-# Initialize translation to english 
-SpotTranslation::initialize('en_US');
-
-# in safe mode, max execution time cannot be set, warn the user
-if (ini_get('safe_mode') ) {
-	echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
-} # if
-
-try {
-	$db = new SpotDb($settings['db']);
-	$db->connect();
-} 
-catch(DatabaseConnectionException $x) {
-	die("Unable to connect to database: " . $x->getMessage() . PHP_EOL);
-} # catch
-
-# Creer het settings object
-$settings = SpotSettings::singleton($db, $settings);
-
-# Controleer dat we niet een schema upgrade verwachten
-if (!$settings->schemaValid()) {
-	die("Database schema has been changed, please run upgrade-db.php" . PHP_EOL);
-} # if
-
-# Controleer eerst of de settings versie nog wel geldig zijn
-if (!$settings->settingsValid()) {
-	die("Global settings have been changed, please run upgrade-db.php" . PHP_EOL);
-} # if
-
-$req = new SpotReq();
-$req->initialize($settings);
-
-# We willen alleen uitgevoerd worden door een user die dat mag als
-# we via de browser aangeroepen worden. Via console halen we altijd
-# het admin-account op
-$spotUserSystem = new SpotUserSystem($db, $settings);
-if (!SpotCommandline::isCommandline()) {
-	# Vraag de API key op die de gebruiker opgegeven heeft
-	$apiKey = $req->getDef('apikey', '');
-	
-	$userSession = $spotUserSystem->verifyApi($apiKey);
-
-	if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) { 
-		die("Access denied");
+	/*
+	 * If we are run from another directory, try to change the current
+	 * working directory to a directory the script is in
+	 */
+	if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
+		chdir(dirname(__FILE__));
 	} # if
-	
-	# Add the user's ip addres, we need it for sending notifications
-	$userSession['session'] = array('ipaddr' => '');
-} else {
-	$userSession['user'] = $db->getUser(SPOTWEB_ADMIN_USERID);
-	$userSession['security'] = new SpotSecurity($db, $settings, $userSession['user'], '');
-	$userSession['session'] = array('ipaddr' => '');
-} # if
 
-if ($req->getDef('output', '') == 'xml') {
-	echo "<xml>";
-} # if
+	require_once "lib/SpotClassAutoload.php";
+    SpotClassAutoload::register();
 
-# We vragen de nntp_hdr settings alvast op
-$settings_nntp_hdr = $settings->get('nntp_hdr');
-if (empty($settings_nntp_hdr['host'])) {
-	die("Unable to continue: You did not setup any newsserver yet." . PHP_EOL);
-} # if
-	
-## Als we forceren om de "already running" check te bypassen, doe dat dan
-if (SpotCommandline::get('force')) {
-	$db->setRetrieverRunning($settings_nntp_hdr['host'], false);
-} # if
+	/*
+	 * Initialize the Spotweb base classes
+	 */
+	$bootstrap = new Bootstrap();
+	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
-## Moeten we debugloggen? Kan alleen als geen --force opgegeven wordt
-$debugLog = SpotCommandline::get('debug');
+	/*
+	 * disable timing, all queries which are ran by retrieve this would make it use
+	 * large amounts of memory
+	 */
+	SpotTiming::disable();
 
-## RETRO MODE! Hiermee kunnen we de fullspots, fullcomments en/of cache achteraf ophalen
-$retroMode = SpotCommandline::get('retro');
+	# Initialize commandline arguments
+	SpotCommandline::initialize(array('force', 'debug', 'retro', 'timing'), array('force' => false, 'timing' => false, 'debug' => false, 'retro' => false));
 
-/*
- * Retention cleanup. Basically when we ask for Spotweb to only
- * keep spots for 'xx' days (eg: 30 days), we either have to delete
- * everyting older than 'xx' days, or delete all 'full' resources
- * older than the specified time period.
- *
- * The full resources are everything beyond the bare minimum to 
- * display the spots, so we delete nzb's, images, comments, etc.
- */
-try {
-	if ($settings->get('retention') > 0 && !$retroMode) {
+    # Allow for timing to be displayed after retrieval of spots
+    $showTiming = SpotCommandline::get('timing');
+    if ($showTiming) {
+        SpotTiming::enable();
+        SpotTiming::enableHtml(false);
+        SpotTiming::disableExtra(true);
+    } # if
 
-		if ($settings->get('retentiontype') == 'everything') {
-			$db->deleteSpotsRetention($settings->get('retention'));
-		} elseif ($settings->get('retentiontype') == 'fullonly') {
-			$db->expireCache($settings->get('retention'));
-			$db->expireCommentsFull($settings->get('retention'));
-			$db->expireSpotsFull($settings->get('retention'));
-		} else {
-			throw new NotImplementedException("Unknown retentiontype specified");
-		}
+    # Initialize translation to english
+	SpotTranslation::initialize('en_US');
+
+	/*
+	 * When PHP is running in safe mode, max execution time cannot be set,
+	 * which is necessary on slow systems for retrieval and statistics generation
+	 */
+	if (ini_get('safe_mode')) {
+		echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
 	} # if
-} catch(Exception $x) {
-	echo PHP_EOL . PHP_EOL;
-	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
-	echo "Fatal error occured while cleaning up messages due to retention:" . PHP_EOL;
-	echo "  " . $x->getMessage() . PHP_EOL;
-	echo PHP_EOL . PHP_EOL;
-	echo $x->getTraceAsString();
-	echo PHP_EOL . PHP_EOL;
-	die();
-} # catch
 
-$newSpotCount = 0;
-$newCommentCount = 0;
-$newReportCount = 0;
-$retriever = null;
+	/*
+	 * When retrieval is run from the webinterface, we want to make
+	 * sure this user is actually allowed to run retrieval.
+	 */
+	$svcUserRecord = new Services_User_Record($daoFactory, $settings);
+	$svcUserAuth = new Services_User_Authentication($daoFactory, $settings);
+	if (!SpotCommandline::isCommandline()) {
+		/*
+		 * An API key is required, so request it and try to
+		 * create a session with it which we can use to validate
+		 * the user with
+		 */
+		$apiKey = $req->getDef('apikey', '');
+		$userSession = $svcUserAuth->verifyApi($apiKey);
 
-## Spots
-try {
+		/*
+		 * If the session failed or the the user doesn't have access
+		 * to retrieve spots, let the user know
+		 */
+		if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) { 
+			throw new PermissionDeniedException(SpotSecurity::spotsec_retrieve_spots, '');
+		} # if
+		
+		# Add the user's ip addres, we need it for sending notifications
+		$userSession['session'] = array('ipaddr' => '');
+	} else {
+		$userSession['user'] = $svcUserRecord->getUser(SPOTWEB_ADMIN_USERID);
+		$userSession['security'] = new SpotSecurity($daoFactory->getUserDao(),
+													$daoFactory->getAuditDao(),
+													$settings, 
+													$userSession['user'], 
+													'');
+		$userSession['session'] = array('ipaddr' => '');
+	} # if
+
+	/*
+	 * We normally check whether we are not running already, because
+	 * this would mean it will mess up all sorts of things like
+	 * comment calculation, but a user can force our hand
+	 */
+	$forceMode = SpotCommandline::get('force');
+
+	/*
+	 * Do we need to debuglog this session? Generates loads of
+	 * output
+	 */
+	$debugLog = SpotCommandline::get('debug');
+    if ($debugLog) {
+        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
+    } else {
+        SpotDebug::disable();
+    } # if
+
+	/*
+	 * Retro mode will allow os to start from the beginning and retrieve
+	 * all spots starting from scratch
+	 */
+	$retroMode = SpotCommandline::get('retro');
+
+	/*
+	 * Retention cleanup. Basically when we ask for Spotweb to only
+	 * keep spots for 'xx' days (eg: 30 days), we either have to delete
+	 * everyting older than 'xx' days, or delete all 'full' resources
+	 * older than the specified time period.
+	 *
+	 * The full resources are everything beyond the bare minimum to 
+	 * display the spots, so we delete nzb's, images, comments, etc.
+	 */
+	if (($settings->get('retention') > 0) && (!$retroMode)) {
+        echo "Removing Spot information which is beyond retention period,";
+
+		$spotDao = $daoFactory->getSpotDao();
+        $cacheDao = $daoFactory->getCacheDao();
+        $commentDao = $daoFactory->getCommentDao();
+
+		switch ($settings->get('retentiontype')) {
+			case 'everything'		: {
+				$spotDao->deleteSpotsRetention($settings->get('retention'));
+                $cacheDao->expireCache($settings->get('retention'));
+			} # case everything
+
+			case 'fullonly'			: {
+				$cacheDao->expireCache($settings->get('retention'));
+				$commentDao->expireCommentsFull($settings->get('retention'));
+				$spotDao->expireSpotsFull($settings->get('retention'));
+			} # case fullonly
+		} # switch
+
+        echo ", done" . PHP_EOL;
+	} # if
+
+	$newSpotCount = 0;
+	$newCommentCount = 0;
+	$newReportCount = 0;
+	$retriever = null;
+
+	## Spots
 	/*
 	 * Actually retrieve spots from the server
 	 */
-	$retriever = new SpotRetriever_Spots($settings_nntp_hdr, 
-										 $db, 
-										 $settings,										 
-										 $req->getDef('output', ''),
-										 $debugLog,
-										 $retroMode);
+	$retriever = new Services_Retriever_Spots($daoFactory, 
+											  $settings,
+											  $forceMode,
+											  $retroMode);
 	$newSpotCount = $retriever->perform();
 
-	## Creating filter counts
+    # Show the cumulative timings of the spotsretrieval
+    if ($showTiming) {
+        SpotTiming::displayCumul();
+        SpotTiming::clear();
+    } # if
+
+    ## Creating filter counts
 	if ($newSpotCount > 0) {
-		$spotsOverview = new SpotsOverview($db, $settings);
+		$svcPrv_cacheSpotCount = new Services_Actions_CacheNewSpotCount($daoFactory->getUserFilterCountDao(),
+																		  $daoFactory->getUserFilterDao(),
+																		  $daoFactory->getSpotDao(),
+																		  new Services_Search_QueryParser($daoFactory->getConnection()));
 		echo 'Calculating how many spots are new';
-		$notifyNewArray = $spotsOverview->cacheNewSpotCount();
+		$notifyNewArray = $svcPrv_cacheSpotCount->cacheNewSpotCount();
 		echo ', done.' . PHP_EOL;
+
+        # Show the cumulative timings of the caching of these spots
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
 	} # if
 
-	/*
-	 * Should we retrieve comments?
-	 */
+
+    /*
+     * Should we retrieve comments?
+     */
 	if ($settings->get('retrieve_comments')) {
-		$retriever = new SpotRetriever_Comments($settings_nntp_hdr, 
-												$db,
-												$settings,
-												$req->getDef('output', ''),
-												$debugLog,
-												$retroMode);
+		$retriever = new Services_Retriever_Comments($daoFactory,
+													 $settings,
+													 $forceMode,
+													 $retroMode);
 		$newCommentCount = $retriever->perform();
-	} # if
+
+        # Show the cumulative timings of the caching of these comments
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
+    } # if
+
 
 	/*
 	 * Retrieval of reports
 	 */
 	if ($settings->get('retrieve_reports') && !$retroMode) {
-		$retriever = new SpotRetriever_Reports($settings_nntp_hdr, 
-												$db,
-												$settings,
-												$req->getDef('output', ''),
-												$debugLog);
+		$retriever = new Services_Retriever_Reports($daoFactory,
+												    $settings,
+												    $forceMode,
+                                                    $retroMode);
 		$newReportCount = $retriever->perform();
+
+        # Show the cumulative timings of the caching of these reports
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } # if
 	} # if
 	
 	/*
 	 * SpotStateList cleanup
 	 */
-	$db->cleanSpotStateList();
+	$daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
-	if (!$retroMode) {
-		$db->expireCache(30);
+	try {
+		## External blacklist
+		if ($settings->get('external_blacklist')) {
+			$svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
+			$bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
+			if ($bwResult === false) {
+				echo "Blacklist not modified, no need to update" . PHP_EOL;
+			} else {
+				echo "Finished updating blacklist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+			} # else
+		} # if
+
+		## External whitelist
+		if ($settings->get('external_whitelist')) {
+			$bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
+			if ($bwResult === false) {
+				echo "Whitelist not modified, no need to update" . PHP_EOL;
+			} else {
+				echo "Finished updating whitelist. Added " . $bwResult['added'] . ", removed " . $bwResult['removed'] . ", skipped " . $bwResult['skipped'] . " of " . $bwResult['total'] . " lines." . PHP_EOL;
+			} # else
+		} # if
+	} catch (CorruptBWListException $e) {
+		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
+	}
+
+    ## Remove expired debuglogs
+    echo "Expiring debuglog entries, if any, ";
+    $daoFactory->getDebugLogDao()->expire();
+    echo "done. " . PHP_EOL;
+
+	## Statistics
+	if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
+		if (extension_loaded('gd') || extension_loaded('gd2')) {
+			$settings_nntp_hdr = $settings->get('nntp_hdr');
+			$svcPrv_Stats = new Services_Providers_Statistics($daoFactory->getSpotDao(),
+															  $daoFactory->getCachedao(),
+												 			  $daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots));
+
+			echo "Starting to create statistics " . PHP_EOL;
+			$svcPrv_Stats->createAllStatistics();
+			echo "Finished creating statistics " . PHP_EOL;
+			echo PHP_EOL;
+		} else {
+			echo "GD extension not loaded, not creating statistics" . PHP_EOL;
+		} # else
 	} # if
+
+	# Verstuur notificaties
+	$spotsNotifications = new SpotNotifications($daoFactory, $settings, $userSession);
+	if (!empty($notifyNewArray)) {
+		foreach($notifyNewArray as $userId => $newSpotInfo) {
+	 		foreach($newSpotInfo as $filterInfo) {
+				if (($filterInfo['newcount'] > 0) && ($filterInfo['enablenotify'])) {
+					$spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
+				} # if
+			} # foreach
+		} # foreach
+	} # if
+	$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
 }
+
 catch(RetrieverRunningException $x) {
        echo PHP_EOL . PHP_EOL;
-       die("retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL);
+       echo "retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL;
 }
+
 catch(NntpException $x) {
-	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
 	echo "Fatal error occured while connecting to the newsserver:" . PHP_EOL;
 	echo "  (" . $x->getCode() . ") " . $x->getMessage() . PHP_EOL;
 	echo PHP_EOL . PHP_EOL;
 	echo $x->getTraceAsString();
 	echo PHP_EOL . PHP_EOL;
-
-	if (!empty($retriever)){
-		echo "Updating retrieve status in the database" . PHP_EOL . PHP_EOL;
-		$retriever->quit();
-	}
-	die();
 }
+
+catch(DatabaseConnectionException $x) {
+	echo "Unable to connect to database: " . $x->getMessage() . PHP_EOL;
+} # catch
+
+catch(InvalidOwnSettingsSettingException $x) {
+	echo "There is an error in your ownsettings.php" . PHP_EOL . PHP_EOL;
+	echo $x->getMessage() . PHP_EOL;
+} # InvalidOwnSettingsSetting
+
 catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
@@ -230,112 +311,3 @@ catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	die();
 } # catch
-
-
-## External blacklist
-$settings_external_blacklist = $settings->get('external_blacklist');
-if ($settings_external_blacklist) {
-	try {
-		$spotsOverview = new SpotsOverview($db, $settings);
-		# haal de blacklist op
-		list($http_code, $blacklist) = $spotsOverview->getFromWeb($settings->get('blacklist_url'), false, 30*60);
-
-		if ($http_code == 304) {
-			echo "Blacklist not modified, no need to update" . PHP_EOL;
-		} elseif (strpos($blacklist['content'],">")) {
-			echo "Error, blacklist does not have expected layout!" . PHP_EOL;
-		} else {
-			# update de blacklist
-			$blacklistarray = explode(chr(10),$blacklist['content']);
-			
-			# Perform a very small snaity check on the blacklist
-			if ((count($blacklistarray) > 5) && (strlen($blacklistarray[0]) < 10)) {
-				$updateblacklist = $db->updateExternallist($blacklistarray, SpotDb::spotterlist_Black);
-				echo "Finished updating blacklist. Added " . $updateblacklist['added'] . ", removed " . $updateblacklist['removed'] . ", skipped " . $updateblacklist['skipped'] . " of " . count($blacklistarray) . " lines." . PHP_EOL;
-			} else {
-				echo "Blacklist is probably corrupt, skipping" . PHP_EOL;
-			} # else				
-		}
-	} catch(Exception $x) {
-		echo "Fatal error occured while updating blacklist:" . PHP_EOL;
-		echo "  " . $x->getMessage() . PHP_EOL;
-		echo PHP_EOL . PHP_EOL;
-		echo $x->getTraceAsString();
-		echo PHP_EOL . PHP_EOL;
-	}
-} # if
-
-## External whitelist
-$settings_external_whitelist = $settings->get('external_whitelist');
-if ($settings_external_whitelist) {
-	try {
-		$spotsOverview = new SpotsOverview($db, $settings);
-		# haal de whitelist op
-		list($http_code, $whitelist) = $spotsOverview->getFromWeb($settings->get('whitelist_url'), false, 30*60);
-
-		if ($http_code == 304) {
-			echo "Whitelist not modified, no need to update" . PHP_EOL;
-		} elseif (strpos($whitelist['content'],">")) {
-			echo "Error, whitelist does not have expected layout!" . PHP_EOL;
-		} else {
-			# update de whitelist
-			$whitelistarray = explode(chr(10),$whitelist['content']);
-			
-			# Perform a very small snaity check on the whitelist
-			if ((count($whitelistarray) > 5) && (strlen($whitelistarray[0]) < 10)) {
-				$updatewhitelist = $db->updateExternallist($whitelistarray, SpotDb::spotterlist_White);
-				echo "Finished updating whitelist. Added " . $updatewhitelist['added'] . ", removed " . $updatewhitelist['removed'] . ", skipped " . $updatewhitelist['skipped'] . " of " . count($whitelistarray) . " lines." . PHP_EOL;
-			} else {
-				echo "Whitelist is probably corrupt, skipping" . PHP_EOL;
-			} # else				
-		}
-	} catch(Exception $x) {
-		echo "Fatal error occured while updating whitelist:" . PHP_EOL;
-		echo "  " . $x->getMessage() . PHP_EOL;
-		echo PHP_EOL . PHP_EOL;
-		echo $x->getTraceAsString();
-		echo PHP_EOL . PHP_EOL;
-	}
-} # if
-
-## Statistics
-if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
-	if (extension_loaded('gd') || extension_loaded('gd2')) {	
-		$spotsOverview = new SpotsOverview($db, $settings);
-		$spotImage = new SpotImage($db);
-		$spotsOverview->setActiveRetriever(true);
-
-		echo "Starting to create statistics " . PHP_EOL;
-		foreach ($spotImage->getValidStatisticsLimits() as $limitValue => $limitName) {
-			# Reset timelimit
-			set_time_limit(60);
-
-			foreach($settings->get('system_languages') as $language => $name) {
-				foreach ($spotImage->getValidStatisticsGraphs() as $graphValue => $graphName) {
-					$spotsOverview->getStatisticsImage($graphValue, $limitValue, $settings_nntp_hdr, $language);
-				} # foreach graph
-			} # foreach language
-			echo "Finished creating statistics " . $limitName . PHP_EOL;
-		} # foreach limit
-		echo PHP_EOL;
-	} else {
-		echo "GD extension not loaded, not creating statistics" . PHP_EOL;
-	} # else
-} # if
-
-# Verstuur notificaties
-$spotsNotifications = new SpotNotifications($db, $settings, $userSession);
-if (!empty($notifyNewArray)) {
-	foreach($notifyNewArray as $userId => $newSpotInfo) {
-		foreach($newSpotInfo as $filterInfo) {
-			if (($filterInfo['newcount'] > 0) && ($filterInfo['enablenotify'])) {
-				$spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
-			} # if
-		} # foreach
-	} # foreach
-} # if
-$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
-
-if ($req->getDef('output', '') == 'xml') {
-	echo "</xml>";
-} # if

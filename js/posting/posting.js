@@ -1,4 +1,4 @@
-function spotPosting() {
+function SpotPosting() {
 	this.commentForm = null;
 	this.reportForm = null;
 	this.uiStart = null;
@@ -10,23 +10,23 @@ function spotPosting() {
 		self.uiDone();
 
 		// convert the processed form to post values
-		var dataString = $(self.commentForm).serialize()
+		var dataString = $(self.commentForm).serialize();
 		
 		// and actually process the call
 		$.ajax({  
 			type: "POST",  
 			url: "?page=postcomment",  
-			dataType: "xml",
+			dataType: "json",
 			data: dataString,  
-			success: function(xml) {
-				var result = $(xml).find('result').text();
+			success: function(data) {
+				var result = data.result;
 				if(result == 'success') {
-					var user = $(xml).find('user').text();
-					var spotterid = $(xml).find('spotterid').text();
-					var rating = $(xml).find('rating').text();
-					var text = $(xml).find('body').text();
-					var spotteridurl = 'http://'+window.location.hostname+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
-					var commentimage = $(xml).find('commentimage').text();
+					var user = data.data.user;
+					var spotterid = data.data.spotterid;
+					var rating = data.data.rating;
+					var text = data.data.body;
+					var spotteridurl = 'http://'+window.location.host+window.location.pathname+'?search[tree]=&amp;search[type]=SpotterID&amp;search[text]='+spotterid;
+					var commentimage = data.data.commentimage;
 
 					var data = "<li> <img class='commentavatar' src='" + commentimage + "'> <strong> <t>Posted by %1</t>".replace("%1", "<span class='user'>"+user+"</span>") + " (<a class='spotterid' target='_parent' href='"+spotteridurl+"' title='<t>Search spots from %1</t>".replace("%1", spotterid) + "'>"+spotterid+"</a>) @ <t>just now</t> </strong> <br>"+text+"</li>";
 
@@ -37,42 +37,48 @@ function spotPosting() {
 						$("#commentslist > li:nth-child(even)").addClass('even');
 						$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 					});
-				}
+				} else {
+                    /*
+                     * At least let the caller know it has failed
+                     */
+                    alert(data.errors.join('\r\n'));
+                }
 			},
-			error: function(xml) {
-				console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
+			error: function(data) {
+				console.log('error: '+data);
 			}
 		});
-	} // cbHashcashCalculated
+	}; // cbHashcashCalculated
 		
 	this.rpHashcashCalculated = function (self, hash) {
 			self.reportForm['postreportform[newmessageid]'].value = hash;
 			self.reportForm['postreportform[submitpost]'].value = 'Post';
 			self.uiDone();
 			
-			var dataString2 = $(self.reportForm).serialize()
+			var dataString2 = $(self.reportForm).serialize();
 			
 			$.ajax({  
 				type: "POST",  
 				url: "?page=reportpost",  
-				dataType: "xml",
+				dataType: "json",
 				data: dataString2,  
-				success: function(xml) {
-					var result = $(xml).find('result').text();
-					var errors = $(xml).find('errors').text();
-					
-					if(result != 'success') {
-						console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-						
-						$(".spamreport-button").attr('title', result + ': ' + errors);
-						alert('<t>Marking as spam was not successfull:</t> ' + errors);
-					} // else					
+				success: function(data) {
+                    var result = data.result;
+
+                    if(result != 'success') {
+                        var errors = data.errors.join('\r\n');
+
+                        console.log('error: ' + errors);
+
+                        $(".spamreport-button").attr('title', result + ': ' + errors);
+                        alert('<t>Marking as spam was not successful:</t> ' + errors);
+                    } // if
 				},
-				error: function(xml) {
-					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-				}
+                error: function(data) {
+                    console.log('error: '+data);
+                }
 			});
-	} // callback rpHashcashCalculated
+	}; // callback rpHashcashCalculated
 
 	this.spotHashcashCalculated = function (self, hash) {
 			// and enter the form's inputfields
@@ -83,10 +89,10 @@ function spotPosting() {
 			$(self.newSpotForm).ajaxSubmit({
 				type: "POST",  
 				url: "?page=postspot",  
-				dataType: "xml",
-				success: function(xml) {
-					var $dialdiv = $("#editdialogdiv")
-					var result = $(xml).find('result').text();
+				dataType: "json",
+				success: function(data) {
+					var $dialdiv = $("#editdialogdiv");
+					var result = data.result;
 					
 					var $formerrors = $dialdiv.find("ul.formerrors");
 					$formerrors.empty();
@@ -94,9 +100,9 @@ function spotPosting() {
 					$forminfo.empty();
 
 					if (result == 'success') {
-						// zet de information van het formulier in de infolijst
-						$('info', xml).each(function() {
-							$forminfo.append("<li>" + $(this).text() + "</li>");
+						// did we get any info field? if so, add it to the form
+						$(data.info).each(function() {
+							$forminfo.append("<li>" + this + "</li>");
 						}); // each
 						
 						/**
@@ -110,18 +116,17 @@ function spotPosting() {
 						$("input[name='newspotform[nzbfile]']").val('');
 						$("input[name='newspotform[imagefile]']").val('');						
 					} else {						
-						// voeg nu de errors in de html
-						// zet de errors van het formulier in de errorlijst
-						$('errors', xml).each(function() {
-							$formerrors.append("<li>" + $(this).text() + "</li>");
+						// add errors of the JSON
+						$(data.errors).each(function() {
+							$formerrors.append("<li>" + this + "</li>");
 						}); // each
 					} // if post was not succesful
 				}, // success()
-				error: function(xml) {
-					console.log('error: '+((new XMLSerializer()).serializeToString(xml)));
-				}
+                error: function(data) {
+                    console.log('error: '+data);
+                }
 			});
-	} // callback spotHashcashCalculated
+	}; // callback spotHashcashCalculated
 	
 	this.postComment = function(commentForm, uiStart, uiDone) {
 		this.commentForm = commentForm;
@@ -143,7 +148,7 @@ function spotPosting() {
 		/* Nu vragen we om, asynchroon, een hashcash te berekenen. Zie comments van calculateCommentHashCash()
 		   waarom dit asynhcroon verloopt */
 		this.calculateCommentHashCash('<' + inreplyto + '.' + rating + '.' + randomstr + '.', '@spot.net>', 0, this.cbHashcashCalculated);
-	} // postComment
+	}; // postComment
 	
 	this.postReport = function(reportForm, uiStart, uiDone) {
 		this.reportForm = reportForm;
@@ -158,7 +163,7 @@ function spotPosting() {
 		inreplyto = inreplyto.substring(0, inreplyto.indexOf('@'));
 		
 		this.calculateCommentHashCash('<' + inreplyto + '.' + randomstr + '.', '@spot.net>', 0, this.rpHashcashCalculated);
-	} // postReport
+	}; // postReport
 
 	this.postNewSpot = function(newSpotForm, uiStart, uiDone) {
 		this.newSpotForm = newSpotForm;
@@ -166,7 +171,7 @@ function spotPosting() {
 		this.uiDone = uiDone;
 
 		/* Clear the errors */
-		var $dialdiv = $("#editdialogdiv")
+		var $dialdiv = $("#editdialogdiv");
 		$dialdiv.find("ul.formerrors").empty();
 		$dialdiv.find("ul.forminformation").empty();
 				
@@ -175,7 +180,7 @@ function spotPosting() {
 		var randomstr = newSpotForm['newspotform[randomstr]'].value;
 		
 		this.calculateCommentHashCash('<' + randomstr, '@spot.net>', 0, this.spotHashcashCalculated);
-	} // postNewSpot
+	}; // postNewSpot
 	
 	//
 	// We breken de make expensive hash op in stukken omdat 
@@ -211,5 +216,5 @@ function spotPosting() {
 			} // else
 		} // if
 
-	} // calculateCommentHashCash
-};
+	}; // calculateCommentHashCash
+}

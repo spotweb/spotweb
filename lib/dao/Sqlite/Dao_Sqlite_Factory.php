@@ -2,12 +2,27 @@
 
  class Dao_Sqlite_Factory extends Dao_Factory {
  	private $_conn;
+    private $_cachePath;
+
+    /*
+     * Actual cachepath to use
+     */
+    public function setCachePath($cachePath) {
+        $this->_cachePath = $cachePath;
+    } # setCachePath
+
+    /*
+     * Returns the currently configured cachepath
+     */
+     public function getCachePath() {
+         return $this->_cachePath;
+     } # getCachePath
 
  	/*
  	 * Actual connection object to be used in
  	 * data retrieval
  	 */
-	public function setConnection($conn) {
+	public function setConnection(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # setConnection
 
@@ -28,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Sqlite_Cache($this->_conn);
+		return new Dao_Sqlite_Cache($this->_conn, $this->getCachePath());
 	} # getCacheDao
 
 	public function getAuditDao() {
@@ -71,8 +86,16 @@
 		return new Dao_Sqlite_SpotStateList($this->_conn);
 	} # getSpotStateListDao
 
-	public function getNntpDao() {
-		return new Dao_Sqlite_Nntp($this->_conn);
-	} # getNntpDao
+	public function getUsenetStateDao() {
+		return new Dao_Sqlite_UsenetState($this->_conn);
+	} # getUsenetStateDao
+
+    public function getModeratedRingBufferDao() {
+        return new Dao_Sqlite_ModeratedRingBuffer($this->_conn);
+    } # getModeratedRingBufferDao
+
+     public function getDebugLogDao() {
+         return new Dao_Sqlite_DebugLog($this->_conn);
+     } # getDebugLogDao
 
 } // Dao_Sqlite_Factory

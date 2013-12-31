@@ -22,7 +22,7 @@ class Notifications_NMA extends Notifications_abs {
 						'application' => $this->_appName,
 						'event' => $title,
 						'description' => $body);
-		$response = $this->nmaObj->push($params);
+		$this->nmaObj->push($params);
 	} # sendMessage
 
 } # Notifications_NMA

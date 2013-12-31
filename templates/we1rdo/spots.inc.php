@@ -1,20 +1,25 @@
 <?php
+
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
-		require_once "includes/header.inc.php";	
+		require_once "includes/header.inc.php";
 		require_once "includes/filters.inc.php";
 	} # if
+
+    SpotTiming::start('tpl:spotsinc-afterinclude');
 
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_watchlist_button = ($currentSession['user']['prefs']['keep_watchlist'] && $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, ''));
 	$show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
 	$show_filesize = $currentSession['user']['prefs']['show_filesize'];
 	$show_spamreports = $currentSession['user']['prefs']['show_reportcount'];
+	$minimum_spamreports = $currentSession['user']['prefs']['minimum_reportcount'];
 	$show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
 	$show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
 	$show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
 	$newCommentCount = array();
 	$noResults = (count($spots) == 0);
+	$show_editspot_button = ($tplHelper->allowed(SpotSecurity::spotsec_view_spotdetail, '') && $tplHelper->allowed(SpotSecurity::spotsec_edit_spotdetail, ''));
 
 	/*
 	 * For Seen, Watched en MyPosted-spots we want to show a list of
@@ -33,7 +38,10 @@
 						<tr class="head">
 							<th class='category'> <a href="<?php echo $tplHelper->makeSortUrl('index', 'category', ''); ?>" title="<?php echo _('Sort on category'); ?>"><?php echo _('Cat.'); ?></a> </th> 
 							<th class='title'> <span class="sortby"><a class="up" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'ASC'); ?>" title="<?php echo _('Sort on title [0-Z]'); ?>"> </a> <a class="down" href="<?php echo $tplHelper->makeSortUrl('index', 'title', 'DESC'); ?>" title="<?php echo _('Sort on title [Z-0]'); ?>"> </a></span> <?php echo _('Title'); ?> </th> 
-							<?php if ($show_watchlist_button) { ?>
+							<?php if ($show_editspot_button) { ?>
+							<th class='editspot'> </th>
+							<?php }
+							if ($show_watchlist_button) { ?>
 							<th class='watch'> </th>
 							<?php }
 							if ($show_comments) {
@@ -52,12 +60,12 @@
 							<th class='multinzb'> 
 								<form action="" method="GET" id="checkboxget" name="checkboxget">
 									<input type='hidden' name='page' value='getnzb'>
-									<input type='checkbox' name='checkall' onclick='checkedAll("checkboxget");'> 
+									<input type='checkbox' name='checkall' onclick='toggleAllMultiNzb();'>
 							</th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
 if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
-							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s panel"'), $tplHelper->getNzbHandlerName()); ?>'></a></th>
+							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s" panel'), $tplHelper->getNzbHandlerName()); ?>'></a></th>
 <?php } ?>						
 						</tr>
 					</thead>
@@ -70,6 +78,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_nzb_button) { $colSpan++; }
 		if ($show_filesize) { $colSpan++; }
 		if ($show_multinzb_checkbox) { $colSpan++; }
+		if ($show_editspot_button) { $colSpan++; }
 		if ($show_watchlist_button) { $colSpan++; }
 		if ($nzbHandlingTmp['action'] != 'disable') { $colSpan++; }
 		
@@ -88,17 +97,21 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		} # if
 
 		$catMap = array();
-		foreach($spot['subcatlist'] as $sub) {
-			$subcatType = substr($sub, 0, 1);
-			$subCatDesc = SpotCategories::SubcatDescription($spot['category'], $subcatType);
-			$catDesc = SpotCategories::Cat2Desc($spot['category'], $sub);
+        foreach(array('a', 'b', 'c', 'd', 'z') as $subcatType) {
+            $subList = explode('|', $spot['subcat' . $subcatType]);
+            foreach($subList as $sub) {
+                if (!empty($sub)) {
+            		$subCatDesc = SpotCategories::SubcatDescription($spot['category'], $subcatType);
+			        $catDesc = SpotCategories::Cat2Desc($spot['category'], $sub);
 
-			if (isset($catMap[$subCatDesc])) {
-				$catMap[$subCatDesc] .= ', ' . $catDesc;
-			} else {
-				$catMap[$subCatDesc] = $catDesc;
-			} # else
-		} # foreach
+                    if (isset($catMap[$subCatDesc])) {
+                        $catMap[$subCatDesc] .= ', ' . $catDesc;
+                    } else {
+                        $catMap[$subCatDesc] = $catDesc;
+                    } # else
+                } # if
+        	} # foreach
+        } # foreach
 		$catData = json_encode($catMap);
 	
 		if($spot['rating'] == 0) {
@@ -113,16 +126,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			$markSpot = '';
 		}
 		
-		if($spot['idtype'] == 2) {
-			$markSpot = '<span class="markGreen">W</span>' . $markSpot;
-		}
-		
-		if($spot['idtype'] == 1) {
-			$markSpot = '<span class="markSpot">B</span>' . $markSpot;
-		}
-		
 		$reportSpam = '';
-		if ($show_spamreports && $spot['reportcount'] != 0) {
+		if ($show_spamreports && $spot['reportcount'] >= $minimum_spamreports) {
 			if($spot['reportcount'] == 1) {
 				$reportSpamClass = ' grey';
 			} elseif ($spot['reportcount'] >= 2 && $spot['reportcount'] < 4) {
@@ -137,7 +142,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		}
 
 		echo "\t\t\t\t\t\t\t";
-		echo "<tr class='" . $tplHelper->cat2color($spot);
+		echo "<tr class='" . $tplHelper->cat2CssClass($spot);
 		if ($spot['hasbeendownloaded']) {
 			echo " downloadedspot";
 			
@@ -148,13 +153,18 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 
 			$dateTitleText .= "\r\n " . _("opened on") . ' ' . $tplHelper->formatDate($spot['seenstamp'], 'force_spotlist');
 		} # if
-		
-		if($tplHelper->isModerated($spot)) {
-		     echo " moderatedspot";
-          } #if 
+		if ($spot['moderated'] != 0) {
+			echo " moderatedspot";
+		} # if
 		echo "'>";
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
 			 "<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+
+		if ($show_editspot_button) {
+			echo "<td class='editspot'>";
+			echo "<a href='" . $tplHelper->makeEditSpotUrl($spot, "edit") . "' onclick=\"return openDialog('editdialogdiv', '" . _('Edit spot') ."', '?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . "', null, 'autoclose', function() { window.location.reload(); }, null);\" title='" . _('Edit spot') . "'><span class='ui-icon ui-icon-pencil'></span></a>";
+			echo "</td>";
+		} # if
 
 		if ($show_watchlist_button) {
 			echo "<td class='watch'>";
@@ -167,8 +177,16 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $commentCountValue . "</a></td>";
 		} # if
 		
+		$markSpot = '';
+		if($spot['idtype'] == 2) {
+			$markSpot = '<span class="markGreen">W</span>';
+		}
+		
+		if($spot['idtype'] == 1) {
+			$markSpot = '<span class="markSpot">B</span>';
+		}		
 		echo "<td class='genre'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
-			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $spot['poster'] . "</a></td>" .
+			 "<td class='poster'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $markSpot . $spot['poster'] . "</a></td>" .
 			 "<td class='date' title='" . $dateTitleText . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
 
 		if ($show_filesize) {
@@ -197,9 +215,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			# display the SABnzbd button
 			if (!empty($spot['sabnzbdurl'])) {
 				if ($spot['hasbeendownloaded']) {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') . "'> </a></td>";
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') . "'> </a></td>";
 				} else {
-					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SABnzbd queue (s)'). "'> </a></td>";	
+					echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SABnzbd queue (s)'). "'> </a></td>";
 				} # else
 			} # if
 		} else {
@@ -246,9 +264,11 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			</div>
 			<div class="clear"></div>
 
-<?php 
+<?php
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
 		/* Render de footer template */
 		require_once "includes/footer.inc.php";
 	} # if
+
+    SpotTiming::stop('tpl:spotsinc-afterinclude');

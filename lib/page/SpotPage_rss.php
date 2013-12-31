@@ -1,42 +1,51 @@
 <?php
+
 class SpotPage_rss extends SpotPage_Abs {
 	private $_params;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
-	}
+	} # ctor
 
 	function render() {
-		# Controleer de users' rechten
+		# Make sure the proper permissions are met
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_rssfeed, '');
 
-		$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 		$nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
-		# we willen niet dat de RSS feed gecached wordt
+		# Don't allow the RSS feed to be cached
 		$this->sendExpireHeaders(true);
-		
-		# Zet the query parameters om naar een lijst met filters, velden,
-		# en sorteringen etc
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$parsedSearch = $spotsOverview->filterToQuery($this->_params['search'],
-							array('field' => $this->_params['sortby'],
-								  'direction' => $this->_params['sortdir']),
-						    $this->_currentSession,
-							$spotUserSystem->getIndexFilter($this->_currentSession['user']['userid']));
 
-		# laad de spots
+		/*
+		 * Transform the query parameters to a list of filters, fields, 
+		 * sortings, etc.
+		 */		
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+        $svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		$parsedSearch = $svcSearchQp->filterToQuery(
+							$this->_params['search'], 
+							array(
+								'field' => $this->_params['sortby'], 
+								'direction' => $this->_params['sortdir']
+							),
+							$this->_currentSession,
+							$svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
+
+		/* 
+		 * Actually fetch the spots
+		 */		
 		$pageNr = $this->_params['page'];
-		$spotsTmp = $spotsOverview->loadSpots($this->_currentSession['user']['userid'],
-							$pageNr,
-							$this->_currentSession['user']['prefs']['perpage'],
-							$parsedSearch);
+		$svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
+		$spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
+												$pageNr, 
+												$this->_currentSession['user']['prefs']['perpage'],
+												$parsedSearch);
 
-		# Opbouwen XML
+		# Create an XML document for RSS
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
 
@@ -61,16 +70,19 @@ class SpotPage_rss extends SpotPage_Abs {
 		$channel->appendChild($doc->createElement('pubDate', date('r')));
 		$rss->appendChild($channel);
 
-		# Fullspots ophalen en aan XML toevoegen
+		# Retrieve full spots so we can show images for spots etc.
 		foreach($spotsTmp['list'] as $spotHeaders) {
 			try {
 				$spot = $this->_tplHelper->getFullSpot($spotHeaders['messageid'], false);
-				# Normaal is fouten oplossen een beter idee, maar in dit geval is het een bug in de library (?)
-				# Dit voorkomt Notice: Uninitialized string offset: 0 in lib/ubb/TagHandler.inc.php on line 142
-				# wat een onbruikbare RSS oplevert
+
+                /*
+                 * We supress the error by using this ugly operator simply because the library
+                 * sometimes gives an notice and we cannot be bothered to fix it, but it does
+                 * give an incorrect and unusable RSS feed
+                 */
 				$spot = @$this->_tplHelper->formatSpot($spot);
 
-				$title = preg_replace(array('/</', '/>/'), array('&#x3C;', '&#x3E;'), $spot['title']);
+				$title = str_replace(array('<', '>', '&'), array('&#x3C;', '&#x3E;', '&amp;'), $spot['title']);
 				$poster = (empty($spot['spotterid'])) ? $spot['poster'] : $spot['poster'] . " (" . $spot['spotterid'] . ")";
 
 				$guid = $doc->createElement('guid', $spot['messageid']);
@@ -105,7 +117,7 @@ class SpotPage_rss extends SpotPage_Abs {
 			} # catch
 		} # foreach
 
-		# XML output
+		# Output XML
 		$this->sendContentTypeHeader('rss');
 		echo $doc->saveXML();
 	} # render()

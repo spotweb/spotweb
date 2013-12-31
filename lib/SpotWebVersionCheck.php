@@ -8,6 +8,36 @@ define('SPOTWEB_FEATURE_VERSION', '0.06');
  */
 class SpotWebVersionCheck {
 	const rss_url = 'https://raw.github.com/spotweb/spotweb/master/notifications.xml';
+    const https_not_available = <<<EOF
+<rss version="2.0">
+	<channel>
+		<title>Spotweb update notifications</title>
+		<description>HTTPS not available</description>
+		<link>https://github.com/spotweb/spotweb/</link>
+		<lastBuildDate>Thu, 3 Jan 2013 00:00:00 +0100</lastBuildDate>
+		<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+		<ttl>1800</ttl>
+
+		<item>
+			<title>HTTPS wrapper not available</title>
+			<description><![CDATA[To be able to view notifications of changes and new features for Spotweb, you need to
+			have the OpenSSL extension installed.<br /><br />
+			Your PHP does not have this extension enabled, so we cannot show you the list of changes.
+			]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>1</guid>
+			<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+			<author>spotweb</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.58</spotweb:schema_version>
+			<spotweb:settings_version>0.25</spotweb:settings_version>
+			<spotweb:security_version>0.29</spotweb:security_version>
+			<spotweb:feature_version>0.06</spotweb:feature_version>
+		</item>
+	</channel>
+</rss>
+EOF;
+
 	#const rss_url = './notifications.xml';
 
 	private $_xml = null;
@@ -20,8 +50,15 @@ class SpotWebVersionCheck {
 	 * Retrieves the RSS feed from Github
 	 */
 	private function retrieveRss() {
-		$rssFile = file_get_contents(SpotWebVersionCheck::rss_url);
-		
+        /*
+         * Check for the existence of the HTTPS stream wrapper
+         */
+        if (in_array('https', stream_get_wrappers())) {
+            $rssFile = file_get_contents(SpotWebVersionCheck::rss_url);
+        } else {
+            $rssFile = SpotWebVersionCheck::https_not_available;
+        } # else
+
 		# Supress the namespace warning
 		$this->_xml = @simplexml_load_string($rssFile);
 	} # retrieveRss

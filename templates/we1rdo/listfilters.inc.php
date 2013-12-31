@@ -9,7 +9,7 @@
 			
 			# Output de HTML
 			echo '<li class="sortable-element-class ' . $tplHelper->filter2cat($filter['tree']) . '" id="orderfilterslist_' . $filter['id'];
-			echo '"><div><a href="" onclick="return openDialog(\'editfilterdialogdiv\', \'' . _('Edit filter') . '\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', \'editfilterform\', null, \'autoclose\', function() { refreshTab(\'edituserpreferencetabs\')}, null);">';
+			echo '"><div><a href="" onclick="return openDialog(\'editfilterdialogdiv\', \'' . _('Edit filter') . '\', \'?page=render&tplname=editfilter&data[filterid]=' . $filter['id'] . '\', null, \'autoclose\', function() { refreshTab(\'edituserpreferencetabs\')}, null);">';
 			echo '<span class="spoticon spoticon-' . str_replace('.png', '', $filter['icon']) . '">&nbsp;</span>' . $filter['title'] . '</a>';
 			echo '</div>';
 			
@@ -45,7 +45,7 @@
 				<fieldset class="uploadFilters">
 					<dt><label><?php echo _('Upload filters'); ?></label></dt>
 					<dd><input type="hidden" name="MAX_FILE_SIZE" value="3072000" />
-					<input name="filterimport" type="file" />
+					<input name="editfilterform[filterimport]" type="file" />
 					<input class="greyButton" type="submit" name="editfilterform[submitimportfilters]" value="<?php echo _('Upload filters'); ?>"></dd>
 				</fieldset>
 			</form>

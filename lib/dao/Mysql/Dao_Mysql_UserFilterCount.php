@@ -11,8 +11,10 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 										f.currentspotcount = t.currentspotcount
 									WHERE (f.filterhash = t.filterhash) 
 									  AND (t.userid = -1) 
-									  AND (f.userid = %d)",
-						Array((int) $userId) );
+									  AND (f.userid = :userid)",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
 	} # resetFilterCountForUser
 
 	/*
@@ -26,9 +28,8 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 		$sessionList = $this->_conn->arrayQuery("SELECT s.userid FROM sessions s 
 														   INNER JOIN filtercounts f ON (f.userid = s.userid) 
 												 WHERE lasthit > f.lastupdate 
-												 GROUP BY s.userid",
-												 array());
-		
+												 GROUP BY s.userid");
+
 		/*
 		 * Update the current filter counts if the session
 		 * is still active
@@ -43,7 +44,7 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 		} # if
 
 		/*
-		 * Sometimes retrieve removes some sports, make sure
+		 * Sometimes retrieve removes some spots, make sure
 		 * we do not get confusing results
 		 */
 		$this->_conn->modify("UPDATE filtercounts f, filtercounts t
@@ -63,8 +64,10 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 									f.lastupdate = t.lastupdate
 								WHERE (f.filterhash = t.filterhash) 
 								  AND (t.userid = -1) 
-								  AND (f.userid = %d)",
-					Array( (int) $userId) );
+								  AND (f.userid = :userid)",
+             array(
+                 ':userid' => array($userId, PDO::PARAM_INT)
+             ));
 	} # markFilterCountAsSeen
 
 	

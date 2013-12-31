@@ -19,7 +19,7 @@ class Notifications_Notifo extends Notifications_abs {
 						'title' => $title,
 						'msg' => $body,
 						'uri' => $sourceUrl);
-		$response = $this->notifoObj->send_notification($params);
+		$this->notifoObj->send_notification($params);
 	} # sendMessage
 
 } # Notifications_Notifo

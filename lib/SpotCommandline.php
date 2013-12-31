@@ -52,6 +52,7 @@ class SpotCommandline {
      * <value>
      *
      * @param array $noopt List of parameters without values
+     * @return array of parameters with their values if valid
      */
     static private function parseParameters($noopt = array()) {
         $result = array();

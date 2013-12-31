@@ -67,7 +67,7 @@ abstract class SpotGettext
      * otherwise $msg_plural
      *
      * @param String $msg The message to search for
-     * @param String $msg_plural A fallback plural form
+     * @param String $msg2 A fallback plural form
      * @param Integer $count Which plural form
      *
      * @return Translated string

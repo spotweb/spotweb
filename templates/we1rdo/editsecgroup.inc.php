@@ -1,15 +1,9 @@
 <?php
-if (!empty($editresult)) {
-	include 'includes/form-xmlresult.inc.php';
+    require "includes/form-messages.inc.php";
 
-	$this->sendContentTypeHeader('xml');
-	echo formResult2Xml($editresult, $formmessages, $tplHelper);
-} # if
+    if (!showResults($result)) {
 
-if (empty($editresult)) {
-	include "includes/form-messages.inc.php";
-	
-	# vraag de opgegeven securitygroup op
+	# Retrieve the requested security group
 	$permList = $tplHelper->getSecGroupPerms($securitygroup['id']);
 ?>
 	<table class="ui-widget ui-widget-content secgroupperms" summary="Permissions">
@@ -30,16 +24,31 @@ if (empty($editresult)) {
 				<?php } ?>
 			</tr>
 		</thead>
-		
+
 		<tbody id="secgroupermlist">
-<?php for($i = 0; $i < count($permList); $i += 2) { 
+<?php 
+# make sure we have an even number of permissions so that both columns are always filled in
+$nrOfPermission = count($permList);
+if ($nrOfPermission % 2 == 1) {
+	$permList[] = array('permissionid' => -1,
+						'permissionname' => '&nbsp;',
+						'objectid' => '&nbsp;');
+
+	# we now have one permission more
+	$nrOfPermission++;
+}
+
+$rows = $nrOfPermission / 2;
+
+for($i = 0; $i < $rows; $i++) { 
 		echo '<tr>';
-		for($j = 0; $j < 2 && count($permList) > ($i + $j); $j++) { 
-			$perm = $permList[$i+$j];
+		for($j = 0; $j < 2; $j++) { 
+			($j==0)?$perm = $permList[$i]:$perm = $permList[$i+$rows];
 ?>
-				<td> <?php echo _($tplHelper->permToString($perm['permissionid'])); ?> </td>
+				<td> <?php echo $perm['permissionname']; ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
-				<?php if ($securitygroup['id'] > 5) { ?>
+				<?php if ($securitygroup['id'] > 5) {
+						if ($perm['permissionid'] != -1) { ?>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
@@ -64,7 +73,10 @@ if (empty($editresult)) {
 						<?php } ?>
 					</form>
 				</td>
-				<?php } ?>
+				<?php 	} else { ?>
+				<td>&nbsp;</td><td>&nbsp;</td>
+				<?php 	} # else
+					  } # if ?>
 				
 <?php
 			if ($j == 0) {
@@ -94,14 +106,14 @@ if (empty($editresult)) {
 				<select name="editsecgroupform[permissionid]">
 			
 <?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
-					<option value="<?php echo $key; ?>"><?php echo _($val); ?></option>
+					<option value="<?php echo $key; ?>"><?php echo $val; ?></option>
 <?php } ?>
 				</select>
 			</dd>
 			
 			<dt><label for="editsecgroupform[objectid]"><?php echo _('ObjectID (normally empty)'); ?></label></dt>
 			<dd>
-				<input type="text" name="editsecgroupform[objectid]" ></input>
+				<input type="text" name="editsecgroupform[objectid]" />
 			</dd>
 
 			<dd>
@@ -109,10 +121,5 @@ if (empty($editresult)) {
 			</dd>
 		</fieldset>
 	</form>
-<?php } ?>
-
-<?php
-	require_once "includes/footer.inc.php";
-
-	} # if not only  xml
-	
+<?php }
+    }

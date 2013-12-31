@@ -1,23 +1,21 @@
 <?php
-define('SPOTWEB_SECURITY_VERSION', '0.29');
 
 class SpotSecurity {
-	private $_db;
+	private $_userDao;
 	private $_user;
 	private $_permissions;
 	private $_settings;
 	private $_failAudit;
-	private $_AllAudit;
+	private $_allAudit;
 	
 	/*
-	 * Het security systeem kent een aantal rechten welke gedefinieerd worden met een aantal parameters.
+	 * The security system has several rights which are defined with zero or more parameters.
 	 * 
 	 * Parameter:
-	 *     Permissie           - Permissie is de permissie die gevraagd wordt - moet gebruik maken van de gedefinieerde constants
-	 *     Object              - Geeft aan dat de permissie enkel voor dit specifieke object geld. Denk bv. aan 'cat0_z4'.
-	 *                           Als het objectid leeg is, dan geld de permissie voor alle objecten.
-	 *     DenyOrGranted       - Als deze op "True" staat, dan is de permissie expliciet gegeven. Als de permissie op FALSE
-	 *                           staat is de permissie expliciet denied. 
+	 *     Permission          - Actual permission being asked for.
+	 *     Object              - Mentions that the permission is only valid for this specific objectid. For example, 'cat0_z4', or
+     *                           'client-sabnzbd'. You also need an empty objectid to have this permission at all.
+	 *     DenyOrGranted       - When enabled, the permission is explicitly granted. When set to FALSE, the permission is denied.
 	 */
 
 	 /*
@@ -65,6 +63,11 @@ class SpotSecurity {
 	const spotsec_view_statistics				= 39;
 	const spotsec_view_spotweb_updates			= 40;
 	const spotsec_edit_settings					= 41;
+	const spotsec_edit_spotdetail				= 42;
+	const spotsec_view_spot_editor				= 43;
+	const spotsec_show_spot_was_edited			= 44;
+	const spotsec_delete_spot					= 45;
+	
 	
 	// Array mapping the security id to a human readable text
 	private $_secHumanReadable = array(
@@ -109,7 +112,11 @@ class SpotSecurity {
 		38		=> "Blacklist a spotter",
 		39		=> "Display statistics",
 		40		=> "Display Spotweb's changelog",
-		41		=> "Change settings"
+		41		=> "Change settings",
+		42		=> "Edit spot details",
+		43		=> "Display the spot editor's username",
+		44		=> "Display that the spot was edited",
+		45		=> "Delete a spot"
 	);
 
 	/*
@@ -119,25 +126,27 @@ class SpotSecurity {
 	const spot_secaudit_failure			= 1;
 	const spot_secaudit_all				= 2; 
 	
-	function __construct(SpotDb $db, SpotSettings $settings, array $user, $ipaddr) {
-		$this->_db = $db;
+	function __construct(Dao_User $userDao, Dao_Audit $auditDao, Services_Settings_Container $settings, array $user, $ipaddr) {
+		$this->_userDao = $userDao;
 		$this->_user = $user;
 		$this->_settings = $settings;
 		$this->_failAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_failure);
 		$this->_allAudit = ($settings->get('auditlevel') == SpotSecurity::spot_secaudit_all);
 		
 		if (($this->_failAudit) || ($this->_allAudit)) {
-			$this->_spotAudit = new SpotAudit($db, $settings, $user, $ipaddr);
+			$this->_spotAudit = new SpotAudit($auditDao, $settings, $user, $ipaddr);
 		} # if
 		
-		$this->_permissions = $db->getPermissions($user['userid']);
+		$this->_permissions = $userDao->getPermissions($user['userid']);
 	} # ctor
 	
 	function allowed($perm, $object) {
 		$allowed = isset($this->_permissions[$perm][$object]) && $this->_permissions[$perm][$object];
 
-		# We check for auditing in SpotSecurity to prevent the overhead
-		# of a function call for each security check
+		/* 
+		 * We check for auditing in SpotSecurity to prevent the overhead
+		 * of a function call for each security check
+		 */
 		if (($this->_allAudit) || ((!$allowed) && ($this->_failAudit))) {
 			$this->_spotAudit->audit($perm, $object, $allowed);
 		} # if
@@ -156,7 +165,17 @@ class SpotSecurity {
 	} # toHuman
 	
 	function getAllPermissions() {
-		return $this->_secHumanReadable;
+		
+		# Translated permissions
+		$secHumanReadable = array();
+        $secItemCount = count($this->_secHumanReadable);
+		for ($i = 0; $i < $secItemCount; $i++) {
+			$secHumanReadable[] = _($this->_secHumanReadable[$i]);
+		}
+		# and return a nicely sorted list of permissions
+		asort($secHumanReadable);
+
+		return $secHumanReadable;
 	} # getAllPermissions
 	
 	function securityValid() {

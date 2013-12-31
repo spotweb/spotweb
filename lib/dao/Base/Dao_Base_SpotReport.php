@@ -7,7 +7,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 * constructs a new Dao_Base_Audit object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
@@ -16,15 +16,21 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 */
 	function removeExtraReports($messageId) {
 		# vraag eerst het id op
-		$reportId = $this->_conn->singleQuery("SELECT id FROM reportsxover WHERE messageid = '%s'", Array($messageId));
-		
+		$reportId = $this->_conn->singleQuery("SELECT id FROM reportsxover WHERE messageid = :messageid",
+            array(
+                ':messageid' => array($messageId, PDO::PARAM_STR)
+            ));
+
 		# als deze report leeg is, is er iets raars aan de hand
 		if (empty($reportId)) {
 			throw new Exception("Our highest report is not in the database!?");
 		} # if
 
 		# en wis nu alles wat 'jonger' is dan deze spot
-		$this->_conn->modify("DELETE FROM reportsxover WHERE id > %d", Array($reportId));
+		$this->_conn->modify("DELETE FROM reportsxover WHERE id > :id",
+            array(
+                ':id' => array($reportId, PDO::PARAM_INT)
+            ));
 	} # removeExtraReports
 	
 
@@ -40,7 +46,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 		} # if
 
 		# en vraag alle comments op die we kennen
-		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $this->_conn->arrayValToInOffset($hdrList, 'Message-ID', 1, -1) . ")");
+		$rs = $this->_conn->arrayQuery("SELECT messageid FROM reportsxover WHERE messageid IN (" . $this->_conn->arrayValToIn($hdrList, 'Message-ID') . ")");
 
 		# geef hier een array terug die kant en klaar is voor isset()
 		foreach($rs as $msgids) {
@@ -58,8 +64,8 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	function addReportRefs($reportList) {
 		$this->_conn->batchInsert($reportList,
 								  "INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES",
-								  "('%s', '%s', '%s', '%s')",
-								  Array('messageid', 'fromhdr', 'keyword', 'nntpref')
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR),
+								  array('messageid', 'fromhdr', 'keyword', 'nntpref')
 								  );
 	} # addReportRefs
 
@@ -67,8 +73,12 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 * Check whether a user already ceated an report for a specific spot
 	 */
 	function isReportPlaced($messageid, $userId) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = '%s' AND ouruserid = %d", Array($messageid, $userId));
-		
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE inreplyto = :inreplyto AND ouruserid = :ouruserid",
+            array(
+                'inreplyto' => array($messageid, PDO::PARAM_STR),
+                'ouruserid' => array($userId, PDO::PARAM_INT)
+            ));
+
 		return (!empty($tmpResult));
 	} # isReportPlaced
 	
@@ -76,9 +86,11 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	 * Makes sure the messageid for this report hasn't been already used to post
 	 */
 	function isReportMessageIdUnique($messageid) {
-		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = '%s'",
-						Array($messageid));
-		
+		$tmpResult = $this->_conn->singleQuery("SELECT messageid FROM reportsposted WHERE messageid = :messageid",
+            array(
+                'messageid' => array($messageid, PDO::PARAM_STR)
+            ));
+
 		return (empty($tmpResult));
 	} # isReportMessageIdUnique
 
@@ -89,13 +101,15 @@ class Dao_Base_SpotReport implements Dao_SpotReport {
 	function addPostedReport($userId, $report) {
 		$this->_conn->modify(
 				"INSERT INTO reportsposted(ouruserid, messageid, inreplyto, randompart, body, stamp)
-					VALUES('%d', '%s', '%s', '%s', '%s', %d)", 
-				Array((int) $userId,
-					  $report['newmessageid'],
-					  $report['inreplyto'],
-					  $report['randomstr'],
-					  $report['body'],
-					  (int) time()));
+					VALUES(:ouruserid, :messageid, :inreplyto, :randompart, :body, :stamp)",
+            array(
+                ':ouruserid' => array($userId, PDO::PARAM_INT),
+                ':messageid' => array($report['newmessageid'], PDO::PARAM_STR),
+                ':inreplyto' => array($report['inreplyto'], PDO::PARAM_STR),
+                ':randomstr' => array($report['randompart'], PDO::PARAM_STR),
+                ':body' => arrray($report['body'], PDO::PARAM_STR),
+                ':stamp' => array(time(), PDO::PARAM_INT)
+            ));
 	} # addPostedReport
 
 } # Dao_Base_SpotReport

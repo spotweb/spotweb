@@ -1,37 +1,29 @@
 <?php
+
 class SpotPage_reportpost extends SpotPage_Abs {
 	private $_inReplyTo;
 	private $_reportForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_reportForm = $params['reportform'];
 		$this->_inReplyTo = $params['inreplyto'];
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
-		# Controleer de users' rechten
+		$result = new Dto_FormResult('notsubmitted');
+
+		# Check the users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_report_spam, '');
 				
-		# Sportparser is nodig voor het escapen van de random string
-		$spotParser = new SpotParser();
-		
-		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::newServiceSigning();
-		
-		# creeer een default report
-		$report = array('body' => 'This is SPAM!',
+		# Create the default report a spot structure
+		$report = array('body' => 'This message has been reported as spam',
 						 'inreplyto' => $this->_inReplyTo,
 						 'newmessageid' => '',
 						 'randomstr' => '');
 		
-		# reportpost verzoek was standaard niet geprobeerd
-		$postResult = array();
-		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "report: report spot";
 
 		/* 
@@ -40,46 +32,28 @@ class SpotPage_reportpost extends SpotPage_Abs {
 		 */
 		$formAction = $this->_reportForm['action'];
 
-		# Make sure the anonymous user and reserved usernames cannot post content
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
-		
 		if ($formAction == 'post') {
-			# Notificatiesysteem initialiseren
-			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+			# Initialize the notification system
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
-			# zorg er voor dat alle variables ingevuld zijn
+			# Make sure we always have a fully valid form
 			$report = array_merge($report, $this->_reportForm);
 
-			# vraag de users' privatekey op
-			$this->_currentSession['user']['privatekey'] = 
-				$this->_db->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
-			
-			# het messageid krijgen we met <>'s, maar we werken 
-			# in spotweb altijd zonder, dus die strippen we
-			$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
-			
-			# valideer of we dit report kunnen posten, en zo ja, doe dat dan
-			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			$formMessages['errors'] = $spotPosting->reportSpotAsSpam($this->_currentSession['user'], $report);
-			
-			if (empty($formMessages['errors'])) {
-				$postResult = array('result' => 'success');
+			# can we report this spot as spam?
+			$svcPostReport = new Services_Posting_Report($this->_daoFactory, $this->_settings);
+            $svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+			$result = $svcPostReport->postSpamReport($svcUserRecord, $this->_currentSession['user'], $report);
 
-				# en verstuur een notificatie
+			if ($result->isSuccess()) {
+				# send a notification
 				$spotsNotifications->sendReportPosted($report['inreplyto']);
-			} else {
-				$postResult = array('result' => 'failure');
-			} # else
+			} # if
 		} # if
 		
 		#- display stuff -#
-		$this->template('spamreport', array('postreportform' => $report,
-											 'formmessages' => $formMessages,
-											 'postresult' => $postResult));
+		$this->template('jsonresult', array('postreportform' => $report,
+											'result' => $result));
 	} # render	
+
 } # class SpotPage_reportpost
+

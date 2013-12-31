@@ -1,12 +1,29 @@
 <?php
+
 abstract class SpotStruct_abs {
-	protected $_spotdb;
 	protected $_dbcon;
 
-	public function __construct(SpotDb $spotdb) {
-		$this->_spotdb = $spotdb;
-		$this->_dbcon = $spotdb->getDbHandle();
+	public function __construct(dbeng_abs $dbEng) {
+		$this->_dbcon = $dbEng;
 	} # __construct
+
+	/* 
+	 * Factory for dbstruct
+	 */
+	static public function factory($dbEngine, $dbCon) {
+		# Instantieeer een struct object
+		switch($dbEngine) {
+			case 'mysql'			:
+			case 'pdo_mysql'		: return new SpotStruct_mysql($dbCon); break;
+
+			case 'pdo_pgsql'		: return new SpotStruct_pgsql($dbCon); break;
+			
+			case 'pdo_sqlite'		: return new SpotStruct_sqlite($dbCon); break;
+			
+			default					: throw new Exception("Unknown database engine '" . $dbEngine . "'");
+		} # switch
+
+	} # factory
 
 	/*
 	 * Optimize / analyze (database specific) a number of hightraffic
@@ -20,6 +37,11 @@ abstract class SpotStruct_abs {
 	 * database specific datatype
 	 */
 	abstract function swDtToNative($colType);
+
+    /*
+     * Converts a boolean type to database native representation
+     */
+    abstract function bool2dt($b);
 
 	/*
 	 * Converts a database native datatype to a spotweb native
@@ -337,6 +359,8 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
+		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
@@ -349,14 +373,14 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
-		# ---- nntp table ---- #
-		$this->createTable('nntp', "utf8"); 
-		$this->validateColumn('server', 'nntp', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('maxarticleid', 'nntp', 'INTEGER', NULL, false, '');
-		$this->validateColumn('nowrunning', 'nntp', 'INTEGER', "0", false, '');
-		$this->validateColumn('lastrun', 'nntp', 'INTEGER', "0", false, '');
-		$this->validateColumn('serverdatelastrun', 'nntp', 'VARCHAR(14)', "00000000000000", false, 'ascii');
-		$this->alterStorageEngine("nntp", "InnoDB");
+		# ---- uspstate table ---- #
+		$this->createTable('usenetstate', "utf8");
+		$this->validateColumn('infotype', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('curarticlenr', 'usenetstate', 'INTEGER', "0", false, '');
+		$this->validateColumn('curmessageid', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->validateColumn('lastretrieved', 'usenetstate', 'INTEGER', "0", false, '');
+        $this->validateColumn('nowrunning', 'usenetstate', 'INTEGER', "0", false, '');
+		$this->alterStorageEngine("usenetstate", "InnoDB");
 		
 		# ---- commentsxover table ---- #
 		$this->createTable('commentsxover', "ascii"); 
@@ -460,7 +484,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('lastvisit', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastread', 'users', "INTEGER", "0", true, '');
 		$this->validateColumn('lastapiusage', 'users', "INTEGER", "0", true, '');
-		$this->validateColumn('deleted', 'users', "BOOLEAN", $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('deleted', 'users', "BOOLEAN", $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("users", "InnoDB");
 
 		# ---- sessions ---- #
@@ -483,7 +507,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->_dbcon->bool2dt(false), true, ''); 
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
@@ -501,7 +525,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
 		$this->validateColumn('body', 'notifications', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, ''); 
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
 		# ---- filters ----
@@ -516,7 +540,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->validateColumn('sortorder', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
-		$this->validateColumn('enablenotify', 'filters', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('enablenotify', 'filters', 'BOOLEAN', $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("filters", "InnoDB");
 
 		# ---- filtercounts ----
@@ -534,43 +558,104 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('idtype', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
-		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->_dbcon->bool2dt(false), true, '');
+		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 		
 		# Update old blacklisttable
-		if ($this->_spotdb->getSchemaVer() < 0.56) {
+		$schemaVer = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'", array());
+		if ($schemaVer < 0.56) {
 			$this->_dbcon->rawExec("UPDATE spotteridblacklist SET idtype = 1");
 		}
 		
 		# Drop old cache -- converting is too error prone
-		if (($this->_spotdb->getSchemaVer() < 0.50) && ($this->tableExists('cache'))) {
-			$this->dropTable('cache');
-		} # if
-		if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cache')) && (!$this->tableExists('cachetmp')) && ($this instanceof SpotStruct_mysql)) { 
-			$this->renameTable('cache', 'cachetmp');
+		if ($schemaVer > 0.00 && ($schemaVer < 0.60)) {
+            /*
+             * If the current cache table is too large, we basically recommend the user
+             * to run the seperate cache-migration script. If it contains less than 501 records
+             *  we just drop it. This number is chosen arbitrarily.
+             */
+            $cacheCount = $this->_dbcon->singleQuery("SELECT COUNT(1) FROM cache WHERE content IS NOT NULL", array());
+            if ($cacheCount > 500) {
+                throw new CacheMustBeMigratedException();
+            } else {
+                if ($this->columnExists('cache', 'content')) {
+                    $this->dropTable("cache");
+                } # if
+            } # else
 		} # if
 
-		# ---- cache table ---- #
+        if ($schemaVer > 0.60 && ($schemaVer < 0.63)) {
+            throw new CacheMustBeMigrated2Exception();
+        } # new storage format
+
+        # Convert incorrect stored book subtitles
+        if ($schemaVer > 0.00 && ($schemaVer < 0.65)) {
+            /*
+             * A lot of posters use the old category mapping of Spotweb for epubs, but this
+             * is wrong and we don't want to propagate this error. Hence we fix the categories,
+             * in the database. The Spot parsers also fixup the categories.
+             */
+            echo "Performing mass book category mapping update " . PHP_EOL;
+            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c2|', 'c11|'), 'c2|', 'c11|'), 'c6|', 'c11|')
+                                    WHERE
+                                            subcatz = 'z2|'
+                                            AND ((subcatc LIKE '%c1|%') OR (subcatc LIKE '%c2|%') OR ('subcatc' LIKE '%c6|%'))
+                                            AND (NOT subcatc LIKE '%c11|%')
+                                ");
+
+            $this->_dbcon->exec("UPDATE spots SET subcatc = REPLACE(REPLACE(REPLACE(subcatc, 'c3|', 'c10|'), 'c4|', 'c10|'), 'c7|', 'c10|')
+                                    WHERE
+                                            subcatz = 'z2|'
+                                            AND ((subcatc LIKE '%c3|%') OR (subcatc LIKE '%c4|%') OR ('subcatc' LIKE '%c7|%'))
+                                            AND (NOT subcatc LIKE '%c10|%')
+                                ");
+        } # if
+
+        /*
+         * In version 0.65 we made a misttake in inserting categories, so delete the last 10.000 spots
+         * and let them be retrieved again
+         */
+        if ($schemaVer == 0.65) {
+            $maxSpotsId = $this->_dbcon->singleQuery("SELECT MAX(id) FROM spots");
+            $this->_dbcon->rawExec("DELETE FROM spots WHERE id > " . (int) ($maxSpotsId - 15000));
+
+            // invalidate usenetstate so we re-retrieve the spots
+            $this->_dbcon->rawExec("UPDATE usenetstate SET curmessageid = '' WHERE infotype = 'Spots'");
+        } # if
+
+        # ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('serialized', 'cache', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('content', 'cache', 'MEDIUMBLOB', NULL, false, '');
+        $this->validateColumn('ttl', 'cache', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
-		# ---- permaudit table ---- #
+        # ---- moderated ring buffer table ---- #
+        $this->createTable('moderatedringbuffer', "ascii");
+        $this->validateColumn('messageid', 'moderatedringbuffer', 'VARCHAR(128)', "''", true, 'ascii');
+        $this->alterStorageEngine("moderatedringbuffer", "InnoDB");
+
+        # ---- permaudit table ---- #
 		$this->createTable('permaudit', "ascii");
 		$this->validateColumn('stamp', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('userid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('permissionid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'permaudit', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('result', 'permaudit', "BOOLEAN", $this->_dbcon->bool2dt(true), true, '');
+		$this->validateColumn('result', 'permaudit', "BOOLEAN", $this->bool2dt(true), true, '');
 		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(45)", "''", true, 'ascii');
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
-		##############################################################################################
+        # ---- debuglog table ---- #
+        $this->createTable('debuglog', "ascii");
+        $this->validateColumn('stamp', 'debuglog', 'INTEGER', "0", true, '');
+        $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, '');
+        $this->validateColumn('level', 'debuglog', 'INTEGER', "0", true, '');
+        $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
+        $this->alterStorageEngine("debuglog", "InnoDB");
+
+        ##############################################################################################
 		### Remove old sessions ######################################################################
 		##############################################################################################
 		# Remove sessions with only one hit, older than one day
@@ -585,20 +670,20 @@ abstract class SpotStruct_abs {
 		##############################################################################################
 		### deprecation of old Spotweb versions ######################################################
 		##############################################################################################
-		if ($this->_spotdb->getSchemaVer() > 0.00 && ($this->_spotdb->getSchemaVer() < 0.51)) {
-			if ($this->_spotdb->getSchemaVer() < 0.30) {
+		if ($schemaVer > 0.00 && ($schemaVer < 0.51)) {
+			if ($schemaVer < 0.30) {
 				throw new SpotwebCannotBeUpgradedTooOldException("da6ba29071c49ae88823cccfefc39375b37e9bee");
 			} # if
 
-			if (($this->_spotdb->getSchemaVer() < 0.34) && ($this->tableExists('spottexts'))) {
+			if (($schemaVer < 0.34) && ($this->tableExists('spottexts'))) {
 				throw new SpotwebCannotBeUpgradedTooOldException("48bc94a63f94959f9fe6b2372b312e35a4d09997");
 			} # if
 
-			if ($this->_spotdb->getSchemaVer() < 0.48) {
+			if ($schemaVer < 0.48) {
 				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
 			} # if
 
-			if (($this->_spotdb->getSchemaVer() < 0.51) && ($this->tableExists('cachetmp'))) {
+			if (($schemaVer < 0.51) && ($this->tableExists('cachetmp'))) {
 				throw new SpotwebCannotBeUpgradedTooOldException("4c874ec24a28d5ee81218271dc584a858f6916af");
 			} # if
 		} # if
@@ -616,7 +701,7 @@ abstract class SpotStruct_abs {
 						  3 => 'tag'));
 
 		# ---- Indexes on nntp ----
-		$this->validateIndex("idx_nntp_1", "UNIQUE", "nntp", array("server"));
+		$this->validateIndex("idx_usenetstate_1", "UNIQUE", "usenetstate", array("infotype"));
 		
 		# ---- Indexes on spotsfull ----
 		$this->validateIndex("idx_spotsfull_1", "UNIQUE", "spotsfull", array("messageid"));
@@ -695,6 +780,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_cache_1", "UNIQUE", "cache", array("resourceid", "cachetype"));
 		$this->validateIndex("idx_cache_2", "", "cache", array("cachetype", "stamp"));
 
+        # ---- Indexes on ring buffer of moderated messageids ----
+        $this->validateIndex("idx_moderatedringbuffer_1", "UNIQUE", "moderatedringbuffer", array("messageid"));
+
 		# Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -715,15 +803,17 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'spotsfull');
 		$this->dropColumn('userid', 'spotteridblacklist');
 		$this->dropColumn('userid', 'commentsfull');
+        $this->dropColumn('serialized', 'cache');
+        $this->dropColumn('content', 'cache');
 
-		##############################################################################################
-		# Drop old tables ######## ###################################################################
-		##############################################################################################		
-		$this->dropTable('webcache');
-		$this->dropTable('cachetmp');
+        ##############################################################################################
+        # Drop old tables ############################################################################
+        ##############################################################################################
+        $this->dropTable("nntp");
 
 		# update the database with this specific schemaversion
-		$this->_spotdb->updateSetting('schemaversion', SPOTDB_SCHEMA_VERSION);
+		$this->_dbcon->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
+		$this->_dbcon->rawExec("INSERT INTO settings(name, value) VALUES('schemaversion', '" . SPOTDB_SCHEMA_VERSION . "')");
 	} # updateSchema
 
 } # class

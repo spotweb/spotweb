@@ -1,23 +1,21 @@
 <?php
+
 class SpotPage_editsettings extends SpotPage_Abs {
-	private $_editSettingsFrom;
+	private $_editSettingsForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_editSettingsForm = $params['editsettingsform'];
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
-							  
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_settings, '');
 
 		# Make sure the editresult is set to 'not comited' per default
-		$editResult = array();
+		$result = new Dto_FormResult('notsubmitted');
 		
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = _('Settings');
 
 		/* 
@@ -27,36 +25,32 @@ class SpotPage_editsettings extends SpotPage_Abs {
 		$formAction = $this->_editSettingsForm['action'];
 		
 		# Are we trying to submit this form, or only rendering it?
-		if ((!empty($formAction)) && (empty($formMessages['errors']))) {
+        if (!empty($formAction)) {
 			switch($formAction) {
 				case 'edit'	: {
 					# Validate and apply all settings
-					list($formMessages['errors'], $newSettings) = $this->_settings->validateSettings($this->_editSettingsForm);
+                    $svcSettings = new Services_Settings_Base($this->_settings, $this->_daoFactory->getBlackWhiteListDao());
+					$result = $svcSettings->validateSettings($this->_editSettingsForm);
 
-					if (empty($formMessages['errors'])) {
+					if ($result->isSuccess()) { 
 						# and actually update the user in the database
-						$this->_settings->setSettings($newSettings);
-
-						# if we didnt get an exception, it automatically succeeded
-						$editResult = array('result' => 'success');
-					} else {
-						$editResult = array('result' => 'failure');
-					} # else
+						$newSettings = $result->getData('settings');
+						$svcSettings->setSettings($newSettings);
+					} # if
 					
 					break;
 				} # case 'edit' 
 				
 				case 'cancel' : {
-					$editResult = array('result' => 'success');
+					$result = new Dto_FormResult('success');
 				} # case 'cancel'
 			} # switch
 		} # if
 
 		#- display stuff -#
 		$this->template('editsettings', array('editsettingsform' => $this->_settings,
-											  'formmessages' => $formMessages,
-											  'http_referer' => $this->_editSettingsForm['http_referer'],
-											  'adminpanelresult' => $editResult));
+											  'result' => $result,
+											  'http_referer' => $this->_editSettingsForm['http_referer']));
 	} # render
 	
-} # class SpotPage_edituserprefs
+} # class SpotPage_editsettings

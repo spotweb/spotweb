@@ -1,98 +1,74 @@
 <?php
+
 class SpotPage_getimage extends SpotPage_Abs {
 	private $_messageid;
 	private $_image;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
+
 		$this->_messageid = $params['messageid'];
 		$this->_image = $params['image'];
 	} # ctor
 
 	function render() {
-		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
-
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, '');
-		
-		# Haal de image op
+
+		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
+
+		# Did the user request an SpeedDial image?
 		if (isset($this->_image['type']) && $this->_image['type'] == 'speeddial') {
-			/*
-			 * Because the speeddial image shows stuff like last update and amount of new spots,
-			 * we want to make sure this is not a totally closed system
-			 */
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
-
-			# init
-			$spotImage = new SpotImage($this->_db);
-
-			$totalSpots = $this->_db->getSpotCount('');
-			$newSpots = $this->_tplHelper->getNewCountForFilter('');
-			$lastUpdate = $this->_tplHelper->formatDate($this->_db->getLastUpdate($settings_nntp_hdr['host']), 'lastupdate');
-			$data = $spotImage->createSpeedDial($totalSpots, $newSpots, $lastUpdate);
+			$svcActn_SpeedDial = new Services_Actions_SpeedDial($this->_daoFactory, $this->_spotSec, $this->_tplHelper);
+			$data = $svcActn_SpeedDial->createSpeedDialImage($this->_currentSession['user']['userid'], $settings_nntp_hdr['host']);
+			
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'statistics') {
+			/* Check whether the user has view statistics permissions */
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_statistics, '');
-
-			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
 			$graph = (isset($this->_image['graph'])) ? $this->_image['graph'] : false;
 			$limit = (isset($this->_image['limit'])) ? $this->_image['limit'] : false;
-			$data = $spotsOverview->getStatisticsImage($graph, $limit, $settings_nntp_hdr, $this->_currentSession['user']['prefs']['user_language']);
+
+			# init
+			$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+															  $this->_daoFactory->getCacheDao(),
+												 			  $this->_daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots));
+			$data = $svcPrv_Stats->renderStatImage($graph, $limit);
+
+
 		} elseif (isset($this->_image['type']) && $this->_image['type'] == 'avatar') {
 			# Check users' permissions
 			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotimage, 'avatar');
-			
-			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
 
-			$imgDefaults = array('md5' => false,
-								 'size' => 80,
-								 'default' => 'identicon',
-								 'rating' => 'g');
-			$imgSettings = array_merge($imgDefaults, $this->_image);
-
-			if ($imgSettings['size'] < 1 || $imgSettings['size'] > 512) {
-				$imgSettings['size'] = $imgDefaults['size'];
-			} # if
-
-			if (!in_array($imgSettings['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
-				$imgSettings['default'] = $imgDefaults['default'];
-			} # if
-
-			if (!in_array($imgSettings['rating'], array('g', 'pg', 'r', 'x'))) {
-				$imgSettings['rating'] = $imgDefaults['rating'];
-			} # if
-
-			$data = $spotsOverview->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
+            $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
+			$data = $providerSpotImage->fetchGravatarImage($this->_image);
 		} else {
-			# init
-			$spotsOverview = new SpotsOverview($this->_db, $this->_settings);
-			$hdr_spotnntp = new SpotNntp($settings_nntp_hdr);
+            $svc_nntpnzb_engine = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
 
-			/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
-			if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
-				$nzb_spotnntp = $hdr_spotnntp;
-			} else {
-				$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
-			} # else
+			/*
+			 * Retrieve the full spot, we need it to be able to retrieve the image
+			 */
+            $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
+            $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $this->_messageid, false);
 
-			# Haal de volledige spotinhoud op
-			$fullSpot = $this->_tplHelper->getFullSpot($this->_messageid, false);
-
-			$data = $spotsOverview->getImage($fullSpot, $nzb_spotnntp);
+			/*
+			 * Actually retrieve the image 
+			 */
+			$providerSpotImage = new Services_Providers_SpotImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()), 
+																  new Services_Nntp_SpotReading($svc_nntpnzb_engine),
+											  					  $this->_daoFactory->getCacheDao());
+			$data = $providerSpotImage->fetchSpotImage($fullSpot);
 		} # else
 
-		# Images mogen gecached worden op de client, behalve als is opgegeven dat het niet mag
-		if (isset($data['expire'])) {
+		# Images are allowed to be cached on the client unless the provider explicitly told us not to
+		if (isset($data['ttl']) && ($data['ttl'] > 0)) {
 			$this->sendExpireHeaders(true);
 		} else {
 			$this->sendExpireHeaders(false);
 		} # else
 
 		header("Content-Type: " . image_type_to_mime_type($data['metadata']['imagetype']));
-		header("Content-Length: " . strlen($data['content'])); 
+		header("Content-Length: " . strlen($data['content']));
 		echo $data['content'];
 	} # render
 

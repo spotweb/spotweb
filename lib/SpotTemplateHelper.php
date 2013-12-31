@@ -3,30 +3,27 @@
 # door custom templates extended worden
 class SpotTemplateHelper {	
 	protected $_settings;
-	protected $_db;
-	protected $_spotsOverview;
+	protected $_daoFactory;
 	protected $_currentSession;
 	protected $_params;
 	protected $_nzbhandler;
 	protected $_spotSec;
-	protected $_cachedSpotCount = null;
+    protected $_svcCacheNewSpotCount = null;
+    protected $_treeFilterCache = null;
 	
 	
-	function __construct(SpotSettings $settings, $currentSession, SpotDb $db, $params) {
+	function __construct(Services_Settings_Container $settings, $currentSession, Dao_Factory $daoFactory, $params) {
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
+		$this->_daoFactory = $daoFactory;
+
 		$this->_spotSec = $currentSession['security'];
-		$this->_db = $db;
 		$this->_params = $params;
 		
-		# We hebben SpotsOverview altijd nodig omdat we die ook voor het
-		# maken van de sorturl nodig hebben, dus maken we deze hier aan
-		$this->_spotsOverview = new SpotsOverview($db, $settings);
-
 		# We initialiseren hier een NzbHandler object om te voorkomen
 		# dat we voor iedere spot een nieuw object initialiseren, een property
 		# zou mooier zijn, maar daar is PHP dan weer te traag voor
-		$nzbHandlerFactory = new NzbHandler_Factory();
+		$nzbHandlerFactory = new Services_NzbHandler_Factory();
 		if (isset($currentSession['user']['prefs']['nzbhandling'])) {
 			$this->_nzbHandler = $nzbHandlerFactory->build($settings, 
 						$currentSession['user']['prefs']['nzbhandling']['action'], 
@@ -39,10 +36,10 @@ class SpotTemplateHelper {
 	 */
 	function getParentTemplates() {
 		return array();
-	} // getParentTemplates
+	} # getParentTemplates
 
 	/*
-	 * Set params - update de template list of parameters
+	 * Set params - update the template list of parameters
 	 */
 	function setParams($params) {
 		$this->_params = $params;
@@ -64,42 +61,33 @@ class SpotTemplateHelper {
 	 * Returns te amount of spots (for a specific filter) which are new for this user
 	 */
 	function getNewCountForFilter($filterStr) {
-		/*
-		 * If necessary, fill the cache 
-		 */
-		if ($this->_cachedSpotCount == null) {
-			$this->_cachedSpotCount = $this->_db->getNewCountForFilters($this->_currentSession['user']['userid']);
-		 } # if
+        if ($this->_svcCacheNewSpotCount === null) {
+            $this->_svcCacheNewSpotCount = new Services_Actions_CacheNewSpotCount($this->_daoFactory->getUserFilterCountDao(),
+                                            $this->_daoFactory->getUserFilterDao(),
+                                            $this->_daoFactory->getSpotDao(),
+                                            new Services_Search_QueryParser($this->_daoFactory->getConnection()));
+        } # if
 
-		# Now parse it to an array as we would get when called from a webpage
-		parse_str(html_entity_decode($filterStr), $query_params);
-		$query_params['search']['valuelist'] = implode('&', $query_params['search']['value']);
-
-		# Make sure we have a tree variable, even if it is an empty one
-		if (!isset($query_params['search']['tree'])) {
-			$query_params['search']['tree'] = '';
-		} # if
-		 
-		$filterHash = sha1($query_params['search']['tree'] . '|' . urldecode($query_params['search']['valuelist']));
-		 
-		if (isset($this->_cachedSpotCount[$filterHash])) {
-			return $this->_cachedSpotCount[$filterHash]['newspotcount'];
-		} else {
-			return -1;
-		 } # if
+		return $this->_svcCacheNewSpotCount->getNewCountForFilter($this->_currentSession['user']['userid'], $filterStr);
 	} # getNewCountForFilter
 
 	/*
 	 * Rturn the actual comments for a specific spot
 	 */
 	function getSpotComments($msgId, $start, $length) {
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
+        $language = substr($this->_currentSession['user']['prefs']['user_language'], 0, 2);
 
-		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
-		
-		return $this->_spotsOverview->getSpotComments($this->_currentSession['user']['userid'], $msgId, $spotnntp, $start, $length);
+        $svcActnComments = new Services_Actions_GetComments($this->_settings, $this->_daoFactory, $this->_spotSec);
+        return $svcActnComments->getSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length, $language);
 	} # getSpotComments
+
+    function getFullSpot($messageId) {
+        # and actually retrieve the spot
+        $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
+        $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $messageId, true);
+
+        return $fullSpot;
+    } # getFullSpot
 
 	/*
 	 * Validates wether we can connect to a usenet server succesfully
@@ -108,7 +96,7 @@ class SpotTemplateHelper {
 		$result = '';
 		
 		try {
-			$testNntp = new SpotNntp($server);
+			$testNntp = new Services_Nntp_Engine($server);
 			$testNntp->validateServer();
 		} # try
 		catch(Exception $x) {
@@ -125,34 +113,6 @@ class SpotTemplateHelper {
 		return $this->_spotSec->allowed($perm, $object);
 	} # allowed
 	
-	/*
-	 * Returns a spot in full including all the information we have available
-	 */
-	function getFullSpot($msgId, $markAsRead) {
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
-		
-		$spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
-		
-		$fullSpot = $this->_spotsOverview->getFullSpot($msgId, $this->_currentSession['user']['userid'], $spotnntp);
-
-		# seen list
-		if ($markAsRead) {
-			if ($this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_seenlist, '')) {
-				if ($this->_currentSession['user']['prefs']['keep_seenlist']) {
-					/*
-					 * Always update the seen stamp, this is used for viewing new comments
-					 * and the likes
-					 */
-					$this->_db->addtoSeenList($msgId, $this->_currentSession['user']['userid']);
-				} # if
-				
-			} # if allowed
-		} # if
-		
-		return $fullSpot;
-	} # getFullSpot
-
 	/*
 	 * Creeert een URL naar de zoekmachine zoals gedefinieerd in de settings
 	 */
@@ -202,6 +162,18 @@ class SpotTemplateHelper {
 	} # makeSpotUrl
 
 	/*
+	 * Creates the url for editing an existing spot
+	 */ 
+	function makeEditSpotUrl($spot, $action) {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_spotdetail, '')) {
+			return '';
+		}
+		
+		return $this->makeBaseUrl("path") . "?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . '&amp;action=' . $action;
+	} # makeEditSpotUrl
+
+	/*
 	 * Creeert de action url voor het aanmaken van de user
 	 */
 	function makeCreateUserAction() {
@@ -224,7 +196,19 @@ class SpotTemplateHelper {
 		
 		return $this->makeBaseUrl("path") . "?page=postspot";
 	} # makePostSpotAction
-	
+
+	/*
+	 * Creates the action url for editing an existing spot (used in form post actions)
+	 */
+	 function makeEditSpotAction() {
+		# Controleer de users' rechten
+		if (!$this->_spotSec->allowed(SpotSecurity::spotsec_edit_spotdetail, '')) {
+			return '';
+		} # if
+
+		return $this->makeBaseUrl("path") . "?page=editspot";
+	} # makeEditSpotAction
+
 	/*
 	 * Creeert de action url voor het beweken van een security group 
 	 */
@@ -363,8 +347,8 @@ class SpotTemplateHelper {
 	 * Only allow a specific set of users to create customized content
 	 */
 	function allowedToPost() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->allowedToPost($this->_currentSession['user']);	
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+		return $svcUserRecord ->allowedToPost($this->_currentSession['user']);
 	} # allowedToPost
 	
 	/*
@@ -436,12 +420,6 @@ class SpotTemplateHelper {
 		} # else 
 	} # makeCommenterImageUrl
 
-	/*
-	 * Creert een gravatar url
-	 */
-	function makeGravatarUrl($avatar, $size=80, $default='mm', $rating='g') {
-		return $this->makeBaseUrl("path") . '?page=getimage&amp;image[type]=gravatar&amp;image[type]=md5' . $avatar . '&amp;image[size]=' . $size . '&amp;image[default]=' . $default . '&amp;image[rating]=' . $rating;
-	} # makeGravatarUrl
 
 	/*
 	 * Creert een sorteer url die andersom sorteert 
@@ -600,7 +578,8 @@ class SpotTemplateHelper {
 	 * als een comma seperated lijst voor de dynatree initialisatie
 	 */
 	function categoryListToDynatree() {
-		return $this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+		return $svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'], $this->_params['parsedsearch']['strongNotList']);
 	} # categoryListToDynatree
 	
 	/*
@@ -613,11 +592,6 @@ class SpotTemplateHelper {
 		#var_dump($this->_params['parsedsearch']['filterValueList']);
 		#var_dump($this->_params['parsedsearch']['sortFields']);
 
-		
-		//$xml = $this->_spotsOverview->parsedSearchToXml($this->_params['parsedsearch']);
-		//$parsed = $this->_spotsOverview->xmlToParsedSearch($xml, $this->_currentSession);
-		//var_dump($parsed);
-		//die();
 		
 		return $this->convertUnfilteredToQueryParams() . $this->convertTreeFilterToQueryParams() . $this->convertTextFilterToQueryParams();
 	} # convertFilterToQueryParams
@@ -649,10 +623,17 @@ class SpotTemplateHelper {
 		if (!isset($this->_params['parsedsearch']['categoryList'])) {
 			return '';
 		} # if
-		
-		# Bouwen de search[tree] value op
-		return '&amp;search[tree]=' . urlencode($this->_spotsOverview->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
+
+        if ($this->_treeFilterCache !== null) {
+            return $this->_treeFilterCache;
+        } # if
+
+		# Rebuild the category tree
+		$svcSearchQp = new Services_Search_QueryParser($this->_daoFactory->getConnection());
+        $this->_treeFilterCache = '&amp;search[tree]=' . urlencode($svcSearchQp->compressCategorySelection($this->_params['parsedsearch']['categoryList'],
 														$this->_params['parsedsearch']['strongNotList']));
+
+        return $this->_treeFilterCache;
 	} # convertTreeFilterToQueryParams
 
 	/*
@@ -667,7 +648,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-			$filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . urlencode(htmlspecialchars($value['value'], ENT_QUOTES, "utf-8"));
+            $filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . htmlspecialchars(urlencode($value['value']), ENT_QUOTES, "utf-8");
 		} # foreach
 
 		return $filterStr;
@@ -705,7 +686,6 @@ class SpotTemplateHelper {
 	 * naar GET parameters voor in de URL
 	 */
 	function convertSortToQueryParams() {
-		$sortStr = '';
 		$activeSort = $this->getActiveSorting();
 		
 		if (!empty($activeSort['field'])) {
@@ -737,6 +717,7 @@ class SpotTemplateHelper {
 		
 		# fix the sabnzbdurl, searchurl, sporturl, subcaturl, posterurl
 		$spot['sabnzbdurl'] = $this->makeSabnzbdUrl($spot);
+        $spot['nzbhandlertype'] = $this->_currentSession['user']['prefs']['nzbhandling']['action'];
 		$spot['searchurl'] = $this->makeSearchUrl($spot);
 		$spot['spoturl'] = $this->makeSpotUrl($spot);
 		$spot['caturl'] = $this->makeCatUrl($spot);
@@ -781,9 +762,7 @@ class SpotTemplateHelper {
 			# we joinen eerst de contents zodat we het kunnen parsen als 1 string
 			# en tags over meerdere lijnen toch nog werkt. We voegen een extra \n toe
 			# om zeker te zijn dat we altijd een array terugkrijgen
-			$tmpBody = implode("\n", $comments[$i]['body']);
-			$tmpBody = $this->formatContent($tmpBody);
-			$comments[$i]['body'] = explode("\n", $tmpBody);
+            $comments[$i]['body'] = $this->formatContent($comments[$i]['body']);
 		} # for
 
 		return $comments;
@@ -796,10 +775,10 @@ class SpotTemplateHelper {
 		# Prepare the spotlisting with an list of nntp items
 		$nntpRefList = array();
 		foreach($spotList as $spot) {
-			$nntpRefList[] = $spot['messageid'];
+			$nntpRefList['messageid'] = $spot['messageid'];
 		} # foreach
 
-		return $this->_db->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
+		return $this->_daoFactory->getCommentDao()->getNewCommentCountFor($nntpRefList, $this->_currentSession['user']['lastvisit']);
 	} # getNewCommentCountFor
 
 	
@@ -817,7 +796,9 @@ class SpotTemplateHelper {
 		// Geen website? Dan standaard naar de zoekmachine
 		if (empty($spot['website'])) {
 			$spot['website'] = $this->makeSearchUrl($spot);
-		} # if
+		} else {
+            $spot['website'] = htmlspecialchars($spot['website']);
+        } # else
 		
 		// geef de category een fatsoenlijke naam
 		$spot['catname'] = SpotCategories::HeadCat2Desc($spot['category']);
@@ -827,38 +808,11 @@ class SpotTemplateHelper {
 		if (!is_array($spot['image'])) {
 			$spot['image'] = htmlspecialchars($spot['image']);
 		} # if
-		$spot['website'] = htmlspecialchars($spot['website']);
 		$spot['tag'] = htmlspecialchars(strip_tags($spot['tag']), ENT_QUOTES, 'UTF-8');
 		
 		// description
 		$spot['description'] = $this->formatContent($spot['description']);
 		
-		// Stripped stuff like 'Subs by:..., -releasegroup, mpg, hd, subs, nlsubs, r1.hdtv.blabla, etc. for the usage of (the imdb) api('s).
-		// After that it wil remove the spaces left behind, replacing them with only one space.
-		// It will probably not filter all but it will filter a lot.
-		// It will only filter cat0 (beeld).
-		if ($spot['category'] == 0) {
-			$spot['cleantitle'] = preg_replace('/(([Ss][uU][Bb][Ss]) ([Mm][Aa][Dd][Ee]\s)?([bB][yY])\s?:?.{0,15}\S)|(~.+~)|' .
-											   '( \S{2,}( ?\/ ?\S{2,})+)|(\*+.+\*+)|(-=?.{0,10}=?-)|(\d{3,4}[pP])|([Hh][Qq])|' . 
-											   '(\(\w+(\s\w+)?\))|(\S*([Ss][Uu][Bb](([Ss])|([Bb][Ee][Dd])))\S*)|((-\S+)$)|' .
-											   '([Nn][Ll])|([\s\/][Ee][Nn][Gg]?[\s\/])|(AC3)|(DD(5.1)?)|([Xx][Vv][Ii][Dd])|' .
-											   '([Dd][Ii][Vv][Xx])|([Tt][Ss])|(\d+\s([Mm]|[Kk]|[Gg])[Bb])|([Mm][Kk][Vv])|' . 
-											   '([xX]\d{3}([Hh][Dd])?)|([Dd][Ll])|([Bb][Ll][Uu]([Ee])?\s?-?[Rr][Aa][Yy])|' .
-											   '([Rr][Ee][Aa][Dd]\s?[Nn][Ff][Oo])|(([Hh][Dd])([Tt][Vv])?)|(R\d)|(S\d+E\d+)|' .
-											   '(2[Hh][Dd])|(5 1)|([Dd][Tt][Ss]-?[Hh][Dd])|([Aa][Vv][Cc])|' .
-											   '(([Bb][Dd])?[Rr][Ee][Mm][Uu][Xx])|([Nn][Tt][Ss][Cc])|([Pp][Aa][Ll])|' .
-											   '(\S+(\.\S+)+)|([Cc][Uu][Ss][Tt][Oo][Mm])|([Mm][Pp][Ee]?[Gg]-([Hh][Dd])?)/', 
-											   "", 
-											   $spot['title']);
-			$spot['cleantitle'] = preg_replace('/ {2,}/', " ", $spot['cleantitle']);
-			if (empty($spot['cleantitle'])) {
-				// Use $spot['title'] if my regex screws up..
-				$spot['cleantitle']=$spot['title'];
-			} # if
-		} else {
-			// Prevent gigantic failures from happening.
-			$spot['cleantitle'] = $spot['title'];
-		}
 		return $spot;
 	} # formatSpot
 
@@ -902,7 +856,7 @@ class SpotTemplateHelper {
 
 	function formatDate($stamp, $type) {
 		if (empty($stamp)) {
-			return "onbekend";
+			return _("unknown");
 		} elseif (substr($type, 0, 6) == 'force_') {
 			return strftime("%a, %d-%b-%Y (%H:%M)", $stamp);
 		} elseif ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
@@ -984,7 +938,7 @@ class SpotTemplateHelper {
 		# Check users' permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_list_all_users, '');
 		
-		return $this->_db->getUserListForDisplay();
+		return $this->_daoFactory->getUserDao()->getUserListForDisplay();
 	} # getUserList
 
  	/*
@@ -994,7 +948,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 		
-		return $this->_db->getSpotterList($this->_currentSession['user']['userid']);
+		return $this->_daoFactory->getBlackWhiteListDao()->getSpotterList($this->_currentSession['user']['userid']);
 	} # getSpotterList
 	
 	/*
@@ -1004,28 +958,15 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_blacklist_spotter, '');
 		
-		return $this->_db->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
+		return $this->_daoFactory->getBlackWhiteListDao()->getBlacklistForSpotterId($this->_currentSession['user']['userid'], $spotterId);
 	} # getBlacklistForSpotterId
 	
 	/*
 	 * Wanneer was de spotindex voor het laatst geupdate?
 	 */
 	function getLastSpotUpdates() {
-		# query wanneer de laatste keer de spots geupdate werden
-		$nntp_hdr_settings = $this->_settings->get('nntp_hdr');
-		return $this->_db->getLastUpdate($nntp_hdr_settings['host']);
+		return $this->_daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots);
 	} # getLastSpotUpdates
-	
-	/*
-	 * Leegt de lijst met gedownloade NZB bestanden
-	 */
-	function clearDownloadList() {
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, '');
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_keep_own_downloadlist, 'erasedls');
-		
-		$this->_db->clearDownloadList($this->_currentSession['user']['userid']);
-	} # clearDownloadList
 	
 	/*
 	 * Converteert een permission id naar een string
@@ -1048,7 +989,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
 		
-		return $this->_db->getGroupList(null);
+		return $this->_daoFactory->getUserDao()->getGroupList(null);
 	}  # getGroupList
 
 	/*
@@ -1058,7 +999,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_display_groupmembership, '');
 		
-		return $this->_db->getGroupList($userId);
+		return $this->_daoFactory->getUserDao()->getGroupList($userId);
 	}  # getGroupListForUser
 
 	/*
@@ -1079,7 +1020,7 @@ class SpotTemplateHelper {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
 		
-		$tmpGroup = $this->_db->getSecurityGroup($groupId);
+		$tmpGroup = $this->_daoFactory->getUserDao()->getSecurityGroup($groupId);
 		if (!empty($tmpGroup)) {
 			return $tmpGroup[0];
 		} else {
@@ -1093,10 +1034,25 @@ class SpotTemplateHelper {
 	function getSecGroupPerms($id) {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_edit_securitygroups, '');
-		
-		return $this->_db->getGroupPerms($id);
+		$permList = $this->_daoFactory->getUserDao()->getGroupPerms($id);
+		for($i = 0; $i < count($permList); $i++) {
+			$permList[$i]['permissionname'] = _($this->permToString($permList[$i]['permissionid']));
+		}
+		usort($permList, 'SpotTemplateHelper::comparePermissionName');
+		return $permList;
 	} # getSecGroupPerms
-	
+
+	/*
+	 * Callback function for usort
+	 */
+	static function comparePermissionName($a, $b) {
+		$retval = strnatcmp($a['permissionname'], $b['permissionname']);
+		if (!$retval) {
+			return strnatcmp($a['objectid'], $b['objectid']);
+		}
+		return $retval;	
+	}
+
 	/*
 	 * Redirect naar een opgegeven url
 	 */
@@ -1108,53 +1064,60 @@ class SpotTemplateHelper {
 	 * Get users' filter list
 	 */
 	function getUserFilterList() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->getFilterList($this->_currentSession['user']['userid'], 'filter');
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getFilterList($this->_currentSession['user']['userid'], 'filter');
 	} # getUserFilterList
 
 	/*
 	 * Get specific filter
 	 */
 	function getUserFilter($filterId) {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->getFilter($this->_currentSession['user']['userid'], $filterId);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getFilter($this->_currentSession['user']['userid'], $filterId);
 	} # getUserFilter
 
 	/*
 	 * Get index filter
 	 */
 	function getIndexFilter() {
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		return $spotUser->getIndexFilter($this->_currentSession['user']['userid']);
+		$svcUserFilter = new Services_User_Filters($this->_daoFactory, $this->_settings);
+		return $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']);
 	} # getIndexFilter
 
 	/*
 	 * Controleer  of de user al een report heeft aangemaakt
 	 */
 	function isReportPlaced($messageId) {
-		return $this->_db->isReportPlaced($messageId, $this->_currentSession['user']['userid']);
+		return $this->_daoFactory->getSpotReportDao()->isReportPlaced($messageId, $this->_currentSession['user']['userid']);
 	} # isReportPlaced
 	
 	/*
 	 * Genereert een random string
 	 */
 	function getCleanRandomString($len) {
-		$spotParser = new SpotParser();
-		$spotSigning = Services_Signing_Base::newServiceSigning();
-		return substr($spotParser->specialString(base64_encode($spotSigning->makeRandomStr($len))), 0, $len);
+		$spotParseUtil = new Services_Format_Util();
+		$spotSigning = Services_Signing_Base::factory();
+		return substr($spotParseUtil->spotPrepareBase64(base64_encode($spotSigning->makeRandomStr($len))), 0, $len);
 	} # getRandomStr
 	
 	/*
-	 * Geeft de naam van de nzbhandler terug
+	 * Geeft de naam van de NzbHandler terug
 	 */
-	function getNzbHandlerName(){
-		return $this->_nzbHandler->getName();
-	} # getNzbHandlerName
+	function getNzbHandlerType(){
+		return $this->_currentSession['user']['prefs']['nzbhandling']['action'];
+	} # getNzbHandlerType
 
-	/*
-	 * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
-	 * voor de geselecteerde NzbHandler
-	 */
+    /*
+     * Returns name of nzbhandler action
+     */
+    function getNzbHandlerName(){
+        return $this->_nzbHandler->getName();
+    } # getNzbHandlerName
+
+    /*
+     * Geeft een string met gesupporte API functies terug of false wanneer er geen API support is
+     * voor de geselecteerde NzbHandler
+     */
 	function getNzbHandlerApiSupport(){
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
@@ -1163,16 +1126,20 @@ class SpotTemplateHelper {
 	 * Geeft een array met valide statistics graphs terug
 	 */
 	function getValidStatisticsGraphs(){
-		$spotImage = new SpotImage($this->_db);
-		return $spotImage->getValidStatisticsGraphs();
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+														  $this->_daoFactory->getCacheDao($this->_settings->get('cache_path')),
+														  0);
+		return $svcPrv_Stats->getValidStatisticsGraphs();
 	} # getValidStatisticsGraphs
 
 	/*
 	 * Geeft een array met valide statistics limits terug
 	 */
 	function getValidStatisticsLimits(){
-		$spotImage = new SpotImage($this->_db);
-		return $spotImage->getValidStatisticsLimits();
+		$svcPrv_Stats = new Services_Providers_Statistics($this->_daoFactory->getSpotDao(),
+														  $this->_daoFactory->getCacheDao(),
+														  0);
+		return $svcPrv_Stats->getValidStatisticsLimits();
 	} # getValidStatisticsGraphs
 	
 	/*

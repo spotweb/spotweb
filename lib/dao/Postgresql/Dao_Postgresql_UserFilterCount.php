@@ -13,8 +13,11 @@ class Dao_Postgresql_UserFilterCount extends Dao_Base_UserFilterCount {
 										lastupdate = o.lastupdate
 									FROM filtercounts AS o
 									WHERE (f.filterhash = o.filterhash) 
-									  AND (f.userid = %d) AND (o.userid = %d)",
-						Array((int) $userId, (int) $userId));
+									  AND (f.userid = :userid1) AND (o.userid = :userid2)",
+            array(
+                ':userid1' => array($userId, PDO::PARAM_INT),
+                ':userid2' => array($userId, PDO::PARAM_INT),
+            ));
 	} # markFilterCountAsSeen
 
 } # Dao_Postgresql_UserFilterCount

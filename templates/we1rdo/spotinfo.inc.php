@@ -1,7 +1,7 @@
 <?php
 	require_once "includes/header.inc.php";
 	$spot = $tplHelper->formatSpot($spot);
-	
+
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
 	$show_nzb_button = ( (!empty($spot['nzb'])) && 
 						 ($spot['stamp'] > 1290578400) && 
@@ -13,6 +13,8 @@
 	$isWhitelisted = ($spot['listidtype'] == 2); 
 	$allow_blackList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!empty($spot['spotterid'])));
 	$allow_whiteList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!$isWhitelisted) && (!empty($spot['spotterid'])));
+	$show_spot_edit = $tplHelper->allowed(SpotSecurity::spotsec_show_spot_was_edited, '');
+	$show_editor = $tplHelper->allowed(SpotSecurity::spotsec_view_spot_editor, '');
 
 	/* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
 	$imgMinWidth = 260;
@@ -22,19 +24,7 @@
 	
 ?>
 
-		<div id="details" class="details <?php echo $tplHelper->cat2color($spot) ?>">
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_report_spam, '')) {
-		if ($currentSession['user']['userid'] > 2) { ?>
-			<form class="postreportform" name="postreportform" action="<?php echo $tplHelper->makeReportAction(); ?>" method="post">
-				<input type="hidden" name="postreportform[submitpost]" value="Post">
-				<input type="hidden" name="postreportform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('postreportform'); ?>">
-				<input type="hidden" name="postreportform[inreplyto]" value="<?php echo htmlspecialchars($spot['messageid']); ?>">
-				<input type="hidden" name="postreportform[newmessageid]" value="">
-				<input type="hidden" name="postreportform[randomstr]" value="<?php echo $tplHelper->getCleanRandomString(4); ?>">
-			</form>
-<?php } # if
-	} # if 
-?>
+		<div id="details" class="details <?php echo $tplHelper->cat2CssClass($spot) ?>">
 			<form class="blacklistspotterform" name="blacklistspotterform" action="<?php echo $tplHelper->makeListAction(); ?>" method="post">
 				<input type="hidden" name="blacklistspotterform[submitaddspotterid]" value="Blacklist">
 				<input type="hidden" name="blacklistspotterform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('blacklistspotterform'); ?>">
@@ -62,7 +52,7 @@
 		if ($currentSession['user']['userid'] > 2) {
 			if (!$tplHelper->isReportPlaced($spot['messageid'])) {
 ?>
-						<th class="spamreport"><a onclick="$('form.postreportform').submit();" class="spamreport-button" title="<?php echo _('Report this spot as spam'); ?>"></a> </th>
+						<th class="spamreport"><a onclick="openDialog('editdialogdiv', '<?php echo _('Report spam'); ?>', '?page=render&tplname=reportspot&data[messageid]=<?php echo urlencode($spot['messageid']); ?>', postReportForm, 'autoclose', null, null);" class="spamreport-button" title="<?php echo _('Report this spot as spam'); ?>"></a> </th>
 <?php 		} else { ?>
 						<th class="spamreport"><a onclick="return false;" class="spamreport-button success" title="<?php echo _('You already reported this spot as spam'); ?>"></a> </th>
 <?php 	}	} } ?>
@@ -70,7 +60,7 @@
 <?php if ($show_nzb_button) { ?>
 							<a class="nzb<?php if ($spot['hasbeendownloaded']) { echo " downloaded"; } ?>" href="<?php echo $tplHelper->makeNzbUrl($spot); ?>" title="<?php echo _('Download NZB'); if ($spot['hasbeendownloaded']) {echo _('(this spot has already been downloaded)');} echo " (n)"; ?>"></a>
 <?php } ?>				</th>
-						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="<?php echo _('Find NZB');?>"></a></th>
+						<th class="search"><a href="<?php echo $spot['searchurl'];?>" title="<?php echo _('Find NZB');?>" rel="nofollow"></a></th>
 <?php if ($show_watchlist_button) {
 echo "<th class='watch'>";
 echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if($spot['isbeingwatched'] == false) { echo " style='display: none;'"; } echo " title='" . _('Delete from watchlist (w)') . "'> </a>";
@@ -79,9 +69,9 @@ echo "</th>";
 } ?>
 <?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
 <?php if ($spot['hasbeendownloaded']) { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
 <?php } else { ?>
-						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
+						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "'"; ?>)" class="<?php echo "sab_".$spot['id'].""; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
 <?php } } ?>
 					</tr>
 				</tbody>
@@ -116,18 +106,20 @@ echo "</th>";
 							<tbody>
 								<tr><th> <?php echo _('Category'); ?> </th> <td><a href="<?php echo $tplHelper->makeCatUrl($spot); ?>" title='<?php echo _('Find spots in this category'); ?> "<?php echo $spot['catname']; ?>"'><?php echo $spot['catname']; ?></a></td> </tr>
 <?php
-	if (!empty($spot['subcatlist'])) {
-		foreach($spot['subcatlist'] as $sub) {
-			$subcatType = substr($sub, 0, 1);
-			echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th>";
-			echo "<td><a href='" . $tplHelper->makeSubCatUrl($spot, $sub) . "' title='" . _('Find spots in this category') . ' ' . SpotCategories::Cat2Desc($spot['category'], $sub) . "'>" . SpotCategories::Cat2Desc($spot['category'], $sub) . "</a></td> </tr>\r\n";
+		foreach(array('a', 'b', 'c', 'd', 'z') as $subcatType) {
+            $subList = explode('|', $spot['subcat' . $subcatType]);
+            foreach($subList as $sub) {
+                if (!empty($sub)) {
+                    echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th>";
+                    echo "<td><a href='" . $tplHelper->makeSubCatUrl($spot, $sub) . "' title='" . _('Find spots in this category') . ' ' . SpotCategories::Cat2Desc($spot['category'], $sub) . "'>" . SpotCategories::Cat2Desc($spot['category'], $sub) . "</a></td> </tr>\r\n";
+                } # if
+            } # if
 		} # foreach
-	} # if
 ?>
 								<tr><th> <?php echo _('Date'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['stamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['stamp'], 'spotdetail'); ?> </td> </tr>
 								<tr><th> <?php echo _('Size'); ?> </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
 								<tr><td class="break" colspan="2">&nbsp;</td> </tr>
-								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>'><?php echo $spot['website'];?></a> </td> </tr>
+								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>' rel="nofollow"><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Sender'); ?> </th> <td> <a href="<?php echo $tplHelper->makePosterUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['poster']); ?>'><?php echo $spot['poster']; ?></a>
 								<?php if (!empty($spot['spotterid'])) { ?> (<a href="<?php echo $tplHelper->makeSpotterIdUrl($spot); ?>" title='<?php echo sprintf(_('Find spots from %s'), $spot['spotterid']);?>'><?php echo $spot['spotterid']; ?></a>)<?php } ?>
@@ -146,7 +138,10 @@ echo "</th>";
 
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr> <th> <?php echo _('Number of spamreports'); ?> </th> <td> <?php echo $spot['reportcount']; ?> </td> </tr>
-							</tbody>
+<?php if ($show_spot_edit && $spot['editstamp']) { ?>
+								<tr> <th> <?php echo _('Spot edited'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['editstamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['editstamp'], 'spotdetail'); ?> <?php if ($show_editor) echo "(" . $spot['editor'] . ")"?></td> </tr>
+<?php } ?>
+								</tbody>
 						</table>
 					</td>
 				</tr>
@@ -175,31 +170,32 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 		</div>
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
-		<script type="text/javascript">
-			// Attach an onLoad() listener to the image so we can bring the image into view
-			loadSpotImage();
-
-			$(document).ready(function(){
-				$("#details").addClass("external");
-
-				$("a[href^='http']").attr('target','_blank');
-
-				$("a.closeDetails").click(function(){ 
-					window.close();
-				});
-
-				var messageid = $('#messageid').val();
-				postCommentsForm();
-				postReportForm();
-				postBlacklistForm();
-				if (spotweb_retrieve_commentsperpage > 0) {
-					loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
-				} // if
-			});
-
-			function addText(text,element_id) {
-				document.getElementById(element_id).value += text;
-			}
-		</script>
 <?php
 require_once "includes/footer.inc.php";
+?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Attach an onLoad() listener to the image so we can bring the image into view
+        loadSpotImage();
+
+        $("#details").addClass("external");
+
+        $("a[href^='http']").attr('target','_blank');
+
+        $("a.closeDetails").click(function(){
+            window.close();
+        });
+
+        var messageid = $('#messageid').val();
+        postCommentsForm();
+        postBlacklistForm();
+        if (spotweb_retrieve_commentsperpage > 0) {
+            loadComments(messageid,spotweb_retrieve_commentsperpage,'0');
+        } // if
+    });
+
+    function addText(text,element_id) {
+        document.getElementById(element_id).value += text;
+    }
+</script>

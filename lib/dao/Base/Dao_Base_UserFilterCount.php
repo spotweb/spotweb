@@ -7,7 +7,7 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 	 * constructs a new Dao_Base_UserFilterCount object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
@@ -23,14 +23,22 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 		
 		foreach($filterHashes as $filterHash => $filterCount) {
 			/* Remove any existing cached filtercount for this user */		
-			$this->_conn->modify("DELETE FROM filtercounts WHERE (userid = %d) AND (filterhash = '%s')",
-									Array((int) $userId, $filterHash));
-									
+			$this->_conn->modify("DELETE FROM filtercounts WHERE (userid = :userid) AND (filterhash = :filterhash)",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT),
+                    ':filterhash' => array($filterHash, PDO::PARAM_STR)
+                ));
+
 			/* and insert our new filtercount hash */
 			$this->_conn->modify("INSERT INTO filtercounts(userid, filterhash, currentspotcount, lastvisitspotcount, lastupdate) 
-											VALUES(%d, '%s', %d, %d, %d)",
-									Array((int) $userId, $filterHash, $filterCount['currentspotcount'], $filterCount['lastvisitspotcount'], 
-										  $maxSpotStamp ));
+											VALUES(:userid, :filterhash, :currentspotcount, :lastvisitspotcount, :lastupdate)",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT),
+                    ':filterhash' => array($filterHash, PDO::PARAM_STR),
+                    ':currentspotcount' => array($filterCount['currentspotcount'], PDO::PARAM_INT),
+                    ':lastvisitspotcount' => array($filterCount['lastvisitspotcount'], PDO::PARAM_INT),
+                    ':lastupdate' => array($maxSpotStamp, PDO::PARAM_INT)
+                ));
 		} # foreach
 	} # setCachedFilterCount
 
@@ -48,9 +56,11 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 										 FROM filtercounts f
 										 INNER JOIN filtercounts t ON (t.filterhash = f.filterhash)
 										 WHERE t.userid = -1 
-										   AND f.userid = %d",
-								Array((int) $userId) );
-								
+										   AND f.userid = :userid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
+
 		foreach($tmp as $cachedItem) {
 			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
 															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
@@ -85,8 +95,11 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 														  sortorder,
 														  enablenotify 
 													FROM filters 
-													WHERE userid = %d
-													ORDER BY tparent, torder", Array($userId));
+													WHERE userid = :userid
+													ORDER BY tparent, torder",
+                array(
+                    ':userid' => array($userId, PDO::PARAM_INT)
+                ));
 
 			/* We can assume userid -1 (baseline) has all the filters which exist */
 			$cachedList = $this->getCachedFilterCount($userId);
@@ -119,9 +132,16 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 	 */
 	function getCachedFilterCount($userId) {
 		$filterHashes = array();
-		$tmp = $this->_conn->arrayQuery("SELECT filterhash, currentspotcount, lastvisitspotcount, lastupdate FROM filtercounts WHERE userid = %d",
-								Array( (int) $userId) );
-		
+		$tmp = $this->_conn->arrayQuery("SELECT filterhash,
+		                                        currentspotcount,
+		                                        lastvisitspotcount,
+		                                        lastupdate
+		                                   FROM filtercounts
+		                                  WHERE userid = :userid",
+            array(
+                ':userid' => array($userId, PDO::PARAM_INT)
+            ));
+
 		foreach($tmp as $cachedItem) {
 			$filterHashes[$cachedItem['filterhash']] = array('currentspotcount' => $cachedItem['currentspotcount'],
 															 'lastvisitspotcount' => $cachedItem['lastvisitspotcount'],
@@ -139,10 +159,14 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 		foreach($filterList as $filter) {
 			$this->_conn->modify("UPDATE filtercounts
 										SET lastvisitspotcount = currentspotcount,
-											currentspotcount = %d
-										WHERE (filterhash = '%s') 
-										  AND (userid = %d)",
-							Array((int) $filter['currentspotcount'], $filter['filterhash'], (int) $userId));
+											currentspotcount = :currentspotcount
+										WHERE (filterhash = :filterhash)
+										  AND (userid = :userid)",
+                array(
+                    ':currentspotcount' => array($filter['currentspotcount'], PDO::PARAM_INT),
+                    ':filterhash' => array($filter['filterhash'], PDO::PARAM_STR),
+                    ':userid' => array($userId, PDO::PARAM_INT)
+                ));
 		} # foreach
 	} # resetFilterCountForUser
 
@@ -154,14 +178,22 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount {
 		 * Update the current filter counts if the session
 		 * is still active
 		 */
-		$filterList = $this->_conn->arrayQuery("SELECT currentspotcount, lastupdate, filterhash FROM filtercounts WHERE userid = -1", array());
+		$filterList = $this->_conn->arrayQuery("SELECT currentspotcount,
+		                                               lastupdate,
+		                                               filterhash
+		                                          FROM filtercounts
+		                                          WHERE userid = -1");
 		foreach($filterList as $filter) {
 			$this->_conn->modify("UPDATE filtercounts
-										SET currentspotcount = %d,
-											lastupdate = %d
-										WHERE (filterhash = '%s') 
+										SET currentspotcount = :currentspotcount,
+											lastupdate = :lastupdate
+										WHERE (filterhash = :filterhash)
 										  AND (userid IN (SELECT userid FROM sessions WHERE lasthit > lastupdate GROUP BY userid ))",
-							Array((int) $filter['currentspotcount'], (int) $filter['lastupdate'], $filter['filterhash']));
+                array(
+                    ':currentspotcount' => array($filter['currentspotcount'], PDO::PARAM_INT),
+                    ':lastupdate' => array($filter['lastupdate'], PDO::PARAM_INT),
+                    ':filterhash' => array($filter['filterhash'], PDO::PARAM_INT)
+                ));
 		} # foreach
 	} # updateCurrentFilterCounts
 

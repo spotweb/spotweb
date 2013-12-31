@@ -19,7 +19,7 @@ class Services_Search_QueryParser {
 	 * to contain the fully qualified categories and subcategories.
 	 */
 	public function prepareCategorySelection($dynaList) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		$strongNotList = array();
 		$categoryList = array();
@@ -227,7 +227,7 @@ class Services_Search_QueryParser {
 			} # elseif
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($categoryList, $strongNotList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($categoryList, $strongNotList));
 		
 		return array($categoryList, $strongNotList);
 	} # prepareCategorySelection
@@ -236,7 +236,7 @@ class Services_Search_QueryParser {
 	 * Converts a list of categories to an SQL filter
 	 */
 	private function categoryListToSql($categoryList) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$categorySql = array();
 
 		# Make sure we were passed a valid filter
@@ -343,7 +343,7 @@ class Services_Search_QueryParser {
 			} # if
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($categorySql));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($categorySql));
 
 		return $categorySql;
 	} # categoryListToSql 
@@ -353,7 +353,7 @@ class Services_Search_QueryParser {
 	 * SQL statements
 	 */
 	private function strongNotListToSql($strongNotList) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$strongNotSql = array();
 		
 		if (empty($strongNotList)) {
@@ -381,22 +381,22 @@ class Services_Search_QueryParser {
 					 */
 					if (count($subcats) == 1) {
 						if (in_array($subcats[0][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = '" . $this->_dbEng->safe($subcats[0]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = " . $this->_dbEng->safe($subcats[0] . '|') . ")))";
 						} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE '%" . $this->_dbEng->safe($subcats[0]) . "|%')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[0] . '|%') . ")))";
 						} # if
 					} elseif (count($subcats) == 2) {
 						if (in_array($subcats[1][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = '" . $this->_dbEng->safe($subcats[1]) . "|')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = " . $this->_dbEng->safe($subcats[1] . '|') . ")))";
 						} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE '%" . $this->_dbEng->safe($subcats[1]) . "|%')))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[1] . '|%') . ")))";
 						} # if
 					} # else
 				} # else not whole subcat
 			} # foreach				
 		} # forEach
 
-		SpotTiming::stop(__FUNCTION__, array($strongNotSql));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($strongNotSql));
 
 		return $strongNotSql;
 	} # strongNotListToSql
@@ -405,11 +405,11 @@ class Services_Search_QueryParser {
 	 * Prepareert de filter values naar een altijd juist formaat 
 	 */
 	private function prepareFilterValues($search) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$filterValueList = array();
 
 		/*
-		 * We have drie kinds of filters:
+		 * We have three kinds of filters:
 		 *		- Old type where you have a search[type] with the values stamp,title,tag and an search[text]
 		 *		  containing the value to search for. This limits you to a maximum of one filter which is not
 		 *		  sufficient.
@@ -418,8 +418,8 @@ class Services_Search_QueryParser {
 		 *
 		 *
 		 *		- New type where there is a search[value] array, which contain values in the following shape:
-		 *		  type:operator:value. 
-		 *        For example, tag:=:spotweb. A shorthand is also available when the operator is left out (eg: tag:spotweb),
+		 *		  type:operator:boolop?:value. 
+		 *        For example, tag:=:AND:spotweb. The boolop is not required, and a shorthand is also available when the operator is left out (eg: tag:spotweb),
 		 *		  we assume the EQ operator was intended.
 		 *
 		 *		- Special kind of lists, there are a few values with a special meaning:
@@ -463,6 +463,26 @@ class Services_Search_QueryParser {
 									   '=',
 									   $tmpFilter[1]);
 				} # if
+
+				# Default to a DEF boolean operator, when none is given
+				if (count($tmpFilter) < 4) { 
+					$tmpFilter = array($tmpFilter[0],
+							   $tmpFilter[1],
+							   'DEF',
+							   $tmpFilter[2]);
+                } # if
+
+                if ($tmpFilter[2] == 'DEF') {
+					/*
+					 * For some operators it just makes more sense to default to OR when no
+					 * default is given, so we do that.
+					 */
+					if (in_array(strtolower($tmpFilter[0]), array('poster', 'tag'))) {
+						$tmpFilter[2] = 'OR';
+					} else {
+                        $tmpFilter[2] = 'AND';
+                    } # else
+				} # if
 				
 				/*
 				 * Create the actual filter, we add the array_slice part to
@@ -470,7 +490,8 @@ class Services_Search_QueryParser {
 				 */
 				$filterValueTemp = Array('fieldname' => $tmpFilter[0],
 										 'operator' => $tmpFilter[1],
-										 'value' => join(":", array_slice($tmpFilter, 2)));
+										 'booloper' => $tmpFilter[2],
+										 'value' => join(":", array_slice($tmpFilter, 3)));
 										 
 				/*
 				 * and create the actual filter list. Before appending it,
@@ -483,7 +504,7 @@ class Services_Search_QueryParser {
 			} # if
 		} # for
 		
-		SpotTiming::stop(__FUNCTION__, array($filterValueList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueList));
 
 		return $filterValueList;
 	} # prepareFilterValues
@@ -492,7 +513,7 @@ class Services_Search_QueryParser {
 	 * Converts one or multiple userprovided txt filters to SQL statements
 	 */
 	private function filterValuesToSql($filterValueList, $currentSession) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Add a list of possible text searches
 		$filterValueSql = array('OR' => array(), 'AND' => array());
@@ -526,6 +547,7 @@ class Services_Search_QueryParser {
 		foreach($filterValueList as $filterRecord) {
 			$tmpFilterFieldname = strtolower($filterRecord['fieldname']);
 			$tmpFilterOperator = $filterRecord['operator'];
+			$tmpFilterBoolOper = strtoupper($filterRecord['booloper']);
 			$tmpFilterValue = $filterRecord['value'];
 
 			# When no match for friendly name -> column name is found, ignore the search
@@ -535,6 +557,11 @@ class Services_Search_QueryParser {
 
 			# make sure the operators are valid
 			if (!in_array($tmpFilterOperator, array('>', '<', '>=', '<=', '=', '!='))) {
+				break;
+			} # if
+
+			# make sure the boolean operators are valid
+			if (!in_array($tmpFilterBoolOper, array('AND', 'OR', 'DEF'))) {
 				break;
 			} # if
 
@@ -552,7 +579,7 @@ class Services_Search_QueryParser {
 			 * by utilizing the fulltext search (engine). If so, we take this path
 			 * to gain the most performance.
 			 */
-			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'titel'))) {
+			if (in_array($tmpFilterFieldname, array('tag', 'poster', 'title', 'titel'))) {
 				/*
 				 * Some databases (sqlite for example), want to have all their fulltext
 				 * searches available in one SQL function call. 
@@ -563,7 +590,7 @@ class Services_Search_QueryParser {
 				if (!isset($textSearchFields[$filterFieldMapping[$tmpFilterFieldname]])) {
 					$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]] = array();
 				} # if
-				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue);
+				$textSearchFields[$filterFieldMapping[$tmpFilterFieldname]][] = array('fieldname' => $filterFieldMapping[$tmpFilterFieldname], 'value' => $tmpFilterValue, 'booloper' => $tmpFilterBoolOper);
 			} elseif (in_array($tmpFilterFieldname, array('new', 'downloaded', 'watch', 'seen', 'mypostedspots', 'whitelistedspotters'))) {
 				/*
 				 * Some fieldnames are mere dummy fields which map to actual
@@ -571,7 +598,7 @@ class Services_Search_QueryParser {
 				 */
 				switch($tmpFilterFieldname) {
 					case 'new' : {
-							$tmpFilterValue = ' ((s.stamp > ' . (int) $this->_dbEng->safe($currentSession['user']['lastread']) . ')';
+							$tmpFilterValue = ' ((s.stamp > ' . $this->_dbEng->safe((int) $currentSession['user']['lastread']) . ')';
 							$tmpFilterValue .= ' AND (l.seen IS NULL))';
 							
 							break;
@@ -587,7 +614,7 @@ class Services_Search_QueryParser {
 												   'tablealias' => 'spost',
 												   'jointype' => 'LEFT',
 												   'joincondition' => 'spost.messageid = s.messageid');
-						$tmpFilterValue = ' (spost.ouruserid = ' . (int) $this->_dbEng->safe($currentSession['user']['userid']) . ') '; 	
+						$tmpFilterValue = ' (spost.ouruserid = ' . $this->_dbEng->safe((int) $currentSession['user']['userid']) . ') ';
 						$sortFields[] = array('field' => 'spost.stamp',
 											  'direction' => 'DESC',
 											  'autoadded' => true,
@@ -639,8 +666,10 @@ class Services_Search_QueryParser {
 					$val = (float) trim(substr($tmpFilterValue, 0, -1));
 					$last = strtolower($tmpFilterValue[strlen($tmpFilterValue) - 1]);
 					switch($last) {
-						case 'g': $val *= (float) 1024;
-						case 'm': $val *= (float) 1024;
+                        /** @noinspection PhpMissingBreakStatementInspection */
+                        case 'g': $val *= (float) 1024;
+                        /** @noinspection PhpMissingBreakStatementInspection */
+                        case 'm': $val *= (float) 1024;
 						case 'k': $val *= (float) 1024;
 					} # switch
 					$tmpFilterValue = round($val, 0);
@@ -651,9 +680,9 @@ class Services_Search_QueryParser {
 				 * as postgresql doesn't like that of course
 				 */
 				if (!is_numeric($tmpFilterValue)) {
-					$tmpFilterValue = "'" . $this->_dbEng->safe($tmpFilterValue) . "'";
-				} else {
 					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
+				} else {
+					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue);
 				} # if
 
 				# depending on the type of search, we either add the filter as an AND or an OR
@@ -665,13 +694,13 @@ class Services_Search_QueryParser {
 			} # if
 		} # foreach
 
-		/*
-		 * When all filters are processed, we want to check wether we actually
-		 * have to process any of the $textSearchFields for which we could run
-		 * the db specific FTS engine.
-		 *
-		 * If so, ask the FTS engin to process the query.
-		 */
+        /*
+         * When all filters are processed, we want to check wether we actually
+         * have to process any of the $textSearchFields for which we could run
+         * the db specific FTS engine.
+         *
+         * If so, ask the FTS engin to process the query.
+         */
 		if (!empty($textSearchFields)) {
 			/*
  			 * We group searches per search type, but this means
@@ -685,11 +714,7 @@ class Services_Search_QueryParser {
 				$ftsEng = dbfts_abs::Factory($this->_dbEng);
 				$parsedTextQueryResult = $ftsEng->createTextQuery($searches, $additionalFields);
 
-				if (in_array($searches[0]['fieldname'], array('s.poster', 's.tag', 's.title'))) {
-					$filterValueSql['AND'][] = ' (' . implode(' OR ', $parsedTextQueryResult['filterValueSql']) . ') ';
-				} else {
-					$filterValueSql['AND'][] = ' (' . implode(' AND ', $parsedTextQueryResult['filterValueSql']) . ') ';
-				} # if
+				$filterValueSql['AND'][] = ' (' . implode(' ' . $searches[0]['booloper'] . ' ', $parsedTextQueryResult['filterValueSql']) . ') ';
 
 				$additionalTables = array_merge($additionalTables, $parsedTextQueryResult['additionalTables']);
 				$additionalFields = array_merge($additionalFields, $parsedTextQueryResult['additionalFields']);
@@ -698,7 +723,7 @@ class Services_Search_QueryParser {
 		} # if
 
 		
-		SpotTiming::stop(__FUNCTION__, array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields));
 
 		return array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields);
 	} # filterValuesToSql
@@ -707,7 +732,7 @@ class Services_Search_QueryParser {
 	 * Converts the sorting as asked to an intermediate format ready for processing
 	 */
 	private function prepareSortFields($sort, $sortFields) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$VALID_SORT_FIELDS = array('category' => 1, 
 								   'poster' => 1, 
 								   'title' => 1, 
@@ -739,7 +764,7 @@ class Services_Search_QueryParser {
 											 'friendlyname' => $sort['field']));
 		} # else
 		
-		SpotTiming::stop(__FUNCTION__, array($sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($sortFields));
 		return $sortFields;
 	} # prepareSortFields
 	
@@ -756,7 +781,7 @@ class Services_Search_QueryParser {
 	 *
 	 */
 	public function compressCategorySelection($categoryList, $strongNotList) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$compressedList = '';
 
 		/*
@@ -881,7 +906,7 @@ class Services_Search_QueryParser {
 			} # foreach
 		} # if
 
-		SpotTiming::stop(__FUNCTION__, array($compressedList));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($compressedList));
 
 		return $compressedList;
 	} # compressCategorySelection
@@ -891,7 +916,7 @@ class Services_Search_QueryParser {
 	 * to be glued to an SQL WHERE query
 	 */
 	public function filterToQuery($search, $sort, $currentSession, $indexFilter) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		
 		$isUnfiltered = false;
 		
@@ -971,7 +996,7 @@ class Services_Search_QueryParser {
 		$endFilter[] = join(' AND ', $strongNotSql);
 		$endFilter = array_filter($endFilter);
 
-		SpotTiming::stop(__FUNCTION__, array(join(" AND ", $endFilter)));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array(join(" AND ", $endFilter)));
 		return array('filter' => join(" AND ", $endFilter),
 					 'categoryList' => $categoryList,
 					 'unfiltered' => $isUnfiltered,

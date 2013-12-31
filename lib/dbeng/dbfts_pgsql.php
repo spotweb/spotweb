@@ -1,12 +1,35 @@
 <?php
 
 class dbfts_pgsql extends dbfts_abs {
+
+    /**
+     * Prepare (mangle) an FTS query to make sure we can use them
+     *
+     * @param $searchTerm
+     * @return string
+     */
+    private function prepareFtsQuery($searchTerm) {
+        /*
+         * + signs get incorrectly interpreted by the query
+         * parser used for PostgreSQL by us, so for now we strip those.
+         */
+        if (strpos('+-~<>', $searchTerm[0]) !== false) {
+            $searchTerm = substr($searchTerm, 1);
+        } # if
+
+        $searchTerm = str_replace(array('-', '+'),
+                                  array(' NOT ', ' AND '),
+                                  $searchTerm);
+
+        return $searchTerm;
+    } # prepareFtsQuery
+
 	/*
 	 * Constructs a query part to match textfields. Abstracted so we can use
 	 * a database specific FTS engine if one is provided by the DBMS
 	 */
 	function createTextQuery($searchFields, $additionalFields) {
-		SpotTiming::start(__FUNCTION__);
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		/*
 		 * Initialize some basic values which are used as return values to
@@ -25,19 +48,63 @@ class dbfts_pgsql extends dbfts_abs {
 			 */
 			$tmpSortCounter = count($additionalFields);
 
-			# Prepare the to_tsvector and to_tsquery strings
-			$ts_vector = "to_tsvector('Dutch', " . $field . ")";
-			$ts_query = "plainto_tsquery('Dutch', '" . $this->_db->safe(strtolower($searchValue)) . "')";
-			
-			$filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
-			$additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+            # Prepare the to_tsvector and to_tsquery strings
+            $ts_vector = "to_tsvector('Dutch', " . $field . ")";
+
+            /*
+             * Inititialize Digital Stratum's FTS2 parser so we can
+             * give the user somewhat normal search query parameters
+             */
+            $o_parse = new parse_model();
+            $o_parse->debug = false;
+            $o_parse->upper_op_only = true;
+            $o_parse->use_prepared_sql = false;
+            $o_parse->set_default_op('AND');
+
+            /*
+             * Do some preparation for the searchvalue, test cases:
+             *
+             * +"Revolution (2012)" +"Season 2"
+             */
+            $searchValue = $this->prepareFtsQuery($searchValue);
+
+            /*
+             * First try to the parse the query using this library,
+             * if that fails, fall back to letting PostgreSQL crudely
+             * parse it
+             */
+            if ($o_parse->parse($searchValue, $field) === false) {
+                $ts_query = "plainto_tsquery('Dutch', " . $this->_db->safe(strtolower($searchValue)) . ")";
+                $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
+                $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+            } else {
+                $queryPart = array();
+
+                if (!empty($o_parse->tsearch)) {
+                    $ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch) . ")";
+                    $queryPart[] = " " . $ts_vector . " @@ " . $ts_query;
+                    $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+                } # if
+
+                if (!empty($o_parse->ilike)) {
+                    $queryPart[] = $o_parse->ilike;
+                } # if
+
+                /*
+                 * Add the textqueries with an AND per search term
+                 */
+                if (!empty($queryPart)) {
+                    $filterValueSql[] = ' (' . implode(' AND ', $queryPart) . ') ';
+                } # if
+            } # else
+
 			$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 								  'direction' => 'DESC',
 								  'autoadded' => true,
 								  'friendlyname' => null);
 		} # foreach
 
-		SpotTiming::stop(__FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 		
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),

@@ -1,21 +1,27 @@
 <?php
+
+/*
+ * FIXME
+ * XXX
+ * TODO
+ */
+
 class SpotPage_twitteroauth extends SpotPage_Abs {
 	private $_notificationService = array();
 	private $_params;
 
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $currentSession, $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 
 		$this->_params = $params;
-	}
+	} # ctor
 
 	function render() {
 		# Controleer de users' rechten
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_send_notifications_services, 'twitter');
 
 		# Instantieer het Spot user system & notificatiesysteem
-		$spotUserSystem = new SpotUserSystem($this->_db, $this->_settings);
-		$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
 
 		$requestArray = array_merge_recursive($this->_currentSession['user']['prefs']['notifications']['twitter'],
 											  array('consumer_key' => $this->_settings->get('twitter_consumer_key'),
@@ -35,7 +41,7 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 				$this->_currentSession['user']['prefs']['notifications']['twitter']['screen_name'] = $access_token['screen_name'];
 				$this->_currentSession['user']['prefs']['notifications']['twitter']['access_token'] = $access_token['oauth_token'];
 				$this->_currentSession['user']['prefs']['notifications']['twitter']['access_token_secret'] = $access_token['oauth_token_secret'];
-				$spotUserSystem->setUser($this->_currentSession['user']);
+				$svcUserRecord->setUser($this->_currentSession['user']);
 				echo "Account " . $access_token['screen_name'] . " geverifi&euml;erd.";
 			} else {
 				echo "Code " . $http_code . ": " . $this->getError($http_code);
@@ -45,7 +51,7 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 			$this->_currentSession['user']['prefs']['notifications']['twitter']['screen_name'] = '';
 			$this->_currentSession['user']['prefs']['notifications']['twitter']['access_token'] = '';
 			$this->_currentSession['user']['prefs']['notifications']['twitter']['access_token_secret'] = '';
-			$spotUserSystem->setUser($this->_currentSession['user']);
+			$svcUserRecord->setUser($this->_currentSession['user']);
 			echo "Account " . $screen_name . " verwijderd.";
 		} else {
 			$this->_notificationService = Notifications_Factory::build('Spotweb', 'twitter', $requestArray);
@@ -56,7 +62,7 @@ class SpotPage_twitteroauth extends SpotPage_Abs {
 				# weer nodig wanneer de PIN wordt ingevoerd
 				$this->_currentSession['user']['prefs']['notifications']['twitter']['request_token'] = $request_token['oauth_token'];
 				$this->_currentSession['user']['prefs']['notifications']['twitter']['request_token_secret'] = $request_token['oauth_token_secret'];
-				$spotUserSystem->setUser($this->_currentSession['user']);
+				$svcUserRecord->setUser($this->_currentSession['user']);
 				echo $registerURL;
 			} else {
 				echo "Code " . $http_code . ": " . $this->getError($http_code);

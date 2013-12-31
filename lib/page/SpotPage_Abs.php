@@ -1,18 +1,41 @@
 <?php
-abstract class SpotPage_Abs {
-	protected $_db;
-	protected $_settings;
-	protected $_pageTitle;
-	protected $_currentSession;
-	protected $_spotSec;
-	protected $_tplHelper;
 
+abstract class SpotPage_Abs {
+    /**
+     * @var Dao_Factory
+     */
+    protected $_daoFactory;
+    /**
+     * @var Services_Settings_Base
+     */
+    protected $_settings;
+    /**
+     * Name of the page which we should render.
+     * @var string
+     */
+    protected $_pageTitle;
+    /**
+     * @var array
+     */
+    protected $_currentSession;
+    /**
+     * @var SpotSecurity
+     */
+    protected $_spotSec;
+    /**
+     * @var SpotTemplateHelper
+     */
+    protected $_tplHelper;
+    /**
+     * @var string
+     */
 	protected $_templatePaths;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession) {
-		$this->_db = $db;
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession) {
+		$this->_daoFactory = $daoFactory;
 		$this->_settings = $settings;
 		$this->_currentSession = $currentSession;
+
 		$this->_spotSec = $currentSession['security'];
 		$this->_tplHelper = $this->getTplHelper(array());
 
@@ -27,16 +50,14 @@ abstract class SpotPage_Abs {
 	} # ctor
 
 	/* 
-	 * Standaard mogen paginas niet gecached worden 
-	 * om invalid cached informatie te voorkomen. Kan overriden worden
-	 * per pagina
+	 * Send either 'do cache' or 'do not cache' headers to the client
 	 */
 	function sendExpireHeaders($preventCaching) {
 		if ($preventCaching) {
 			Header("Cache-Control: private, post-check=1, pre-check=2, max-age=1, must-revalidate");
 			Header("Expires: Mon, 12 Jul 2000 01:00:00 GMT");
 		} else {
-			# stuur een expires header zodat dit een jaar of 10 geldig is
+			# send an expire header claiming this content is at least valid for 10 years
 			Header("Cache-Control: public");
 			Header("Expires: " . gmdate("D, d M Y H:i:s", (time() + (86400 * 3650))) . " GMT");
 			Header("Pragma: ");
@@ -44,8 +65,7 @@ abstract class SpotPage_Abs {
 	} # sendExpireHeaders
 	
 	/*
-	 * Stuur een content header, dit zorgt er voor dat de browser
-	 * eventuele content sneller kan parsen
+	 * Send the correct content header and character set to the browser
 	 */
 	function sendContentTypeHeader($type) {
 		switch($type) {
@@ -55,31 +75,35 @@ abstract class SpotPage_Abs {
 			case 'css'		: Header("Content-Type: text/css; charset=utf-8"); break;
 			case 'js'		: Header("Content-Type: application/javascript; charset=utf-8"); break;
 			case 'ico'		: Header("Content-Type: image/x-icon"); break;
-			
+            case 'nzb'		: Header("Content-Type: application/x-nzb"); break;
+
 			default 		: Header("Content-Type: text/html; charset=utf-8"); break;
 		} # switch
 		
 	} # sendContentTypeHeader
 
-	
-	# Geef the tpl helper terug
+
+	/*
+	 * Returns an TemplateHelper instance. Instantiates an
+	 * dynamic class name which is ugly.
+	 */	
 	private function getTplHelper($params) {
 		$tplName = $this->_currentSession['active_tpl'];
 
 		$className = 'SpotTemplateHelper_' . ucfirst($tplName);
-		$tplHelper = new $className($this->_settings, $this->_currentSession, $this->_db, $params);
+		$tplHelper = new $className($this->_settings, $this->_currentSession, $this->_daoFactory, $params);
 
 		return $tplHelper;
 	} # getTplHelper
 		
 	
 	/*
-	 * Display de template
+	 * Actually run the templating code
 	 */
 	function template($tpl, $params = array()) {
-		SpotTiming::start(__FUNCTION__ . ':' . $tpl);
-		
-		extract($params, EXTR_REFS);
+        SpotTiming::start(__FUNCTION__ . ':' . $tpl);
+
+        extract($params, EXTR_REFS);
 		$settings = $this->_settings;
 		$pagetitle = $this->_pageTitle;
 		
@@ -94,8 +118,8 @@ abstract class SpotPage_Abs {
 		# send any expire headers
 		$this->sendExpireHeaders(true);
 		$this->sendContentTypeHeader('html');
-		
-		# and include the template
+
+        # and include the template
 		foreach($this->_templatePaths as $tplPath) {
 			if (file_exists($tplPath . $tpl . '.inc.php')) {
 				require_once($tplPath . $tpl . '.inc.php');
@@ -103,17 +127,18 @@ abstract class SpotPage_Abs {
 				break;
 			} # if
 		} # foreach
-		SpotTiming::stop(__FUNCTION__ . ':' . $tpl, array($params));
+		
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':' . $tpl, array($params));
 	} # template
 	
 	/*
-	 * Daadwerkelijk renderen van de pagina -- implementatie specifiek
+	 * Actually render the page, must be overridden by the specific implementation
 	 */
 	abstract function render();
 	
 	/*
-	 * Renderen van een permission denied pagina, kan overridden worden door een implementatie
-	 * specifieke renderer
+	 * Render a permission denied page. Might be overridden by a page specific
+	 * implementation to allow rendering of XML or other type of pages
 	 */
 	function permissionDenied($exception, $page, $http_referer) {
 		$this->template('permdenied',

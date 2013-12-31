@@ -9,39 +9,50 @@ $.address.init(function() {
 				var currentSpot = $('table.spots tr.active');
 				if ((currentSpot) && (currentSpot.offset() != null)) {
 					if (currentSpot.offset().top > $(window).height()) {
-						$(document).scrollTop($('table.spots tr.active').offset().top - 50);
+						$(document).scrollTop(currentSpot.offset().top - 50);
 					} // if
 				} // if
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
 		});
 
-$(function(){
-// console.time("10th-ready");
+function initSpotwebJs() {
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
-	$('.showTipTip a.spotlink').each(applyTipTip);
 	if(navigator.userAgent.toLowerCase().indexOf('chrome')>-1)$('a.spotlink').mouseup(function(e){if(e.which==2||(e.metaKey||e.ctrlKey)&&e.which==1){$(this).attr('rel','address:');}});
 	$("a[href^='http']").attr('target','_blank');
-	
-    $("#filterform input").keypress(function (e) {
-		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-			$('form#filterform').find('input[type=submit].default').click();
-			return false;
-		} else {
-			return true;
-		}
-    });	
-// console.timeEnd("10th-ready");
-});
 
-// createBaseURL
+    /*
+     * Attach the "TipTip" tooltip behaviour for each SpotLink
+     */
+    $('.showTipTip a.spotlink').each(applyTipTip);
+
+
+    attachInfiniteScroll();
+    attachKeyBindings();
+    attachSidebarBehaviour();
+    attachSidebarVisibility();
+    attachAdvancedSearchBehaviour();
+    attachFilterVisibility();
+    attachMaintenanceButtonsBehaviour();
+
+    var BaseURL = createBaseURL();
+    var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+    attachEnablerBehaviour();
+} // initSpotwebJs
+
+/**
+ * Creates a base url, full path to this Spotweb
+ * installation.
+ *
+ * @returns {string}
+ */
 function createBaseURL() {
-	var baseURL = '$HTTP_S://'+window.location.hostname+window.location.pathname;
+	var baseURL = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
 	if (window.location.port != '') {
-		var baseURL = '$HTTP_S://'+window.location.hostname+':'+window.location.port+window.location.pathname;
+		var baseURL = window.location.protocol + '//' + window.location.hostname+':'+window.location.port+window.location.pathname;
 	}
 	return baseURL;
-}
+} // createBaseURL
 
 // Detecteer aanwezigheid scrollbar binnen spotinfo pagina
 function detectScrollbar() {
@@ -102,7 +113,6 @@ function openSpot(id,url) {
 		$(window).bind("resize", detectScrollbar);
 
 		postCommentsForm();
-		postReportForm();
 		postBlacklistForm();
 		
 		if (spotweb_retrieve_commentsperpage > 0) {
@@ -110,11 +120,17 @@ function openSpot(id,url) {
 		} // if
 		loadSpotImage();
 	});
+
+    return false;
 }
 
-/*
- * Refresht een tab in een bepaalde tab lijst, 
- * kan als callback gegeven worden aan showDialog()
+/**
+ * Refreshes a tabs content when given a tabname,
+ * is primarily used a callback for ShowDialog(), so
+ * when the dialog is closed, the tab contents is
+ * refreshed.
+ *
+ * @returns void
  */
 function refreshTab(tabName) {    
 	var tab = $('#' + tabName);
@@ -123,149 +139,6 @@ function refreshTab(tabName) {
 	tab.tabs('load', selected);
 } // refreshTab
 
-	
-/*
- * Helper function to open a dialog, a couple of parameters are required.
- *
- * divid = id of a dummy div which should be used to create a dialog
- * title = title of the dialogbox
- * url = URL of the HTML content to load into the dialog
- * formname = Formname, necessary to attach the submit buttons
- * buttonClick = Function to be called when the submit button is pressed
- * successAction = choice of 'autoclose', 'showresultonly', 'reload'
- * closeCb = Function which should be called when the dialog is closed
- * openCb = Function which should be called when the HTML content of the dialog is loaded
- */
-function openDialog(divid, title, url, formname, buttonClick, successAction, closeCb, openCb) {
-	var $dialdiv = $("#" + divid);
-  
-    if (!$dialdiv.is(".ui-dialog-content")) {
-		// en nu kunnen we de dialog wel tonen
-		$dialdiv.dialog( {
-			title: title,
-			autoOpen: false,
-			resizable: false,
-			position: 'center',
-			stack: true,
-			closeOnEscape: true,
-			height: 'auto',
-			width: 'auto',
-			modal: true
-		} );
-	} // if
-
-	// Update de dialogs' title, de tweede manier is er omdat het niet altijd goed
-	// werkt met de 1e methode
-	$dialdiv.dialog("option", 'title', title);
-	$("span.ui-dialog-title").text(title);
-	
-	/* submit button handler */
-	if (!buttonClick) {
-		var buttonClick = function() {
-			// In deze context is 'this' de submit button waarop gedrukt is,
-			// dus die data voegen we gewoon aan de post data toe.
-			var formdata = $(this).attr("name") + "=" + $(this).val();  
-			formdata = $(this.form).serialize() + "&" + formdata;
-			
-			// post de data
-			$.ajax({
-				type: "POST",
-				url: this.form.action,
-				dataType: "xml",
-				data: formdata,
-				success: function(xml) {
-					var $dialdiv = $("#"+divid)
-					var result = $(xml).find('result').text();
-					
-					if ((result == 'success') && (successAction == 'autoclose')) {
-						$dialdiv.dialog('close');
-						$dialdiv.empty();
-						
-						if (closeCb) {
-							closeCb();
-						} // if
-					} else {						
-						/* We herladen de content zodat eventuele dialog wijzigingen duidelijk zijn */
-						if (successAction == 'reload') {
-							loadDialogContent(false);
-						} // if
-						
-						if ((successAction == 'showresultsonly') && (result == 'success')) {
-							$dialdiv.empty();
-							
-							/* Create the empty elements to show the errors/information in */
-							$dialdiv.html("<ul class='formerrors'></ul><ul class='forminformation'></ul>");
-						} // if
-
-						var $formerrors = $dialdiv.find("ul.formerrors");
-						$formerrors.empty();
-						$('errors', xml).each(function() {
-							$formerrors.append("<li>" + $(this).text() + "</li>");
-						}); // each
-
-						// Add the information items to the form
-						var $forminfo = $dialdiv.find("ul.forminformation");
-						$forminfo.empty();
-						$('info', xml).each(function() {
-							$forminfo.append("<li>" + $(this).text() + "</li>");
-						}); // each
-					} // if post was not succesful
-				} // success()
-			}); // ajax call om de form te submitten
-			
-			return false; // standaard button submit supressen
-		} // buttonClick
-	} // if not defined
-	
-	/*
-	 * definieer een dialog loader functie welke tegelijkertijd
-	 * de submit buttons attached, deze wordt namelijk aangeroepen
-	 * als een dialog submit succesvol is, maar de dialog niet gesloten
-	 * mag worden. Dat is namelijk de simpelste manier om de content
-	 * te refreshen
-	 */
-	function loadDialogContent(async) {
-		/* en laad de werkelijke content */
-		$.ajax({
-			type: "GET",
-			dataType: "html",
-			async: async,
-			url: url,
-			data: {},
-			success: function(response) {
-				// Laad de content van de pagina in de dialog zodat we die daarna 
-				// kunnen laten zien
-				var $dialdiv = $("#" + divid);
-				$dialdiv.empty().html(response);
-				
-				// sla de geladen url op zodat we het resultaat zien
-				$dialdiv.data('dialogurl', url);
-				
-				// we vragen vervolgens alle submit buttons op, hier gaan we dan een
-				// form submit handler aan vast knopen. Dit is nodig omdat standaard
-				// de form submit handler van jquery niet weet op welke knop er gedrukt
-				// is, dus moeten we wat doen om dat duidelijk te krijgen.
-				//var $buttons = $("form." + formname + " input[type='submit']"); 
-				var $buttons = $("#" + divid + " input[type='submit']"); 
-				$buttons.click(buttonClick)
-
-				// Call the open callback
-				if (openCb) {
-					openCb();
-				} // if
-				
-				// en toon de dialog
-				$dialdiv.dialog('open');
-					
-				return false; // standaard link actie voor openen dialog supressen
-			} // success function
-		}); // ajax call
-	} // loadDialogContent
-
-	// en laad de content
-	loadDialogContent(true);
-	return false;
-} // openDialog
 
 // Open spot in los scherm
 function openNewWindow() {
@@ -288,7 +161,7 @@ function closeDetails(scrollLocation) {
 }
 
 // Laadt nieuwe spots in overzicht wanneer de onderkant wordt bereikt
-$(function(){
+function attachInfiniteScroll() {
 	//ready
 // console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
@@ -305,7 +178,7 @@ $(function(){
 						$("div.spots").addClass("full");
 					}
 					$("#overlay").hide().removeClass('loading'); 
-					$("tbody#spots").append($($("div#overlay tbody#spots").html()).fadeIn('slow'));
+					$("tbody#spots").append($($("div#overlay tbody#spots").html()).show());
 					$("div#overlay").empty();
 					$("a.spotlink").click(function(e) { e.preventDefault(); });
 					$(".showTipTip a.spotlink").each(applyTipTip);
@@ -318,7 +191,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("2nd-ready");
-});
+} // attachInfiniteScroll
 
 // Haal de comments op en zet ze per batch op het scherm
 function loadComments(messageid,perpage,pagenr) {
@@ -329,17 +202,17 @@ function loadComments(messageid,perpage,pagenr) {
 	var xhr = null;
 	xhr = $.get('?page=render&tplname=comment&messageid='+messageid+'&pagenr='+pagenr+'&perpage='+perpage, function(html) {
 		count = $(html+' > li').length / 2;
-		if (count == 0 && pagenr == 0) {
+        if (count == 0 && pagenr == 0) {
 			$("#commentslist").append("<li class='nocomments'><t>No (verified) comments found.</t></li>");
 		} else {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
-		$("#commentslist").append($(html).fadeIn('slow'));
+        $("#commentslist").append($(html));
 		$("#commentslist > li:nth-child(even)").addClass('even');
 		$("#commentslist > li.addComment").next().addClass('firstComment');
 
-		pagenr++;
+        pagenr++;
 		if (count >= 1) { 
 			loadComments(messageid,perpage,pagenr);
 		} else {
@@ -347,13 +220,13 @@ function loadComments(messageid,perpage,pagenr) {
 		}
 	});
 	$("a.closeDetails").click(function() { xhr.abort() });
+
+    return false;
 }
 
 function postReportForm() {
-	$("form.postreportform").submit(function(){ 
-		new spotPosting().postReport(this,postReportUiStart,postReportUiDone); 
-		return false;
-	});	
+    new SpotPosting().postReport($('form.postreportform')[0], postReportUiStart, postReportUiDone);
+    return false;
 }
 
 function blacklistSpotterId(spotterId) {
@@ -386,10 +259,10 @@ function validateNntpServerSetting(settingsForm, serverArrayId) {
 	$.ajax({
 		type: "POST",
 		url: "?page=render&tplname=validatenntp", 
-		dataType: "xml",
+		dataType: "json",
 		data: formData,
-		success: function(xml) {
-			var result = $(xml).find('result').text();
+		success: function(data) {
+			var result = $data.results;
 			$("#servertest_" + serverArrayId + "_loading").hide();
 
 			/* Remove existing style and contents from from the string */
@@ -406,7 +279,7 @@ function validateNntpServerSetting(settingsForm, serverArrayId) {
 			} else {
 				$("#servertest_" + serverArrayId + "_result")
 					.addClass("servertest_" + serverArrayId + "_result_fail")
-					.text($(xml).find('error').text());
+					.text(data.error.join('\n'));
 			} // else
 		} // success
 	}); // ajax call om de form te submitten
@@ -421,9 +294,9 @@ function postBlacklistForm() {
 		$.ajax({
 			type: "POST",
 			url: this.action, 
-			dataType: "xml",
+			dataType: "json",
 			data: formdata,
-			success: function(xml) {
+			success: function(data) {
 				$(".blacklistuserlink_" + $("input[name='blacklistspotterform[spotterid]']").val()).remove();
 			} // success
 		}); // ajax call om de form te submitten
@@ -484,7 +357,7 @@ function postCommentsForm() {
 	}
 
 	$("form.postcommentform").submit(function(){ 
-		new spotPosting().postComment(this,postCommentUiStart,postCommentUiDone); 
+		new SpotPosting().postComment(this,postCommentUiStart,postCommentUiDone);
 		return false;
 	});	
 }
@@ -504,7 +377,7 @@ function loadSpotImage() {
 		$('a.postimage').css({
 			'width': $("img.spotinfoimage").width(),
 			'height': $("img.spotinfoimage").height()
-		})
+		});
 		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
 		detectScrollbar();
 	})
@@ -514,6 +387,8 @@ function loadSpotImage() {
 			$(this).trigger("load");
 		}
 	});
+
+    return false;
 }
 
 function toggleImageSize() {
@@ -532,7 +407,7 @@ function toggleImageSize() {
 }
 
 // Bind keys to functions
-$(function(){
+function attachKeyBindings() {
 // console.time("3rd-ready");
 	//ready
 	$('table.spots tbody tr').first().addClass('active');
@@ -550,10 +425,10 @@ $(function(){
 	$document.bind('keydown', 'w', function(){if($("#overlay").is(':visible') || $('#details').hasClass("external")) {$("#details th.watch a:visible").click()} else if($("div.spots").hasClass("watchlist")) {location.href = $("tr.active td.watch a").attr('href')} else {$("tr.active td.watch a:visible").click()}});
 	$document.bind('keydown', 't', function(){openNewWindow()});
 	$document.bind('keydown', 'h', function(){location.href = '?search[tree]=&search[unfiltered]=true'});
-	$document.bind('keydown', 'm', downloadMultiNZB);
+	$document.bind('keydown', 'm', function(){downloadMultiNZB(spotweb_nzbhandler_type)});
 	$document.bind('keydown', 'c', checkMultiNZB);
 // console.timeEnd("3rd-ready");
-});
+} // attachKeyBindings
 
 // Keyboard navigation functions
 function spotNav(direction) {	
@@ -580,6 +455,22 @@ function spotNav(direction) {
 	}
 	if($("#overlay").is(':hidden')) {$(document).scrollTop($('table.spots tr.active').offset().top - 50)}
 }
+
+/*
+ * Initializes the user management page
+ */
+function initializeUserManagementPage() {
+    $("#usermanagementtabs").tabs();
+} // initializeUserManagementPage
+
+/*
+ Initializes the settings pages
+ */
+function initializeSettingsPage() {
+    initDatePicker();
+    $("#editsettingstab").tabs();
+}
+
 
 /*
  * Initializes the user preferences screen
@@ -610,7 +501,7 @@ function initializeUserPreferencesScreen() {
 	$('#twitter_request_auth').click(function(){
 		$('#twitter_result').html(loading);
 		$.get(BaseURL+"?page=twitteroauth", function (data){window.open(data)}).complete(function() {
-			$('#twitter_result').html('<t><b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this.</t><br /><input type="text" name="twitter_pin" id="twitter_pin">');
+			$('#twitter_result').html('<t><b>Step 2</b?:<br />Please fill below your PIN-number that twitter has given you and validate this.</t><br /><input type="text" name="twitter_pin" id="twitter_pin" />');
 		});
 		$(this).replaceWith('<input type="button" id="twitter_verify_pin" value="<t>Validate PIN</t>">');
 	});
@@ -626,9 +517,11 @@ function initializeUserPreferencesScreen() {
 } // initializeUserPreferencesScreen
 
 
-/*
+/**
  * Some checkboxes behave as an 'hide/show' button for extra settings
  * we want to add the behaviour to those buttons
+ *
+ * @returns void
  */
 function attachEnablerBehaviour() {
     $(".enabler").each(function(){
@@ -645,20 +538,8 @@ function attachEnablerBehaviour() {
 } // attachEnablerBehaviour
 
 
-$(document).ready(function() {
-// console.time("4th-ready");
-	//ready
-	var BaseURL = createBaseURL();
-	var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
-	$("#usermanagementtabs").tabs();
-	$("#editsettingstab").tabs();
-	attachEnablerBehaviour();
-	initializeUserPreferencesScreen();
-// console.timeEnd("4th-ready");
-});
-
 // Regel positie en gedrag van sidebar (fixed / relative)
-$().ready(function() {
+function attachSidebarBehaviour() {
 // console.time("5th-ready");
 	//ready
 	$('#filterscroll').bind('change', function() {
@@ -671,7 +552,7 @@ $().ready(function() {
 	var scrolling = $.cookie("scrolling");
 	toggleScrolling(scrolling);
 // console.timeEnd("5th-ready");
-});
+} // attachSidebarBehaviour
 
 function toggleScrolling(state) {
 	if (state == true || state == 'true') {
@@ -693,7 +574,7 @@ function getSidebarState() {
 	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '', expires: $COOKIE_EXPIRES, domain: '$COOKIE_HOST' });
 }
 
-$(function(){
+function attachSidebarVisibility() {
 // console.time("6th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
@@ -710,7 +591,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("6th-ready");
-});
+} // attachSidebarVisibility
 
 function toggleSidebarItem(id) {
 	var hide = $(id).next();
@@ -722,30 +603,52 @@ function toggleSidebarItem(id) {
 }
 
 // Geavanceerd zoeken op juiste moment zichtbaar / onzichtbaar maken
-$(function(){
+function attachAdvancedSearchBehaviour() {
 // console.time("7th-ready");
 	//ready
 	$("input.searchbox").focus(function(){
 		if($("form#filterform .advancedSearch").is(":hidden")) {
-			toggleSidebarPanel('.advancedSearch');
+
+            toggleSidebarPanel('.advancedSearch');
+
+            if (!$('div#tree').data('dynatree')) {
+                attachDateSortBehaviour();
+                initSliders();
+                initializeCategoryTree();
+
+                $("input[name='search[unfiltered]']").prop('checked') ? $("div#tree").hide() : $("div#tree").show();
+            } // if
 		}
+
+        /*
+         * Make sure that an 'enter' actually submits the searchform
+         */
+        $("#filterform input").keypress(function (e) {
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                $('form#filterform').find('input[type=submit].default').click();
+                return false;
+            } else {
+                return true;
+            }
+        });
 	});
 
-	$("input[name='search[unfiltered]']").attr('checked') ? $("div#tree").hide() : $("div#tree").show();
 	$("input[name='search[unfiltered]']").click(function() {
-		if($("div#tree").is(":visible")) {
+		if($("input[name='search[unfiltered]']").prop('checked')) {
 			$("div#tree").hide();
 			$("ul.clearCategories label").html('<t>Use categories</t>');
 		} else {
 			$("div#tree").show();
 			$("ul.clearCategories label").html("<t>Don't use categories</t>");
 		}
+
+        return true;
 	});
 // console.timeEnd("7th-ready");
-});
+} // attachAdvancedSearchBehaviour()
 
 // Pas sorteervolgorde aan voor datum
-$(function(){
+function attachDateSortBehaviour() {
 // console.time("8th-ready");
 	//ready
 	$("ul.sorting input").click(function() {
@@ -756,7 +659,7 @@ $(function(){
 		}
 	});
 // console.timeEnd("8th-ready");
-});
+} // attachDateSortBehaviour
 
 // sidebarPanel zichtbaar maken / verbergen
 function toggleSidebarPanel(id) {
@@ -777,15 +680,36 @@ function toggleSidebarPanel(id) {
 }
 
 // SabNZBd knop; url laden via ajax (regel loading en succes status)
-function downloadSabnzbd(id,url) {
+function downloadSabnzbd(id,url, dltype) {
 	$(".sab_"+id).removeClass("succes").addClass("loading");
 	
-	/* This is a cross-domain request, so success will never be called */
-	$.get(url, function(data, textStatus, jqXHR) {
-		$(".sab_"+id).removeClass("loading").addClass("succes");
-	});
-	
-	setTimeout( function() { $(".sab_"+id).removeClass("loading").addClass("succes"); }, 2000);
+	/*
+	 * Get the URL, do not rely on the result handler always
+	 * being called because in some cases (eg: client-sabnzbd)
+	 * it is a cross-domain request and will never be called
+	 */
+    // post de data
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: function(data) {
+            if (data.result == "success") {
+                $(".sab_"+id).removeClass("loading").addClass("succes");
+            } else {
+                $(".sab_"+id).removeClass("loading").addClass("failure");
+            } // else
+        } // success
+    }); // ajax call om de form te submitten
+
+    /*
+     * with client-sabnzbd we ask the browser to download a specific url,
+     * so we cannot keep track if this succeeds or not. Therefore,
+     * we just always set it to green
+     */
+	if (dltype == 'client-sabnzbd') {
+    	setTimeout( function() { $(".sab_"+id).removeClass("loading").addClass("succes"); }, 1000);
+    } // if
 }
 
 // Voorzie de span.newspots van link naar nieuwe spots binnen het filter
@@ -825,36 +749,80 @@ function multinzb() {
 	}
 }
 
-function uncheckMultiNZB() {
-	$("table.spots input[type=checkbox]").attr("checked", false);
-	$('div.notifications').fadeOut();
-}
-
 function checkMultiNZB() {
-	if($("tr.active input[type=checkbox]").is(":checked")) {
-		$("tr.active input[type=checkbox]").attr('checked', false);
+	if($("tr.active td.multinzb input[type=checkbox]").is(":checked")) {
+		$("tr.active td.multinzb input[type=checkbox]").attr('checked', false);
 		multinzb()
 	} else {
-		$("tr.active input[type=checkbox]").attr('checked', true);
+		$("tr.active td.multinzb input[type=checkbox]").attr('checked', true);
 		multinzb()
 	}
 }
 
-function downloadMultiNZB() {
+function toggleAllMultiNzb() {
+    var val = $('th.multinzb input[type=checkbox]').attr('checked');
+    if (typeof val == "undefined") {
+        val = false;
+    } // if
+
+    $('td.multinzb input[type=checkbox]').each(function() {
+        $(this).attr('checked', val);
+    });
+    multinzb();
+} // toggleAllMultinzb
+
+
+function downloadMultiNZB(dltype) {
 	var count = $('td.multinzb input[type="checkbox"]:checked').length;
 	if(count > 0) {
-		var url = '?page=getnzb';
+        /*
+         * with client-sabnzbd we override to display as we cannot send
+         * multiple NZB files to the server just yet
+         */
+        if (dltype == 'client-sabnzbd' || dltype == 'disable') {
+            dltype = 'display';
+        } // if
+
+		var url = '?page=getnzb&action=' + dltype;
 		$('td.multinzb input[type=checkbox]:checked').each(function() {
 			url += '&messageid%5B%5D='+$(this).val();
 		});
-		window.location = url;
-		$("table.spots input[type=checkbox]").attr("checked", false);
-		multinzb();
+
+        /*
+         * Add loading to all NZB's being downloaded
+         */
+        $(".sabnzbd-button").removeClass("succes").addClass("loading");
+
+        if (dltype != 'display') {
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(data) {
+                    if (data.result == "success") {
+                        $(".sabnzbd-button").removeClass("loading").addClass("succes");
+                    } else {
+                        $(".sabnzbd-button").removeClass("loading").addClass("failure");
+                    } // else
+
+                    $("table.spots input[type=checkbox]").attr("checked", false);
+                    multinzb();
+                } // success
+            }); // ajax call om de form te submitten
+        } else {
+            window.location.href = url;
+
+            $(".sabnzbd-button").removeClass("loading").addClass("succes");
+            $("table.spots input[type=checkbox]").attr("checked", false);
+            multinzb();
+        }
+
+
 	}
 }
 
 // Toggle filter visibility
-$(function(){
+function attachFilterVisibility() {
 // console.time("9th-ready");
 	//ready
 	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
@@ -872,7 +840,7 @@ $(function(){
 		});
 	}
 // console.timeEnd("9th-ready");
-});
+} // attachFilterVisibility
 
 function toggleFilter(id) {
 	$(id).parent().click(function(){ return false; });
@@ -898,11 +866,11 @@ function toggleFilter(id) {
 }
 
 // Maintenance buttons
-$(function(){
+function attachMaintenanceButtonsBehaviour() {
 	$("ul.maintenancebox a.retrievespots").click(function(){return false});
 	$("ul.maintenancebox a.erasedownloads").click(function(){return false});
 	$("ul.maintenancebox a.markasread").click(function(){return false});
-});
+} // attachMaintenanceButtionsBehaviour
 
 function retrieveSpots() {
 	var url = $("ul.maintenancebox a.retrievespots").attr("href");
@@ -915,7 +883,7 @@ function retrieveSpots() {
 }
 
 function eraseDownloads() {
-	var url = $("ul.maintenancebox a.erasedownloads").attr("href");
+    var url = $("ul.maintenancebox a.erasedownloads").attr("href");
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
 	$.get(url, function(data) {
@@ -934,6 +902,14 @@ function markAsRead() {
 	});
 }
 
+/**
+ * Submits a form using AJAX and call a user-defined callback
+ * when the post was succesful
+ *
+ * @param url
+ * @param tbutton
+ * @param cb
+ */
 function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	var formdata = $(tbutton).attr("name") + "=" + $(tbutton).val();  
 	formdata = $(tbutton.form).serialize() + "&" + formdata;
@@ -941,20 +917,19 @@ function ajaxSubmitFormWithCb(url, tbutton, cb) {
 	// post de data
 	$.ajax({
 		type: "POST",
-		url: url, // '?page=editfilter',
-		dataType: "html",
+		url: url, 
+		dataType: "json",
 		data: formdata,
-		success: function(xml) {
+		success: function(data) {
 			// alert(xml);
-			cb(xml);
+			cb(data);
 		} // success
 	}); // ajax call om de form te submitten
 } // ajaxSubmitFormWithCb
 
-function requestNewUserApiKeyCbHandler(xml) {
-	var result = $(xml).find('newapikey').text();
 
-	$(".apikeyinputfield").val(result);
+function requestNewUserApiKeyCbHandler(data) {
+	$(".apikeyinputfield").val(data.data.apikey);
 } // requestNewUserApiKeyCbHandler
 
 function userLogout() {
@@ -964,391 +939,28 @@ function userLogout() {
         type: "GET",
         url: url,
 		async: false,
-        dataType: "xml",
+        dataType: "json",
         success: function(msg) {
 			window.location.reload();
 		}
 	});
 } // userLogout
 
-// SabNZBd actions
-function sabBaseURL() {
-	var apikey = $("div.sabnzbdPanel input.apikey").val();
-	var sabBaseURL = createBaseURL()+'?page=nzbhandlerapi&nzbhandlerapikey='+apikey;
-	return sabBaseURL;
-}
-
-function sabActions(start,limit,action,slot) {
-	var baseURL = sabBaseURL();
-	
-	if(action == 'pause') {
-		var url = baseURL+'&action=pause&id'+slot;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'resume') {
-		var url = baseURL+'&action=resume&id'+slot;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'speedlimit') {
-		var limit = $("td.speedlimit input[name=speedLimit]").val();
-		var url = baseURL+'&action=setspeedlimit&limit='+limit;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'up') {
-		var url = baseURL+'&action=moveup&id='+slot;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'down') {
-		var url = baseURL+'&action=movedown&id='+slot;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'delete') {
-		var url = baseURL+'&action=delete&id='+slot;
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else 	if(action == 'pausequeue') {
-		var url = baseURL+'&action=pausequeue';
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	} else if(action == 'resumequeue') {
-		var url = baseURL+'&action=resumequeue';
-		$.get(url, function(){
-			updateSabPanel(start,limit);
-		});
-	}
-}
 
 // Text toevoegen aan id (Smiley's)
 function addText(text,element_id) {
-	document.getElementById(element_id).value += text;
-	document.getElementById(element_id).focus();
-}
-
-function drawGraph(currentSpeed,interval) {
-	var numXLabels = 8;
-	var numYLabels = 5;
-
-	if($("table.sabGraphData tbody > tr").size() == 1) {
-		// maak juiste hoeveelheid data rijen aan (afhankelijk van numXLabels
-		$("table.sabGraphData").empty();
-		i = 0;
-		for (i = 0; i <= numXLabels; i++) {
-			$("table.sabGraphData").append("<tr><td>0.00</td></tr>");
-		}
-	}
-	// vul de juiste rijen met de juiste data
-	if($("table.sabGraphData td:empty").size() != 0) {
-		$("table.sabGraphData td:empty").first().html(currentSpeed);
-	} else {
-		$("table.sabGraphData td").first().remove();
-		$("table.sabGraphData").append("<tr><td>"+currentSpeed+"</td></tr>");
-	}
-
-	var elem = $("canvas#graph");
-	elem.width = $("canvas#graph").width();
-	elem.height = $("canvas#graph").height();
-	var offset = {
-		"top": 6,
-		"right": 6,
-		"bottom": 18, 
-		"left": 30
-	};
-	var graph = {
-		"width": elem.width - offset.right - offset.left,
-		"height": elem.height - offset.bottom - offset.top
-	};
-	var axisSpacing = {
-		"x": 8,
-		"y": 6
-	};
-	var intervalWidth = (elem.width - offset.left - offset.right) / numXLabels;
-
-	var context = elem[0].getContext("2d");
-
-	var speed = new Array();
-	$("table.sabGraphData td").each(function(){
-		speed.push({
-			"count": $(this).index(),
-			"value": $(this).text()
-		});
-	});
-	var maxspeed = 0;
-	var i = 0;
-	for (i = 0; i <= numXLabels; i++) {
-		if(Math.round(speed[i].value) >= Math.round(maxspeed)) {
-			var maxspeed = speed[i].value;
-		}
-	};
-
-	var speedAxis = new Array();
-	var i = 0;
-	for (i = 0; i <= numYLabels; i++) {
-		speedAxis.push({
-			"count": i, 
-			"posx": offset.left - axisSpacing.x, 
-			"posy": (elem.height-offset.bottom-offset.top) - (elem.height-offset.bottom-offset.top) * i/numYLabels + offset.top, 
-			"value": Math.round(maxspeed * i/numYLabels)
-		});
-	};
-
-	var interval = interval / 1000;
-	var timeAxis = new Array();
-	var i = 0;
-	for (i = 0; i <= numXLabels; i++) {
-		timeAxis.push({
-			"count": i, 
-			"posx": intervalWidth * i + offset.left, 
-			"posy": elem.height - offset.bottom + axisSpacing.y, 
-			"value": interval * i
-		});
-	};
-
-	context.clearRect(0, 0, elem.width, elem.height);
-
-	if(context) {
-		// draw graph background
-		context.shadowColor = "#777";
-		context.shadowBlur = 0;
-		context.fillStyle = "#eee";	
-		context.fillRect(offset.left, offset.top, graph.width, graph.height);
-
-		// draw axis
-		context.fillStyle = "#000";	
-		context.strokeStyle = "#fff";
-		context.lineWidth = 2;
-
-		context.shadowBlur = 3;
-		context.beginPath();
-		context.moveTo(offset.left, offset.top);
-		context.lineTo(offset.left, elem.height - offset.bottom);
-		context.lineTo(elem.width - offset.right, elem.height - offset.bottom);
-		context.stroke();
-
-		// draw axis labels
-		context.shadowBlur = 0;
-		$.each(speedAxis, function(i, value) {
-			context.save();
-
-			context.beginPath();
-			context.moveTo(offset.left - 3, value.posy);
-			context.lineTo(elem.width - offset.right, value.posy);
-			context.stroke();
-
-			if(maxspeed != 0 || value.count == 0) {
-				context.shadowBlur = 0;
-				context.textBaseline = "middle";
-				context.textAlign = "end";
-				context.fillText(value.value, value.posx, value.posy);
-			}
-
-			context.restore();
-		});
-		$.each(timeAxis, function(i, value) {
-			context.save();
-
-			context.beginPath();
-			context.moveTo(value.posx, elem.height - offset.bottom);
-			context.lineTo(value.posx, elem.height - offset.bottom + 3);
-			context.stroke();
-
-			context.textBaseline = "top";
-			context.textAlign = "center";
-			context.fillText(value.value, value.posx, value.posy);
-
-			context.restore();
-		});
-
-		// draw graph
-		context.fillStyle = "#219727";
-		context.shadowBlur = 3;
-
-		var speedData = new Array();
-		var i = 0;
-		for (i = 0; i <= numXLabels; i++) {
-			speedData.push({
-				"count": i, 
-				"posx": offset.left + i*intervalWidth, 
-				"posy": (graph.height + offset.top) - (speed[i].value / maxspeed) * graph.height
-			});
-		};
-
-		context.beginPath();
-		context.moveTo(offset.left, elem.height - offset.bottom);
-		$.each(speedData, function(i, value) {
-			context.lineTo(value.posx, value.posy);
-		});
-		context.lineTo(offset.left + graph.width, offset.top + graph.height);
-		context.lineTo(offset.left, offset.top + graph.height);
-		context.fill();
-		context.stroke();
-	}
-}
-
-function updateSabPanel(start,limit) {
-	var baseURL = sabBaseURL();
-	var url = baseURL+'&action=getstatus';
-
-	$.getJSON(url, function(json){
-		var queue = json.queue;
-
-		if(queue.paused) {var state = "resume";} else {var state = "pause";}
-		$("table.sabInfo td.state").html("<strong>"+queue.status+"</strong> (<a class='state' title='"+state+"'>"+state+"</a>)");
-		$("table.sabInfo td.state a.state").click(function(){
-			if(timeOut) {clearTimeout(timeOut)};
-			sabActions(start,limit,state+"queue");
-		});
-		$("table.sabInfo td.diskspace").html("<strong title='<t>Free space (complete)</t>'>"+queue.freediskspace+"</strong> / <strong title='<t>Totale space (complete)</t>'>"+queue.totaldiskspace+"</strong> <t>GB</t>");
-		$("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1024).toFixed(2)+"</strong> <t>KB/s</t>");
-		$("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label><t>KB/s</t></label>");
-		$("td.speedlimit input[name=speedLimit]").focus(function(){
-			$(this).addClass("hasFocus");
-		});
-		$("td.speedlimit input[name=speedLimit]").keyup(function(e) {
-			if(e.keyCode == 13) {
-				if(timeOut) {clearTimeout(timeOut)}; 
-				sabActions(start,limit,'speedlimit');
-			}
-		});
-		$("td.speedlimit input[name=speedLimit]").blur(function(){
-			if(timeOut) {clearTimeout(timeOut)}; 
-			sabActions(start,limit,'speedlimit');
-		});
-		
-		var hours = Math.floor(queue.secondsremaining / 3600);
-		var minutes = pad_zeros(Math.floor((queue.secondsremaining - (hours * 3600)) / 60),2);
-		var seconds = pad_zeros((queue.secondsremaining % 60),2);
-		
-		$("table.sabInfo td.timeleft").html("<strong>"+hours+":"+minutes+":"+seconds+"</strong>");
-		
-		var eta = "-";
-		if (queue.secondsremaining != 0)
-		{
-			var estimate = new Date();
-			estimate.setSeconds(estimate.getSeconds() + queue.secondsremaining); 
-			eta = estimate.toLocaleString();
-		}
-		
-		$("table.sabInfo td.eta").html("<strong>"+eta+"</strong>");
-		$("table.sabInfo td.mb").html("<strong>"+queue.mbremaining+"</strong> / <strong>"+queue.mbsize+"</strong> <t>MB</t>");
-
-		// make sure we don't try to show more items than available in the queue
-		while (start > queue.nrofdownloads)	{start -= limit;}
-		// a start value lower than one is invalid
-		if (start < 1) {start = 1;}
-		
-		var end = start+limit-1;
-		
-		$("table.sabQueue").empty();
-		if(queue.nrofdownloads == 0) {
-			$("table.sabQueue").html("<tr><td class='info'><t>No items in queue</t></td></tr>");
-		} else {
-			var index = 0;
-			$.each(queue.slots, function(){
-				var slot = this;
-				
-				index++;
-				if ((index >= start) && (index <= end))
-				{
-					if(slot.percentage == 0) {var progress = " empty"} else {var progress = "";}
-					
-					$("table.sabQueue").append("<tr class='title "+index+"'><td><span class='move'><a class='up' title='<t>Up</t>'></a><a class='down' title='<t>Down</t>'></a></span><span class='delete'><a title='<t>Delete from queue</t>'></a></span><strong>"+index+".</strong><span class='title'>"+slot.filename+"</span></td></tr>");
-					$("table.sabQueue").append("<tr class='progressBar'><td><div class='progressBar"+progress+"' title='"+slot.mbremaining+" / "+slot.mbsize+" MB' style='width:"+slot.percentage+"%'></div></td></tr>");
-					
-					$("table.sabQueue tr."+index+" a.up").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
-						sabActions(start,limit,'up', slot.id);
-					});
-					$("table.sabQueue tr."+index+" a.down").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
-						sabActions(start,limit,'down', slot.id);
-					});
-					$("table.sabQueue tr."+index+" span.delete a").click(function(){
-						if(timeOut) {clearTimeout(timeOut)}; 
-						if(start+1 > queue.nrofdownloads-1) {
-							sabActions(start-(limit-start),limit-(limit-start),'delete', slot.id);
-						} else {
-							sabActions(start,limit,'delete', slot.id);
-						}
-					});
-				}
-			});
-		}
-
-		if(queue.nrofdownloads != 0 && queue.nrofdownloads > end) {
-			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
-		} else if(queue.nrofdownloads != 0 && end > queue.nrofdownloads) {
-			if(queue.nrofdownloads == 1) {
-				$("table.sabQueue").append("<tr class='nav'><td><t>Show 1 result</t></td></tr>");
-			} else {
-				$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results</t></td></tr>".replace('%1', start).replace('%2', queue.nrofdownloads).replace('%3', queue.nrofdownloads));
-			}
-		} else if(queue.nrofdownloads != 0 && end == queue.nrofdownloads) {
-			$("table.sabQueue").append("<tr class='nav'><td><t>Show %1 till %2 from a total of %3 results/t></td></tr>".replace('%1', start).replace('%2', end).replace('%3', queue.nrofdownloads));
-		}
-
-		if(queue.nrofdownloads == 1) {
-			$("table.sabQueue tr.title td span.move").hide();
-		} else {
-			if (start == 1){
-				$("table.sabQueue tr.title td span.move").first().css('padding', '2px 4px 3px 0').children("a.up").hide();
-			}
-			if (end >= queue.nrofdownloads){
-				$("table.sabQueue tr.title td span.move").last().css('padding', '2px 4px 3px 0').children("a.down").hide();
-			}
-		}
-
-		if(start > 1) {
-			$("table.sabQueue tr.nav td").prepend("<a class='prev' title='<t>Previous</t>'>&lt;&lt;</a> ");
-		}
-		if(queue.nrofdownloads > end) {
-			$("table.sabQueue tr.nav td").append(" <a class='next' title='<t>Next</t>'>&gt;&gt;</a>");
-		}
-
-		$("table.sabQueue tr.nav a").click(function(){
-			if(timeOut) {clearTimeout(timeOut)}
-			if($(this).hasClass("prev")) {
-				updateSabPanel(start-limit,limit);
-			} else if($(this).hasClass("next")) {
-				updateSabPanel(start+limit,limit);
-			}
-		});
-
-		$("tr.title td span.title").mouseenter(function(){
-			$(this).addClass("hover");
-		}).mouseleave(function(){
-			if($(this).hasClass("hover")) {
-				if(timeOut) {clearTimeout(timeOut)}
-				$(this).removeClass("hover");
-				updateSabPanel(start,limit);
-			}
-		});
-
-		var interval = 5000;
-		drawGraph(queue.bytepersec/1024, interval);
-
-		var timeOut = setTimeout(function(){
-			if($("div.sabnzbdPanel").is(":visible") && !($("td.speedlimit input[name=speedLimit]").hasClass("hasFocus")) && !($("tr.title td span.title").hasClass("hover"))) {
-				updateSabPanel(start,limit);
-			}
-		}, interval);
-	});
+    document.getElementById(element_id).value += text;
+    document.getElementById(element_id).focus();
 }
 
 /*
  * Haalt uit een bestaande filter URL de opgegeven filter via
  * string replacement
  */
-function removeFilter(href, fieldname, operator, value) {
+function removeFilter(href, fieldname, operator, booloper, value) {
 	href = unescape(href).replace(/\+/g, ' ');
 
-	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + value, '');
+	return href.replace('search[value][]=' + fieldname + ':' + operator + ':' + booloper + ':' + value, '');
 } // removeFilter	
 
 /*
@@ -1373,7 +985,7 @@ function submitFilterBtn(searchform) {
 		$('<input>').attr({
 			type: 'hidden',
 			name: 'search[value][]',
-			value: rad_val + ':=:' + searchform.elements['search[text]'].value
+			value: rad_val + ':=:DEF:' + searchform.elements['search[text]'].value
 		}).appendTo('form#filterform');
 	} // if
 	
@@ -1398,10 +1010,10 @@ function submitFilterBtn(searchform) {
 	
 	// als de slider niet gewijzigd is van de default waardes, dan submitten
 	// we heel de slider niet
-	if ($('#min-filesize').val() == 'filesize:>:0') { 
+	if ($('#min-filesize').val() == 'filesize:>:DEF:0') {
 		$('form#filterform').find('#min-filesize').remove();
 	} // if
-	if ($('#max-filesize').val() == 'filesize:<:375809638400') { 
+	if ($('#max-filesize').val() == 'filesize:<:DEF:274877906944') {
 		$('form#filterform').find('#max-filesize').remove();
 	} // if
 	
@@ -1458,8 +1070,8 @@ function bindSelectedSortableFilter() {
 					url: '?page=editfilter',
 					dataType: "html",
 					data: formdata,
-					success: function(xml) {
-						// alert(xml);
+					success: function(data) {
+						// alert(data);
 					} // success
 				}); // ajax call om de form te submitten
 			}
@@ -1536,7 +1148,119 @@ function categorySelectChanged() {
 	loadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc'}, true, true);
 	loadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd'}, true, true);
 } // categorySelectChanged
- 
+
+/*
+ * Function to load the ?page=catsjson data into an
+ * selectbox given by the system
+ */
+function spotEditLoadCategoryIntoSelectbox(selectId, titleElm, data, async, doClear, subcategory) {
+	if (typeof subcategory == "undefined") { subcategory = new Array(); }
+
+	var $selectbox = $("#" + selectId);
+	if (titleElm) {
+		var $titleElm = $("#" + titleElm);
+	} else {
+		var $titleElm = null;
+	} // else
+	if ($selectbox.data('fromurl') == $.toJSON(data)) {
+		return ;
+	} // if
+
+	$.ajax(
+		{type: "GET",
+		url: "?page=catsjson",
+		data: data,
+		async: async,
+		dataType: "json",
+		success: function(msg) {
+			$selectbox.data('fromurl', $.toJSON(data));
+			var htmlData = '';
+
+			if ($titleElm) {
+				$titleElm.text(msg.title);
+			} else {
+				htmlData += '<optgroup label="' + msg.title + '">';
+			} // else
+
+			if (doClear) {
+				$selectbox.empty();
+			} // if
+
+			$.each(msg.items, function(index, item) {
+				var selected = "";
+				for (var i=0; i < subcategory.length; i++) {
+					if (subcategory[i] == index) {
+						selected = " selected=\"selected\"";
+						break;
+					} // if
+				} // for
+
+				htmlData += '<option' + selected + ' value="' + index + '">' + item + '</option>';
+			}); // $.each
+
+			if (!$titleElm) {
+				htmlData += '</optgroup>';
+			} // if
+
+			$selectbox.append(htmlData);
+			$selectbox[0].selected = 0;
+
+			if ($selectbox[0].options.length < 2) {
+				if ($titleElm) { $titleElm.hide(); }
+				$selectbox.hide();
+			} else {
+				if ($titleElm) { $titleElm.show(); }
+				$selectbox.show();
+			} // else
+		},error: function() {
+			alert("Failed to load data");
+		}
+	}); // $.ajax
+} // spotEditLoadCategoryIntoSelectbox
+
+function spotEditCategorySelectChanged(category, subcata, subcatb, subcatc, subcatd, subcatz) {
+	var itm = $("#spotcategoryselectbox")[0];
+
+	if (typeof subcatz != "undefined") {
+		// remove leading z and trailing |
+		subcatz = subcatz.slice(1,-1);
+	}
+
+	spotEditLoadCategoryIntoSelectbox('subcatzselectbox', 'txtsubcatz', {category: itm.value, subcatz: subcatz, rendertype: 'subcatz'}, false, true, new Array(subcatz));
+	var subcatzValue = $("#subcatzselectbox")[0].value;
+
+	// update the select boxes with the correct selections
+	var subcataValue = $("#subcataselectbox")[0].value;
+	subcataArray = makeSubcategoryArray(category, subcatzValue, subcata);
+	// don't select items in category b and c when switching to or from type Book.
+	if ((category == 0) && (subcatz == "2" || subcatzValue == 2)) { 
+		subcatbArray = makeSubcategoryArray(category, subcatz, subcatb);
+		subcatcArray = makeSubcategoryArray(category, subcatz, subcatc);
+	}
+	else
+	{
+		subcatbArray = makeSubcategoryArray(category, subcatzValue, subcatb);
+		subcatcArray = makeSubcategoryArray(category, subcatzValue, subcatc);
+	}
+	subcatdArray = makeSubcategoryArray(category, subcatzValue, subcatd);
+
+	spotEditLoadCategoryIntoSelectbox('subcataselectbox', 'txtsubcata', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcata_old'}, true, true, subcataArray);
+	spotEditLoadCategoryIntoSelectbox('subcatbselectbox', 'txtsubcatb', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatb_old'}, true, true, subcatbArray);
+	spotEditLoadCategoryIntoSelectbox('subcatcselectbox', 'txtsubcatc', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatc_old'}, true, true, subcatcArray);
+	spotEditLoadCategoryIntoSelectbox('subcatdselectbox', 'txtsubcatd', {category: itm.value, subcatz: subcatzValue, rendertype: 'subcatd_old'}, true, true, subcatdArray);
+} // spotEditCategorySelectChanged
+
+function makeSubcategoryArray(category, subcatz, subcat)
+{
+	if (typeof subcat == "undefined") { return new Array(); }
+
+	var subcatarray = subcat.split("|");
+	for (var i=0; i < subcatarray.length-1; i++) {
+		subcatarray[i] = 'cat' + category + "_z" + subcatz + "_" + subcatarray[i];
+	}
+	return subcatarray;
+} // makeSubcategoryArray
+
 function downloadMappingTypeChanged() {
 	var itm = $("#spotcategoryselectbox")[0];
 	var $selectbox = $('#subcataselectbox');
@@ -1554,7 +1278,7 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 	var formData = 'editfilterform[xsrfid]=' + escape(xsrf);
 	formData += '&editfilterform[filterid]=9999';
 	formData += '&editfilterform[tree]=';
-	formData += '&editfilterform[valuelist]=' + escape(filterType) + ":=:" + escape(filterValue);
+	formData += '&editfilterform[valuelist]=' + escape(filterType) + ":=:DEF:" + escape(filterValue);
 	formData += '&editfilterform[sorton]=date';
 	formData += '&editfilterform[sortorder]=desc';
 	formData += '&editfilterform[title]=' + escape(filterName);
@@ -1565,12 +1289,10 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 	$.ajax({
 		type: "POST",
 		url: '?page=editfilter',
-		dataType: "xml",
+		dataType: "json",
 		data: formData,
-		success: function(xml) {
-			var result = $(xml).find('result').text();
-			
-			if (result == 'success') {
+		success: function(data) {
+			if (data.result == 'success') {
 				$("." + addElementClass).remove();
 			} // if
 		} // success()
@@ -1581,14 +1303,136 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 function applyTipTip(){
 	var categories = $(this).data('cats');
 	if(!categories) return;
-	var $dl = $("<ul/>")
+	var $dl = $("<ul/>");
 	var list = $.map(categories, function(value, key){
 		if(value) {
 			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
-		}
+		} else {
+            return '';
+        } // else
 	});
 
 	$dl.append.apply($dl, list);
 	$(this).attr("title", "");
 	$(this).tipTip({defaultPosition: 'bottom', maxWidth: 'auto', content: $dl});
 }
+
+function findNearest(possibleValues, realValues, includeLeft, includeRight, value) {
+    var nearest = null;
+    var realValue = null;
+    var diff = null;
+    for (var i = 0; i < possibleValues.length; i++) {
+        if ((includeLeft && possibleValues[i] <= value) || (includeRight && possibleValues[i] >= value)) {
+            var newDiff = Math.abs(value - possibleValues[i]);
+            if (diff == null || newDiff < diff) {
+                nearest = possibleValues[i];
+                realValue = realValues[i];
+                diff = newDiff;
+            }
+        }
+    }
+    return [nearest, realValue];
+}
+
+function initSliders() {
+    var _1MB = 1024 * 1024;
+    var _1GB = 1024 * 1024 * 1024;
+
+    var realValues     = [0, _1MB, _1MB * 10, _1MB * 50, _1MB * 512, _1GB, _1GB * 4, _1GB * 6, _1GB * 8, _1GB * 12, _1GB * 16, _1GB * 24, _1GB * 32, _1GB * 48, _1GB * 64, _1GB * 96, _1GB * 128, _1GB * 256];
+    var possibleValues = [0,    1,         2,         3,          6,   10,       11,       12,       13,        14,        15,        16,        17,        18,        19,        20,         25,         30];
+    if (realValues.length != possibleValues.length) {
+        alert('error in code: possibleValues and realValues array length do not match up');
+    } // if
+
+    var max = possibleValues[possibleValues.length - 1];
+
+    /*
+     * convert the current sliderMinFileSize and sliderMaxFileSize
+     * to values appropriate in the system
+     */
+    var convertedSliderMinFileSize = findNearest(realValues, possibleValues, true, false, sliderMinFileSize)[1];
+    var convertedSliderMaxFileSize = findNearest(realValues, possibleValues, true, false, sliderMaxFileSize)[1];
+
+    var slider = $( "#slider-filesize" ).slider({
+        range: true,
+        step: 1,
+        min: 0,
+        max: max,
+        values: [ convertedSliderMinFileSize, convertedSliderMaxFileSize ],
+        slide: function( event, ui ) {
+            /*
+             * code copied from: http://stackoverflow.com/questions/967372/jquery-slider-how-to-make-step-size-change
+             */
+            var includeLeft = event.keyCode != $.ui.keyCode.RIGHT;
+            var includeRight = event.keyCode != $.ui.keyCode.LEFT;
+            var fixedValues = findNearest(possibleValues, realValues, includeLeft, includeRight, ui.value);
+
+//            console.log('findNearest(' + ui.value + ') => ' + fixedValues[0] + ' (' + fixedValues[1] + ')');
+
+            if (ui.value == ui.values[0]) {
+                slider.slider('values', 0, fixedValues[0]);
+                $( "#min-filesize" ).val( "filesize:>:DEF:" + fixedValues[1]);
+                sliderMinFileSize = fixedValues[1];
+            } else {
+                slider.slider('values', 1, fixedValues[0]);
+                $( "#max-filesize" ).val( "filesize:<:DEF:" + fixedValues[1]);
+                sliderMaxFileSize = fixedValues[1];
+            } // else
+
+            $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
+
+            return false;
+            }
+        });
+
+    $( "#slider-reportcount" ).slider({
+        range: 'max',
+        min: 0,
+        max: 21,
+        step: 1,
+        values: [ sliderMaxReportCount ],
+        slide: function( event, ui ) {
+            $( "#max-reportcount" ).val( "reportcount:<=:" + ui.values[0]);
+
+            if (ui.values[0] == 21) {
+            /* In de submit handler wordt 21 gefiltered */
+            $( "#human-reportcount" ).text( "<t>Do not filter on # reports</t>" );
+            } else {
+            $( "#human-reportcount" ).text( "<t>Maximum %1 reports</t>".replace("%1", ui.values[0]) );
+            } // if
+        }
+        });
+
+    /* Filesizes */
+    var nearestMin = findNearest(possibleValues, realValues, true, false, convertedSliderMinFileSize);
+    var nearestMax = findNearest(possibleValues, realValues, false, true, convertedSliderMaxFileSize);
+    $( "#min-filesize" ).val( "filesize:>:DEF:" + nearestMin[1]);
+    $( "#max-filesize" ).val( "filesize:<:DEF:" + nearestMax[1]);
+    $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
+
+    /* Report counts */
+    var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
+    $( "#max-reportcount" ).val( "reportcount:<=:" + reportSlideValue);
+            if (reportSlideValue == 21) {
+                $( "#human-reportcount" ).text("<t>Do not filter on # reports</t>");
+                } else {
+                $( "#human-reportcount" ).text( "<t>Maximum %1 reports</t>".replace("%1", reportSlideValue));
+                } // if
+} // initSliders
+
+// used by editsettings form
+function initDatePicker() {
+    if (typeof retrieveNewerThanDate != 'undefined') {
+        $( "#datepicker" ).datepicker({ altField: "#retrieve_newer_than",
+            dateFormat: "dd-mm-yy",
+            defaultDate: retrieveNewerThanDate,
+            dayNamesMin: ['<t>Su</t>', '<t>Mo</t>', '<t>Tu</t>', '<t>We</t>', '<t>Th</t>', '<t>Fr</t>', '<t>Sa</t>' ],
+            monthNamesShort: ['<t>Jan</t>', '<t>Feb</t>', '<t>Mar</t>', '<t>Apr</t>', '<t>May</t>', '<t>Jun</t>', '<t>Jul</t>', '<t>Aug</t>', '<t>Sep</t>', '<t>Oct</t>', '<t>Nov</t>', '<t>Dec</t>'],
+            prevText: '<t>Previous</t>',
+            nextText: '<t>Next</t>',
+            numberOfMonths: 3,
+            stepMonths: 3,
+            minDate: new Date(2009, 10, 1),
+            maxDate: "today" });
+    } // retrieveNewerThanDate
+} // initDatePicker()

@@ -18,12 +18,25 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE TABLE filtercounts");
 		$this->_dbcon->rawExec("ANALYZE TABLE users");
 		$this->_dbcon->rawExec("ANALYZE TABLE cache");
+        $this->_dbcon->rawExec("ANALYZE TABLE moderatedringbuffer");
+        $this->_dbcon->rawExec("ANALYZE TABLE usenetstate");
 	} # analyze
-	
-	/*
-	 * Converts a 'spotweb' internal datatype to a 
-	 * database specific datatype
-	 */
+
+    /*
+     * Returns a database specific representation of a boolean value
+    */
+    function bool2dt($b) {
+        if ($b) {
+            return '1';
+        } # if
+
+        return '0';
+    } # bool2dt
+
+    /*
+     * Converts a 'spotweb' internal datatype to a
+     * database specific datatype
+     */
 	function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'int(11)'; break;
@@ -56,13 +69,19 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	
 	/* checks if an index exists */
 	function indexExists($idxname, $tablename) {
-		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = '%s'", Array($idxname));
+		$q = $this->_dbcon->arrayQuery("SHOW INDEXES FROM " . $tablename . " WHERE key_name = :keyname",
+            array(
+                ':keyname' => array($idxname, PDO::PARAM_STR)
+            ));
 		return !empty($q);
 	} # indexExists
 
 	/* checks if a column exists */
 	function columnExists($tablename, $colname) {
-		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = '%s'", Array($colname));
+		$q = $this->_dbcon->arrayQuery("SHOW COLUMNS FROM " . $tablename . " WHERE Field = :fieldname",
+            array(
+                ':fieldname' => array($colname, PDO::PARAM_STR)
+            ));
 		return !empty($q);
 	} # columnExists
 

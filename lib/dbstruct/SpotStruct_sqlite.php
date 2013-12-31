@@ -18,6 +18,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE filtercounts");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE cache");
+        $this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
+        $this->_dbcon->rawExec("ANALYZE usenetstate");
 	} # analyze
 
 	/*
@@ -80,6 +82,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 				return false;
 			} # if
 		} # foreach
+
+        return true;
 	} # ftsExists
 			
 	/* creates a full text index */

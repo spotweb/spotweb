@@ -7,7 +7,7 @@ class Dao_Base_Session implements Dao_Session {
 	 * constructs a new Dao_Base_Comment object, 
 	 * connection object is given
 	 */
-	public function __construct($conn) {
+	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
 	} # ctor
 
@@ -24,9 +24,11 @@ class Dao_Base_Session implements Dao_Session {
 								s.ipaddr as ipaddr,
 								s.devicetype as devicetype
 						FROM sessions AS s
-						WHERE (sessionid = '%s') AND (userid = %d)",
-				 Array($sessionid,
-				       (int) $userid));
+						WHERE (sessionid = :sessionid) AND (userid = :userid)",
+            array(
+                ':sessionid' => array($sessionid, PDO::PARAM_STR),
+                ':userid' => array($userid, PDO::PARAM_INT)
+            ));
 		if (!empty($tmp)) {
 			return $tmp[0];
 		} # if
@@ -40,13 +42,15 @@ class Dao_Base_Session implements Dao_Session {
 	function addSession($session) {
 		$this->_conn->modify(
 				"INSERT INTO sessions(sessionid, userid, hitcount, lasthit, ipaddr, devicetype) 
-					VALUES('%s', %d, %d, %d, '%s', '%s')",
-				Array($session['sessionid'],
-					  (int) $session['userid'],
-					  (int) $session['hitcount'],
-					  (int) $session['lasthit'],
-					  $session['ipaddr'],
-					  $session['devicetype']));
+					VALUES(:sessionid, :userid, :hitcount, :lasthit, :ipaddr, :devicetype)",
+            array(
+                ':sessionid' => array($session['sessionid'], PDO::PARAM_STR),
+                ':userid' => array($session['userid'], PDO::PARAM_INT),
+                ':hitcount' => array($session['hitcount'], PDO::PARAM_INT),
+                ':lasthit' => array($session['lasthit'], PDO::PARAM_INT),
+                'ipaddr' => array($session['ipaddr'], PDO::PARAM_STR),
+                'devicetype' => array($session['devicetype'], PDO::PARAM_STR)
+            ));
 	} # addSession
 
 	/*
@@ -54,8 +58,10 @@ class Dao_Base_Session implements Dao_Session {
 	 */
 	function deleteSession($sessionid) {
 		$this->_conn->modify(
-					"DELETE FROM sessions WHERE sessionid = '%s'",
-					Array($sessionid));
+					"DELETE FROM sessions WHERE sessionid = :sessionid",
+            array(
+                ':sessionid' => array($sessionid, PDO::PARAM_STR)
+            ));
 	} # deleteSession
 
 	/*
@@ -63,8 +69,10 @@ class Dao_Base_Session implements Dao_Session {
 	 */
 	function deleteAllUserSessions($userid) {
 		$this->_conn->modify(
-					"DELETE FROM sessions WHERE userid = %d",
-					Array( (int) $userid));
+					"DELETE FROM sessions WHERE userid = :userid",
+            array(
+                ':userid' => array($userid, PDO::PARAM_INT)
+            ));
 	} # deleteAllUserSessions
 	
 	/*
@@ -72,8 +80,10 @@ class Dao_Base_Session implements Dao_Session {
 	 */
 	function deleteExpiredSessions($maxLifeTime) {
 		$this->_conn->modify(
-					"DELETE FROM sessions WHERE lasthit < %d",
-					Array(time() - $maxLifeTime));
+					"DELETE FROM sessions WHERE lasthit < :lasthit",
+            array(
+                ':lashit', array(time() - $maxLifeTime, PDO::PARAM_INT)
+            ));
 	} # deleteExpiredSessions
 
 	/*
@@ -82,9 +92,12 @@ class Dao_Base_Session implements Dao_Session {
 	function hitSession($sessionid) {
 		$this->_conn->modify("UPDATE sessions
 								SET hitcount = hitcount + 1,
-									lasthit = %d
-								WHERE sessionid = '%s'", 
-							Array(time(), $sessionid));
+									lasthit = :lasthit
+								WHERE sessionid = :sessionid",
+            array(
+                ':lasthit' => array(time(), PDO::PARAM_INT),
+                ':sessionid' => array($sessionid, PDO::PARAM_STR)
+            ));
 	} # hitSession
 	
 } # Dao_Base_Session

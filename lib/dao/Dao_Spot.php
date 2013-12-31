@@ -14,6 +14,7 @@ interface Dao_Spot {
 	function addSpots($spots, $fullSpots = array());
 	function updateSpotInfoFromFull($fullSpot);
 	function addFullSpots($fullSpots);
+	function updateSpot($fullSpot, $editor);
 	function getOldestSpotTimestamp();
 	function matchSpotMessageIds($hdrList);
 	function getSpotCount($sqlFilter);

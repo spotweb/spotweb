@@ -1,2 +1,8 @@
-# OpenSSL dummy configuration file omdat er anders geen private keys gemaakt kunnen worden
+# OpenSSL dummy configuration file, required for use with OpenSSL
+# minimalist openssl.cnf file for use with phpseclib
+
+HOME			= .
+RANDFILE		= $ENV::HOME/.rnd
+
+[ v3_ca ]
 

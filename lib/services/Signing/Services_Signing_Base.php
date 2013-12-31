@@ -1,7 +1,6 @@
 <?php
-require_once "Crypt/RSA.php";
-
 abstract class Services_Signing_Base {
+
 	/* 
 	 * We never want to create this directly
 	 */	
@@ -11,7 +10,15 @@ abstract class Services_Signing_Base {
 	/*
 	 * Create a factory method
 	 */
-	static public function newServiceSigning() {
+	static public function factory() {
+        /*
+         * Trigger the autoloader to load Crypt_RSA as
+         * we need it for
+         */
+        if (class_exists('Crypt_RSA')) {
+
+        } # if
+
 		/*
 		 * Automatically select OpenSSL if
 		 * possible
@@ -30,7 +37,7 @@ abstract class Services_Signing_Base {
 		} else {
 			return new Services_Signing_Php(); 
 		} # else
-	} # newServiceSigning
+	} # factory
 
 	/*
 	 * Actually validates the RSA signature
@@ -85,12 +92,20 @@ abstract class Services_Signing_Base {
 	function getPublicKey($privateKey) {
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-		$rsa->loadKey($privateKey);
+        $rsa->loadKey($privateKey);
+
+        /*
+         * When we load a public key where a private key should
+         * be loaded, this makes sure we can use it after all
+         */
+        if ($rsa->publicExponent == false) {
+            $rsa->publicExponent = $rsa->exponent;
+        } # if
 
 		# extract the public key
 		$publicKey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
 
-		return array('publickey' => array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes())));
+		return array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes()));
 	} # getPublicKey
 
 	/*
@@ -199,19 +214,5 @@ abstract class Services_Signing_Base {
 		
 		return $unique;
 	} # makeRandomStr
-
-	/*
-	 * Calculates the user id using hte users' publickey
-	 */		
-	public function calculateSpotterId($userKey) {
-		$userSignCrc = crc32(base64_decode($userKey));
-		
-		$userIdTmp = chr($userSignCrc & 0xFF) .
-						chr(($userSignCrc >> 8) & 0xFF ).
-						chr(($userSignCrc >> 16) & 0xFF) .
-						chr(($userSignCrc >> 24) & 0xFF);
-		
-		return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
-	} # calculateSpotterId
 	
 } # Services_Signing_Base

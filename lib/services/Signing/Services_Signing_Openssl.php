@@ -1,5 +1,4 @@
 <?php
-require_once "Crypt/RSA.php";
 
 class Services_Signing_Openssl extends Services_Signing_Base {
 	/*
@@ -9,10 +8,9 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 	private $_pubKeyCache = array();
 
 	/* 
-	 * Overwrite private constructor
-	 */
+	 * Override visibility of the constructor see GH issue #1554
+	 */	
 	public function __construct() {
-
 	} # ctor
 
 	/*
@@ -30,7 +28,7 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 			$pubKey['n'] = base64_decode($rsaKey['modulo']);
 			$pubKey['e'] = base64_decode($rsaKey['exponent']);
 
-			$openSslPubKey = openssl_get_publickey($this->seclibToOpenSsl($pubKey));
+			$openSslPubKey = openssl_pkey_get_public($this->seclibToOpenSsl($pubKey));
 			$verified = openssl_verify($toCheck, $signature, $openSslPubKey);
 			
 			# Keep caching the resource?
@@ -51,15 +49,15 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 		$rsa = new Crypt_RSA();
 		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
 			
-		$opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => $sslCnfPath));
-		openssl_pkey_export($opensslPrivKey, $privateKey, null, array('config' => $sslCnfPath));
+		$opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => realpath($sslCnfPath)));
+		openssl_pkey_export($opensslPrivKey, $privateKey, null, array('config' => realpath($sslCnfPath)));
 		$publicKey = openssl_pkey_get_details($opensslPrivKey);
 		$publicKey = $publicKey['key'];
 		openssl_free_key($opensslPrivKey);
 
 		return array('public' => $publicKey,
 					 'private' => $privateKey);
-	} # createPrivateKey 
+	} # createPrivateKey
 
 	/*
 	 * Helper function for parsing ASN.1
@@ -74,8 +72,8 @@ class Services_Signing_Openssl extends Services_Signing_Base {
             if ($component < $l) break;
         }
         return $i;
-	} 
-	
+	}
+
 	/*
 	 * Helper function for parsing ASN.1
 	 */

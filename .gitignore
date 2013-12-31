@@ -14,4 +14,7 @@ tests/*.nzb
 .settings/
 .DS_Store
 dbsettings.inc.php
-
+reallymyownsettings.php
+.idea
+reallymyownsettings.php
+cache/

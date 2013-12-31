@@ -1,27 +1,30 @@
 <?php
+
 class SpotPage_postspot extends SpotPage_Abs {
 	private $_spotForm;
 	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
+	function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params) {
+		parent::__construct($daoFactory, $settings, $currentSession);
 		$this->_spotForm = $params['spotform'];
 	} # ctor
 
 	function render() {
-		$formMessages = array('errors' => array(),
-							  'info' => array());
+		# Make sure the result is set to 'not comited' per default
+		$result = new Dto_FormResult('notsubmitted');
 							  
 		# Validate proper permissions
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_post_spot, '');
 							  
 		# Sportparser is nodig voor het escapen van de random string
-		$spotParser = new SpotParser();
-		
-		# spot signing is nodig voor het RSA signen van de spot en dergelijke
-		$spotSigning = Services_Signing_Base::newServiceSigning();
-		
-		# creeer een default spot zodat het form altijd
-		# de waardes van het form kan renderen
+		$spotParseUtil = new Services_Format_Util();
+
+		# we need the spotuser system
+		$svcUserRecord = new Services_User_Record($this->_daoFactory, $this->_settings);
+
+        /*
+         * Create a default form so we can be sure to always be able
+         * to render the form without notices or whatever
+         */
 		$spot = array('title' => '',
 					  'body' => '',
 					  'category' => 0,
@@ -35,102 +38,69 @@ class SpotPage_postspot extends SpotPage_Abs {
 					  'newmessageid' => '',
 					  'randomstr' => '');
 		
-		# postspot verzoek was standaard niet geprobeerd
-		$postResult = array();
-		
 		/* 
 		 * bring the forms' action into the local scope for 
 		 * easier access
 		 */
 		$formAction = $this->_spotForm['action'];
 
-		# zet de page title
+		# set the page title
 		$this->_pageTitle = "spot: post";
 
-		# Make sure the anonymous user and reserved usernames cannot post content
-		$spotUser = new SpotUserSystem($this->_db, $this->_settings);
-		if (!$spotUser->allowedToPost($this->_currentSession['user'])) {
-			$postResult = array('result' => 'notloggedin');
-
-			$formAction = '';
-		} # if
-
-		# zorg er voor dat alle variables ingevuld zijn
+		# Make sure all variables are merged with the default form
 		$spot = array_merge($spot, $this->_spotForm);
 
 		# If user tried to submit, validate the file uploads
+        $nzbFilename = '';
+        $imgFilename = '';
 		if ($formAction == 'post') {
+			$result->setResult('success');
+
 			# Make sure an NZB file was provided
-			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['nzbfile'] != UPLOAD_ERR_OK)) {
-				$formMessages['errors'][] = _('Please select NZB file');
-				$postResult = array('result' => 'failure');
+            $uploadHandler = new Services_Providers_FileUpload('newspotform', 'nzbfile');
+            if (!$uploadHandler->isUploaded()) {
+                $result->addError(_('Please select NZB file'));
+            } elseif (!$uploadHandler->success()) {
+                $result->addError(_('Invalid NZB file') . ' (' . $uploadHandler->errorText() . ')');
+            } else {
+                $nzbFilename = $uploadHandler->getTempName();
+            } # if
 
-				$formAction = '';
-			} # if
-
-			# Make sure an imgae file was provided
-			if ((!isset($_FILES['newspotform'])) || ($_FILES['newspotform']['error']['imagefile'] != UPLOAD_ERR_OK)) {
-				$formMessages['errors'][] = _('Please select a picture');
-				$postResult = array('result' => 'failure');
-
-				$formAction = '';
-			} # if
-		
-			# Make sure the subcategorie are in the proper format
-			if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) { 
-				$formMessages['errors'][] = _('Invalid subcategories given ');
-				$postResult = array('result' => 'failure');
-
-				$formAction = '';
-			} # if				
+            # Make sure an picture was provided
+            $uploadHandler = new Services_Providers_FileUpload('newspotform', 'imagefile');
+            if (!$uploadHandler->isUploaded()) {
+                $result->addError(_('Please select a picture'));
+            } elseif (!$uploadHandler->success()) {
+                $result->addError(_('Invalid picture') . ' (' . $uploadHandler->errorText() . ')');
+            } else {
+                $imgFilename = $uploadHandler->getTempName();
+            } # if
 		} # if
 
-		if ($formAction == 'post') {
-			# Notificatiesysteem initialiseren
-			$spotsNotifications = new SpotNotifications($this->_db, $this->_settings, $this->_currentSession);
+		if (($formAction == 'post') && ($result->isSuccess())) {
+			# Initialize notificatiesystem
+			$spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 
-			# en creer een grote lijst met spots
-			$spot['subcatlist'] = array_merge(
-										array($spot['subcata']), 
-										$spot['subcatb'], 
-										$spot['subcatc'], 
-										$spot['subcatd']
-									);
-
-			# vraag de users' privatekey op
-			$this->_currentSession['user']['privatekey'] = 
-				$spotUser->getUserPrivateRsaKey($this->_currentSession['user']['userid']);
-				
-			# het messageid krijgen we met <>'s, maar we werken 
-			# in spotweb altijd zonder, dus die strippen we
-			$spot['newmessageid'] = substr($spot['newmessageid'], 1, -1);
-			
-			# valideer of we deze spot kunnen posten, en zo ja, doe dat dan
-			$spotPosting = new SpotPosting($this->_db, $this->_settings);
-			$formMessages['errors'] = 
-				$spotPosting->postSpot($this->_currentSession['user'], 
+			# Make sure we can post this spot, if so, make it happen
+			$svcPostSpot = new Services_Posting_Spot($this->_daoFactory, $this->_settings);
+			$result = $svcPostSpot->postSpot($svcUserRecord,
+									   $this->_currentSession['user'], 
 									   $spot,
-									   $_FILES['newspotform']['tmp_name']['imagefile'],
-									   $_FILES['newspotform']['tmp_name']['nzbfile']);
+									   $imgFilename,
+                                       $nzbFilename);
 			
-			if (empty($formMessages['errors'])) {
-				$postResult = array('result' => 'success',
-									'user' => $this->_currentSession['user']['username'],
-									'spotterid' => $spotSigning->calculateSpotterId($this->_currentSession['user']['publickey']),
-									'body' => $spot['body']);
-				$formMessages['info'][] = _('Spot has been successfully uploaded. It can take some time before it is shown');
+			if ($result->isSuccess()) { 
+				$result->addData('user', $this->_currentSession['user']['username']);
+				$result->addData('spotterid', $spotParseUtil->calculateSpotterId($this->_currentSession['user']['publickey']['modulo']));
 
-				# en verstuur een notificatie
+				# en send a notification
 				$spotsNotifications->sendSpotPosted($spot);
-			} else {
-				$postResult = array('result' => 'failure');
-			} # else
+			} # if
 		} # if
 		
 		#- display stuff -#
 		$this->template('newspot', array('postspotform' => $spot,
-								         'formmessages' => $formMessages,
-										 'postresult' => $postResult));
+										 'result' => $result));
 	} # render
 	
 } # class SpotPage_postspot
