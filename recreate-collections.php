@@ -42,8 +42,8 @@ try {
      */
     $dbConnection = $daoFactory->getConnection();
 
-//    $spot['title'] = 'Hanni & Nanni 2 2012 De Dolle Tweeling 2';
-//    $y = new Services_Parse_Collections_Movies($spot);
+//    $spot['title'] = 'Donald Duck 1960 25 35 36';
+//    $y = new Services_ParseCollections_Books($spot);
 //    var_dump($y->parseSpot());
 //    die();
 

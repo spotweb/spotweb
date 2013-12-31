@@ -26,11 +26,12 @@ class Services_ParseCollections_Books extends Services_ParseCollections_Abstract
              */
             if (preg_match('/[ \-,.\(\[]([0-9]{1,2})[\-.\/ ]([0-9]{2})[\-.\/ ]([0-9]{2,4})([\)\] \-,.]|$)/', $this->spot['title'], $matches)) {
                 /* Ad vrijdag 10 06 2011 */
-                $episode = $matches[1] . '-' . $matches[2];
-                $season = $matches[3];
+                $episode = $matches[1];
+                $season = $matches[2];
+                $year = $matches[3];
                 $titleStr = substr($this->spot['title'], 0, strpos($this->spot['title'], $matches[0]));
 
-                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($titleStr), $season, $episode, null);
+                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($titleStr), $season, $episode, $year);
             } else {
                 return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($this->spot['title']), null, null, null);
             } // else
