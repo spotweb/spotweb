@@ -87,7 +87,7 @@
 			<span class="scroll"><input type="checkbox" name="filterscroll" id="filterscroll" value="Scroll" title="<?php echo _('Switch between static or scrolling sidebar'); ?>"><label>&nbsp;</label></span>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_perform_search, '')) { ?>
-				<form id="filterform" action="" onsubmit="submitFilterBtn(this)">
+				<form id="filterform" action="<?php echo $tplHelper->makeSelfUrl('')?>" onsubmit="submitFilterBtn(this)">
 				<input type="hidden" id="searchfilter-includeprevfilter-toggle" name="search[includeinfilter]" value="false" />
 <?php
 	// Omdat we nu op meerdere criteria tegelijkertijd kunnen zoeken is dit onmogelijk
