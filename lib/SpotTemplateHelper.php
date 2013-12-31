@@ -1081,7 +1081,7 @@ class SpotTemplateHelper {
 	 * Redirect naar een opgegeven url
 	 */
 	function redirect($url) {
-		Header("Location: " . $url); 
+		header("Location: " . $url); 
 	} # redirect()
 	
 	/*

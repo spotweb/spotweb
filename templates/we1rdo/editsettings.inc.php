@@ -1,7 +1,4 @@
 <?php
-    require "includes/header.inc.php";
-    require "includes/form-messages.inc.php";
-
     if ($result->isSubmitted()) {
         if ($result->isSuccess()) {
             $tplHelper->redirect($http_referer);
@@ -12,6 +9,9 @@
         } # else
     } # if
 
+    require "includes/header.inc.php";
+    require "includes/form-messages.inc.php";
+    
     $nntp_nzb = $this->_settings->get('nntp_nzb');
     $nntp_hdr = $this->_settings->get('nntp_hdr');
     $nntp_post = $this->_settings->get('nntp_post');
