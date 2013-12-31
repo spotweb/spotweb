@@ -157,14 +157,26 @@ abstract class dbeng_pdo extends dbeng_abs {
      * Escape a string for insertion in a query.
      *
      * @param $s
+     * @param $forceType
      * @return string
+     * @throws NotImplementedException
      */
-    function safe($s) {
-        if (is_integer($s) || is_double($s)) {
-            return $s;
+    function safe($s, $forceType = null) {
+        if ($forceType === null) {
+            if (is_integer($s) || is_double($s)) {
+                return $s;
+            } else {
+                return $this->_conn->quote($s);
+            } # else
         } else {
-            return $this->_conn->quote($s);
-        } # else
+            if ($forceType == PDO::PARAM_INT) {
+                return (float) $s;
+            } elseif ($forceType == PDO::PARAM_STR) {
+                return $this->_conn->quote($s);
+            } else {
+                throw new NotImplementedException("Unknown forcetype passed to safe()");
+            } // else
+        } // else
     } # safe
 
     /*

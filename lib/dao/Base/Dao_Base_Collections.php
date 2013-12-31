@@ -48,7 +48,7 @@ class Dao_Base_Collections implements Dao_Collections {
          * else jjust the list we want to return
          */
         if (!empty($titles)) {
-            $sqlWhere = " mc.title IN (" . $this->_conn->arrayKeyToIn($titles) . ")";
+            $sqlWhere = " mc.title IN (" . $this->_conn->arrayKeyToIn($titles, PDO::PARAM_STR) . ")";
             self::$startedWithFullCacheLoad = false;
         } else {
             $sqlWhere = ' (1 = 1)';

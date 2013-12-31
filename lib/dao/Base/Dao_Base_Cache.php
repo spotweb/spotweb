@@ -619,7 +619,7 @@ class Dao_Base_Cache implements Dao_Cache {
 
         # Prepare a list of values
         $idList = array();
-        $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID');
+        $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID', PDO::PARAM_STR);
 
         $rs = $this->_conn->arrayQuery("SELECT resourceid, cachetype
                                             FROM cache

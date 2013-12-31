@@ -22,7 +22,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         } # if
 
         # match the ones we are going to add with these
-        $msgIdList = $this->_conn->arrayKeyToIn($messageIds);
+        $msgIdList = $this->_conn->arrayKeyToIn($messageIds, PDO::PARAM_STR);
         $alreadyAddedList = $this->_conn->arrayQuery("SELECT messageid FROM moderatedringbuffer WHERE messageid IN (" . $msgIdList . ")");
 
         # remove the messageid's we already have
@@ -59,7 +59,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer {
         /*
          * Prepare the list of messageid's we want to match
          */
-        $msgIdList = $this->_conn->arrayValToIn($messageIds, 'Message-ID');
+        $msgIdList = $this->_conn->arrayValToIn($messageIds, 'Message-ID', PDO::PARAM_STR);
         $rs = $this->_conn->arrayQuery("SELECT messageid FROM moderatedringbuffer WHERE messageid IN (" . $msgIdList . ")");
 
         /*

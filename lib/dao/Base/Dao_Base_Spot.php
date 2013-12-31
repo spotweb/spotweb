@@ -271,7 +271,7 @@ class Dao_Base_Spot implements Dao_Spot {
 										spots.messageid = commentsxover.nntpref 
 										AND spotrating BETWEEN 1 AND 10
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotRating
@@ -293,7 +293,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 WHERE 
 										spots.messageid = commentsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotCommentCount
@@ -315,7 +315,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 WHERE 
 										spots.messageid = reportsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
@@ -332,7 +332,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# prepare a list of IN values
-		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR);
 
 		$this->_conn->modify("DELETE FROM spots WHERE messageid IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid  IN (" . $msgIdList . ")");
@@ -355,7 +355,7 @@ class Dao_Base_Spot implements Dao_Spot {
 
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots SET moderated = :moderated WHERE messageid IN (" .
-								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")",
+								$this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")",
             array(
                 ':moderated' => array(true, PDO::PARAM_BOOL)
             ));
@@ -590,7 +590,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Prepare a list of values
-		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID', PDO::PARAM_STR);
 
 		# Because MySQL doesn't know anything about full joins, we use this trick
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")

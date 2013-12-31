@@ -102,11 +102,11 @@ abstract class dbeng_abs {
 	 * Transforms an array of keys to an list usable by an
 	 * IN statement
 	 */
-	function arrayKeyToIn($ar) {
+	function arrayKeyToIn($ar, $forceType = null) {
 		$tmpList = '';
 
 		foreach($ar as $k => $v) {
-			$tmpList .= $this->safe($k) . ",";
+			$tmpList .= $this->safe($k, $forceType) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
@@ -115,11 +115,11 @@ abstract class dbeng_abs {
      * Transforms an array of values to an list usable by an
      * IN statement
      */
-	function arrayValToIn($ar, $val) {
+	function arrayValToIn($ar, $val, $forceType = null) {
 		$tmpList = '';
 
 		foreach($ar as $v) {
-			$tmpList .= $this->safe($v[$val]) . ",";
+			$tmpList .= $this->safe($v[$val], $forceType) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
