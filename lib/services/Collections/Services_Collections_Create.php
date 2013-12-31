@@ -18,7 +18,7 @@ class Services_Collections_Create {
      * @var $cb callable
      */
     public function createCollections($startingPoint, $cb) {
-        $increment = 5000;
+        $increment = 1000;
         /*
          * Create a faked parse search, so we can re-use existing infrastructure
          */
@@ -66,7 +66,7 @@ class Services_Collections_Create {
             } // if
 
             /*
-             * now update the actual database
+             * now update the database
              */
             $dbConnection = $this->_daoFactory->getConnection();
             $dbConnection->beginTransaction();

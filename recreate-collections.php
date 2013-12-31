@@ -37,19 +37,16 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-    /*
-     * Now try to get all current cache items
-     */
-    $dbConnection = $daoFactory->getConnection();
-
 //    $spot['title'] = 'Donald Duck 1960 25 35 36';
 //    $y = new Services_ParseCollections_Books($spot);
 //    var_dump($y->parseSpot());
 //    die();
 
 
-    # Truncate the current collections table, and reset all collection id's
+    # Truncate the current collections tables, and reset all collection id's
     if (SpotCommandline::get('clean')) {
+        $dbConnection = $daoFactory->getConnection();
+
         echo "Cleaning up all existing collections, ";
         $dbConnection->rawExec('UPDATE spots SET collectionid = NULL WHERE collectionid IS NOT NULL');
         $dbConnection->rawExec('TRUNCATE collections');
@@ -57,14 +54,12 @@ try {
         echo "done.". PHP_EOL;
     } // if
 
-    /**
-     * Load the complete collection cache in memory
-     */
+    /* Load the complete collection cache in memory */
     echo "Loading all existing collections in memory, ";
     $daoFactory->getCollectionsDao()->loadCollectionCache(array());
     echo "done" . PHP_EOL;
 
-    /* Retrieve list of spots from the database */
+    /* And start creating ocllections */
     $svcCreateColl= new Services_Collections_Create($daoFactory);
     $svcCreateColl->createCollections(0, 'displayProgress');
 
