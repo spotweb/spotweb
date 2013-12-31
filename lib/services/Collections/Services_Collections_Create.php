@@ -18,7 +18,7 @@ class Services_Collections_Create {
      * @var $cb callable
      */
     public function createCollections($startingPoint, $cb) {
-        $increment = 30000;
+        $increment = 5000;
         /*
          * Create a faked parse search, so we can re-use existing infrastructure
          */
@@ -42,7 +42,11 @@ class Services_Collections_Create {
             /**
              * Get the current list of spots
              */
-            $parsedSearch['filter'] = ' (s.id > ' . (int) ($startingPoint) . ') AND (s.collectionid IS NULL) ';
+            $parsedSearch['filter'] = ' (s.id > ' . (int) ($startingPoint) . ') ' .
+                                      ' AND (s.collectionid IS NULL) ' .
+                                      ' AND (s.category <> 2) ' .                       # Games are never made into collections
+                                      ' AND (s.category <> 3) ' .                       # applications are neither
+                                      ' AND (NOT (s.category = 0) AND (s.subcatz = \'z3|\'))'; # exclude porn as well
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,
                 $increment,
