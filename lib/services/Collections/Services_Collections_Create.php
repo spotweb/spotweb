@@ -46,7 +46,7 @@ class Services_Collections_Create {
                                       ' AND (s.collectionid IS NULL) ' .
                                       ' AND (s.category <> 2) ' .                       # Games are never made into collections
                                       ' AND (s.category <> 3) ' .                       # applications are neither
-                                      ' AND (NOT (s.category = 0) AND (s.subcatz = \'z3|\'))'; # exclude porn as well
+                                      ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z3|\')))'; # exclude porn as well
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,
                 $increment,
