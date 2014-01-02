@@ -1,14 +1,14 @@
 <?php
 
 class Services_Providers_FullSpot {
-	private $_spotDao;
+	private $_daoFactory;
 	private $_nntpSpotReading;
 
 	/*
 	 * constructor
 	 */
-	public function __construct(Dao_Spot $spotDao, Services_Nntp_SpotReading $nntpSpotReading) {
-		$this->_spotDao = $spotDao;
+	public function __construct(Dao_Factory $daoFactory, Services_Nntp_SpotReading $nntpSpotReading) {
+		$this->_daoFactory = $daoFactory;
 		$this->_nntpSpotReading = $nntpSpotReading;
 	}  # ctor
 	
@@ -24,14 +24,14 @@ class Services_Providers_FullSpot {
 		 * is already cached in the database we don't need
 		 * anything else
 		 */
-		$fullSpot = $this->_spotDao->getFullSpot($msgId, $ourUserId);
+		$fullSpot = $this->_daoFactory->getSpotDao()->getFullSpot($msgId, $ourUserId);
 		
 		if (empty($fullSpot)) {
             /*
              * When we retrieve a fullspot entry but there is no spot entry the join in our DB query
              * causes us to never get the spot, hence we throw this exception
              */
-            $spotHeader = $this->_spotDao->getSpotHeader($msgId);
+            $spotHeader = $this->_daoFactory->getSpotDao()->getSpotHeader($msgId);
             if (empty($spotHeader)) {
                 throw new Exception("Spot is not in our Spotweb database");
             } # if
@@ -40,8 +40,28 @@ class Services_Providers_FullSpot {
              * Retrieve a full loaded spot from the NNTP server
              */
 			$newFullSpot = $this->_nntpSpotReading->readFullSpot($msgId);
-			$this->_spotDao->addFullSpots( array($newFullSpot) );
-			
+			$this->_daoFactory->getSpotDao()->addFullSpots( array($newFullSpot) );
+
+            /*
+             * If the title is changed from the header and the full,
+             * we need to update the collection info as well
+             */
+            if ($newFullSpot['title'] != $spotHeader['title']) {
+                $newFullSpot['collectionid'] = null;
+
+                /*
+                 * Updat the collectionid to match our new title, this
+                 * way we know for sure the title matches with the
+                 * actual collection
+                 */
+                $svcCollCreate = new Services_Collections_Create($this->_daoFactory);
+                $tmpList = $svcCollCreate->createCollectionsFromList(array($newFullSpot));
+
+                $newFullSpot = $tmpList[0];
+            } else {
+                $newFullSpot['collectionid'] = $spotHeader['collectionid'];
+            } // else
+
 			/*
 			 * If the current spotterid is empty, we probably now have a spotterid because 
 			 * we have the fullspot.
@@ -54,13 +74,13 @@ class Services_Providers_FullSpot {
 			 * We cannot use all information from the XML because because some information just
 			 * isn't present in the XML file
 			 */
-			$this->_spotDao->updateSpotInfoFromFull($newFullSpot);
+			$this->_daoFactory->getSpotDao()->updateSpotInfoFromFull($newFullSpot);
 			
 			/*
 			 * We ask our DB to retrieve the fullspot again, this ensures
 			 * us all information is present and in always the same format
 			 */
-			$fullSpot = $this->_spotDao->getFullSpot($msgId, $ourUserId);
+			$fullSpot = $this->_daoFactory->getSpotDao()->getFullSpot($msgId, $ourUserId);
 		} # if
 
 		/*

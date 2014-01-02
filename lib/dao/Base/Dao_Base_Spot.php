@@ -107,6 +107,7 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotterid AS spotterid,
  												s.editstamp AS editstamp,
  												s.editor AS editor,
+ 												s.collectionid AS collectionid,
 												f.verified AS verified,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype,
 												COALESCE(mc.title, s.title) AS cleantitle,
@@ -160,7 +161,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
-												s.moderated AS moderated
+												s.moderated AS moderated,
+												s.collectionid AS collectionid
 											  FROM spots AS s
 											  WHERE s.messageid = :messageid",
             array(
@@ -201,6 +203,7 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotterid AS spotterid,
 												s.editstamp AS editstamp,
 												s.editor AS editor,
+												s.collectionid AS collectionid,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -469,11 +472,16 @@ class Dao_Base_Spot implements Dao_Spot {
 	 */
 	function updateSpotInfoFromFull($fullSpot) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid",
+		$this->_conn->modify("UPDATE spots
+		                        SET title = :title,
+		                            spotterid = :spotterid,
+		                            collectionid = :collectionid
+		                        WHERE messageid = :messageid",
             array(
                 ':title' => array($fullSpot['title'], PDO::PARAM_STR),
                 ':spotterid' => array($fullSpot['spotterid'], PDO::PARAM_STR),
-                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR),
+                ':collectionid' => array($fullSpot['collectionid'], PDO::PARAM_INT),
             ));
 
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));

@@ -80,7 +80,7 @@ class Services_Posting_Comment {
 		} # if
 
         # Retrieve the spot to which we are commenting
-        $svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $this->_nntp_hdr);
+        $svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, $this->_nntp_hdr);
         $fullSpot = $svcProvFullSpot->fetchFullSpot($comment['inreplyto'], $user['userid']);
 
 		# Add the title as a comment property

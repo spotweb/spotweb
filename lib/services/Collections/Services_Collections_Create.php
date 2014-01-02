@@ -46,6 +46,7 @@ class Services_Collections_Create {
                                       ' AND (s.collectionid IS NULL) ' .
                                       ' AND (s.category <> 2) ' .                       # Games are never made into collections
                                       ' AND (s.category <> 3) ' .                       # applications are neither
+//                ' AND (s.messageid = \'P9bqBip2OdsoOhLTgAuDQ@spot.net\') ' .
                                       ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z3|\')))'; # exclude porn as well
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,
@@ -92,7 +93,7 @@ class Services_Collections_Create {
      * @param array $spotDbList
      * @return array
      */
-    function createCollectionsFromList(array $spotDbList) {
+    public function createCollectionsFromList(array $spotDbList) {
         /*
          * Loop through all Spots, and try to get the most appropriate
          * parsed title out of it, so we can later reuse that as an unique
