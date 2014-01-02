@@ -185,6 +185,9 @@ class Services_Format_Parsing {
         $tpl_spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
         $tpl_spot['subcatc'] = SpotCategories::mapLanguageSubCategories($tpl_spot['category'], $tpl_spot['subcatc'], $tpl_spot['subcatz']);
 
+        # remove entities from the spot title
+        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'], ENT_COMPAT, 'UTF-8');
+
 		# and return the parsed XML
 		return $tpl_spot;
 	} # parseFull()

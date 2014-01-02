@@ -45,7 +45,7 @@ class Dao_Base_Collections implements Dao_Collections {
 
         /*
          * If we get an empty list of titles to fetch, fetch everything
-         * else jjust the list we want to return
+         * else just the list we want to return
          */
         if (!empty($titles)) {
             $sqlWhere = " mc.title IN (" . $this->_conn->arrayKeyToIn($titles, PDO::PARAM_STR) . ")";
