@@ -37,9 +37,12 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Donald Duck 1960 25 35 36';
+//    $spot['title'] = '┬Çlve libre';
 //    $y = new Services_ParseCollections_Books($spot);
-//    var_dump($y->parseSpot());
+//    $y = $y->parseSpot();
+//    var_dump(mb_detect_encoding($y->getTitle()));
+//    var_dump(mb_check_encoding($y->getTitle()));
+//    var_dump($y);
 //    die();
 
 
