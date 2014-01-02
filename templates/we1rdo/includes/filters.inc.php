@@ -102,7 +102,7 @@
 	# en reportcount niet juist zetten
     $textSearchCount = 0;
     foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID', 'Collection', 'Season', 'Episode', 'Year'))) {
 			$searchType = $filterType['fieldname'];
 			$searchText = $filterType['value'];
             $textSearchCount++;

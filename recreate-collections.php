@@ -37,8 +37,10 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Élève Libre (2008)';
-//    $y = new Services_ParseCollections_Books($spot);
+//    $spot['title'] = 'Scandal us s02e14 720p hdtv x264 dimension';
+//    $spot['subcatz'] = '';
+//    $spot['category'] = '0';
+//    $y = new Services_ParseCollections_Movies($spot);
 //    $y = $y->parseSpot();
 //    var_dump(mb_detect_encoding($y->getTitle()));
 //    var_dump(mb_check_encoding($y->getTitle()));

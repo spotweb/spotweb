@@ -726,7 +726,6 @@ class Services_Search_QueryParser {
 			} # foreach
 		} # if
 
-		
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields));
 
 		return array($filterValueSql, $additionalFields, $additionalTables, $additionalJoins, $sortFields);
