@@ -53,9 +53,9 @@
 				<post ssl='yes' port='563'>eunews.blocknews.net</post>
 			</ssl>
 			<plain>
-				<header ssl='ye' port='563'>eunews.blocknews.net</header>
-				<nzb ssl='' port='563'>eunews.blocknews.net</nzb>
-				<post ssl='' port='563'>eunews.blocknews.net</post>
+				<header ssl='' port='119'>eunews.blocknews.net</header>
+				<nzb ssl='' port='119'>eunews.blocknews.net</nzb>
+				<post ssl='' port='119'>eunews.blocknews.net</post>
 			</plain>
 		</server>
 
@@ -364,6 +364,19 @@
 				<header ssl='' port='119'>news.onsbrabantnet.nl</header>
 				<nzb ssl='' port='119'>news.onsbrabantnet.nl</nzb>
 				<post ssl='' port='119'>news.onsbrabantnet.nl</post>
+			</plain>
+		</server>
+		
+		<server name='Premiumize'>
+			<ssl>
+				<header ssl='yes' port='1563'>usenet.premiumize.me</header>
+				<nzb ssl='yes' port='1563'>usenet.premiumize.me</nzb>
+				<post ssl='yes' port='1563'>usenet.premiumize.me</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='1119'>usenet.premiumize.me</header>
+				<nzb ssl='' port='1119'>usenet.premiumize.me</nzb>
+				<post ssl='' port='1119'>usenet.premiumize.me</post>
 			</plain>
 		</server>
 
