@@ -29,9 +29,10 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
         /*
          * Try to parse the titles
          */
-        if (preg_match('/[ \-,.]([\(\[])([0-9]{4})([\)\]])([ \-,.]|$)/', $title, $matches)) {
+        if (preg_match('/[ \-,.]([\*\(\[])([0-9]{4})([\)\]\*])/', $title, $matches)) {
             /*
              * Blah blah (2013)
+             * * Blah blah *2013*
              * Blah Twest [2014]
              */
             $year = $matches[2];
@@ -55,7 +56,12 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
         if ($matches != null) {
             $titleStr = substr($title, 0, strpos($title, $matches[0]));
         } else {
-            $titleStr = $title;
+            /*
+             * Not recognized by this parser, but sometimes TV series
+             * are posted as movies, so try those.
+             */
+            $svcParseTv = new Services_ParseCollections_Tv($this->spot);
+            return $svcParseTv->parseSpot();
         } // else
 
         return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES, $this->prepareCollName($titleStr), $season, $episode, $year);
