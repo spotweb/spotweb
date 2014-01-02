@@ -18,11 +18,12 @@ class Services_ParseCollections_Music extends Services_ParseCollections_Abstract
          *      Dodie Stevens - The Ultimate Collection
          *      Tomes - Greatest Hits
          */
-        $tmpPos = strpos($this->spot['title'], '-');
+        $title = $this->prepareTitle($this->spot['title']);
+        $tmpPos = strpos($title, '-');
         if ($tmpPos === false) {
-            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($this->spot['title']), null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($title), null, null, null);
         } else {
-            $artist = substr($this->spot['title'], 0, $tmpPos);
+            $artist = substr($title, 0, $tmpPos);
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($artist), null, null, null);
         } // else
     }

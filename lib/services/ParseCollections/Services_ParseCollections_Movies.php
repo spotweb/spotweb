@@ -16,7 +16,7 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
         $year = null;
         $season = null;
         $episode = null;
-        $title = $this->spot['title'];
+        $title = $this->prepareTitle($this->spot['title']);
 
         /*
          * We do not create collections for porn
@@ -27,7 +27,7 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
 
 
         /*
-         * Try to parse hte titles
+         * Try to parse the titles
          */
         if (preg_match('/[ \-,.]([\(\[])([0-9]{4})([\)\]])([ \-,.]|$)/', $title, $matches)) {
             /*

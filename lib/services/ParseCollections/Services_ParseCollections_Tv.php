@@ -13,7 +13,7 @@ class Services_ParseCollections_Tv extends Services_ParseCollections_Abstract {
         /*
          * Convert the title to lowercase so we don't have to work with different cases
          */
-        $title = strtolower($this->spot['title']);
+        $title = $this->prepareTitle($this->spot['title']);
 
         /*
          * Try to parse the season part of the title. This can be either in the form of S1, S01, 1, 2012, etc.
@@ -83,7 +83,7 @@ class Services_ParseCollections_Tv extends Services_ParseCollections_Abstract {
             $episode = null;
             $season = $matches[1] . $matches[2];
         } else {
-            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_TV, $this->prepareCollName($this->spot['title']), null, null, null);
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_TV, $this->prepareCollName($title), null, null, null);
         } // if
 
         $titleStr = substr($this->spot['title'], 0, strpos($title, $matches[0]));

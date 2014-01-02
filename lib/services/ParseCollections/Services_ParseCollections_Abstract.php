@@ -25,6 +25,16 @@ abstract class Services_ParseCollections_Abstract {
     abstract function parseSpot();
 
     /**
+     * Cleans up an title and lowercases it
+     *
+     * @param string $title
+     * @returns string
+     */
+    protected function prepareTitle($title) {
+        return strtolower($title);
+    } // prepareTitle
+
+    /**
      * Cleans up an collection name
      *
      * @param string $collName
