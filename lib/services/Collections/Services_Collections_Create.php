@@ -18,7 +18,7 @@ class Services_Collections_Create {
      * @var $cb callable
      */
     public function createCollections($startingPoint, $cb) {
-        $increment = 1000;
+        $increment = 5000;
         /*
          * Create a faked parse search, so we can re-use existing infrastructure
          */
