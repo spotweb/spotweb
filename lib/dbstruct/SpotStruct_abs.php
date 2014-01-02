@@ -670,6 +670,8 @@ abstract class SpotStruct_abs {
         $this->validateColumn('season', 'collections', 'INTEGER', NULL, false, '');
         $this->validateColumn('episode', 'collections', 'INTEGER', NULL, false, '');
         $this->validateColumn('year', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('partscurrent', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('partstotal', 'collections', 'INTEGER', NULL, false, '');
         $this->alterStorageEngine("collections", "InnoDB");
 
         ##############################################################################################

@@ -37,7 +37,7 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Scandal us s02e14 720p hdtv x264 dimension';
+//    $spot['title'] = 'Warehouse 13 seizoen 1 dvd 3';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
 //    $y = new Services_ParseCollections_Movies($spot);

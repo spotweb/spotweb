@@ -5,7 +5,6 @@ class Dto_CollectionInfo {
     const CATTYPE_GAMES         = 2;
     const CATTYPE_MOVIES        = 3;
     const CATTYPE_MUSIC         = 4;
-    const CATTYPE_TV            = 5;
 
     /**
      * Cleaned up title
@@ -41,6 +40,14 @@ class Dto_CollectionInfo {
      * @var int Category types
      */
     private $catType;
+    /**
+     * @var int Current part number of a collection
+     */
+    private $partsCurrent = null;
+    /**
+     * @var int Total amount of parts available
+     */
+    private $partsTotal = null;
 
     /**
      * @param $catType
@@ -48,13 +55,17 @@ class Dto_CollectionInfo {
      * @param $season
      * @param $episode
      * @param year
+     * @param $partsCurrent
+     * @param $partsTotal
      */
-    public function __construct($catType, $title, $season, $episode, $year) {
+    public function __construct($catType, $title, $season, $episode, $year, $partsCurrent, $partsTotal) {
         $this->setCatType($catType);
         $this->setTitle($title);
         $this->setSeason($season);
         $this->setEpisode($episode);
         $this->setYear($year);
+        $this->setPartsCurrent($partsCurrent);
+        $this->setPartsTotal($partsTotal);
     } // ctor
 
     /**
@@ -68,7 +79,9 @@ class Dto_CollectionInfo {
                     ($this->getTitle() == $compare->getTitle()) &&
                     ($this->getSeason() == $compare->getSeason()) &&
                     ($this->getEpisode() == $compare->getEpisode()) &&
-                    ($this->getYear() == $compare->getYear())
+                    ($this->getYear() == $compare->getYear()) &&
+                    ($this->getPartsCurrent() == $compare->getPartsCurrent()) &&
+                    ($this->getPartsTotal() == $compare->getPartsTotal())
         );
     } // equalColl
 
@@ -181,5 +194,32 @@ class Dto_CollectionInfo {
         return $this->catType;
     }
 
+    /**
+     * @param int $partsCurrent
+     */
+    public function setPartsCurrent($partsCurrent) {
+        $this->partsCurrent = $partsCurrent;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPartsCurrent() {
+        return $this->partsCurrent;
+    }
+
+    /**
+     * @param int $partsTotal
+     */
+    public function setPartsTotal($partsTotal) {
+        $this->partsTotal = $partsTotal;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPartsTotal() {
+        return $this->partsTotal;
+    }
 
 } 

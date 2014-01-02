@@ -64,14 +64,18 @@ class Dao_Base_Collections implements Dao_Collections {
                                                            mc.cattype,
                                                            c.season,
                                                            c.episode,
-                                                           c.year
+                                                           c.year,
+                                                           c.partscurrent,
+                                                           c.partstotal
                                                     FROM mastercollections mc
                                                         LEFT JOIN collections c ON c.mcid = mc.id
 												    WHERE " . $sqlWhere);
 
         // and merge it into the cache
         foreach($resultList as $result) {
-            $collection = new Dto_CollectionInfo($result['cattype'], $result['title'], $result['season'], $result['episode'], $result['year']);
+            $collection = new Dto_CollectionInfo($result['cattype'], $result['title'], $result['season'],
+                                                 $result['episode'], $result['year'], $result['partscurrent'],
+                                                 $result['partstotal']);
             $collection->setMcId($result['mcid']);
             $collection->setId($result['cid']);
 
@@ -81,8 +85,8 @@ class Dao_Base_Collections implements Dao_Collections {
             if (!isset(self::$mc_CacheList[$result['title'] . '|' . $result['cattype']])) {
                 self::$mc_CacheList[$result['title'] . '|' . $result['cattype']] =
                                                   array('mcid' => $result['mcid'],
-                                                              'cattype' =>  $result['cattype'],
-                                                              'collections' => array(),
+                                                        'cattype' =>  $result['cattype'],
+                                                        'collections' => array(),
                                                         );
             } // if
 
@@ -114,13 +118,15 @@ class Dao_Base_Collections implements Dao_Collections {
          * so we add it to our database, and add it to the
          * cache
          */
-        $this->_conn->exec('INSERT INTO collections(mcid, season, episode, year)
-                                              VALUES (:mcid, :season, :episode, :year)',
+        $this->_conn->exec('INSERT INTO collections(mcid, season, episode, year, partscurrent, partstotal)
+                                              VALUES (:mcid, :season, :episode, :year, :partscurrent, :partstotal)',
             array(
                 ':mcid' => array($collToFind->getMcId(), PDO::PARAM_INT),
                 ':season' => array($collToFind->getSeason(), PDO::PARAM_STR),
                 ':episode' => array($collToFind->getEpisode(), PDO::PARAM_STR),
                 ':year' => array($collToFind->getYear(), PDO::PARAM_STR),
+                ':partscurrent' => array($collToFind->getPartsCurrent(), PDO::PARAM_STR),
+                ':partstotal' => array($collToFind->getPartsTotal(), PDO::PARAM_STR),
             ));
         $collToFind->setId($this->_conn->lastInsertId('collections'));
 
