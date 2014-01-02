@@ -55,8 +55,8 @@ abstract class Services_ParseCollections_Abstract {
                                $tmpName);
         $tmpName = preg_replace('/\s+/', ' ', $tmpName);
         $tmpName = trim($tmpName, " \t\n\r\0\x0B-=");
-        $tmpName = strtolower($tmpName);
-        $tmpName = ucfirst($tmpName);
+        $tmpName = mb_strtolower($tmpName, 'UTF-8');
+        $tmpName = mb_strtoupper(mb_substr($tmpName, 0, 1)) . mb_substr($tmpName, 1);
 
         return $tmpName;
     } // prepareCollName
