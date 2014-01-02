@@ -135,7 +135,7 @@ echo "</th>";
                                 <?php
                                     if ($spot['mcid'] !== null) {
                                 ?>
-                                        <tr><th> <?php echo _('Collection'); ?> </th> <td> <a href="<?php echo $tplHelper->makeCollectionSearchUrl($spot); ?>"><?php echo $spot['cleantitle']; if ($spot['release_year'] !== null) { echo '(' . $spot['release_year'] . ')'; } ?> </a> </td> </tr>
+                                        <tr><th> <?php echo _('Collection'); ?> </th> <td> <a href="<?php echo $tplHelper->makeCollectionSearchUrl($spot); ?>"><?php echo $spot['cleantitle']; if ($spot['release_year'] !== null) { echo ' (' . $spot['release_year'] . ')'; } ?> </a> </td> </tr>
                                 <?php
                                         if (!empty($episodeString)) {
                                 ?>
