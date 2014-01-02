@@ -23,12 +23,12 @@ class Services_ParseCollections_Music extends Services_ParseCollections_Abstract
         if ($tmpPos === false) {
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($title), null, null, null, null, null);
         } else {
+            $artist = substr($title, 0, $tmpPos);
             $collInfo = $this->parseYearEpisodeSeason($this->spot);
             if ($collInfo === null) {
-                $collInfo = new Dto_CollectionInfo(null, null, null, null, null, null, null);
+                $collInfo = new Dto_CollectionInfo($this->prepareCollName($artist), null, null, null, null, null, null);
             }
 
-            $artist = substr($title, 0, $tmpPos);
             $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_MUSIC);
             $collInfo->setTitle($this->prepareCollName($artist));
             return $collInfo;

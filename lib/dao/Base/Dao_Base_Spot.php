@@ -222,6 +222,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												c.season as \"season\",
 												c.episode as \"episode\",
 												c.year as \"release_year\"
+												c.partscurrent as \"partscurrent\",
+												c.partstotal as \"partstotal\"
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = :ouruserid1))
 									            LEFT JOIN collections AS c ON (s.collectionid = c.id)
