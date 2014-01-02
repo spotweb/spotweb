@@ -194,8 +194,9 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			switch(strtolower($collation)) {
 				case 'utf8'			: 
 				case 'ascii'		: 
-				case 'ascii_bin'	: 
-				case ''			: $colSetting = ''; break;
+				case 'ascii_bin'	:
+                case 'utf8_bin'     :
+				case ''			    : $colSetting = ''; break;
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
 			
@@ -227,9 +228,10 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		switch(strtolower($collation)) {
 			case 'utf8'			: 
 			case 'ascii'		: 
-			case 'ascii_bin'	: 
-			case ''			: $colSetting = ''; break;
-			default			: throw new Exception("Invalid collation setting");
+			case 'ascii_bin'	:
+            case 'utf8_bin'     :
+			case ''			    : $colSetting = ''; break;
+			default			    : throw new Exception("Invalid collation setting");
 		} # switch
 		
 		# and define the 'NOT NULL' part
@@ -281,7 +283,8 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			 */
 			switch(strtolower($collation)) {
 				case 'utf8'		: 
-				case 'ascii'	: 
+				case 'ascii'	:
+                case 'utf8_bin' :
 				case ''			: $colSetting = ''; break;
 				default			: throw new Exception("Invalid collation setting");
 			} # switch

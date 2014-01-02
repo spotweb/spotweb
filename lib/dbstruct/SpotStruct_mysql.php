@@ -181,6 +181,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 				case 'utf8'			: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
 				case 'ascii'		: $colSetting = 'CHARACTER SET ascii'; break;
 				case 'ascii_bin'	: $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin'; break;
+                case 'utf8_bin'     : $colSetting = 'CHARACTER SET utf8 COLLATE utf8_bin'; break;
 				case ''				: $colSetting = ''; break;
 				default				: throw new Exception("Invalid collation setting");
 			} # switch
@@ -211,6 +212,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			case 'utf8'			: $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
 			case 'ascii'		: $colSetting = 'CHARACTER SET ascii'; break;
 			case 'ascii_bin'	: $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin'; break;
+            case 'utf8_bin'     : $colSetting = 'CHARACTER SET utf8 COLLATE utf8_bin'; break;
 			case ''				: $colSetting = ''; break;
 			default				: throw new Exception("Invalid collation setting");
 		} # switch
@@ -245,6 +247,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 			switch(strtolower($collation)) {
 				case 'utf8'		: $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci'; break;
 				case 'ascii'	: $colSetting = 'CHARSET=ascii'; break;
+                case 'utf8_bin' : $colSetting = 'CHARACTER SET utf8 COLLATE utf8_bin'; break;
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
 		
@@ -345,6 +348,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 					case 'ascii_bin'			: $q['COLLATION_NAME'] = 'ascii_bin'; break;
 					case 'utf8_unicode_ci'		: $q['COLLATION_NAME'] = 'utf8'; break;
 					case 'utf8_general_ci'		: $q['COLLATION_NAME'] = 'utf8'; break;
+                    case 'utf8_bin'             : $q['COLLATION_NAME'] = 'utf8_bin'; break;
 
 					default 					: throw new Exception("Invalid collation setting for varchar: " . $q['COLLATION_NAME']);
 				} # switch

@@ -657,8 +657,8 @@ abstract class SpotStruct_abs {
         $this->alterStorageEngine("debuglog", "InnoDB");
 
         # ---- mastercollections table ---- #
-        $this->createTable('mastercollections', "utf8");
-        $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->createTable('mastercollections', "ascii");
+        $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8_bin');
         $this->validateColumn('cattype', 'mastercollections', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdbid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('tvrageid', 'mastercollections', 'INTEGER', "0", false, '');
