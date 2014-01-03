@@ -435,6 +435,39 @@ if (!$dialogembedded) { ?>
 				</fieldset>
 			</fieldset>
 <?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'pushover')) { ?>
+<!-- Pushover -->
+               <fieldset>
+                    <dt><label for="use_pushover"><?php echo _('Use Pushover?'); ?></label></dt>
+                    <dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][pushover][enabled]" id="use_pushover" <?php if ($edituserprefsform['notifications']['pushover']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+                    <fieldset id="content_use_pushover" class="notificationSettings">
+                         <dt><label for="edituserprefsform[notifications][pushover][userkey]"><?php echo _('Pushover user-key?'); ?></label></dt>
+                         <dd><input type="input" name="edituserprefsform[notifications][pushover][userkey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['pushover']['userkey']); ?>"></dd>
+
+                         <dt><label for="edituserprefsform[notifications][pushover][appkey]"><?php echo _('Pushover <a href="https://pushover.net/apps/build">app-key</a>?'); ?></label></dt>
+                         <dd><input type="text" name="edituserprefsform[notifications][pushover][appkey]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['pushover']['appkey']); ?>"></dd>
+
+                         <?php showNotificationOptions('pushover', $edituserprefsform, $tplHelper); ?>
+                    </fieldset>
+               </fieldset>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'pushalot')) { ?>
+<!-- Pushover -->
+               <fieldset>
+                    <dt><label for="use_pushalot"><?php echo _('Use Pushalot?'); ?></label></dt>
+                    <dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][pushalot][enabled]" id="use_pushalot" <?php if ($edituserprefsform['notifications']['pushalot']['enabled']) { echo 'checked="checked"'; } ?>></dd>
+
+                    <fieldset id="content_use_pushalot" class="notificationSettings">
+                         <dt><label for="edituserprefsform[notifications][pushover][auth_token]"><?php echo _('Pushalot <a href="https://pushalot.com/manager/authorizations">authorization token</a>?'); ?></label></dt>
+                         <dd><input type="text" name="edituserprefsform[notifications][pushalot][auth_token]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['pushalot']['auth_token']); ?>"></dd>
+
+                         <?php showNotificationOptions('pushalot', $edituserprefsform, $tplHelper); ?>
+                    </fieldset>
+               </fieldset>
+<?php } ?>
 		</div>
 <?php } ?>
 <!-- Einde notificaties -->
