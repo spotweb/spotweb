@@ -186,7 +186,12 @@ class Services_Format_Parsing {
         $tpl_spot['subcatc'] = SpotCategories::mapLanguageSubCategories($tpl_spot['category'], $tpl_spot['subcatc'], $tpl_spot['subcatz']);
 
         # remove entities from the spot title
-        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'], ENT_COMPAT, 'UTF-8');
+        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'], ENT_QUOTES, 'UTF-8');
+        /*
+         * We run description decoding twice because a lot of spots are incorrectly encoded
+         */
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'], ENT_QUOTES, 'UTF-8');
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'], ENT_QUOTES, 'UTF-8');
 
 		# and return the parsed XML
 		return $tpl_spot;
@@ -497,7 +502,10 @@ class Services_Format_Parsing {
 			} # if
 		} # if
 
-		return $spot;
+        # remove entities from the title
+        $spot['title'] = html_entity_decode($spot['title'], ENT_QUOTES, 'UTF-8');
+
+        return $spot;
 	} # parseHeader
 
 } # class Services_Format_Parsing
