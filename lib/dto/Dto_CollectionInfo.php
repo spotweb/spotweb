@@ -80,7 +80,11 @@ class Dto_CollectionInfo {
                     ($this->getTitle() == $compare->getTitle()) &&
                     ($this->getSeason() == $compare->getSeason()) &&
                     ($this->getEpisode() == $compare->getEpisode()) &&
-                    ($this->getYear() == $compare->getYear()) &&
+                    (
+                        ($this->getYear() == $compare->getYear())
+                        ||
+                        (($this->getYear() == null) || ($compare->getYear() == null))
+                    ) &&
                     ($this->getPartsCurrent() == $compare->getPartsCurrent()) &&
                     ($this->getPartsTotal() == $compare->getPartsTotal())
         );

@@ -42,7 +42,8 @@ abstract class Services_ParseCollections_Abstract {
          * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
         $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
-                                   "ac3|dts|nederlands|rescan|nl sub)\\b/i", "", $title);
+                                   "ac3|dts|nederlands|rescan|nl sub|pal|ipad|iphone|psp|mp4|dd5.1|" .
+                                   "ntsc|bd50|3d|480p|half sbs|dvd5|dvd9|rental|nl|bollywood|divx|x264)\\b/i", "", $title);
 
         /*
          * Replace empty parenthesis, might be caused by aboves replacement
@@ -113,7 +114,7 @@ abstract class Services_ParseCollections_Abstract {
             /* John Denver - Around The World Live(DVDBox)DVD2-5 */
             $currentPart = $matches[2];
             $totalParts = $matches[5];
-        } elseif (preg_match('/[ \)\(\*\-]([0-9]{1,3})([ \/\-,.]|(van|of|t\/m)|[ \(\*\-,.])+([0-9]{1,3})([\]\*\-\) ]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \)\(\*\-]([0-9]{1,3})([ \(\*\/\-,]|(van|of|t\/m))+([0-9]{1,3})([\]\*\-\) ]|$)/', $title, $matches)) {
             /* Last days of ww2 3 weekly episodes (6 van 6) */
             /* Hitler s warriors 4 of 6 udet */
             $currentPart = $matches[1];
@@ -183,13 +184,6 @@ abstract class Services_ParseCollections_Abstract {
             $season = $matches[1];
             $episode = $matches[2];
             $year = $matches[3];
-        } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
-            /*
-             * blah blah 1920
-             * blah blah 2020
-             */
-            $episode = null;
-            $season = $matches[1] . $matches[2];
         } // elseif
 
 
@@ -223,10 +217,8 @@ abstract class Services_ParseCollections_Abstract {
         $tmpName = mb_convert_encoding($collName, 'UTF-8', 'UTF-8');
         $tmpName = str_replace(array(
                                     '.',
-                                    ':',            // Remove any semi columns
+                                    ':',            // Remove any colons
                                     '-',
-                                    '\'',           // Apostrophes
-                                    '!',
                                     '_',
                                     '=',
                                ),
