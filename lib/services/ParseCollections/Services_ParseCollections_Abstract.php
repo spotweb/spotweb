@@ -102,14 +102,16 @@ abstract class Services_ParseCollections_Abstract {
          * Try to parse the 'currentpart' and 'totalparts' stuff,
          * basically these are volume x of y kind of information.
          */
-        if (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})[ \/\-,.]?(van|of)?[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        if (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,2})([ \/\-,.]|(van|of)|[ \(\*\-,.])+([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             /* History channel the universe seizoen 2 dvd 2/5 */
             /* Maria wern fatal contamination dvd 2 van 2 */
             /* Geert mak in europa tv serie deel 3 van 6  */
             /* Testament van de eighties various artists [dvd 1 van 5] */
+            /* Piet pienter en bert bibber (deel 12) rescan */
+            var_dump($matches);
             $currentPart = $matches[2];
-            $totalParts = $matches[4];
-        } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+            $totalParts = $matches[5];
+        } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             $totalParts = null;
             $currentPart = $matches[2];
         } // else if
@@ -126,6 +128,10 @@ abstract class Services_ParseCollections_Abstract {
             /* Goede Tijden Slechte Tijden - S24E67 Dinsdag 03-12-2013 RTL Lounge */
             $season = $matches[1];
             $episode = $matches[2];
+        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \-,.]?[d]([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+            /* Beverly hills 90210 s7d4 */
+            $season = $matches[1];
+            $currentPart = $matches[2];
         } elseif (preg_match('/[ \-,.](season|seizoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Goede Tijden, Slechte Tijden Seizoen 24 Aflevering 4811 02-12-2013 Repost" */
             $season = $matches[2];
@@ -143,7 +149,7 @@ abstract class Services_ParseCollections_Abstract {
              */
             $season = $matches[2];
             $episode = null;
-        } elseif (preg_match('/[ \-,.](episode|ep|aflevering|afl|epsiode)[ \-,.]*([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.](episode|ep|aflevering|afl|epsiode|week|nr)[ \-,.]*([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /*
              * beschuldigd afl 65
              * heartless city (2013) tv serie "asian - south korea". == eng subs == episode 11 ==

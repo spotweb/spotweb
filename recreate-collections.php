@@ -37,7 +37,7 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'bliep - De nieuwste dance promo\'s in de mix';
+//    $spot['title'] = 'Maria wern fatal (deel 12) contamination';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
 //    $y = new Services_ParseCollections_Music($spot);
