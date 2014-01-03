@@ -290,6 +290,17 @@ class Services_User_Filters {
 			$filterValueList = array();
 			foreach($tmpFilterValues as $filterValue) {
 				$tmpFilter = explode(':', urldecode($filterValue));
+
+                /*
+                 * If the filter is missing the booloper, set it to be the default
+                 */
+                if (count($tmpFilter) == 3) {
+                    // old style filter
+                    $tmpFilter = array(0 => $tmpFilter[0],
+                                       1 => $tmpFilter[1],
+                                       2=> 'DEF',
+                                       3 => $tmpFilter[2]);
+                } // if
 				
 				# and create the actual filter
 				if (count($tmpFilter) >= 4) {
