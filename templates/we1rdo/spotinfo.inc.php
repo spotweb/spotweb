@@ -29,12 +29,17 @@
     } // if
 
     if (!empty($spot['episode'])) {
-        if (!empty($episodeString)) {
-            $episodeString .= ', ';
-        } // if
-
-        $episodeString .= '<a href="' . $tplHelper->makeEpisodeSearchUrl($spot) . '">' . _('episode') . ' ' .$spot['episode'] . "</a>";
+        $episodeString = $tplHelper->commaAdd($episodeString, '<a href="' . $tplHelper->makeEpisodeSearchUrl($spot) . '">' . _('episode') . ' ' .$spot['episode'] . "</a>");
     } // if
+
+    if (!empty($spot['partscurrent'])) {
+        $episodeString = $tplHelper->commaAdd($episodeString, _("deel") . ' ' . (int) $spot['partscurrent']);
+        if (!empty($spot['partstotal'])) {
+            $episodeString = $tplHelper->commaAdd($episodeString, _("van ") . ' ' . (int) $spot['partstotal']);
+        } // if
+    } elseif (!empty($spot['partstotal'])) {
+        $episodeString = $tplHelper->commaAdd($episodeString, _("in totaal") . ' ' . (int) $spot['partstotal'] . "delen");
+    } // eisf
 ?>
 
 		<div id="details" class="details <?php echo $tplHelper->cat2CssClass($spot) ?>">

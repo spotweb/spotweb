@@ -1146,6 +1146,14 @@ class SpotTemplateHelper {
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
 
+    function commaAdd($orig, $add) {
+        if (!empty($orig)) {
+            $orig .= ', ';
+        } // if
+
+        return $orig . $add;
+    } // comaAdd
+
 	/*
 	 * Geeft een array met valide statistics graphs terug
 	 */
