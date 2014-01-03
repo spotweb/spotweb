@@ -578,7 +578,8 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
-		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
+		$tmp = html_entity_decode($tmp, ENT_QUOTES, 'UTF-8');
+        $tmp = html_entity_decode($tmp, ENT_QUOTES, 'UTF-8'); // twice because some legacy spots are stupid
 		$tmp = htmlentities($tmp, ENT_QUOTES, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
