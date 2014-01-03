@@ -12,7 +12,13 @@ class Services_ParseCollections_Factory {
     public static function factory(array $spot) {
         switch($spot['category']) {
             case 0  : {
-                if ($spot['subcatz'] == 'z2|') {
+                if ($spot['subcatz'] == 'z0|') {
+                    // Movies
+                    return new Services_ParseCollections_Movies($spot);
+                } elseif ($spot['subcatz'] == 'z1|') {
+                    // TV Series
+                    return new Services_ParseCollections_Tv($spot);
+                } elseif ($spot['subcatz'] == 'z2|') {
                     // Books
                     return new Services_ParseCollections_Books($spot);
                 } // elseif

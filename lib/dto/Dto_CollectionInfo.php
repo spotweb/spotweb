@@ -5,6 +5,7 @@ class Dto_CollectionInfo {
     const CATTYPE_GAMES         = 2;
     const CATTYPE_MOVIES        = 3;
     const CATTYPE_MUSIC         = 4;
+    const CATTYPE_TV            = 5;
 
     /**
      * Cleaned up title
