@@ -37,16 +37,15 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Warehouse 13 seizoen 1 dvd 3';
+//    $spot['title'] = 'Mark Knopfler Kill for the best of Crimson 2008';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
-//    $y = new Services_ParseCollections_Movies($spot);
+//    $y = new Services_ParseCollections_Music($spot);
 //    $y = $y->parseSpot();
 //    var_dump(mb_detect_encoding($y->getTitle()));
 //    var_dump(mb_check_encoding($y->getTitle()));
 //    var_dump($y);
 //    die();
-
 
     # Truncate the current collections tables, and reset all collection id's
     if (SpotCommandline::get('clean')) {
