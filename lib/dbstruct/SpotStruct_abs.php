@@ -806,7 +806,7 @@ abstract class SpotStruct_abs {
         $this->validateIndex("idx_mastercollections_1", "UNIQUE", "mastercollections", array("title", "cattype"));
 
         # ---- Indexes on collections ----
-        $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "year"));
+        $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "year", "partscurrent", "partstotal"));
 
         # Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -820,8 +820,8 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('reportsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-        $this->addForeignKey('spots', 'collectionid', 'collections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-        $this->addForeignKey('collections', 'mcid', 'mastercollections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+//        $this->addForeignKey('spots', 'collectionid', 'collections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+//        $this->addForeignKey('collections', 'mcid', 'mastercollections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 
 		##############################################################################################
 		# Drop old columns ###########################################################################
