@@ -19,29 +19,26 @@ class Services_ParseCollections_Books extends Services_ParseCollections_Abstract
          *      "Nora Roberts - De villa"
          */
         $title = $this->prepareTitle($this->spot['title']);
+        $collInfo = $this->parseYearEpisodeSeason($this->spot);
+
         $tmpPos = strpos($title, '-');
-        if ($tmpPos === false) {
+        if ($tmpPos !== false) {
             /*
-             * we might be dealing with some sort of date in the article, lets
-             * use that then.
+             * There is a specific artist
              */
-            if (preg_match('/[ \-,.\(\[]([0-9]{1,2})[\-.\/ ]([0-9]{2})[\-.\/ ]([0-9]{2,4})([\)\] \-,.]|$)/', $title, $matches)) {
-                /* Ad vrijdag 10 06 2011 */
-                $episode = $matches[1];
-                $season = $matches[2];
-                $year = $matches[3];
-                $bookTitle = substr($title, 0, strpos($title, $matches[0]));
+            $title = substr($title, 0, $tmpPos);
+        } // if
 
-                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($bookTitle), $season, $episode, $year, null, null);
-            } else {
-                return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($title), null, null, null, null, null);
-            } // else
+        if ($collInfo === null) {
+            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($title), null, null, null, null, null);
         } else {
-            $author = substr($title, 0, $tmpPos);
-            return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_BOOKS, $this->prepareCollName($author), null, null, null, null, null, null);
-        } // else
+            $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_BOOKS);
+            if (($tmpPos !== false) && ($tmpPos < strlen($collInfo->getTitle()))) {
+                $collInfo->setTitle($this->prepareCollName($title));
+            } // if
 
-        return null;
+            return $collInfo;
+        } // else
     } // parseSpot()
 
 }

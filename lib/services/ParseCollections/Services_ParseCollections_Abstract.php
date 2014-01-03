@@ -38,16 +38,18 @@ abstract class Services_ParseCollections_Abstract {
         $title = html_entity_decode($title, ENT_NOQUOTES, 'UTF-8');
 
         /*
-         * Replcae common tags and stuff we do not want to do anything with
+         * Replcae common tags and stuff we do not want to do anything with.
+         * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
-        $title = preg_replace("/\\b(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|nederlands)\\b/i", "", $title);
+        $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
+                                   "ac3|dts|nederlands|rescan|nl sub)\\b/i", "", $title);
 
         /*
          * Replace empty parenthesis, might be caused by aboves replacement
          */
         $title = str_replace(array("[]", "()"), "", $title);
 
-        return strtolower($title);
+        return mb_strtolower($title, 'UTF-8');
     } // prepareTitle
 
     /**
@@ -102,15 +104,21 @@ abstract class Services_ParseCollections_Abstract {
          * Try to parse the 'currentpart' and 'totalparts' stuff,
          * basically these are volume x of y kind of information.
          */
-        if (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,2})([ \/\-,.]|(van|of)|[ \(\*\-,.])+([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        if (preg_match('/[ \)\[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,3})([ \/\-,.]|(van|of|t\/m)|[ \(\*\-,.])+([0-9]{1,3})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             /* History channel the universe seizoen 2 dvd 2/5 */
             /* Maria wern fatal contamination dvd 2 van 2 */
             /* Geert mak in europa tv serie deel 3 van 6  */
             /* Testament van de eighties various artists [dvd 1 van 5] */
             /* Piet pienter en bert bibber (deel 12) rescan */
+            /* John Denver - Around The World Live(DVDBox)DVD2-5 */
             $currentPart = $matches[2];
             $totalParts = $matches[5];
-        } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \)\(\*\-]([0-9]{1,3})([ \/\-,.]|(van|of|t\/m)|[ \(\*\-,.])+([0-9]{1,3})([\]\*\-\) ]|$)/', $title, $matches)) {
+            /* Last days of ww2 3 weekly episodes (6 van 6) */
+            /* Hitler s warriors 4 of 6 udet */
+            $currentPart = $matches[1];
+            $totalParts = $matches[4];
+        } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,3})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             $totalParts = null;
             $currentPart = $matches[2];
         } // else if
@@ -127,8 +135,9 @@ abstract class Services_ParseCollections_Abstract {
             /* Goede Tijden Slechte Tijden - S24E67 Dinsdag 03-12-2013 RTL Lounge */
             $season = $matches[1];
             $episode = $matches[2];
-        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \-,.]?[d]([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \/\-,.]?[d]([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
             /* Beverly hills 90210 s7d4 */
+            /* Seaquest dsv s1/d2 */
             $season = $matches[1];
             $currentPart = $matches[2];
         } elseif (preg_match('/[ \-,.](season|seizoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
@@ -139,12 +148,13 @@ abstract class Services_ParseCollections_Abstract {
             /* "Sons of Anarchy Episode 12 Season 6 Released Dec 3th 2013" */
             $episode = $matches[2];
             $season = $matches[4];
-        } elseif (preg_match('/[ \-,.](season|seizoen|serie|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\-,.](season|seizoen|serie|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
             /*
              * United States of Tara S03
              * Star Trek Voyager - Seizoen 3,
              * monogatari series second season - 22 [720p][aac] [deadfish]
              * the good wife s5 disc 2 nl subs
+             * George gently (season 3 complete)
              */
             $season = $matches[2];
             $episode = null;
