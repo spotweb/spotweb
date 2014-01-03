@@ -455,7 +455,7 @@ if (!$dialogembedded) { ?>
 <?php } ?>
 
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'pushalot')) { ?>
-<!-- Pushover -->
+<!-- Pushalot -->
                <fieldset>
                     <dt><label for="use_pushalot"><?php echo _('Use Pushalot?'); ?></label></dt>
                     <dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][pushalot][enabled]" id="use_pushalot" <?php if ($edituserprefsform['notifications']['pushalot']['enabled']) { echo 'checked="checked"'; } ?>></dd>
