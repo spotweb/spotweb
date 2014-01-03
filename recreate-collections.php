@@ -37,15 +37,15 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-    $spot['title'] = 'Logan\'s Run (1976/ac3/720p)';
-    $spot['subcatz'] = '';
-    $spot['category'] = '0';
-    $y = new Services_ParseCollections_Movies($spot);
-    $y = $y->parseSpot();
-    var_dump(mb_detect_encoding($y->getTitle()));
-    var_dump(mb_check_encoding($y->getTitle()));
-    var_dump($y);
-    die();
+//    $spot['title'] = 'Logan\'s Run (1976/ac3/720p)';
+//    $spot['subcatz'] = '';
+//    $spot['category'] = '0';
+//    $y = new Services_ParseCollections_Movies($spot);
+//    $y = $y->parseSpot();
+//    var_dump(mb_detect_encoding($y->getTitle()));
+//    var_dump(mb_check_encoding($y->getTitle()));
+//    var_dump($y);
+//    die();
 
     # Truncate the current collections tables, and reset all collection id's
     if (SpotCommandline::get('clean')) {
