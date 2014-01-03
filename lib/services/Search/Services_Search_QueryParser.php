@@ -536,7 +536,8 @@ class Services_Search_QueryParser {
 								  'title' => 's.title',
 								  'tag' => 's.tag',
 								  'new' => 'new',
-                                  'collection' => 'mc.id',
+                                  'collectionid' => 'mc.id',
+                                  'collection' => 'mc.title',
                                   'season' => 'c.season',
                                   'episode' => 'c.episode',
                                   'year' => 'c.year',
@@ -684,9 +685,9 @@ class Services_Search_QueryParser {
 				 * as postgresql doesn't like that of course
 				 */
 				if (!is_numeric($tmpFilterValue)) {
-					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
+					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue, PDO::PARAM_STR);
 				} else {
-					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue);
+					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue, PDO::PARAM_INT);
 				} # if
 
 				# depending on the type of search, we either add the filter as an AND or an OR

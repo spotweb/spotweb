@@ -54,7 +54,7 @@ abstract class dbeng_abs {
 	/*
 	 * Database specific 'escape' or 'safe' function to escape strings
 	 */
-	abstract function safe($s);	
+	abstract function safe($s, $forceType = null);
 	
 	/*
 	 * Returns the amount of effected rows
