@@ -108,7 +108,6 @@ abstract class Services_ParseCollections_Abstract {
             /* Geert mak in europa tv serie deel 3 van 6  */
             /* Testament van de eighties various artists [dvd 1 van 5] */
             /* Piet pienter en bert bibber (deel 12) rescan */
-            var_dump($matches);
             $currentPart = $matches[2];
             $totalParts = $matches[5];
         } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
