@@ -27,7 +27,7 @@ try {
 	SpotTiming::disable();
 
 	# Initialize commandline arguments
-	SpotCommandline::initialize(array('force', 'debug', 'retro', 'timing'), array('force' => false, 'timing' => false, 'debug' => false, 'retro' => false));
+	SpotCommandline::initialize(array('reallyforce', 'debug', 'retro', 'timing'), array('reallyforce' => false, 'timing' => false, 'debug' => false, 'retro' => false));
 
     # Allow for timing to be displayed after retrieval of spots
     $showTiming = SpotCommandline::get('timing');
@@ -88,7 +88,7 @@ try {
 	 * this would mean it will mess up all sorts of things like
 	 * comment calculation, but a user can force our hand
 	 */
-	$forceMode = SpotCommandline::get('force');
+	$forceMode = SpotCommandline::get('reallyforce');
 
 	/*
 	 * Do we need to debuglog this session? Generates loads of
@@ -291,7 +291,7 @@ try {
 
 catch(RetrieverRunningException $x) {
        echo PHP_EOL . PHP_EOL;
-       echo "retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL;
+       echo "retriever.php is already running, pass '--reallyforce' to ignore this warning." . PHP_EOL;
 }
 
 catch(NntpException $x) {
