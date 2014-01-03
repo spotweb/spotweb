@@ -37,7 +37,7 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Mark Knopfler Kill for the best of Crimson 2008';
+//    $spot['title'] = 'bliep - De nieuwste dance promo\'s in de mix';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
 //    $y = new Services_ParseCollections_Music($spot);

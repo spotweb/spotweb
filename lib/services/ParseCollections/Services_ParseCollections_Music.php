@@ -33,7 +33,9 @@ class Services_ParseCollections_Music extends Services_ParseCollections_Abstract
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MUSIC, $this->prepareCollName($title), null, null, null, null, null);
         } else {
             $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_MUSIC);
-            $collInfo->setTitle($this->prepareCollName($title));
+            if (($tmpPos !== false) && ($tmpPos < strlen($collInfo->getTitle()))) {
+                $collInfo->setTitle($this->prepareCollName($title));
+            } // if
 
             return $collInfo;
         } // else

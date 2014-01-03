@@ -102,14 +102,14 @@ abstract class Services_ParseCollections_Abstract {
          * Try to parse the 'currentpart' and 'totalparts' stuff,
          * basically these are volume x of y kind of information.
          */
-        if (preg_match('/[ \[\(\*\-,.](dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})[ \/\-,.]?(van|of)?[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        if (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})[ \/\-,.]?(van|of)?[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             /* History channel the universe seizoen 2 dvd 2/5 */
             /* Maria wern fatal contamination dvd 2 van 2 */
             /* Geert mak in europa tv serie deel 3 van 6  */
             /* Testament van de eighties various artists [dvd 1 van 5] */
             $currentPart = $matches[2];
             $totalParts = $matches[4];
-        } elseif (preg_match('/[ \[\(\*\-,.](dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel)[ \(\*\-,.]?([0-9]{1,2})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             $totalParts = null;
             $currentPart = $matches[2];
         } // else if

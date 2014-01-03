@@ -221,7 +221,7 @@ class Dao_Base_Spot implements Dao_Spot {
 												mc.tvrageid as \"tvrageid\",
 												c.season as \"season\",
 												c.episode as \"episode\",
-												c.year as \"release_year\"
+												c.year as \"release_year\",
 												c.partscurrent as \"partscurrent\",
 												c.partstotal as \"partstotal\"
 												FROM spots AS s
