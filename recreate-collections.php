@@ -37,7 +37,7 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-//    $spot['title'] = 'Logan\'s Run (1976/ac3/720p)';
+//    $spot['title'] = 'De Vrienden Van Amstel Live! In Ahoy&#39; 2001';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
 //    $y = new Services_ParseCollections_Movies($spot);

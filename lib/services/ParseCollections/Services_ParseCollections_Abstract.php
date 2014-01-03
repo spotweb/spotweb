@@ -35,7 +35,7 @@ abstract class Services_ParseCollections_Abstract {
          * Decode HTML entities, this is normally done during
          * Spot parsing, but we have a lot of legacy spots.
          */
-        $title = html_entity_decode($title, ENT_NOQUOTES, 'UTF-8');
+        $title = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
 
         /*
          * Replcae common tags and stuff we do not want to do anything with.
@@ -104,7 +104,7 @@ abstract class Services_ParseCollections_Abstract {
          * Try to parse the 'currentpart' and 'totalparts' stuff,
          * basically these are volume x of y kind of information.
          */
-        if (preg_match('/[ \)\[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,3})([ \/\-,.]|(van|of|t\/m)|[ \(\*\-,.])+([0-9]{1,3})([ \]\*\-,.\)]|$)/', $title, $matches)) {
+        if (preg_match('/[ \)\[\(\*\-,.](disc|disk|dvd|cd|vol|volume|deel|part)[ \(\*\-,.]?([0-9]{1,3})([ \/\-,.]|(van|of|t\/m|v|tm)|[ \(\*\-,.])+([0-9]{1,3})([ \]\*\-,.\)]|$)/', $title, $matches)) {
             /* History channel the universe seizoen 2 dvd 2/5 */
             /* Maria wern fatal contamination dvd 2 van 2 */
             /* Geert mak in europa tv serie deel 3 van 6  */
@@ -135,11 +135,11 @@ abstract class Services_ParseCollections_Abstract {
             /* Goede Tijden Slechte Tijden - S24E67 Dinsdag 03-12-2013 RTL Lounge */
             $season = $matches[1];
             $episode = $matches[2];
-        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \/\-,.]?[d]([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \/\-,.]?([d]|dvd)([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
             /* Beverly hills 90210 s7d4 */
             /* Seaquest dsv s1/d2 */
             $season = $matches[1];
-            $currentPart = $matches[2];
+            $currentPart = $matches[3];
         } elseif (preg_match('/[ \-,.](season|seizoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Goede Tijden, Slechte Tijden Seizoen 24 Aflevering 4811 02-12-2013 Repost" */
             $season = $matches[2];
@@ -202,7 +202,7 @@ abstract class Services_ParseCollections_Abstract {
                 $posSeasonFound = strlen($title);
             } // else
 
-            $titleStr = substr($this->spot['title'], 0, min($posYearFound, $posSeasonFound, $posPartOfFound));
+            $titleStr = substr($title, 0, min($posYearFound, $posSeasonFound, $posPartOfFound));
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES,
                                             $this->prepareCollName($titleStr),
                                             $season,
