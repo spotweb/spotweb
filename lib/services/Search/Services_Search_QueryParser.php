@@ -678,7 +678,7 @@ class Services_Search_QueryParser {
 						case 'k': $val *= (float) 1024;
 					} # switch
 					$tmpFilterValue = round($val, 0);
-				} elseif ($tmpFilterFieldname == 'mc.title') {
+				} elseif ($tmpFilterFieldname == 'collection') {
                     $tmpFilterValue = mb_strtolower($tmpFilterValue, 'UTF-8');
                     $tmpFilterValue = mb_strtoupper(mb_substr($tmpFilterValue, 0, 1)) . mb_substr($tmpFilterValue, 1);
                 } # if
