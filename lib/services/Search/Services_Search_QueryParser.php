@@ -381,15 +381,15 @@ class Services_Search_QueryParser {
 					 */
 					if (count($subcats) == 1) {
 						if (in_array($subcats[0][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = " . $this->_dbEng->safe($subcats[0] . '|') . ")))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " = " . $this->_dbEng->safe($subcats[0] . '|', PDO::PARAM_STR) . ")))";
 						} elseif (in_array($subcats[0][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[0] . '|%') . ")))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcat" . $subcats[0][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[0] . '|%', PDO::PARAM_STR) . ")))";
 						} # if
 					} elseif (count($subcats) == 2) {
 						if (in_array($subcats[1][0], array('a', 'z'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = " . $this->_dbEng->safe($subcats[1] . '|') . ")))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " = " . $this->_dbEng->safe($subcats[1] . '|', PDO::PARAM_STR) . ")))";
 						} elseif (in_array($subcats[1][0], array('b', 'c', 'd'))) { 
-							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[1] . '|%') . ")))";
+							$strongNotSql[] = "(NOT ((s.Category = " . (int) $strongNotCat . ") AND (s.subcatz = '" . $subcats[0] . "|') AND (subcat" . $subcats[1][0] . " LIKE " . $this->_dbEng->safe('%' . $subcats[1] . '|%', PDO::PARAM_STR) . ")))";
 						} # if
 					} # else
 				} # else not whole subcat
@@ -603,7 +603,7 @@ class Services_Search_QueryParser {
 				 */
 				switch($tmpFilterFieldname) {
 					case 'new' : {
-							$tmpFilterValue = ' ((s.stamp > ' . $this->_dbEng->safe((int) $currentSession['user']['lastread']) . ')';
+							$tmpFilterValue = ' ((s.stamp > ' . $this->_dbEng->safe((int) $currentSession['user']['lastread'], PDO::PARAM_INT) . ')';
 							$tmpFilterValue .= ' AND (l.seen IS NULL))';
 							
 							break;
@@ -619,7 +619,7 @@ class Services_Search_QueryParser {
 												   'tablealias' => 'spost',
 												   'jointype' => 'LEFT',
 												   'joincondition' => 'spost.messageid = s.messageid');
-						$tmpFilterValue = ' (spost.ouruserid = ' . $this->_dbEng->safe((int) $currentSession['user']['userid']) . ') ';
+						$tmpFilterValue = ' (spost.ouruserid = ' . $this->_dbEng->safe((int) $currentSession['user']['userid'], PDO::PARAM_INT) . ') ';
 						$sortFields[] = array('field' => 'spost.stamp',
 											  'direction' => 'DESC',
 											  'autoadded' => true,
@@ -678,12 +678,16 @@ class Services_Search_QueryParser {
 						case 'k': $val *= (float) 1024;
 					} # switch
 					$tmpFilterValue = round($val, 0);
-				} # if
-					
-				/*
-				 * add quotes around it when not numeric. We cannot blankly always add quotes
-				 * as postgresql doesn't like that of course
-				 */
+				} elseif ($tmpFilterFieldname == 'mc.title') {
+                    $tmpFilterValue = mb_strtolower($tmpFilterValue, 'UTF-8');
+                    $tmpFilterValue = mb_strtoupper(mb_substr($tmpFilterValue, 0, 1)) . mb_substr($tmpFilterValue, 1);
+                } # if
+
+
+                /*
+                 * add quotes around it when not numeric. We cannot blankly always add quotes
+                 * as postgresql doesn't like that of course
+                 */
 				if (!is_numeric($tmpFilterValue)) {
 					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue, PDO::PARAM_STR);
 				} else {

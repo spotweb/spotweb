@@ -476,16 +476,16 @@ class SpotTemplateHelper {
     /*
      * Creates an collection search URL
      */
-    function makeCollectionSearchUrl($spot) {
-        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+    function makeCollectionIdSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
         return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;sortby=stamp&amp;sortdir=DESC';
-    } # makeCollectionSearchUrl
+    } # makeCollectionIdSearchUrl
 
     /*
      * Creates an season search URL
     */
     function makeSeasonSearchUrl($spot) {
-        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
         return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;search[value][]=Season:=:' . urlencode($spot['season']) . '&amp;sortby=stamp&amp;sortdir=DESC';
     } # makeSeasonSearchUrl
 
@@ -493,7 +493,7 @@ class SpotTemplateHelper {
      * Creates an episode search URL
     */
     function makeEpisodeSearchUrl($spot) {
-        $collectionFilter = '&amp;search[value][]=Collection:=:' . urlencode($spot['mcid']);
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
         $seasonFilter = '';
         if (!empty($spot['season'])) {
             $seasonFilter = '&amp;search[value][]=Season:=:' . urlencode($spot['season']);
