@@ -13,6 +13,18 @@ class Services_ParseCollections_Factory {
         switch($spot['category']) {
             case 0  : {
                 if ($spot['subcatz'] == 'z0|') {
+                    if (strpos($spot['subcatd'], 'd6|') !== false) {
+                        // Documentaries
+                        return new Services_ParseCollections_Documentary($spot);
+                    } elseif ($spot['subcatd'] == 'd13|') {
+                        /*
+                         * Make a direct comparison on subcatd, because if a spot
+                         * matches another catgory as well (eg both music and family),
+                         * it is most likely collectionable anyway
+                         */
+                        return new Services_ParseCollections_MusicVideos($spot);
+                    } // elseif
+
                     // Movies
                     return new Services_ParseCollections_Movies($spot);
                 } elseif ($spot['subcatz'] == 'z1|') {
