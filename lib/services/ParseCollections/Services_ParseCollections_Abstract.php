@@ -24,6 +24,23 @@ abstract class Services_ParseCollections_Abstract {
      */
     abstract function parseSpot();
 
+    protected function checkForSpam() {
+        /*
+         * If the spot contains more than x categories,
+         * it is probably spam so we don't bother creating
+         * a phony collection for it
+         */
+        $subCatList = explode('|',
+                            $this->spot['subcata'] . '|' .
+                            $this->spot['subcatb'] . '|' .
+                            $this->spot['subcatc'] . '|' .
+                            $this->spot['subcatd']);
+        if (count($subCatList) > 20) {
+            return true;
+        } // if
+
+        return false;
+    } // checkForSpam
     /**
      * Cleans up an title and lowercases it
      *
@@ -42,13 +59,14 @@ abstract class Services_ParseCollections_Abstract {
          * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
         $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
-                                   "ac3|dts|nederlands|rescan|nl sub|pal|ipad|iphone|psp|mp4|dd5.1|" .
-                                   "ntsc|bd50|3d|480p|half sbs|dvd5|dvd9|rental|nl|bollywood|divx|x264)\\b/i", "", $title);
+                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|iphone|psp|mp4|dd5.1|~\\* srt \\*~|" .
+                                   "ntsc|bd50|3d|480p|half sbs|half\\-sbs|half ou|dvd5|dvd9|rental|nl|bollywood|divx|x264|" .
+                                   "blu ray|made by berserk|web\\-dl|xbox 360|unrated|remux|aac|bd|mkv|subs|subtitel)\\b/i", "", $title);
 
         /*
          * Replace empty parenthesis, might be caused by aboves replacement
          */
-        $title = str_replace(array("[]", "()"), "", $title);
+        $title = str_replace(array("[]", "()", "**"), "", $title);
 
         return mb_strtolower($title, 'UTF-8');
     } // prepareTitle
@@ -213,7 +231,7 @@ abstract class Services_ParseCollections_Abstract {
      * @param string $collName
      * @returns string Cleaned up collection name
      */
-    protected function prepareCollName($collName) {
+    public function prepareCollName($collName) {
         $tmpName = mb_convert_encoding($collName, 'UTF-8', 'UTF-8');
         $tmpName = str_replace(array(
                                     '.',
@@ -226,6 +244,16 @@ abstract class Services_ParseCollections_Abstract {
                                $tmpName);
         $tmpName = preg_replace('/\s+/', ' ', $tmpName);
         $tmpName = trim($tmpName, " \t\n\r\0\x0B-=");
+        $tmpName = ltrim($tmpName, '])');       // remove 'incorrect' closing tags at the front
+        $tmpName = rtrim($tmpName, '([');       // and incorrect opening tags at the end
+
+        /*
+         * If the title ends with an ', the', we move it to the front
+         */
+        if (preg_match('/\, the$/', $tmpName) === 1) {
+            $tmpName = trim('The ' . mb_substr($tmpName, 0, -5));
+        } // if
+
         $tmpName = mb_strtolower($tmpName, 'UTF-8');
         $tmpName = mb_strtoupper(mb_substr($tmpName, 0, 1)) . mb_substr($tmpName, 1);
 

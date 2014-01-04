@@ -674,6 +674,31 @@ abstract class SpotStruct_abs {
         $this->validateColumn('partstotal', 'collections', 'INTEGER', NULL, false, '');
         $this->alterStorageEngine("collections", "InnoDB");
 
+//        # ---- tmdbinfo table ---- #
+//        $this->createTable('tmdbinfo', "ascii");
+//        $this->validateColumn('tmdbid', 'tmdbinfo', 'INTEGER', "0", true, '');
+//        $this->validateColumn('tmdbtitle', 'tmdbinfo', 'VARCHAR(128)', "''", false, '');
+//        $this->validateColumn('overview', 'tmdbinfo', 'TEXT', "''", false, '');
+//        $this->validateColumn('tagline', 'tmdbinfo', 'VARCHAR(250)', "''", false, '');
+//        $this->validateColumn('rating', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('release', 'tmdbinfo', 'VARCHAR(10)', "0", false, '');
+//        $this->validateColumn('runtime', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('budget', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('revenue', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('popularity', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('?? pg rating ??', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('tmdbcollection', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('tmdbcollection_id', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('tmdbcollection_name', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('?? genres ??', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->validateColumn('homepage', 'tmdbinfo', 'VARCHAR(128)', "''", false, '');
+//        $this->validateColumn('imdb_id', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
+//        $this->validateColumn('poster_path', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
+//        $this->validateColumn('poster_path', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
+//        $this->validateColumn('vote_average', 'tmdbinfo', 'FLOAT', "0", false, '');
+//        $this->validateColumn('vote_count', 'tmdbinfo', 'INTEGER', "0", false, '');
+//        $this->alterStorageEngine("tmdbinfo", "InnoDB");
+
         ##############################################################################################
 		### Remove old sessions ######################################################################
 		##############################################################################################

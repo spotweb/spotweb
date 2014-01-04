@@ -11,6 +11,13 @@ class Services_ParseCollections_Tv extends Services_ParseCollections_Movies {
      */
     function parseSpot() {
         /*
+         * Try to prevent obvious spam from creating useless collections
+         */
+        if ($this->checkForSpam()) {
+            return null;
+        } // if
+
+        /*
          * We use the exact same parsing as for Movies, but we do
          * want to use our own collection type id which makes it easier
          * for scrapers and the like

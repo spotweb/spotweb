@@ -11,6 +11,13 @@ class Services_ParseCollections_Music extends Services_ParseCollections_Abstract
      */
     function parseSpot() {
         /*
+         * Try to prevent obvious spam from creating useless collections
+         */
+        if ($this->checkForSpam()) {
+            return null;
+        } // if
+
+        /*
          * For music we just assume the title starts with the name of the artist, a dash, and then
          * the rest.
          *
