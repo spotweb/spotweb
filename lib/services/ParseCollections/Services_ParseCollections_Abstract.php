@@ -107,11 +107,6 @@ abstract class Services_ParseCollections_Abstract {
              * jackpot / arme riddere (2011/2013) pal
              */
             $year = $matches[2];
-        } elseif (preg_match('/([\(\[])([0-9]{4})([\/\-\.])\w)([\)\]])/', $title, $matches)) {
-            /*
-             * Blah (2009/i)
-             */
-            $year = $matches[2];
         } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
             /*
              * blah blah 1920
