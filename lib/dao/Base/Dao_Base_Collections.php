@@ -19,6 +19,13 @@ class Dao_Base_Collections implements Dao_Collections {
      * @var bool
      */
     protected static $startedWithFullCacheLoad = false;
+    /**
+     * List of mastercollections to update with the latest stamp and
+     * spots' id
+     *
+     * @var array
+     */
+    protected $mc_updateMcStamp = array();
 
     /*
      * constructs a new Dao_Base_Collections object,
@@ -102,13 +109,19 @@ class Dao_Base_Collections implements Dao_Collections {
      * it in the database if it does not exist
      *
      * @param Dto_CollectionInfo $collToFind
+     * @param int $stamp
+     * @param int $spotId
      * @return Dto_CollectionInfo
      */
-    protected function matchCreateSpecificCollection(Dto_CollectionInfo $collToFind) {
+    protected function matchCreateSpecificCollection(Dto_CollectionInfo $collToFind, $stamp, $spotId) {
         $title = $collToFind->getTitle();
         $catType = $collToFind->getCatType();
         foreach(self::$mc_CacheList[$title . '|' . $catType]['collections'] as $collection) {
             if ($collToFind->equalColl($collection)) {
+                /* Save stamp to update collection stamp later on */
+                $this->mc_updateMcStamp[$collToFind->getMcId()] = array('stamp' => $stamp,
+                                                                        'spotid' => $spotId);
+
                 return $collection;
             } // if
         } // foreach
@@ -133,8 +146,33 @@ class Dao_Base_Collections implements Dao_Collections {
         // and add it to the cache
         self::$mc_CacheList[$title . '|' . $catType]['collections'][] = $collToFind;
 
+        /* Save stamp to update collection stamp later on */
+        $this->mc_updateMcStamp[$collToFind->getMcId()] = array('stamp' => $stamp,
+                                                                'spotid' => $spotId);
+
         return $collToFind;
     } // matchCreateSpecificCollection
+
+    /**
+     * Update the master collection table with the latest Spot and
+     * stamp in the spots
+     */
+    protected function updateMcCollectionStamp() {
+        foreach($this->mc_updateMcStamp as $mcId => $val) {
+            $this->_conn->exec("UPDATE mastercollections
+                                        SET lateststamp = :lateststamp,
+                                            latestspotid = :latestspotid
+                                WHERE id = :mcid",
+                array(
+                    ':lateststamp' => array($val['stamp'], PDO::PARAM_INT),
+                    ':latestspotid' => array($val['spotid'], PDO::PARAM_INT),
+                    ':mcid' => array($mcId, PDO::PARAM_INT),
+                ));
+        } // foreach
+
+        // and clear the updates-pending list
+        $this->mc_updateMcStamp = array();
+    } // updateMcCollectionStamp
 
     /**
      * Returns an list of spots with the mastercollection id inserted into the
@@ -176,13 +214,18 @@ class Dao_Base_Collections implements Dao_Collections {
                      * we always retrieve the list of collections when retrieving the
                      * master collection.
                      */
-                    $spot['collectionInfo'] = $this->matchCreateSpecificCollection($spot['collectionInfo']);
+                    $spot['collectionInfo'] = $this->matchCreateSpecificCollection($spot['collectionInfo'], $spot['stamp'], $spot['id']);;
                 } else {
                     $toFetch[$spot['collectionInfo']->getTitle()] = $spot['collectionInfo']->getCatType();
                 } // else
             } // if
         } // foreach
         unset($spot);
+
+        /*
+         * Update the local collection information with the latest stamp
+         */
+        $this->updateMcCollectionStamp();
 
         // get remaining titles from database
         if (!empty($toFetch)) {

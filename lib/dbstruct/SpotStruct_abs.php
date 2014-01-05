@@ -659,6 +659,8 @@ abstract class SpotStruct_abs {
         # ---- mastercollections table ---- #
         $this->createTable('mastercollections', "ascii");
         $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8_bin');
+        $this->validateColumn('lateststamp', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('latestspotid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('cattype', 'mastercollections', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdbid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('tvrageid', 'mastercollections', 'INTEGER', "0", false, '');
@@ -674,30 +676,67 @@ abstract class SpotStruct_abs {
         $this->validateColumn('partstotal', 'collections', 'INTEGER', NULL, false, '');
         $this->alterStorageEngine("collections", "InnoDB");
 
-//        # ---- tmdbinfo table ---- #
-//        $this->createTable('tmdbinfo', "ascii");
-//        $this->validateColumn('tmdbid', 'tmdbinfo', 'INTEGER', "0", true, '');
-//        $this->validateColumn('tmdbtitle', 'tmdbinfo', 'VARCHAR(128)', "''", false, '');
-//        $this->validateColumn('overview', 'tmdbinfo', 'TEXT', "''", false, '');
-//        $this->validateColumn('tagline', 'tmdbinfo', 'VARCHAR(250)', "''", false, '');
-//        $this->validateColumn('rating', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('release', 'tmdbinfo', 'VARCHAR(10)', "0", false, '');
-//        $this->validateColumn('runtime', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('budget', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('revenue', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('popularity', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('?? pg rating ??', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('tmdbcollection', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('tmdbcollection_id', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('tmdbcollection_name', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('?? genres ??', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->validateColumn('homepage', 'tmdbinfo', 'VARCHAR(128)', "''", false, '');
-//        $this->validateColumn('imdb_id', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
-//        $this->validateColumn('poster_path', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
-//        $this->validateColumn('poster_path', 'tmdbinfo', 'VARCHAR(12)', "''", false, '');
-//        $this->validateColumn('vote_average', 'tmdbinfo', 'FLOAT', "0", false, '');
-//        $this->validateColumn('vote_count', 'tmdbinfo', 'INTEGER', "0", false, '');
-//        $this->alterStorageEngine("tmdbinfo", "InnoDB");
+        # ---- tmdb_info table ---- #
+        $this->createTable('tmdb_info', "ascii");
+        $this->validateColumn('tmdbid', 'tmdb_info', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdbcollection_id', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('tmdbcollection_name', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('budget', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('imdb_id', 'tmdb_info', 'VARCHAR(12)', "''", false, '');
+        $this->validateColumn('tmdbtitle', 'tmdb_info', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('overview', 'tmdb_info', 'TEXT', "''", false, '');
+        $this->validateColumn('popularity', 'tmdb_info', 'FLOAT', "0", false, '');
+        $this->validateColumn('release_date', 'tmdb_info', 'VARCHAR(10)', "0", false, '');
+        $this->validateColumn('revenue', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('runtime', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('tagline', 'tmdb_info', 'VARCHAR(250)', "''", false, '');
+        $this->validateColumn('vote_average', 'tmdb_info', 'FLOAT', "0", false, '');
+        $this->validateColumn('vote_count', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('lastretrieve', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("tmdb_info", "InnoDB");
+
+        # ---- tmdb_trailers table ---- #
+        $this->createTable('tmdb_trailers', "ascii");
+        $this->validateColumn('tmdbid', 'tmdb_trailers', 'INTEGER', "0", true, '');
+        $this->validateColumn('name', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
+        $this->validateColumn('size', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
+        $this->validateColumn('source', 'tmdb_trailers', 'VARCHAR(64)', "''", true, '');
+        $this->validateColumn('type', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
+        $this->alterStorageEngine("tmdb_trailers", "InnoDB");
+
+        # ---- tmdb_credits table ---- #
+        $this->createTable('tmdb_credits', "ascii");
+        $this->validateColumn('tmdb_credit_id', 'tmdb_credits', 'INTEGER', "0", true, '');
+        $this->validateColumn('name', 'tmdb_credits', 'VARCHAR(128)', "''", true, '');
+        $this->alterStorageEngine("tmdb_credits", "InnoDB");
+
+        # ---- tmdb_cast table ---- #
+        $this->createTable('tmdb_cast', "ascii");
+        $this->validateColumn('tmdb_credit_id', 'tmdb_cast', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_cast_id', 'tmdb_cast', 'INTEGER', "0", true, '');
+        $this->validateColumn('charactername', 'tmdb_cast', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('sortorder', 'tmdb_cast', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("tmdb_cast", "InnoDB");
+
+        # ---- tmdb_crew table ---- #
+        $this->createTable('tmdb_crew', "ascii");
+        $this->validateColumn('tmdb_credit_id', 'tmdb_crew', 'INTEGER', "0", true, '');
+        $this->validateColumn('name', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
+        $this->validateColumn('department', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
+        $this->validateColumn('job', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
+        $this->alterStorageEngine("tmdb_crew", "InnoDB");
+
+        # ---- tmdb_images table ---- #
+        $this->createTable('tmdb_images', "ascii");
+        $this->validateColumn('tmdbid', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->validateColumn('tmdb_credit_id', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->validateColumn('imagetype', 'tmdb_images', 'VARCHAR(20)', "''", true, ''); // backdrops, posters, personimage
+        $this->validateColumn('aspect_ratio', 'tmdb_images', 'FLOAT', "0", false, '');
+        $this->validateColumn('file_path', 'tmdb_images', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('height', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->validateColumn('width', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("tmdb_images", "InnoDB");
 
         ##############################################################################################
 		### Remove old sessions ######################################################################

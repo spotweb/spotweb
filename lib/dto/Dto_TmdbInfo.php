@@ -1,0 +1,322 @@
+<?php
+
+class Dto_TmdbInfo {
+    private $id;
+    private $tmdbId;
+    private $collectionId;
+    private $collectionName;
+    private $budget;
+    private $homepage;
+    private $imdbDb;
+    private $tmdbTitle;
+    private $overview;
+    private $popularity;
+    private $releaseDate;
+    private $revenue;
+    private $runtime;
+    private $tagline;
+    private $voteAverage;
+    private $voteCount;
+    private $lastretrieve;
+
+    private $trailerList;
+    private $creditList;
+    private $imageList;
+
+    /**
+     * @param mixed $budget
+     */
+    public function setBudget($budget) {
+        $this->budget = $budget;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBudget() {
+        return $this->budget;
+    }
+
+    /**
+     * @param mixed $collectionId
+     */
+    public function setCollectionId($collectionId) {
+        $this->collectionId = $collectionId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCollectionId() {
+        return $this->collectionId;
+    }
+
+    /**
+     * @param mixed $collectionName
+     */
+    public function setCollectionName($collectionName) {
+        $this->collectionName = $collectionName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCollectionName() {
+        return $this->collectionName;
+    }
+
+    /**
+     * @param mixed $creditList
+     */
+    public function setCreditList($creditList) {
+        $this->creditList = $creditList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreditList() {
+        return $this->creditList;
+    }
+
+    /**
+     * @param mixed $homepage
+     */
+    public function setHomepage($homepage) {
+        $this->homepage = $homepage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHomepage() {
+        return $this->homepage;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $imageList
+     */
+    public function setImageList($imageList) {
+        $this->imageList = $imageList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImageList() {
+        return $this->imageList;
+    }
+
+    /**
+     * @param mixed $imdbDb
+     */
+    public function setImdbDb($imdbDb) {
+        $this->imdbDb = $imdbDb;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImdbDb() {
+        return $this->imdbDb;
+    }
+
+    /**
+     * @param mixed $lastretrieve
+     */
+    public function setLastretrieve($lastretrieve) {
+        $this->lastretrieve = $lastretrieve;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastretrieve() {
+        return $this->lastretrieve;
+    }
+
+    /**
+     * @param mixed $overview
+     */
+    public function setOverview($overview) {
+        $this->overview = $overview;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOverview() {
+        return $this->overview;
+    }
+
+    /**
+     * @param mixed $popularity
+     */
+    public function setPopularity($popularity) {
+        $this->popularity = $popularity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPopularity() {
+        return $this->popularity;
+    }
+
+    /**
+     * @param mixed $rating
+     */
+    public function setRating($rating) {
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRating() {
+        return $this->rating;
+    }
+
+    /**
+     * @param mixed $releaseDate
+     */
+    public function setReleaseDate($releaseDate) {
+        $this->releaseDate = $releaseDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReleaseDate() {
+        return $this->releaseDate;
+    }
+
+    /**
+     * @param mixed $revenu
+     */
+    public function setRevenue($revenu) {
+        $this->revenue = $revenu;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRevenue() {
+        return $this->revenue;
+    }
+
+    /**
+     * @param mixed $runtime
+     */
+    public function setRuntime($runtime) {
+        $this->runtime = $runtime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRuntime() {
+        return $this->runtime;
+    }
+
+    /**
+     * @param mixed $tagline
+     */
+    public function setTagline($tagline) {
+        $this->tagline = $tagline;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTagline() {
+        return $this->tagline;
+    }
+
+    /**
+     * @param mixed $tmdbId
+     */
+    public function setTmdbId($tmdbId) {
+        $this->tmdbId = $tmdbId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTmdbId() {
+        return $this->tmdbId;
+    }
+
+    /**
+     * @param mixed $tmdbTitle
+     */
+    public function setTmdbTitle($tmdbTitle) {
+        $this->tmdbTitle = $tmdbTitle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTmdbTitle() {
+        return $this->tmdbTitle;
+    }
+
+    /**
+     * @param mixed $trailerList
+     */
+    public function setTrailerList($trailerList) {
+        $this->trailerList = $trailerList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTrailerList() {
+        return $this->trailerList;
+    }
+
+    /**
+     * @param mixed $voteAverage
+     */
+    public function setVoteAverage($voteAverage) {
+        $this->voteAverage = $voteAverage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVoteAverage() {
+        return $this->voteAverage;
+    }
+
+    /**
+     * @param mixed $voteCount
+     */
+    public function setVoteCount($voteCount) {
+        $this->voteCount = $voteCount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVoteCount() {
+        return $this->voteCount;
+    }
+
+
+} // Dto_TmdbInfo
+
