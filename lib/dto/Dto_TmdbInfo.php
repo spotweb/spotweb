@@ -20,7 +20,8 @@ class Dto_TmdbInfo {
     private $lastretrieve;
 
     private $trailerList;
-    private $creditList;
+    private $castList;
+    private $crewList;
     private $imageList;
 
     /**
@@ -315,6 +316,51 @@ class Dto_TmdbInfo {
      */
     public function getVoteCount() {
         return $this->voteCount;
+    }
+
+
+    public function addTrailer(Dto_TmdbTrailer $trailer) {
+        $this->trailerList[] = $trailer;
+    } // addTrailer
+
+    public function addCastMember(Dto_TmdbCast $cast) {
+        $this->castList[] = $cast;;
+    } // addTrailer
+
+    public function addCrewMember(Dto_TmdbCrew $crew) {
+        $this->crewList[] = $crew;
+    }
+
+    public function addImage(Dto_TmdbImage $image) {
+        $this->imageList[] = $image;
+    }
+
+    /**
+     * @param mixed $castList
+     */
+    public function setCastList($castList) {
+        $this->castList = $castList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCastList() {
+        return $this->castList;
+    }
+
+    /**
+     * @param mixed $crewList
+     */
+    public function setCrewList($crewList) {
+        $this->crewList = $crewList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCrewList() {
+        return $this->crewList;
     }
 
 

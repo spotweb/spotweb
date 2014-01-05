@@ -124,4 +124,63 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
 
+    /**
+     * Helper function to either update a record, or
+     * insert a new one, can be overriden by database
+     * specific implementations (an UPSERT basically).
+     *
+     * !! Is not concurrent-safe. !!
+     */
+    public function upsert($tablename, array $parameters, array $idNames, $try = 0) {
+        $sql = 'UPDATE ' . $tablename . ' SET ';
+        foreach($parameters as $k => $v) {
+            $sql .= substr($k, 1) . ' = ' . $k . ', ';
+        } // foreach
+
+        // remove the trailing comma
+        $sql = substr($sql, 0, -2);
+        $sql .= ' WHERE ';
+
+        foreach($idNames as $idName) {
+            $sql .= $idName . ' = :' . $idName . ' AND ';
+        } // foreach
+        $sql = substr($sql, 0, -5);
+
+        /*
+         * Now try to the update the row
+         */
+        $this->modify($sql, $parameters);
+        if ($this->rows() === 0) {
+            /*
+             * Update failed to update any rows, lets insert the record
+             */
+            $sql = 'INSERT INTO ' . $tablename . '(';
+            foreach($parameters as $k => $v) {
+                $sql .= substr($k, 1) . ', ';
+            } // foreach
+
+            // remove the trailing comma
+            $sql = substr($sql, 0, -2);
+
+            $sql .= ') VALUES (';
+            foreach($parameters as $k => $v) {
+                $sql .= $k . ', ';
+            } // foreach
+            $sql = substr($sql, 0, -2) . ')';
+
+            try {
+                $this->modify($sql, $parameters);
+            } catch(SqlErrorException $x) {
+                /*
+                 * Extremely ugly workaround for any concurrency issue...
+                 */
+                if ($try < 5) {
+                    $this->upsert($tablename, $parameters, $idNames, ++$try);
+                } else {
+                    throw $x;
+                } // else
+            } // catch
+        } // if
+    } // upsert
+
 } # dbeng_abs

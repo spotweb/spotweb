@@ -56,7 +56,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
 		} catch(PDOException $x) {
-            throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
+            throw new SqlErrorException(implode(': ', $x->errorInfo) . ' (' . $x->getMessage() . ')', -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s, $p));
@@ -70,7 +70,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	 */
 	function modify($s, $p = array()) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		
+
 		$res = $this->exec($s, $p);
         $res->closeCursor();
 		unset($res);

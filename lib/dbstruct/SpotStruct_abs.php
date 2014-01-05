@@ -713,6 +713,7 @@ abstract class SpotStruct_abs {
 
         # ---- tmdb_cast table ---- #
         $this->createTable('tmdb_cast', "ascii");
+        $this->validateColumn('tmdbid', 'tmdb_cast', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_credit_id', 'tmdb_cast', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_cast_id', 'tmdb_cast', 'INTEGER', "0", true, '');
         $this->validateColumn('charactername', 'tmdb_cast', 'VARCHAR(128)', "''", false, '');
@@ -721,8 +722,8 @@ abstract class SpotStruct_abs {
 
         # ---- tmdb_crew table ---- #
         $this->createTable('tmdb_crew', "ascii");
+        $this->validateColumn('tmdbid', 'tmdb_crew', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_credit_id', 'tmdb_crew', 'INTEGER', "0", true, '');
-        $this->validateColumn('name', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
         $this->validateColumn('department', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
         $this->validateColumn('job', 'tmdb_crew', 'VARCHAR(128)', "''", true, '');
         $this->alterStorageEngine("tmdb_crew", "InnoDB");
@@ -872,6 +873,26 @@ abstract class SpotStruct_abs {
         # ---- Indexes on collections ----
         $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "year", "partscurrent", "partstotal"));
 
+        # ---- indexes on tmdb_info ---- #
+        $this->validateIndex("idx_tmdbinfo_1", "UNIQUE", "tmdb_info", array("tmdbid"));
+        $this->validateIndex("idx_tmdbinfo_2", "UNIQUE", "tmdb_info", array("imdb_id"));
+
+        # ---- indexes on tmdb_trailers ---- #
+        $this->validateIndex("idx_tmdbtrailers_1", "UNIQUE", "tmdb_trailers", array("tmdbid", "name", "size", "source", "type"));
+
+        # ---- indexes on tmdb_credits ---- #
+        $this->validateIndex("idx_tmdbcredits_1", "UNIQUE", "tmdb_credits", array("tmdb_credit_id"));
+
+        # ---- indexes on tmdb_cast ---- #
+        $this->validateIndex("idx_tmdbcast_1", "UNIQUE", "tmdb_cast", array("tmdb_credit_id", "tmdb_cast_id", "tmdbid"));
+
+        # ---- indexes on tmdb_crew ---- #
+        $this->validateIndex("idx_tmdbcrew_1", "UNIQUE", "tmdb_crew", array("tmdb_credit_id", "department", "job", "tmdbid"));
+
+        # ---- indexes on tmdb_images ---- #
+        $this->validateIndex("idx_tmdbimages_1", "UNIQUE", "tmdb_images", array("tmdbid", "imagetype", "file_path"));
+        $this->validateIndex("idx_tmdbimages_2", "UNIQUE", "tmdb_images", array("tmdb_credit_id", "imagetype", "file_path"));
+
         # Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -886,6 +907,13 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 //        $this->addForeignKey('spots', 'collectionid', 'collections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 //        $this->addForeignKey('collections', 'mcid', 'mastercollections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_cast', 'tmdb_credit_id', 'tmdb_credits', 'tmdb_credit_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_crew', 'tmdb_credit_id', 'tmdb_credits', 'tmdb_credit_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_cast', 'tmdbid', 'tmdb_info', 'tmdbid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_crew', 'tmdbid', 'tmdb_info', 'tmdbid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_images', 'tmdb_credit_id', 'tmdb_credits', 'tmdb_credit_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_images', 'tmdbid', 'tmdb_info', 'tmdbid', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_trailers', 'tmdbid', 'tmdb_info', 'tmdbid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 
 		##############################################################################################
 		# Drop old columns ###########################################################################

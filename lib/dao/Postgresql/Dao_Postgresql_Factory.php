@@ -102,4 +102,8 @@
          return new Dao_Postgresql_Collections($this->_conn);
      } # getCollectionsDao
 
+     public function getTmdbInfo() {
+         return new Dao_Postgresql_TmdbInfo($this->_conn);
+     } # getTmdbInfo
+
  } // Dao_Postgresql_Factory

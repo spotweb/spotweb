@@ -59,15 +59,20 @@ abstract class Services_ParseCollections_Abstract {
          * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
         $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
-                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|iphone|psp|mp4|dd5.1|~\\* srt \\*~|" .
+                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|iphone|psp|mp4|dd5\\.1|" .
                                    "ntsc|bd50|3d|480p|half sbs|half\\-sbs|half ou|dvd5|dvd9|rental|nl|bollywood|divx|x264|" .
                                    "blu ray|made by berserk|web\\-dl|xbox 360|unrated|remux|aac|bd|mkv|subs|subtitel|" .
-                                   "bd25|dd 5 1)\\b/i", "", $title);
+                                   "bd25|dd 5\\.1|remuxed|ondertitels|subtitels|cam|mp3|rip|untouched|verzoekje|" .
+                                   "ned gespr|nds|alle seizoenen|engelstalig|nlsubs|dolby 5\\.1|avchd9|dts 5\\.1|" .
+                                   "custom srt|english|hdts|2dvd|cust|extended edition|extended cut|custom|" .
+                                   "dvd rip|dvdrip|brrip|r5|retail|op verzoek)\\b|$/i", "", $title);
+        $title = str_replace(array("~* srt *~"), array(), $title);
 
         /*
-         * Replace empty parenthesis, might be caused by aboves replacement
+         * Replace empty parenthesis, might be caused by aboves replacement, and remove double whitespaces
          */
-        $title = str_replace(array("[]", "()", "**"), "", $title);
+        $title = preg_replace('/\s+/', ' ', $title);
+        $title = str_replace(array("[]", "()", "[ ]", "( )", "**"), "", $title);
 
         return mb_strtolower($title, 'UTF-8');
     } // prepareTitle
@@ -100,13 +105,18 @@ abstract class Services_ParseCollections_Abstract {
              * Clash of the Titans  ( 1981 )
              */
             $year = $matches[2];
-        } elseif (preg_match('/([\(\[])([0-9]{4})([\/\-\.])([0-9]{4})([\)\]])/', $title, $matches)) {
+        } elseif (preg_match('/([\(\[])([0-9]{4}) ?([\/\-\.]) ?([0-9]{4})([\)\]])/', $title, $matches)) {
             /*
              * saints and soldiers: airborne creed (2012/2013) pal
              * wild bill (2011/2013) pal
              * jackpot / arme riddere (2011/2013) pal
              */
             $year = $matches[2];
+        } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})\/(18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
+            /*
+             * blah blah 1920/1921
+             */
+            $year = $matches[1] . $matches[2];
         } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
             /*
              * blah blah 1920
@@ -160,15 +170,15 @@ abstract class Services_ParseCollections_Abstract {
             /* Seaquest dsv s1/d2 */
             $season = $matches[1];
             $currentPart = $matches[3];
-        } elseif (preg_match('/[ \-,.](season|seizoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.](season|seizoen|seisoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|eps|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Goede Tijden, Slechte Tijden Seizoen 24 Aflevering 4811 02-12-2013 Repost" */
             $season = $matches[2];
             $episode = $matches[4];
-        } elseif (preg_match('/[ \-,.](episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})[ \-,.]?(season|seizoen|s)[ \-,.]([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.](episode|ep|eps|aflevering|afl)[ \-,.]([0-9]{1,5})[ \-,.]?(season|seisoen|seizoen|s)[ \-,.]([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
             /* "Sons of Anarchy Episode 12 Season 6 Released Dec 3th 2013" */
             $episode = $matches[2];
             $season = $matches[4];
-        } elseif (preg_match('/[ \(\-,.](season|seizoen|serie|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\-,.](season|seizoen|serie|seisoen|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
             /*
              * United States of Tara S03
              * Star Trek Voyager - Seizoen 3,
@@ -215,9 +225,14 @@ abstract class Services_ParseCollections_Abstract {
                 $posSeasonFound = strlen($title);
             } // else
 
-            $titleStr = substr($title, 0, min($posYearFound, $posSeasonFound, $posPartOfFound));
+            $titleStr = $this->prepareCollName(substr($title, 0, min($posYearFound, $posSeasonFound, $posPartOfFound)));
+
+            // empty titles are no collection
+            if (empty($titleStr)) {return null;
+            } // if
+
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES,
-                                            $this->prepareCollName($titleStr),
+                                            $titleStr,
                                             $season,
                                             $episode,
                                             $year,

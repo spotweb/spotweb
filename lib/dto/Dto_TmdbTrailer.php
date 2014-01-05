@@ -1,10 +1,12 @@
 <?php
 
-class Dto_TmdbCredits {
+class Dto_TmdbTrailer {
     private $id;
-    private $tmdbCreditId;
-    private $name;
     private $tmdbId;
+    private $name;
+    private $size;
+    private $source;
+    private $type;
 
     /**
      * @param mixed $id
@@ -35,17 +37,31 @@ class Dto_TmdbCredits {
     }
 
     /**
-     * @param mixed $tmdbCreditId
+     * @param mixed $size
      */
-    public function setTmdbCreditId($tmdbCreditId) {
-        $this->tmdbCreditId = $tmdbCreditId;
+    public function setSize($size) {
+        $this->size = $size;
     }
 
     /**
      * @return mixed
      */
-    public function getTmdbCreditId() {
-        return $this->tmdbCreditId;
+    public function getSize() {
+        return $this->size;
+    }
+
+    /**
+     * @param mixed $source
+     */
+    public function setSource($source) {
+        $this->source = $source;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSource() {
+        return $this->source;
     }
 
     /**
@@ -61,5 +77,20 @@ class Dto_TmdbCredits {
     public function getTmdbId() {
         return $this->tmdbId;
     }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type) {
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType() {
+        return $this->type;
+    }
+
 
 }

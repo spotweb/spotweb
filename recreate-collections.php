@@ -47,10 +47,12 @@ try {
 //        $spot['subcatc'] = 'c0|c1|c2|c3|c4';
 //        $spot['subcatd'] = 'd0|d1|d2|d3|d4';
 //    }
-//    $spot['title'] = 'Carrie (2013) 720P BRRIP XVID AC3 DD5.1 NL SUBS';
+//    $spot['title'] = ' IMDB Top 250 - nummer 61 - A Clockwork Orange (1971)';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
-//    $y = new Services_ParseCollections_Movies($spot);
+//    // $spot = $daoFactory->getSpotDao()->getSpotHeader('N31UNa90i62vK0PJFzq7VA.HHpFBmV5PjMjfxutURx3FA@free.pt');
+//    $y = Services_ParseCollections_Factory::factory($spot);
+//    // $y = new Services_ParseCollections_Movies($spot);
 //    $y = $y->parseSpot();
 //    if ($y !== null){
 //        var_dump(mb_detect_encoding($y->getTitle()));

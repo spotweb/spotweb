@@ -98,4 +98,8 @@
          return new Dao_Base_DebugLog($this->_conn);
      } # getDebugLogDao
 
+     public function getTmdbInfo() {
+         return new Dao_Base_TmdbInfo($this->_conn);
+     } # getTmdbInfo
+
 } // Dao_Base_Factory
