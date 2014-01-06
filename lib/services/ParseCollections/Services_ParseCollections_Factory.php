@@ -16,6 +16,9 @@ class Services_ParseCollections_Factory {
                     if (strpos($spot['subcatd'], 'd6|') !== false) {
                         // Documentaries
                         return new Services_ParseCollections_Documentary($spot);
+                    } elseif ($spot['subcata'] == 'a5|') {
+                        /* Format epub */
+                        return new Services_ParseCollections_Books($spot);
                     } elseif ($spot['subcatd'] == 'd13|') {
                         /*
                          * Make a direct comparison on subcatd, because if a spot

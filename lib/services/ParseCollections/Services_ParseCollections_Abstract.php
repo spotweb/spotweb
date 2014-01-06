@@ -58,21 +58,18 @@ abstract class Services_ParseCollections_Abstract {
          * Replcae common tags and stuff we do not want to do anything with.
          * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
+        $title = str_replace(array("~* srt *~", "~*srt*~"), array(), $title);
         $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
-                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|iphone|psp|mp4|dd5\\.1|" .
-                                   "ntsc|bd50|3d|480p|half sbs|half\\-sbs|half ou|dvd5|dvd9|rental|nl|bollywood|divx|x264|" .
-                                   "blu ray|made by berserk|web\\-dl|xbox 360|unrated|remux|aac|bd|mkv|subs|subtitel|" .
+                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|2d\\+3d|iphone|psp|mp4|dd5\\.1|" .
+                                   "ntsc|bd50|3d|480p|half sbs|half\\-sbs|half ou|dvd5|dvd9|rental|bollywood|divx|x264|" .
+                                   "blu ray|made by berserk|web\\-dl|xbox 360|unrated|remux|aac|mkv|subs|subtitel|" .
                                    "bd25|dd 5\\.1|remuxed|ondertitels|subtitels|cam|mp3|rip|untouched|verzoekje|" .
-                                   "ned gespr|nds|alle seizoenen|engelstalig|nlsubs|dolby 5\\.1|avchd9|dts 5\\.1|" .
+                                   "ned gespr|nds|alle seizoenen|engelstalig|nlsubs|dolby 5.1|avchd9|dts 5.1|" .
                                    "custom srt|english|hdts|2dvd|cust|extended edition|extended cut|custom|" .
-                                   "dvd rip|dvdrip|brrip|r5|retail|op verzoek)\\b|$/i", "", $title);
-        $title = str_replace(array("~* srt *~"), array(), $title);
-
-        /*
-         * Replace empty parenthesis, might be caused by aboves replacement, and remove double whitespaces
-         */
-        $title = preg_replace('/\s+/', ' ', $title);
-        $title = str_replace(array("[]", "()", "[ ]", "( )", "**"), "", $title);
+                                   "dvd rip|dvdrip|brrip|r5|retail|op verzoek|br2dvd|ingebakken subs|nl gespr|" .
+                                   "externe subs|dvdscr|hd2dvd|srt|dolby5.1|directors cut|ondertitel|bd 50|" .
+                                   "van toor spot|mkvh264ac3|complete series|br 2 dvd|dvdr|eng audio|h264|en|fullbd50|" .
+                                   "bd|nl)\\b|$/i", "", $title);
 
         return mb_strtolower($title, 'UTF-8');
     } // prepareTitle
@@ -170,6 +167,11 @@ abstract class Services_ParseCollections_Abstract {
             /* Seaquest dsv s1/d2 */
             $season = $matches[1];
             $currentPart = $matches[3];
+        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \/\-,.]?([v]|vol)([0-9]{1,2})[ \/\-,.]?([d]|dvd)([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+            /* Beverly hills s1v2d4 */
+            $season = $matches[1];
+            $episode = $matches[3];
+            $currentPart = $matches[5];
         } elseif (preg_match('/[ \-,.](season|seizoen|seisoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|eps|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Goede Tijden, Slechte Tijden Seizoen 24 Aflevering 4811 02-12-2013 Repost" */
             $season = $matches[2];
@@ -249,6 +251,7 @@ abstract class Services_ParseCollections_Abstract {
      */
     public function prepareCollName($collName) {
         $tmpName = mb_convert_encoding($collName, 'UTF-8', 'UTF-8');
+        $tmpName = str_replace("''", "'", $tmpName);
         $tmpName = str_replace(array(
                                     '.',
                                     ':',            // Remove any colons
@@ -258,10 +261,16 @@ abstract class Services_ParseCollections_Abstract {
                                ),
                                ' ',
                                $tmpName);
+
+        /*
+         * Replace empty parenthesis, might be caused by earlier replacements, and remove double whitespaces
+         */
         $tmpName = preg_replace('/\s+/', ' ', $tmpName);
+        $tmpName = str_replace(array("[]", "()", "[ ]", "( )", "**"), "", $tmpName);
         $tmpName = trim($tmpName, " \t\n\r\0\x0B-=");
         $tmpName = ltrim($tmpName, '])');       // remove 'incorrect' closing tags at the front
         $tmpName = rtrim($tmpName, '([');       // and incorrect opening tags at the end
+        $tmpName = preg_replace('/\s+/', ' ', $tmpName);
 
         /*
          * If the title ends with an ', the', we move it to the front
