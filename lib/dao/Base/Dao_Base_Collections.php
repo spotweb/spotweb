@@ -66,7 +66,7 @@ class Dao_Base_Collections implements Dao_Collections {
         $resultList = $this->_conn->arrayQuery("SELECT mc.id AS mcid,
                                                            c.id AS cid,
                                                            mc.title,
-                                                           mc.tmdbid,
+                                                           mc.tmdb_id,
                                                            mc.tvrageid,
                                                            mc.cattype,
                                                            c.season,
@@ -241,7 +241,7 @@ class Dao_Base_Collections implements Dao_Collections {
                  * the first time, create it now.
                  */
                 if (!isset(self::$mc_CacheList[$key . '|' . $val])) {
-                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, tmdbid, tvrageid)
+                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, tmdb_id, tvrageid)
                                               VALUES (:title, :cattype, NULL, NULL)',
                         array(
                             ':title' => array($key, PDO::PARAM_STR),
