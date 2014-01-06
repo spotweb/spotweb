@@ -97,6 +97,15 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
             $castDto->setCharacterName($crew->character);
 
             $mediaInfo->addCastMember($castDto);
+
+            /*
+             * Add this castmembers' image
+             */
+            if (!empty($crew->profile_path)) {
+                $imageDto = new Dto_TmdbImage('cast', $crew->profile_path);
+                $imageDto->setTmdbCreditId($crew->id);
+                $mediaInfo->addImage($imageDto);
+            } # if
         } // foreach
 
         /*
@@ -111,6 +120,15 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
             $crewDto->setJob($crew->job);
 
             $mediaInfo->addCrewMember($crewDto);
+
+            /*
+             * Add this crewmember's image
+             */
+            if (!empty($crew->profile_path)) {
+                $imageDto = new Dto_TmdbImage('crew', $crew->profile_path);
+                $imageDto->setTmdbCreditId($crew->id);
+                $mediaInfo->addImage($imageDto);
+            } // if
         } // foreach
 
         /*

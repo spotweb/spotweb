@@ -31,7 +31,8 @@ try {
     $resultList = $conn->arrayQuery("SELECT DISTINCT ON (mc.tmdbid)
                                            mc.tmdbid
                                     FROM mastercollections mc
-                                    WHERE tmdbid IS NOT NULL");
+                                    WHERE tmdbid IS NOT NULL
+                                    ORDER BY tmdbid");
 
     $startTime = time();
     $counter = 0;

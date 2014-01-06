@@ -141,14 +141,14 @@ abstract class dbeng_abs {
         if (count($parameters) == count($idNames)) {
             $sql = 'SELECT 1 FROM ' . $tablename . ' WHERE ';
             foreach($parameters as $k => $v) {
-                // skip updating our ids as those never change anyway
-                if (array_search(substr($k, 1), $idNames) === false) {
-                    $sql .= substr($k, 1) . ' = ' . $k . ' AND ';
-                } // if
+                $sql .= substr($k, 1) . ' = ' . $k . ' AND ';
             } // foreach
             $sql = substr($sql, 0, -5);
 
             $rowsUpdated = $this->singleQuery($sql, $parameters);
+            if ($rowsUpdated === null) {
+                $rowsUpdated = 0;
+            } // if
         } else {
             $sql = 'UPDATE ' . $tablename . ' SET ';
             foreach($parameters as $k => $v) {

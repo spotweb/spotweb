@@ -56,10 +56,9 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':file_path' => array($image->getFilePath(), PDO::PARAM_STR),
             ':height' => array($image->getHeight(), PDO::PARAM_INT),
             ':width' => array($image->getWidth(), PDO::PARAM_INT),
-            ':file_path2' => array($image->getFilePath(), PDO::PARAM_STR),
         );
 
-        $this->_conn->upsert('tmdb_images', $parameters, array('file_path2'));
+        $this->_conn->upsert('tmdb_images', $parameters, array('file_path'));
     } // saveImage()
 
 

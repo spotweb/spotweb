@@ -688,9 +688,9 @@ abstract class SpotStruct_abs {
         $this->validateColumn('overview', 'tmdb_info', 'TEXT', "''", false, '');
         $this->validateColumn('popularity', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('release_date', 'tmdb_info', 'VARCHAR(10)', "0", false, '');
-        $this->validateColumn('revenue', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('revenue', 'tmdb_info', 'BIGINT', "0", false, '');
         $this->validateColumn('runtime', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('tagline', 'tmdb_info', 'VARCHAR(250)', "''", false, 'utf8');
+        $this->validateColumn('tagline', 'tmdb_info', 'TEXT', "''", false, 'utf8');
         $this->validateColumn('vote_average', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('vote_count', 'tmdb_info', 'INTEGER', "0", false, '');
         $this->validateColumn('lastretrieve', 'tmdb_info', 'INTEGER', "0", false, '');
@@ -875,7 +875,6 @@ abstract class SpotStruct_abs {
 
         # ---- indexes on tmdb_info ---- #
         $this->validateIndex("idx_tmdbinfo_1", "UNIQUE", "tmdb_info", array("tmdbid"));
-        $this->validateIndex("idx_tmdbinfo_2", "UNIQUE", "tmdb_info", array("imdb_id"));
 
         # ---- indexes on tmdb_trailers ---- #
         $this->validateIndex("idx_tmdbtrailers_1", "UNIQUE", "tmdb_trailers", array("tmdbid", "name", "size", "source", "type"));
