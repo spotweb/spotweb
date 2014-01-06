@@ -1,5 +1,5 @@
 <?php
-define('TMDB_API_KEY', '9a3cc6d14b4765b19587e229556ae226');
+define('TMDB_API_KEY', '');
 
 
 function queryTmdb($mcId, $title, $year) {
