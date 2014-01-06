@@ -5,6 +5,7 @@ class Dto_TmdbCast extends Dto_TmdbCredits {
     private $tmdbCastId = null;
     private $characterName = null;
     private $sortOrder = null;
+    private $profilePath = null;
 
     /**
      * @param mixed $characterName
@@ -60,6 +61,20 @@ class Dto_TmdbCast extends Dto_TmdbCredits {
      */
     public function getTmdbCastId() {
         return $this->tmdbCastId;
+    }
+
+    /**
+     * @param null $profilePath
+     */
+    public function setProfilePath($profilePath) {
+        $this->profilePath = $profilePath;
+    }
+
+    /**
+     * @return null
+     */
+    public function getProfilePath() {
+        return $this->profilePath;
     }
 
 }

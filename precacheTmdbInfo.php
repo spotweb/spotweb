@@ -28,38 +28,41 @@ try {
 
     /* Retrieve the current list */
     $conn = $daoFactory->getConnection();
-    $resultList = $conn->arrayQuery("SELECT DISTINCT ON (mc.tmdbid)
-                                           mc.tmdbid
+    $resultList = $conn->arrayQuery("SELECT mc.tmdb_id
                                     FROM mastercollections mc
-                                    WHERE tmdbid IS NOT NULL
-                                    ORDER BY tmdbid");
+                                    WHERE tmdb_id IS NOT NULL
+                                    ORDER BY tmdb_id");
 
     $startTime = time();
     $counter = 0;
-    $svcTmdbInfo = new Services_MediaInformation_TheMovieDb($daoFactory->getCacheDao(), $settings);
+    $svcTmdbInfo = new Services_MediaInformation_TheMovieDb($daoFactory, $settings);
     $daoTmdb = $daoFactory->getTmdbInfo();
+    $prevTmdbId = null;
     foreach($resultList as $mc) {
-        echo "Fetching TMDB id: " . $mc['tmdbid'] . ", ";
+        if ($prevTmdbId != $mc['tmdb_id']) {
+            echo "Fetching TMDB id: " . $mc['tmdb_id'] . ", ";
 
-        $svcTmdbInfo->setSearchid($mc['tmdbid']);
-        $tmdb = $svcTmdbInfo->retrieveInfo();
-        $counter++;
+            $svcTmdbInfo->setSearchid($mc['tmdb_id']);
+            $tmdb = $svcTmdbInfo->retrieveInfo();
+            $counter++;
 
-        if ($tmdb !== null) {
-            $daoTmdb->saveInfo($tmdb);
-            echo "retrieved " . $tmdb->getTitle() . PHP_EOL;
-        } else {
-            echo "failure" . PHP_EOL;
-        } // else
+            if ($tmdb !== null) {
+                echo "retrieved " . $tmdb->getTmdbTitle() . PHP_EOL;
+            } else {
+                echo "failure" . PHP_EOL;
+            } // else
 
-        if ($counter > 29) {
-            echo "  backing off for " . max(10, 12 - (time() - $startTime)) . " seconds" . PHP_EOL;
-            // we try to limit ourselves to 30 records per 22 seconds
-            sleep(max(10, 12 - (time() - $startTime)));
+            if ($counter > 29) {
+                echo "  backing off for " . max(10, 12 - (time() - $startTime)) . " seconds" . PHP_EOL;
+                // we try to limit ourselves to 30 records per 22 seconds
+                sleep(max(10, 12 - (time() - $startTime)));
 
-            $counter = 0;
-            $startTime = time();
+                $counter = 0;
+                $startTime = time();
+            } // if
         } // if
+
+        $prevTmdbId = $mc['tmdb_id'];
     } // foreach
 
     echo "Done precaching tmdb information collections" . PHP_EOL;

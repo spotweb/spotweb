@@ -124,6 +124,54 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
 
+
+    public function sqlUpdate($tableName, array $parameters, array $idNames) {
+        $sql = 'UPDATE ' . $tableName . ' SET ';
+        foreach($parameters as $k => $v) {
+            // skip updating our ids as those never change anyway
+            if (array_search(substr($k, 1), $idNames) === false) {
+                $sql .= substr($k, 1) . ' = ' . $k . ', ';
+            } // if
+        } // foreach
+
+        // remove the trailing comma
+        $sql = substr($sql, 0, -2);
+        $sql .= ' WHERE ';
+
+        foreach($idNames as $idName) {
+            $sql .= $idName . ' = :' . $idName . ' AND ';
+        } // foreach
+        $sql = substr($sql, 0, -5);
+
+        /*
+         * Now try to the update the row
+         */
+        $this->modify($sql, $parameters);
+        return $this->rows();
+    } // sqlUpdate()
+
+    public function sqlInsert($tableName, array $parameters) {
+        /*
+         * Update failed to update any rows, lets insert the record
+         */
+        $sql = 'INSERT INTO ' . $tableName . '(';
+        foreach($parameters as $k => $v) {
+            $sql .= substr($k, 1) . ', ';
+        } // foreach
+
+        // remove the trailing comma
+        $sql = substr($sql, 0, -2);
+
+        $sql .= ') VALUES (';
+        foreach($parameters as $k => $v) {
+            $sql .= $k . ', ';
+        } // foreach
+        $sql = substr($sql, 0, -2) . ')';
+
+        $this->modify($sql, $parameters);
+        return $this->lastInsertId($tableName);
+    } // sqlInsert()
+
     /**
      * Helper function to either update a record, or
      * insert a new one, can be overriden by database
@@ -131,7 +179,7 @@ abstract class dbeng_abs {
      *
      * !! Is not concurrent-safe. !!
      */
-    public function upsert($tablename, array $parameters, array $idNames, $try = 0) {
+    public function upsert($tableName, array $parameters, array $idNames, $try = 0) {
         /*
          * If the same parameters are updated as the where, an update can not
          * be done (those are always the same). We do require the record to be
@@ -139,7 +187,7 @@ abstract class dbeng_abs {
          */
         $rowsUpdated = 0;
         if (count($parameters) == count($idNames)) {
-            $sql = 'SELECT 1 FROM ' . $tablename . ' WHERE ';
+            $sql = 'SELECT 1 FROM ' . $tableName . ' WHERE ';
             foreach($parameters as $k => $v) {
                 $sql .= substr($k, 1) . ' = ' . $k . ' AND ';
             } // foreach
@@ -150,61 +198,55 @@ abstract class dbeng_abs {
                 $rowsUpdated = 0;
             } // if
         } else {
-            $sql = 'UPDATE ' . $tablename . ' SET ';
-            foreach($parameters as $k => $v) {
-                // skip updating our ids as those never change anyway
-                if (array_search(substr($k, 1), $idNames) === false) {
-                    $sql .= substr($k, 1) . ' = ' . $k . ', ';
-                } // if
-            } // foreach
-
-            // remove the trailing comma
-            $sql = substr($sql, 0, -2);
-            $sql .= ' WHERE ';
-
-            foreach($idNames as $idName) {
-                $sql .= $idName . ' = :' . $idName . ' AND ';
-            } // foreach
-            $sql = substr($sql, 0, -5);
-
-            /*
-             * Now try to the update the row
-             */
-            $this->modify($sql, $parameters);
-            $rowsUpdated = $this->rows();
+            $rowsUpdated = $this->sqlUpdate($tableName, $parameters, $idNames);
         } // else
 
         if ($rowsUpdated === 0) {
-            /*
-             * Update failed to update any rows, lets insert the record
-             */
-            $sql = 'INSERT INTO ' . $tablename . '(';
-            foreach($parameters as $k => $v) {
-                $sql .= substr($k, 1) . ', ';
-            } // foreach
-
-            // remove the trailing comma
-            $sql = substr($sql, 0, -2);
-
-            $sql .= ') VALUES (';
-            foreach($parameters as $k => $v) {
-                $sql .= $k . ', ';
-            } // foreach
-            $sql = substr($sql, 0, -2) . ')';
-
             try {
-                $this->modify($sql, $parameters);
+                $this->sqlInsert($tableName, $parameters);
             } catch(SqlErrorException $x) {
                 /*
                  * Extremely ugly workaround for any concurrency issue...
                  */
                 if ($try < 5) {
-                    $this->upsert($tablename, $parameters, $idNames, ++$try);
+                    $this->upsert($tableName, $parameters, $idNames, ++$try);
                 } else {
                     throw $x;
                 } // else
             } // catch
         } // if
     } // upsert
+
+    private function toCamelCase($s) {
+        $tmpAr = array_map('ucfirst', explode('_', strtolower($s)));
+        return implode('', $tmpAr);
+    } // toCamelCase
+
+    /*
+     * Query to automatically fill in DTO's based on query results.
+     * It prtty much sucks, and has a very strict and inflexible naming
+     * convention and stuff, but it works. kinda.
+     */
+    public function sqlQuery($tableName, $objName, $idColName, $idValue) {
+        $objArray = array();
+
+        $sql = 'SELECT * FROM ' . $tableName . ' WHERE ' . $idColName . ' = :' . $idColName;
+        $resultList = $this->arrayQuery($sql,
+                array(':'. $idColName => array($idValue, PDO::PARAM_INT))
+        );
+
+        foreach($resultList as $result) {
+            $tmpObj = new $objName();
+
+            foreach(array_keys($result) as $key) {
+                $set = 'set' . $this->toCamelCase($key);
+                $tmpObj->$set($result[$key]);
+            } // foreach
+
+            $objArray[] = $tmpObj;
+        } // foreach
+
+        return $objArray;
+    } // sqlQuery
 
 } # dbeng_abs

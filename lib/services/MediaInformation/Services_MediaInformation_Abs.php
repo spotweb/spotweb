@@ -5,7 +5,10 @@ abstract class Services_MediaInformation_Abs {
      * @var Services_Providers_Http
      */
     protected $_httpProvider;
-
+    /**
+     * @var Dao_Factory
+     */
+    protected $_daoFactory;
     /**
      * @var Dao_Cache
      */
@@ -28,10 +31,12 @@ abstract class Services_MediaInformation_Abs {
     private $_searchid;
 
 
-    public function __construct(Dao_cache $cacheDao, Services_Settings_Container $settings) {
-        $this->_cacheDao = $cacheDao;
+    public function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings) {
+        $this->_daoFactory = $daoFactory;
         $this->_settings = $settings;
-        $this->_httpProvider = new Services_Providers_Http($cacheDao);
+
+        $this->_cacheDao = $daoFactory->getCacheDao();
+        $this->_httpProvider = new Services_Providers_Http($this->_cacheDao);
     } # ctor
 
     public function setSearchid($id) {

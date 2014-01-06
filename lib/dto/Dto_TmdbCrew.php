@@ -4,6 +4,7 @@ class Dto_TmdbCrew extends Dto_TmdbCredits {
     private $internalCrewId = null;
     private $department = null;
     private $job = null;
+    private $profilePath = null;
 
     /**
      * @param mixed $department
@@ -47,5 +48,18 @@ class Dto_TmdbCrew extends Dto_TmdbCredits {
         return $this->job;
     }
 
+    /**
+     * @param null $profilePath
+     */
+    public function setProfilePath($profilePath) {
+        $this->profilePath = $profilePath;
+    }
+
+    /**
+     * @return null
+     */
+    public function getProfilePath() {
+        return $this->profilePath;
+    }
 
 }

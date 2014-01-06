@@ -3,11 +3,11 @@
 class Dto_TmdbInfo {
     private $id = null;
     private $tmdbId = null;
-    private $collectionId = null;
-    private $collectionName = null;
+    private $tmdbCollectionId = null;
+    private $tmdbCollectionName = null;
     private $budget = null;
     private $homepage = null;
-    private $imdbDb = null;
+    private $imdbId = null;
     private $tmdbTitle = null;
     private $overview = null;
     private $popularity = null;
@@ -41,29 +41,29 @@ class Dto_TmdbInfo {
     /**
      * @param mixed $collectionId
      */
-    public function setCollectionId($collectionId) {
-        $this->collectionId = $collectionId;
+    public function setTmdbCollectionId($collectionId) {
+        $this->tmdbCollectionId = $collectionId;
     }
 
     /**
      * @return mixed
      */
-    public function getCollectionId() {
-        return $this->collectionId;
+    public function getTmdbCollectionId() {
+        return $this->tmdbCollectionId;
     }
 
     /**
      * @param mixed $collectionName
      */
-    public function setCollectionName($collectionName) {
-        $this->collectionName = $collectionName;
+    public function setTmdbCollectionName($collectionName) {
+        $this->tmdbCollectionName = $collectionName;
     }
 
     /**
      * @return mixed
      */
-    public function getCollectionName() {
-        return $this->collectionName;
+    public function getTmdbCollectionName() {
+        return $this->tmdbCollectionName;
     }
 
     /**
@@ -125,15 +125,15 @@ class Dto_TmdbInfo {
     /**
      * @param mixed $imdbDb
      */
-    public function setImdbDb($imdbDb) {
-        $this->imdbDb = $imdbDb;
+    public function setImdbId($imdbDb) {
+        $this->imdbId = $imdbDb;
     }
 
     /**
      * @return mixed
      */
-    public function getImdbDb() {
-        return $this->imdbDb;
+    public function getImdbId() {
+        return $this->imdbId;
     }
 
     /**

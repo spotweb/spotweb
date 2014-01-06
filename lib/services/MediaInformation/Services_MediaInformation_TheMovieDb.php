@@ -7,6 +7,21 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
      * @return Dto_MediaInformation|void
      */
     public function retrieveInfo() {
+        $daoTmdb = $this->_daoFactory->getTmdbInfo();
+        $tmdb = $daoTmdb->getInfo($this->getSearchid());
+
+        if ($tmdb == null) {
+            $tmdb = $this->queryTmdbApi();
+
+            if ($tmdb !== null) {
+                $daoTmdb->addInfo($tmdb);
+            } // if
+        } // if
+
+        return $tmdb;
+    } // retrieveInfo()
+
+    protected function queryTmdbApi() {
         $mediaInfo = new Dto_TmdbInfo();
 
         /*
@@ -30,16 +45,16 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
 
         /* Movie collections from TMDB */
         if (!empty($tmdb->belongs_to_collection)) {
-            $mediaInfo->setCollectionId($tmdb->belongs_to_collection->id);
-            $mediaInfo->setCollectionName($tmdb->belongs_to_collection->name);
+            $mediaInfo->setTmdbCollectionId($tmdb->belongs_to_collection->id);
+            $mediaInfo->setTmdbCollectionName($tmdb->belongs_to_collection->name);
         } else {
-            $mediaInfo->setCollectionId(null);
-            $mediaInfo->setCollectionName(null);
+            $mediaInfo->setTmdbCollectionId(null);
+            $mediaInfo->setTmdbCollectionName(null);
         } // else
 
         $mediaInfo->setBudget($tmdb->budget);
         $mediaInfo->setHomepage($tmdb->homepage);
-        $mediaInfo->setImdbDb($tmdb->imdb_id);
+        $mediaInfo->setImdbId($tmdb->imdb_id);
         $mediaInfo->setTmdbTitle($tmdb->original_title);
         $mediaInfo->setOverview($tmdb->overview);
         $mediaInfo->setPopularity($tmdb->popularity);
@@ -95,17 +110,9 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
             $castDto->setName($crew->name);
             $castDto->setSortOrder($crew->order);
             $castDto->setCharacterName($crew->character);
+            $castDto->setProfilePath($crew->profile_path);
 
             $mediaInfo->addCastMember($castDto);
-
-            /*
-             * Add this castmembers' image
-             */
-            if (!empty($crew->profile_path)) {
-                $imageDto = new Dto_TmdbImage('cast', $crew->profile_path);
-                $imageDto->setTmdbCreditId($crew->id);
-                $mediaInfo->addImage($imageDto);
-            } # if
         } // foreach
 
         /*
@@ -118,17 +125,9 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
             $crewDto->setName($crew->name);
             $crewDto->setDepartment($crew->department);
             $crewDto->setJob($crew->job);
+            $castDto->setProfilePath($crew->profile_path);
 
             $mediaInfo->addCrewMember($crewDto);
-
-            /*
-             * Add this crewmember's image
-             */
-            if (!empty($crew->profile_path)) {
-                $imageDto = new Dto_TmdbImage('crew', $crew->profile_path);
-                $imageDto->setTmdbCreditId($crew->id);
-                $mediaInfo->addImage($imageDto);
-            } // if
         } // foreach
 
         /*
@@ -142,11 +141,9 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
         $imageDto = new Dto_TmdbImage('posters', $tmdb->poster_path);
         $mediaInfo->addImage($imageDto);
 
-        /* backdrop_path */
-        /* poster_path */
-        /*
-       * Parse the list of trailers as individual trailers
-       */
+       /*
+        * Parse the list of trailers as individual trailers
+        */
         foreach(array('backdrops', 'posters') as $imageType) {
             foreach($tmdb->images->$imageType as $image) {
                 $imageDto = new Dto_TmdbImage();
@@ -165,6 +162,6 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
 
 
         return $mediaInfo;
-    } # retrieveInfo
+    } # queryTmdbApi
 
 } 
