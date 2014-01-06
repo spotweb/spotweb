@@ -1,10 +1,10 @@
 <?php
 
 class Dto_TmdbCredits {
-    private $id;
-    private $tmdbCreditId;
-    private $name;
-    private $tmdbId;
+    private $id = null;
+    private $tmdbCreditId = null;
+    private $name = null;
+    private $tmdbId = null;
 
     /**
      * @param mixed $id

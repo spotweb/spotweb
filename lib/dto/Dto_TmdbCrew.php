@@ -1,9 +1,9 @@
 <?php
 
 class Dto_TmdbCrew extends Dto_TmdbCredits {
-    private $internalCrewId;
-    private $department;
-    private $job;
+    private $internalCrewId = null;
+    private $department = null;
+    private $job = null;
 
     /**
      * @param mixed $department

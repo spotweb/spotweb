@@ -31,7 +31,7 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':sortorder' => array($cast->getSortOrder(), PDO::PARAM_INT),
         );
 
-        $this->_conn->upsert('tmdb_cast', $parameters, array('tmdb_cast_id'));
+        $this->_conn->upsert('tmdb_cast', $parameters, array('tmdb_credit_id', 'tmdb_cast_id', 'tmdbid'));
     } // saveCast()
 
     function saveCrew(Dto_TmdbCrew $crew) {
@@ -44,7 +44,7 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':job' => array($crew->getJob(), PDO::PARAM_STR)
         );
 
-        $this->_conn->upsert('tmdb_crew', $parameters, array('tmdb_credit_id'));
+        $this->_conn->upsert('tmdb_crew', $parameters, array('tmdb_credit_id', 'department', 'job', 'tmdbid'));
     } // saveCrew()
 
     function saveImage(Dto_TmdbImage $image) {
@@ -56,9 +56,10 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':file_path' => array($image->getFilePath(), PDO::PARAM_STR),
             ':height' => array($image->getHeight(), PDO::PARAM_INT),
             ':width' => array($image->getWidth(), PDO::PARAM_INT),
+            ':file_path2' => array($image->getFilePath(), PDO::PARAM_STR),
         );
 
-        $this->_conn->upsert('tmdb_images', $parameters, array('file_path'));
+        $this->_conn->upsert('tmdb_images', $parameters, array('file_path2'));
     } // saveImage()
 
 

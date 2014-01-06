@@ -1,12 +1,12 @@
 <?php
 
 class Dto_TmdbTrailer {
-    private $id;
-    private $tmdbId;
-    private $name;
-    private $size;
-    private $source;
-    private $type;
+    private $id = null;
+    private $tmdbId = null;
+    private $name = null;
+    private $size = null;
+    private $source = null;
+    private $type = null;
 
     /**
      * @param mixed $id

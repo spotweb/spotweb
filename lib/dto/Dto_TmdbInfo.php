@@ -1,28 +1,28 @@
 <?php
 
 class Dto_TmdbInfo {
-    private $id;
-    private $tmdbId;
-    private $collectionId;
-    private $collectionName;
-    private $budget;
-    private $homepage;
-    private $imdbDb;
-    private $tmdbTitle;
-    private $overview;
-    private $popularity;
-    private $releaseDate;
-    private $revenue;
-    private $runtime;
-    private $tagline;
-    private $voteAverage;
-    private $voteCount;
-    private $lastretrieve;
+    private $id = null;
+    private $tmdbId = null;
+    private $collectionId = null;
+    private $collectionName = null;
+    private $budget = null;
+    private $homepage = null;
+    private $imdbDb = null;
+    private $tmdbTitle = null;
+    private $overview = null;
+    private $popularity = null;
+    private $releaseDate = null;
+    private $revenue = null;
+    private $runtime = null;
+    private $tagline = null;
+    private $voteAverage = null;
+    private $voteCount = null;
+    private $lastretrieve = null;
 
-    private $trailerList;
-    private $castList;
-    private $crewList;
-    private $imageList;
+    private $trailerList = array();
+    private $castList = array();
+    private $crewList = array();
+    private $imageList = array();
 
     /**
      * @param mixed $budget

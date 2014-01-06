@@ -1,10 +1,10 @@
 <?php
 
 class Dto_TmdbCast extends Dto_TmdbCredits {
-    private $internalCastId;
-    private $tmdbCastId;
-    private $characterName;
-    private $sortOrder;
+    private $internalCastId = null;
+    private $tmdbCastId = null;
+    private $characterName = null;
+    private $sortOrder = null;
 
     /**
      * @param mixed $characterName

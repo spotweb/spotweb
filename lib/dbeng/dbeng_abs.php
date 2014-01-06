@@ -132,25 +132,48 @@ abstract class dbeng_abs {
      * !! Is not concurrent-safe. !!
      */
     public function upsert($tablename, array $parameters, array $idNames, $try = 0) {
-        $sql = 'UPDATE ' . $tablename . ' SET ';
-        foreach($parameters as $k => $v) {
-            $sql .= substr($k, 1) . ' = ' . $k . ', ';
-        } // foreach
-
-        // remove the trailing comma
-        $sql = substr($sql, 0, -2);
-        $sql .= ' WHERE ';
-
-        foreach($idNames as $idName) {
-            $sql .= $idName . ' = :' . $idName . ' AND ';
-        } // foreach
-        $sql = substr($sql, 0, -5);
-
         /*
-         * Now try to the update the row
+         * If the same parameters are updated as the where, an update can not
+         * be done (those are always the same). We do require the record to be
+         * inserted though.
          */
-        $this->modify($sql, $parameters);
-        if ($this->rows() === 0) {
+        $rowsUpdated = 0;
+        if (count($parameters) == count($idNames)) {
+            $sql = 'SELECT 1 FROM ' . $tablename . ' WHERE ';
+            foreach($parameters as $k => $v) {
+                // skip updating our ids as those never change anyway
+                if (array_search(substr($k, 1), $idNames) === false) {
+                    $sql .= substr($k, 1) . ' = ' . $k . ', ';
+                } // if
+            } // foreach
+
+            $rowsUpdated = $this->singleQuery($sql, $parameters);
+        } else {
+            $sql = 'UPDATE ' . $tablename . ' SET ';
+            foreach($parameters as $k => $v) {
+                // skip updating our ids as those never change anyway
+                if (array_search(substr($k, 1), $idNames) === false) {
+                    $sql .= substr($k, 1) . ' = ' . $k . ', ';
+                } // if
+            } // foreach
+
+            // remove the trailing comma
+            $sql = substr($sql, 0, -2);
+            $sql .= ' WHERE ';
+
+            foreach($idNames as $idName) {
+                $sql .= $idName . ' = :' . $idName . ' AND ';
+            } // foreach
+            $sql = substr($sql, 0, -5);
+
+            /*
+             * Now try to the update the row
+             */
+            $this->modify($sql, $parameters);
+            $rowsUpdated = $this->rows();
+        } // else
+
+        if ($rowsUpdated === 0) {
             /*
              * Update failed to update any rows, lets insert the record
              */

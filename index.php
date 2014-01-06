@@ -18,6 +18,14 @@ try {
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
+    /* ------------------------------------ */
+    $tmdb = new Services_MediaInformation_TheMovieDb($daoFactory->getCacheDao());
+    $tmdb->setSearchid(57158);
+    var_dump($tmdb->retrieveInfo());
+
+    $daoFactory->getTmdbInfo()->saveInfo($tmdb->retrieveInfo());
+    die();
+    /* ------------------------------------ */
     /*
      * Enable debug logging mechanism if timing is enabled
      */

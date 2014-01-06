@@ -680,17 +680,17 @@ abstract class SpotStruct_abs {
         $this->createTable('tmdb_info', "ascii");
         $this->validateColumn('tmdbid', 'tmdb_info', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdbcollection_id', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('tmdbcollection_name', 'tmdb_info', 'VARCHAR(128)', "0", false, '');
+        $this->validateColumn('tmdbcollection_name', 'tmdb_info', 'VARCHAR(128)', "0", false, 'utf8');
         $this->validateColumn('budget', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(512)', "''", false, '');
         $this->validateColumn('imdb_id', 'tmdb_info', 'VARCHAR(12)', "''", false, '');
-        $this->validateColumn('tmdbtitle', 'tmdb_info', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('tmdbtitle', 'tmdb_info', 'VARCHAR(128)', "''", false, 'utf8');
         $this->validateColumn('overview', 'tmdb_info', 'TEXT', "''", false, '');
         $this->validateColumn('popularity', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('release_date', 'tmdb_info', 'VARCHAR(10)', "0", false, '');
         $this->validateColumn('revenue', 'tmdb_info', 'INTEGER', "0", false, '');
         $this->validateColumn('runtime', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('tagline', 'tmdb_info', 'VARCHAR(250)', "''", false, '');
+        $this->validateColumn('tagline', 'tmdb_info', 'VARCHAR(250)', "''", false, 'utf8');
         $this->validateColumn('vote_average', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('vote_count', 'tmdb_info', 'INTEGER', "0", false, '');
         $this->validateColumn('lastretrieve', 'tmdb_info', 'INTEGER', "0", false, '');
@@ -699,9 +699,9 @@ abstract class SpotStruct_abs {
         # ---- tmdb_trailers table ---- #
         $this->createTable('tmdb_trailers', "ascii");
         $this->validateColumn('tmdbid', 'tmdb_trailers', 'INTEGER', "0", true, '');
-        $this->validateColumn('name', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
+        $this->validateColumn('name', 'tmdb_trailers', 'VARCHAR(128)', "''", true, '');
         $this->validateColumn('size', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
-        $this->validateColumn('source', 'tmdb_trailers', 'VARCHAR(64)', "''", true, '');
+        $this->validateColumn('source', 'tmdb_trailers', 'VARCHAR(512)', "''", true, '');
         $this->validateColumn('type', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
         $this->alterStorageEngine("tmdb_trailers", "InnoDB");
 
@@ -716,7 +716,7 @@ abstract class SpotStruct_abs {
         $this->validateColumn('tmdbid', 'tmdb_cast', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_credit_id', 'tmdb_cast', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_cast_id', 'tmdb_cast', 'INTEGER', "0", true, '');
-        $this->validateColumn('charactername', 'tmdb_cast', 'VARCHAR(128)', "''", false, '');
+        $this->validateColumn('charactername', 'tmdb_cast', 'VARCHAR(1024)', "''", false, '');
         $this->validateColumn('sortorder', 'tmdb_cast', 'INTEGER', "0", false, '');
         $this->alterStorageEngine("tmdb_cast", "InnoDB");
 
