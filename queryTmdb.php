@@ -1,5 +1,5 @@
 <?php
-define('TMDB_API_KEY', '');
+define('TMDB_API_KEY', '9a3cc6d14b4765b19587e229556ae226');
 
 
 function queryTmdb($mcId, $title, $year) {
@@ -66,7 +66,7 @@ foreach($masters as $mc) {
     if ($counter > 29) {
         echo "  backing off for " . max(3, 12 - (time() - $startTime)) . " seconds" . PHP_EOL;
         // we try to limit ourselves to 30 records per 12 seconds
-        sleep(max(0, 12 - (time() - $startTime)));
+        sleep(max(3, 12 - (time() - $startTime)));
 
         $counter = 0;
         $startTime = time();

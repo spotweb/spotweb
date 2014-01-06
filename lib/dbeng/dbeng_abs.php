@@ -143,9 +143,10 @@ abstract class dbeng_abs {
             foreach($parameters as $k => $v) {
                 // skip updating our ids as those never change anyway
                 if (array_search(substr($k, 1), $idNames) === false) {
-                    $sql .= substr($k, 1) . ' = ' . $k . ', ';
+                    $sql .= substr($k, 1) . ' = ' . $k . ' AND ';
                 } // if
             } // foreach
+            $sql = substr($sql, 0, -5);
 
             $rowsUpdated = $this->singleQuery($sql, $parameters);
         } else {

@@ -10,6 +10,10 @@ abstract class Services_MediaInformation_Abs {
      * @var Dao_Cache
      */
     protected $_cacheDao;
+    /**
+     * @var Services_Settings_Base
+     */
+    protected $_settings;
 
     /*
      * Contains the name of string for the item we are looking for
@@ -24,8 +28,9 @@ abstract class Services_MediaInformation_Abs {
     private $_searchid;
 
 
-    public function __construct(Dao_cache $cacheDao) {
+    public function __construct(Dao_cache $cacheDao, Services_Settings_Base $settings) {
         $this->_cacheDao = $cacheDao;
+        $this->_settings = $settings;
         $this->_httpProvider = new Services_Providers_Http($cacheDao);
     } # ctor
 

@@ -1,7 +1,7 @@
 <?php
 
 class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs {
-    const tmdb_api_key = ''; // FIXME TODO
+    protected $tmdb_api_key = '';
 
     /**
      * @return Dto_MediaInformation|void
@@ -13,7 +13,7 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
          * Create URL to retriev info from, for this provider
          */
         $baseUrl = 'http://api.themoviedb.org/3/movie/' . (int)$this->getSearchid() .
-            '?api_key=' . self::tmdb_api_key .
+            '?api_key=' . $this->_settings->get('tmdb_api_key') .
             '&append_to_response=trailers,credits,images&language=en';
 
         list($http_code, $tmdb) = $this->_httpProvider->performCachedGet($baseUrl, false, 365 * 24 * 60 * 60);
@@ -29,8 +29,13 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
         $mediaInfo->setTmdbId($tmdb->id);
 
         /* Movie collections from TMDB */
-        $mediaInfo->setCollectionId($tmdb->belongs_to_collection->id);
-        $mediaInfo->setCollectionName($tmdb->belongs_to_collection->name);
+        if (!empty($tmdb->belongs_to_collection)) {
+            $mediaInfo->setCollectionId($tmdb->belongs_to_collection->id);
+            $mediaInfo->setCollectionName($tmdb->belongs_to_collection->name);
+        } else {
+            $mediaInfo->setCollectionId(null);
+            $mediaInfo->setCollectionName(null);
+        } // else
 
         $mediaInfo->setBudget($tmdb->budget);
         $mediaInfo->setHomepage($tmdb->homepage);
