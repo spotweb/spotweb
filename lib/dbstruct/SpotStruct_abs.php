@@ -663,7 +663,7 @@ abstract class SpotStruct_abs {
         $this->validateColumn('latestspotid', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('cattype', 'mastercollections', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdb_id', 'mastercollections', 'INTEGER', "0", false, '');
-        $this->validateColumn('tvrageid', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('tvrage_id', 'mastercollections', 'INTEGER', "0", false, '');
         $this->alterStorageEngine("mastercollections", "InnoDB");
 
         # ---- collections table ---- #
