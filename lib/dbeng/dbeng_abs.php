@@ -222,15 +222,22 @@ abstract class dbeng_abs {
         return implode('', $tmpAr);
     } // toCamelCase
 
-    /*
+    /**
      * Query to automatically fill in DTO's based on query results.
      * It prtty much sucks, and has a very strict and inflexible naming
      * convention and stuff, but it works. kinda.
      */
-    public function sqlQuery($tableName, $objName, $idColName, $idValue) {
+    public function sqlQuery($tableName, $objName, $idColName, $idValue, $additionalJoins = array()) {
+        $additionalJoinList = '';
+        foreach($additionalJoins as $additionalJoin) {
+            $additionalJoinList = ' ' . $additionalJoin['jointype'] . ' JOIN ' .
+                $additionalJoin['tablename'] . ' AS ' . $additionalJoin['tablealias'] .
+                ' ON (' . $additionalJoin['joincondition'] . ') ';
+        } # foreach
         $objArray = array();
 
-        $sql = 'SELECT * FROM ' . $tableName . ' WHERE ' . $idColName . ' = :' . $idColName;
+        $sql = 'SELECT * FROM ' . $tableName . ' AS t1 ' . $additionalJoinList . ' WHERE ' . $idColName . ' = :' . $idColName;
+
         $resultList = $this->arrayQuery($sql,
                 array(':'. $idColName => array($idValue, PDO::PARAM_INT))
         );

@@ -37,31 +37,31 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-    $spot['subcata'] = 'a3|';
-    if (1==0) {
-        $spot['subcatb'] = 'b0|b1|b2|b3|b4|b6|b7|b8|b9|';
-        $spot['subcatc'] = 'c0|c1|c2|c3|c4|c6|c7|c10|c11|c12|c13|c14|';
-        $spot['subcatd'] = 'd0|d1|d2|d3|d4|d5|d6|d7|d8|d9|d10|d11|d12|d13|d14|d15|d16|d17|d';
-    } else {
-        $spot['subcatb'] = 'b0|b1|b2|b3|';
-        $spot['subcatc'] = 'c0|c1|c2|c3|c4';
-        $spot['subcatd'] = 'd0|d1|d2|d3|d4';
-    }
-    $spot['title'] = 'Thundercats s1v2 d1 2D+3D';
-    $spot['subcatz'] = '';
-    $spot['category'] = '0';
-//     $spot = $daoFactory->getSpotDao()->getSpotHeader('2u2eWbN2ghksiWsTgAELm@spot.net');
-    $y = Services_ParseCollections_Factory::factory($spot);
-    // $y = new Services_ParseCollections_Movies($spot);
-    $y = $y->parseSpot();
-    if ($y !== null){
-        var_dump(mb_detect_encoding($y->getTitle()));
-        var_dump(mb_check_encoding($y->getTitle()));
-        var_dump($y);
-    } else {
-        echo "Spot is marked as INVALID!";
-    }
-    die();
+//    $spot['subcata'] = 'a3|';
+//    if (1==0) {
+//        $spot['subcatb'] = 'b0|b1|b2|b3|b4|b6|b7|b8|b9|';
+//        $spot['subcatc'] = 'c0|c1|c2|c3|c4|c6|c7|c10|c11|c12|c13|c14|';
+//        $spot['subcatd'] = 'd0|d1|d2|d3|d4|d5|d6|d7|d8|d9|d10|d11|d12|d13|d14|d15|d16|d17|d';
+//    } else {
+//        $spot['subcatb'] = 'b0|b1|b2|b3|';
+//        $spot['subcatc'] = 'c0|c1|c2|c3|c4';
+//        $spot['subcatd'] = 'd0|d1|d2|d3|d4';
+//    }
+//    $spot['title'] = 'Thundercats s1v2 d1 2D+3D';
+//    $spot['subcatz'] = '';
+//    $spot['category'] = '0';
+////     $spot = $daoFactory->getSpotDao()->getSpotHeader('2u2eWbN2ghksiWsTgAELm@spot.net');
+//    $y = Services_ParseCollections_Factory::factory($spot);
+//    // $y = new Services_ParseCollections_Movies($spot);
+//    $y = $y->parseSpot();
+//    if ($y !== null){
+//        var_dump(mb_detect_encoding($y->getTitle()));
+//        var_dump(mb_check_encoding($y->getTitle()));
+//        var_dump($y);
+//    } else {
+//        echo "Spot is marked as INVALID!";
+//    }
+//    die();
 
     # Truncate the current collections tables, and reset all collection id's
     if (SpotCommandline::get('clean')) {

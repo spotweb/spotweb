@@ -124,10 +124,24 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
     } // getTrailers
 
     function getCastList($tmdbId) {
-        return $this->_conn->sqlQuery('tmdb_cast', 'Dto_TmdbCast', 'tmdb_id', $tmdbId);
+        $additionalJoinList = array(
+            array('jointype' => '',
+                  'tablename' => 'tmdb_credits',
+                  'tablealias' => 'tc',
+                  'joincondition' => 't1.tmdb_credit_id = tc.tmdb_credit_id')
+        );
+
+        return $this->_conn->sqlQuery('tmdb_cast', 'Dto_TmdbCast', 'tmdb_id', $tmdbId, $additionalJoinList);
     } // getCastList
 
     function getCrewList($tmdbId) {
+        $additionalJoinList = array(
+            array('jointype' => '',
+                'tablename' => 'tmdb_credits',
+                'tablealias' => 'tc',
+                'joincondition' => 't1.tmdb_credit_id = tc.tmdb_credit_id')
+        );
+
         return $this->_conn->sqlQuery('tmdb_crew', 'Dto_TmdbCrew', 'tmdb_id', $tmdbId);
     } // getCrewList
 
