@@ -680,7 +680,7 @@ abstract class SpotStruct_abs {
         $this->createTable('tmdb_info', "ascii");
         $this->validateColumn('tmdbid', 'tmdb_info', 'INTEGER', "0", true, '');
         $this->validateColumn('tmdbcollection_id', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('tmdbcollection_name', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('tmdbcollection_name', 'tmdb_info', 'VARCHAR(128)', "0", false, '');
         $this->validateColumn('budget', 'tmdb_info', 'INTEGER', "0", false, '');
         $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(128)', "''", false, '');
         $this->validateColumn('imdb_id', 'tmdb_info', 'VARCHAR(12)', "''", false, '');
