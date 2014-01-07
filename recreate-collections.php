@@ -47,7 +47,8 @@ try {
 //        $spot['subcatc'] = 'c0|c1|c2|c3|c4';
 //        $spot['subcatd'] = 'd0|d1|d2|d3|d4';
 //    }
-//    $spot['title'] = 'Thundercats s1v2 d1 2D+3D';
+//    $spot['title'] = 'Even Krap Bij Kas \'Aflevering 49\' 07-11-2013';
+//    $spot['title'] = 'MacGyver Seizoen 5 (6 dvd\'\'s)';
 //    $spot['subcatz'] = '';
 //    $spot['category'] = '0';
 ////     $spot = $daoFactory->getSpotDao()->getSpotHeader('2u2eWbN2ghksiWsTgAELm@spot.net');

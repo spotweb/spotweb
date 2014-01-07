@@ -11,7 +11,7 @@ class Dao_Base_Collections implements Dao_Collections {
      *
      * @var array
      */
-    protected static $mc_CacheList;
+    protected static $mc_CacheList = array();
     /**
      * Signals whether we started with a full cache, eg, we
      * have everything that is in the database.
@@ -35,6 +35,114 @@ class Dao_Base_Collections implements Dao_Collections {
         $this->_conn = $conn;
     } # ctor
 
+
+    private function fixCollectionYear($title, $catType, $year) {
+        /*
+         * We try to be something intelligent about movies without a year,
+         * because they usually /do/ belong to another collection.
+         */
+        if (($year === null) && ($catType == Dto_CollectionInfo::CATTYPE_MOVIES)) {
+            /*
+             * For each movie where there is no year, we try to see if we can find
+             * the most recent year entry as it might belong to that one. Ugly, but
+             * we have to decide somehow.
+             */
+            $idxStr = $title . '|' . $catType;
+            if (isset(self::$mc_CacheList[$idxStr])) {
+                foreach(array_keys(self::$mc_CacheList[$idxStr]) as $cntYear) {
+                    if (($cntYear !== null) && (($cntYear > $year) || ($year === null))) {
+                        $year = $cntYear;
+                    } // if
+                } // foreach
+            } // if
+        } // if
+
+        return $year;
+    } // fixCollectionYear
+
+    /**
+     * Create the id to the array
+     *
+     * @param $title
+     * @param $catType
+     * @param $year
+     * @return array
+     */
+    private function makeLocalCacheKey($title, $catType, $year) {
+        return array($title . '|' . $catType,
+                     $year);
+    } // makeLocalCacheKey
+
+    /**
+     * Returns whether a given item is in the local
+     * mastercollections cache
+     */
+    private function isInLocalCache($title, $catType, $year) {
+        list($idKey1, $idKey2) = $this->makeLocalCacheKey($title, $catType, $year);
+
+        return ((isset(self::$mc_CacheList[$idKey1])) && (isset(self::$mc_CacheList[$idKey1][$idKey2])));
+    } // isInLocalCache
+
+    /**
+     * Adds an item to the local msatercollectioncache
+     *
+     * @param $mcId
+     * @param $title
+     * @param $catType
+     * @param $year
+     */
+    private function addMcToLocalCache($mcId, $title, $catType, $year) {
+        list($idKey1, $idKey2) = $this->makeLocalCacheKey($title, $catType, $year);
+
+        # echo '  Adding MC to local cache: (' . $title. '),(' . $catType . '),('. $year . ')' . PHP_EOL;
+
+        self::$mc_CacheList[$idKey1][$idKey2] =
+            array('mcid' => $mcId,
+                  'cattype' =>  $catType,
+                  'collections' => array(),
+            );
+    } // addMcToLocalCache
+
+    /**
+     * Returns the mastercollection id from the local cache
+     *
+     * @param $title
+     * @param $catType
+     * @param $year
+     * @return mixed
+     */
+    private function getMcIdFromLocalCache($title, $catType, $year) {
+        list($idKey1, $idKey2) = $this->makeLocalCacheKey($title, $catType, $year);
+        return self::$mc_CacheList[$idKey1][$idKey2]['mcid'];
+    } // getMcIdFromLocalCache
+
+    /**
+     * Adds a specific collectoin to the local cache
+     *
+     * @param $title
+     * @param $catType
+     * @param $year
+     * @param Dto_CollectionInfo $collection
+     */
+    private function addSpecificCollectionToLocalCache($title, $catType, $year, Dto_CollectionInfo $collection) {
+        list($idKey1, $idKey2) = $this->makeLocalCacheKey($collection->getTitle(),
+                                                          $collection->getCatType(),
+                                                          $year);
+        self::$mc_CacheList[$idKey1][$idKey2]['collections'][] = $collection;
+    } // addSpecificCollectionToLocalCache
+
+    /**
+     * Return all collections from the local cache
+     *
+     * @param $title
+     * @param $catType
+     * @param $year
+     * @return mixed
+     */
+    private function getCollectionsFromLocalCache($title, $catType, $year) {
+        list($idKey1, $idKey2) = $this->makeLocalCacheKey($title, $catType, $year);
+        return self::$mc_CacheList[$idKey1][$idKey2]['collections'];
+    } // getCollectionsFromLocalCache
 
     /**
      * Load a list of titles into the collection cache
@@ -67,11 +175,11 @@ class Dao_Base_Collections implements Dao_Collections {
                                                            c.id AS cid,
                                                            mc.title,
                                                            mc.tmdb_id,
-                                                           mc.tvrageid,
+                                                           mc.tvrage_id,
                                                            mc.cattype,
+                                                           mc.year AS year,
                                                            c.season,
                                                            c.episode,
-                                                           c.year,
                                                            c.partscurrent,
                                                            c.partstotal
                                                     FROM mastercollections mc
@@ -87,20 +195,19 @@ class Dao_Base_Collections implements Dao_Collections {
             $collection->setId($result['cid']);
 
             /*
-             * Make sure the master title record is in the local cache
+             * Make sure the master record is in the local cache
              */
-            if (!isset(self::$mc_CacheList[$result['title'] . '|' . $result['cattype']])) {
-                self::$mc_CacheList[$result['title'] . '|' . $result['cattype']] =
-                                                  array('mcid' => $result['mcid'],
-                                                        'cattype' =>  $result['cattype'],
-                                                        'collections' => array(),
-                                                        );
+            if (!$this->isInLocalCache($result['title'], $result['cattype'], $result['year'])) {
+                $this->addMcToLocalCache($result['mcid'], $result['title'], $result['cattype'], $result['year']);
             } // if
 
             /*
              * And add it to the local cache array
              */
-            self::$mc_CacheList[$result['title'] . '|' . $result['cattype']]['collections'][] = $collection;
+            $this->addSpecificCollectionToLocalCache($collection->getTitle(),
+                                                     $collection->getCatType(),
+                                                     $collection->getYear(),
+                                                     $collection);
         } // foreach
     } // loadCollectionCache
 
@@ -116,7 +223,10 @@ class Dao_Base_Collections implements Dao_Collections {
     protected function matchCreateSpecificCollection(Dto_CollectionInfo $collToFind, $stamp, $spotId) {
         $title = $collToFind->getTitle();
         $catType = $collToFind->getCatType();
-        foreach(self::$mc_CacheList[$title . '|' . $catType]['collections'] as $collection) {
+        $year = $collToFind->getYear();
+
+        foreach($this->getCollectionsFromLocalCache($title, $catType, $year) as $collection) {
+
             if ($collToFind->equalColl($collection)) {
                 /* Save stamp to update collection stamp later on */
                 $this->mc_updateMcStamp[$collToFind->getMcId()] = array('stamp' => $stamp,
@@ -144,7 +254,7 @@ class Dao_Base_Collections implements Dao_Collections {
         $collToFind->setId($this->_conn->lastInsertId('collections'));
 
         // and add it to the cache
-        self::$mc_CacheList[$title . '|' . $catType]['collections'][] = $collToFind;
+        $this->addSpecificCollectionToLocalCache($title, $catType, $collToFind->getYear(), $collToFind);
 
         /* Save stamp to update collection stamp later on */
         $this->mc_updateMcStamp[$collToFind->getMcId()] = array('stamp' => $stamp,
@@ -204,9 +314,10 @@ class Dao_Base_Collections implements Dao_Collections {
             if ($spot['collectionInfo'] !== null) {
                 $title = $spot['collectionInfo']->getTitle();
                 $catType = $spot['collectionInfo']->getCatType();
+                $year = $spot['collectionInfo']->getYear();
 
-                if (isset(self::$mc_CacheList[$title . '|' . $catType])) {
-                    $spot['collectionInfo']->setMcId(self::$mc_CacheList[$title . '|' . $catType]['mcid']);
+                if ($this->isInLocalCache($title, $catType, $year)) {
+                    $spot['collectionInfo']->setMcId($this->getMcIdFromLocalCache($title, $catType, $year));
 
                     /*
                      * Try to find this specific collection id. If it isn't matched,
@@ -216,7 +327,10 @@ class Dao_Base_Collections implements Dao_Collections {
                      */
                     $spot['collectionInfo'] = $this->matchCreateSpecificCollection($spot['collectionInfo'], $spot['stamp'], $spot['id']);;
                 } else {
-                    $toFetch[$spot['collectionInfo']->getTitle()] = $spot['collectionInfo']->getCatType();
+                    $toFetch[$spot['collectionInfo']->getTitle()] =
+                        array('cattype' => $spot['collectionInfo']->getCatType(),
+                              'year' => $spot['collectionInfo']->getYear()
+                        );
                 } // else
             } // if
         } // foreach
@@ -240,18 +354,22 @@ class Dao_Base_Collections implements Dao_Collections {
                  * Make sure the master title record is in the db, if we didn't get it
                  * the first time, create it now.
                  */
-                if (!isset(self::$mc_CacheList[$key . '|' . $val])) {
-                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, tmdb_id, tvrageid)
-                                              VALUES (:title, :cattype, NULL, NULL)',
+                if (!$this->isInLocalCache($key, $val['cattype'], $val['year'])) {
+                     # echo 'Creating mastercollections: (' . $key . '),(' . $val['cattype'] . '),('. $val['year'] . ')' . PHP_EOL;
+
+                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, year, tmdb_id, tvrageid)
+                                              VALUES (:title, :cattype, :year, NULL, NULL)',
                         array(
                             ':title' => array($key, PDO::PARAM_STR),
-                            ':cattype' => array($val, PDO::PARAM_INT)
+                            ':cattype' => array($val['cattype'], PDO::PARAM_INT),
+                            ':year' => array($val['year'], PDO::PARAM_INT)
                         ));
 
                     // add the newly generated mastercollection to the local cache
-                    self::$mc_CacheList[$key . '|' . $val] = array('mcid' => $this->_conn->lastInsertId('mastercollections'),
-                                                                   'cattype' => $val,
-                                                                   'collections' => array());
+                    $this->addMcToLocalCache($this->_conn->lastInsertId('mastercollections'),           // mcid
+                                             $key,                                                      // title
+                                             $val['cattype'],                                           // cattype
+                                             $val['year']);
                 } // if
             } // foreach
 
@@ -268,6 +386,26 @@ class Dao_Base_Collections implements Dao_Collections {
         } // if
 
         if (!$isRecursive) {
+            /*
+             * We try one more time to see if we can re-arrange the movies
+             * with the year NULL
+             */
+            foreach($spotList as &$spot) {
+                if ($spot['collectionInfo'] !== null) {
+                    $collInfo = $spot['collectionInfo'];
+
+                    /*
+                     * Is there any other year available yet? If so, use that one.
+                     */
+                    $fixedYear = $this->fixCollectionYear($collInfo->getTitle(), $collInfo->getCatType(), $collInfo->getYear());
+                    if ($fixedYear !== null) {
+                        $collInfo->setYear($fixedYear);
+                        $spot['collectionInfo'] = $this->matchCreateSpecificCollection($collInfo, $spot['stamp'], $spot['id']);
+                    } // if
+                }
+            } // foreach
+            unset($spot);
+
             $this->_conn->commit();
         } // if
 
