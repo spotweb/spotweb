@@ -357,7 +357,7 @@ class Dao_Base_Collections implements Dao_Collections {
                 if (!$this->isInLocalCache($key, $val['cattype'], $val['year'])) {
                      # echo 'Creating mastercollections: (' . $key . '),(' . $val['cattype'] . '),('. $val['year'] . ')' . PHP_EOL;
 
-                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, year, tmdb_id, tvrageid)
+                    $this->_conn->exec('INSERT INTO mastercollections(title, cattype, year, tmdb_id, tvrage_id)
                                               VALUES (:title, :cattype, :year, NULL, NULL)',
                         array(
                             ':title' => array($key, PDO::PARAM_STR),
