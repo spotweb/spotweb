@@ -215,11 +215,11 @@ class Dao_Base_Spot implements Dao_Spot {
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype,
 												COALESCE(mc.title, s.title) AS cleantitle,
 												mc.id as \"mcid\",
+												mc.year as \"release_year\",
 												mc.tmdb_id as \"tmdb_id\",
 												mc.tvrage_id as \"tvrage_id\",
 												c.season as \"season\",
 												c.episode as \"episode\",
-												c.year as \"release_year\",
 												c.partscurrent as \"partscurrent\",
 												c.partstotal as \"partstotal\"
 												FROM spots AS s
