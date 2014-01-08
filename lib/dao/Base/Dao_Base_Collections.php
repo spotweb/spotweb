@@ -241,13 +241,12 @@ class Dao_Base_Collections implements Dao_Collections {
          * so we add it to our database, and add it to the
          * cache
          */
-        $this->_conn->exec('INSERT INTO collections(mcid, season, episode, year, partscurrent, partstotal)
-                                              VALUES (:mcid, :season, :episode, :year, :partscurrent, :partstotal)',
+        $this->_conn->exec('INSERT INTO collections(mcid, season, episode, partscurrent, partstotal)
+                                              VALUES (:mcid, :season, :episode, :partscurrent, :partstotal)',
             array(
                 ':mcid' => array($collToFind->getMcId(), PDO::PARAM_INT),
                 ':season' => array($collToFind->getSeason(), PDO::PARAM_STR),
                 ':episode' => array($collToFind->getEpisode(), PDO::PARAM_STR),
-                ':year' => array($collToFind->getYear(), PDO::PARAM_STR),
                 ':partscurrent' => array($collToFind->getPartsCurrent(), PDO::PARAM_STR),
                 ':partstotal' => array($collToFind->getPartsTotal(), PDO::PARAM_STR),
             ));
