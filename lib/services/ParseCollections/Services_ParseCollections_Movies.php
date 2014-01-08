@@ -18,6 +18,13 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
         } // if
 
         /*
+         * Try to prevent obvious spam from creating useless collections
+         */
+        if ($this->checkForSpam()) {
+            return null;
+        } // if
+
+        /*
          * Do the basic year/season/episode parsing
          */
         $collInfo = $this->parseYearEpisodeSeason($this->spot);
@@ -25,7 +32,15 @@ class Services_ParseCollections_Movies extends Services_ParseCollections_Abstrac
             $title = $this->prepareTitle($this->spot['title']);
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES, $this->prepareCollName($title), null, null, null, null, null);
         } else {
-            $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_MOVIES);
+            /*
+             * If a season or episode is defined, its a TV serie for us
+             */
+            if (($this->spot['subcatz'] == 'z1|') || ($collInfo->getSeason() != null) || ($collInfo->getEpisode() != null)) {
+                $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_TV);
+            } else {
+                $collInfo->setCatType(Dto_CollectionInfo::CATTYPE_MOVIES);
+            } // else
+
             return $collInfo;
         } // else
     } // parseSpot

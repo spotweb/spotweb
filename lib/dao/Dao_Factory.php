@@ -117,6 +117,13 @@ abstract class Dao_Factory {
     abstract public function getCollectionsDao();
 
     /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_TmdbInfo
+     */
+    abstract public function getTmdbInfo();
+
+    /**
      * Factory class which instantiates the specified DAO factory object
      *
      * @param $which String specifying which DB specific factory to return

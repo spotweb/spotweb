@@ -11,6 +11,13 @@ class Services_ParseCollections_Books extends Services_ParseCollections_Abstract
      */
     function parseSpot() {
         /*
+         * Try to prevent obvious spam from creating useless collections
+         */
+        if ($this->checkForSpam()) {
+            return null;
+        } // if
+
+        /*
          * For books we just assume the title starts with the name of the wrtier, a dash, and then
          * the rest.
          *

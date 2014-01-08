@@ -44,9 +44,9 @@ class Services_Collections_Create {
              */
             $parsedSearch['filter'] = ' (s.id > ' . (int) ($startingPoint) . ') ' .
                                       ' AND (s.collectionid IS NULL) ' .
+                                      ' AND (s.stamp > 1290578400)' .
                                       ' AND (s.category <> 2) ' .                       # Games are never made into collections
                                       ' AND (s.category <> 3) ' .                       # applications are neither
-//                ' AND (s.messageid = \'P9bqBip2OdsoOhLTgAuDQ@spot.net\') ' .
                                       ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z3|\')))'; # exclude porn as well
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,

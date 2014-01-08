@@ -679,8 +679,8 @@ class Services_Search_QueryParser {
 					} # switch
 					$tmpFilterValue = round($val, 0);
 				} elseif ($tmpFilterFieldname == 'collection') {
-                    $tmpFilterValue = mb_strtolower($tmpFilterValue, 'UTF-8');
-                    $tmpFilterValue = mb_strtoupper(mb_substr($tmpFilterValue, 0, 1)) . mb_substr($tmpFilterValue, 1);
+                    $svcParseColl = new Services_ParseCollections_None(array());
+                    $tmpFilterValue = $svcParseColl->prepareCollName($tmpFilterValue);
                 } # if
 
 

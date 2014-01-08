@@ -250,7 +250,7 @@ try {
 			} # else
 		} # if
 	} catch (CorruptBWListException $e) {
-		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
+		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!" . PHP_EOL;
 	}
 
     ## Remove expired debuglogs

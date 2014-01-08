@@ -214,14 +214,12 @@ class Dao_Base_Spot implements Dao_Spot {
 												f.fullxml AS fullxml,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype,
 												COALESCE(mc.title, s.title) AS cleantitle,
-												mc.tmdbid as \"tmdbid\",
-												mc.tvrageid as \"tvrageid\",
 												mc.id as \"mcid\",
-												mc.tmdbid as \"tmdbid\",
-												mc.tvrageid as \"tvrageid\",
+												mc.year as \"release_year\",
+												mc.tmdb_id as \"tmdb_id\",
+												mc.tvrage_id as \"tvrage_id\",
 												c.season as \"season\",
 												c.episode as \"episode\",
-												c.year as \"release_year\",
 												c.partscurrent as \"partscurrent\",
 												c.partstotal as \"partstotal\"
 												FROM spots AS s

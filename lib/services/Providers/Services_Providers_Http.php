@@ -188,7 +188,7 @@ class Services_Providers_Http {
         $effectiveUrl = $url;
 
         $ch = curl_init();
-        curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
+        curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0');
         curl_setopt ($ch, CURLOPT_URL, $url);
         curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -382,19 +382,28 @@ class Services_Providers_Http {
                      'curl_info' => $curl_info);
     } # performGet
 	
-	/* 
+	/**
 	 * Retrieves an URL from the web and caches it when so required
 	 */
-	function performCachedGet($url, $storeWhenRedirected, $ttl = 900) {
+	function performCachedGet($url, $storeWhenRedirected, $ttl = 900, $forceCacheRefresh = false) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$url_md5 = md5($url);
 		
 		/*
 		 * Is this URL stored in the cache and is it still valid?
 		 */
-		$content = $this->_cacheDao->getCachedHttp($url_md5); 
+		if ($forceCacheRefresh) {
+            $content = false;
+        } else {
+            $content = $this->_cacheDao->getCachedHttp($url_md5);
+        }  // else
+
 		if ((!$content) || ( (time()-(int) $content['stamp']) > $ttl)) {
-            $tmpData = $this->perform($url, $content['stamp']);
+            if (isset($content['stamp'])) {
+                $tmpData = $this->perform($url, $content['stamp']);
+            } else {
+                $tmpData = $this->perform($url);
+            } // else
 
 			$data = $tmpData['data'];
             $http_code = $tmpData['http_code'];

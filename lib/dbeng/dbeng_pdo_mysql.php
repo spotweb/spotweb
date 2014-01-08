@@ -36,13 +36,48 @@ class dbeng_pdo_mysql extends dbeng_pdo {
                                         $pass,
                                         array(PDO::MYSQL_ATTR_FOUND_ROWS => true,
                                               PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                                              PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8 COLLATE utf8_unicode_ci'));
+                                              PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8 COLLATE utf8_unicode_ci'
+                                        ));
 			} catch (PDOException $e) {
 				throw new DatabaseConnectionException($e->getMessage(), -1);
 			}
 		} # if
 	} # connect()
 
+    /**
+     * Helper function to either update a record, or
+     * insert a new one, can be overriden by database
+     * specific implementations (an UPSERT basically).
+     *
+     */
+    public function upsert($tablename, array $parameters, array $idNames, $try = 0) {
+        /*
+         * Update failed to update any rows, lets insert the record
+         */
+        $sql = 'INSERT INTO ' . $tablename . '(';
+        foreach($parameters as $k => $v) {
+            $sql .= substr($k, 1) . ', ';
+        } // foreach
+
+        // remove the trailing comma
+        $sql = substr($sql, 0, -2);
+
+        $sql .= ') VALUES (';
+        foreach($parameters as $k => $v) {
+            $sql .= $k . ', ';
+        } // foreach
+        $sql = substr($sql, 0, -2) . ')';
+
+        $sql .= ' ON DUPLICATE KEY UPDATE ';
+        foreach($parameters as $k => $v) {
+            $sql .= substr($k, 1) . ' = ' . $k . ', ';
+        } // foreach
+
+        // remove the trailing comma
+        $sql = substr($sql, 0, -2);
+
+        $this->modify($sql, $parameters);
+    } // upsert
 
 
 } # class

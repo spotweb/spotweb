@@ -24,6 +24,23 @@ abstract class Services_ParseCollections_Abstract {
      */
     abstract function parseSpot();
 
+    protected function checkForSpam() {
+        /*
+         * If the spot contains more than x categories,
+         * it is probably spam so we don't bother creating
+         * a phony collection for it
+         */
+        $subCatList = explode('|',
+                            $this->spot['subcata'] . '|' .
+                            $this->spot['subcatb'] . '|' .
+                            $this->spot['subcatc'] . '|' .
+                            $this->spot['subcatd']);
+        if (count($subCatList) > 20) {
+            return true;
+        } // if
+
+        return false;
+    } // checkForSpam
     /**
      * Cleans up an title and lowercases it
      *
@@ -41,13 +58,18 @@ abstract class Services_ParseCollections_Abstract {
          * Replcae common tags and stuff we do not want to do anything with.
          * We allow the string to proceed with a slash, so things like (1920/1020p/ac4) works as well
          */
+        $title = str_replace(array("~* srt *~", "~*srt*~"), array(), $title);
         $title = preg_replace("/\\b(\\/)?(x264|hdtv|xvid|hd|720p|avchd|bluray|mkvh264aac|1080p|1080i|dutch|repost|basp|" .
-                                   "ac3|dts|nederlands|rescan|nl sub)\\b/i", "", $title);
-
-        /*
-         * Replace empty parenthesis, might be caused by aboves replacement
-         */
-        $title = str_replace(array("[]", "()"), "", $title);
+                                   "ac3|dts|nederlands|rescan|nl sub|nlsub|pal|ipod|ipad|2d\\+3d|iphone|psp|mp4|dd5\\.1|" .
+                                   "ntsc|bd50|3d|480p|half sbs|half\\-sbs|half ou|dvd5|dvd9|rental|bollywood|divx|x264|" .
+                                   "blu ray|made by berserk|web\\-dl|xbox 360|unrated|remux|aac|mkv|subs|subtitel|" .
+                                   "bd25|dd 5\\.1|remuxed|ondertitels|subtitels|cam|mp3|rip|untouched|verzoekje|" .
+                                   "ned gespr|nds|alle seizoenen|engelstalig|nlsubs|dolby 5.1|avchd9|dts 5.1|" .
+                                   "custom srt|english|hdts|2dvd|cust|extended edition|extended cut|custom|" .
+                                   "dvd rip|dvdrip|brrip|r5|retail|op verzoek|br2dvd|ingebakken subs|nl gespr|" .
+                                   "externe subs|dvdscr|hd2dvd|srt|dolby5.1|directors cut|ondertitel|bd 50|" .
+                                   "van toor spot|mkvh264ac3|complete series|br 2 dvd|dvdr|eng audio|h264|en|fullbd50|" .
+                                   "bd|nl)\\b|$/i", "", $title);
 
         return mb_strtolower($title, 'UTF-8');
     } // prepareTitle
@@ -80,17 +102,31 @@ abstract class Services_ParseCollections_Abstract {
              * Clash of the Titans  ( 1981 )
              */
             $year = $matches[2];
-        } elseif (preg_match('/([\(\[])([0-9]{4})([\/\-\.])([0-9]{4})([\)\]])/', $title, $matches)) {
+        } elseif (preg_match('/([\(\[])([0-9]{4}) ?([\/\-\.]) ?([0-9]{4})([\)\]])/', $title, $matches)) {
             /*
              * saints and soldiers: airborne creed (2012/2013) pal
              * wild bill (2011/2013) pal
              * jackpot / arme riddere (2011/2013) pal
              */
             $year = $matches[2];
-        } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})\/(18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
+            /*
+             * blah blah 1920/1921
+             */
+            $year = $matches[1] . $matches[2];
+        } elseif (preg_match('/(\(|\()([a-z ]+)(18|19|20)([0-9]{2})([\w\b]*|$)/', $title, $matches)) {
+            /*
+             * Blah blah [test test 2012]
+             * va - flashbacks v.1 high and low (drug songs 1917-1944)-2006-bandulu
+             * (specialcase, that removes the preceding texts as well)
+             *
+             */
+            $year = $matches[3] . $matches[4];
+        } elseif (preg_match('/[ \]\)\-,.](18|19|20)([0-9]{2})([ \[\(\)\]\-,.]|$)/', $title, $matches)) {
             /*
              * blah blah 1920
              * blah blah 2020
+             * blah blah 2010)
              */
             $year = $matches[1] . $matches[2];
         } // if
@@ -113,7 +149,7 @@ abstract class Services_ParseCollections_Abstract {
             /* John Denver - Around The World Live(DVDBox)DVD2-5 */
             $currentPart = $matches[2];
             $totalParts = $matches[5];
-        } elseif (preg_match('/[ \)\(\*\-]([0-9]{1,3})([ \/\-,.]|(van|of|t\/m)|[ \(\*\-,.])+([0-9]{1,3})([\]\*\-\) ]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \)\(\*\-]([0-9]{1,3})([ \/\-]|(van|of|t\/m))+([0-9]{1,3})([\]\*\) ]|$)/', $title, $matches)) {
             /* Last days of ww2 3 weekly episodes (6 van 6) */
             /* Hitler s warriors 4 of 6 udet */
             $currentPart = $matches[1];
@@ -131,7 +167,7 @@ abstract class Services_ParseCollections_Abstract {
         /*
          * try to parse the episode stuff
          */
-        if (preg_match('/[ \(\*\-,.][sS]([0-9]{1,2})[ \-,.]?[e]([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+        if (preg_match('/[ \(\*\-,.][sS]([0-9]{1,2})[ \-,.]?[e]([0-9]{1,5})([ \*\-,.\)]|$)/', $title, $matches)) {
             /* Goede Tijden Slechte Tijden - S24E67 Dinsdag 03-12-2013 RTL Lounge */
             $season = $matches[1];
             $episode = $matches[2];
@@ -140,15 +176,20 @@ abstract class Services_ParseCollections_Abstract {
             /* Seaquest dsv s1/d2 */
             $season = $matches[1];
             $currentPart = $matches[3];
-        } elseif (preg_match('/[ \-,.](season|seizoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\*\-,.][s]([0-9]{1,2})[ \/\-,.]?([v]|vol)([0-9]{1,2})[ \/\-,.]?([d]|dvd)([0-9]{1,2})([ \*\-,.\)]|$)/', $title, $matches)) {
+            /* Beverly hills s1v2d4 */
+            $season = $matches[1];
+            $episode = $matches[3];
+            $currentPart = $matches[5];
+        } elseif (preg_match('/[ \-,.](season|seizoen|seisoen|s)[ \-,.]([0-9]{1,4})[ \-,.]?(episode|ep|eps|aflevering|afl)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Goede Tijden, Slechte Tijden Seizoen 24 Aflevering 4811 02-12-2013 Repost" */
             $season = $matches[2];
             $episode = $matches[4];
-        } elseif (preg_match('/[ \-,.](episode|ep|aflevering|afl)[ \-,.]([0-9]{1,5})[ \-,.]?(season|seizoen|s)[ \-,.]([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.](episode|ep|eps|aflevering|afl)[ \-,.]([0-9]{1,5})[ \-,.]?(season|seisoen|seizoen|s)[ \-,.]([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
             /* "Sons of Anarchy Episode 12 Season 6 Released Dec 3th 2013" */
             $episode = $matches[2];
             $season = $matches[4];
-        } elseif (preg_match('/[ \(\-,.](season|seizoen|serie|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \(\-,.](season|seizoen|serie|seisoen|s)[ \-,.]{0,3}([0-9]{1,4})([ \-,.]|$)/', $title, $matches)) {
             /*
              * United States of Tara S03
              * Star Trek Voyager - Seizoen 3,
@@ -158,7 +199,7 @@ abstract class Services_ParseCollections_Abstract {
              */
             $season = $matches[2];
             $episode = null;
-        } elseif (preg_match('/[ \-,.](episode|ep|aflevering|afl|epsiode|week|nr)[ \-,.]*([0-9]{1,5})([ \-,.]|$)/', $title, $matches)) {
+        } elseif (preg_match('/[ \-,.\'](episode|ep|aflevering|afl|epsiode|week|nr)[ \-,.]*([0-9]{1,5})([ \-,.\']|$)/', $title, $matches)) {
             /*
              * beschuldigd afl 65
              * heartless city (2013) tv serie "asian - south korea". == eng subs == episode 11 ==
@@ -172,24 +213,15 @@ abstract class Services_ParseCollections_Abstract {
             /* WWE.Friday.Night.Smackdown.2013.12.6.HDTV.x264-DX */
             /* craig ferguson 2013 12 02 betty white hdtv x264-batv */
             /* rtl 7 darts; players championship finals [20131201] */
-            $year = $matches[1];
-            $season = $matches[2];
-            $episode = $matches[3];
+            $season = $matches[1];
+            $episode = str_pad($matches[2], 3, 0, STR_PAD_LEFT) . str_pad($matches[3], 3, 0, STR_PAD_LEFT);
         } elseif (preg_match('/[ \-,.\(\[]([0-9]{1,2})[\-.\/ ]([0-9]{2})[\-.\/ ]([0-9]{2,4})([\)\] \-,.]|$)/', $title, $matches)) {
             /* THE BOLD AND THE BEAUTIFUL Vrijdag 06-12-2013 */
             /* NBA RS: 05-12-13 Memphis Grizzlies @ Los angeles Clippers */
             /* nederland zingt 2013 - dvd 23 (23.11.2013 - 01.12.2013) */
             /* reportage 1-12-2013 */
-            $season = $matches[1];
-            $episode = $matches[2];
-            $year = $matches[3];
-        } elseif (preg_match('/[ \-,.](18|19|20)([0-9]{2})([ \-,.]|$)/', $title, $matches)) {
-            /*
-             * blah blah 1920
-             * blah blah 2020
-             */
-            $episode = null;
-            $season = $matches[1] . $matches[2];
+            $season = $matches[3];
+            $episode = str_pad($matches[1], 3, 0, STR_PAD_LEFT) . str_pad($matches[2], 3, 0, STR_PAD_LEFT);
         } // elseif
 
 
@@ -202,9 +234,15 @@ abstract class Services_ParseCollections_Abstract {
                 $posSeasonFound = strlen($title);
             } // else
 
-            $titleStr = substr($title, 0, min($posYearFound, $posSeasonFound, $posPartOfFound));
+            $titleStr = $this->prepareCollName(substr($title, 0, min($posYearFound, $posSeasonFound, $posPartOfFound)));
+
+            // empty titles are no collection
+            if (empty($titleStr)) {
+                return null;
+            } // if
+
             return new Dto_CollectionInfo(Dto_CollectionInfo::CATTYPE_MOVIES,
-                                            $this->prepareCollName($titleStr),
+                                            $titleStr,
                                             $season,
                                             $episode,
                                             $year,
@@ -219,21 +257,42 @@ abstract class Services_ParseCollections_Abstract {
      * @param string $collName
      * @returns string Cleaned up collection name
      */
-    protected function prepareCollName($collName) {
+    public function prepareCollName($collName) {
         $tmpName = mb_convert_encoding($collName, 'UTF-8', 'UTF-8');
+        $tmpName = str_replace("''", "'", $tmpName);
         $tmpName = str_replace(array(
                                     '.',
-                                    ':',            // Remove any semi columns
+                                    ':',            // Remove any colons
                                     '-',
-                                    '\'',           // Apostrophes
-                                    '!',
                                     '_',
+                                    '#',
                                     '=',
                                ),
                                ' ',
                                $tmpName);
+
+        /*
+         * Replace empty parenthesis, might be caused by earlier replacements, and remove double whitespaces
+         */
         $tmpName = preg_replace('/\s+/', ' ', $tmpName);
+        $tmpName = str_replace(array("[]", "()", "[ ]", "( )", "**"), "", $tmpName);
         $tmpName = trim($tmpName, " \t\n\r\0\x0B-=");
+        $tmpName = ltrim($tmpName, '])');       // remove 'incorrect' closing tags at the front
+        $tmpName = rtrim($tmpName, '([');       // and incorrect opening tags at the end
+        $tmpName = preg_replace('/\s+/', ' ', $tmpName);
+
+        /*
+         * If the title ends with an ', the', we move it to the front
+         */
+        if (preg_match('/\, the$/', $tmpName) === 1) {
+            $tmpName = trim('The ' . mb_substr($tmpName, 0, -5));
+        } // if
+
+        /*
+         * trim again because all other operations might add extra spaces again
+         */
+        $tmpName = trim($tmpName, " \t\n\r\0\x0B-=");
+
         $tmpName = mb_strtolower($tmpName, 'UTF-8');
         $tmpName = mb_strtoupper(mb_substr($tmpName, 0, 1)) . mb_substr($tmpName, 1);
 

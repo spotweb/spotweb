@@ -102,4 +102,8 @@
          return new Dao_Mysql_Collections($this->_conn);
      } # getCollectionsDao
 
+     public function getTmdbInfo() {
+         return new Dao_Mysql_TmdbInfo($this->_conn);
+     } # getTmdbInfo
+
  } // Dao_Mysql_Factory

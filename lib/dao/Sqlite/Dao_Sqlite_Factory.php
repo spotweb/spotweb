@@ -102,4 +102,8 @@
          return new Dao_Sqlite_Collections($this->_conn);
      } # getCollectionsDao
 
+     public function getTmdbInfo() {
+         return new Dao_Sqlite_TmdbInfo($this->_conn);
+     } # getTmdbInfo
+
 } // Dao_Sqlite_Factory
