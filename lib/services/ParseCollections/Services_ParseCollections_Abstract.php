@@ -214,14 +214,14 @@ abstract class Services_ParseCollections_Abstract {
             /* craig ferguson 2013 12 02 betty white hdtv x264-batv */
             /* rtl 7 darts; players championship finals [20131201] */
             $season = $matches[1];
-            $episode = str_pad($matches[2], 3, 0, STR_PAD_LEFT) . ' ' . str_pad($matches[3], 3, 0, STR_PAD_LEFT);
+            $episode = str_pad($matches[2], 3, 0, STR_PAD_LEFT) . str_pad($matches[3], 3, 0, STR_PAD_LEFT);
         } elseif (preg_match('/[ \-,.\(\[]([0-9]{1,2})[\-.\/ ]([0-9]{2})[\-.\/ ]([0-9]{2,4})([\)\] \-,.]|$)/', $title, $matches)) {
             /* THE BOLD AND THE BEAUTIFUL Vrijdag 06-12-2013 */
             /* NBA RS: 05-12-13 Memphis Grizzlies @ Los angeles Clippers */
             /* nederland zingt 2013 - dvd 23 (23.11.2013 - 01.12.2013) */
             /* reportage 1-12-2013 */
             $season = $matches[3];
-            $episode = str_pad($matches[1], 3, 0, STR_PAD_LEFT) . ' ' . str_pad($matches[2], 3, 0, STR_PAD_LEFT);
+            $episode = str_pad($matches[1], 3, 0, STR_PAD_LEFT) . str_pad($matches[2], 3, 0, STR_PAD_LEFT);
         } // elseif
 
 
