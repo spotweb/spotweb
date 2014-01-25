@@ -540,7 +540,7 @@ class Services_Search_QueryParser {
                                   'collection' => 'mc.title',
                                   'season' => 'c.season',
                                   'episode' => 'c.episode',
-                                  'year' => 'c.year',
+                                  'year' => 'mc.year',
 								  'reportcount' => 's.reportcount',
 								  'commentcount' => 's.commentcount',
 								  'downloaded' => 'downloaded', 
@@ -691,7 +691,7 @@ class Services_Search_QueryParser {
 				if (!is_numeric($tmpFilterValue)) {
 					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue, PDO::PARAM_STR);
 				} else {
-					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue, PDO::PARAM_INT);
+					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue, PDO::PARAM_INT);
 				} # if
 
 				# depending on the type of search, we either add the filter as an AND or an OR
