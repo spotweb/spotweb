@@ -35,7 +35,7 @@ abstract class Services_ParseCollections_Abstract {
                             $this->spot['subcatb'] . '|' .
                             $this->spot['subcatc'] . '|' .
                             $this->spot['subcatd']);
-        if (count($subCatList) > 20) {
+        if (count($subCatList) > 24) {
             return true;
         } // if
 

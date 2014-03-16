@@ -47,7 +47,9 @@ class Services_Collections_Create {
                                       ' AND (s.stamp > 1290578400)' .
                                       ' AND (s.category <> 2) ' .                       # Games are never made into collections
                                       ' AND (s.category <> 3) ' .                       # applications are neither
-                                      ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z3|\')))'; # exclude porn as well
+                                      ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z3|\')))' .  # exclude porn as well
+                                      ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z0|\') AND (s.subcatd LIKE \'%d6|%\')))' .  # exclude books as well
+                                      ' AND (NOT ((s.category = 0) AND (s.subcatz = \'z0|\') AND (s.subcatd = \'d13|\')))';   # exclude music videos as well
             $dbSpotList = $svcProvSpotList->fetchSpotList(0,
                 0,
                 $increment,

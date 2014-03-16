@@ -40,7 +40,13 @@ class Services_Providers_FullSpot {
              * Retrieve a full loaded spot from the NNTP server
              */
 			$newFullSpot = $this->_nntpSpotReading->readFullSpot($msgId);
-			$this->_daoFactory->getSpotDao()->addFullSpots( array($newFullSpot) );
+            if (!empty($newFullSpot)) {
+                $this->_daoFactory->getSpotDao()->addFullSpots( array($newFullSpot) );
+            } else {
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $ourUserId, $fullSpot));
+
+                return false;
+            } // else
 
             /*
              * If the title is changed from the header and the full,
@@ -92,7 +98,7 @@ class Services_Providers_FullSpot {
 		$fullSpot = array_merge($parsedXml, $fullSpot);
 
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $ourUserId, $fullSpot));
-		
+
 		return $fullSpot;
 	} # fetchFullSpot
 

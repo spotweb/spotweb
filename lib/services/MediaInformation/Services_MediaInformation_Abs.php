@@ -17,13 +17,11 @@ abstract class Services_MediaInformation_Abs {
      * @var Services_Settings_Container
      */
     protected $_settings;
-
-    /*
+    /**
      * Contains the name of string for the item we are looking for
      * @var string
      */
     private $_searchName;
-
     /**
      * Contains the id used by the directory service internally for reference
      * @var int
@@ -48,7 +46,7 @@ abstract class Services_MediaInformation_Abs {
     } # getSearchId
 
     public function setSearchName($s) {
-        $this->_name = $s;
+        $this->_searchName = $s;
     } # setSeearchName
 
     public function getSearchName() {

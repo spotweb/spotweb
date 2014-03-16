@@ -204,6 +204,11 @@ abstract class Services_Retriever_Base {
 			$this->displayStatus("curartnr", $curArticleNr);
 			$this->displayStatus("", "");
 
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+            $curArticleNr = 1984748;
+            $this->_msgdata['last'] = $curArticleNr + 500;
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+
             SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':whileLoop');
 			while ($curArticleNr < $this->_msgdata['last']) {
 				$timer = microtime(true);

@@ -142,7 +142,7 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
                 'joincondition' => 't1.tmdb_credit_id = tc.tmdb_credit_id')
         );
 
-        return $this->_conn->sqlQuery('tmdb_crew', 'Dto_TmdbCrew', 'tmdb_id', $tmdbId);
+        return $this->_conn->sqlQuery('tmdb_crew', 'Dto_TmdbCrew', 'tmdb_id', $tmdbId, $additionalJoinList);
     } // getCrewList
 
     function getImageList($tmdbId) {

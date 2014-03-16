@@ -29,7 +29,7 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
          */
         $baseUrl = 'http://api.themoviedb.org/3/movie/' . (int)$this->getSearchid() .
             '?api_key=' . $this->_settings->get('tmdb_api_key') .
-            '&append_to_response=trailers,credits,images&language=en';
+            '&append_to_response=trailers,credits,images&language=en&include_image_language=en,null';
 
         list($http_code, $tmdb) = $this->_httpProvider->performCachedGet($baseUrl, false, 365 * 24 * 60 * 60);
         if (empty($tmdb)) {
