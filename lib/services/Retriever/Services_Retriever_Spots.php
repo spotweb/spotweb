@@ -89,6 +89,31 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			} # if
 		} # ctor
 
+    /**
+     * returns whether we are under extreme memory pressure or not
+     */
+    function hasMemoryPressure() {
+        $val = trim(ini_get('memory_limit'));
+        $last = strtolower($val[strlen($val)-1]);
+        switch($last) {
+            // The 'G' modifier is available since PHP 5.1.0
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+
+        /*
+         * If we have less than 16mbyte of free memory, start flushing to disk
+         */
+        return (memory_get_usage(true) > ($val - (1024*1024 * 16)));
+    } // hasMemoryPressure
+
+
+
+
 		/*
 		 * Returns the status in either xml or text format 
 		 */
@@ -363,6 +388,14 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							$fullSpot = $this->_svcNntpTextReading->readFullSpot($msgId);
 							SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getFullSpot, done. msgId= ' . $msgId);
 
+                        # did we fail to parse the spot? if so, skip this one
+                        if (empty($fullSpot)) {
+                            $invalidCount++;
+                            continue;
+                        } // if
+
+
+
 							# add this spot to the database
 							$fullSpotDbList[] = $fullSpot;
 							$fullspot_isInDb = true;
@@ -512,6 +545,25 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
+                
+
+            /*
+             * If we are under memory pressure, flush the cache to disk in advance so we
+             * can free up memory. This is slower, but might avoid ballooning memory.
+             */
+            if ($this->hasMemoryPressure()) {
+                SpotDebug::msg(SpotDebug::DEBUG, 'we are under memory pressure, flushing to disk');
+
+                echo "We are under memory pressure... ";
+
+                $this->_spotDao->addSpots($spotDbList, $fullSpotDbList);
+
+                $spotDbList = array();
+                $fullSpotDbList = array();
+            } // if
+
+
+
 				SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, done. msgId= ' . $msgCounter);
 			} # foreach
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach');
