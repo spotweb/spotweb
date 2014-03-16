@@ -173,6 +173,14 @@ class Services_Nntp_SpotReading {
 			$spot['spotterid'] = $this->_spotParseUtil->calculateSpotterId($spot['user-key']['modulo']);
 		} # if	
 		
+        /*
+         * Some spots are very large bcause they are spammy. if so, we skip them to
+         * prevent memory and database issues
+         */
+        if (strlen($spot['fullxml']) > (1024*50)) {
+            return false;
+        } # if
+		
 		/*
 		 * Parse the XML structure of the spot, technically not necessary
 		 */
