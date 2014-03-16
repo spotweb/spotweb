@@ -40,8 +40,14 @@ class Services_Providers_FullSpot {
              * Retrieve a full loaded spot from the NNTP server
              */
 			$newFullSpot = $this->_nntpSpotReading->readFullSpot($msgId);
-			$this->_spotDao->addFullSpots( array($newFullSpot) );
-			
+            if (!empty($newFullSpot)) {
+                $this->_daoFactory->getSpotDao()->addFullSpots( array($newFullSpot) );
+            } else {
+                SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $ourUserId, $fullSpot));
+
+                return false;
+            } // else
+
 			/*
 			 * If the current spotterid is empty, we probably now have a spotterid because 
 			 * we have the fullspot.
