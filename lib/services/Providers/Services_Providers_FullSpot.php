@@ -41,7 +41,7 @@ class Services_Providers_FullSpot {
              */
 			$newFullSpot = $this->_nntpSpotReading->readFullSpot($msgId);
             if (!empty($newFullSpot)) {
-                $this->_daoFactory->getSpotDao()->addFullSpots( array($newFullSpot) );
+                $this->_spotDao->addFullSpots( array($newFullSpot) );
             } else {
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($msgId, $ourUserId, $fullSpot));
 
