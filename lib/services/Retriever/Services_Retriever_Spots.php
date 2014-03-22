@@ -105,6 +105,16 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                 $val *= 1024;
         }
 
+
+        /*
+         * Setting memory_limit to -1 means PHP has no memory
+         * limit of its own, if so, we are never under memory
+         * pressure.
+         */
+        if ($val < 0) {
+            return false;
+        } // if
+
         /*
          * If we have less than 16mbyte of free memory, start flushing to disk
          */
