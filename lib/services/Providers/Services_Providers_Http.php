@@ -343,6 +343,10 @@ class Services_Providers_Http {
                         if ($redirUrl[0] == '/') {
                             $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
                         } else {
+                            if (!isset($urlParts['path'])) {
+                                $urlParts['path'] = '';
+                            } // if
+
                             $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . $redirUrl;
                         } # if
                     } # if
