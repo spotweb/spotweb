@@ -255,7 +255,7 @@ class Services_Nntp_Engine {
      * array with head and body as elements
      */
     public function post($article) {
-        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->post() -> " . serialize(article));
+        SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->post() -> " . serialize($article));
         $this->connect();
         /*
          * We cannot run post() directly because it would
