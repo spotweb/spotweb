@@ -685,12 +685,12 @@ abstract class SpotStruct_abs {
         $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(512)', "''", false, 'ascii');
         $this->validateColumn('imdb_id', 'tmdb_info', 'VARCHAR(12)', "''", false, 'ascii');
         $this->validateColumn('tmdb_title', 'tmdb_info', 'VARCHAR(128)', "''", false, 'utf8');
-        $this->validateColumn('overview', 'tmdb_info', 'TEXT', "''", false, 'utf8');
+        $this->validateColumn('overview', 'tmdb_info', 'TEXT', NULL, false, 'utf8');
         $this->validateColumn('popularity', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('release_date', 'tmdb_info', 'VARCHAR(10)', "0", false, 'ascii');
         $this->validateColumn('revenue', 'tmdb_info', 'BIGINT', "0", false, '');
         $this->validateColumn('runtime', 'tmdb_info', 'INTEGER', "0", false, '');
-        $this->validateColumn('tagline', 'tmdb_info', 'TEXT', "''", false, 'utf8');
+        $this->validateColumn('tagline', 'tmdb_info', 'TEXT', NULL, false, 'utf8');
         $this->validateColumn('vote_average', 'tmdb_info', 'FLOAT', "0", false, '');
         $this->validateColumn('vote_count', 'tmdb_info', 'INTEGER', "0", false, '');
         $this->validateColumn('last_retrieve', 'tmdb_info', 'INTEGER', "0", false, '');
