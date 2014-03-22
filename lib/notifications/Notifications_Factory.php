@@ -9,11 +9,13 @@ class Notifications_Factory {
 			case 'boxcar'			: $handler = new Notifications_Boxcar($appName, $dataArray); break;
 			case 'email'			: $handler = new Notifications_Email($appName, $dataArray); break;
 			case 'growl'			: $handler = new Notifications_Growl($appName, $dataArray); break;
-			case 'nma'				: $handler = new Notifications_NMA($appName, $dataArray); break;
+			case 'nma'			: $handler = new Notifications_NMA($appName, $dataArray); break;
 			case 'notifo'	  		: $handler = new Notifications_Notifo($appName, $dataArray); break;
 			case 'prowl'			: $handler = new Notifications_Prowl($appName, $dataArray); break;
 			case 'twitter'			: $handler = new Notifications_Twitter($appName, $dataArray); break;
-			default					: $handler = false; break;
+               case 'pushover'          : $handler = new Notifications_Pushover($appName, $dataArray); break;
+               case 'pushalot'          : $handler = new Notifications_Pushalot($appName, $dataArray); break;
+               default			     : $handler = false; break;
 		} # switch
 
 		return $handler;
@@ -26,7 +28,9 @@ class Notifications_Factory {
 					 'nma',
 					 'notifo',
 					 'prowl',
-					 'twitter'
+					 'twitter',
+					 'pushover',
+					 'pushalot'
 					);
 	}
 
