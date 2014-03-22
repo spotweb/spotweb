@@ -490,7 +490,16 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieve a image resource from the cache
 	 */
 	function getCachedSpotImage($resourceId) {
-		return $this->getCache($resourceId, $this::SpotImage);
+		$tmpData = $this->getCache($resourceId, $this::SpotImage);
+
+        /*
+         * We need to 'migrate' the older cache format to this one
+         */
+        if (!isset($tmpData['metadata']['dimensions'])) {
+            $tmpData['metadata'] = array('dimensions' => $tmpData['metadata'], 'isErrorImage' => false);
+        } // if
+
+        return $tmpData;
 	} # getCachedSpotImage
 
     /*
@@ -510,13 +519,14 @@ class Dao_Base_Cache implements Dao_Cache {
 	/*
 	 * Save an image resource into the cache
 	 */
-	function saveSpotImageCache($resourceId, $metadata, $content, $performExpire) {
+	function saveSpotImageCache($resourceId, $metadata, $content, $isErrorImage, $performExpire) {
         if ($performExpire) {
-            $ttl = 7 * 24 * 60 * 60;
+            $ttl = 1 * 60 * 60;
         } else {
             $ttl = 0;
         } # else
 
+        $metadata = array('dimensions' => $metadata, 'isErrorImage' => $isErrorImage);
 		return $this->saveCache($resourceId, $this::SpotImage, $metadata, $ttl, $content);
 	} # saveSpotImagecache
 

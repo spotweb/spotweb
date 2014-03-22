@@ -37,7 +37,12 @@ class Services_Providers_SpotImage {
 
 		$data = $this->_cacheDao->getCachedSpotImage($fullSpot['messageid']);
 		if ($data !== false) {
-            $this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid'], $data);
+            /*
+             * Do not update the time stamp for error images
+             */
+            if ($data['metadata']['isErrorImage']) {
+                $this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid'], $data);
+            } // if
 
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 			
@@ -129,6 +134,7 @@ class Services_Providers_SpotImage {
                     if (!$this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
                                                                 $dimensions,
                                                                 $imageString,
+                                                                false,
                                                                 false)) {
                         $validImage = false;
                         $return_code = 997;
@@ -162,6 +168,7 @@ class Services_Providers_SpotImage {
             $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
                 $dimensions,
                 $imageString,
+                true,
                 true);
 		} # if
 

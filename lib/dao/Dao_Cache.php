@@ -25,7 +25,7 @@ interface Dao_Cache {
 	function getCachedSpotImage($resourceId);
     function hasCachedSpotImage($resourceId);
 	function updateSpotImageCacheStamp($resourceId, $metadata);
-	function saveSpotImageCache($resourceId, $metadata, $content, $performExpire);
+	function saveSpotImageCache($resourceId, $metadata, $content, $isErrorMessage, $performExpire);
 
 	function getCachedStats($resourceId);
     function hasCachedStats($resourceId);
