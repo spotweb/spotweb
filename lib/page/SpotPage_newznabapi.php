@@ -804,8 +804,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 2000: return 'cat0_z0';
 			case 2010: 
-			case 2030: return 'cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3';
-			case 2040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3';
+			case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';
+			case 2040: return 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';
 			case 2060: return 'cat0_d18';
 
 			case 3000: return 'cat1_a';
@@ -819,17 +819,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 4050: return 'cat2_a0,cat2_a1,cat2_a2';
 
 			case 5000: return 'cat0_z1';
-			case 5020: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_a10';
-			case 5030: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10';
-			case 5040: return 'cat0_z1,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9';
-			case 5050: return 'cat0_z1,cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,cat0_a10';
-			case 5060: return 'cat0_z1,cat0_d18';
+			case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
+			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
+			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5060: return 'cat0_z1_d18';
 
 			case 6000: return 'cat0_z3';
-			case 6010: return 'cat0_a3,cat0_a10,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6020: return 'cat0_a1,cat0_a8,~cat0_z1,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6030: return 'cat0_a0,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
+			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
+			case 6030: return 'cat0_z3_a0';
+			case 6040: return 'cat0_z3_a4,cat0_z3_a6,cat0_z3_a7,cat0_z3_a8,cat0_z3_a9';
 
 			case 7020: return 'cat0_z2';
 		}
