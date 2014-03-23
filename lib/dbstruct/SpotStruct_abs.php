@@ -343,7 +343,7 @@ abstract class SpotStruct_abs {
 		$this->createTable('spots', "utf8"); 
 		$this->validateColumn('messageid', 'spots', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('poster', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
-		$this->validateColumn('title', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('title', 'spots', 'VARCHAR(450)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spots', 'INTEGER', NULL, false, '');
 		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
@@ -446,7 +446,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('ouruserid', 'spotsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('title', 'spotsposted', 'VARCHAR(450)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spotsposted', 'INTEGER', NULL, false, '');
 		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii'); 
@@ -658,7 +658,7 @@ abstract class SpotStruct_abs {
 
         # ---- mastercollections table ---- #
         $this->createTable('mastercollections', "ascii");
-        $this->validateColumn('title', 'mastercollections', 'VARCHAR(128)', "''", true, 'utf8_bin');
+        $this->validateColumn('title', 'mastercollections', 'VARCHAR(450)', "''", true, 'utf8_bin');
         $this->validateColumn('year', 'mastercollections', 'INTEGER', "0", false, ''); // we need year in MC because different films of different years are different while series are not
         $this->validateColumn('lateststamp', 'mastercollections', 'INTEGER', "0", false, '');
         $this->validateColumn('latestspotid', 'mastercollections', 'INTEGER', "0", false, '');
