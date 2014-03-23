@@ -144,7 +144,12 @@ class Services_Providers_SpotImage {
 			} else {
 				$validImage = false;
 				$return_code = 998;
-			} # if	
+			} # if
+
+            /*
+             * create the propery return array for metadata
+             */
+            $metadata = array('dimensions' => $dimensions, 'isErrorImage' => false);
 		} # if
 
 		/*
@@ -159,7 +164,8 @@ class Services_Providers_SpotImage {
             SpotTiming::stop('fetchSpotImage::createErrorImage()');
 
             $imageString = $errorImage['content'];
-            $dimensions = $errorImage['metadata'];
+            $metadata = array('dimensions' => $errorImage['dimensions'],
+                              'isErrorImage' => true);
 
             /*
              * Store a copy of the error image so we don't request
@@ -174,7 +180,7 @@ class Services_Providers_SpotImage {
 
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
 		return array('content' => $imageString,
-					 'metadata' => $dimensions);
+					 'metadata' => $metadata);
 	} # fetchSpotImage
 	
 } # Services_Providers_SpotImage

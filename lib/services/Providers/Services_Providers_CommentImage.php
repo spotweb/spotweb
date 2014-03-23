@@ -56,7 +56,7 @@ class Services_Providers_CommentImage {
 		$dimensions = $this->_svc_ImageUtil->getImageDimensions($data);
 
 		$data = array('content' => $data);
-		$data['metadata'] = $dimensions;
+		$data['metadata'] = array('dimensions' => $dimensions, 'isErrorImage' => false);
 		$data['ttl'] = (24 * 7 * 60 * 60);
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($md5, $size, $default, $rating));
 		return $data;
