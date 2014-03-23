@@ -495,7 +495,7 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * We need to 'migrate' the older cache format to this one
          */
-        if (!isset($tmpData['metadata']['dimensions'])) {
+        if (($tmpData !== false) && (!isset($tmpData['metadata']['dimensions']))) {
             $tmpData['metadata'] = array('dimensions' => $tmpData['metadata'], 'isErrorImage' => false);
         } // if
 
