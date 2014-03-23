@@ -49,7 +49,7 @@ class Services_Posting_Validator {
 			$result->addError(_('Enter a title'));
 		} # if
 
-        if (strlen($spot['title']) > 450) {
+        if (strlen($spot['title']) > 250) {
             $result->addError(_('Please shorten your title'));
         } # if
 
