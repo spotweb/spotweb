@@ -114,12 +114,19 @@ class Dao_Base_Cache implements Dao_Cache {
          * And create an extension, because thats nicer.
          */
         if ($cacheType == Dao_Cache::SpotImage) {
-            switch($metadata['imagetype']) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
                 case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
                 case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
                 case IMAGETYPE_PNG          : $filePath .= '.png'; break;
 
-                default                     : $filePath .= '.image.' . $metadata['imagetype']; break;
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
             } # switch
         } else {
             switch ($cacheType) {
@@ -168,12 +175,19 @@ class Dao_Base_Cache implements Dao_Cache {
          * And create an extension, because thats nicer.
          */
         if ($cacheType == Dao_Cache::SpotImage) {
-            switch($metadata['imagetype']) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
                 case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
                 case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
                 case IMAGETYPE_PNG          : $filePath .= '.png'; break;
 
-                default                     : $filePath .= '.image.' . $metadata['imagetype']; break;
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
             } # switch
         } else {
             switch ($cacheType) {
