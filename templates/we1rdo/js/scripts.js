@@ -1306,7 +1306,12 @@ function applyTipTip(){
 	var $dl = $("<ul/>");
 	var list = $.map(categories, function(value, key){
 		if(value) {
-			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+			if(key=='image'){//if image is used, don't add text or :
+				return $("<li/>").append(value);
+			}
+			else{
+				return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+			}
 		} else {
             return '';
         } // else
