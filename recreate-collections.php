@@ -37,25 +37,6 @@ try {
     # Initialize commandline arguments
     SpotCommandline::initialize(array('clean'), array('clean' => false));
 
-    $spot['subcata'] = 'a0|';
-    $spot['title'] = 'The Glee Project E5';
-    $spot['subcatz'] = 'z1|';
-    $spot['category'] = '0';
-    $spot = $daoFactory->getSpotDao()->getSpotHeader('CLswObnJ7C8jIIxTgARyw@spot.net');
-    $user = array('userid' => 0);
-
-    $y = Services_ParseCollections_Factory::factory($spot);
-    // $y = new Services_ParseCollections_Movies($spot);
-    $y = $y->parseSpot();
-    if ($y !== null){
-        var_dump(mb_detect_encoding($y->getTitle()));
-        var_dump(mb_check_encoding($y->getTitle()));
-        var_dump($y);
-    } else {
-        echo "Spot is marked as INVALID!";
-    }
-    die();
-
     # Truncate the current collections tables, and reset all collection id's
     if (SpotCommandline::get('clean')) {
         $dbConnection = $daoFactory->getConnection();
