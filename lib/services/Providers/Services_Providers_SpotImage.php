@@ -40,7 +40,7 @@ class Services_Providers_SpotImage {
             /*
              * Do not update the time stamp for error images
              */
-            if ($data['metadata']['isErrorImage']) {
+            if (!$data['metadata']['isErrorImage']) {
                 $this->_cacheDao->updateSpotImageCacheStamp($fullSpot['messageid'], $data);
             } // if
 
@@ -164,15 +164,14 @@ class Services_Providers_SpotImage {
             SpotTiming::stop('fetchSpotImage::createErrorImage()');
 
             $imageString = $errorImage['content'];
-            $metadata = array('dimensions' => $errorImage['dimensions'],
-                              'isErrorImage' => true);
+            $metadata = $errorImage['metadata'];
 
             /*
              * Store a copy of the error image so we don't request
              * the same image over and over.
              */
             $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
-                $dimensions,
+                $metadata,
                 $imageString,
                 true,
                 true);
