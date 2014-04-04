@@ -374,7 +374,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
-		# ---- uspstate table ---- #
+		# ---- usenetstate table ---- #
 		$this->createTable('usenetstate', "utf8");
 		$this->validateColumn('infotype', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('curarticlenr', 'usenetstate', 'INTEGER', "0", false, '');

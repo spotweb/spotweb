@@ -171,7 +171,7 @@ class Services_Providers_SpotImage {
              * the same image over and over.
              */
             $this->_cacheDao->saveSpotImageCache($fullSpot['messageid'],
-                $metadata,
+                $metadata['dimensions'],
                 $imageString,
                 true,
                 true);
