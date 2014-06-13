@@ -784,9 +784,13 @@ function downloadMultiNZB(dltype) {
         } // if
 
 		var url = '?page=getnzb&action=' + dltype;
-		$('td.multinzb input[type=checkbox]:checked').each(function() {
-			url += '&messageid%5B%5D='+$(this).val();
-		});
+        var data = [];
+        $('td.multinzb input[type=checkbox]:checked').each(function() {
+            data.push({
+                name: 'messageid[]',
+                value: $(this).val()
+            });
+        });
 
         /*
          * Add loading to all NZB's being downloaded
@@ -795,7 +799,8 @@ function downloadMultiNZB(dltype) {
 
         if (dltype != 'display') {
             $.ajax({
-                type: "GET",
+                type: "POST",
+                data: data,
                 url: url,
                 dataType: "json",
                 success: function(data) {
