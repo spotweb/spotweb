@@ -1304,12 +1304,17 @@ function applyTipTip(){
 	var categories = $(this).data('cats');
 	if(!categories) return;
 	var $dl = $("<ul/>");
-	var list = $.map(categories, function(value, key){
-		if(value) {
-			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+		var list = $.map(categories, function(value, key){
+	if(value) {
+			if(key=='image'){//if image is used, don't add text or :
+				return $("<li/>").append(value);
+			}
+			else{
+				return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+			}
 		} else {
-            return '';
-        } // else
+			return '';
+		} // else
 	});
 
 	$dl.append.apply($dl, list);
