@@ -280,7 +280,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         $svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
         $spotsTmp = $svcProvSpotList->fetchSpotList($this->_currentSession['user']['userid'],
             $pageNr,
-            $this->_currentSession['user']['prefs']['perpage'],
+			$limit,
             $parsedSearch);
 
 		$this->showResults($spotsTmp, ($pageNr * $limit), $outputtype);
