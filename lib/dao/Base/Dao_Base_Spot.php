@@ -107,14 +107,19 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotterid AS spotterid,
  												s.editstamp AS editstamp,
  												s.editor AS editor,
+ 												s.collectionid AS collectionid,
 												f.verified AS verified,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype,
+												COALESCE(mc.title, s.title) AS cleantitle,
+												mc.id as mcid
 												" . $extendedFieldList . "
 									 FROM spots AS s " . 
 									 $additionalTableList . 
 									 $additionalJoinList . 
 								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
+									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid)
+									 LEFT JOIN collections AS c ON (s.collectionid = c.id)
+									 LEFT JOIN mastercollections AS mc on (mc.id = c.mcid)
 									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
 									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) " .
@@ -156,7 +161,8 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotrating AS rating,
 												s.commentcount AS commentcount,
 												s.reportcount AS reportcount,
-												s.moderated AS moderated
+												s.moderated AS moderated,
+												s.collectionid AS collectionid
 											  FROM spots AS s
 											  WHERE s.messageid = :messageid",
             array(
@@ -197,6 +203,7 @@ class Dao_Base_Spot implements Dao_Spot {
 												s.spotterid AS spotterid,
 												s.editstamp AS editstamp,
 												s.editor AS editor,
+												s.collectionid AS collectionid,
 												l.download AS downloadstamp,
 												l.watch as watchstamp,
 												l.seen AS seenstamp,
@@ -205,9 +212,20 @@ class Dao_Base_Spot implements Dao_Spot {
 												f.userkey AS \"user-key\",
 												f.xmlsignature AS \"xml-signature\",
 												f.fullxml AS fullxml,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS listidtype,
+												COALESCE(mc.title, s.title) AS cleantitle,
+												mc.id as \"mcid\",
+												mc.year as \"release_year\",
+												mc.tmdb_id as \"tmdb_id\",
+												mc.tvrage_id as \"tvrage_id\",
+												c.season as \"season\",
+												c.episode as \"episode\",
+												c.partscurrent as \"partscurrent\",
+												c.partstotal as \"partstotal\"
 												FROM spots AS s
 												LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = :ouruserid1))
+									            LEFT JOIN collections AS c ON (s.collectionid = c.id)
+            									LEFT JOIN mastercollections AS mc on (mc.id = c.mcid)
 												LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = :ouruserid2) OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 												LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = :ouruserid3)) AND (wl.idtype = 2))
 												LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1)) AND (gwl.idtype = 2))
@@ -256,7 +274,7 @@ class Dao_Base_Spot implements Dao_Spot {
 										spots.messageid = commentsxover.nntpref 
 										AND spotrating BETWEEN 1 AND 10
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotRating
@@ -278,7 +296,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 WHERE 
 										spots.messageid = commentsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotCommentCount
@@ -300,7 +318,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									 WHERE 
 										spots.messageid = reportsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")
+							WHERE spots.messageid IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")
 						");
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
@@ -317,7 +335,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# prepare a list of IN values
-		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR);
 
 		$this->_conn->modify("DELETE FROM spots WHERE messageid IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid  IN (" . $msgIdList . ")");
@@ -340,7 +358,7 @@ class Dao_Base_Spot implements Dao_Spot {
 
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$this->_conn->modify("UPDATE spots SET moderated = :moderated WHERE messageid IN (" .
-								$this->_conn->arrayKeyToIn($spotMsgIdList) . ")",
+								$this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")",
             array(
                 ':moderated' => array(true, PDO::PARAM_BOOL)
             ));
@@ -409,6 +427,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
 			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
+            $spot['collectionid'] = $spot['collectionid'];
 
             /*
              * Make sure we only store valid utf-8
@@ -417,18 +436,24 @@ class Dao_Base_Spot implements Dao_Spot {
             $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'UTF-8');
             $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'UTF-8');
 
+            if (is_array($spot['collectionid'])) {
+                var_dump($spot);
+                die();
+            }
+
 		} # foreach
         unset($spot);
 
 		$this->_conn->batchInsert($spots,
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp,
+														filesize, spotterid, collectionid)
 									VALUES",
                                   array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
                                         PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
-                                        PDO::PARAM_INT, PDO::PARAM_STR),
+                                        PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_INT),
 								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', 'collectionid')
 								  );
 
 		if (!empty($fullSpots)) {
@@ -447,11 +472,16 @@ class Dao_Base_Spot implements Dao_Spot {
 	 */
 	function updateSpotInfoFromFull($fullSpot) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		$this->_conn->modify("UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid",
+		$this->_conn->modify("UPDATE spots
+		                        SET title = :title,
+		                            spotterid = :spotterid,
+		                            collectionid = :collectionid
+		                        WHERE messageid = :messageid",
             array(
                 ':title' => array($fullSpot['title'], PDO::PARAM_STR),
                 ':spotterid' => array($fullSpot['spotterid'], PDO::PARAM_STR),
-                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR)
+                ':messageid' => array($fullSpot['messageid'], PDO::PARAM_STR),
+                ':collectionid' => array($fullSpot['collectionid'], PDO::PARAM_INT),
             ));
 
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($fullSpot));
@@ -568,7 +598,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
 		# Prepare a list of values
-		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID', PDO::PARAM_STR);
 
 		# Because MySQL doesn't know anything about full joins, we use this trick
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (" . $msgIdList . ")
@@ -779,6 +809,21 @@ class Dao_Base_Spot implements Dao_Spot {
 		return $stamp;
 	} # getMaxMessageTime()
 
+    /**
+     * Returns the highest id of a spot in the database
+     */
+    function getMaxSpotId() {
+        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+
+        $id = $this->_conn->singleQuery("SELECT MAX(id) AS id FROM spots");
+        if ($id == null) {
+            $id = 0;
+        } # if
+
+        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($id));
+
+        return $id;
+    } // getMaxSpotId
 
     /**
      * Returns the highest messageid from server

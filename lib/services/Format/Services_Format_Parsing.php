@@ -185,6 +185,14 @@ class Services_Format_Parsing {
         $tpl_spot['subcatd'] = SpotCategories::mapDeprecatedGenreSubCategories($tpl_spot['category'], $tpl_spot['subcatd'], $tpl_spot['subcatz']);
         $tpl_spot['subcatc'] = SpotCategories::mapLanguageSubCategories($tpl_spot['category'], $tpl_spot['subcatc'], $tpl_spot['subcatz']);
 
+        # remove entities from the spot title
+        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'], ENT_QUOTES, 'UTF-8');
+        /*
+         * We run description decoding twice because a lot of spots are incorrectly encoded
+         */
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'], ENT_QUOTES, 'UTF-8');
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'], ENT_QUOTES, 'UTF-8');
+
 		# and return the parsed XML
 		return $tpl_spot;
 	} # parseFull()
@@ -261,6 +269,7 @@ class Services_Format_Parsing {
 		$spot['subcatz'] = '';
 		$spot['wassigned'] = false;
 		$spot['spotterid'] = '';
+        $spot['collectionid'] = null;
 		$isRecentKey = $spot['keyid'] <> 1;
 		
 		/* 
@@ -429,7 +438,7 @@ class Services_Format_Parsing {
 					$signature = $this->_util->spotUnprepareBase64($spot['headersign']);
 
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+					$spot['verified'] = (substr($userSignedHash, 0, 4) === '0000');
 
 					/*
 					 * Create a fake RSA keyarray so we can validate it using our standard
@@ -493,7 +502,10 @@ class Services_Format_Parsing {
 			} # if
 		} # if
 
-		return $spot;
+        # remove entities from the title
+        $spot['title'] = html_entity_decode($spot['title'], ENT_QUOTES, 'UTF-8');
+
+        return $spot;
 	} # parseHeader
 
 } # class Services_Format_Parsing

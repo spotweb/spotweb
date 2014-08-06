@@ -61,7 +61,7 @@ if (!showResults($result)) {
 	
 		<div>
 			<dt><label for="editspotform[title]"><?php echo _('Titel'); ?></label></dt>
-			<dd><input type="text" name="editspotform[title]" size="60" maxlength="60" value="<?php echo $editspotform['title']; ?>"></dd>
+			<dd><input type="text" name="editspotform[title]" size="60" maxlength="250" value="<?php echo $editspotform['title']; ?>"></dd>
 
 			<dt><label for="editspotform[body]"><?php echo _('Description'); ?></label></dt>
 			<dd><textarea name="editspotform[body]" id="editspotform[body]" cols="70" rows="8"><?php echo $editspotform['description']; ?></textarea><br />

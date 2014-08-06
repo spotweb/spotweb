@@ -67,7 +67,7 @@ class SpotPage_getimage extends SpotPage_Abs {
 			$this->sendExpireHeaders(false);
 		} # else
 
-		header("Content-Type: " . image_type_to_mime_type($data['metadata']['imagetype']));
+		header("Content-Type: " . image_type_to_mime_type($data['metadata']['dimensions']['imagetype']));
 		header("Content-Length: " . strlen($data['content']));
 		echo $data['content'];
 	} # render

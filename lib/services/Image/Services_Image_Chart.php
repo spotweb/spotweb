@@ -77,7 +77,8 @@ class Services_Image_Chart {
 			$imageString = ob_get_clean();
 
 			$dimensions = $this->_svcImageUtil->getImageDimensions($imageString);
-			return array('metadata' => $dimensions, 'content' => $imageString);
+			return array('metadata' => array('dimensions' => $dimensions, 'isErrorImage' => false),
+                         'content' => $imageString);
 		} else {
 			return false;
 		} # else

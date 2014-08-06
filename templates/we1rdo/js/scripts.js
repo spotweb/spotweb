@@ -784,9 +784,13 @@ function downloadMultiNZB(dltype) {
         } // if
 
 		var url = '?page=getnzb&action=' + dltype;
-		$('td.multinzb input[type=checkbox]:checked').each(function() {
-			url += '&messageid%5B%5D='+$(this).val();
-		});
+        var data = [];
+        $('td.multinzb input[type=checkbox]:checked').each(function() {
+            data.push({
+                name: 'messageid[]',
+                value: $(this).val()
+            });
+        });
 
         /*
          * Add loading to all NZB's being downloaded
@@ -795,7 +799,8 @@ function downloadMultiNZB(dltype) {
 
         if (dltype != 'display') {
             $.ajax({
-                type: "GET",
+                type: "POST",
+                data: data,
                 url: url,
                 dataType: "json",
                 success: function(data) {
@@ -1306,7 +1311,12 @@ function applyTipTip(){
 	var $dl = $("<ul/>");
 	var list = $.map(categories, function(value, key){
 		if(value) {
-			return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+			if(key=='image'){//if image is used, don't add text or :
+				return $("<li/>").append(value);
+			}
+			else{
+				return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
+			}
 		} else {
             return '';
         } // else

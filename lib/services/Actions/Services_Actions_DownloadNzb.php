@@ -16,7 +16,7 @@ class Services_Actions_DownloadNzb {
 		if (!is_array($messageIds)) {
             $messageIds = array($messageIds);
 		} # if
-		
+
 		# Make sure the user has the appropriate permissions
         $currentSession['security']->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
 		if ($action != 'display') {

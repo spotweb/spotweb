@@ -9,7 +9,7 @@
     <tr> <td> Open base dir </td> <td> <?php echo ini_get("open_basedir"); ?> </td> <td> <?php showResult(!ini_get("open_basedir"), true, "", "Not empty, <strong>might</strong> be a problem"); ?> </td> </tr>
     <tr> <td> Allow furl open </td> <td> <?php echo ini_get("allow_url_fopen"); ?> </td> <td> <?php showResult(ini_get("allow_url_fopen") == 1, true, "", "allow_url_fopen not on -- will cause problems to retrieve external data"); ?> </td> </tr>
     <tr> <td> PHP safe mode </td> <td> <?php echo ini_get("safe_mode"); ?> </td> <td> <?php showResult(!ini_get("safe_mode"), true, "", "Safe mode set -- will cause problems for retrieve.php"); ?> </td> </tr>
-    <tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024), true, "", "memory_limit below 128M"); ?> </td> </tr>
+    <tr> <td> Memory limit </td> <td> <?php echo ini_get("memory_limit"); ?> </td> <td> <?php showResult(return_bytes(ini_get("memory_limit")) >= (128*1024*1024) || ini_get("memory_limit") == -1, true, "", "memory_limit below 128M"); ?> </td> </tr>
 </table>
 <br />
 
