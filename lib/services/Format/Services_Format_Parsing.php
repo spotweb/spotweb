@@ -438,7 +438,7 @@ class Services_Format_Parsing {
 					$signature = $this->_util->spotUnprepareBase64($spot['headersign']);
 
 					$userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
-					$spot['verified'] = (substr($userSignedHash, 0, 3) == '0000');
+					$spot['verified'] = (substr($userSignedHash, 0, 4) === '0000');
 
 					/*
 					 * Create a fake RSA keyarray so we can validate it using our standard
