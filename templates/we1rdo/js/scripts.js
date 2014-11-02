@@ -208,7 +208,10 @@ function loadComments(messageid,perpage,pagenr) {
 			$("span.commentcount").html('# '+$("#commentslist").children().not(".addComment").size());
 		}
 
-        $("#commentslist").append($(html));
+		html = $(html);
+		$("a[href^='http']", html).attr('target','_blank');
+
+		$("#commentslist").append(html);
 		$("#commentslist > li:nth-child(even)").addClass('even');
 		$("#commentslist > li.addComment").next().addClass('firstComment');
 
