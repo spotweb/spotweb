@@ -199,6 +199,12 @@ abstract class dbeng_abs {
             } // if
         } else {
             $rowsUpdated = $this->sqlUpdate($tableName, $parameters, $idNames);
+
+	    $t='';
+	    foreach($parameters as $k=>$v) {
+		$t.=','.$k;
+	    }
+	    //echo 'Rowsupdated: ' . $rowsUpdated . ' for ' . $tableName . ', params=(' . $t . '), idNames=(' . implode(',', $idNames) . ')'.PHP_EOL;
         } // else
 
         if ($rowsUpdated === 0) {

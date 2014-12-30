@@ -8,6 +8,7 @@ class Dto_TmdbInfo {
     private $budget = null;
     private $homepage = null;
     private $imdbId = null;
+    private $tvRageId = null;
     private $tmdbTitle = null;
     private $overview = null;
     private $popularity = null;
@@ -129,11 +130,19 @@ class Dto_TmdbInfo {
         $this->imdbId = $imdbDb;
     }
 
+    public function setTvRageid($tvRageId) {
+	$this->tvRageId = $tvRageId;
+    }
+
     /**
      * @return mixed
      */
     public function getImdbId() {
         return $this->imdbId;
+    }
+
+    public function getTvRageId() {
+	return $this->tvRageId;
     }
 
     /**

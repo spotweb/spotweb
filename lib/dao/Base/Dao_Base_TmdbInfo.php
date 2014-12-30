@@ -46,7 +46,7 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':profile_path' => array($crew->getProfilePath(), PDO::PARAM_STR),
         );
 
-        $this->_conn->upsert('tmdb_crew', $parameters, array('tmdb_credit_id'));
+        $this->_conn->upsert('tmdb_crew', $parameters, array('tmdb_credit_id', 'department', 'job', 'tmdb_id'));
     } // addCrew()
 
     function addImage(Dto_TmdbImage $image) {
@@ -57,9 +57,10 @@ class Dao_Base_TmdbInfo implements Dao_TmdbInfo {
             ':file_path' => array($image->getFilePath(), PDO::PARAM_STR),
             ':height' => array($image->getHeight(), PDO::PARAM_INT),
             ':width' => array($image->getWidth(), PDO::PARAM_INT),
+	    ':tmdb_credit_id' => array($image->getTmdbCreditId(), PDO::PARAM_INT),
         );
 
-        $this->_conn->sqlInsert('tmdb_images', $parameters);
+       	$this->_conn->upsert('tmdb_images', $parameters, array('image_type', 'file_path'));
     } // addImage()
 
     function addTrailer(Dto_TmdbTrailer $trailer) {

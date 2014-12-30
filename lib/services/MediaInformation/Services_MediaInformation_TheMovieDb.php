@@ -29,7 +29,7 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
          */
         $baseUrl = 'http://api.themoviedb.org/3/movie/' . (int)$this->getSearchid() .
             '?api_key=' . $this->_settings->get('tmdb_api_key') .
-            '&append_to_response=trailers,credits,images&language=en&include_image_language=en,null';
+            '&append_to_response=trailers,credits,images,external_ids&language=en&include_image_language=en,null';
 
         list($http_code, $tmdb) = $this->_httpProvider->performCachedGet($baseUrl, false, 365 * 24 * 60 * 60);
         if (empty($tmdb)) {
@@ -55,6 +55,12 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
         $mediaInfo->setBudget($tmdb->budget);
         $mediaInfo->setHomepage($tmdb->homepage);
         $mediaInfo->setImdbId($tmdb->imdb_id);
+	if (!empty($mediaInfo->external_ids->imdb_id)) {
+		$mediaInfo->setImdbId($tmdb->imdb_id);
+	} // if
+	if (!empty($mediaInfo->external_ids->tvrage_id)) {
+		$mediaInfo->setTvRageId($tmdb->tvrage_id);
+	} // if
         $mediaInfo->setTmdbTitle($tmdb->original_title);
         $mediaInfo->setOverview($tmdb->overview);
         $mediaInfo->setPopularity($tmdb->popularity);
@@ -125,7 +131,7 @@ class Services_MediaInformation_TheMovieDb extends Services_MediaInformation_Abs
             $crewDto->setName($crew->name);
             $crewDto->setDepartment($crew->department);
             $crewDto->setJob($crew->job);
-            $castDto->setProfilePath($crew->profile_path);
+            $crewDto->setProfilePath($crew->profile_path);
 
             $mediaInfo->addCrewMember($crewDto);
         } // foreach

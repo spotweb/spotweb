@@ -2,8 +2,16 @@
 define('TMDB_API_KEY', '9a3cc6d14b4765b19587e229556ae226');
 
 
-function queryTmdb($mcId, $title, $year) {
-    $baseUrl = 'http://api.themoviedb.org/3/search/movie?api_key=' . TMDB_API_KEY  .
+function queryTmdb($catType, $mcId, $title, $year) {
+    if ($catType == 3) {
+	$catType = 'movie';
+    } elseif ($catType == 5) {
+	$catType = 'tv';
+    } else {
+	throw new Exception('Unknown cattype: ' . $catType);
+    } // else
+
+    $baseUrl = 'http://api.themoviedb.org/3/search/' . $catType . '?api_key=' . TMDB_API_KEY  .
                     '&append_to_response=trailers,credits,images&language=en';
 
     /*
