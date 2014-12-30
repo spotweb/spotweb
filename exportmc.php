@@ -28,18 +28,19 @@ try {
 
     /* Retrieve the current list */
     $conn = $daoFactory->getConnection();
-    $resultList = $conn->arrayQuery("SELECT DISTINCT ON (mc.title, c.year)
+    $resultList = $conn->arrayQuery("SELECT DISTINCT ON (mc.title, mc.year)
                                            mc.id AS mcid,
                                            mc.title,
-                                           mc.tmdbid,
+                                           mc.tmdb_id,
                                            mc.cattype,
-                                           c.year
+                                           mc.year
                                     FROM mastercollections mc
                                     LEFT JOIN collections c ON c.mcid = mc.id
                                         WHERE cattype = 3
-                                          AND tmdbid IS NULL");
+                                          AND tmdb_id IS NULL");
 
-    $lists = array_chunk($resultList, ceil(count($resultList) / 4));
+    # $lists = array_chunk($resultList, ceil(count($resultList) / 4));
+    $lists = array($resultList); // 1 one list
     for($i = 0; $i < count($lists); $i++) {
         file_put_contents('export' . $i . '.serialize', serialize($lists[$i]));
     } // for
