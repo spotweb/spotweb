@@ -50,7 +50,7 @@ try {
 
         echo "Updating TMDBid for '" . $line[3] . "', (id: " . $line[0] . ') ';
 
-        $conn->exec("UPDATE mastercollections SET tmdbid = " . $line[1] .
+        $conn->exec("UPDATE mastercollections SET tmdb_id = " . $line[1] .
                         " WHERE id = " . $line[0]);
 
         echo ", done" . PHP_EOL;
