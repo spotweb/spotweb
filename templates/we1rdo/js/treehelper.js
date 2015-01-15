@@ -34,12 +34,6 @@
                 } else {
                     return true;
                 } // else
-            },
-            onClick: function(node, event) {
-                // We should not toggle, if target was "checkbox", because this
-                // would result in double-toggle (i.e. no toggle)
-                if (node.getEventTargetType(event) == "title" && !node.data.isFolder)
-                    node.toggleSelect();
             }
         });
 
