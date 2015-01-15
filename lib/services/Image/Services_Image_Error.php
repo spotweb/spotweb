@@ -51,7 +51,8 @@ class Services_Image_Error {
 		imagedestroy($img['resource']);
 
 		$dimensions = $this->_svcImageUtil->getImageDimensions($imageString);
-		return array('metadata' => $dimensions, 'ttl' => time() + (7 * 24 * 60 * 60), 'content' => $imageString);
+		return array('metadata' => array('dimensions' => $dimensions, 'isErrorImage' => true),
+                     'ttl' => time() + (7 * 24 * 60 * 60), 'content' => $imageString);
 	} # createErrorImage
 	
 } # Services_Image_Error

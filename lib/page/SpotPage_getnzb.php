@@ -29,7 +29,7 @@ class SpotPage_getnzb extends SpotPage_Abs {
 		$svcBinSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'bin'));
 		$svcTextSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
 		$svcProvNzb = new Services_Providers_Nzb($this->_daoFactory->getCacheDao(), $svcBinSpotReading);
-		$svcProvSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcTextSpotReading);
+		$svcProvSpot = new Services_Providers_FullSpot($this->_daoFactory, $svcTextSpotReading);
 
 		# We do not want NZB files to be cached on the client
 		$this->sendExpireHeaders(true);

@@ -16,7 +16,7 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
 							LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 							LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 							LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-							WHERE spots.messageid  IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")");
+							WHERE spots.messageid  IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList, PDO::PARAM_STR) . ")");
 	} # removeSpots
 
 	/*

@@ -84,7 +84,9 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
 			 */
+			SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':matchCommentMessageIds');
 			$dbIdList = $this->_commentDao->matchCommentMessageIds($hdrList);
+			SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':matchCommentMessageIds');
 			
 			/*
 			 * We keep a seperate list of messageid's for updating the amount of
@@ -99,6 +101,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			$spotMsgIdRatingList = array();
 			
 			# Process each header
+			SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-hdrList');
 			foreach($hdrList as $msgheader) {
                 SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-start');
 
@@ -127,6 +130,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
                  * Do we have the comment in the database already? If not, lets process it
                  */
 				if (!$header_isInDb || (!$fullcomment_isInDb && $this->_retrieveFull)) {
+					SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':forEach-hdrList->retrieveFull');
 					/*
 					 * Because not all usenet servers pass the reference field properly,
 					 * we manually create this reference field by using the messageid of
@@ -200,6 +204,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
                         $lastProcessedArtNr = $artNr;
 						$didFetchHeader = true;
 					} # if
+
+                                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-hdrList->retrieveFull');
 				} else {
 					$lastProcessedId = $commentId;
                     $lastProcessedArtNr = $artNr;
@@ -270,6 +276,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 
                 SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-stop');
 			} # foreach
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-hdrList');
+
             SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: done');
 
 			if (count($hdrList) > 0) {
@@ -289,7 +297,10 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 			} # while
 
 
+                        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':addComments() call');
 			$this->_commentDao->addComments($commentDbList, $fullComments);
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':addComments() call');
+
 
             # update the maximum article id
             if (!empty($lastProcessedId) && ($lastProcessedArtNr > 0)) {
@@ -300,8 +311,12 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
              * Recalculate the average spotrating and update the amount
              * of unverified comments
              */
+                        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':updateSpotRating()');
 			$this->_spotDao->updateSpotRating($spotMsgIdRatingList);
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':updateSpotRating()');
+                        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':updateSpotCommentCount()');
 			$this->_spotDao->updateSpotCommentCount($spotMsgIdList);
+                        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':updateSpotCommentCount()');
 			
 			return array('count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId);
 		} # process()

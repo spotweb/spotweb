@@ -40,7 +40,7 @@ class Services_Posting_Report {
 		$report['newmessageid'] = substr($report['newmessageid'], 1, -1);
 
 		# retrieve the spot this is a report of
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $this->_nntp_hdr);
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, $this->_nntp_hdr);
 		$fullSpot = $svcProvFullSpot->fetchFullSpot($report['inreplyto'], $user['userid']);
 
 		# we won't bother when the hashcash is not properly calculcated

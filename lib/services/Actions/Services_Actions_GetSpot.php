@@ -19,7 +19,7 @@ class Services_Actions_GetSpot {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 		
 		$svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
-		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcNntpSpotReading);
+		$svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory, $svcNntpSpotReading);
 		$fullSpot = $svcProvFullSpot->fetchFullSpot($msgId, $currentSession['user']['userid']);
 
 		# seen list

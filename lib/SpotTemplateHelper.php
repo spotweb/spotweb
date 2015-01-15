@@ -473,9 +473,38 @@ class SpotTemplateHelper {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=Poster:=:' . urlencode($spot['poster']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makePosterUrl
 
-	/*
-	 * Creeert een linkje naar een zoekopdracht op spotterid
-	 */
+    /*
+     * Creates an collection search URL
+     */
+    function makeCollectionIdSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeCollectionIdSearchUrl
+
+    /*
+     * Creates an season search URL
+    */
+    function makeSeasonSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;search[value][]=Season:=:' . urlencode($spot['season']) . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeSeasonSearchUrl
+
+    /*
+     * Creates an episode search URL
+    */
+    function makeEpisodeSearchUrl($spot) {
+        $collectionFilter = '&amp;search[value][]=CollectionId:=:' . urlencode($spot['mcid']);
+        $seasonFilter = '';
+        if (!empty($spot['season'])) {
+            $seasonFilter = '&amp;search[value][]=Season:=:' . urlencode($spot['season']);
+        } // season
+
+        return $this->makeBaseUrl("path") . '?search[tree]=' . $collectionFilter . '&amp;search[value][]=Episode:=:' . urlencode($spot['episode']) . $seasonFilter . '&amp;sortby=stamp&amp;sortdir=DESC';
+    } # makeSeasonSearchUrl
+
+    /*
+     * Creeert een linkje naar een zoekopdracht op spotterid
+     */
 	function makeSpotterIdUrl($spot) {
 		return $this->makeBaseUrl("path") . '?search[tree]=&amp;search[value][]=SpotterID:=:' . urlencode($spot['spotterid']) . '&amp;sortby=stamp&amp;sortdir=DESC';
 	} # makeSpotterIdUrl
@@ -546,10 +575,7 @@ class SpotTemplateHelper {
 
 	
 	function formatContent($tmp) {
-		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
-		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
-		# in zitten welke we wel willen behouden.
-		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
+        # Make sure specific HTML is converted
 		$tmp = htmlentities($tmp, ENT_QUOTES, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
@@ -648,7 +674,7 @@ class SpotTemplateHelper {
 		# Vervolgens bouwen we de filtervalues op
 		$filterStr = '';
 		foreach($this->_params['parsedsearch']['filterValueList'] as $value) {
-            $filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . htmlspecialchars(urlencode($value['value']), ENT_QUOTES, "utf-8");
+            $filterStr .= '&amp;search[value][]=' . urlencode($value['fieldname']) . ':' . urlencode($value['operator']) . ':' . urlencode($value['booloper']) . ':' . htmlspecialchars(urlencode($value['value']), ENT_QUOTES, "utf-8");
 		} # foreach
 
 		return $filterStr;
@@ -725,8 +751,6 @@ class SpotTemplateHelper {
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 
 		// title escapen
-		$spot['title'] = htmlentities($spot['title'], ENT_QUOTES, 'UTF-8');
-		$spot['title'] = html_entity_decode($spot['title'], ENT_COMPAT, 'UTF-8');
 		$spot['title'] = strip_tags($this->remove_extensive_dots($spot['title']));
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		
@@ -1121,6 +1145,14 @@ class SpotTemplateHelper {
 	function getNzbHandlerApiSupport(){
 		return $this->_nzbHandler->hasApiSupport();
 	} # getNzbHandlerApiSupport
+
+    function commaAdd($orig, $add) {
+        if (!empty($orig)) {
+            $orig .= ', ';
+        } // if
+
+        return $orig . $add;
+    } // comaAdd
 
 	/*
 	 * Geeft een array met valide statistics graphs terug

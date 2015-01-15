@@ -49,6 +49,10 @@ class Services_Posting_Validator {
 			$result->addError(_('Enter a title'));
 		} # if
 
+        if (strlen($spot['title']) > 250) {
+            $result->addError(_('Please shorten your title'));
+        } # if
+
 		/*
 		 * If the post's character does not fit into ISO-8859-1, we HTML
 		 * encode the UTF-8 characters so we can properly post the spots

@@ -40,7 +40,7 @@ class Dao_Mysql_UserFilterCount extends Dao_Base_UserFilterCount {
 										f.lastupdate = t.lastupdate
 									WHERE (f.filterhash = t.filterhash) 
 									  AND (t.userid = -1)
-									  AND (f.userid IN (" . $this->_conn->arrayValToIn($sessionList, 'userid') . "))");
+									  AND (f.userid IN (" . $this->_conn->arrayValToIn($sessionList, 'userid', PDO::PARAM_INT) . "))");
 		} # if
 
 		/*

@@ -121,6 +121,7 @@ class SpotPage_editfilter extends SpotPage_Abs {
 				case 'changefilter'	: {
 					# Retrieve the filter we want to edit
                     $this->_editFilterForm['id'] = $this->_filterId;
+                    $this->_editFilterForm['enablenotify'] = isset($this->_editFilterForm['enablenotify']) ? true : false;
 					
 					$result = $svcUserFilter->changeFilter($this->_currentSession['user']['userid'],
                                                            $this->_editFilterForm);

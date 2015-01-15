@@ -102,7 +102,7 @@
 	# en reportcount niet juist zetten
     $textSearchCount = 0;
     foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID', 'CollectionId', 'Collection', 'Season', 'Episode', 'Year'))) {
 			$searchType = $filterType['fieldname'];
 			$searchText = $filterType['value'];
             $textSearchCount++;
@@ -139,7 +139,7 @@
 
 	# Zorg er voor dat de huidige filterwaardes nog beschikbaar zijn
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID', 'CollectionId', 'Collection', 'Season', 'Episode', 'Year'))) {
 			echo '<input data-currentfilter="true" type="hidden" name="search[value][]" value="' . $filterType['fieldname'] . ':=:'  . htmlspecialchars($filterType['booloper']) . ':' . htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8') . '">';
 		} # if
 	} # foreach
@@ -153,19 +153,20 @@
 </script>
 
 				<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
-<?php
-	$filterColCount = 4;
-?>
 					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='<?php echo _('Search within current filters'); ?>'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='<?php echo _('Search'); ?>'></div>
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title="<?php echo _("Close 'Advanced Search'"); ?>">[x]</a><?php echo _('Search on:'); ?></h4>
-						<ul class="search <?php if ($filterColCount == 3) {echo " threecol";} else {echo " fourcol";} ?>">
+						<ul class="search sorting fourcol">
 							<li> <input type="radio" name="search[type]" value="Title" <?php echo $searchType == "Title" ? 'checked="checked"' : "" ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == "Poster" ? 'checked="checked"' : "" ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == "Tag" ? 'checked="checked"' : "" ?> ><label><?php echo _('Tag'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="SpotterID" <?php echo $searchType == "SpotterID" ? 'checked="checked"' : "" ?> ><label><?php echo _('SpotterID'); ?></label></li>
-						</ul>
+                            <li> <input type="radio" name="search[type]" value="Year" <?php echo $searchType == "Year" ? 'checked="checked"' : "" ?> ><label><?php echo _('Year'); ?></label></li>
+                            <li> <input type="radio" name="search[type]" value="Season" <?php echo $searchType == "Season" ? 'checked="checked"' : "" ?> ><label><?php echo _('Season'); ?></label></li>
+                            <li> <input type="radio" name="search[type]" value="Episode" <?php echo $searchType == "Episode" ? 'checked="checked"' : "" ?> ><label><?php echo _('Episode'); ?></label></li>
+                            <li> <input type="radio" name="search[type]" value="Collection" <?php echo $searchType == "Collection" ? 'checked="checked"' : "" ?> ><label><?php echo _('Collection'); ?></label></li>
+                        </ul>
 
 <?php
 	if ($textSearchCount > 0) {
@@ -174,9 +175,9 @@
 						<table class='search currentfilterlist'>
 <?php
 	foreach($parsedsearch['filterValueList'] as $filterType) {
-		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID'))) {
+		if (in_array($filterType['fieldname'], array('Titel', 'Title', 'Poster', 'Tag', 'SpotterID', 'CollectionId', 'Collection', 'Season', 'Episode', 'Year'))) {
 ?>
-							<tr> <th> <?php echo ($filterType['fieldname'] == 'Title') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlspecialchars($filterType['booloper'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
+							<tr> <th> <?php echo ($filterType['fieldname'] == 'Title') ? _('Title') : _($filterType['fieldname']); ?> </th> <td> <?php echo htmlspecialchars($filterType['booloper'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <?php echo htmlentities($filterType['value'], ENT_QUOTES, 'UTF-8'); ?> </td> <td> <a href="javascript:location.href=removeFilter('?page=index<?php echo addcslashes(urldecode($tplHelper->convertFilterToQueryParams()), "\\\'\"&\n\r<>"); ?>', '<?php echo $filterType['fieldname']; ?>', '<?php echo $filterType['operator']; ?>', '<?php echo $filterType['booloper']; ?>', '<?php echo addcslashes(htmlspecialchars($filterType['value'], ENT_QUOTES, 'utf-8'), "\\\'\"&\n\r<>"); ?>');">x</a> </td> </tr>
 <?php
 		} # if
 	} # foreach
@@ -185,7 +186,7 @@
 <?php						
 	}
 ?>
-						<h4>Sorteren op:</h4>
+						<h4><?php echo _('Sorteren op:'); ?></h4>
 						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
 							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label><?php echo _('Relevance'); ?></label> </li>
