@@ -54,7 +54,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 					'hd'				=> _('HD'),
 					'ipod'				=> _('iPod'),
 					'linux'				=> _('Linux'),
-					'apple'				=> _('Apple'),
+					'mac'				=> _('Apple'),
 					'mpg'				=> _('MPEG'),
 					'music'				=> _('Music'),
 					'nintendo_ds'		=> _('Nintendo DS'),

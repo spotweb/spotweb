@@ -236,7 +236,7 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs'], 'mobile_template', 'mobile');
 			$this->setSettingIfNot($user['prefs'], 'tablet_template', 'we1rdo');
 			$this->setSettingIfNot($user['prefs'], 'count_newspots', true);
-            $this->setSettingIfNot($user['prefs'], 'mouseover_subcats', true);
+               $this->setSettingIfNot($user['prefs'], 'mouseover_subcats', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_seenlist', true);
 			$this->setSettingIfNot($user['prefs'], 'auto_markasread', true);
 			$this->setSettingIfNot($user['prefs'], 'keep_downloadlist', true);
@@ -260,8 +260,8 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'url', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'apikey', '');
-            $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'username', '');
-            $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'password', '');
+               $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'username', '');
+               $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'port', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'username', '');
@@ -280,6 +280,9 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'request_token_secret', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'access_token_secret', '');
+               $this->setSettingIfNot($user['prefs']['notifications']['pushover'], 'appkey', '');
+               $this->setSettingIfNot($user['prefs']['notifications']['pushover'], 'userkey', '');        
+               $this->setSettingIfNot($user['prefs']['notifications']['pushalot'], 'auth_token', '');
 			$notifProviders = Notifications_Factory::getActiveServices();
 			foreach ($notifProviders as $notifProvider) {
 				$this->setSettingIfNot($user['prefs']['notifications'][$notifProvider], 'enabled', false);
@@ -457,6 +460,14 @@ class Services_Upgrade_Users {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_show_spot_was_edited . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_delete_spot . ")");
 		} # if
+		
+          ########################################################################
+          ## Security level 0.32
+          ########################################################################
+          if (($forceReset) || ($this->_settings->get('securityversion') < 0.32)) {
+                $dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'pushover')");
+                $dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, " . SpotSecurity::spotsec_send_notifications_services . ", 'pushalot')");
+          } # if
 	} # updateSecurityGroups
 
 	/*

@@ -197,9 +197,9 @@ abstract class SpotStruct_abs {
 
 		# Chcek character set setting
 		if ((strtolower($q['COLLATION_NAME']) != $collation) && ($q['COLLATION_NAME'] != null)) {
-			# var_dump($q);
-			# var_dump($collation);
-			# die();
+//			var_dump($q);
+//			var_dump($collation);
+//			die();
 			return 'charset';
 		} # if
 		
@@ -343,7 +343,7 @@ abstract class SpotStruct_abs {
 		$this->createTable('spots', "utf8"); 
 		$this->validateColumn('messageid', 'spots', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('poster', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
-		$this->validateColumn('title', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('title', 'spots', 'VARCHAR(250)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spots', 'INTEGER', NULL, false, '');
 		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
@@ -361,6 +361,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
 		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
+        $this->validateColumn('collectionid', 'spots', "INTEGER", NULL, false, '');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
 		# ---- spotsfull table ---- #
@@ -373,7 +374,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
-		# ---- uspstate table ---- #
+		# ---- usenetstate table ---- #
 		$this->createTable('usenetstate', "utf8");
 		$this->validateColumn('infotype', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('curarticlenr', 'usenetstate', 'INTEGER', "0", false, '');
@@ -445,7 +446,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('ouruserid', 'spotsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
+		$this->validateColumn('title', 'spotsposted', 'VARCHAR(250)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spotsposted', 'INTEGER', NULL, false, '');
 		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii'); 
@@ -650,10 +651,94 @@ abstract class SpotStruct_abs {
         # ---- debuglog table ---- #
         $this->createTable('debuglog', "ascii");
         $this->validateColumn('stamp', 'debuglog', 'INTEGER', "0", true, '');
-        $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, '');
+        $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, 'ascii');
         $this->validateColumn('level', 'debuglog', 'INTEGER', "0", true, '');
         $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
         $this->alterStorageEngine("debuglog", "InnoDB");
+
+        # ---- mastercollections table ---- #
+        $this->createTable('mastercollections', "ascii");
+        $this->validateColumn('title', 'mastercollections', 'VARCHAR(250)', "''", true, 'utf8_bin');
+        $this->validateColumn('year', 'mastercollections', 'INTEGER', "0", false, ''); // we need year in MC because different films of different years are different while series are not
+        $this->validateColumn('lateststamp', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('latestspotid', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('cattype', 'mastercollections', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_id', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->validateColumn('tvrage_id', 'mastercollections', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("mastercollections", "InnoDB");
+
+        # ---- collections table ---- #
+        $this->createTable('collections', "ascii");
+        $this->validateColumn('mcid', 'collections', 'INTEGER', "0", true, '');
+        $this->validateColumn('season', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('episode', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('partscurrent', 'collections', 'INTEGER', NULL, false, '');
+        $this->validateColumn('partstotal', 'collections', 'INTEGER', NULL, false, '');
+        $this->alterStorageEngine("collections", "InnoDB");
+
+        # ---- tmdb_info table ---- #
+        $this->createTable('tmdb_info', "ascii");
+        $this->validateColumn('tmdb_id', 'tmdb_info', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_collection_id', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('tmdb_collection_name', 'tmdb_info', 'VARCHAR(128)', "0", false, 'utf8');
+        $this->validateColumn('budget', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('homepage', 'tmdb_info', 'VARCHAR(512)', "''", false, 'ascii');
+        $this->validateColumn('imdb_id', 'tmdb_info', 'VARCHAR(12)', "''", false, 'ascii');
+        $this->validateColumn('tmdb_title', 'tmdb_info', 'VARCHAR(128)', "''", false, 'utf8');
+        $this->validateColumn('overview', 'tmdb_info', 'TEXT', NULL, false, 'utf8');
+        $this->validateColumn('popularity', 'tmdb_info', 'FLOAT', "0", false, '');
+        $this->validateColumn('release_date', 'tmdb_info', 'VARCHAR(10)', "0", false, 'ascii');
+        $this->validateColumn('revenue', 'tmdb_info', 'BIGINT', "0", false, '');
+        $this->validateColumn('runtime', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('tagline', 'tmdb_info', 'TEXT', NULL, false, 'utf8');
+        $this->validateColumn('vote_average', 'tmdb_info', 'FLOAT', "0", false, '');
+        $this->validateColumn('vote_count', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->validateColumn('last_retrieve', 'tmdb_info', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("tmdb_info", "InnoDB");
+
+        # ---- tmdb_trailers table ---- #
+        $this->createTable('tmdb_trailers', "ascii");
+        $this->validateColumn('tmdb_id', 'tmdb_trailers', 'INTEGER', "0", true, '');
+        $this->validateColumn('name', 'tmdb_trailers', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->validateColumn('size', 'tmdb_trailers', 'VARCHAR(20)', "''", true, 'ascii');
+        $this->validateColumn('source', 'tmdb_trailers', 'VARCHAR(512)', "''", true, 'ascii');
+        $this->validateColumn('type', 'tmdb_trailers', 'VARCHAR(20)', "''", true, '');
+        $this->alterStorageEngine("tmdb_trailers", "InnoDB");
+
+        # ---- tmdb_credits table ---- #
+        $this->createTable('tmdb_credits', "ascii");
+        $this->validateColumn('tmdb_credit_id', 'tmdb_credits', 'INTEGER', "0", true, '');
+        $this->validateColumn('name', 'tmdb_credits', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->alterStorageEngine("tmdb_credits", "InnoDB");
+
+        # ---- tmdb_cast table ---- #
+        $this->createTable('tmdb_cast', "ascii");
+        $this->validateColumn('tmdb_id', 'tmdb_cast', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_credit_id', 'tmdb_cast', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_cast_id', 'tmdb_cast', 'INTEGER', "0", true, '');
+        $this->validateColumn('character_name', 'tmdb_cast', 'VARCHAR(1024)', "''", false, 'utf8');
+        $this->validateColumn('sort_order', 'tmdb_cast', 'INTEGER', "0", false, '');
+        $this->validateColumn('profile_path', 'tmdb_cast', 'VARCHAR(128)', "''", false, 'ascii');
+        $this->alterStorageEngine("tmdb_cast", "InnoDB");
+
+        # ---- tmdb_crew table ---- #
+        $this->createTable('tmdb_crew', "ascii");
+        $this->validateColumn('tmdb_id', 'tmdb_crew', 'INTEGER', "0", true, '');
+        $this->validateColumn('tmdb_credit_id', 'tmdb_crew', 'INTEGER', "0", true, '');
+        $this->validateColumn('department', 'tmdb_crew', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->validateColumn('job', 'tmdb_crew', 'VARCHAR(128)', "''", true, 'utf8');
+        $this->validateColumn('profile_path', 'tmdb_crew', 'VARCHAR(128)', "''", false, 'ascii');
+        $this->alterStorageEngine("tmdb_crew", "InnoDB");
+
+        # ---- tmdb_images table ---- #
+        $this->createTable('tmdb_images', "ascii");
+        $this->validateColumn('tmdb_id', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->validateColumn('image_type', 'tmdb_images', 'VARCHAR(20)', "''", true, 'ascii'); // backdrops, posters, personimage
+        $this->validateColumn('aspect_ratio', 'tmdb_images', 'FLOAT', "0", false, '');
+        $this->validateColumn('file_path', 'tmdb_images', 'VARCHAR(128)', "''", false, 'ascii');
+        $this->validateColumn('height', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->validateColumn('width', 'tmdb_images', 'INTEGER', "0", false, '');
+        $this->alterStorageEngine("tmdb_images", "InnoDB");
 
         ##############################################################################################
 		### Remove old sessions ######################################################################
@@ -783,7 +868,31 @@ abstract class SpotStruct_abs {
         # ---- Indexes on ring buffer of moderated messageids ----
         $this->validateIndex("idx_moderatedringbuffer_1", "UNIQUE", "moderatedringbuffer", array("messageid"));
 
-		# Create foreign keys where possible
+        # ---- Indexes on mastercollections ----
+        $this->validateIndex("idx_mastercollections_1", "UNIQUE", "mastercollections", array("title", "cattype", "year"));
+
+        # ---- Indexes on collections ----
+        $this->validateIndex("idx_collections_1", "UNIQUE", "collections", array("mcid", "season", "episode", "partscurrent", "partstotal"));
+
+        # ---- indexes on tmdb_info ---- #
+        $this->validateIndex("idx_tmdbinfo_1", "UNIQUE", "tmdb_info", array("tmdb_id"));
+
+        # ---- indexes on tmdb_trailers ---- #
+        $this->validateIndex("idx_tmdbtrailers_1", "UNIQUE", "tmdb_trailers", array("tmdb_id", "name", "size", "source", "type"));
+
+        # ---- indexes on tmdb_credits ---- #
+        $this->validateIndex("idx_tmdbcredits_1", "UNIQUE", "tmdb_credits", array("tmdb_credit_id"));
+
+        # ---- indexes on tmdb_cast ---- #
+        $this->validateIndex("idx_tmdbcast_1", "UNIQUE", "tmdb_cast", array("tmdb_credit_id", "tmdb_cast_id", "tmdb_id"));
+
+        # ---- indexes on tmdb_crew ---- #
+        $this->validateIndex("idx_tmdbcrew_1", "UNIQUE", "tmdb_crew", array("tmdb_credit_id", "department", "job", "tmdb_id"));
+
+        # ---- indexes on tmdb_images ---- #
+        $this->validateIndex("idx_tmdbimages_1", "UNIQUE", "tmdb_images", array("tmdb_id", "image_type", "file_path"));
+
+        # Create foreign keys where possible
 		$this->addForeignKey('usersettings', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotstatelist', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('usergroups', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -795,7 +904,15 @@ abstract class SpotStruct_abs {
 		$this->addForeignKey('reportsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('filters', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->addForeignKey('spotsposted', 'ouruserid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
-		
+//        $this->addForeignKey('spots', 'collectionid', 'collections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+//        $this->addForeignKey('collections', 'mcid', 'mastercollections', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_cast', 'tmdb_credit_id', 'tmdb_credits', 'tmdb_credit_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_crew', 'tmdb_credit_id', 'tmdb_credits', 'tmdb_credit_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_cast', 'tmdb_id', 'tmdb_info', 'tmdb_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_crew', 'tmdb_id', 'tmdb_info', 'tmdb_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_images', 'tmdb_id', 'tmdb_info', 'tmdb_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+        $this->addForeignKey('tmdb_trailers', 'tmdb_id', 'tmdb_info', 'tmdb_id', 'ON DELETE CASCADE ON UPDATE CASCADE');
+
 		##############################################################################################
 		# Drop old columns ###########################################################################
 		##############################################################################################

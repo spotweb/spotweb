@@ -114,12 +114,19 @@ class Dao_Base_Cache implements Dao_Cache {
          * And create an extension, because thats nicer.
          */
         if ($cacheType == Dao_Cache::SpotImage) {
-            switch($metadata['imagetype']) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
                 case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
                 case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
                 case IMAGETYPE_PNG          : $filePath .= '.png'; break;
 
-                default                     : $filePath .= '.image.' . $metadata['imagetype']; break;
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
             } # switch
         } else {
             switch ($cacheType) {
@@ -168,12 +175,19 @@ class Dao_Base_Cache implements Dao_Cache {
          * And create an extension, because thats nicer.
          */
         if ($cacheType == Dao_Cache::SpotImage) {
-            switch($metadata['imagetype']) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
                 case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
                 case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
                 case IMAGETYPE_PNG          : $filePath .= '.png'; break;
 
-                default                     : $filePath .= '.image.' . $metadata['imagetype']; break;
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
             } # switch
         } else {
             switch ($cacheType) {
@@ -490,7 +504,16 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieve a image resource from the cache
 	 */
 	function getCachedSpotImage($resourceId) {
-		return $this->getCache($resourceId, $this::SpotImage);
+		$tmpData = $this->getCache($resourceId, $this::SpotImage);
+
+        /*
+         * We need to 'migrate' the older cache format to this one
+         */
+        if (($tmpData !== false) && (!isset($tmpData['metadata']['dimensions']))) {
+            $tmpData['metadata'] = array('dimensions' => $tmpData['metadata'], 'isErrorImage' => false);
+        } // if
+
+        return $tmpData;
 	} # getCachedSpotImage
 
     /*
@@ -510,13 +533,14 @@ class Dao_Base_Cache implements Dao_Cache {
 	/*
 	 * Save an image resource into the cache
 	 */
-	function saveSpotImageCache($resourceId, $metadata, $content, $performExpire) {
+	function saveSpotImageCache($resourceId, $metadata, $content, $isErrorImage, $performExpire) {
         if ($performExpire) {
-            $ttl = 7 * 24 * 60 * 60;
+            $ttl = 1 * 60 * 60;
         } else {
             $ttl = 0;
         } # else
 
+        $metadata = array('dimensions' => $metadata, 'isErrorImage' => $isErrorImage);
 		return $this->saveCache($resourceId, $this::SpotImage, $metadata, $ttl, $content);
 	} # saveSpotImagecache
 
@@ -619,7 +643,7 @@ class Dao_Base_Cache implements Dao_Cache {
 
         # Prepare a list of values
         $idList = array();
-        $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID');
+        $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID', PDO::PARAM_STR);
 
         $rs = $this->_conn->arrayQuery("SELECT resourceid, cachetype
                                             FROM cache
