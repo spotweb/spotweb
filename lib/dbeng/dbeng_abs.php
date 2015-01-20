@@ -119,7 +119,7 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $v) {
-			if (!isset($v[$val]) {
+			if (!isset($v[$val])) {
 				continue;
 			}
 			$tmpList .= $this->safe($v[$val], $forceType) . ",";
