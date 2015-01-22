@@ -119,10 +119,10 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $v) {
-			if (!isset($v[$val])) {
-				continue;
+			if (is_array($v)) {
+				$v = $v[$val];
 			}
-			$tmpList .= $this->safe($v[$val], $forceType) . ",";
+			$tmpList .= $this->safe($v, $forceType) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
