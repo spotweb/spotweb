@@ -35,7 +35,7 @@
                 
 				<table class="spotinfo">
                 	<tbody>
-                        <tr><th> Categorie </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
+                        <tr><th> Category </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
 <?php
 	if (!empty($spot['subcatlist'])) {
 		foreach($spot['subcatlist'] as $sub) {
@@ -44,11 +44,11 @@
 		} # foreach
 	} # if
 ?>
-                        <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
-                        <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a> </td> </tr>
-                        <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>) </td> </tr>
+                        <tr><th> Size </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
+                        <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">OPEN</a> </td> </tr>
+                        <tr><th> Poster </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>) </td> </tr>
                         <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
-                        <tr><th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+                        <tr><th> Searchengine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Search</a> </td> </tr>
                         <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
                     	<tr><th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' target="_blank" title=''>Download NZB</a> </td> </tr>
                     </tbody>
