@@ -49,8 +49,7 @@
                         <tr><th> Poster </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>) </td> </tr>
                         <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
                         <tr><th> Searchengine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Search</a> </td> </tr>
-                        <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
-                    	<tr><th> NZB </th> <td> <a href='<?php echo $tplHelper->makeNzbUrl($spot); ?>' target="_blank" title=''>Download NZB</a> </td> </tr>
+                        <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>' target="_blank" title=''>Download NZB</a> </td> </tr>
                     </tbody>
 				</table>
             	<h4>Omschrijving</h4>
