@@ -1,3 +1,3 @@
-Spot verwijderd van watchlist
+Spot removed from watchlist
 
 <?php echo $spot['title']; ?> has been removed from watchlist.
