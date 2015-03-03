@@ -732,6 +732,12 @@ msgstr "Toon een checkbox naast elke spot om meerdere NZB files in een keer te d
 msgid "Hide erotic spots in index?"
 msgstr "Erotica spots op de index verbergen?"
 
+msgid "Hide CAM spots in index?"
+msgstr "CAM spots verbergen in index"
+
+msgid "Hide Telesync spots in index?"
+msgstr "Telesync spots verbergen in index"
+
 msgid "What NZB searchengine shall we use?"
 msgstr "Welke zoekmachine moet er gebruikt worden?"
 
