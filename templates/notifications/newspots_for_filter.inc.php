@@ -1,3 +1,3 @@
-<?php echo $newCount; ?> nieuwe spots beschikbaar in filter "<?php echo $filtertitle; ?>"
+<?php echo $newCount; ?> new spots available for filter "<?php echo $filtertitle; ?>"
 
-<?php echo $filtertitle; ?> heeft <?php echo $newCount; ?> spots beschikbaar
+<?php echo $filtertitle; ?> has <?php echo $newCount; ?> spots available
