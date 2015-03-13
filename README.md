@@ -1,5 +1,5 @@
 #SpotWeb
-Spotweb is a decentral usenet community based on the [Spotnet](https://github.com/Spotnet/Spotnet/wiki) protocol.
+Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/Spotnet/Spotnet/wiki) protocol.
 
 Spotweb requires an operational webserver with PHP5 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 
