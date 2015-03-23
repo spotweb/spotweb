@@ -465,7 +465,7 @@ msgid "Number of spamreports"
 msgstr "Aantal spam reports"
 
 msgid "Post Description"
-msgstr "Verzend omschrijving"
+msgstr "Omschrijving"
 
 msgid "No results found"
 msgstr "Geen resultaten gevonden"
