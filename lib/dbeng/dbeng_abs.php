@@ -119,9 +119,6 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $v) {
-			if (is_array($v)) {
-				$v = $v[$val];
-			}
 			$tmpList .= $this->safe($v, $forceType) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
