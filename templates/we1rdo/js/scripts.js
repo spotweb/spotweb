@@ -1,7 +1,7 @@
 $.address.init(function() {
 	$('.spotlink').address();
 }).externalChange(
-		function(event) {ao
+		function(event) {
 			basePATH = location.href.replace('#' + $.address.value(), '');
 			if ($.address.value() == '/' && basePATH.indexOf('/?page=getspot') < 0 && basePATH.indexOf('/details/') < 0) {
 				closeDetails(0);
