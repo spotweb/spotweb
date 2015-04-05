@@ -1,5 +1,5 @@
-#SpotWeb
-Spotweb is a webbased usenet binary resource indexer based on the protocol and development done by Spotnet (http://github.com/spotnet).
+#Spotweb
+Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/spotnet/spotnet/wiki) protocol.
 
 Spotweb requires an operational webserver with PHP5 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 
