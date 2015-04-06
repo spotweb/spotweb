@@ -1304,25 +1304,25 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 } // addSpotFilter
 
 function applyTipTip(){
-	var categories = $(this).data('cats');
-	if(!categories) return;
-	var $dl = $("<ul/>");
-	var list = $.map(categories, function(value, key){
-		if(value) {
-			if(key=='image'){//if image is used, don't add text or :
-				return $("<li/>").append(value);
-			}
-			else{
-				return $("<li/>").append($("<strong/>").text(key + ": ")).append(value);
-			}
-		} else {
+        var categories = $(this).data('cats');
+        if(!categories) return;
+        var dl = "<ul>";
+        var list = $.map(categories, function(value, key){
+                if(value) {
+                        if(key=='image'){//if image is used, don't add text or :
+                                return '<li>' + value + '</li>';
+                        }
+                        else{
+                                return '<li><strong/>' + key + ': ' + value;
+                        }
+                } else {
             return '';
         } // else
-	});
+        });
 
-	$dl.append.apply($dl, list);
-	$(this).attr("title", "");
-	$(this).tipTip({defaultPosition: 'bottom', maxWidth: 'auto', content: $dl});
+        dl = dl + list + '</ul>';
+        $(this).attr("title", "");
+        $(this).tipTip({defaultPosition: 'bottom', delay: 800, maxWidth: 'auto', content: dl});
 }
 
 function findNearest(possibleValues, realValues, includeLeft, includeRight, value) {
