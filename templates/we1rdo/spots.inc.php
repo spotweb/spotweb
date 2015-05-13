@@ -112,6 +112,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                 } # if
         	} # foreach
         } # foreach
+        	$catMap['image'] = '<center><br><img src="?page=getimage&messageid='.$spot['messageid'].'&image[height]=260&image[width]=130" height="175px" width="auto"></center>';
 		$catData = json_encode($catMap);
 	
 		if($spot['rating'] == 0) {
