@@ -60,11 +60,12 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('external_whitelist', true);
 		$this->setIfNot('whitelist_url', 'http://jijhaatmij.hopto.me/whitelist.txt');
 		$this->setIfNot('enable_timing', false);
-                $this->setIfNot('cache_path', './cache');
+        	$this->setIfNot('cache_path', './cache/');
 		$this->setIfNot('enable_stacktrace', true);
 		$this->setIfNot('systemfrommail', 'spotweb@example.com');
 		$this->setIfNot('customcss', '');
 		$this->setIfNot('systemtype', 'public');
+		$this->setIfNot('imageover_subcats', true);
 		$this->setIfNot('newuser_grouplist', 
 				array(
 						Array('groupid' => 2, 'prio' => 1),		// Group ID 2 == Anonymous users, open system
@@ -79,7 +80,6 @@ class Services_Upgrade_Settings {
         $this->setIfNot('ms_translator_clientid', '');
         $this->setIfNot('ms_translator_clientsecret', '');
         $this->setIfNot('create_collections', true);
-        $this->setIfNot('imageover_subcats', true);
         $this->updateSettingsVersion();
 	} # update()
 	
