@@ -103,6 +103,7 @@ class Services_Settings_Base {
 		$settings['prepare_statistics'] = (isset($settings['prepare_statistics'])) ? true : false;
 		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
 		$settings['external_whitelist'] = (isset($settings['external_whitelist'])) ? true : false;
+		$settings['imageover_subcats'] = (isset($settings['imageover_subcats'])) ? true : false;
 
 		# Default server settings if they won't be used
 		if (!isset($settings['nntp_hdr']['use'])) { 
