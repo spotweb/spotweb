@@ -236,6 +236,9 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 						<option <?php if ($this->_settings->get('spot_moderation') == 'act') { echo 'selected="selected"'; } ?> value="act"><?php echo _('Delete moderated spots'); ?></option>
 						<option <?php if ($this->_settings->get('spot_moderation') == 'markspot') { echo 'selected="selected"'; } ?> value="markspot"><?php echo _('Mark moderated spots as moderated'); ?></option>
 					</select></dd>
+					
+					<dt><label for="editsettingsform[imageover_subcats]"><?php echo _('Enable imagepreview in spot overview'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[imageover_subcats]" <?php if ($this->_settings->get('imageover_subcats')) { echo 'checked="checked"'; } ?>></dd>
 
 					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[prepare_statistics]" <?php if ($this->_settings->get('prepare_statistics')) { echo 'checked="checked"'; } ?>></dd>
