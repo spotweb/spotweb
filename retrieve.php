@@ -298,6 +298,7 @@ catch(NntpException $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo $x->getTraceAsString();
 	echo PHP_EOL . PHP_EOL;
+	$retriever->quit();
 }
 
 catch(DatabaseConnectionException $x) {
@@ -317,5 +318,6 @@ catch(Exception $x) {
 	echo PHP_EOL . PHP_EOL;
 	echo $x->getTraceAsString();
 	echo PHP_EOL . PHP_EOL;
+	$retriever->quit();
 	die();
 } # catch
