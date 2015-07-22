@@ -60,7 +60,7 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('external_whitelist', true);
 		$this->setIfNot('whitelist_url', 'http://jij.haatmij.nl/spotnet/whitelist.txt');
 		$this->setIfNot('enable_timing', false);
-        	$this->setIfNot('cache_path', './cache/');
+        	$this->setIfNot('cache_path', './cache');
 		$this->setIfNot('enable_stacktrace', true);
 		$this->setIfNot('systemfrommail', 'spotweb@example.com');
 		$this->setIfNot('customcss', '');
