@@ -394,7 +394,7 @@ abstract class SpotStruct_abs {
 		# ---- reportsxover table ---- #
 		$this->createTable('reportsxover', "ascii"); 
 		$this->validateColumn('messageid', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('fromhdr', 'reportsxover', 'VARCHAR(128)', "''", true, 'utf8');
+		$this->validateColumn('fromhdr', 'reportsxover', 'VARCHAR(256)', "''", true, 'utf8');
 		$this->validateColumn('keyword', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('nntpref', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->alterStorageEngine("reportsxover", "InnoDB");
