@@ -23,6 +23,17 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	} # analyze
 
 	/*
+	 * Returns a database specific representation of a boolean value
+	 */
+	function bool2dt($b) {
+		if ($b) {
+			return '1';
+		} # if
+
+		return '0';
+	} # bool2dt
+
+	/*
 	 * Converts a 'spotweb' internal datatype to a 
 	 * database specific datatype
 	 */
@@ -105,6 +116,10 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " FOR EACH ROW
 								BEGIN
 								   INSERT INTO " . $ftsname . "(rowid," . implode(',', $colList) . ") VALUES (new.rowid, new." . implode(', new.', $colList) . ");
+								END");
+		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_delete AFTER DELETE ON " . $tablename . " FOR EACH ROW
+								BEGIN
+								   DELETE FROM " . $ftsname . " WHERE rowid=old.rowid;
 								END");
 	} # createFts
 	

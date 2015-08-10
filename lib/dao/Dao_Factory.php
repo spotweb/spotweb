@@ -136,6 +136,7 @@ abstract class Dao_Factory {
 			case 'postgresql'			: return new Dao_Postgresql_Factory(); break;
             case 'pdo_mysql' 	        :
 			case 'mysql'				: return new Dao_Mysql_Factory(); break;
+            case 'pdo_sqlite' 	        :
 			case 'sqlite'				: return new Dao_Sqlite_Factory(); break;
 
 			default						: throw new Exception("Unknown DAO factory specified");

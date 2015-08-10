@@ -463,6 +463,16 @@
 
 					break;
 				} # pdo_pgsql 
+
+				case 'pdo_sqlite' : {
+					$dbConnectionString .= "\$dbsettings['engine'] = 'pdo_sqlite';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['host'] = '" . $_SESSION['spotsettings']['db']['host'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['dbname'] = '" . $_SESSION['spotsettings']['db']['dbname'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['user'] = '" . $_SESSION['spotsettings']['db']['user'] . "';" . PHP_EOL;
+					$dbConnectionString .= "\$dbsettings['pass'] = '" . $_SESSION['spotsettings']['db']['pass'] . "';" . PHP_EOL;
+
+					break;
+				} # pdo_sqlite
 			} # switch
 
 			# Try to create the dbsettings.inc.php file for the user
