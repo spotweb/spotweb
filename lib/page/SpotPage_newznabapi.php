@@ -819,12 +819,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 4050: return 'cat2_a0,cat2_a1,cat2_a2';
 
 			case 5000: return 'cat0_z1';
-			case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-			case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
-			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
-			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-			case 5060: return 'cat0_z1_d18';
-
+ 			case 5020: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5030: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
+			case 5040: return 'cat0_z1,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
+			case 5050: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5060: return 'cat0_z1,cat0_z1_d18';
 			case 6000: return 'cat0_z3';
 			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
 			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
