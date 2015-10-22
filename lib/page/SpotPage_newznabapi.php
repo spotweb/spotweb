@@ -75,32 +75,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          * Now determine what type of information we are searching for using sabnzbd
          */
         if ($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") {
-        	$found = false;
-        	# First search on tvmazeid if present
-        	if (($found == false) and ($this->_params['tvmazeid'] != "")) {
-        		if (! preg_match ( '/^[0-9]{1,6}$/', $this->_params ['tvmazeid'] )) {
-        			$this->showApiError ( 201 );
-        			return;
-        		} // if
-				/*
-				 * Actually retrieve the information from TVMaze, based on the
-				 * TVmaze ID passed by the API
-				 */
-				$svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze ( $this->_daoFactory->getCacheDao () );
-				$svcMediaInfoTvmaze->setSearchid ( $this->_params ['tvmazeid'] );
-				$svcMediaInfoTvmaze->setSearchName ( "tvmaze" ); # Indicate tvmazeid usage
-				$tvInfo = $svcMediaInfoTvmaze->retrieveInfo ();
-				$found = $tvInfo -> isValid();
-        	}
-        	# second search on rid (rageid) if present
-        	if (($found == false) and ($this->_params['rid'] != "")) {
-        		# validate input
-        		if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
-        			$this->showApiError(201);
-        			return ;
-        		} # if
+        	if ($this->_params['rid'] != "") {
+				# validate input
+				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+					$this->showApiError(201);
+					return ;
+				} # if
+	
 	            /*
-	             * Actually retrieve the information from TVMaze as long as TVrage is down, based on the
+	             * Actually retrieve the information from TVRage, based on the
 	             * tvrage passed by the API
 	             */
 	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
@@ -128,6 +111,25 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         	}
 
         	/*
+	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
+	
+	            if (!$tvRageInfo->isValid()) {
+	                $this->showApiError(300);
+	                return ;
+	            } # if
+        	} else { # no rageid (rid) specified, q should be present
+        		if ($this->_params['q'] == "") {
+					$this->showApiError(201);
+					return ;
+        		} 
+        		$tvRageInfo = new Dto_MediaInformation();
+        		$tvRageInfo -> setTitle($this->_params['q']);
+        		$tvRageInfo->setValid(true);
+        		
+        	} # if
+
+            /*
+>>>>>>> a9f6ae6... Switch to TVMaze info and support q parm on TVSearch
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
              * we try to standardize all these types of season definitions into one format.
              */
