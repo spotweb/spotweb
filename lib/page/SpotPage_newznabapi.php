@@ -74,28 +74,36 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         /**
          * Now determine what type of information we are searching for using sabnzbd
          */
-        if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
-			# validate input
-			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
-				$this->showApiError(201);
-				
-				return ;
-			} # if
-
-            /*
-             * Actually retrieve the information from TVRage, based on the
-             * tvrage passed by the API
-             */
-            $svcMediaInfoTvrage = new Services_MediaInformation_Tvrage($this->_daoFactory, $this->_settings);
-            $svcMediaInfoTvrage->setSearchid($this->_params['rid']);
-            $tvRageInfo = $svcMediaInfoTvrage->retrieveInfo();
-
-            if (!$tvRageInfo->isValid()) {
-                $this->showApiError(300);
-
-                return ;
-            } # if
-
+        if ($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") {
+        	if ($this->_params['rid'] != "") {
+				# validate input
+				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+					$this->showApiError(201);
+					return ;
+				} # if
+	
+	            /*
+	             * Actually retrieve the information from TVRage, based on the
+	             * tvrage passed by the API
+	             */
+	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
+	            $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
+	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
+	
+	            if (!$tvRageInfo->isValid()) {
+	                $this->showApiError(300);
+	                return ;
+	            } # if
+        	} else { # no rageid (rid) specified, q should be present
+        		if ($this->_params['q'] == "") {
+					$this->showApiError(201);
+					return ;
+        		} 
+        		$tvRageInfo = new Dto_MediaInformation();
+        		$tvRageInfo -> setTitle($this->_params['q']);
+        		$tvRageInfo->setValid(true);
+        		
+        	} # if
 
             /*
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
