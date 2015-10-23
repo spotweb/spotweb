@@ -83,7 +83,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				} # if
 	
 	            /*
-	             * Actually retrieve the information from TVMaze, based on the
+	             * Actually retrieve the information from TVMaze as long as TVrage is down, based on the
 	             * tvrage passed by the API
 	             */
 	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
@@ -94,18 +94,37 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	                $this->showApiError(300);
 	                return ;
 	            } # if
-        	} else { # no rageid (rid) specified, q should be present
+	        }  elseif ($this->_params['tvmazeid'] != "") {
+					// if parameter is "tvmazeid", perform TVMaze search
+				if (! preg_match ( '/^[0-9]{1,6}$/', $this->_params ['tvmazeid'] )) {
+					$this->showApiError ( 201 );
+					return;
+				} // if
+				
+				/*
+				 * Actually retrieve the information from TVMaze, based on the
+				 * TVmaze ID passed by the API
+				 */
+				$svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze ( $this->_daoFactory->getCacheDao () );
+				$svcMediaInfoTvmaze->setSearchid ( $this->_params ['tvmazeid'] );
+				$svcMediaInfoTvmaze->setSearchName ( "tvmaze" ); # Indicate tvmazeid usage
+				$tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo (); 
+				
+				if (! $tvRageInfo->isValid ()) {
+					$this->showApiError ( 300 );
+					return;
+				} # if
+		        	
+        	} elseif ($this->_params['q'] != "") {
         		$tvRageInfo = new Dto_MediaInformation();
-        		if ($this->_params['q'] == "") {
-/*					$this->showApiError(201);
-					return ; */
-        		 	$tvRageInfo -> setTitle("");
-        		} else {
-        		 	$tvRageInfo -> setTitle($this->_params['q']);
-        		} 
+        		$tvRageInfo -> setTitle($this->_params['q']);
         		$tvRageInfo->setValid(true);
         		
-        	} # if
+        	} else { # no parameter q, tvmaze or rid 
+        		$tvRageInfo = new Dto_MediaInformation();
+        		$tvRageInfo -> setTitle("");
+        		$tvRageInfo->setValid(true);
+        	} 	# if param tvmazeid, rid or q or nothing
 
             /*
 >>>>>>> a9f6ae6... Switch to TVMaze info and support q parm on TVSearch
@@ -152,9 +171,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} else {
                 // Complete season search, add wildcard character to season
             	if (!empty($tvRageInfo->getTitle())) {
-					$seasonSearch .= '*';
-	                // and search for the text 'Season ' ...
-    	            $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+                $seasonSearch .= '*';
+
+                // and search for the text 'Season ' ...
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             	}
             } # else
 
@@ -672,7 +692,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
-		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid, season,ep');
+		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid,season,ep');
 		$searching->appendChild($tvsearch);
 
 		$moviesearch = $doc->createElement('movie-search');
