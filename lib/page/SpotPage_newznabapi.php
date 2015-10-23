@@ -83,7 +83,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				} # if
 	
 	            /*
-	             * Actually retrieve the information from TVRage, based on the
+	             * Actually retrieve the information from TVMaze, based on the
 	             * tvrage passed by the API
 	             */
 	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
@@ -94,15 +94,33 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	                $this->showApiError(300);
 	                return ;
 	            } # if
-        	} else { # no rageid (rid) specified, q should be present
-        		$tvRageInfo = new Dto_MediaInformation();
+        	} else { # if parameter is "tvmazeid", perform TVMaze search
+        	if ($this->_params['tvmazeid'] != "") {
+				# validate input
+				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['tvmazeid'])) {
+					$this->showApiError(201);
+					return ;
+				} # if
+	
+	            /*
+	             * Actually retrieve the information from TVMaze, based on the
+	             * TVmaze ID passed by the API
+	             */
+	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
+	            $svcMediaInfoTvmaze->setSearchid($this->_params['tvmazeid']);
+	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
+	
+	            if (!$tvRageInfo->isValid()) {
+	                $this->showApiError(300);
+	                return ;
+	            } # if
+        	} else { # no rageid (rid) or tvmaze id specified, q should be present
         		if ($this->_params['q'] == "") {
-/*					$this->showApiError(201);
-					return ; */
-        		 	$tvRageInfo -> setTitle("");
-        		} else {
-        		 	$tvRageInfo -> setTitle($this->_params['q']);
+					$this->showApiError(201);
+					return ;
         		} 
+        		$tvRageInfo = new Dto_MediaInformation();
+        		$tvRageInfo -> setTitle($this->_params['q']);
         		$tvRageInfo->setValid(true);
         		
         	} # if
@@ -155,11 +173,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvRageInfo->getTitle())) {
-					$seasonSearch .= '*';
-	                // and search for the text 'Season ' ...
-    	            $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
-            	}
+                $seasonSearch .= '*';
+
+                // and search for the text 'Season ' ...
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             } # else
 
 			/*
@@ -167,12 +184,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvRageInfo->getTitle())) {
-				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
-	            if (!empty($episodeSearch)) {
-	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
-	            } # if
-            }
+			$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
+            if (!empty($episodeSearch)) {
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
+            } # if
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
@@ -257,7 +272,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          */
 		if ((!empty($this->_params['limit'])) &&
             (is_numeric($this->_params['limit'])) &&
-            ($this->_params['limit'] <= 500)) {
+            ($this->_params['limit'] < 500)) {
                 $limit = $this->_params['limit'];
         } else {
             $limit = $this->_currentSession['user']['prefs']['perpage'];
@@ -676,6 +691,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
+		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid, season,ep');
 		$searching->appendChild($tvsearch);
 
 		$moviesearch = $doc->createElement('movie-search');
