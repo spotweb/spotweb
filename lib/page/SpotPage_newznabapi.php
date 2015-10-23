@@ -88,29 +88,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	             */
 	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
 	            $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
-	            $tvInfo = $svcMediaInfoTvmaze->retrieveInfo();
-	            $svcMediaInfoTvmaze->setSearchName ( "tvrage" ); # Indicate tvmazeid usage
-				$found = $tvInfo -> isValid();
-        	}
-        	# third search on q (showname) if present
-        	if (($found == false) and ($this->_params['q'] != "")) {
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle($this->_params['q']);
-        		$tvInfo -> setValid(true);
-        		$found = true;
-        	}
-        	# fourth, no search information present, set emtpy
-        	if ($found == false) {
-        		if ((!empty($this -> _params['tvmazeid'])) or (!empty($this -> _params['rid']))) {
-        			$this->showApiError(300);
-        			return ;
-        		}
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle("");
-        		$tvInfo -> setValid(true);
-        	}
-
-        	/*
 	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
 	
 	            if (!$tvRageInfo->isValid()) {
@@ -713,7 +690,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
+<<<<<<< HEAD
 		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid,season,ep');
+=======
+		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid, season,ep');
+>>>>>>> 9fed5af... Added supportedParams
 		$searching->appendChild($tvsearch);
 
 		$moviesearch = $doc->createElement('movie-search');
