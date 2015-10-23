@@ -83,7 +83,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				} # if
 	
 	            /*
-	             * Actually retrieve the information from TVRage, based on the
+	             * Actually retrieve the information from TVMaze, based on the
 	             * tvrage passed by the API
 	             */
 	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
@@ -117,7 +117,27 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	                $this->showApiError(300);
 	                return ;
 	            } # if
-        	} else { # no rageid (rid) specified, q should be present
+        	} else { # if parameter is "tvmazeid", perform TVMaze search
+        	if ($this->_params['tvmazeid'] != "") {
+				# validate input
+				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['tvmazeid'])) {
+					$this->showApiError(201);
+					return ;
+				} # if
+	
+	            /*
+	             * Actually retrieve the information from TVMaze, based on the
+	             * TVmaze ID passed by the API
+	             */
+	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
+	            $svcMediaInfoTvmaze->setSearchid($this->_params['tvmazeid']);
+	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
+	
+	            if (!$tvRageInfo->isValid()) {
+	                $this->showApiError(300);
+	                return ;
+	            } # if
+        	} else { # no rageid (rid) or tvmaze id specified, q should be present
         		if ($this->_params['q'] == "") {
 					$this->showApiError(201);
 					return ;
