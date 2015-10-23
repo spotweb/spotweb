@@ -94,33 +94,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	                $this->showApiError(300);
 	                return ;
 	            } # if
-        	} else { # if parameter is "tvmazeid", perform TVMaze search
-        	if ($this->_params['tvmazeid'] != "") {
-				# validate input
-				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['tvmazeid'])) {
-					$this->showApiError(201);
-					return ;
-				} # if
-	
-	            /*
-	             * Actually retrieve the information from TVMaze, based on the
-	             * TVmaze ID passed by the API
-	             */
-	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
-	            $svcMediaInfoTvmaze->setSearchid($this->_params['tvmazeid']);
-	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
-	
-	            if (!$tvRageInfo->isValid()) {
-	                $this->showApiError(300);
-	                return ;
-	            } # if
-        	} else { # no rageid (rid) or tvmaze id specified, q should be present
-        		if ($this->_params['q'] == "") {
-					$this->showApiError(201);
-					return ;
-        		} 
+        	} else { # no rageid (rid) specified, q should be present
         		$tvRageInfo = new Dto_MediaInformation();
-        		$tvRageInfo -> setTitle($this->_params['q']);
+        		if ($this->_params['q'] == "") {
+/*					$this->showApiError(201);
+					return ; */
+        		 	$tvRageInfo -> setTitle("");
+        		} else {
+        		 	$tvRageInfo -> setTitle($this->_params['q']);
+        		} 
         		$tvRageInfo->setValid(true);
         		
         	} # if
@@ -169,10 +151,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvInfo->getTitle())) {
-                $seasonSearch .= '*';
-                // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+            	if (!empty($tvRageInfo->getTitle())) {
+					$seasonSearch .= '*';
+	                // and search for the text 'Season ' ...
+    	            $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             	}
             } # else
 
@@ -181,10 +163,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvInfo->getTitle())) {
-				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
+            if (!empty($tvRageInfo->getTitle())) {
+				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
 	            if (!empty($episodeSearch)) {
-	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
+	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
 	            } # if
             }
 		} elseif ($this->_params['t'] == "music") {
@@ -690,11 +672,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
-<<<<<<< HEAD
-		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid,season,ep');
-=======
 		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid, season,ep');
->>>>>>> 9fed5af... Added supportedParams
 		$searching->appendChild($tvsearch);
 
 		$moviesearch = $doc->createElement('movie-search');
