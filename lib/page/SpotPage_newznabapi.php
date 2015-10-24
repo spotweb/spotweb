@@ -75,32 +75,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          * Now determine what type of information we are searching for using sabnzbd
          */
         if ($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") {
-        	if ($this->_params['rid'] != "") {
-				# validate input
-				if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
-					$this->showApiError(201);
-					return ;
-				} # if
-	
-	            /*
-	             * Actually retrieve the information from TVMaze as long as TVrage is down, based on the
-	             * tvrage passed by the API
-	             */
-	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
-	            $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
-	            $tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo();
-	
-	            if (!$tvRageInfo->isValid()) {
-	                $this->showApiError(300);
-	                return ;
-	            } # if
-	        }  elseif ($this->_params['tvmazeid'] != "") {
-					// if parameter is "tvmazeid", perform TVMaze search
-				if (! preg_match ( '/^[0-9]{1,6}$/', $this->_params ['tvmazeid'] )) {
-					$this->showApiError ( 201 );
-					return;
-				} // if
-				
+        	$found = false;
+        	# First search on tvmazeid if present
+        	if (($found == false) and ($this->_params['tvmazeid'] != "")) {
+        		if (! preg_match ( '/^[0-9]{1,6}$/', $this->_params ['tvmazeid'] )) {
+        			$this->showApiError ( 201 );
+        			return;
+        		} // if
 				/*
 				 * Actually retrieve the information from TVMaze, based on the
 				 * TVmaze ID passed by the API
@@ -108,26 +89,46 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze ( $this->_daoFactory->getCacheDao () );
 				$svcMediaInfoTvmaze->setSearchid ( $this->_params ['tvmazeid'] );
 				$svcMediaInfoTvmaze->setSearchName ( "tvmaze" ); # Indicate tvmazeid usage
-				$tvRageInfo = $svcMediaInfoTvmaze->retrieveInfo (); 
-				
-				if (! $tvRageInfo->isValid ()) {
-					$this->showApiError ( 300 );
-					return;
-				} # if
-		        	
-        	} elseif ($this->_params['q'] != "") {
-        		$tvRageInfo = new Dto_MediaInformation();
-        		$tvRageInfo -> setTitle($this->_params['q']);
-        		$tvRageInfo->setValid(true);
-        		
-        	} else { # no parameter q, tvmaze or rid 
-        		$tvRageInfo = new Dto_MediaInformation();
-        		$tvRageInfo -> setTitle("");
-        		$tvRageInfo->setValid(true);
-        	} 	# if param tvmazeid, rid or q or nothing
+				$tvInfo = $svcMediaInfoTvmaze->retrieveInfo ();
+				$found = $tvInfo -> isValid();
+        	}
+        	# second search on rid (rageid) if present
+        	if (($found == false) and ($this->_params['rid'] != "")) {
+        		# validate input
+        		if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+        			$this->showApiError(201);
+        			return ;
+        		} # if
+	            /*
+	             * Actually retrieve the information from TVMaze as long as TVrage is down, based on the
+	             * tvrage passed by the API
+	             */
+	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
+	            $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
+	            $tvInfo = $svcMediaInfoTvmaze->retrieveInfo();
+	            $svcMediaInfoTvmaze->setSearchName ( "tvrage" ); # Indicate tvmazeid usage
+				$found = $tvInfo -> isValid();
+        	}
+        	# third search on q (showname) if present
+        	if (($found == false) and ($this->_params['q'] != "")) {
+        		$tvInfo = new Dto_MediaInformation();
+        		$tvInfo -> setTitle($this->_params['q']);
+        		$tvInfo -> setValid(true);
+        		$found = true;
+        	}
+        	# fourth, no search information present, set emtpy
+        	if ($found == false) {
+        		if ((!empty($this -> _params['tvmazeid'])) or (!empty($this -> _params['rid']))) {
+        			$this->showApiError(300);
+        			return ;
+        		}
+        		$tvInfo = new Dto_MediaInformation();
+        		$tvInfo -> setTitle("");
+        		$tvInfo -> setValid(true);
+        	}
 
-            /*
->>>>>>> a9f6ae6... Switch to TVMaze info and support q parm on TVSearch
+        	/*
+>>>>>>> 838489b... Give priority on tvsearch on tvmazeid over rid over q over nothing
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
              * we try to standardize all these types of season definitions into one format.
              */
@@ -170,11 +171,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvRageInfo->getTitle())) {
+            	if (!empty($tvInfo->getTitle())) {
                 $seasonSearch .= '*';
-
                 // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             	}
             } # else
 
@@ -183,10 +183,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvRageInfo->getTitle())) {
-				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
+            if (!empty($tvInfo->getTitle())) {
+				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
 	            if (!empty($episodeSearch)) {
-	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
+	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
 	            } # if
             }
 		} elseif ($this->_params['t'] == "music") {
