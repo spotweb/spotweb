@@ -38,7 +38,7 @@ abstract class Services_MediaInformation_Abs {
     } # getSearchId
 
     public function setSearchName($s) {
-        $this->_name = $s;
+        $this->_searchName = $s;
     } # setSeearchName
 
     public function getSearchName() {
