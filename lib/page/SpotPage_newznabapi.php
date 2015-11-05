@@ -26,7 +26,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$this->caps();
 			return ;
 		} # if
-		
+
 		# Make sure the user has permissions to retrieve the index
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
@@ -199,11 +199,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
 				$this->showApiError(200);
-				
+
 				return ;
 			} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
 				$this->showApiError(201);
-				
+
 				return ;
 			} # if
 
@@ -217,7 +217,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
             if (!$imdbInfo->isValid()) {
 				$this->showApiError(300);
-				
+
 				return ;
 			} # if
 
@@ -273,7 +273,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          */
 		if ((!empty($this->_params['limit'])) &&
             (is_numeric($this->_params['limit'])) &&
-            ($this->_params['limit'] <= 500)) {
+            ($this->_params['limit'] < 500)) {
                 $limit = $this->_params['limit'];
         } else {
             $limit = $this->_currentSession['user']['prefs']['perpage'];
@@ -353,10 +353,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				if (empty($doc)) {
 					$data['_totalrows'] = count($spots['list']);
 				}
-				
+
 				$doc[] = $data;
 			} # foreach
-			
+
 			echo json_encode($doc);
 		} else {
 			# Create XML
@@ -443,12 +443,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('value', $nabCat[0]);
 					$item->appendChild($attr);
 				} # if
-				
+
 				if ( !empty($spot['subcatc'])) {
 					$nabCat = explode("|",  $spot['subcatc']);
 					$count=0;
 					$subs=array();
-					
+
 					if ( in_array('c2',$nabCat)==true || in_array('c1',$nabCat)==true || in_array('c6',$nabCat)==true  ) {
 						$subs[$count] = 'dutch';
 						$count+=1;
@@ -464,7 +464,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$item->appendChild($attr);
 					}
 				} # if
-				
+
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'size');
 				$attr->setAttribute('value', $spot['filesize']);
@@ -491,7 +491,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	function spotDetails($outputtype) {
 		if (empty($this->_params['messageid'])) {
 			$this->showApiError(200);
-			
+
 			return ;
 		} # if
 
@@ -504,7 +504,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 		catch(Exception $x) {
 			$this->showApiError(300);
-			
+
 			return ;
 		} # catch
 
@@ -538,7 +538,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$doc['comments']		= $spot['commentcount'];
 			$doc['category_name']	= SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 			$doc['category_ids']	= $cat;
-			
+
 			echo json_encode($doc);
 		} else {
 			$nzbUrl = $this->_tplHelper->makeBaseUrl("full") . 'api?t=g&amp;id=' . $spot['messageid'] . $this->_tplHelper->makeApiRequestString();
@@ -617,7 +617,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$attr->setAttribute('value', $nabCat[0]);
 				$item->appendChild($attr);
 			} # if
-			
+
 			$attr = $doc->createElement('newznab:attr');
 			$attr->setAttribute('name', 'size');
 			$attr->setAttribute('value', $spot['filesize']);
@@ -808,7 +808,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											'SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Other'	=> '5050',
-											 'Sport'	=> '5060')
+											 'Sport'	=> '5060',
+											 'Anime'	=> '5070')
 				), array('name'		=> 'XXX',
 						 'cat'		=> '6000',
 						 'subcata'	=> array('DVD'		=> '6010',
@@ -833,9 +834,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 1060: return 'cat2_a7';
 
 			case 2000: return 'cat0_z0';
-			case 2010: 
-			case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';
-			case 2040: return 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';
+			case 2010:
+			case 2030: return 'cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3';
+			case 2040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3';
 			case 2060: return 'cat0_d18';
 
 			case 3000: return 'cat1_a';
@@ -849,11 +850,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 4050: return 'cat2_a0,cat2_a1,cat2_a2';
 
 			case 5000: return 'cat0_z1';
- 			case 5020: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-			case 5030: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
-			case 5040: return 'cat0_z1,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
-			case 5050: return 'cat0_z1,cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-			case 5060: return 'cat0_z1,cat0_z1_d18';
+			case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10,cat0_z1_d2';
+			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_d2';
+			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+			case 5060: return 'cat0_z1_d18';
+			case 5070: return 'cat0_z1_d29';
 			case 6000: return 'cat0_z3';
 			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
 			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
