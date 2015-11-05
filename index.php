@@ -8,7 +8,7 @@ SpotClassAutoload::register();
 #- main() -#
 try {
 	SpotTranslation::initialize('en_US');
-	
+
 	SpotTiming::enable();
 	SpotTiming::start('total');
 
@@ -184,6 +184,7 @@ try {
 						  'artist' => $req->getDef('artist', ''),
 						  'rid' => $req->getDef('rid', ''),
 						  'tvmazeid' => $req->getDef('tvmazeid', ''),
+						  'tvdbid' => $req->getDef('tvdbid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
