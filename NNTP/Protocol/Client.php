@@ -164,7 +164,8 @@ class Net_NNTP_Protocol_Client
      *
      * @access public
      */
-    function Net_NNTP_Protocol_Client() {
+    function __construct()
+    {
 
     	//
 //    	parent::PEAR('Net_NNTP_Error');
