@@ -851,8 +851,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 5000: return 'cat0_z1';
 			case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-			case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10,cat0_z1_d2';
-			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_d2';
+			case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
+			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
 			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
 			case 5060: return 'cat0_z1_d18';
 			case 5070: return 'cat0_z1_d29';
