@@ -171,7 +171,7 @@ function attachInfiniteScroll() {
 	 */
 	$(window).scroll(function() {
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
-		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
+		if(Math.ceil($(document).scrollTop()) >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
 			loadProducts(url);
 		}
 	});
