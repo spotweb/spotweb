@@ -56,9 +56,9 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('spot_moderation', 'act');
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);
-		$this->setIfNot('blacklist_url', 'http://jij.haatmij.nl/spotnet/blacklist.txt');
+		$this->setIfNot('blacklist_url', 'http://jijhaatmij.hopto.me/blacklist.txt');
 		$this->setIfNot('external_whitelist', true);
-		$this->setIfNot('whitelist_url', 'http://jij.haatmij.nl/spotnet/whitelist.txt');
+		$this->setIfNot('whitelist_url', 'http://jijhaatmij.hopto.me/whitelist.txt');
 		$this->setIfNot('enable_timing', false);
         	$this->setIfNot('cache_path', './cache');
 		$this->setIfNot('enable_stacktrace', true);
