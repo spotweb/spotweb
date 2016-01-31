@@ -165,49 +165,31 @@ function attachInfiniteScroll() {
 	//ready
 // console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
-
-	/**
-	 * Monitor scroll once bottom page has been reached load extra products
-	 */
 	$(window).scroll(function() {
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
+
 		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
-			loadProducts(url);
+			if(!($("div.spots").hasClass("full"))) {
+				var scrollLocation = $("div.container").scrollTop();
+				$("#overlay").show().addClass('loading');
+				$("div#overlay").load(url, function() {				
+					if($("div#overlay tbody#spots").children().size() < $('#perPage').val()) {
+						$("table.footer").remove();
+						$("div.spots").addClass("full");
+					}
+					$("#overlay").hide().removeClass('loading'); 
+					$("tbody#spots").append($($("div#overlay tbody#spots").html()).show());
+					$("div#overlay").empty();
+					$("a.spotlink").click(function(e) { e.preventDefault(); });
+					$(".showTipTip a.spotlink").each(applyTipTip);
+					
+					pagenr++;
+					$("td.next > a").attr("href", url);
+					$("div.container").scrollTop(scrollLocation);
+				});
+			}
 		}
 	});
-
-	/**
-	 * If user has big screen load extra products
-	 */
-	if($('.spots').outerHeight() < $(window).height()){
-		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
-		loadProducts(url);
-	}
-
-	/**
-	 * Load products
-	 */
-	var loadProducts = function(url){
-		if(!($("div.spots").hasClass("full"))) {
-			var scrollLocation = $("div.container").scrollTop();
-			$("#overlay").show().addClass('loading');
-			$("div#overlay").load(url, function() {
-				if($("div#overlay tbody#spots").children().size() < $('#perPage').val()) {
-					$("table.footer").remove();
-					$("div.spots").addClass("full");
-				}
-				$("#overlay").hide().removeClass('loading');
-				$("tbody#spots").append($($("div#overlay tbody#spots").html()).show());
-				$("div#overlay").empty();
-				$("a.spotlink").click(function(e) { e.preventDefault(); });
-				$(".showTipTip a.spotlink").each(applyTipTip);
-
-				pagenr++;
-				$("td.next > a").attr("href", url);
-				$("div.container").scrollTop(scrollLocation);
-			});
-		}
-	}
 // console.timeEnd("2nd-ready");
 } // attachInfiniteScroll
 
