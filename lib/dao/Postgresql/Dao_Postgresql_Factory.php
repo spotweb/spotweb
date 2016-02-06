@@ -2,21 +2,15 @@
 
  class Dao_Postgresql_Factory extends Dao_Factory {
  	private $_conn;
-    private $_cachePath;
+    private $_cacheStore;
 
-    /*
-     * Actual cachepath to use
-     */
-    public function setCachePath($cachePath) {
-        $this->_cachePath = $cachePath;
-    } # setCachePath
+    public function setCacheStore(Dao_CacheStore $cacheStore) {
+        $this->_cacheStore = $cacheStore;
+    } # setCacheStore
 
-    /*
-     * Returns the currently configured cachepath
-     */
-    public function getCachePath() {
-        return $this->_cachePath;
-    } # getCachePath
+    public function setCacheStore(Dao_CacheStore $cacheStore) {
+        $this->_cacheStore = $cacheStore;
+    } # setCacheStore
 
  	/*
  	 * Actual connection object to be used in
@@ -43,7 +37,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath());
+		return new Dao_Postgresql_Cache($this->_conn, $this->getCacheStore());
 	} # getCacheDao
 
 	public function getAuditDao() {
