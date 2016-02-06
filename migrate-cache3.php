@@ -1,164 +1,110 @@
 <?php
+error_reporting(2147483647);
 
-class Dao_Base_ZipCacheStore implements Dao_CacheStore {
-	private     $_cachePath     = '';
+function cleanupDirs($dir, $curlevel) {
+    echo 'Scanning directory: ' . $dir . ' (level: ' . $curlevel . ')' . PHP_EOL;
+} # cleanupDirs
 
-    public function __construct($cachePath) {
-	$this->_cachePath = $cachePath;
+try {
+    /*
+     * If we are run from another directory, try to change the current
+     * working directory to a directory the script is in
+     */
+    if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
+        chdir(dirname(__FILE__));
+    } # if
 
-        if (empty($this->_cachePath)) {
-            throw new NotImplementedException("Cache path is null?");
+    require_once "lib/SpotClassAutoload.php";
+    SpotClassAutoload::register();
+    require_once "lib/Bootstrap.php";
+
+# -------------------
+# Dummy class to make getCache() available to the public
+class MigrateCache extends Dao_Base_Cache {
+        public function moveCache($cacheId, $cacheType) {
+                $this->getCache($cacheId, $cacheType);
+        } // moveCache
+} // class MigrateCache
+
+    /*
+     * Create a DAO factory. We cannot use the bootstrapper here,
+     * because it validates for a valid settings etc. version.
+     */
+    $bootstrap = new Bootstrap();
+    $daoFactory = $bootstrap->getDaoFactory();
+    $settings = $bootstrap->getSettings($daoFactory, true);
+    $dbSettings = $bootstrap->getDbSettings();
+
+    /*
+     * Try to create the directory, we hardcode it here because
+     * it cannot be made configurable in the database anyway
+     * and this is just the lazy way out, really
+     */
+    $cacheDao = new MigrateCache($daoFactory->getConnection(), new Dao_Base_ZipCacheStore('./cache/'));
+
+    if (!is_dir('./cache')) {
+        mkdir('./cache', 0777);
+    } # if
+
+    /*
+     * Now try to get all current cache items
+     */
+    $dbConnection = $daoFactory->getConnection();
+
+    $counter = 0;
+    while(true) {
+        $counter++;
+        echo "Migrating cache content, items " . (($counter - 1) * 1000) . ' to ' . ($counter * 1000);
+
+        $results = $dbConnection->arrayQuery('SELECT id, resourceid, cachetype, metadata FROM cache ORDER BY id LIMIT 1001 OFFSET ' . (($counter - 1) * 1000));
+
+        foreach($results as $cacheItem) {
+            try {
+            	$cacheDao->moveCache($cacheItem['resourceid'], $cacheItem['cachetype']);
+	    } catch(Exception $x) {
+		echo $x->getMessage() . PHP_EOL;
+	    } // catch
+        } # results
+
+        echo ", done. " . PHP_EOL;
+
+        if (count($results) == 0) {
+            break;
         } # if
-    } # ctor
+    } # while
 
     /*
-     * Removes an item from the cache
+      * try to remove the directories
      */
-    public function removeCacheItem($cacheId, $cachetype, $metaData) {
-        list($zipName, $fileName, $subFolder) = $this->calculateFilePath($cacheId, $cachetype, $metaData);
-
-	$zip = new ZipArchive();
-	if ($zip->open($zipName, ZipArchive::CREATE) !== true) {
-		throw new CacheIsCorruptException('Unable to open ZIP file');
-	} // if
-	$zip->deleteName($fileName);
-	$zip->close();
-    } # removeCacheItem
-
+    echo "Removing old and empty cache directories (can take a while)..." . PHP_EOL;
 
     /*
-     * Calculates the exact filepath given a storageid
+     * Removing orphaned files
      */
-    protected function calculateFilePath($cacheId, $cacheType, $metadata) {
-        $filePath = $this->_cachePath . DIRECTORY_SEPARATOR;
-
-        switch ($cacheType) {
-            case Dao_Cache::SpotImage           : $filePath .= 'image' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::SpotNzb             : $filePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Statistics          : $filePath .= 'stats' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Web                 : $filePath .= 'web' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslaterToken     : $filePath .= 'translatertoken' . DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslatedComments  : $filePath .= 'translatedcomments' . DIRECTORY_SEPARATOR; break;
-
-            default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
-        } # switch
-	$zipName = $filePath;
-
-        /*
-         * We want to store at most 1000 file in one directory,
-         * so we use this.
-         */
-        if (floor($cacheId/ 1000) > 1000) {
-	    $cacheSeperated = str_split($cacheId, 3);
-
-	    $filePath .= implode(DIRECTORY_SEPARATOR, $cacheSeperated);
-
-	    $cacheSeperated = array_splice($cacheSeperated, 0, -1);
-            $zipName .= implode(DIRECTORY_SEPARATOR, $cacheSeperated) . '.zip';
-        } else {
-            $filePath .= floor($cacheId / 1000);
-	    $zipName .= floor($cacheId / 1000) . '.zip';
-        } # else
-
-        /*
-         * And create an extension, because thats nicer.
-         */
-	$extension = '';
-        if ($cacheType == Dao_Cache::SpotImage) {
-            /*
-             * We need to 'migrate' the older cache format to this one
-             */
-            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
-                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
-            } // if
-
-            switch($metadata['dimensions']['imagetype']) {
-                case IMAGETYPE_GIF          : $extension = '.gif'; break;
-                case IMAGETYPE_JPEG         : $extension = '.jpg'; break;
-                case IMAGETYPE_PNG          : $extension = '.png'; break;
-
-                default                     : $extension = '.image.' . $metadata['dimensions']['imagetype']; break;
-            } # switch
-        } else {
-            switch ($cacheType) {
-                case Dao_Cache::SpotNzb             : $extension = '.nzb'; break;
-                case Dao_Cache::Statistics          : $extension = '.stats'; break;
-                case Dao_Cache::Web                 : $extension = '.http'; break;
-                case Dao_Cache::TranslaterToken     : $extension = '.token'; break;
-                case Dao_Cache::TranslatedComments  : $extension = '.translatedcomments'; break;
-
-                default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
-            } # switch
-        } # else
-
-	// 1st element is ZIP name, 2nd is file to include in it
-        return [$zipName, $cacheId . $extension, $filePath];
-    } # calculateFilePath
+    $cacheBasePath = '.' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+    cleanUpDirs($cacheBasePath . 'image' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'nzb' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'stats' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'web' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'translatedcomments' . DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath . 'translatertoken' . DIRECTORY_SEPARATOR, 0);
 
     /*
-     * Returns the actual contents for a given resourceid
-     */
-    public function getCacheContent($cacheId, $cacheType, $metaData) {
-        /*
-         * Get the unique filepath
-         */
-        list($zipName, $fileName, $subFolder) = $this->calculateFilePath($cacheId, $cacheType, $metaData);
+     * And actually start updating or creating the schema and settings
+    */
+    echo "Updating schema..(" . $dbSettings['engine'] . ")" . PHP_EOL;
 
-        $zip = new ZipArchive();
-        if ($zip->open($zipName, ZipArchive::CREATE) !== true) {
-                throw new CacheIsCorruptException('Unable to open ZIP file');
-        } // if
-        $cacheContent = $zip->getFromName($fileName);
-        $zip->close();
+    # update the database with this specific schemaversion
+    $dbConnection->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
+    $dbConnection->rawExec("INSERT INTO settings(name, value) VALUES('schemaversion', '" . SPOTDB_SCHEMA_VERSION . "')");
 
-	if ($cacheContent === false) {
-		// try to see if we have the original file, ... ?
-		if (is_readable($subFolder . DIRECTORY_SEPARATOR . $fileName)) {
-			$cacheContent = file_get_contents($subFolder . DIRECTORY_SEPARATOR . $fileName);
-
-			// write it to the ZIP file
-			$this->putCacheContent($cacheId, $cacheType, $cacheContent, $metaData);
-
-			// and remove it from disk
-			@unlink($subFolder . DIRECTORY_SEPARATOR . $fileName);
-		} else {
-            		$this->removeCacheItem($cacheId, $cacheType, $metaData);
-            		throw new CacheIsCorruptException('ZipCacheStore: Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' -> ' . $subFolder . DIRECTORY_SEPARATOR . $fileName);
-		} // else
-        } # if
-
-        return $cacheContent;
-    } # getCacheContent
-
-    /*
-     * Stores the actual content for a given resourceid
-     */
-    public function putCacheContent($cacheId, $cacheType, $content, $metaData) {
-        /*
-           * Get the unique filepath
-           */
-        list($zipName, $fileName, $subFolder) = $this->calculateFilePath($cacheId, $cacheType, $metaData);
-
-        /*
-	 * Create the directory
-         */
-        $success = true;
-        if (!is_writable(dirname($zipName))) {
-            $success = @mkdir(dirname($zipName), 0777, true);
-            @chmod(dirname($zipName), 0777); // mkdir's chmod is masked with umask()
-        } # if
-
-        $zip = new ZipArchive();
-        if ($zip->open($zipName, ZipArchive::CREATE) !== true) {
-                throw new CacheIsCorruptException('Unable to open ZIP file');
-        } // if
-        $zip->addFromString($fileName, $content);
-        $zip->close();
-
-        @chmod($zipName, 0777); // mkdir's chmod is masked with umask()
-
-        return true;
-    } # putCacheContent
-
-
-}  # Dao_Base_CacheStore
+}
+catch(Exception $x) {
+    echo PHP_EOL . PHP_EOL;
+    echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
+    echo "Cache migration failed:" . PHP_EOL;
+    echo "   " . $x->getMessage() . PHP_EOL;
+    echo PHP_EOL . PHP_EOL;
+    echo $x->getTraceAsString();
+    die(1);
+} # catch
