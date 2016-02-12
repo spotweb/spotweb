@@ -23,21 +23,23 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs {
         /*
          * Extract movie title from system
          */
-        preg_match('/<h1 class="header"> <span class="itemprop" itemprop="name">([^\<]*)<\/span/ms', $imdb, $movieTitle);
-
+        /* preg_match('/<h1 itemprop="name" class="">([^\<]*)<span/ms', $imdb, $movieTitle); */
+         
         /* Extract the release date from the IMDB info page */
         if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate)) {
             $mediaInfo->setReleaseYear($movieReleaseDate[1]);
         } # if
-
+        preg_match('/\<meta property=\'og:title\' content="([^<]*?)\([0-9]*?\)" \/>/ms',$imdb,$movieTitle);
+        
         if (isset($movieTitle[1])) {
-            $mediaInfo->setTitle($movieTitle[1]);
+            $movieTitle[1] = trim($movieTitle[1]);
+        	$mediaInfo->setTitle($movieTitle[1]);
         } # if
 
         // imdb sometimes returns the title translated, if so, pass the original title as well
-        preg_match('/<span class="title-extra" itemprop="name">([^\<]*)<i>/ms', $imdb, $originalTitle);
-        if ((!empty($originalTitle)) && ($originalTitle[1] != $movieTitle[1])) {
-            $mediaInfo->setAlternateTitle($originalTitle[1]);
+        preg_match('/<meta name="title" content="([^<]*?)\([0-9]*?\)/ms', $imdb, $originalTitle);
+        if ((!empty($originalTitle)) && (trim($originalTitle[1]) != $movieTitle[1])) {
+            $mediaInfo->setAlternateTitle(trim($originalTitle[1]));
         } # if
 
         $mediaInfo->setValid(true);
