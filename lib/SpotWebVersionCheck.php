@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_FEATURE_VERSION', '0.06');
+define('SPOTWEB_FEATURE_VERSION', '0.07');
 
 /*
  * Spotweb version check needs to have as few dependencies on the
@@ -14,8 +14,8 @@ class SpotWebVersionCheck {
 		<title>Spotweb update notifications</title>
 		<description>HTTPS not available</description>
 		<link>https://github.com/spotweb/spotweb/</link>
-		<lastBuildDate>Thu, 3 Jan 2013 00:00:00 +0100</lastBuildDate>
-		<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+		<lastBuildDate>Thu, 12 Feb 2016 00:00:00 +0100</lastBuildDate>
+		<pubDate>Thu, 12 Feb 2016 00:00:00 +0100</pubDate>
 		<ttl>1800</ttl>
 
 		<item>
@@ -26,13 +26,13 @@ class SpotWebVersionCheck {
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
 			<guid>1</guid>
-			<pubDate>Thu, 3 Jan 2013 00:00:00 +0100</pubDate>
+			<pubDate>Thu, 12 Feb 2016 00:00:00 +0100</pubDate>
 			<author>spotweb</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
 			<spotweb:schema_version>0.58</spotweb:schema_version>
 			<spotweb:settings_version>0.25</spotweb:settings_version>
 			<spotweb:security_version>0.29</spotweb:security_version>
-			<spotweb:feature_version>0.06</spotweb:feature_version>
+			<spotweb:feature_version>0.07</spotweb:feature_version>
 		</item>
 	</channel>
 </rss>
