@@ -5,7 +5,7 @@ echo ($newSpotCount == 1) ? "is " . $newSpotCount . " spot" : "are " . $newSpotC
 if ($newCommentCount > 0) {
 	echo ($newReportCount > 0) ? ", " : " en ";
 	echo $newCommentCount;
-	echo ($newCommentCount == 1) ? " reaction" : " reactionss";
+	echo ($newCommentCount == 1) ? " reaction" : " reactions";
 } # if
 if ($newReportCount > 0) {
 	echo " and " . $newReportCount;
