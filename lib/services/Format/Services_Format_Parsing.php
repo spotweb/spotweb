@@ -89,7 +89,11 @@ class Services_Format_Parsing {
 		$tpl_spot['filesize'] = (string) $xml->Size;
 		$tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
 		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
-		$tpl_spot['title'] = (string) $xml->Title;
+        $tpl_spot['title'] = (string) $xml->Title;
+
+        // Decode HTML special characters, title otherwise search will be broken, description as body in newsgroup
+        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'],ENT_QUOTES ,'UTF-8');
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'],ENT_QUOTES ,'UTF-8');
 
 		# FTD spots have the filename
 		if (!empty($xml->Filename)) {
