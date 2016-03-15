@@ -118,7 +118,8 @@ class SpotTemplateHelper {
 	 */
 	function makeSearchUrl($spot) {
 		$searchString = (empty($spot['filename'])) ? $spot['title'] : $spot['filename'];
-		
+        $searchString = urlencode($searchString);
+
 		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
 			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
@@ -549,8 +550,8 @@ class SpotTemplateHelper {
 		# escape alle embedded HTML, maar eerst zetten we de spot inhoud om naar 
 		# volledige HTML, dit doen we omdat er soms embedded entities (&#237; e.d.) 
 		# in zitten welke we wel willen behouden.
-		$tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
-		$tmp = htmlentities($tmp, ENT_QUOTES, 'UTF-8');
+        $tmp = html_entity_decode($tmp, ENT_COMPAT, 'UTF-8');
+		$tmp = htmlentities($tmp, ENT_COMPAT, 'UTF-8');
 		
 		# Code gecopieerd vanaf 
 		#		http://stackoverflow.com/questions/635844/php-how-to-grab-an-url-out-of-a-chunk-of-text
@@ -724,9 +725,9 @@ class SpotTemplateHelper {
 		$spot['subcaturl'] = $this->makeSubCatUrl($spot, $spot['subcat' . SpotCategories::SubcatNumberFromHeadcat($spot['category'])]);
 		$spot['posterurl'] = $this->makePosterUrl($spot);
 
-		// title escapen
-		$spot['title'] = htmlentities($spot['title'], ENT_QUOTES, 'UTF-8');
-		$spot['title'] = html_entity_decode($spot['title'], ENT_COMPAT, 'UTF-8');
+		// title escapen !!
+        $spot['title'] = html_entity_decode($spot['title'], ENT_QUOTES, 'UTF-8');
+        $spot['title'] = htmlentities($spot['title'], ENT_COMPAT, 'UTF-8');
 		$spot['title'] = strip_tags($this->remove_extensive_dots($spot['title']));
 		$spot['poster'] = htmlspecialchars(strip_tags($spot['poster']), ENT_QUOTES, 'UTF-8');
 		
