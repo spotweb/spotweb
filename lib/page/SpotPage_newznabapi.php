@@ -326,7 +326,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$data = array();
 				$data['ID']				= $spot['messageid'];
-				$data['name']			= $spot['title'];
+				$data['name']			= html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8');
 				$data['size']			= $spot['filesize'];
 				$data['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
 				$data['guid']			= $spot['messageid'];
@@ -406,7 +406,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
+ 				$item->appendChild($doc->createElement('title', htmlspecialchars(html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8'), ENT_XHTML, "UTF-8")));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
