@@ -305,6 +305,29 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
 
+    /* check spots to be removed and update list
+     */
+
+    function GetDisposedSpots($spotMsgIdList) {
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+        $tmparray = array();
+        # Empty list provided? Exit
+		if (count($spotMsgIdList) == 0) {
+			return $tmparray;
+		} # if
+
+		# prepare a list of IN values
+		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+        $msgIdList = "(" .$msgIdList .")";
+
+        $tmpArray = $this->_conn->arrayQuery("SELECT s.messageid AS messageid, s.spotterid AS spotterid, s.stamp AS stamp, s.title as title
+											  FROM spots AS s
+											  WHERE s.messageid IN ".$msgIdList);
+        return $tmpArray;
+       }
+
+    
+
 	/*
 	 * Remove a spot from the database
 	 */
@@ -321,8 +344,9 @@ class Dao_Base_Spot implements Dao_Spot {
 
 		$this->_conn->modify("DELETE FROM spots WHERE messageid IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM spotsfull WHERE messageid  IN (" . $msgIdList . ")");
-		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref IN (" . $msgIdList . "))");
-		$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref  IN (" . $msgIdList . ")");
+        // Comments are deleted in a seperate routine
+        //$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (SELECT messageid FROM commentsxover WHERE nntpref IN (" . $msgIdList . "))");
+        //$this->_conn->modify("DELETE FROM commentsxover WHERE nntpref  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM spotstatelist WHERE messageid  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsxover WHERE nntpref  IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM reportsposted WHERE inreplyto  IN (" . $msgIdList . ")");
