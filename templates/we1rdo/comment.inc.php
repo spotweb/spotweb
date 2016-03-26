@@ -15,7 +15,7 @@
 	$perm_allow_blackList = ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, ''));
 	
 	# Get the spot comments for each $perPage comments
-    $comments = $tplHelper->getSpotComments($messageId, ($pageNr * $perPage), $perPage);
+    $comments = $tplHelper->getSpotComments($messageId, $spot['prevspots'], ($pageNr * $perPage), $perPage);
 	$comments = $tplHelper->formatComments($comments);
 
 	# Does the user want to see avatars?

@@ -312,15 +312,18 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					} # if
 
 					/*
-					 * Special moderator commands always have keyid 2
+					 * Special moderator commands always have keyid 2 or 7
 					 */
-					if ($spot['keyid'] == 2) {
-						$commandAr = explode(' ', $spot['title']);
-						$validCommands = array('delete', 'dispose', 'remove');
+                    
+                    $commandAr = explode(' ', $spot['title']);
+                    $validCommands = array('delete', 'dispose', 'remove');
+
+                    if ($spot['keyid'] == 2) {
 
 						# is this one of the defined valid commands?
 						if (in_array(strtolower($commandAr[0]), $validCommands) !== false) {
-							$moderationList[$commandAr[1]] = 1;
+                            //$moderationList[$commandAr[1]] = 1;
+							$moderationList[$commandAr[1]] = array('spotterid' => $spot['spotterid'], 'stamp' => $spot['stamp']);
 							$modCount++;
 						} # if
 						
@@ -613,15 +616,17 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			switch($this->_settings->get('spot_moderation')) {
 				case 'disable'	: break;
 				case 'markspot'	: {
+                    
+                    $moderationList = $this->RemoveInvalidDisposes($moderationList);
 					$this->_commentDao->markCommentsModerated($moderationList); 
 					$this->_spotDao->markSpotsModerated($moderationList); 
 					
 					break;
 				} # case 'markspot' 
 				default			: { 
+                    $moderationList = $this->RemoveInvalidDisposes($moderationList);
 					$this->_spotDao->removeSpots($moderationList); 
 					$this->_commentDao->removeComments($moderationList);
-
                     /*
                      * If the spots actually get removed, we want to make
                      * sure we write the deleted spots down. This prevents
@@ -648,6 +653,34 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 			return array('count' => count($hdrList), 'headercount' => $hdrsParsed, 'lastmsgid' => $lastProcessedId);
 		} # process()
+
+        /* 
+         * Remove invalid disposes from list
+         */
+        function RemoveInvalidDisposes($moderationlist) {
+            /* check all dispose messages */
+            $tmpArray = $this->_spotDao->GetDisposedSpots ($moderationlist);
+            foreach ($tmpArray as $value) {
+                $t = $moderationlist [$value['messageid']]['spotterid'];
+                if (isset($t)) {
+                    if ($t <> '') {
+                        if ($t <> $value['spotterid']) {
+                            unset($moderationlist [$value['messageid']]);
+                        } 
+                        else {
+                            $stmod = $moderationlist [$value['messageid']]['stamp'];
+                            $stspot = $value['stamp'];
+                            $diff = $stmod - $stspot;
+                            if ($diff > 432000) {
+                                unset($moderationlist [$value['messageid']]);
+                            }
+                        }
+                    }
+                }
+            }
+            return $moderationlist;
+        } # RemoveInvalidDisposes
+
 
 		/*
 		 * returns the name of the group we are expected to retrieve messages from
