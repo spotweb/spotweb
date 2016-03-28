@@ -10,10 +10,9 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
 			return;
 		} # if
 
-		$this->_conn->modify("DELETE FROM spots, spotsfull, commentsxover, reportsxover, spotstatelist, reportsposted USING spots
+		$this->_conn->modify("DELETE FROM spots, spotsfull, reportsxover, spotstatelist, reportsposted USING spots
 							LEFT JOIN spotsfull ON spots.messageid=spotsfull.messageid
-							LEFT JOIN commentsxover ON spots.messageid=commentsxover.nntpref
-							LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
+                            LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 							LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 							LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
 							WHERE spots.messageid  IN (" . $this->_conn->arrayKeyToIn($spotMsgIdList) . ")");
