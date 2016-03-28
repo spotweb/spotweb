@@ -244,9 +244,9 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		$msgIdList = $this->_conn-> arrayKeyToInForComments($commentMsgIdList);
+		$msgIdList = $this-> _conn-> arrayKeyToInForComments($commentMsgIdList);
 
-        if (!$msgIdList == false) {
+        if ($msgIdList !== false) {
             $this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
             $this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
         }

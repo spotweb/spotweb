@@ -617,14 +617,14 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				case 'disable'	: break;
 				case 'markspot'	: {
                     
-                    $moderationList = $this->RemoveInvalidDisposes($moderationList);
+                    $moderationList = $this->removeInvalidDisposes($moderationList);
 					$this->_commentDao->markCommentsModerated($moderationList); 
 					$this->_spotDao->markSpotsModerated($moderationList); 
 					
 					break;
 				} # case 'markspot' 
 				default			: { 
-                    $moderationList = $this->RemoveInvalidDisposes($moderationList);
+                    $moderationList = $this->removeInvalidDisposes($moderationList);
 					$this->_spotDao->removeSpots($moderationList); 
 					$this->_commentDao->removeComments($moderationList);
                     /*
@@ -656,29 +656,29 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
         /* 
          * Remove invalid disposes from list
+         * This prevents invalid personal disposes from being executed
+         * Checked is : dispose spotterid is the same as spot spotterid 
+         * and timestamp of dispose is not older than 5 days
          */
-        function RemoveInvalidDisposes($moderationlist) {
+        function removeInvalidDisposes($moderationList) {
             /* check all dispose messages */
-            $tmpArray = $this->_spotDao->GetDisposedSpots ($moderationlist);
+            $tmpArray = $this-> _spotDao-> getDisposedSpots ($moderationList);
             foreach ($tmpArray as $value) {
-                $t = $moderationlist [$value['messageid']]['spotterid'];
-                if (isset($t)) {
-                    if ($t <> '') {
-                        if ($t <> $value['spotterid']) {
-                            unset($moderationlist [$value['messageid']]);
-                        } 
-                        else {
-                            $stmod = $moderationlist [$value['messageid']]['stamp'];
-                            $stspot = $value['stamp'];
-                            $diff = $stmod - $stspot;
-                            if ($diff > 432000) {
-                                unset($moderationlist [$value['messageid']]);
-                            }
+                if (!empty($moderationList [$value['messageid']]['spotterid'])) {
+                    if ($moderationList [$value['messageid']]['spotterid'] <> $value['spotterid']) {
+                        unset($moderationList [$value['messageid']]);
+                    } 
+                    else {
+                        $stmod = $moderationList [$value['messageid']]['stamp'];
+                        $stspot = $value['stamp'];
+                        $diff = $stmod - $stspot;
+                        if ($diff > 432000) {
+                            unset($moderationList [$value['messageid']]);
                         }
                     }
                 }
             }
-            return $moderationlist;
+            return $moderationList;
         } # RemoveInvalidDisposes
 
 

@@ -22,7 +22,7 @@ class Services_Providers_Comments {
 	/*
 	 * Returns a list of commentss
 	 */
-	public function fetchSpotComments($msgId, &$prevspots, $userId, $start, $length) {
+	public function fetchSpotComments($msgId, $prevMsgids, $userId, $start, $length) {
 		/*
 		 * Calculate the total amount of comments we want to retrieve
 		 */
@@ -36,22 +36,18 @@ class Services_Providers_Comments {
 		 */
 
         $refs = array();
-
         $refs[$msgId]  = 0;
 
-        if (is_array($prevspots)) {
-            foreach ($prevspots['spot'] as $spot) {
-                $refs[$spot] = 0;
-            }
+        foreach ($prevMsgids as $spot) {
+             $refs[$spot] = 0;
         }
 
         if (count($refs) == 0) {
             throw new Exception("No msgid specified ");
         }
 
-		$fullComments = $this->_commentDao->getCommentsFull($userId, $refs);
-
-        
+$fullComments = $this->_commentDao->getCommentsFull($userId, $refs);
+       
 		/*
 		 * Now we want to know the first comment we haven't retrieved yet, we
 		 * ignore not verified comments

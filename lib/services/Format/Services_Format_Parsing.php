@@ -57,7 +57,7 @@ class Services_Format_Parsing {
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcata' => '', 'subcatb' => '',
-						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevspots' => '');
+						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevMsgids' => array());
 
 		/*
 		 * Some legacy spotNet clients create incorrect/invalid multiple segments,
@@ -146,11 +146,8 @@ class Services_Format_Parsing {
         if (!empty($xml->PREVSPOTS->Spot)) {
 			foreach($xml->xpath('/Spotnet/Posting/PREVSPOTS/Spot') as $seg) {
 				# Make sure the messageid's are valid so we do not throw an NNTP error
-				if (!$this->_util->validMessageId((string) $seg)) {
-					$tpl_spot['prevspots']['spots'] = array();
-					break;
-				} else {
-					$tpl_spot['prevspots']['spot'][] = (string) $seg;
+				if ($this->_util->validMessageId((string) $seg)) {
+					$tpl_spot['prevMsgids'][] = (string) $seg;
 				} # if
 			} # foreach			
 		} # else
@@ -437,7 +434,7 @@ class Services_Format_Parsing {
 					 * Make sure the key specified is an actual known key 
 					 */
 					if (isset($rsaKeys[$spot['keyid']])) {
-                        if ($spot['keyid'] == 2 and $spot['filesize'] = 999 and strlen($spot['selfsignedpubkey']) > 50
+                        if ($spot['keyid'] == 2 && $spot['filesize'] = 999 && strlen($spot['selfsignedpubkey']) > 50
                             ) {
                             /* Check personal dispose message */ 
                             $signature = $this->_util->spotUnprepareBase64($spot['headersign']);

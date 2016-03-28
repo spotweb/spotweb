@@ -305,10 +305,10 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spotMsgIdList));
 	} # updateSpotReportCount
 
-    /* check spots to be removed and update list
+    /* Get spotterId and stamp from the spots to be disposed to
+     * enable checking of personal dispose messages
      */
-
-    function GetDisposedSpots($spotMsgIdList) {
+        function getDisposedSpots($spotMsgIdList) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
         $tmparray = array();
         # Empty list provided? Exit
@@ -320,9 +320,10 @@ class Dao_Base_Spot implements Dao_Spot {
 		$msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
         $msgIdList = "(" .$msgIdList .")";
 
-        $tmpArray = $this->_conn->arrayQuery("SELECT s.messageid AS messageid, s.spotterid AS spotterid, s.stamp AS stamp, s.title as title
+        $tmpArray = $this->_conn->arrayQuery("SELECT s.messageid AS messageid, s.spotterid AS spotterid, s.stamp AS stamp
 											  FROM spots AS s
 											  WHERE s.messageid IN ".$msgIdList);
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
         return $tmpArray;
        }
 
