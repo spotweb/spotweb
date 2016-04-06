@@ -1,5 +1,5 @@
 <?php
-define('SPOTWEB_FEATURE_VERSION', '0.07');
+define('SPOTWEB_FEATURE_VERSION', '0.08');
 
 /*
  * Spotweb version check needs to have as few dependencies on the
@@ -7,7 +7,8 @@ define('SPOTWEB_FEATURE_VERSION', '0.07');
  * create an interdependency
  */
 class SpotWebVersionCheck {
-	const rss_url = 'https://raw.github.com/spotweb/spotweb/master/notifications.xml';
+    const rss_url = 'https://raw.github.com/spotweb/spotweb/master/notifications.xml';
+    //const rss_url = 'http://localhost:81/spotweb/notifications.xml';
     const https_not_available = <<<EOF
 <rss version="2.0">
 	<channel>
@@ -32,7 +33,7 @@ class SpotWebVersionCheck {
 			<spotweb:schema_version>0.58</spotweb:schema_version>
 			<spotweb:settings_version>0.25</spotweb:settings_version>
 			<spotweb:security_version>0.29</spotweb:security_version>
-			<spotweb:feature_version>0.07</spotweb:feature_version>
+			<spotweb:feature_version>0.08</spotweb:feature_version>
 		</item>
 	</channel>
 </rss>
