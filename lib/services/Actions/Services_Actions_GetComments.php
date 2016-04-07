@@ -41,7 +41,7 @@ class Services_Actions_GetComments {
      * Returns the spot comments, and translates them when asked to,
      * tries to minimize the amount of requests to the translator API
      */
-    public function getSpotComments($msgId, $userId, $start, $length, $language) {
+    public function getSpotComments($msgId, $prevMsgids, $userId, $start, $length, $language) {
         # Check users' permissions
         $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
@@ -54,7 +54,7 @@ class Services_Actions_GetComments {
          * Basically we are retrieving the comments from the database, for them to be translated
          * if necessary
          */
-        $comments = $svcProvComments->fetchSpotComments($msgId, $userId, $start, $length);
+        $comments = $svcProvComments->fetchSpotComments($msgId, $prevMsgids, $userId, $start, $length);
         if (!$tryTranslate) {
             return $comments;
         } # if

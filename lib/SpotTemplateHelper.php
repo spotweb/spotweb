@@ -72,13 +72,13 @@ class SpotTemplateHelper {
 	} # getNewCountForFilter
 
 	/*
-	 * Rturn the actual comments for a specific spot
+	 * Return the actual comments for a specific spot
 	 */
-	function getSpotComments($msgId, $start, $length) {
+	function getSpotComments($msgId, $prevMsgids, $start, $length) {
         $language = substr($this->_currentSession['user']['prefs']['user_language'], 0, 2);
 
         $svcActnComments = new Services_Actions_GetComments($this->_settings, $this->_daoFactory, $this->_spotSec);
-        return $svcActnComments->getSpotComments($msgId, $this->_currentSession['user']['userid'], $start, $length, $language);
+        return $svcActnComments->getSpotComments($msgId, $prevMsgids, $this->_currentSession['user']['userid'], $start, $length, $language);
 	} # getSpotComments
 
     function getFullSpot($messageId) {
