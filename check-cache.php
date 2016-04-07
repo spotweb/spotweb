@@ -47,7 +47,7 @@ try {
     /*
      * Initialize the NZB retrieval provider
      */
-    $svcFullSpot = new Services_Providers_FullSpot($daoFactory->getSpotDao(), new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr')));
+    $svcFullSpot = new Services_Providers_FullSpot($daoFactory, new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr')));
     $svcNzb = new Services_Providers_Nzb($cacheDao, new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')));
     $svcPrvHttp = new Services_Providers_Http($cacheDao);
     $svcImage = new Services_Providers_SpotImage($svcPrvHttp,

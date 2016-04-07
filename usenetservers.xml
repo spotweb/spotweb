@@ -218,6 +218,19 @@
 			</plain>
 		</server>
 
+                <server name='Gebruikhet'>
+                        <ssl>
+                                <header ssl='yes' port='563'>download.gebruikhet.net</header>
+                                <nzb ssl='yes' port='563'>download.gebruikhet.net</nzb>
+                                <post ssl='yes' port='563'>download.gebruikhet.net</post>
+                        </ssl>
+                        <plain>
+                                <header ssl='' port='119'>download.gebruikhet.net</header>
+                                <nzb ssl='' port='119'>download.gebruikhet.net</nzb>
+                                <post ssl='' port='119'>download.gebruikhet.net</post>
+                        </plain>
+                </server>
+
 		<server name='Giganews EU'>
 			<ssl>
 				<header ssl='yes' port='563'>news-europe.giganews.com</header>

@@ -110,6 +110,20 @@ abstract class Dao_Factory {
     abstract public function getDebugLogDao();
 
     /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_Collections
+     */
+    abstract public function getCollectionsDao();
+
+    /**
+     * Factory method which returns specified DAO class
+     *
+     * @return Dao_TmdbInfo
+     */
+    abstract public function getTmdbInfo();
+
+    /**
      * Factory class which instantiates the specified DAO factory object
      *
      * @param $which String specifying which DB specific factory to return
@@ -122,7 +136,6 @@ abstract class Dao_Factory {
 			case 'postgresql'			: return new Dao_Postgresql_Factory(); break;
             case 'pdo_mysql' 	        :
 			case 'mysql'				: return new Dao_Mysql_Factory(); break;
-            case 'pdo_sqlite' 	        :
 			case 'sqlite'				: return new Dao_Sqlite_Factory(); break;
 
 			default						: throw new Exception("Unknown DAO factory specified");

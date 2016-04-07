@@ -98,12 +98,13 @@ class Services_Settings_Base {
 		$settings['retrieve_comments'] = (isset($settings['retrieve_comments'])) ? true : false;
 		$settings['retrieve_full_comments'] = (isset($settings['retrieve_full_comments'])) ? true : false;
 		$settings['retrieve_reports'] = (isset($settings['retrieve_reports'])) ? true : false;
+                $settings['create_collections'] = (isset($settings['create_collections'])) ? true : false;
 		$settings['enable_timing'] = (isset($settings['enable_timing'])) ? true : false;
 		$settings['enable_stacktrace'] = (isset($settings['enable_stacktrace'])) ? true : false;
+		$settings['imageover_subcats'] = (isset($settings['imageover_subcats'])) ? true : false;
 		$settings['prepare_statistics'] = (isset($settings['prepare_statistics'])) ? true : false;
 		$settings['external_blacklist'] = (isset($settings['external_blacklist'])) ? true : false;
 		$settings['external_whitelist'] = (isset($settings['external_whitelist'])) ? true : false;
-		$settings['imageover_subcats'] = (isset($settings['imageover_subcats'])) ? true : false;
 
 		# Default server settings if they won't be used
 		if (!isset($settings['nntp_hdr']['use'])) { 

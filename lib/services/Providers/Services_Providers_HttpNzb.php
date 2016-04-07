@@ -116,14 +116,14 @@ class Services_Providers_HttpNzb {
 
         // Array containing url matches. Must contain the first part of the url.
         $matches = array(
-            'http://base64.derefer.me',
-            'http://derefer.me',
             'http://alturl.com',
-            'http://tiny.cc',
+            'http://base64.derefer.me',
             'http://bit.ly',
+            'http://derefer.me',
             'http://goo.gl',
             'http://hideref.org',
             'http://tiny.cc',
+            'http://tinyurl.com',
             'http://www.dereferer.org',
         );
 

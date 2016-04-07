@@ -16,7 +16,7 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 <!DOCTYPE html> 
 <html> 
 	<head>
-	<title>Inloggen</title> 
+	<title>Login</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0-rc.1/jquery.mobile-1.1.0-rc.1.min.css" />
 	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
@@ -37,13 +37,13 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 		<input type="hidden" name="data[performredirect]" value="<?php echo $data['performredirect']; ?>">
 	<?php } ?> 
 	<fieldset>
-    	<label for="loginform[username]"><div align="center"><strong>Gebruikersnaam</strong></div></label>
+    	<label for="loginform[username]"><div align="center"><strong>Username:</strong></div></label>
 		<div align="center"><input type="text" style="width:66%; text-align:center"; name="loginform[username]" value="<?php echo htmlspecialchars($loginform['username']); ?>"></div>
 <br><!-- Return -->
-        <label for="loginform[password]"><div align="center"><strong>Wachtwoord</strong></div></label>
+        <label for="loginform[password]"><div align="center"><strong>Password:</strong></div></label>
 		<div align="center"><input type="password" style="width:66%; text-align:center"; name="loginform[password]" value=""></div>
 
-    	<div align="center"><input class="Button" type="submit" name="loginform[submitlogin]" value="Inloggen" data-inline="true" data-theme="b"></div>
+    	<div align="center"><input class="Button" type="submit" name="loginform[submitlogin]" value="Login" data-inline="true" data-theme="b"></div>
 	</fieldset>
 </form>
 <?php

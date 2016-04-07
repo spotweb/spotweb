@@ -89,7 +89,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		# Format the spot header
 		$spot = $tplHelper->formatSpotHeader($spot);
 		$newSpotClass = ($tplHelper->isSpotNew($spot)) ? 'new' : '';
-        $tipTipClass = $show_mouseover_subcats ? 'showTipTip' : '';
+		$tipTipClass = $show_mouseover_subcats ? 'showTipTip' : '';
 		$dateTitleText = $tplHelper->formatDate($spot['stamp'], 'force_spotlist');
 		$commentCountValue = $spot['commentcount'];
 		if (isset($newCommentCount[$spot['messageid']])) {
@@ -112,10 +112,9 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                 } # if
         	} # foreach
         } # foreach
-        
 		if ($settings->get('imageover_subcats') > 0)
 		{
-        	$catMap['image'] = '<center><br><img src="?page=getimage&messageid='.$spot['messageid'].'&image[height]=260&image[width]=130" height="175px" width="auto"></center>';
+                $catMap['image'] = '<center><br><img src="?page=getimage&messageid='.$spot['messageid'].'&image[height]=260&image[width]=130" height="175px" width="auto"></center>';
 		}
 		$catData = json_encode($catMap);
 	

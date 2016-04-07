@@ -89,7 +89,7 @@ class Dao_Base_Comment implements Dao_Comment {
 		/*
 		 * Prepare the list of messageid's we want to match
 		 */
-		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
+		$msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID', PDO::PARAM_STR);
 		$rs = $this->_conn->arrayQuery("SELECT messageid AS comment, '' AS fullcomment FROM commentsxover WHERE messageid IN (" . $msgIdList . ")
 											UNION
 					 				    SELECT '' as comment, messageid AS fullcomment FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
@@ -217,7 +217,7 @@ class Dao_Base_Comment implements Dao_Comment {
 		$tmp = $this->_conn->arrayQuery("SELECT COUNT(nntpref) AS ccount, nntpref FROM commentsxover AS cx
 									LEFT JOIN spotstatelist sl ON (sl.messageid = cx.nntpref) 
 												AND (sl.ouruserid = :ouruserid)
-									WHERE nntpref IN (" . $this->_conn->arrayKeyToIn($nntpRefList, 'messageid') . ")
+									WHERE nntpref IN (" . $this->_conn->arrayValToIn($nntpRefList, 'messageid', PDO::PARAM_STR) . ")
  										  AND (cx.stamp > sl.seen) 
 								   GROUP BY nntpref",
             array(
@@ -240,7 +240,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		$msgIdList = $this->_conn->arrayKeyToIn($commentMsgIdList);
+		$msgIdList = $this->_conn->arrayKeyToIn($commentMsgIdList, PDO::PARAM_STR);
 
 		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
 		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
@@ -254,7 +254,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		$this->_conn->modify("UPDATE commentsxover SET moderated = :moderated WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList) . ")",
+		$this->_conn->modify("UPDATE commentsxover SET moderated = :moderated WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList, PDO::PARAM_STR) . ")",
             array(
                 ':moderated' => array(true, PDO::PARAM_BOOL)
             ));

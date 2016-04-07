@@ -26,7 +26,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$this->caps();
 			return ;
 		} # if
-
+		
 		# Make sure the user has permissions to retrieve the index
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
@@ -74,60 +74,30 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         /**
          * Now determine what type of information we are searching for using sabnzbd
          */
-        if ($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") {
-        	$found = false;
-        	# First search on tvmazeid if present
-        	if (($found == false) and ($this->_params['tvmazeid'] != "")) {
-        		if (! preg_match ( '/^[0-9]{1,6}$/', $this->_params ['tvmazeid'] )) {
-        			$this->showApiError ( 201 );
-        			return;
-        		} // if
-				/*
-				 * Actually retrieve the information from TVMaze, based on the
-				 * TVmaze ID passed by the API
-				 */
-				$svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze ( $this->_daoFactory->getCacheDao () );
-				$svcMediaInfoTvmaze->setSearchid ( $this->_params ['tvmazeid'] );
-				$svcMediaInfoTvmaze->setSearchName ( "tvmaze" ); # Indicate tvmazeid usage
-				$tvInfo = $svcMediaInfoTvmaze->retrieveInfo ();
-				$found = $tvInfo -> isValid();
-        	}
-        	# second search on rid (rageid) if present
-        	if (($found == false) and ($this->_params['rid'] != "")) {
-        		# validate input
-        		if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
-        			$this->showApiError(201);
-        			return ;
-        		} # if
-	            /*
-	             * Actually retrieve the information from TVMaze as long as TVrage is down, based on the
-	             * tvrage passed by the API
-	             */
-	            $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
-	            $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
-	            $tvInfo = $svcMediaInfoTvmaze->retrieveInfo();
-	            $svcMediaInfoTvmaze->setSearchName ( "tvrage" ); # Indicate tvmazeid usage
-				$found = $tvInfo -> isValid();
-        	}
-        	# third search on q (showname) if present
-        	if (($found == false) and ($this->_params['q'] != "")) {
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle($this->_params['q']);
-        		$tvInfo -> setValid(true);
-        		$found = true;
-        	}
-        	# fourth, no search information present, set emtpy
-        	if ($found == false) {
-        		if ((!empty($this -> _params['tvmazeid'])) or (!empty($this -> _params['rid']))) {
-        			$this->showApiError(300);
-        			return ;
-        		}
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle("");
-        		$tvInfo -> setValid(true);
-        	}
+        if (($this->_params['t'] == "t" || $this->_params['t'] == "tvsearch") && $this->_params['rid'] != "") {
+			# validate input
+			if (!preg_match('/^[0-9]{1,6}$/', $this->_params['rid'])) {
+				$this->showApiError(201);
+				
+				return ;
+			} # if
 
-        	/*
+            /*
+             * Actually retrieve the information from TVRage, based on the
+             * tvrage passed by the API
+             */
+            $svcMediaInfoTvrage = new Services_MediaInformation_Tvrage($this->_daoFactory, $this->_settings);
+            $svcMediaInfoTvrage->setSearchid($this->_params['rid']);
+            $tvRageInfo = $svcMediaInfoTvrage->retrieveInfo();
+
+            if (!$tvRageInfo->isValid()) {
+                $this->showApiError(300);
+
+                return ;
+            } # if
+
+
+            /*
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
              * we try to standardize all these types of season definitions into one format.
              */
@@ -135,6 +105,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
             $seasonSearch = '';
 			if (preg_match('/^[sS][0-9]{1,2}$/', $this->_params['season']) ||
                 preg_match('/^[0-9]{1,4}$/', $this->_params['season'])) {
+
                 /*
                  * Did we get passed a 4 digit season (most likely a year), or a
                  * two digit season?
@@ -150,6 +121,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
                 } # else
 			} elseif ($this->_params['season'] != "") {
 				$this->showApiError(201);
+				
 				return ;
 			} # if
 
@@ -160,6 +132,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
+
+
                     if (is_numeric($this->_params['ep'])) {
                         $episodeSearch .= 'E' . str_pad($this->_params['ep'], 2, "0", STR_PAD_LEFT);
                     } else {
@@ -167,14 +141,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
                     } # else
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
+				
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvInfo->getTitle())) {
                 $seasonSearch .= '*';
+
                 // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
-            	}
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             } # else
 
 			/*
@@ -182,12 +156,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvInfo->getTitle())) {
-				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
-	            if (!empty($episodeSearch)) {
-	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
-	            } # if
-            }
+			$searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
+            if (!empty($episodeSearch)) {
+                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvRageInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
+            } # if
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
@@ -198,11 +170,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			# validate input
 			if ($this->_params['imdbid'] == "") {
 				$this->showApiError(200);
-
+				
 				return ;
 			} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
 				$this->showApiError(201);
-
+				
 				return ;
 			} # if
 
@@ -210,13 +182,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
              * Actually retrieve the information from imdb, based on the
 			 * imdbid passed by the API
 			 */
-            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory, $this->_settings);
             $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
             $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
             if (!$imdbInfo->isValid()) {
 				$this->showApiError(300);
-
+				
 				return ;
 			} # if
 
@@ -301,7 +273,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
             $this->_currentSession,
             $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid']));
 
-         /*
+        /*
          * Actually fetch the spots, we always perform
          * this action even when the watchlist is editted
          */
@@ -352,10 +324,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				if (empty($doc)) {
 					$data['_totalrows'] = count($spots['list']);
 				}
-
+				
 				$doc[] = $data;
 			} # foreach
-
+			
 			echo json_encode($doc);
 		} else {
 			# Create XML
@@ -442,12 +414,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('value', $nabCat[0]);
 					$item->appendChild($attr);
 				} # if
-
+				
 				if ( !empty($spot['subcatc'])) {
 					$nabCat = explode("|",  $spot['subcatc']);
 					$count=0;
 					$subs=array();
-
+					
 					if ( in_array('c2',$nabCat)==true || in_array('c1',$nabCat)==true || in_array('c6',$nabCat)==true  ) {
 						$subs[$count] = 'dutch';
 						$count+=1;
@@ -463,7 +435,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						$item->appendChild($attr);
 					}
 				} # if
-
+				
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'size');
 				$attr->setAttribute('value', $spot['filesize']);
@@ -490,7 +462,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 	function spotDetails($outputtype) {
 		if (empty($this->_params['messageid'])) {
 			$this->showApiError(200);
-
+			
 			return ;
 		} # if
 
@@ -503,7 +475,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		}
 		catch(Exception $x) {
 			$this->showApiError(300);
-
+			
 			return ;
 		} # catch
 
@@ -537,7 +509,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$doc['comments']		= $spot['commentcount'];
 			$doc['category_name']	= SpotCategories::HeadCat2Desc($spot['category']) . ': ' . SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
 			$doc['category_ids']	= $cat;
-
+			
 			echo json_encode($doc);
 		} else {
 			$nzbUrl = $this->_tplHelper->makeBaseUrl("full") . 'api?t=g&amp;id=' . $spot['messageid'] . $this->_tplHelper->makeApiRequestString();
@@ -616,7 +588,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$attr->setAttribute('value', $nabCat[0]);
 				$item->appendChild($attr);
 			} # if
-
+			
 			$attr = $doc->createElement('newznab:attr');
 			$attr->setAttribute('name', 'size');
 			$attr->setAttribute('value', $spot['filesize']);
@@ -691,7 +663,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
-		$tvsearch->setAttribute('supportedParams', 'q,rid,tvmazeid,season,ep');
 		$searching->appendChild($tvsearch);
 
 		$moviesearch = $doc->createElement('movie-search');
@@ -807,8 +778,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											'SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Other'	=> '5050',
-											 'Sport'	=> '5060',
-											 'Anime'	=> '5070')
+											 'Sport'	=> '5060')
 				), array('name'		=> 'XXX',
 						 'cat'		=> '6000',
 						 'subcata'	=> array('DVD'		=> '6010',
@@ -833,9 +803,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 1060: return 'cat2_a7';
 
 			case 2000: return 'cat0_z0';
-			case 2010:
-			case 2030: return 'cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3';
-			case 2040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3';
+			case 2010: 
+			case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';
+			case 2040: return 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';
 			case 2060: return 'cat0_d18';
 
 			case 3000: return 'cat1_a';
@@ -854,13 +824,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
 			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
 			case 5060: return 'cat0_z1_d18';
-			case 5070: return 'cat0_z1_d29';
 
 			case 6000: return 'cat0_z3';
-			case 6010: return 'cat0_a3,cat0_a10,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6020: return 'cat0_a1,cat0_a8,~cat0_z1,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6030: return 'cat0_a0,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
+			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
+			case 6030: return 'cat0_z3_a0';
+			case 6040: return 'cat0_z3_a4,cat0_z3_a6,cat0_z3_a7,cat0_z3_a8,cat0_z3_a9';
 
 			case 7020: return 'cat0_z2';
 		}

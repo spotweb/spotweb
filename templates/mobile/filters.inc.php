@@ -9,7 +9,7 @@
 	<div data-role="navbar">
 		<ul>
 			<li><a href="#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="#search" class="ui-btn-active" data-icon="search">Zoek</a></li>
+			<li><a href="#search" class="ui-btn-active" data-icon="search">Search</a></li>
 			<li><a href="#filters" data-icon="star">Filters</a></li>
 		</ul>
 	</div><!-- /navbar -->
@@ -30,7 +30,7 @@
                
                <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
 	         		<input type="radio" name="search[type]" value="Titel" id="radio-choice-1" checked="checked" />
-	         		<label for="radio-choice-1">Titel</label>
+	         		<label for="radio-choice-1">Title</label>
 	
 		         	<input type="radio"  name="search[type]" value="Poster" id="radio-choice-2" />
 	    	     	<label for="radio-choice-2">Poster</label>
@@ -50,7 +50,7 @@
 	<div data-role="navbar">
 		<ul>
 			<li><a href="#spots" data-icon="grid" >Spots</a></li>
-			<li><a href="#search" data-icon="search">Zoek</a></li>
+			<li><a href="#search" data-icon="search">Search</a></li>
 			<li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
 
 		</ul>

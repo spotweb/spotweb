@@ -18,6 +18,7 @@ try {
 	 */
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
+    $spotDao = $daoFactory->getSpotDao();
 
 	/*
 	 * disable timing, all queries which are ran by retrieve this would make it use
@@ -26,7 +27,7 @@ try {
 	SpotTiming::disable();
 
 	# Initialize commandline arguments
-	SpotCommandline::initialize(array('force', 'debug', 'retro', 'timing'), array('force' => false, 'timing' => false, 'debug' => false, 'retro' => false));
+	SpotCommandline::initialize(array('reallyforce', 'debug', 'retro', 'timing'), array('reallyforce' => false, 'timing' => false, 'debug' => false, 'retro' => false));
 
     # Allow for timing to be displayed after retrieval of spots
     $showTiming = SpotCommandline::get('timing');
@@ -87,7 +88,7 @@ try {
 	 * this would mean it will mess up all sorts of things like
 	 * comment calculation, but a user can force our hand
 	 */
-	$forceMode = SpotCommandline::get('force');
+	$forceMode = SpotCommandline::get('reallyforce');
 
 	/*
 	 * Do we need to debuglog this session? Generates loads of
@@ -118,7 +119,6 @@ try {
 	if (($settings->get('retention') > 0) && (!$retroMode)) {
         echo "Removing Spot information which is beyond retention period,";
 
-		$spotDao = $daoFactory->getSpotDao();
         $cacheDao = $daoFactory->getCacheDao();
         $commentDao = $daoFactory->getCommentDao();
 
@@ -147,6 +147,7 @@ try {
 	/*
 	 * Actually retrieve spots from the server
 	 */
+    $currentMaxSpotId = $spotDao->getMaxSpotId();
 	$retriever = new Services_Retriever_Spots($daoFactory, 
 											  $settings,
 											  $forceMode,
@@ -158,6 +159,16 @@ try {
         SpotTiming::displayCumul();
         SpotTiming::clear();
     } # if
+
+    ## Create collections, if enabled
+    if ($settings->get('create_collections')) {
+        echo "Creating collections starting from " . $currentMaxSpotId . ", ";
+
+        $svcPrvCreateColl = new Services_Collections_Create($daoFactory);
+        $svcPrvCreateColl->createCollections($currentMaxSpotId, null);
+
+        echo ", done" . PHP_EOL;
+    } // if
 
     ## Creating filter counts
 	if ($newSpotCount > 0) {
@@ -199,10 +210,7 @@ try {
 	 * Retrieval of reports
 	 */
 	if ($settings->get('retrieve_reports') && !$retroMode) {
-		$retriever = new Services_Retriever_Reports($daoFactory,
-												    $settings,
-												    $forceMode,
-                                                    $retroMode);
+		$retriever = new Services_Retriever_Reports($daoFactory, $settings, $forceMode, $retroMode);
 		$newReportCount = $retriever->perform();
 
         # Show the cumulative timings of the caching of these reports
@@ -239,7 +247,7 @@ try {
 			} # else
 		} # if
 	} catch (CorruptBWListException $e) {
-		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
+		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!" . PHP_EOL;
 	}
 
     ## Remove expired debuglogs
@@ -280,7 +288,7 @@ try {
 
 catch(RetrieverRunningException $x) {
        echo PHP_EOL . PHP_EOL;
-       echo "retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL;
+       echo "retriever.php is already running, pass '--reallyforce' to ignore this warning." . PHP_EOL;
 }
 
 catch(NntpException $x) {

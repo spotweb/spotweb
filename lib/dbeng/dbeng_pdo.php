@@ -56,7 +56,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 			$stmt = $this->prepareSql($s, $p);
 			$stmt->execute();
 		} catch(PDOException $x) {
-            throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
+            throw new SqlErrorException(implode(': ', $x->errorInfo) . ' (' . $x->getMessage() . ')', -1);
 		} # catch
         $this->_rows_changed = $stmt->rowCount();
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s, $p));
@@ -70,7 +70,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	 */
 	function modify($s, $p = array()) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		
+
 		$res = $this->exec($s, $p);
         $res->closeCursor();
 		unset($res);
@@ -121,7 +121,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	function singleQuery($s, $p = array()) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_NUM);
         $stmt->closeCursor();
 		unset($stmt);
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
@@ -144,7 +144,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 	function arrayQuery($s, $p = array()) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$stmt = $this->exec($s, $p);
-		$tmpArray = $stmt->fetchAll();
+		$tmpArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $stmt->closeCursor();
 		unset($stmt);
@@ -157,14 +157,26 @@ abstract class dbeng_pdo extends dbeng_abs {
      * Escape a string for insertion in a query.
      *
      * @param $s
+     * @param $forceType
      * @return string
+     * @throws NotImplementedException
      */
-    function safe($s) {
-        if (is_integer($s) || is_double($s)) {
-            return $s;
+    function safe($s, $forceType = null) {
+        if ($forceType === null) {
+            if (is_integer($s) || is_double($s)) {
+                return $s;
+            } else {
+                return $this->_conn->quote($s);
+            } # else
         } else {
-            return $this->_conn->quote($s);
-        } # else
+            if ($forceType == PDO::PARAM_INT) {
+                return (float) $s;
+            } elseif ($forceType == PDO::PARAM_STR) {
+                return $this->_conn->quote($s);
+            } else {
+                throw new NotImplementedException("Unknown forcetype passed to safe()");
+            } // else
+        } // else
     } # safe
 
     /*

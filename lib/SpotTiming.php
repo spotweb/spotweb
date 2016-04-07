@@ -24,6 +24,7 @@ class SpotTiming {
     } # isEnabled
 
     static function clear() {
+	self::$_curlevel = 0;
         self::$_inflight = array();
         self::$_timings = array();
     } # clear
@@ -95,7 +96,12 @@ class SpotTiming {
                 echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
             } # catch
         } else {
-            echo "|" . self::makeLen(str_pad('', $values['level'], '.') . $values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
+	    $strPadding = str_pad('', $values['level'], '.');
+	    if ($values['level'] > 30) {
+		$strPadding = '...(level: ' . $values['level'] . ')...';
+	    } 
+
+            echo "|" . self::makeLen($strPadding . $values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
         } # else
     } # displayLine
 

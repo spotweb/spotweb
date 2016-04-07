@@ -18,6 +18,13 @@ try {
 	$bootstrap = new Bootstrap();
 	list($settings, $daoFactory, $req) = $bootstrap->boot();
 
+//    /* ------------------------------------ */
+//    $tmdb = new Services_MediaInformation_TheMovieDb($daoFactory, $settings);
+//    $tmdb->setSearchid(57158);
+//    var_dump($tmdb->retrieveInfo());
+//
+//    die();
+//    /* ------------------------------------ */
     /*
      * Enable debug logging mechanism if timing is enabled
      */
@@ -183,7 +190,6 @@ try {
 						  'imdbid' => $req->getDef('imdbid', ''),
 						  'artist' => $req->getDef('artist', ''),
 						  'rid' => $req->getDef('rid', ''),
-						  'tvmazeid' => $req->getDef('tvmazeid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
