@@ -29,7 +29,7 @@
  * in notifications to users.
  */
 if (isset($_SERVER['SERVER_PROTOCOL'])) {
-    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'off' ? 'http' : 'https') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
+    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
 } else {
 	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
 } # if
