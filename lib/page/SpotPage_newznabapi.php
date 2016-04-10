@@ -70,7 +70,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
 		$searchParams = array();
-
+        $tvInfo = new Dto_MediaInformation();
+        $tvInfo -> setTitle("");
+        $tvInfo -> setValid(true);
         /**
          * Now determine what type of information we are searching for using sabnzbd
          */
@@ -122,9 +124,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         			$this->showApiError(300);
         			return ;
         		}
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle("");
-        		$tvInfo -> setValid(true);
         	}
 
         	/*
@@ -157,6 +156,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
              * And try to add an episode parameter, basically the same set of rules
              * as for the season
              */
+            $title = $tvInfo->getTitle();
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
@@ -170,10 +170,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvInfo->getTitle())) {
-                $seasonSearch .= '*';
-                // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+            	if (!empty($title)) {
+                    $seasonSearch .= '*';
+                    // and search for the text 'Season ' ...
+                    $searchParams['value'][] = "Titel:=:OR:+\"" . $title . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             	}
             } # else
 
@@ -182,11 +182,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvInfo->getTitle())) {
+            if (!empty($title)) {
 				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
 	            if (!empty($episodeSearch)) {
 	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
 	            } # if
+            }
+            if (empty($this->_params['cat'] )) {
+				$this->_params['cat'] = 5000;
             }
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
@@ -326,7 +329,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$data = array();
 				$data['ID']				= $spot['messageid'];
-				$data['name']			= $spot['title'];
+				$data['name']			= html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8');
 				$data['size']			= $spot['filesize'];
 				$data['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
 				$data['guid']			= $spot['messageid'];
@@ -406,7 +409,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
+ 				$item->appendChild($doc->createElement('title', htmlspecialchars(html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8'), ENT_XHTML, "UTF-8")));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
