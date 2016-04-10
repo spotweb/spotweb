@@ -27,7 +27,7 @@ class NotifyMyAndroid
 		'description' 	=> 		10000,	// Description of the event.
 	);
 	
-	function __construct($apikey=null, $verify=false, $devkey=null, $proxy=null, $userpwd=null)
+	function NotifyMyAndroid($apikey=null, $verify=false, $devkey=null, $proxy=null, $userpwd=null)
 	{
 		$curl_info = curl_version();	// Checks for cURL function and SSL version. Thanks Adrian Rollett!
 		if(!function_exists('curl_exec') || empty($curl_info['ssl_version']))

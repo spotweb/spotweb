@@ -25,8 +25,6 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 	
 	public function processNzb($fullspot, $nzblist)
 	{
-		setlocale(LC_ALL,'en_US.UTF-8');
-		
 		$nzb = $this->prepareNzb($fullspot, $nzblist);
 		$title = urlencode($this->cleanForFileSystem($fullspot['title']));
 		$category = urlencode($this->convertCatToSabnzbdCat($fullspot));
@@ -48,7 +46,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
                       'data' => $nzb['nzb'])
         ));
         $output = $svcProvHttp->perform($url, null);
-        $errorStr = 'sabnzbd push : ' . $output['errorstr']. ' / '.$output['data'];
+        $errorStr = 'sabnzbd push failed: ' . $output['errorstr'];
 
 		if (($output['successful'] === false) || (strtolower(trim($output['data'])) != 'ok')) {
 			error_log($errorStr);

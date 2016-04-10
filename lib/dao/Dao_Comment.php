@@ -8,7 +8,7 @@ interface Dao_Comment {
 	function matchCommentMessageIds($hdrList);
 	function addComments($comments, $fullComments = array());	
 	function addFullComments($fullComments);
-	function getCommentsFull($userId, $nntpRefs);
+	function getCommentsFull($userId, $nntpRef);
 	function getNewCommentCountFor($nntpRefList, $ourUserId);
 	function markCommentsModerated($commentMsgIdList);
 	function removeComments($commentMsgIdList);

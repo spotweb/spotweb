@@ -160,16 +160,12 @@ class Dao_Base_Comment implements Dao_Comment {
 								  array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
 								  );
 	} # addFullComments
-    
+
 	/*
 	 * Retrieves the full comments 
 	 */
-	function getCommentsFull($userId, $nntpRefs) {
+	function getCommentsFull($userId, $nntpRef) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-
-       
-
-        $refs = $this->_conn->arrayKeyToIn($nntpRefs);
 
 		# eactually retrieve the comment
 		$commentList = $this->_conn->arrayQuery("SELECT c.messageid AS messageid, 
@@ -188,10 +184,11 @@ class Dao_Base_Comment implements Dao_Comment {
 													FROM commentsfull f 
 													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
 													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = :doubled))
-													WHERE c.nntpref IN (". $refs .") AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = :ouruserid) OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
+													WHERE c.nntpref = :nntpref AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = :ouruserid) OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
 													ORDER BY c.id",
             array(
                 ':doubled' => array(false, PDO::PARAM_BOOL),
+                ':nntpref' => array($nntpRef, PDO::PARAM_STR),
                 ':ouruserid' => array($userId, PDO::PARAM_INT)
             ));
  		$commentListCount = count($commentList);
@@ -204,7 +201,6 @@ class Dao_Base_Comment implements Dao_Comment {
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__);
 		return $commentList;
 	} # getCommentsFull
-
 
 	/*
 	 * Returns the amount of new comments since 'stamp' for all 
@@ -244,12 +240,10 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-		$msgIdList = $this-> _conn-> arrayKeyToInForComments($commentMsgIdList);
+		$msgIdList = $this->_conn->arrayKeyToIn($commentMsgIdList, PDO::PARAM_STR);
 
-        if ($msgIdList !== false) {
-            $this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
-            $this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
-        }
+		$this->_conn->modify("DELETE FROM commentsfull WHERE messageid IN (" . $msgIdList . ")");
+		$this->_conn->modify("DELETE FROM commentsxover WHERE messageid IN (" . $msgIdList . ")");
 	} # removeComments
 
 	/*
@@ -260,13 +254,10 @@ class Dao_Base_Comment implements Dao_Comment {
 			return;
 		} # if
 
-        $tmplist = $this->_conn->arrayKeyToInForComments($commentMsgIdList);
-        if (strlen($tmplist) > 0) {
-            $this->_conn->modify("UPDATE commentsxover SET moderated = :moderated WHERE messageid IN (" . $tmplist . ")",
-                array(
-                    ':moderated' => array(true, PDO::PARAM_BOOL)
-                ));
-        }
+		$this->_conn->modify("UPDATE commentsxover SET moderated = :moderated WHERE messageid IN (" . $this->_conn->arrayKeyToIn($commentMsgIdList, PDO::PARAM_STR) . ")",
+            array(
+                ':moderated' => array(true, PDO::PARAM_BOOL)
+            ));
 	} # markCommentsModerated
 
 	/*
