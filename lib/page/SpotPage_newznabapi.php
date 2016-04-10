@@ -127,7 +127,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         	}
 
         	/*
->>>>>>> 838489b... Give priority on tvsearch on tvmazeid over rid over q over nothing
              * Try to parse the season parameter. This can be either in the form of S1, S01, 1, 2012, etc.
              * we try to standardize all these types of season definitions into one format.
              */
@@ -214,7 +213,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
              * Actually retrieve the information from imdb, based on the
 			 * imdbid passed by the API
 			 */
-            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory, $this->_settings);
+            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
             $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
             $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
@@ -859,11 +858,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
 			case 5060: return 'cat0_z1_d18';
 			case 5070: return 'cat0_z1_d29';
+
 			case 6000: return 'cat0_z3';
-			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
-			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
-			case 6030: return 'cat0_z3_a0';
-			case 6040: return 'cat0_z3_a4,cat0_z3_a6,cat0_z3_a7,cat0_z3_a8,cat0_z3_a9';
+			case 6010: return 'cat0_a3,cat0_a10,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6020: return 'cat0_a1,cat0_a8,~cat0_z1,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6030: return 'cat0_a0,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
 
 			case 7020: return 'cat0_z2';
 		}
