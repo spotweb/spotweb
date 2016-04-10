@@ -1,6 +1,6 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
-	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 99999);
+	$comments = $tplHelper->getSpotComments($spot['messageid'], $spot['prevMsgids'], 0, 99999);
 	$comments = $tplHelper->formatComments($comments);
 
 	$setpath = $tplHelper->makeBaseUrl("path");

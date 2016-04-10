@@ -190,6 +190,7 @@ try {
 						  'imdbid' => $req->getDef('imdbid', ''),
 						  'artist' => $req->getDef('artist', ''),
 						  'rid' => $req->getDef('rid', ''),
+						  'tvmazeid' => $req->getDef('tvmazeid', ''),
 						  'season' => $req->getDef('season', ''),
 						  'ep' => $req->getDef('ep', ''),
 						  'o' => $req->getDef('o', ''),
