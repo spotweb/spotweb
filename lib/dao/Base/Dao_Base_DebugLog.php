@@ -16,13 +16,12 @@ class Dao_Base_DebugLog implements Dao_DebugLog {
      * @param $msg
      */
     function add($lvl, $microtime, $msg) {
-                
         $this->_conn->modify("INSERT INTO debuglog(stamp, microtime, level, message) VALUES(:stamp, :microtime, :level, :message)",
             array(
                 ':stamp' => array(time(), PDO::PARAM_INT),
                 ':level' => array($lvl, PDO::PARAM_INT),
                 ':microtime' => array($microtime, PDO::PARAM_STR),
-                ':message' => array(substr($msg,0,2000), PDO::PARAM_STR),
+                ':message' => array($msg, PDO::PARAM_STR),
             ));
     } # add()
 

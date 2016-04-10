@@ -2,10 +2,19 @@
 
  class Dao_Base_Factory extends Dao_Factory {
 
-     public function setCacheStore(Dao_CacheStore $cacheStore, $cachePath) {
-       throw new NotImplementedException();
-     } # setCacheStore
- 
+     /*
+      * Actual cachepath to use
+      */
+     public function setCachePath($cachePath) {
+         throw new NotImplementedException();
+     } # setCachePath
+
+     /*
+      * Returns the currently configured cachepath
+      */
+     public function getCachePath() {
+         throw new NotImplementedException();
+     } # getCachePath
 
  	/*
  	 * Actual connection object to be used in
@@ -34,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Base_Cache($this->_conn, $this->_cacheStore);
+		return new Dao_Base_Cache($this->_conn, $this->_cachePath);
 	} # getCacheDao
 
 	public function getAuditDao() {

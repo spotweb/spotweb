@@ -139,7 +139,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base {
 					$msgIdParts = explode(".", $commentId);
 					$msgheader['References'] = $msgIdParts[0] . substr($commentId, strpos($commentId, '@'));
 					$msgheader['stamp'] = strtotime($msgheader['Date']);
-                    $msgheader['Subject'] = mb_convert_encoding($msgheader['Subject'],'ASCII','ASCII');
+
                     SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop: msgHeader=' . serialize($msgheader));
 
                     /*

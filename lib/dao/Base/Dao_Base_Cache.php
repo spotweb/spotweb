@@ -1,15 +1,19 @@
 <?php
 class Dao_Base_Cache implements Dao_Cache {
+    private     $_cachePath     = '';
     protected   $_conn;
-    protected   $_cacheStore    = null;
 
 	/*
 	 * constructs a new Dao_Base_Cache object,
 	 * connection object is given
 	 */
-	public function __construct(dbeng_abs $conn, Dao_CacheStore $cacheStore) {
+	public function __construct(dbeng_abs $conn, $cachePath) {
 		$this->_conn = $conn;
-		$this->_cacheStore = $cacheStore;
+        $this->_cachePath = $cachePath;
+
+        if (empty($this->_cachePath)) {
+            throw new NotImplementedException("Cache path is null?");
+        } # if
 	} # ctor
 
 	/*
@@ -64,8 +68,268 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Remove the item from disk and ignore any errors
          */
-	$this->_cacheStore->removeCacheItem($cacheId, $cachetype, $metaData);
+        $filePath = $this->calculateFilePath($cacheId, $cachetype, $metaData);
+        @unlink($filePath);
     } # removeCacheItem
+
+    /*
+     * Previous 'calculate file path' feature
+     */
+    protected function oldCalculateFilePath($cacheId, $cacheType, $metadata) {
+        /*
+         * Get the cache id
+         */
+        $cacheRow = $this->_conn->singleQuery("SELECT resourceid FROM cache WHERE id = :cacheid",
+            array(
+                ':cacheid' => array($cacheId, PDO::PARAM_INT)
+            ));
+        $resourceId = $cacheRow;
+
+        $filePath = $this->_cachePath . DIRECTORY_SEPARATOR;
+
+        switch ($cacheType) {
+            case Dao_Cache::SpotImage           : $filePath .= 'image' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotNzb             : $filePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Statistics          : $filePath .= 'stats' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Web                 : $filePath .= 'web' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslaterToken     : $filePath .= 'translatertoken' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslatedComments  : $filePath .= 'translatedcomments' . DIRECTORY_SEPARATOR; break;
+
+            default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
+        } # switch
+
+        /*
+         * We calculate SHA1 of it, to make sure we only use
+         * filesystem save and unique characters in the filename,
+         * a bit useless because the resourceId is already unique for
+         * the given storage type
+         */
+        $storageId = sha1($resourceId);
+        for($i = 0; $i < (strlen($storageId) - 4); $i += 3) {
+            $filePath .= substr($storageId, $i, 3) . DIRECTORY_SEPARATOR;
+        } # for
+        $filePath .= substr($storageId, strlen($storageId) - 4);
+
+        /*
+         * And create an extension, because thats nicer.
+         */
+        if ($cacheType == Dao_Cache::SpotImage) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
+                case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
+                case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
+                case IMAGETYPE_PNG          : $filePath .= '.png'; break;
+
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
+            } # switch
+        } else {
+            switch ($cacheType) {
+                case Dao_Cache::SpotNzb             : $filePath .= '.nzb'; break;
+                case Dao_Cache::Statistics          : $filePath .= '.stats'; break;
+                case Dao_Cache::Web                 : $filePath .= '.http'; break;
+                case Dao_Cache::TranslaterToken     : $filePath .= '.token'; break;
+                case Dao_Cache::TranslatedComments  : $filePath .= '.translatedcomments'; break;
+
+                default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
+            } # switch
+        } # else
+
+        return $filePath;
+    } # oldCalculateFilePath
+
+
+    /*
+     * Calculates the exact filepath given a storageid
+     */
+    protected function calculateFilePath($cacheId, $cacheType, $metadata) {
+        $filePath = $this->_cachePath . DIRECTORY_SEPARATOR;
+
+        switch ($cacheType) {
+            case Dao_Cache::SpotImage           : $filePath .= 'image' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotNzb             : $filePath .= 'nzb' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Statistics          : $filePath .= 'stats' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::Web                 : $filePath .= 'web' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslaterToken     : $filePath .= 'translatertoken' . DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::TranslatedComments  : $filePath .= 'translatedcomments' . DIRECTORY_SEPARATOR; break;
+
+            default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
+        } # switch
+
+        /*
+         * We want to store at most 1000 file in one directory,
+         * so we use this.
+         */
+        if (floor($cacheId/ 1000) > 1000) {
+            $filePath .= implode(DIRECTORY_SEPARATOR, str_split($cacheId, 3)) . DIRECTORY_SEPARATOR . $cacheId;
+        } else {
+            $filePath .= floor($cacheId / 1000) . DIRECTORY_SEPARATOR . $cacheId;
+        } # else
+
+        /*
+         * And create an extension, because thats nicer.
+         */
+        if ($cacheType == Dao_Cache::SpotImage) {
+            /*
+             * We need to 'migrate' the older cache format to this one
+             */
+            if (($metadata !== false) && (!isset($metadata['dimensions']))) {
+                $metadata = array('dimensions' => $metadata, 'isErrorImage' => false);
+            } // if
+
+            switch($metadata['dimensions']['imagetype']) {
+                case IMAGETYPE_GIF          : $filePath .= '.gif'; break;
+                case IMAGETYPE_JPEG         : $filePath .= '.jpg'; break;
+                case IMAGETYPE_PNG          : $filePath .= '.png'; break;
+
+                default                     : $filePath .= '.image.' . $metadata['dimensions']['imagetype']; break;
+            } # switch
+        } else {
+            switch ($cacheType) {
+                case Dao_Cache::SpotNzb             : $filePath .= '.nzb'; break;
+                case Dao_Cache::Statistics          : $filePath .= '.stats'; break;
+                case Dao_Cache::Web                 : $filePath .= '.http'; break;
+                case Dao_Cache::TranslaterToken     : $filePath .= '.token'; break;
+                case Dao_Cache::TranslatedComments  : $filePath .= '.translatedcomments'; break;
+
+                default                         : throw new NotImplementedException("Undefined Cachetype: " . $cacheType);
+            } # switch
+        } # else
+
+        return $filePath;
+    } # calculateFilePath
+
+    /*
+     * Migrate the cache from one storage format to another
+     */
+    public function migrateCacheToNewStorage($cacheId, $cacheType, $metaData) {
+        /*
+         * Get the unique filepath
+         */
+        $filePath = $this->calculateFilePath($cacheId, $cacheType, $metaData);
+        if (file_exists($filePath)) {
+            return ;
+        } # if
+
+        $oldFilePath = $this->oldCalculateFilePath($cacheId, $cacheType, $metaData);
+
+        if (!file_exists($oldFilePath)) {
+            $this->_conn->exec("DELETE FROM cache WHERE id = :cacheid",
+                array(
+                    ':cacheid' => array($cacheId, PDO::PARAM_INT)
+                ));
+            @unlink($oldFilePath);
+
+            echo PHP_EOL . 'Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' ' . $oldFilePath . ' -> ' . $filePath . PHP_EOL;
+
+            return ;
+        } # if
+
+        /*
+         * Move the file
+         */
+        @mkdir(dirname($filePath), 0777, true);
+        @chmod(dirname($filePath), 0777); // mkdir's chmod is masked with umask()
+        rename($oldFilePath, $filePath);
+        @chmod($filePath, 0777);
+
+        /*
+         * and erase the old one, and try to
+         * remove the directory
+         */
+        @unlink($oldFilePath);
+    } # migrateCacheToNewStorage
+
+    /*
+     * Returns the actual contents for a given resourceid
+     */
+    public function getCacheContent($cacheId, $cacheType, $metaData) {
+        /*
+         * Get the unique filepath
+         */
+        $filePath = $this->calculateFilePath($cacheId, $cacheType, $metaData);
+        $cacheContent = @file_get_contents($filePath);
+
+        if ($cacheContent === false) {
+            /*
+             * It might be the file is stored using the old way,
+             * if it is, move the file.
+             */
+            $oldFilePath = $this->oldCalculateFilePath($cacheId, $cacheType, $metaData);
+            if (@file_exists($oldFilePath)) {
+                $this->migrateCacheToNewStorage($cacheId, $cacheType, $metaData);
+            } else {
+                $this->removeCacheItem($cacheId, $cacheType, $metaData);
+
+                throw new CacheIsCorruptException('Cache is corrupt, could not find on-disk resource for: ' . $cacheId . ' ' . $oldFilePath . ' -> ' . $filePath);
+            } # if
+        } # if
+
+        return $cacheContent;
+    } # getCacheContent
+
+    /*
+     * Stores the actual content for a given resourceid
+     */
+    public function putCacheContent($cacheId, $cacheType, $content, $metaData) {
+        /*
+           * Get the unique filepath
+           */
+        $filePath = $this->calculateFilePath($cacheId, $cacheType, $metaData);
+
+        /*
+         * Create the directory
+         */
+        $success = true;
+        if (!is_writable(dirname($filePath))) {
+            $success = @mkdir(dirname($filePath), 0777, true);
+            @chmod(dirname($filePath), 0777); // mkdir's chmod is masked with umask()
+        } # if
+
+        if ($success) {
+            $success = (file_put_contents($filePath, $content) === strlen($content));
+
+            if ($success) {
+                @chmod($filePath, 0777);
+            } # if
+        } # if
+
+        if (!$success) {
+            /*
+             * Gather some diagnostics information to allow the operator to
+             * troubleshoot this easier.
+             */
+            $filePerms = fileperms(dirname($filePath));
+            $fileOwner = fileowner(dirname($filePath));
+            $fileGroup = filegroup(dirname($filePath));
+            $phpUser = get_current_user(); // appears to work for windows
+
+
+            if (function_exists('posix_getpwuid')) {
+                $fileGroup = posix_getgrgid($fileGroup);
+                $fileGroup = $fileGroup['name'];
+
+                $fileOwner = posix_getpwuid($fileOwner);
+                $fileOwner = $fileOwner['name'];
+
+                $phpUser = posix_getpwuid(posix_geteuid());
+                $phpUser = $phpUser['name'];
+            } # if
+
+            error_log('Unable to write to cache directory (' . $filePath . '), ' .
+                            ' owner=' . $fileOwner . ', ' .
+                            ' group=' . $fileGroup . ', ' .
+                            ' thisUser=' . $phpUser . ', ' .
+                            ' perms= ' . substr(decoct($filePerms), 2) );
+        } # if
+
+        return $success;
+    } # putCacheContent
 
 	/*
 	 * Returns the resource from the cache table, if we have any
@@ -90,15 +354,8 @@ class Dao_Base_Cache implements Dao_Cache {
             } # if
 
             $tmp[0]['metadata'] = unserialize($tmp[0]['metadata']);
-
-	    try {
-            	$tmp[0]['content'] = $this->_cacheStore->getCacheContent($tmp[0]['id'], $cachetype, $tmp[0]['metadata']);
-				return $tmp[0];
-	    } catch(CacheIsCorruptException $x) {
-		$this->removeCacheItem($tmp[0]['id'], $cachetype, false);
-		throw $x;
-	    } // catch
-	
+            $tmp[0]['content'] = $this->getCacheContent($tmp[0]['id'], $cachetype, $tmp[0]['metadata']);
+			return $tmp[0];
 		} # if
 
         // echo 'Cache miss for resourceid: ' . $resourceid . PHP_EOL;
@@ -148,7 +405,7 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Actually store the contents on disk
          */
-        if (!$this->_cacheStore->putCacheContent($cacheRow, $cachetype, $content, $metadata)) {
+        if (!$this->putCacheContent($cacheRow, $cachetype, $content, $metadata)) {
             /*
              * If we couldn't store the cache result, we have to actually remove the
              * cache record again
@@ -404,3 +661,5 @@ class Dao_Base_Cache implements Dao_Cache {
     } # getMassCacheRecords
 
 } # Dao_Base_Cache
+
+

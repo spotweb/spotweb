@@ -127,21 +127,6 @@ abstract class dbeng_abs {
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
 
-    /*
-     * Transforms an array of keys to an list usable by an
-     * IN statement
-     */
-	function arrayKeyToInForComments($ar) {
-		$tmpList = '';
-        foreach($ar as $k => $v) {
-            // Exclude messageid's from spots which are disposed by the owner, only process real disposes
-            if ($v['spotterid'] == '') {
-                $tmpList .= $this->safe($k) . ",";
-            }
-		} # foreach
-		return substr($tmpList, 0, -1);
-	} # arrayKeyToIn
-
 
     public function sqlUpdate($tableName, array $parameters, array $idNames) {
         $sql = 'UPDATE ' . $tableName . ' SET ';

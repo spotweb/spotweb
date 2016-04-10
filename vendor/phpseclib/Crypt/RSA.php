@@ -443,7 +443,7 @@ class Crypt_RSA {
      * @return Crypt_RSA
      * @access public
      */
-    function __construct()
+    function Crypt_RSA()
     {
         if ( !defined('CRYPT_RSA_MODE') ) {
             switch (true) {
