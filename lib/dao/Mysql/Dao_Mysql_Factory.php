@@ -2,15 +2,6 @@
 
  class Dao_Mysql_Factory extends Dao_Factory {
      private $_conn;
-     private $_cacheStore;
-
-    public function setCacheStore(Dao_CacheStore $cacheStore) {
-        $this->_cacheStore = $cacheStore;
-    } # setCacheStore
-
-    public function setCacheStore(Dao_CacheStore $cacheStore) {
-        $this->_cacheStore = $cacheStore;
-    } # setCacheStore
 
  	/*
  	 * Actual connection object to be used in

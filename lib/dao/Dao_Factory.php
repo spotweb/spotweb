@@ -1,6 +1,19 @@
 <?php
 
 abstract class Dao_Factory {
+    private $cacheStore;
+
+    public function setCacheStore(Dao_CacheStore $cacheStore) {
+	$this->cacheStore = $cacheStore;
+    }
+
+    /**
+     *
+     * @returns Dao_CacheStore
+     */
+    public function getCacheStore() {
+        return $this->cacheStore;
+    }
     /**
      * @param dbeng_abs $conn
      * @return void

@@ -2,21 +2,6 @@
 
  class Dao_Sqlite_Factory extends Dao_Factory {
  	private $_conn;
-    private $_cachePath;
-
-    /*
-     * Actual cachepath to use
-     */
-    public function setCachePath($cachePath) {
-        $this->_cachePath = $cachePath;
-    } # setCachePath
-
-    /*
-     * Returns the currently configured cachepath
-     */
-     public function getCachePath() {
-         return $this->_cachePath;
-     } # getCachePath
 
  	/*
  	 * Actual connection object to be used in
@@ -43,7 +28,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Sqlite_Cache($this->_conn, $this->getCachePath());
+		return new Dao_Sqlite_Cache($this->_conn, $this->getCacheStore());
 	} # getCacheDao
 
 	public function getAuditDao() {
