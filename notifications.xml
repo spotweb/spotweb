@@ -9,6 +9,27 @@
 		<ttl>1800</ttl>
 
     <item>
+      <title>Various bugfixes and enhancements</title>
+			<description><![CDATA[
+- Correction for sqlite (dao_base_comments, dbfts_abs). More is coming.<br>
+- Newsreader info (services_format_parsing, services_nntp_spotreading, we1rdo\spotinfo.inc, messages.mo, messages.po)<br>
+- Code layout (mobile\spotinfo.inc)<br>
+- Retrieve.php with --debug gives error: issue #141 (dao_base_debuglog)<br?
+- API Issues --extra content at the end of the document- issue: #93 (index, retrieve)<br>
+- Unable to create DB with MySQL 5.7.10 - issue: #110 (spotstruct_mysql)<br>
+- Spotweb and Sabnzbdplus 1.0.0 - issue: #94 (Services_NzbHandler_Pushsabnzbd)<br>
+			  ]]></description>
+			<link>https://github.com/spotweb/spotweb/</link>
+			<guid>11</guid>
+			<pubDate>Wed, 14 Apr 2016 00:00:00 +0100</pubDate>
+			<author>mesa57</author>
+			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
+			<spotweb:schema_version>0.67</spotweb:schema_version>
+			<spotweb:settings_version>0.28</spotweb:settings_version>
+			<spotweb:security_version>0.31</spotweb:security_version>
+      <spotweb:feature_version>0.08/spotweb:</spotweb:feature_version>
+		</item>
+    <item>
       <title>Personal disposes and commentlinking</title>
 			<description><![CDATA[
         Changes in the spotnet protocol made by spotnet 1.8.5.x and spotnet V2 are now supported in spotweb.<br>

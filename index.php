@@ -1,5 +1,5 @@
 <?php
-error_reporting(2147483647);
+error_reporting(E_ALL & ~E_WARNING);
 ini_set('display_errors', 1);
 
 require_once "lib/SpotClassAutoload.php";

@@ -22,7 +22,7 @@ class Dao_Base_DebugLog implements Dao_DebugLog {
                 ':stamp' => array(time(), PDO::PARAM_INT),
                 ':level' => array($lvl, PDO::PARAM_INT),
                 ':microtime' => array($microtime, PDO::PARAM_STR),
-                ':message' => array(substr($msg,0,2000), PDO::PARAM_STR),
+                ':message' => array(mb_convert_encoding(substr($msg,0,2000),'UTF-8','UTF-8'), PDO::PARAM_STR),
             ));
     } # add()
 

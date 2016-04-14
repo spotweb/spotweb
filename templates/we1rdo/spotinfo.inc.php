@@ -118,6 +118,9 @@ echo "</th>";
 ?>
 								<tr><th> <?php echo _('Date'); ?> </th> <td title='<?php echo $tplHelper->formatDate($spot['stamp'], 'force_spotlist'); ?>'> <?php echo $tplHelper->formatDate($spot['stamp'], 'spotdetail'); ?> </td> </tr>
 								<tr><th> <?php echo _('Size'); ?> </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
+                                <?php if (!empty($spot['newsreader'])) {?>
+								   <tr><th> <?php echo _('Spotted with'); ?> </th> <td> <?php echo $spot['newsreader'];?> </td> </tr>
+                                <?php } ?>
 								<tr><td class="break" colspan="2">&nbsp;</td> </tr>
 								<tr><th> <?php echo _('Website'); ?> </th> <td> <a href='<?php echo $spot['website']; ?>' rel="nofollow"><?php echo $spot['website'];?></a> </td> </tr>
 								<tr> <td class="break" colspan="2">&nbsp;</td> </tr>

@@ -1,5 +1,5 @@
 <?php
-error_reporting(2147483647);
+error_reporting(E_ALL);
 
 try {
 	/*

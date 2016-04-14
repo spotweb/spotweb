@@ -437,6 +437,9 @@ msgstr "Datum"
 msgid "Size"
 msgstr "Omvang"
 
+msgid "Spotted with"
+msgstr "Gespot met"
+
 msgid "Website"
 msgstr "Website"
 

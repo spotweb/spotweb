@@ -29,6 +29,8 @@ class Services_Nntp_SpotReading {
 				case 'X-XML' 			: $tmpAr['fullxml'] .= substr($hdr, 7); break;
 				case 'X-User-Signature'	: $tmpAr['user-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 18)); break;
 				case 'X-XML-Signature'	: $tmpAr['xml-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 17)); break;
+				case 'X-Newsreader'     : $tmpAr['newsreader'] = substr($hdr, 14); break;
+				case 'X-newsreader'     : $tmpAr['newsreader'] = substr($hdr, 14); break;
 				case 'X-User-Avatar'	: $tmpAr['user-avatar'] .= substr($hdr, 15); break;
 				case 'X-User-Key'		: {
 						$xml = simplexml_load_string(substr($hdr, 12)); 
@@ -40,7 +42,16 @@ class Services_Nntp_SpotReading {
 				} # x-user-key
 			} # switch
 		} # foreach
-		
+
+        /*
+         * Add newsreader (if present) to xml to be saved in fullspots
+         */
+        if ((!empty($tmpAr['fullxml'])) && (!empty($tmpAr['newsreader']))) {
+            $xml = simplexml_load_string($tmpAr['fullxml']);
+            $extra = $xml -> addChild('Extra');
+            $extra -> addchild('Newsreader',$tmpAr['newsreader']);
+            $tmpAr['fullxml'] = (string) $xml -> asXML();
+        }
 		return $tmpAr;
 	} # parseHeader
 
@@ -152,7 +163,8 @@ class Services_Nntp_SpotReading {
 					  'spotterid' => '',
 					  'xml-signature' => '',
 					  'moderated' => 0,
-					  'user-avatar' => '');
+					  'user-avatar' => '',
+                      'newsreader' => '');
 
 		/* 
 		 * Retrieve the header of the given spot 
