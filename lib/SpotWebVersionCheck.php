@@ -27,7 +27,7 @@ class SpotWebVersionCheck {
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
 			<guid>1</guid>
-			<pubDate>Thu, 14 apr 2016 00:00:00 +0100</pubDate>
+			<pubDate>Thu, 12 Feb 2016 00:00:00 +0100</pubDate>
 			<author>spotweb</author>
 			<!-- Please update these according to the current version, it allows for Spotweb to notify the administrator of the changes required -->
 			<spotweb:schema_version>0.58</spotweb:schema_version>

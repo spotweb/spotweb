@@ -176,21 +176,25 @@ class dbfts_mysql extends dbfts_abs {
 				 * When there are boolean operators in the string, it's an 
 				 * boolean search
 				 */
-				if (strpos('+-~<>', $strippedTerm[0]) !== false) {
-					$searchMode = 'match-boolean';
+                if (strlen($strippedTerm[0]) > 0) {
+				    if (strpos('+-~<>', $strippedTerm[0]) !== false) {
+					    $searchMode = 'match-boolean';
+                        $strippedTerm = trim($strippedTerm, "+-");
+				    } # if
+                }
 
-                    $strippedTerm = trim($strippedTerm, "+-");
-				} # if
+                if (strlen(substr($strippedTerm,-1)) > 0) {
+				    if (strpos('*', substr($strippedTerm, -1)) !== false) {
+					    $searchMode = 'match-boolean';
+                        $strippedTerm = trim($strippedTerm, "*");
+				    } # if
+                }
 
-				if (strpos('*', substr($strippedTerm, -1)) !== false) {
-					$searchMode = 'match-boolean';
-
-                    $strippedTerm = trim($strippedTerm, "*");
-				} # if
-
-				if (strpos('"', substr($term, -1)) !== false) {
-					$searchMode = 'match-boolean';
-				} # if
+                if (strlen(substr($term,-1)) > 0) {
+				    if (strpos('"', substr($term, -1)) !== false) {
+					    $searchMode = 'match-boolean';
+				    } # if
+                }
 
                 /*
                  * We get the complete phrase here, we need to look into
