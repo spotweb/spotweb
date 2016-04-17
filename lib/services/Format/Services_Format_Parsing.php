@@ -57,7 +57,7 @@ class Services_Format_Parsing {
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcata' => '', 'subcatb' => '',
-						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '');
+						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevMsgids' => array());
 
 		/*
 		 * Some legacy spotNet clients create incorrect/invalid multiple segments,
@@ -89,7 +89,11 @@ class Services_Format_Parsing {
 		$tpl_spot['filesize'] = (string) $xml->Size;
 		$tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
 		$tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
-		$tpl_spot['title'] = (string) $xml->Title;
+        $tpl_spot['title'] = (string) $xml->Title;
+
+        // Decode HTML special characters, title otherwise search will be broken, description as body in newsgroup
+        $tpl_spot['title'] = html_entity_decode($tpl_spot['title'],ENT_QUOTES ,'UTF-8');
+        $tpl_spot['description'] = html_entity_decode($tpl_spot['description'],ENT_QUOTES ,'UTF-8');
 
 		# FTD spots have the filename
 		if (!empty($xml->Filename)) {
@@ -136,6 +140,18 @@ class Services_Format_Parsing {
 				$tpl_spot['nzb'][] = (string) $seg;
 			} # else
 		} # foreach
+
+
+        // PREVSPOTS
+        if (!empty($xml->PREVSPOTS->Spot)) {
+			foreach($xml->xpath('/Spotnet/Posting/PREVSPOTS/Spot') as $seg) {
+				# Make sure the messageid's are valid so we do not throw an NNTP error
+				if ($this->_util->validMessageId((string) $seg)) {
+					$tpl_spot['prevMsgids'][] = (string) $seg;
+				} # if
+			} # foreach			
+		} # else
+
 
 		# fix the category in the XML array but only for new spots
 		if ((int) $xml->Key != 1) {
@@ -427,7 +443,22 @@ class Services_Format_Parsing {
 					 * Make sure the key specified is an actual known key 
 					 */
 					if (isset($rsaKeys[$spot['keyid']])) {
-                        $spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+                        if ($spot['keyid'] == 2 && $spot['filesize'] = 999 && strlen($spot['selfsignedpubkey']) > 50
+                            ) {
+                            /* Check personal dispose message */ 
+                            $signature = $this->_util->spotUnprepareBase64($spot['headersign']);
+                            $userSignedHash = sha1('<' . $spot['messageid'] . '>', false);
+                            $spot['verified'] = (substr($userSignedHash, 0, 4) === '0000');
+                            if ($spot['verified']) {
+                                    $userRsaKey = array(2 => array('modulo' => $spot['selfsignedpubkey'],'exponent' => 'AQAB'));
+                                    if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+                                            $spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
+                                        } # if
+                                } # if
+                            }
+                        else {
+                            $spot['verified'] = $this->_spotSigning->verifySpotHeader($spot, $signature, $rsaKeys);
+                        }
 					} # if
 
                     break;
