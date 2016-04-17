@@ -22,8 +22,9 @@ abstract class dbfts_abs {
          *  +
          *  \
          *  *
+         *  '
          */
-        if (preg_match_all('([\\\/\+-\\\*\w]+|".+")', $s, $matches)) {
+        if (preg_match_all('([\\\/\+-\\\*\'\w]+|".+")', $s, $matches)) {
 
             $newList = array();
             foreach($matches[0] as $word) {

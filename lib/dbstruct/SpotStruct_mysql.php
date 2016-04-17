@@ -93,11 +93,11 @@ class SpotStruct_mysql extends SpotStruct_abs {
 	 */
 	function addIndex($idxname, $idxType, $tablename, $colList) {
 		if (!$this->indexExists($idxname, $tablename)) {
-			if ($idxType == "UNIQUE") {
-				$this->_dbcon->rawExec("ALTER IGNORE TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
-			} else {
-				$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
-			} # else
+            //if ($idxType == "UNIQUE") {
+                //$this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
+            //} else {
+                $this->_dbcon->rawExec("ALTER TABLE " . $tablename . " ADD " . $idxType . " INDEX " . $idxname . "(" . implode(",", $colList) . ");");
+            //} # else
 		} # if
 	} # addIndex
 

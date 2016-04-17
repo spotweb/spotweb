@@ -185,8 +185,8 @@ class Dao_Base_Comment implements Dao_Comment {
 														c.moderated AS moderated,
 														f.avatar as \"user-avatar\",
 														bl.idtype AS idtype
-													FROM commentsfull f 
-													RIGHT JOIN commentsxover c on (f.messageid = c.messageid)
+													FROM commentsxover c 
+													LEFT JOIN commentsfull f on (f.messageid = c.messageid)
 													LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = f.spotterid) AND (bl.doubled = :doubled))
 													WHERE c.nntpref IN (". $refs .") AND ((bl.spotterid IS NULL) OR (((bl.ouruserid = :ouruserid) OR (bl.ouruserid = -1)) AND (bl.idtype = 2)))
 													ORDER BY c.id",

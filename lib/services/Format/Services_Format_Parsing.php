@@ -57,7 +57,7 @@ class Services_Format_Parsing {
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
 						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
 						  'filename' => '', 'newsgroup' => '', 'subcata' => '', 'subcatb' => '',
-						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevMsgids' => array());
+						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevMsgids' => array(), 'newsreader' => '');
 
 		/*
 		 * Some legacy spotNet clients create incorrect/invalid multiple segments,
@@ -79,8 +79,8 @@ class Services_Format_Parsing {
 		/*
 		 * Supress errors for corrupt messageids, eg: <evoCgYpLlLkWe97TQAmnV@spot.net>
 		 */
-		$xml = @(new SimpleXMLElement($xmlStr));
-		$xml = $xml->Posting;
+		$xmltop = @(new SimpleXMLElement($xmlStr));
+		$xml = $xmltop->Posting;
 		$tpl_spot['created'] = (string) $xml->Created;
 		$tpl_spot['key'] = (string) $xml->Key;
 		$tpl_spot['category'] = (string) $xml->Category;
@@ -142,7 +142,7 @@ class Services_Format_Parsing {
 		} # foreach
 
 
-        // PREVSPOTS
+        # PREVSPOTS
         if (!empty($xml->PREVSPOTS->Spot)) {
 			foreach($xml->xpath('/Spotnet/Posting/PREVSPOTS/Spot') as $seg) {
 				# Make sure the messageid's are valid so we do not throw an NNTP error
@@ -152,6 +152,11 @@ class Services_Format_Parsing {
 			} # foreach			
 		} # else
 
+        # Extra / newsreader
+        if (!empty($xmltop->Extra->Newsreader)) {
+            $tpl_spot['newsreader'] = (string) $xmltop->Extra->Newsreader;
+        }
+      
 
 		# fix the category in the XML array but only for new spots
 		if ((int) $xml->Key != 1) {
