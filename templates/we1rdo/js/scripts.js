@@ -1304,7 +1304,7 @@ function addSpotFilter(xsrf, filterType, filterValue, filterName, addElementClas
 } // addSpotFilter
 
 function applyTipTip(){
-        var categories = $(this).data('cats');
+var categories = $(this).data('cats');
         if(!categories) return;
         var dl = "<ul>";
         var list = $.map(categories, function(value, key){
@@ -1315,12 +1315,12 @@ function applyTipTip(){
                         else{
                                 return '<li><strong/>' + key + ': ' + value;
                         }
-                } else {
+               } else {
             return '';
         } // else
-        });
+       	});
 
-        dl = dl + list + '</ul>';
+	dl = dl + list + '</ul>';
         $(this).attr("title", "");
         $(this).tipTip({defaultPosition: 'bottom', delay: 800, maxWidth: 'auto', content: dl});
 }
