@@ -47,10 +47,12 @@ class Services_Nntp_SpotReading {
          * Add newsreader (if present) to xml to be saved in fullspots
          */
         if ((!empty($tmpAr['fullxml'])) && (!empty($tmpAr['newsreader']))) {
-            $xml = simplexml_load_string($tmpAr['fullxml']);
-            $extra = $xml -> addChild('Extra');
-            $extra -> addchild('Newsreader',$tmpAr['newsreader']);
-            $tmpAr['fullxml'] = (string) $xml -> asXML();
+            $xml = @simplexml_load_string($tmpAr['fullxml']);
+            if ($xml !== false) {
+                $extra = $xml -> addChild('Extra');
+                $extra -> addchild('Newsreader',$tmpAr['newsreader']);
+                $tmpAr['fullxml'] = (string) $xml -> asXML();
+            }
         }
 		return $tmpAr;
 	} # parseHeader
