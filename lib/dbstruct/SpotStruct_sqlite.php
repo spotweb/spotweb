@@ -110,7 +110,7 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("DROP TRIGGER IF EXISTS " . $ftsname . "_insert");
 		
 		# and recreate the virtual table and link the update trigger to it
-		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS3(" . implode(',', $colList) . ", tokenize=porter)");
+		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS4(CONTENT='spots'," . implode(',', $colList) . ", matchinfo=fts3)");
 
 		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . implode(',', $colList) . ") SELECT rowid," . implode(',', $colList) . " FROM " . $tablename);
 		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " FOR EACH ROW

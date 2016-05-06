@@ -113,8 +113,8 @@ class Dao_Base_Spot implements Dao_Spot {
 								    COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
 								    " . $extendedFieldList . "
 								    FROM spots AS s " . 
-								    $additionalTableList . 
-								    $additionalJoinList . 
+								    $additionalTableList . " " .
+								    $additionalJoinList . " " .
 							       "LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 								    LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
 								    LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
