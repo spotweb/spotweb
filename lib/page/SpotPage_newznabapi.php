@@ -218,7 +218,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
             $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
             if (!$imdbInfo->isValid()) {
-				$this->showApiError(300);
+				$this->showApiError(301);
 
 				return ;
 			} # if
@@ -505,7 +505,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$fullSpot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
 		}
 		catch(Exception $x) {
-			$this->showApiError(300);
+			$this->showApiError(302);
 
 			return ;
 		} # catch
@@ -760,7 +760,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 202: $errtext = "No such function"; break;
 			case 203: $errtext = "Function not available"; break;
 
-			case 300: $errtext = "No such item"; break;
+			case 300: $errtext = "On TVSearch no q, tvmaze or rid parameter present"; break;
+			case 301: $errtext = "IMDB information returned is invalid"; break;
+			case 302: $errtext = "Error in fetching spot information"; break;
 
 			case 500: $errtext = "Request limit reached"; break;
 			case 501: $errtext = "Download limit reached"; break;
