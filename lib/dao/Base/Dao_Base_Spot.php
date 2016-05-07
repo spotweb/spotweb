@@ -79,7 +79,7 @@ class Dao_Base_Spot implements Dao_Spot {
 			} # if
 		} # foreach
 		$sortList = implode(', ', $sortList);
-
+        $sortList2 = str_replace ('s.','x.',$sortList);
 		/*
 		 * Run the query with a limit always increased by one. this allows us to 
 		 * check whether any more results are available
@@ -88,7 +88,8 @@ class Dao_Base_Spot implements Dao_Spot {
 	                        f.verified ,
 	                        l.download as downloadstamp, 
 	                        l.watch as watchstamp,
-	                        l.seen AS seenstamp
+	                        l.seen AS seenstamp,
+						    COALESCE(x.idtype, wl.idtype, gwl.idtype) AS idtype
                             from 
                             (SELECT s.id AS id,
 								    s.messageid AS messageid,
@@ -110,19 +111,21 @@ class Dao_Base_Spot implements Dao_Spot {
 								    s.spotterid AS spotterid,
  								    s.editstamp AS editstamp,
  								    s.editor AS editor,
-								    COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
+                                    bl.idtype as idtype,
+                                    s.reversestamp as reversestamp
 								    " . $extendedFieldList . "
 								    FROM spots AS s " . 
 								    $additionalTableList . " " .
 								    $additionalJoinList . " " .
 							       "LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-								    LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
-								    LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
                                     " . $criteriaFilter . "
 								    ORDER BY " . $sortList . " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset ."
                             ) as x
                             LEFT JOIN spotsfull AS f ON (f.messageid = x.messageid) 
-							LEFT JOIN spotstatelist AS l on ((x.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . "))" ;
+ 					        LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = x.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
+							LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = x.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
+							LEFT JOIN spotstatelist AS l on ((x.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . "))
+                            ORDER BY ".$sortList2 ;
 
  	$tmpResult = $this->_conn->arrayQuery($query);
 
