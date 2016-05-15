@@ -37,6 +37,7 @@ class dbfts_pgsql extends dbfts_abs {
 		 */
 		$filterValueSql = array();
 		$sortFields = array();
+        $addFields = array();
 
 		foreach($searchFields as $searchItem) {
 			$searchValue = trim($searchItem['value']);
@@ -46,7 +47,7 @@ class dbfts_pgsql extends dbfts_abs {
 			 * if we get multiple textsearches, we sort them per order
 			 * in the system
 			 */
-			$tmpSortCounter = count($additionalFields);
+			$tmpSortCounter = count($additionalFields) + count($addFields);
 
             # Prepare the to_tsvector and to_tsquery strings
             $ts_vector = "to_tsvector('Dutch', " . $field . ")";
@@ -76,14 +77,14 @@ class dbfts_pgsql extends dbfts_abs {
             if ($o_parse->parse($searchValue, $field) === false) {
                 $ts_query = "plainto_tsquery('Dutch', " . $this->_db->safe(strtolower($searchValue)) . ")";
                 $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
-                $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+                $addFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
             } else {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
                     $ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch) . ")";
                     $queryPart[] = " " . $ts_vector . " @@ " . $ts_query;
-                    $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+                    $addFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
                 } # if
 
                 if (!empty($o_parse->ilike)) {
@@ -104,11 +105,11 @@ class dbfts_pgsql extends dbfts_abs {
 								  'friendlyname' => null);
 		} # foreach
 
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$addFields,$sortFields));
 		
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),
-					 'additionalFields' => $additionalFields,
+					 'additionalFields' => $addFields,
 					 'sortFields' => $sortFields);
 	} # createTextQuery()
 
