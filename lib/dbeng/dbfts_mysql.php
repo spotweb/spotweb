@@ -73,7 +73,6 @@ class dbfts_mysql extends dbfts_abs {
 		 */
 		$filterValueSql = array();
 		$sortFields = array();
-        $addFields = array();
 
 		/*
 		 * MySQL's fultxt search has a minimum length of words for indexes. Per default this is 
@@ -86,7 +85,7 @@ class dbfts_mysql extends dbfts_abs {
 		$serverSetting = $this->_db->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
 
-        //var_dump($searchFields);
+//        var_dump($searchFields);
 
 		foreach($searchFields as $searchItem) {
 			$hasTooShortWords = false;
@@ -321,27 +320,25 @@ class dbfts_mysql extends dbfts_abs {
 				 * if we get multiple textsearches, we sort them per order
 				 * in the system
 				 */
-				$tmpSortCounter = count($additionalFields) + count($addFields);
+				$tmpSortCounter = count($additionalFields);
 				
-				$addFields[] = $matchPart . ' AS searchrelevancy' . $tmpSortCounter;
+				$additionalFields[] = $matchPart . ' AS searchrelevancy' . $tmpSortCounter;
 			
 				$sortFields[] = array('field' => 'searchrelevancy' . $tmpSortCounter,
 									  'direction' => 'DESC',
 									  'autoadded' => true,
 									  'friendlyname' => null);
-			}  # if
+			} # if
 		} # foreach
 
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$addFields,$sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
 
-        //var_dump($filterValueSql);
-        //var_dump($addFields);
-        //var_dump($sortFields);
-        //die();
+//        var_dump($filterValueSql);
+//        die();
 
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),
-					 'additionalFields' => $addFields,
+					 'additionalFields' => $additionalFields,
 					 'sortFields' => $sortFields);
 	} # createTextQuery()
 
