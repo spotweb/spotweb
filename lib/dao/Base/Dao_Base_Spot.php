@@ -12,44 +12,44 @@ class Dao_Base_Spot implements Dao_Spot {
 	} # ctor
 
 	/*
-	 * Returns the spots in the database which match the 
-	 * restrictions of $parsedSearch
-	 */
+     * Returns the spots in the database which match the 
+     * restrictions of $parsedSearch
+     */
 	function getSpots($ourUserId, $pageNr, $limit, $parsedSearch) {
 		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 		$offset = (int) $pageNr * (int) $limit;
 
 		/*
-		 * there are the basic search criteria (category, title, etc) 
-		 * which are always available in the query
-		 */
+         * there are the basic search criteria (category, title, etc) 
+         * which are always available in the query
+         */
 		$criteriaFilter = " WHERE (bl.spotterid IS NULL) ";
 		if (!empty($parsedSearch['filter'])) {
 			$criteriaFilter .= ' AND ' . $parsedSearch['filter'];
 		} # if 
 
 		/*
-		 * but the queryparser is allowed to request any additional fields
-		 * to be queried upon, which we need to make available in the
-		 * query as well.
-		 */
+         * but the queryparser is allowed to request any additional fields
+         * to be queried upon, which we need to make available in the
+         * query as well.
+         */
 		$extendedFieldList = '';
 		foreach($parsedSearch['additionalFields'] as $additionalField) {
 			$extendedFieldList = ', ' . $additionalField . $extendedFieldList;
 		} # foreach
 
 		/*
-		 * even additional tables might be requested, mostly used for FTS
-		 * with virtual tables
-		 */
+         * even additional tables might be requested, mostly used for FTS
+         * with virtual tables
+         */
 		$additionalTableList = '';
 		foreach($parsedSearch['additionalTables'] as $additionalTable) {
 			$additionalTableList = ', ' . $additionalTable . $additionalTableList;
 		} # foreach
 
 		/*
-		 * add additional requested joins
-		 */
+         * add additional requested joins
+         */
 		$additionalJoinList = '';
 		foreach($parsedSearch['additionalJoins'] as $additionalJoin) {
 			$additionalJoinList = ' ' . $additionalJoin['jointype'] . ' JOIN ' . 
@@ -58,18 +58,18 @@ class Dao_Base_Spot implements Dao_Spot {
 		} # foreach
 
 		/* 
-		 * we always sort, but sometimes on multiple fields.
-		 */		
+         * we always sort, but sometimes on multiple fields.
+         */		
 		$sortFields = $parsedSearch['sortFields'];
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
 			if (!empty($sortValue)) {
 				/*
-				 * when asked to sort on the field 'stamp' descending, we secretly 
-				 * sort ascsending on a field called 'reversestamp'. Older MySQL versions
-				 * suck at sorting in reverse, and older NAS systems run ancient MySQl
-				 * versions
-				 */
+                 * when asked to sort on the field 'stamp' descending, we secretly 
+                 * sort ascsending on a field called 'reversestamp'. Older MySQL versions
+                 * suck at sorting in reverse, and older NAS systems run ancient MySQl
+                 * versions
+                 */
 				if ((strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
 					$sortValue['field'] = 's.reversestamp';
 					$sortValue['direction'] = 'ASC';
@@ -79,53 +79,18 @@ class Dao_Base_Spot implements Dao_Spot {
 			} # if
 		} # foreach
 		$sortList = implode(', ', $sortList);
+                
+        /* 
+         * The query is depending on the database implementation chosen
+         */
+        
+        $queryStr = $this-> getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter,$sortList,$limit,$offset);
+        $tmpResult = $this->_conn->arrayQuery($queryStr);
 
 		/*
-		 * Run the query with a limit always increased by one. this allows us to 
-		 * check whether any more results are available
-		 */
- 		$tmpResult = $this->_conn->arrayQuery("SELECT s.id AS id,
-												s.messageid AS messageid,
-												s.category AS category,
-												s.poster AS poster,
-												l.download as downloadstamp, 
-												l.watch as watchstamp,
-												l.seen AS seenstamp,
-												s.subcata AS subcata,
-												s.subcatb AS subcatb,
-												s.subcatc AS subcatc,
-												s.subcatd AS subcatd,
-												s.subcatz AS subcatz,
-												s.title AS title,
-												s.tag AS tag,
-												s.stamp AS stamp,
-												s.moderated AS moderated,
-												s.filesize AS filesize,
-												s.spotrating AS rating,
-												s.commentcount AS commentcount,
-												s.reportcount AS reportcount,
-												s.spotterid AS spotterid,
- 												s.editstamp AS editstamp,
- 												s.editor AS editor,
-												f.verified AS verified,
-												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
-												" . $extendedFieldList . "
-									 FROM spots AS s " . 
-									 $additionalTableList . 
-									 $additionalJoinList . 
-								   " LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f ON (s.messageid = f.messageid) 
-									 LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-									 LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
-									 LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) " .
-									 $criteriaFilter . "
-									 ORDER BY " . $sortList . 
-								   " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset);
-
-		/*
-		 * Did we get more results than originally asked? Remove the last element
-		 * and set the flag we have gotten more results than originally asked for
-		 */
+         * Did we get more results than originally asked? Remove the last element
+         * and set the flag we have gotten more results than originally asked for
+         */
 		$hasMore = (count($tmpResult) > $limit);
 		if ($hasMore) {
 			# remove the last element
@@ -135,6 +100,7 @@ class Dao_Base_Spot implements Dao_Spot {
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($ourUserId, $pageNr, $limit, $criteriaFilter));
 		return array('list' => $tmpResult, 'hasmore' => $hasMore);
 	} # getSpots()
+    
 
 	/*
 	 * Returns the header information of a spot
@@ -658,6 +624,11 @@ class Dao_Base_Spot implements Dao_Spot {
 	function getSpotCountPerMonth($limit) {
 		throw new NotImplementedException();
 	} # getSpotCountPerMonth
+
+	function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter,$sortList,$limit,$offset) {
+		throw new NotImplementedException();
+	} # getQuerystr
+    
 
 	/**
 	 * Returns the amount of spots per category
