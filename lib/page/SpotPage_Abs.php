@@ -101,7 +101,7 @@ abstract class SpotPage_Abs {
 	 * Actually run the templating code
 	 */
 	function template($tpl, $params = array()) {
-        SpotTiming::start(__CLASS__ . '::' .__FUNCTION__ . ':' . $tpl);
+        SpotTiming::start(__FUNCTION__ . ':' . $tpl);
 
         extract($params, EXTR_REFS);
 		$settings = $this->_settings;
