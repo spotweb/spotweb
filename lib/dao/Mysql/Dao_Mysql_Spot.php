@@ -160,7 +160,7 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
                                     $additionalTableList . 
                                     $additionalJoinList . 
                                   " LEFT JOIN spotstatelist AS l FORCE INDEX FOR JOIN (idx_spotstatelist_1) ON ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
-									 LEFT JOIN spotsfull AS f FORCE INDEX FOR JOIN (messageid_UNIQUE) ON (s.messageid = f.messageid)  
+									 LEFT JOIN spotsfull AS f FORCE INDEX FOR JOIN (idx_spotsfull_1) ON (s.messageid = f.messageid)  
 									 LEFT JOIN spotteridblacklist as bl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
 									 LEFT JOIN spotteridblacklist AS wl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
 									 LEFT JOIN spotteridblacklist AS gwl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) \n " .
