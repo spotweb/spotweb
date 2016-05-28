@@ -2,6 +2,9 @@
 
 set -e
 
+#change SPOT_PATH to your root spotweb install
+#change SPOT_SLEEP_TIME to the amount of seconds to wait between loops (300sec is 5 mins)
+
 export SPOT_PATH="/var/www/spotweb/"
 export SPOT_SLEEP_TIME="300" # in seconds
 LASTOPTIMIZE=`date +%s`
@@ -22,10 +25,12 @@ cd ${SPOT_PATH}
 #	echo "Upgrade already running. Not running again"
 #  exit
 #fi
-# Tempfile aanmaken aangezien de update nog niet draait
+# Creating Tempfile since the git update/upgrade isn't running yet
 #touch /tmp/.spotweb-upgrade
 #wait
 #echo "git update"
+
+#change to your spotweb install path 
 #cd /var/www/spotweb
 #git pull
 #echo "Waiting till pull is done.."
