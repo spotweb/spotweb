@@ -124,5 +124,50 @@ class Dao_Mysql_Spot extends Dao_Base_Spot {
                 ':spotid' => array($spot['id'], PDO::PARAM_INT)
             ));
 	} # removeExtraSpots
+
+    function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter,$sortList,$limit,$offset) {
+        /*
+         * Run the query with a limit always increased by one. this allows us to 
+         * check whether any more results are available
+         */
+        $queryStr = "SELECT s.id AS id,
+												s.messageid AS messageid,
+												s.category AS category,
+												s.poster AS poster,
+												l.download as downloadstamp, 
+												l.watch as watchstamp,
+												l.seen AS seenstamp,
+												s.subcata AS subcata,
+												s.subcatb AS subcatb,
+												s.subcatc AS subcatc,
+												s.subcatd AS subcatd,
+												s.subcatz AS subcatz,
+												s.title AS title,
+												s.tag AS tag,
+												s.stamp AS stamp,
+												s.moderated AS moderated,
+												s.filesize AS filesize,
+												s.spotrating AS rating,
+												s.commentcount AS commentcount,
+												s.reportcount AS reportcount,
+												s.spotterid AS spotterid,
+ 												s.editstamp AS editstamp,
+ 												s.editor AS editor,
+												f.verified AS verified,
+												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
+												" . $extendedFieldList . "
+									 FROM spots AS s " . 
+                                    $additionalTableList . 
+                                    $additionalJoinList . 
+                                  " LEFT JOIN spotstatelist AS l FORCE INDEX FOR JOIN (idx_spotstatelist_1) ON ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ")) 
+									 LEFT JOIN spotsfull AS f FORCE INDEX FOR JOIN (idx_spotsfull_1) ON (s.messageid = f.messageid)  
+									 LEFT JOIN spotteridblacklist as bl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+									 LEFT JOIN spotteridblacklist AS wl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
+									 LEFT JOIN spotteridblacklist AS gwl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) \n " .
+                                    $criteriaFilter . "
+									 ORDER BY " . $sortList . 
+                                  " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset;
+        return $queryStr ;
+    }
 	
 } # Dao_Mysql_Spot

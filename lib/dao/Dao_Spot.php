@@ -28,6 +28,8 @@ interface Dao_Spot {
 	function isNewSpotMessageIdUnique($messageid);
 	function getMaxMessageTime();
 	function getMaxMessageId($headers);
+    
+    function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter,$sortList,$limit,$offset);
 
 } # Dao_Spot
 
