@@ -156,6 +156,14 @@ class Net_NNTP_Protocol_Client
      */
     var $_logger = null;
 
+    /**
+     * Contains false on non-ssl connection and true when ssl
+     *
+     * @var     object
+     * @access  private
+     */
+    var $_ssl = false;
+
     // }}}
     // {{{ constructor
 
@@ -223,6 +231,19 @@ class Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ _clearSSLErrors()
+
+    /**
+     * Clears ssl errors from the openssl error stack
+     */
+    function _clearSSLErrors()
+    {
+	if ($this->_ssl) {
+		while ($msg = openssl_error_string()) {};
+	}
+    }
+
+    // }}}
     // {{{ _sendCommand()
 
     /**
@@ -266,6 +287,7 @@ class Net_NNTP_Protocol_Client
         }
 
     	// Send the command
+	$this->_clearSSLErrors();
     	$R = @fwrite($this->_socket, $cmd . "\r\n");
         if ($R === false) {
             $this->throwError('Failed to write to socket!');
@@ -292,6 +314,7 @@ class Net_NNTP_Protocol_Client
     function _getStatusResponse()
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
+	$this->_clearSSLErrors();
     	$response = @fgets($this->_socket);
         if ($response === false) {
             $this->throwError('Failed to read from socket...!');
@@ -342,6 +365,7 @@ class Net_NNTP_Protocol_Client
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 8192 characters from the server.
+	    $this->_clearSSLErrors();
             $recieved = @fgets($this->_socket, 8192);
 
             if ($recieved === false) {
@@ -525,7 +549,9 @@ class Net_NNTP_Protocol_Client
     	switch (true) {
     	case is_string($article):
     	    //
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, $article);
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
@@ -550,7 +576,9 @@ class Net_NNTP_Protocol_Client
 */
 
     	    // Send header (including separation line)
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, $header);
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n");
 
     	    //
@@ -569,7 +597,9 @@ class Net_NNTP_Protocol_Client
 */
 
     	    // Send body
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, $body);
+	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
@@ -680,6 +710,7 @@ class Net_NNTP_Protocol_Client
 	    case 'tls':
 		$transport = $encryption;
     	    	$port = is_null($port) ? 563 : $port;
+		$this->_ssl = true;
 		break;
 	    default:
     	    	trigger_error('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
