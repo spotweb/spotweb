@@ -4,9 +4,11 @@ set -e
 
 #change SPOT_PATH to your root spotweb install
 #change SPOT_SLEEP_TIME to the amount of seconds to wait between loops (300sec is 5 mins)
+#change PHP_PATH if you are using a differt version of php. Default is php5.
 
 export SPOT_PATH="/var/www/spotweb/"
 export SPOT_SLEEP_TIME="300" # in seconds
+export PHP_PATH="/usr/bin/php5"
 LASTOPTIMIZE=`date +%s`
 
 while :
@@ -14,7 +16,7 @@ while :
  do
 CURRTIME=`date +%s`
 cd ${SPOT_PATH}
-/usr/bin/php5 ${SPOT_PATH}/retrieve.php
+${PHP_PATH} ${SPOT_PATH}/retrieve.php
 
 #DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 #if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
@@ -36,7 +38,7 @@ cd ${SPOT_PATH}
 #echo "Waiting till pull is done.."
 #wait
 #echo "Upgradeding db/clean up "
-#/usr/bin/php5 ${SPOT_PATH}/upgrade-db.php
+#${PHP_PATH} ${SPOT_PATH}/upgrade-db.php
 #wait
 # removing tempfile
 #rm /tmp/.spotweb-upgrade
