@@ -337,10 +337,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$data['completion']		= 100;
 
                 $cat = array();
+                if( !empty($spot["subcatz"])) {
+					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+						$cat = $nabCat[0];
+					} # if
+				} # if
+				
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$data['categoryID'] = $nabCat[0];
-					$cat = implode(",", $nabCat);
+					$cat .= implode(",", $nabCat);
 				} # if
 
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
@@ -424,7 +431,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					default		: $enclosure->setAttribute('type', 'application/x-nzb');
 				} # switch
 				$item->appendChild($enclosure);
-
+				
+				if( !empty($spot["subcatz"])) {
+					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+						$attr = $doc->createElement('newznab:attr');
+						$attr->setAttribute('name', 'category');
+						$attr->setAttribute('value', $nabCat[0]);
+						$item->appendChild($attr);
+					} # if
+				} # if
+				
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$attr = $doc->createElement('newznab:attr');
@@ -526,10 +543,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$doc['fromname']		= $spot['poster'];
 			$doc['completion']		= 100;
 
+			if( !empty($spot["subcatz"])) {
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$cat = $nabCat[0];
+				} # if
+			} # if
+
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 				$doc['categoryID'] = $nabCat[0];
-				$cat = implode(",", $nabCat);
+				$cat .= implode(",", $nabCat);
 			} # if
 
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
@@ -598,6 +622,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				default		: $enclosure->setAttribute('type', 'application/x-nzb');
 			} # switch
 			$item->appendChild($enclosure);
+
+			if( !empty($spot["subcatz"])) {
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'category');
+					$attr->setAttribute('value', $nabCat[0]);
+					$item->appendChild($attr);
+				} # if
+			} # if
 
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
@@ -726,7 +760,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		echo $doc->saveXML();
 	} # caps
 
-	function Cat2NewznabCat($hcat, $cat) {
+	function Cat2NewznabCat($hcat, $cat, $catZCompanion = "") {
 		$result = "-";
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
@@ -738,6 +772,28 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			switch ($cat[0]) {
 				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
+				case "z"	: 
+					switch($nr) {
+						case "1":
+							if(!empty($catZCompanion)) {
+								$catZCompanionList = explode("|", $catZCompanion);
+								$catZCompanion = $catZCompanionList[0];
+								
+								if(in_array($catZCompanion, $this->spotHdCat())) {
+									return 5040;
+								}
+								elseif(in_array($catZCompanion, $this->spotSdCat())) {
+									return 5030;
+								}
+							}
+						break;
+						default: 
+							$newznabcat = $this->spotZcat2nabcat(); 
+							return @$newznabcat[$nr]; 						
+						break;
+					}
+
+				break;
 			} # switch
 		} # if
 
@@ -939,5 +995,19 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					 9 => "",
 					 10 => "");
 	} # spotBcat2nabcat
+	
+	function spotZcat2nabcat() {
+		return Array (
+			3 => "6000"
+		);
+	} # spotZcat2nabcat
+	
+	function spotHdCat() {
+		return Array("a4", "a6", "a7", "a8", "a9");
+	} # spotHdCat
+	
+	function spotSdCat() {
+		return Array("a1", "a2", "a3", "a10");
+	} # spotSdCat
 
 } # class SpotPage_api
