@@ -18,3 +18,5 @@ reallymyownsettings.php
 .idea
 reallymyownsettings.php
 cache/
+vendor/
+/composer.phar

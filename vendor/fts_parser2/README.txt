@@ -1,1 +1,0 @@
-http://www.digitalstratum.com/oss/fts_parser
