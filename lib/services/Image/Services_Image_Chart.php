@@ -1,11 +1,5 @@
 <?php
 
-require "vendor/pchart/pData.class.php";
-require "vendor/pchart/pDraw.class.php";
-require "vendor/pchart/pImage.class.php";
-require "vendor/pchart/pPie.class.php";
-
-
 class Services_Image_Chart {
 	private $_svcImageUtil;
 

@@ -10,8 +10,7 @@ try {
 		chdir(dirname(__FILE__));
 	} # if
 
-	require_once "lib/SpotClassAutoload.php";
-    SpotClassAutoload::register();
+	require_once 'vendor/autoload.php';
 
 	/*
 	 * Initialize the Spotweb base classes

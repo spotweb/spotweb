@@ -10,10 +10,7 @@ try {
 		chdir(dirname(__FILE__));
 	} # if
 
-	require_once "lib/SpotClassAutoload.php";
-    SpotClassAutoload::register();
-
-    require_once "lib/Bootstrap.php";
+	require_once 'vendor/autoload.php';
 
     /*
      * Make sure we are not run from the server, an db upgrade can take too much time and

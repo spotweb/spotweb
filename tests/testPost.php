@@ -1,19 +1,6 @@
 <?php
-require_once "lib/SpotClassAutoload.php";
-require_once "lib/SpotParser.php";
-require_once "lib/SpotPosting.php";
-require_once "lib/SpotCategories.php";
-require_once "lib/SpotSigning.php";
-require_once "lib/SpotSeclibToOpenSsl.php";
-require_once "lib/SpotNntp.php";
-require_once "NNTP/Protocol/Client.php";
-require_once "NNTP/Client.php";
-require_once "lib/exceptions/CustomException.php";
-require_once "lib/exceptions/NntpException.php";
-require_once "lib/SpotSecurity.php";
-require_once "lib/SpotTiming.php";
+require_once 'vendor/autoload.php';
 require_once "settings.php";
-require_once "lib/SpotDb.php";
 
 define('USERID', 30);
 

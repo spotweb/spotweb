@@ -10,9 +10,7 @@ try {
         chdir(dirname(__FILE__));
     } # if
 
-    require_once "lib/SpotClassAutoload.php";
-    SpotClassAutoload::register();
-    require_once "lib/Bootstrap.php";
+    require_once 'vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
