@@ -17,8 +17,10 @@ all items are checked 'OK'.
 3. Ensure you have a webserver running and PHP is configured for this webserver
 3. Download Spotweb 
 4. Unpack Spotweb to a directory of your choosing
-5. Run 'install.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
-6. Follow the wizard and perform the instructions as given by the wizard.
+5. [Download Composer](https://getcomposer.org/download/) to the directory containing Spotweb.
+6. Run `./composer.phar install --no-dev` to install dependencies.
+7. Run 'install.php' from your browser until everything is 'OK'. Fix the parts which aren't OK.
+8. Follow the wizard and perform the instructions as given by the wizard.
 
 == Troubleshooting ==
 When a white page appears instead of your Spotweb installation, this usually indicates an typing error in either
