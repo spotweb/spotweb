@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f48f34400e6d090ad0bf88b42e282f7a",
-    "content-hash": "13188a619415bb2894a39a47cabe355b",
+    "hash": "1dac310417dfe86bbc3f2c47be650c46",
+    "content-hash": "2d07681688f2d000d2d0ed48925bbb86",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -241,12 +241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mbirth/notifo-php.git",
-                "reference": "dd0fd8862a5cc69c2b54b4ca942c1b52a596bc32"
+                "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/dd0fd8862a5cc69c2b54b4ca942c1b52a596bc32",
-                "reference": "dd0fd8862a5cc69c2b54b4ca942c1b52a596bc32",
+                "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/3f5faee77e6c79a769de2577ff580aaf679543a8",
+                "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8",
                 "shasum": ""
             },
             "require": {
@@ -274,24 +274,24 @@
                 "notifo",
                 "push"
             ],
-            "time": "2016-08-12 21:07:54"
+            "time": "2016-08-12 21:11:31"
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "1.0.2",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "b8f3a76632636d52ceb8a4eb6ab4398d4346ca38"
+                "reference": "3d265f7c079f5b37d33475f996d7a383c5fc8aeb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/b8f3a76632636d52ceb8a4eb6ab4398d4346ca38",
-                "reference": "b8f3a76632636d52ceb8a4eb6ab4398d4346ca38",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/3d265f7c079f5b37d33475f996d7a383c5fc8aeb",
+                "reference": "3d265f7c079f5b37d33475f996d7a383c5fc8aeb",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.0.0"
+                "php": ">=5.3.3"
             },
             "require-dev": {
                 "phing/phing": "~2.7",
@@ -301,26 +301,20 @@
             },
             "suggest": {
                 "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
-                "ext-mcrypt": "Install the Mcrypt extension in order to speed up a wide variety of cryptographic operations.",
-                "pear-pear/PHP_Compat": "Install PHP_Compat to get phpseclib working on PHP < 5.0.0."
+                "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
+                "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
+                "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Crypt": "phpseclib/",
-                    "File": "phpseclib/",
-                    "Math": "phpseclib/",
-                    "Net": "phpseclib/",
-                    "System": "phpseclib/"
-                },
                 "files": [
-                    "phpseclib/Crypt/Random.php"
-                ]
+                    "phpseclib/bootstrap.php"
+                ],
+                "psr-4": {
+                    "phpseclib\\": "phpseclib/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "phpseclib/"
-            ],
             "license": [
                 "MIT"
             ],
@@ -372,7 +366,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2016-05-08 00:01:00"
+            "time": "2016-05-13 01:15:21"
         },
         {
             "name": "uskr/nma-php",
