@@ -1,6 +1,4 @@
 {
-    "name": "Spotweb",
-    "description": "A decentralized usenet community based on the Spotnet protocol.",
     "require": {
         "mobiledetect/mobiledetectlib": "~2.5.2",
         "jean-damien/pchart": "~2.1.3",
