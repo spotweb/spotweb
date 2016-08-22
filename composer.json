@@ -9,7 +9,7 @@
     "xenji/prowlphp": "~1.0.0",
     "boxcar/boxcar": "dev-master",
     "uskr/nma-php": "~0.0.2",
-    "notifo/notifo-php": "dev-master",
+    "notifo/notifo-php": "~1.0.0",
     "gdwebs/nntp": "~1.0.0",
     "php": ">=5.3.0"
   },
