@@ -7,7 +7,6 @@ server-settings.php
 retrieve.sh
 tests/*.jpg
 tests/*.nzb
-.htaccess
 .htpasswd
 .buildpath
 .project

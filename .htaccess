@@ -3,3 +3,15 @@
 	RewriteCond %{REQUEST_URI} !api/  
 	RewriteRule api/?$ index.php?page=newznabapi [QSA,L]  
 </IfModule>
+
+<Files "install.php">
+    <IfModule mod_authz_host.c>
+        Require ip 127.0.0.1
+    </IfModule>
+
+    <IfModule !mod_authz_host.c>
+        order deny,allow
+        deny from all
+        allow from 127.0.0.1
+    </IfModule>
+</Files>
