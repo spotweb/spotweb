@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 error_reporting(2147483647);
 
@@ -6,14 +7,12 @@ try {
 	 * If we are run from another directory, try to change the current
 	 * working directory to a directory the script is in
 	 */
-	if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-		chdir(dirname(__FILE__));
-	} # if
+    chdir(__DIR__ . '/../');
 
-	require_once "lib/SpotClassAutoload.php";
+    require_once __DIR__ . '/../lib/SpotClassAutoload.php';
     SpotClassAutoload::register();
 
-    require_once "lib/Bootstrap.php";
+    require_once __DIR__ . '/../lib/Bootstrap.php';
 
     /*
      * Make sure we are not run from the server, an db upgrade can take too much time and
