@@ -27,7 +27,7 @@
 <tr>
     <td> &rarr; </td>
     <td>
-        <a href="/spotweb/">Visit your Spotweb</a>
+        <a href="<?php echo dirname($_SERVER['PHP_SELF']); ?>">Visit your Spotweb</a>
     </td>
 </tr>
 </table>
