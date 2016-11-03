@@ -1,0 +1,36 @@
+{
+  "name": "gdwebs/nntp",
+  "description": "A package that adds support for the NNTP protocol in PHP.",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
+  "authors": [
+    {
+      "name": "Heino H. Gehlsen",
+      "email": "heino@gehlsen.dk",
+      "role": "Lead (abandoned)"
+    },
+    {
+      "name": "Jan-Pascal van Best",
+      "email": "janpascal@vanbest.org",
+      "role": "Lead (abandoned)"
+    },
+    {
+      "name": "Geoffrey Dijkstra",
+      "email": "info@gdwebs.nl",
+      "homepage": "http://www.gdwebs.nl",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ],
+    "files": [
+      "src/ResponseCode.php"
+    ]
+  }
+}
