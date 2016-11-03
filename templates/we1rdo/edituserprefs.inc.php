@@ -308,8 +308,8 @@ if (!$dialogembedded) { ?>
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][port]"><?php echo _('Portnumber of nzbget?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['port']); ?>"></dd>
 
-						<dt><label for="edituserprefsform[nzbhandling][nzbget][username]"><?php echo _('Username for nzbget? Attention: At this moment only <u>nzbget</u> is a valid name!'); ?></label></dt>
-						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][username]" value="nzbget"></dd>
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][username]"><?php echo _('Username for nzbget?'); ?></label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][username]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['username']); ?>"></dd>
 
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][password]"><?php echo _('Password for nzbget?'); ?></label></dt>
 						<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>
