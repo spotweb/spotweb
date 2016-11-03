@@ -26,11 +26,10 @@
     "php": ">=5.3"
   },
   "autoload": {
-    "classmap": [
-      "src/"
-    ],
     "files": [
-      "src/ResponseCode.php"
+      "src/Protocol/Responsecode.php",
+      "src/Protocol/Client.php",
+      "src/Client.php"
     ]
   }
 }

@@ -4,11 +4,13 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit07d87b422f08d63fb52b97300d4a515f
+class ComposerStaticInit5bb6ea1f44c22f3fd8645582d239d8f9
 {
     public static $files = array (
+        '2017bd12a28d839df32ad9b0b2a97562' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Responsecode.php',
+        'ed817a92f1a97d5fd2972ea0d5bd357d' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Client.php',
+        '675a69e7dbe61c444936690a6f90035e' => __DIR__ . '/..' . '/gdwebs/nntp/src/Client.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
-        'fee223fadcd6000acbd04d0a48b8874c' => __DIR__ . '/..' . '/gdwebs/nntp/src/ResponseCode.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -167,9 +169,6 @@ class ComposerStaticInit07d87b422f08d63fb52b97300d4a515f
         'InvalidSettingsUpdateException' => __DIR__ . '/../..' . '/lib/exceptions/InvalidSettingsUpdateException.php',
         'MissingNntpConfigurationException' => __DIR__ . '/../..' . '/lib/exceptions/MissingNntpConfigurationException.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
-        'NNTPException' => __DIR__ . '/..' . '/gdwebs/nntp/src/NNTPException.php',
-        'Net_NNTP_Client' => __DIR__ . '/..' . '/gdwebs/nntp/src/Net_NNTP_Client.php',
-        'Net_NNTP_Protocol_Client' => __DIR__ . '/..' . '/gdwebs/nntp/src/Net_NNTP_Protocol_Client.php',
         'NntpException' => __DIR__ . '/../..' . '/lib/exceptions/NntpException.php',
         'NotImplementedException' => __DIR__ . '/../..' . '/lib/exceptions/NotImplementedException.php',
         'Notifications_Boxcar' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Boxcar.php',
@@ -377,10 +376,10 @@ class ComposerStaticInit07d87b422f08d63fb52b97300d4a515f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit07d87b422f08d63fb52b97300d4a515f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit07d87b422f08d63fb52b97300d4a515f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit07d87b422f08d63fb52b97300d4a515f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit07d87b422f08d63fb52b97300d4a515f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5bb6ea1f44c22f3fd8645582d239d8f9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5bb6ea1f44c22f3fd8645582d239d8f9::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit5bb6ea1f44c22f3fd8645582d239d8f9::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit5bb6ea1f44c22f3fd8645582d239d8f9::$classMap;
 
         }, null, ClassLoader::class);
     }

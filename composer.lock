@@ -147,16 +147,16 @@
         },
         {
             "name": "gdwebs/nntp",
-            "version": "1.4.0",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GeoffreyDijkstra/NNTP-Protocol.git",
-                "reference": "999a571ff51f4506e9629d87d4d6a54583357652"
+                "reference": "16c44614935e3d15dd44e405b5c1c0df7709c891"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/999a571ff51f4506e9629d87d4d6a54583357652",
-                "reference": "999a571ff51f4506e9629d87d4d6a54583357652",
+                "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/16c44614935e3d15dd44e405b5c1c0df7709c891",
+                "reference": "16c44614935e3d15dd44e405b5c1c0df7709c891",
                 "shasum": ""
             },
             "require": {
@@ -164,11 +164,10 @@
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "src/"
-                ],
                 "files": [
-                    "src/ResponseCode.php"
+                    "src/Protocol/Responsecode.php",
+                    "src/Protocol/Client.php",
+                    "src/Client.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -195,7 +194,7 @@
             ],
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
-            "time": "2016-09-15 06:45:56"
+            "time": "2016-11-03 21:35:32"
         },
         {
             "name": "jean-damien/pchart",
