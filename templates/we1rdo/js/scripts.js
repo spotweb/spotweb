@@ -1387,7 +1387,7 @@ function initSliders() {
                 sliderMaxFileSize = fixedValues[1];
             } // else
 
-            $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
+            $( "#human-filesize" ).text( "Between " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " and " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
 
             return false;
             }
@@ -1416,7 +1416,7 @@ function initSliders() {
     var nearestMax = findNearest(possibleValues, realValues, false, true, convertedSliderMaxFileSize);
     $( "#min-filesize" ).val( "filesize:>:DEF:" + nearestMin[1]);
     $( "#max-filesize" ).val( "filesize:<:DEF:" + nearestMax[1]);
-    $( "#human-filesize" ).text( "Tussen " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " en " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
+    $( "#human-filesize" ).text( "Between " + format_size( parseInt($( "#min-filesize").val().substring("filesize:>:DEF:".length)) ) + " and " + format_size( parseInt($( "#max-filesize").val().substring("filesize:>:DEF:".length) )) );
 
     /* Report counts */
     var reportSlideValue = $( "#slider-reportcount" ).slider("values", 0);
