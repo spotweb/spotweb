@@ -1,6 +1,7 @@
 filter:
     excluded_paths:
         - 'tests/*'
+        - 'vendor/*'
     dependency_paths:
         - 'vendor/*'
 
