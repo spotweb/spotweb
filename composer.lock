@@ -147,16 +147,16 @@
         },
         {
             "name": "gdwebs/nntp",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GeoffreyDijkstra/NNTP-Protocol.git",
-                "reference": "16c44614935e3d15dd44e405b5c1c0df7709c891"
+                "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/16c44614935e3d15dd44e405b5c1c0df7709c891",
-                "reference": "16c44614935e3d15dd44e405b5c1c0df7709c891",
+                "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/d9883b322a36a7cbb400be4eb5da880b108c120a",
+                "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a",
                 "shasum": ""
             },
             "require": {
@@ -194,7 +194,7 @@
             ],
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
-            "time": "2016-11-03 21:35:32"
+            "time": "2016-11-04 15:48:31"
         },
         {
             "name": "jean-damien/pchart",
