@@ -1,0 +1,531 @@
+[
+    {
+        "name": "abraham/twitteroauth",
+        "version": "0.2.1",
+        "version_normalized": "0.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/abraham/twitteroauth.git",
+            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/abraham/twitteroauth/zipball/adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
+            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.2.*"
+        },
+        "time": "2014-11-18 00:05:59",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Abraham\\TwitterOAuth\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Abraham Williams",
+                "email": "abraham@abrah.am",
+                "homepage": "https://abrah.am",
+                "role": "Developer"
+            }
+        ],
+        "description": "The first PHP Library to support OAuth 1.0A for Twitter's REST API.",
+        "homepage": "https://github.com/abraham/twitteroauth",
+        "keywords": [
+            "api",
+            "oauth",
+            "twitter"
+        ]
+    },
+    {
+        "name": "boxcar/boxcar",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/boxcar-php.git",
+            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/boxcar-php/zipball/1357299c01bca1da57391f75a5de8214d927bd4d",
+            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-12 20:03:30",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "boxcar_api.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "ISC"
+        ],
+        "authors": [
+            {
+                "name": "Russell Smith",
+                "email": "russell.smith@ukd1.co.uk",
+                "homepage": "http://www.ukd1.co.uk/",
+                "role": "Developer"
+            }
+        ],
+        "description": "A simple boxcar provider implementation for PHP.",
+        "homepage": "https://boxcar.io/",
+        "keywords": [
+            "boxcar",
+            "ios",
+            "notifications",
+            "push"
+        ]
+    },
+    {
+        "name": "digitalstratum/fts_parser",
+        "version": "dev-spotweb",
+        "version_normalized": "dev-spotweb",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/fts_parser.git",
+            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/fts_parser/zipball/b693bfb6f348a1875dd8edd512cce360dceb1138",
+            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-12 10:43:23",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "parse_model.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Digital Stratum, Inc.",
+                "homepage": "http://digitalstratum.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
+        "homepage": "http://digitalstratum.com/oss/fts_parser",
+        "keywords": [
+            "fts",
+            "fulltext",
+            "postgresql",
+            "tsearch2"
+        ]
+    },
+    {
+        "name": "gdwebs/nntp",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/GeoffreyDijkstra/NNTP-Protocol.git",
+            "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/d9883b322a36a7cbb400be4eb5da880b108c120a",
+            "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "time": "2016-11-04 15:48:31",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/Protocol/Responsecode.php",
+                "src/Protocol/Client.php",
+                "src/Client.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Heino H. Gehlsen",
+                "email": "heino@gehlsen.dk",
+                "role": "Lead (abandoned)"
+            },
+            {
+                "name": "Jan-Pascal van Best",
+                "email": "janpascal@vanbest.org",
+                "role": "Lead (abandoned)"
+            },
+            {
+                "name": "Geoffrey Dijkstra",
+                "email": "info@gdwebs.nl",
+                "homepage": "http://www.gdwebs.nl",
+                "role": "Developer"
+            }
+        ],
+        "description": "A package that adds support for the NNTP protocol in PHP.",
+        "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol"
+    },
+    {
+        "name": "jean-damien/pchart",
+        "version": "v2.1.4",
+        "version_normalized": "2.1.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/pchart.git",
+            "reference": "484c52f17f1a3a198c907ea8bb71a3351a114f1b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/pchart/zipball/484c52f17f1a3a198c907ea8bb71a3351a114f1b",
+            "reference": "484c52f17f1a3a198c907ea8bb71a3351a114f1b",
+            "shasum": ""
+        },
+        "require": {
+            "ext-gd": "*",
+            "php": ">=5.3.0"
+        },
+        "time": "2014-01-19 20:08:29",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "class/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Jean-Damien Pogolotti",
+                "homepage": "http://www.pchart.net/",
+                "role": "Developer"
+            }
+        ],
+        "description": "pChart is a PHP class oriented framework designed to create anti-aliased charts.",
+        "homepage": "http://www.pchart.net/",
+        "keywords": [
+            "charts",
+            "pchart",
+            "pogolotti"
+        ]
+    },
+    {
+        "name": "mobiledetect/mobiledetectlib",
+        "version": "2.8.22",
+        "version_normalized": "2.8.22.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/serbanghita/Mobile-Detect.git",
+            "reference": "53cddae0c272a478b24a4b5fb60d0f838caf70b6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/serbanghita/Mobile-Detect/zipball/53cddae0c272a478b24a4b5fb60d0f838caf70b6",
+            "reference": "53cddae0c272a478b24a4b5fb60d0f838caf70b6",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.0.0"
+        },
+        "require-dev": {
+            "codeclimate/php-test-reporter": "dev-master",
+            "johnkary/phpunit-speedtrap": "~1.0@dev",
+            "phpunit/phpunit": "*"
+        },
+        "time": "2016-04-24 09:47:16",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "Mobile_Detect.php"
+            ],
+            "psr-0": {
+                "Detection": "namespaced/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Serban Ghita",
+                "email": "serbanghita@gmail.com",
+                "homepage": "http://mobiledetect.net",
+                "role": "Developer"
+            }
+        ],
+        "description": "Mobile_Detect is a lightweight PHP class for detecting mobile devices. It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.",
+        "homepage": "https://github.com/serbanghita/Mobile-Detect",
+        "keywords": [
+            "detect mobile devices",
+            "mobile",
+            "mobile detect",
+            "mobile detector",
+            "php mobile detect"
+        ]
+    },
+    {
+        "name": "notifo/notifo-php",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/notifo-php.git",
+            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/3f5faee77e6c79a769de2577ff580aaf679543a8",
+            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.0.0"
+        },
+        "time": "2016-08-12 21:11:31",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "Notifo_API.php",
+                "Notifo_Webhook.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "authors": [
+            {
+                "name": "Notifo",
+                "homepage": "http://notifo.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "Notifo API Library.",
+        "homepage": "http://www.notifo.com/",
+        "keywords": [
+            "notifications",
+            "notifo",
+            "push"
+        ]
+    },
+    {
+        "name": "phpseclib/phpseclib",
+        "version": "2.0.4",
+        "version_normalized": "2.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/phpseclib/phpseclib.git",
+            "reference": "ab8028c93c03cc8d9c824efa75dc94f1db2369bf"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/ab8028c93c03cc8d9c824efa75dc94f1db2369bf",
+            "reference": "ab8028c93c03cc8d9c824efa75dc94f1db2369bf",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "phing/phing": "~2.7",
+            "phpunit/phpunit": "~4.0",
+            "sami/sami": "~2.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "suggest": {
+            "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
+            "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
+            "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
+            "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
+        },
+        "time": "2016-10-04 00:57:04",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "phpseclib/bootstrap.php"
+            ],
+            "psr-4": {
+                "phpseclib\\": "phpseclib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jim Wigginton",
+                "email": "terrafrost@php.net",
+                "role": "Lead Developer"
+            },
+            {
+                "name": "Patrick Monnerat",
+                "email": "pm@datasphere.ch",
+                "role": "Developer"
+            },
+            {
+                "name": "Andreas Fischer",
+                "email": "bantu@phpbb.com",
+                "role": "Developer"
+            },
+            {
+                "name": "Hans-Jürgen Petrich",
+                "email": "petrich@tronic-media.com",
+                "role": "Developer"
+            },
+            {
+                "name": "Graham Campbell",
+                "email": "graham@alt-three.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
+        "homepage": "http://phpseclib.sourceforge.net",
+        "keywords": [
+            "BigInteger",
+            "aes",
+            "asn.1",
+            "asn1",
+            "blowfish",
+            "crypto",
+            "cryptography",
+            "encryption",
+            "rsa",
+            "security",
+            "sftp",
+            "signature",
+            "signing",
+            "ssh",
+            "twofish",
+            "x.509",
+            "x509"
+        ]
+    },
+    {
+        "name": "uskr/nma-php",
+        "version": "v0.0.2",
+        "version_normalized": "0.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/nma-php.git",
+            "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/nma-php/zipball/d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
+            "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=4.0.0"
+        },
+        "time": "2016-08-12 20:29:39",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "class.nma.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Adriano Maia",
+                "email": "adriano@locked.io",
+                "homepage": "https://github.com/uskr",
+                "role": "Developer"
+            }
+        ],
+        "description": "This library provides an easy to use API for PHP that interfaces with Notify My Android public API.",
+        "homepage": "http://www.notifymyandroid.com/",
+        "keywords": [
+            "android",
+            "nma",
+            "notifications",
+            "notifymyandroid",
+            "push"
+        ]
+    },
+    {
+        "name": "xenji/prowlphp",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/xenji/ProwlPHP.git",
+            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/xenji/ProwlPHP/zipball/f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
+            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-10-02 12:30:45",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Prowl": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache 2.0"
+        ],
+        "authors": [
+            {
+                "name": "Mario Mueller",
+                "email": "mario@xenji.com",
+                "homepage": "http://xenji.com"
+            }
+        ],
+        "description": "PHP library to access the webserives of Prowl (http://www.prowlapp.com/)",
+        "homepage": "https://github.com/xenji/ProwlPHP",
+        "keywords": [
+            "api",
+            "webservices"
+        ]
+    }
+]

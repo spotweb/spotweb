@@ -1,0 +1,23 @@
+{
+    "name": "boxcar/boxcar",
+    "type": "library",
+    "description": "A simple boxcar provider implementation for PHP.",
+    "keywords": ["boxcar", "push", "notifications", "ios"],
+    "homepage": "https://boxcar.io/",
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "Russell Smith",
+            "email": "russell.smith@ukd1.co.uk",
+            "homepage": "http://www.ukd1.co.uk/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "classmap": ["boxcar_api.php"]
+    }
+}
